@@ -1,0 +1,54 @@
+{
+  "schema_version": "UA-ART-INDEPENDENT-EXACT-BYTE-REVIEW-1",
+  "review_id": "ge-price-cache-reconcile-review-20260926T130459Z",
+  "status": "PASS",
+  "reviewed_at": "2026-09-26T13:04:59Z",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "subject_candidate_commit": "c1894c646d75f1384066db00ca4585949f6880b9",
+  "subject_candidate_parent": "23a28d9a03968b9700a0925a2fc568cd394979fa",
+  "subject_parent_main": "76115cd84ba7b802c4c3400a060f51aa7b7c8c14",
+  "subject_manifest_path": "cloud/ge_price_cache_20260922/reconciliation_candidate/CANDIDATE_MANIFEST.json",
+  "subject_manifest_sha256": "e8fbea27e600103f77d9c71502dfa5815fd0fc5aa1c6e68858d40327f769fcad",
+  "reviewed_payload_sha256": {
+    "PLAN.json": "e5c1bd6d7e2a61c4d2481a1792bd911f2c3a0ec7f80f1340aee532ea21e61a3b",
+    "VALIDATION.json": "40e2bfda356525cf9070a4009dcf117f8af076b4ae0884b77c14284a468cc6db",
+    "proposed/state/claims/claim.json": "54295916f47553e47fe4b965202d46e162f669b053c182d19cef7da855570fe5",
+    "proposed/state/reconciliations/reconciliation.json": "ed31619b1e91cc8aa51df7052f7869e4cfdd131b56a3128e06f3e9dcb1d4f541",
+    "proposed/state/halt_history/halt.json": "4497ef90ea3dc69552333ce5849603f3df1c062337e6f3838f2b955c6fe5b151",
+    "proposed/state/halt_history/claim.before.json": "b0b3fbf4d36ace6af49e89149366fbdc1d06fffa28f13b72b870a246e9403a1b"
+  },
+  "source_preconditions_sha256": {
+    "state/AUTOPILOT_HALT.json": "4497ef90ea3dc69552333ce5849603f3df1c062337e6f3838f2b955c6fe5b151",
+    "state/claims/GE-PRICE-CACHE-20260922.c6a6b444bfe97b313b6de5d80694572b4ae50c93bde6a1f7042bac7fcc6ee2a1.35696840719.json": "b0b3fbf4d36ace6af49e89149366fbdc1d06fffa28f13b72b870a246e9403a1b",
+    "tasks/requests/GE-PRICE-CACHE-20260922.json": "c6a6b444bfe97b313b6de5d80694572b4ae50c93bde6a1f7042bac7fcc6ee2a1",
+    "state/storage/GE-PRICE-CACHE-20260922.json": "07f3394a955e5d45c9a7c6e8c443abfa15198f8aaaa367c59e616c9d59bd7bca"
+  },
+  "absence_checks": {
+    "transaction": true,
+    "receipt": true,
+    "halt_history_targets": true,
+    "reconciliation_target": true,
+    "main_tree_truncated": false
+  },
+  "semantic_checks": {
+    "claim_failure_history_unchanged": true,
+    "claim_updated_at_unchanged": true,
+    "reconciliation_has_no_predeclared_apply_status": true,
+    "reconciliation_has_no_predeclared_review_pass": true,
+    "application_time_deferred_to_main_committer_time": true,
+    "external_pass_required_before_apply": true
+  },
+  "active_writer_check": {
+    "active_actions_runs": 0,
+    "status": "PASS"
+  },
+  "authorization": "EXACT_PARENT_DATA_ONLY_APPLY",
+  "conditions": [
+    "Immediately before commit, main must still equal subject_parent_main.",
+    "All source SHA256 and absence checks must remain unchanged.",
+    "No active writer or workflow may exist.",
+    "Apply exactly the reviewed target bytes in one atomic main commit.",
+    "Do not replay launch, create a transaction, run production code, reload services or perform rollback.",
+    "Any mismatch cancels this authorization."
+  ]
+}

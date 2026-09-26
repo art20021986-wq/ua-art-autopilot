@@ -1,0 +1,131 @@
+{
+  "contract": "PR114-SAVED-EVIDENCE-REUSE-OBSERVATION-1",
+  "report_kind": "LOCAL_READ_ONLY_HASH_VERIFICATION_NOT_A_GATE",
+  "recorded_at": "2026-09-14T17:54:43.484327+00:00",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "local_checkout": "/workspace/scratch/5f3dba772b24/ua-art-autopilot",
+  "observed_local_head": "3d46faaf39bfb66df69402ce3e497220c433b45b",
+  "historical_evidence_commit": "5c3a1560c723de6a6f1f422fa33487153cef75f6",
+  "remote_head_verified": false,
+  "server_state_verified": false,
+  "tracked_worktree_at_initial_observation": "CLEAN_WITH_UNTRACKED_RAW_EVIDENCE_PRESENT",
+  "instructions_discovery": "No AGENTS.md found in checkout, its applicable parent directories, or descendants of this checkout.",
+  "method": {
+    "operation": "Read existing files and git history; compare SHA256 and recorded sizes; verify compact ZIP CRC without extracting files.",
+    "software_suites_rerun": false,
+    "browser_matrix_rerun": false,
+    "existing_evidence_modified": false,
+    "historical_manifests_modified": false,
+    "production_written": false,
+    "crm_written": false,
+    "network_mutations": false,
+    "actual_tool_output_references": [
+      {"chunk_id": "5db81d", "purpose": "Initial git status, exact local HEAD and five-commit history"},
+      {"chunk_id": "5a932b", "purpose": "Actual source/evidence/reference hash and ZIP CRC verification"},
+      {"chunk_id": "862910", "purpose": "Read-only git diff proving PR body was changed by the audit continuation commit"},
+      {"chunk_id": "cea11d", "purpose": "Current PR body digest and historical 5c3a156 blob digest"}
+    ]
+  },
+  "software": {
+    "report_path": "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix_v2/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+    "report_bytes": 40630,
+    "report_sha256": "876ab0b71f80624ec5dc96f764ec5edf99644ed1cf0e334bc8ea2853da78f3d7",
+    "original_run_finished_at": "2026-09-14T16:37:45.451975+00:00",
+    "source_manifest_sha256": "0dae6071812640061367ef54dedb52a4b6a8e155449d526202f2496f52b55f38",
+    "builder_sha256": "ce6fb512f2b2c5dadb81c6412b1da28a43b8ba0d8b9d325f93c03833d9368cc9",
+    "saved_price_tests": {"tests_run": 446, "failures": 0, "errors": 0, "skipped": 0},
+    "saved_maintenance_tests": {"tests_run": 183, "failures": 0, "errors": 0, "skipped": 0},
+    "current_source_files_compared": 82,
+    "current_source_files_matched": 82,
+    "raw_evidence_manifest_path": "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix_v2/evidence_manifest.json",
+    "raw_evidence_files_compared": 34,
+    "raw_evidence_files_matched": 34,
+    "reuse_result": "SAVED_LOCAL_CODE_AND_EVIDENCE_HASHES_MATCH",
+    "limit": "No current runtime/environment or live server equivalence is asserted. Reuse saved offline results within the unchanged relevant source/data/environment scope; do not treat them as live acceptance."
+  },
+  "browser": {
+    "report_path": "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+    "report_bytes": 15090,
+    "report_sha256": "3798d46b281515c0a50bb2e3c41e8da464abaf1ccc3f3264bd9a772e76ff4906",
+    "saved_css_price_cases": 120,
+    "saved_assertions": 6744,
+    "report_hash_verified_via_checkpoint_references": true,
+    "historical_preservation_bridge": {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREFLIGHT_BROWSER_BINDING_V2.json",
+      "sha256": "3320408164e34afbd7781e5594cb5fa6fbbb0a4d2f5e04cf6e52f098fccc5c99",
+      "served_page_hash_matches": 20,
+      "retained_resources": 679
+    },
+    "reuse_result": "SAVED_REPORT_AND_BRIDGE_INTEGRITY_MATCH_CURRENT_LIVE_BINDINGS_NOT_OBSERVED",
+    "photos": "NOT_PASSED",
+    "full_preview": "NOT_PASSED"
+  },
+  "checkpoint_integrity": {
+    "current_checkpoint_path": "cloud/task088_v5_acceptance/resume_20260914/CHECKPOINT.json",
+    "unique_file_references_compared": 41,
+    "unique_file_references_matched": 40,
+    "criteria_map_path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREVIEW_CRITERIA_MAP.json",
+    "criteria_known_evidence_references_compared": 61,
+    "criteria_known_evidence_references_matched": 60,
+    "only_mismatched_file": "cloud/task088_v5_acceptance/resume_20260914/PR_BODY_CURRENT_RU.md",
+    "mismatch_types": ["SHA256", "BYTES"],
+    "classification": "DOCUMENTATION_REFERENCE_DRIFT_WITH_EXACT_GIT_PROVENANCE"
+  },
+  "pr_body_reference_correction": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/PR_BODY_CURRENT_RU.md",
+    "historical_reference": {
+      "commit": "5c3a1560c723de6a6f1f422fa33487153cef75f6",
+      "bytes": 6336,
+      "sha256": "0b677cf9088edf9423d4ceb8939791361777fd7b63047d43dbe178957c551d1e",
+      "git_blob_recomputed": true
+    },
+    "current_reference": {
+      "commit": "3d46faaf39bfb66df69402ce3e497220c433b45b",
+      "bytes": 8227,
+      "sha256": "87c56fafa0e5795ff6e9dd61f17078a7d57a07adcb2a4d6c436a9bcc88a2fcf2",
+      "local_bytes_recomputed": true
+    },
+    "provenance": "git diff 5c3a156..3d46faaf shows only the audited continuation, ended credential receiver state and persistence instructions added to this PR body. The old body hash remains in CHECKPOINT.json and the historical criteria map.",
+    "effect_on_software_and_browser_evidence": "No software source mismatch or scoped browser evidence mismatch found by this verification.",
+    "handling": "This new report records the current body reference. Do not rewrite immutable historical reports or archives to make their prior body reference appear current."
+  },
+  "compact_archive": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/PR114_CHECKPOINT_V2_20260914.zip",
+    "bytes": 812377,
+    "sha256": "ce3558e1869c77f81104a9f3c8be5ef592596c579da10dc0f3ba1e31a590081d",
+    "raw_archive_hash_and_size_match": true,
+    "entries": 55,
+    "crc_bad_member": null,
+    "crc_result": "PASS",
+    "per_entry_sha256_recomputed_in_this_verification": false,
+    "scope": "Archive SHA256 matches the saved immutable archive manifest; ZIP CRC checked independently. Historical archive creation recorded every-entry raw hash matching."
+  },
+  "distinct_candidate_bindings": {
+    "preview_resource_manifest_sha256": "c6febae073064d66c89a553a1d23538c8dc71c40c9737c440d33a3ba457611ca",
+    "installation_candidate_manifest_sha256": "eaceee78bcdbabc03e2430fd096c921d19ca1942e62fb5aa528dbf57a3eb8611",
+    "instruction": "These manifests cover different sets and cannot substitute for one another."
+  },
+  "current_authoritative_notice": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/AUDIT_CONTINUATION_NOTICE.json",
+    "observed_at": "2026-09-14T17:44:28.847Z",
+    "credential_console_id": "48168693",
+    "recorded_credential_console_state": "SHELL_PROMPT_RECEIVER_EXITED",
+    "recorded_result": "E_TOKEN_FORMAT",
+    "instruction": "Old instructions saying the console is waiting for a token are historical and superseded by the audit notice. Reconcile actual current console state before any credential action. Never enter a token in a shell prompt."
+  },
+  "remaining_open": [
+    "Current remote main/head, mode/HALT/delegation, receipts and in-flight operations have not been checked by this local audit.",
+    "Current server Preview configuration, source, DB, quota and writer exclusion require fresh actual observations.",
+    "Permitted post-fix full-size gallery acceptance remains missing after the explicit recorded Cloud browser URL policy denial; no indirect or alternate-tool retry is permitted.",
+    "All 24 Preview criteria need actual canonical evaluation with current bindings; this report is not TASK088-FINAL-V5-PREVIEW-GATE-1.",
+    "Canonical manifest/Gate/request/runtime registration, required GitHub statuses, full backup, controlled Stage 3 installation and independent receipt remain open.",
+    "Read credential provisioning and continuous authenticated reader verification remain open for Stage 4.",
+    "Actual CRM-card-catalog price cycles, SLA, queue/recovery/restart acceptance and Stage 4 receipt remain open.",
+    "Universal durable process persistence and isolated interruption/reconciliation acceptance remain requirements, not declared implemented."
+  ],
+  "exact_next_action": "Reconcile current Git/server/receipts and any in-flight operation using AUDIT_CONTINUATION_NOTICE.json; preserve the completed hashes above, refresh only required current bindings, and continue the first incomplete approved step. Do not reinstall Stage 1/2 or repeat the saved 446/183/120 suites solely because a new session started.",
+  "authorization": "Existing conditional publication authorization is retained; this local evidence report neither creates a Gate nor authorizes a deployment.",
+  "stage3": "OPEN_NOT_PUBLISHED",
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "full_preview_gate": "NOT_PASSED"
+}

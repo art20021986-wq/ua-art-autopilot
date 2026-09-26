@@ -1,0 +1,63 @@
+{
+  "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-1",
+  "semantic_outcome": "ABORTED_NO_PRODUCTION_WRITE",
+  "task_id": "GE-PRICE-CACHE-20260922",
+  "original_run_id": "35696840719",
+  "request_sha256": "c6a6b444bfe97b313b6de5d80694572b4ae50c93bde6a1f7042bac7fcc6ee2a1",
+  "base_main_commit": "76115cd84ba7b802c4c3400a060f51aa7b7c8c14",
+  "prepared_at": "2026-09-26T12:58:32.384Z",
+  "apply_parent_main": "76115cd84ba7b802c4c3400a060f51aa7b7c8c14",
+  "apply_semantics": "PRESENCE_AT_TARGET_PATH_ON_MAIN_MEANS_EXACT_PARENT_APPLICATION_COMPLETED",
+  "independent_review_requirement": "EXTERNAL_PASS_ON_EXACT_BYTES_BEFORE_APPLY",
+  "original_failure_preserved": true,
+  "original_failure_code": "STORAGE_PROBE_STALE_OR_FUTURE",
+  "failure_job_id": "106645820373",
+  "failure_stage": "trusted gate rebuild / production storage freshness validation",
+  "transaction_created": false,
+  "production_backup_executed": false,
+  "production_install_controller_executed": false,
+  "production_write_executed": false,
+  "production_rollback_executed": false,
+  "production_service_reload_executed": false,
+  "metadata_terminal_status": "FAILED",
+  "metadata_terminal_status_meaning": "Run aborted before a production transaction existed; no rollback or installation PASS is asserted.",
+  "consumed_launch_unchanged": true,
+  "successor_installation_authorized_by_this_record": false,
+  "live_outcome": {
+    "evidence_commit": "7ecdb92ab18c2b4b02a7b9955b68b0cf8bbd186b",
+    "catalog_rendered": true,
+    "catalog_count": 21,
+    "non_kyiv_example": {
+      "id": "UA-0010",
+      "price_uah_usd": 11700,
+      "price_georgia_usd": 8750,
+      "both_visible_on_card_and_catalog": true
+    },
+    "kyiv_example": {
+      "id": "UA-0018",
+      "price_uah_usd": 22900,
+      "georgia_price_public": false
+    },
+    "scope": "Read-only visible DOM after dynamic refresh; proves existing price installation behavior, not that failed cache run wrote production."
+  },
+  "before_sha256": {
+    "state/AUTOPILOT_HALT.json": "4497ef90ea3dc69552333ce5849603f3df1c062337e6f3838f2b955c6fe5b151",
+    "state/claims/GE-PRICE-CACHE-20260922.c6a6b444bfe97b313b6de5d80694572b4ae50c93bde6a1f7042bac7fcc6ee2a1.35696840719.json": "b0b3fbf4d36ace6af49e89149366fbdc1d06fffa28f13b72b870a246e9403a1b",
+    "tasks/requests/GE-PRICE-CACHE-20260922.json": "c6a6b444bfe97b313b6de5d80694572b4ae50c93bde6a1f7042bac7fcc6ee2a1",
+    "state/storage/GE-PRICE-CACHE-20260922.json": "07f3394a955e5d45c9a7c6e8c443abfa15198f8aaaa367c59e616c9d59bd7bca"
+  },
+  "after_sha256": {
+    "state/claims/GE-PRICE-CACHE-20260922.c6a6b444bfe97b313b6de5d80694572b4ae50c93bde6a1f7042bac7fcc6ee2a1.35696840719.json": "2bf1014cda6d05baab8469f8a3b4709aa1a83dc3c1158aed0151b17480f299ae"
+  },
+  "halt_archive": {
+    "path": "state/halt_history/GE-PRICE-CACHE-20260922.35696840719/halt.json",
+    "sha256": "4497ef90ea3dc69552333ce5849603f3df1c062337e6f3838f2b955c6fe5b151",
+    "byte_identical_required": true
+  },
+  "claim_archive": {
+    "path": "state/halt_history/GE-PRICE-CACHE-20260922.35696840719/claim.before.json",
+    "sha256": "b0b3fbf4d36ace6af49e89149366fbdc1d06fffa28f13b72b870a246e9403a1b",
+    "byte_identical_required": true
+  },
+  "no_transaction_or_receipt_paths_observed": true
+}

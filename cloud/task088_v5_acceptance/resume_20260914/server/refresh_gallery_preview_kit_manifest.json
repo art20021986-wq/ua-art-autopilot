@@ -1,0 +1,39 @@
+{
+  "archive": "refresh_gallery_preview_20260914.pyz",
+  "bytes": 11500,
+  "expected_added_gallery_routes": 542,
+  "expected_all_gallery_routes": 560,
+  "gallery_routes_sha256": "457df9c40064e7e5c5510d339e264e549ddfc4b1a2ae2bd2380c0501b46c2c74",
+  "helpers": {
+    "check_preview_freshness_20260914_1545.py": "f31949ba6efd759f2faab1e730dfa2210c9dd6f0eb3dcc1c1e926ae6cb041972",
+    "provision_preview_08fbf7a1.py": "206ec6f601a4997e2f1129f9e6deb158293b811ce188eba7eff6d02ce062d3f6",
+    "provision_public_preview_1.py": "58c8cf3a3e25254ea6f978c79cb9004f519d59be75400cc2efbd8b6c326bda40"
+  },
+  "members": {
+    "__main__.py": {
+      "bytes": 17018,
+      "sha256": "f3f8a5c6d9b47d193c1d9903fffc43328986f3540dded3a41d9d0fc4755fb7ee"
+    },
+    "build_preview.py": {
+      "bytes": 17925,
+      "sha256": "0137d0077ef485679feea238b579b629f8c281542ca28a7277b769d5a7b8fa02"
+    }
+  },
+  "review": {
+    "ast_compile": "OK",
+    "builder_pin": "MATCH",
+    "cas_calls": [
+      "base.replace_new_preview_wsgi(check.WSGI, old_wsgi, candidate_wsgi)",
+      "base.replace_new_preview_wsgi(check.WSGI, candidate_wsgi, old_wsgi)"
+    ],
+    "cas_scope": "ADVISORY_FLOCK_COMPARE_BYTES_NO_NONCOOPERATING_WRITER_FENCE",
+    "full_preview": "NOT_PASSED",
+    "helper_pins": "MATCH",
+    "image_http_requests": 0,
+    "local_captured_gallery_binding": "MATCH_560",
+    "quota": "FRESH_AUTHENTICATED_FILE_REQUIRED",
+    "server_execution": "NOT_RUN",
+    "sole_wsgi_write_target": "DEDICATED_PREVIEW_WSGI"
+  },
+  "sha256": "3c83ca418d9a10667867ccb4ab1efaf9566d5b5864844055c679d831b268b63e"
+}

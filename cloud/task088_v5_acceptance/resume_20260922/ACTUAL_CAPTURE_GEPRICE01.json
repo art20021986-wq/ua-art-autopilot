@@ -1,0 +1,76 @@
+{
+  "kind": "PR114_ACTUAL_CAPTURE_GEPRICE01_NOT_PUBLICATION",
+  "recorded_at": "2026-09-22T03:12:55.153963+00:00",
+  "status": "PASS_CORE_DOUBLE_READ_STABLE_OBSERVATION",
+  "started_at": "2026-09-22T03:00:41.477207+00:00",
+  "finished_at": "2026-09-22T03:01:05.454206+00:00",
+  "observer": {
+    "server_path": "/home/Carix/observe_point4_core_dynamic.py",
+    "sha256": "50dd8832c905c0ee0430bd424dcd2883156f7350037e9b2664b5695953c94a2d",
+    "delivered_by_owner": true,
+    "launched_once": true
+  },
+  "server_output": "/home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260922_geprice01",
+  "server_summary_sha256_independently_read": "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454",
+  "server_export_manifest_sha256_independently_read": "d6785dabc3f3de4aff827675b10be080add16a3b499d91ed05e56a0c5fc7d900",
+  "raw_artifacts": {
+    "summary.json": {
+      "bytes": 85206,
+      "sha256": "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454"
+    },
+    "export_manifest.json": {
+      "bytes": 12279,
+      "sha256": "d6785dabc3f3de4aff827675b10be080add16a3b499d91ed05e56a0c5fc7d900"
+    },
+    "public_inputs_000.json": {
+      "bytes": 818440,
+      "sha256": "cb91bb5b6af86984dcc300e42c69fc239454780434102e9b66d4e52c03ad815a"
+    },
+    "public_inputs_001.json": {
+      "bytes": 818673,
+      "sha256": "740958b4bdb49c9166b1c3594ae200e3b9abeafa91041b0edbce5a6977674215"
+    },
+    "public_inputs_002.json": {
+      "bytes": 819032,
+      "sha256": "2676fbaf777408ecd89ea77c900c03f1933a79cc2968ed2e518c3a20ac521688"
+    },
+    "public_inputs_003.json": {
+      "bytes": 818903,
+      "sha256": "6861d00d0cace6e30a5eac4d725ed95c827fa27dbe3926844d92a73f4dc2935a"
+    },
+    "public_inputs_004.json": {
+      "bytes": 190895,
+      "sha256": "998a64bf7337c74808579d6afc17b8cba247c88e80700d152d3e3d5e4934d0ca"
+    }
+  },
+  "stability": {
+    "core_html_hashes_and_stamps": true,
+    "database_and_published_rows": true,
+    "diagnostic_hashes_and_stamps": true,
+    "home_routing_equal_core": true,
+    "known_runtime_source_overlap": true,
+    "referenced_media_metadata_only": true,
+    "routing_hashes_and_stamps": true,
+    "runtime_modules_hashes_and_stamps": true,
+    "source_hashes_and_stamps": true,
+    "supporting_html_hashes_and_stamps": true
+  },
+  "export_completed": true,
+  "published_records": 21,
+  "core_html": 46,
+  "captured_public_html": 92,
+  "ua0002_deleted_preserved": true,
+  "ua0018_current_ua_price": 22900,
+  "ua0010_current_ge_price": 8750,
+  "currency": "USD",
+  "business_SQL_writes": false,
+  "business_source_writes": false,
+  "services_changed": false,
+  "stage3_installed": false,
+  "stage4_accepted": false,
+  "acceptance": {
+    "completed": 8,
+    "total": 20
+  },
+  "next_action": "Build current21-car candidate from verified capture; review exact catalogue UA0018 reconciliation; complete actual Preview and existing canonical publication gates."
+}

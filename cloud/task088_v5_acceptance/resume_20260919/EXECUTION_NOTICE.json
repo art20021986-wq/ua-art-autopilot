@@ -1,0 +1,70 @@
+{
+  "approval": {
+    "canonical_gate_or_activation": false,
+    "document_sha256": "4590e4db2d6dafe3cac95f96da808ca05831de3ce45097d8235970913ba62ba1",
+    "identifier": "UA-ART-PR114-AUDIT-005 v1.0",
+    "recorded_on": "2026-09-19",
+    "scope": "Continue original Stage3 under actual canonical gates and verified backup, then Stage4 acceptance; preserve Stage1/2 and approved design",
+    "user_statement": "УТВЕРЖДАЮ UA-ART-PR114-AUDIT-005 v1.0"
+  },
+  "background_task": {
+    "changed_this_execution": false,
+    "id": "6aa838e44e688191acb636f6597ac587",
+    "is_enabled": false,
+    "last_run_time": "2026-09-19T09:37:33.586548+00:00",
+    "observed_on": "2026-09-19"
+  },
+  "canonical_launch": "NOT_RUN",
+  "canonical_state": "cloud/task088_v5_acceptance/resume_20260919/CANONICAL_STATE.json",
+  "completed": [
+    "Reviewed and tested crash/timeout/lost-response protection in the installation adapter",
+    "Closed independently identified delayed execute versus canonical rollback race",
+    "Rebuilt exact generated release with the new fault/concurrency suite and ran 71 tests successfully",
+    "Authenticated server UI readback: existing CRM and monitor Running; 14 on-disk source hashes match earlier source pins",
+    "Read current canonical main, active HALT, all claims and transactions; diagnosed unexpected workflow root cause"
+  ],
+  "completed_old_operations": "Retain September15 completed observer, binding and preflight evidence; no relaunch performed",
+  "contract": "PR114-RESUME-EXECUTION-NOTICE-NOT-A-GATE-1",
+  "crm_written": false,
+  "foreground_in_progress": false,
+  "historical_suites_repeated": false,
+  "main_observation_correction": "Use current main ref; PR metadata base_sha still reports historical 0c85a6561d80c4d8789b3a482ae41cdaf9d0f667 and is not the current main tip",
+  "next_action": "Continue isolated permanent media writer fences and canonical quiescence integration using the matched private sources; do not run freshness-only preflight while writer isolation and main HALT remain unresolved.",
+  "no_background_execution_claim": true,
+  "observed_head_before_checkpoint": "77732241009586729e24e4425e3df541da5cf792",
+  "observed_main": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+  "original_stages": {
+    "stage1": "PREVIOUSLY_ACCEPTED",
+    "stage2": "PREVIOUSLY_ACCEPTED",
+    "stage3": "OPEN_NOT_PUBLISHED",
+    "stage4": "OPEN_NOT_ACCEPTED"
+  },
+  "preview": {
+    "evaluated_at": "2026-09-15T04:55:50.289644+00:00",
+    "freshness_reset": false,
+    "historical_result": "24/24 PASS",
+    "path": "cloud/task088_v5_acceptance/resume_20260915_2/PREVIEW_GATE.json",
+    "sha256": "3ed070183d19de801348aef5a521d30781c6528aa585441c6593ab34ae7f864a"
+  },
+  "production_written": false,
+  "progress": {
+    "accepted": 8,
+    "percent": 40,
+    "scope": "COMPLETION-004 acceptance criteria, not total site readiness",
+    "total": 20
+  },
+  "remaining_blockers": [
+    "Permanent media-deletion/file writer fences and actual complete quiescence remain unintegrated",
+    "Current main EMERGENCY_HALT: unregistered uaart_crm_runtime_readonly_probe.yml violates exact workflow policy; canonical remediation/recovery required, HALT retained",
+    "Fresh exact candidate request/manifest/Gate B/activation, full verified backup and canonical Stage3 installation are absent",
+    "Continuous reader access was last observed absent September15; not revalidated today; Stage4 live acceptance remains open"
+  ],
+  "runtime_activation": "NOT_RUN",
+  "separate_release_prerequisite": "Reviewed canonical remediation of unexpected probe workflow and validated recovery; do not weaken workflow policy or delete HALT to gain admission",
+  "server_observations": "cloud/task088_v5_acceptance/resume_20260919/SERVER_OBSERVATIONS.json",
+  "specification": "UA-ART-PR114-AUDIT-005 v1.0",
+  "stage3": "OPEN_NOT_PUBLISHED",
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "updated_at": "2026-09-19T15:19:28.662668+00:00",
+  "validation": "cloud/task088_v5_acceptance/resume_20260919/VALIDATION.json"
+}

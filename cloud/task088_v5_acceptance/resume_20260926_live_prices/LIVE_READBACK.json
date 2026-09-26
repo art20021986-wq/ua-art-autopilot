@@ -1,0 +1,62 @@
+{
+  "contract": "PR114-LIVE-CRM-PRICE-READBACK-20260926-1",
+  "operation_id": "pr114-live-price-readback-20260926T1119Z",
+  "observed_at": "2026-09-26T11:21:31.134Z",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "branch": "codex/task088-owner-policy-20260913-0934",
+  "input_heads": {
+    "main": "76115cd84ba7b802c4c3400a060f51aa7b7c8c14",
+    "pr": "d65847a8a08395fca7b9d9fb00e35f8ee011b47f"
+  },
+  "intent": "Read-only production verification of already installed CRM-backed UA/GE prices after connection recovery; persist facts only.",
+  "expected_result": "Confirm non-Kyiv cards/catalog show independent UA and GE USD prices; Kyiv retains GE in CRM but publicly shows UA only.",
+  "readback": {
+    "catalog_url": "https://www.uaart.com.ua/video/katalog.html",
+    "non_kyiv_card_url": "https://www.uaart.com.ua/video/UA-0010.html",
+    "kyiv_card_url": "https://www.uaart.com.ua/video/UA-0018.html",
+    "catalog_count": 21,
+    "non_kyiv": {
+      "id": "UA-0010",
+      "status": "In Georgia",
+      "card_price_uah_usd": 11700,
+      "card_price_georgia_usd": 8750,
+      "catalog_price_uah_usd": 11700,
+      "catalog_price_georgia_usd": 8750,
+      "result": "PASS_BOTH_INDEPENDENT_PRICES_VISIBLE"
+    },
+    "kyiv": {
+      "id": "UA-0018",
+      "status": "In Kyiv",
+      "card_price_uah_usd": 22900,
+      "georgia_price_public": false,
+      "catalog_price_uah_usd": 22900,
+      "catalog_georgia_price_public": false,
+      "result": "PASS_UA_ONLY_PUBLIC"
+    },
+    "availability": "PASS_BROWSER_RENDERED",
+    "source": "managed browser visible DOM after 4 second dynamic refresh"
+  },
+  "safety": {
+    "production_write": false,
+    "crm_write": false,
+    "service_reload": false,
+    "preview_stage": false,
+    "preview_switch": false,
+    "launch_replayed": false,
+    "halt_removed": false,
+    "backup_required": false
+  },
+  "controls": {
+    "active_github_actions_runs": 0,
+    "main_halt_status": "EMERGENCY_HALT retained from failed GE-PRICE-CACHE-20260922 run 35696840719",
+    "pr114_progress": {
+      "completed": 8,
+      "total": 20,
+      "percent": 40
+    },
+    "progress_incremented": false,
+    "reason_no_increment": "Live functionality confirmed, but separate canonical Stage3/Stage4 receipts and final acceptance remain absent."
+  },
+  "status": "LIVE_PRICE_BEHAVIOR_CONFIRMED_EXISTING_INSTALLATION",
+  "next_action": "Reconcile failed cache-launch transaction and HALT against the confirmed installed outcome without replaying launch; then resume first genuinely incomplete canonical acceptance step."
+}

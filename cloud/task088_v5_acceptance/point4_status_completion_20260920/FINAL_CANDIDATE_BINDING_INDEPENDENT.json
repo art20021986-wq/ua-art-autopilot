@@ -1,0 +1,54 @@
+{
+  "contract": "PR114-FINAL-CURRENT-CANDIDATE-INDEPENDENT-BINDING-1",
+  "status": "PASS_EXACT_68_FILE_CURRENT_CAPTURE_BINDING",
+  "reviewed_at": "2026-09-20T07:02:31.145451+00:00",
+  "candidate_directory": "/workspace/scratch/cc71e1c55fba/private_current_candidate_20260920",
+  "candidate_manifest_path": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/current_final_candidate/CANDIDATE_MANIFEST.json",
+  "candidate_manifest_raw_sha256": "0c83bbdc3a820d8b4bb875e4b7515a1bae033220019d3ef9235eae9c80ef5cc9",
+  "candidate_manifest_canonical_sha256": "2881e87087bcecc6d8e3e9e15cf02903b3c430eb69f3d7279708ba5b75ef1305",
+  "candidate_files_checked": 68,
+  "candidate_file_set_exact": true,
+  "source_and_module_afterhashes_checked": 20,
+  "html_afterhashes_checked": 48,
+  "current_beforehashes_checked": 68,
+  "retained_source_inputs_bound_to_current_observation": 18,
+  "public_builder_source_pins_checked": 68,
+  "native_generated_four_outputs_match": true,
+  "final_startup_runtime_and_binding_match": true,
+  "current_observation": {
+    "path": "/workspace/scratch/cc71e1c55fba/current_core_capture/summary.json",
+    "sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+    "provenance": "Parent-owned authenticated observation; reviewer verifies local hash and all manifest bridges, does not independently fetch production.",
+    "published_count": 22,
+    "stable_flags": 10,
+    "runtime_modules": 11,
+    "core_html": 48,
+    "diagnostics": 44,
+    "supporting_html": 4,
+    "point_in_time_only": true
+  },
+  "composition_result": {
+    "path": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/current_final_candidate/RESULT.json",
+    "sha256": "1fdd4621a5c1b9281e43e1d59922df7d51b151c979c1c7031cf6704d80e75a01",
+    "compile20_credit": "Builder compilation without execution retained; no duplicate compilation.",
+    "approved_html_delta48_credit": "Independent applicability report checks exact current bytes; all48 hashes cross-bound here."
+  },
+  "preview": {
+    "applicability_sha256": "a317826cc87ec077eb53eddc6680c006ae12ccdfe4729e839dff1c4eed2b4cfe",
+    "remaining_real_browser_cases": 42,
+    "preview_gate": "NOT_PASSED",
+    "resource_runtime_binding_pending": true
+  },
+  "not_asserted": [
+    "Source execution on production",
+    "Complete optional plugin closure",
+    "Global writer exclusion",
+    "Backup or restore acceptance",
+    "Stage3/4 receipt",
+    "Live reader or synchronization",
+    "Point4 full PASS",
+    "20/20 acceptance"
+  ],
+  "unchanged_suites_repeated": false,
+  "production_mutations": false
+}

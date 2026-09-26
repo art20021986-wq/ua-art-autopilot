@@ -1,0 +1,43 @@
+{
+  "report_kind": "PRIVATE_SOURCE_OFFLINE_VALIDATION",
+  "started_at": "2026-09-14T07:17:35.089963+00:00",
+  "production_written": false,
+  "live_browser_tested": false,
+  "real_telegram_tested": false,
+  "source_manifest_sha256": "80caa235053ad81550415b162060f4d77661967fc8ed97fb4fef0d5aff87db7b",
+  "suites": [
+    {
+      "name": "renderer_private",
+      "exit_code": 0,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 21,
+      "unexpected_successes": 0
+    },
+    {
+      "name": "crm_guard_private",
+      "exit_code": 0,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 61,
+      "unexpected_successes": 0
+    },
+    {
+      "name": "preview_capture",
+      "exit_code": 0,
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 1,
+      "unexpected_successes": 0
+    }
+  ],
+  "passed": true,
+  "tests_run": 83,
+  "finished_at": "2026-09-14T07:17:40.613948+00:00"
+}

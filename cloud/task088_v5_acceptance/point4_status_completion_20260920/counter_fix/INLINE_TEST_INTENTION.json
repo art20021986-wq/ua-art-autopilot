@@ -1,0 +1,6 @@
+{
+  "reason": "Canonical builder must migrate existing exact inline CLIENT_SCRIPT so initial published HTML uses fixed counter logic. New pure helper changes one exact identified script, retains absent/current scripts, refuses unknown/duplicate markers, preserves all unrelated markup.",
+  "test_scope": "Four newly added inline migration tests only; preceding nine passing counter tests retained because their code unchanged.",
+  "patcher_sha256": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
+  "production_writes": false
+}

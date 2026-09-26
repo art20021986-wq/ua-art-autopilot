@@ -1,0 +1,39 @@
+{
+  "status": "PASS_LOCAL_SYNTHETIC_INTEGRATION_ONLY",
+  "checks": [
+    "default_package_closure_unchanged",
+    "bound_package_closure_exact",
+    "stager_default_mapping_matches_builder",
+    "stager_bound_mapping_matches_builder",
+    "binding_constants_match",
+    "absent_binding_retains_strict_stale_catalog_rejection",
+    "canonical_preflight_bound_candidate_passes",
+    "no_production_gate_fabricated",
+    "46_html_candidates_and_66_total",
+    "all_candidates_match_independent_offline_candidate",
+    "actual_catalog_before_hash_retained",
+    "explicit_original_intermediate_strict_final_chain",
+    "private_schema_test_preserves_cars_audit",
+    "live_fixture_sources_html_database_unchanged",
+    "null_binding_rejected",
+    "unknown_binding_rejected",
+    "observer_byte_drift_rejected",
+    "catalog_byte_drift_rejected",
+    "full_row_alias_conflict_rejected_by_unchanged_migrator",
+    "new_crm_price_not_reconciled_using_old_observation",
+    "builder_observer_data_exact_in_archive",
+    "builder_code_pins_exclude_json_but_bind_exact_helper",
+    "stager_exact_archive_payload_no_network"
+  ],
+  "count": 23,
+  "production_changed": false,
+  "canonical_preflight_executed_on_server": false,
+  "gate_b": false,
+  "fixture": "Actual captured HTML/private source before-images; synthetic local SQLite, routing source bytes, quota and Stage2 receipt; no server invocation.",
+  "code_sha256": {
+    "build_preflight_bundle.py": "2018c4d84566d6a0b8fb1126f1462d41337ad5971a99dced55f06eb1a0fafedb",
+    "stage_preflight.py": "58e6d177ca71ffe2483ce8f63e0ff0d58c30468f27ecccf382625d84d62237a5",
+    "bound_catalog_reconciliation.py": "39974670ad14f8bc92b56d213645a59b763dae3eb6af833b5aa41c1412f21424",
+    "preflight.py": "d9049265641a4539b621d9e897c3d2ddedebe4a7d2583e92f5e2e345f61c3d1a"
+  }
+}

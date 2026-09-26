@@ -1,0 +1,101 @@
+{
+  "actual_prepare_report": {
+    "canonical_workflow_policy": {
+      "active_workflows": [
+        ".github/workflows/uaart_autostart.yml",
+        ".github/workflows/uaart_backup.yml",
+        ".github/workflows/uaart_critical.yml",
+        ".github/workflows/uaart_fast.yml",
+        ".github/workflows/uaart_maintenance.yml",
+        ".github/workflows/uaart_monitor.yml",
+        ".github/workflows/uaart_orchestrator.yml",
+        ".github/workflows/uaart_standard.yml",
+        ".github/workflows/uaart_transaction_watchdog.yml"
+      ],
+      "allowlist": [
+        ".github/workflows/uaart_critical.yml",
+        ".github/workflows/uaart_transaction_watchdog.yml"
+      ],
+      "consumers": [
+        ".github/workflows/uaart_critical.yml",
+        ".github/workflows/uaart_transaction_watchdog.yml"
+      ],
+      "events": {
+        ".github/workflows/uaart_autostart.yml": [
+          "push"
+        ],
+        ".github/workflows/uaart_backup.yml": [
+          "workflow_call",
+          "workflow_dispatch"
+        ],
+        ".github/workflows/uaart_critical.yml": [
+          "workflow_call"
+        ],
+        ".github/workflows/uaart_fast.yml": [
+          "workflow_call"
+        ],
+        ".github/workflows/uaart_maintenance.yml": [
+          "schedule",
+          "workflow_dispatch"
+        ],
+        ".github/workflows/uaart_monitor.yml": [
+          "schedule",
+          "workflow_dispatch"
+        ],
+        ".github/workflows/uaart_orchestrator.yml": [
+          "workflow_call"
+        ],
+        ".github/workflows/uaart_standard.yml": [
+          "workflow_call"
+        ],
+        ".github/workflows/uaart_transaction_watchdog.yml": [
+          "push",
+          "schedule",
+          "workflow_dispatch"
+        ]
+      },
+      "secrets_inherit": [
+        ".github/workflows/uaart_autostart.yml",
+        ".github/workflows/uaart_orchestrator.yml"
+      ],
+      "status": "PASS"
+    },
+    "contract": "TASK088-OFFLINE-RUNTIME-PREPARATION-1",
+    "files_sha256": {
+      "runtime_registration.json": "cb3c9371c582b5c5744763dd1a5b667e01b544b8cacb41b27c4e6c4b28020420",
+      "tree/state/AUTOPILOT_RUNTIME_MANIFEST.json": "525d964234b1f2991d79dc383b5522a04ccafddfce965408d62029c4c8bb4d6d",
+      "tree/state/runtime_activations/TASK088-PRICE-V5-STAGE3.previous-manifest.json": "2b3b75c686a41f4f6a48b2f9e2d57da12574c2b498505150899b66645d7cd2c5",
+      "tree/state/runtime_activations/TASK088-PRICE-V5-STAGE3.previous-mode.json": "11af7c738faa902412d35f0755a0a829df49ec939d32960abf343203f93bb715"
+    },
+    "generated_at": "2026-09-22T06:00:21.344969+00:00",
+    "launch_created": false,
+    "production_written": false,
+    "source_commit": "580b811dd860e25f61f591c9d8f87235da15caff",
+    "stage3_complete": false,
+    "status": "PREPARED_NOT_ACTIVATED"
+  },
+  "actual_prepare_report_sha256": "473a996de5b02f22a0288ba6bcc01160b404bcb010b0fad6f9bafacd72f725d9",
+  "contract": "TASK088-OFFLINE-ACTIVATION-PREPARER-REVIEW-1",
+  "delegation_generated": false,
+  "finalize_executed": false,
+  "launch_created": false,
+  "observed_at": "2026-09-22T06:01:59.250796+00:00",
+  "private_binding_generated": false,
+  "production_written": false,
+  "remaining_requirements": [
+    "Fresh complete canonical request/owner/Gate B/Preview artifacts for unchanged full verify_execution_mode validation",
+    "Actual current identity/chat/operator/routing facts and explicitly approved persistent control-reader credential path",
+    "Reviewed operational writer drain and fresh factual writer-fence evidence",
+    "Actual engine deployment receipt before private binding finalization and live acceptance"
+  ],
+  "review_result": "NO_BLOCKER_IDENTIFIED_IN_PREPARE_PATH",
+  "review_scope": "284-line offline preparation code and actual exact merged-candidate prepare invocation",
+  "reviewer": "root",
+  "runtime_activated": false,
+  "source_commit": "580b811dd860e25f61f591c9d8f87235da15caff",
+  "source_path": "cloud/task088_v5_install/prepare_runtime_activation.py",
+  "source_sha256": "44f72027ebd9bf9704d0d31cbee072ea1cc7b12b1213b8acafd7746d68c58b7d",
+  "stage3_complete": false,
+  "status": "REVIEWED_PREPARATION_ONLY",
+  "syntax_compile": "PASS"
+}

@@ -1,0 +1,30 @@
+{
+  "availability_outcome": "RESTORED_OBSERVED_FROM_MANAGED_BROWSER_AND_SERVER",
+  "http": {
+    "apex_home": 200,
+    "catalog": 200,
+    "ua0022_card": 200,
+    "ua0022_diagnostic": 200,
+    "www_home": 200
+  },
+  "install_verify_receipt": "PASS",
+  "installed_runtime_sha256": {
+    "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+    "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+    "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687"
+  },
+  "observed_window_utc": "2026-09-20T08:15Z..08:17:58Z",
+  "production_write_by_reconciliation": false,
+  "public_local_sha256_matches": {
+    "ua0022_card": true,
+    "ua0022_diagnostic": true
+  },
+  "publisher_result": true,
+  "rollback_performed": false,
+  "run_id": "35490449348",
+  "schema_version": "UA-ART-UA0022-AVAILABILITY-EVIDENCE-1",
+  "source_evidence_sha256": "7bb50cd3f9f924f19360efc2ad988b3311e31baf5f6304e74fd56ecbde0684e8",
+  "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+  "transaction_id": "tx-35490449348-334c361c22ebee11"
+}

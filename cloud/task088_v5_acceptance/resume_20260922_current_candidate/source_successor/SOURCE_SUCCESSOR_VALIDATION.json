@@ -1,0 +1,51 @@
+{
+  "actual_server_preflight": false,
+  "base_commit": "142f1303f8320d71a360bd578fa0a76bca7e7d07",
+  "chain_sha256": "3c8fe00c8f0ca37bd98d159f7c5acc8eb3bed5ebbd3f10d9af59841a286fd63d",
+  "contract": "TASK088-SOURCE-SUCCESSOR-SCOPED-VALIDATION-1",
+  "files": {
+    "cloud/task088_price_sync/build_preflight_bundle.py": "7e35d93be4e0e8fbf703397cecf8b571befe79e0b2eeb96be847dc31f65376df",
+    "cloud/task088_price_sync/install_package.py": "3d9fe9d45423691f5602edc380a61b373d71dda96e809a614f013f3d98e4a509",
+    "cloud/task088_price_sync/preflight.py": "496980535e2586693d482ddeaf19714a3f4b6b2393ac9cc6ced6e175354a32ce",
+    "cloud/task088_price_sync/source_successor.py": "7111488541bbc88aa6426d5de76b223cb8e99ab4ca17c934424025a1c4428d28",
+    "cloud/task088_price_sync/source_successor_20260920.json": "3c8fe00c8f0ca37bd98d159f7c5acc8eb3bed5ebbd3f10d9af59841a286fd63d",
+    "cloud/task088_price_sync/stage_preflight.py": "a1e890ec43037f04607de965896a8fa21fa36c09930971e0044f605566f6f600",
+    "cloud/task088_price_sync/test_source_successor.py": "bd69fb8942e06629de4fe5c05278c274abae98856e536822bc1f0923097a961d",
+    "cloud/task088_price_sync/test_source_successor_integration.py": "38b917bda0e859b4a71d182cc96f56c9b56ff93e4d53da1804ec2e85e29c6be3",
+    "cloud/task088_price_sync/test_source_successor_packaging.py": "579658c0dac2154e2e34c19620aef02f4a1215049f7867ef7ac74bc9e61c2d59",
+    "cloud/task088_v5_install/build_release.py": "703b14e301a3f469f4c90286b5219664abefa1cd5d0246aea8cc7f240c45e77b",
+    "cloud/task088_v5_install/controller.py": "3fe2c18cb19951f1dafd7e7d8978664487c6fc8223a1db04609235148236a76b",
+    "cloud/task088_v5_install/prepare_install_plan.py": "a60bf6c4b2b40d3f0e22dff5932926b539e34bcccff7ecd9031cf13d85c8c280",
+    "cloud/task088_v5_writer_fence/test_release_closure.py": "cdc0d1dcb0301a4a0617947a16c7e683d6a5d63fec372aa902eb9335df83fcda"
+  },
+  "full_preview_gate_created": false,
+  "gate_b_created": false,
+  "historical_canonical_commit": "d6bb157288e3a3ea19ddc5d6f11a4c449b9b01eb",
+  "immutability": {
+    "completed_successor_digest": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+    "current_source_observation_required": true,
+    "historical_chain_is_not_current_install_authority": true,
+    "stage2_original_digest": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "stage2_receipt_modified": false
+  },
+  "independent_reviews": {
+    "release_review": "Existing execution_contract.inspect_python PASS on engine, source_successor, controller, remote_adapter, test_adapter, test_install_package after pinned SourceFileLoader replacement",
+    "root": "Reviewed original canonical chain and integration, no blocker reported; original exec loader replaced after static-contract review"
+  },
+  "installation_authority_created": false,
+  "production_written": false,
+  "recorded_at": "2026-09-22T05:57:26.248101+00:00",
+  "stage3_complete": false,
+  "status": "PASS_SCOPED_LOCAL_VALIDATION_ONLY",
+  "test_environment": "ISOLATED_LOCAL_TEST_ROOTS_NO_SERVER_OPERATIONS",
+  "tests": {
+    "archive_and_closure": 5,
+    "existing_install_preparation": 8,
+    "existing_installer_safety": 25,
+    "existing_remote_adapter_safety": 23,
+    "historical_chain_negative": 14,
+    "installer_gate_integration": 10
+  },
+  "tests_total": 85,
+  "validator_sha256": "7111488541bbc88aa6426d5de76b223cb8e99ab4ca17c934424025a1c4428d28"
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "UAART-UA0022-FORWARD-INPUT-MANIFEST-2",
+  "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "repo_inputs": {
+    "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": {"blob_sha": "cfccccb058abac735639bb41debdf8486808a742", "sha256": "c9123be192ff44ad89605c52e4fbad5b75504dd5e54ba4f172541e3575ddf7b3"},
+    "state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": {"blob_sha": "3f34ca885bcb09b04d6c3561e8d63c79bb9bb776", "sha256": "59920fe94343f94373f4d93da1c2785ddfbd36101890baf2e6b7133cabbefa9c"},
+    "state/AUTOPILOT_HALT.json": {"blob_sha": "7982f47958d4e656b0edbb64d8a40bcdd3836183", "sha256": "3e4b804fbc76ae0fc330db8a0add69fae3bb6d0d9a846d0a91cb41e4ff94e3a9"},
+    "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json": {"blob_sha": "403b505032d36bb0d7f99dede4610ad34c5434b7", "sha256": "381aa9633b8119abf7e52ad9a00c813f51e5e8056d33e449d112ff0af4665d7a"},
+    "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-003.json": {"blob_sha": "13e8e49dcc223753a186b4a2854ffa2323938cf7", "sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba"}
+  },
+  "must_not_exist": [
+    "state/halt_history/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348/halt.json",
+    "state/halt_history/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348/receipt.json",
+    "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+    "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348.availability-evidence.json",
+    "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348.forward-reconciliation.json"
+  ],
+  "external": {
+    "install": {"path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/UA0022_ACTUAL_INSTALL_RECEIPT_OBSERVED.json", "blob_sha": "cf7d980bf1b21b35614e7149151622b38161963c", "source_commit": "528e64f083d9aacb85f75337cca281c5134d2ab0", "sha256": "018a99891750cb13ff43407342ecefeb084cedfb5bc75b41cb557acfa086250a"},
+    "health": {"path": "cloud/emergency_availability_20260920/forward_reconciliation_candidate_v2/FRESH_HEALTH.json", "blob_sha": "7bb5ee152a6debccc9f0ebb4cac13f2a38d04b2c", "source_commit": "7a306b25b12432a0bf10325102956578fd512553", "sha256": "29c86557518848b7be03a127b39dcaa2e8fa8d7afb7af6a5e2bf4b36fc778f75"}
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": "UAART-CONNECTION-RESILIENT-OPERATION-OUTCOME-1",
+  "operation_id": "ua0022-forward-v2-corrections-upload-20260920T1133Z",
+  "status": "PASS",
+  "finished_at": "2026-09-20T11:36:00Z",
+  "intent_commit": "845ab4ae678e1153d8b000fb90b86adbe103f5cf",
+  "candidate_commit": "1959e37cce2d1a075a12204dbbe878d266fbc319",
+  "candidate_parent": "845ab4ae678e1153d8b000fb90b86adbe103f5cf",
+  "branch": "codex/task088-owner-policy-20260913-0934",
+  "main_observed_unchanged": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "receipt": {
+    "affected_tests": "12/12 PASS",
+    "reproducible_outputs": "7/7 PASS",
+    "active_control_plane_validate_receipt": "PASS",
+    "remote_exact_blob_readback": "12/12 PASS"
+  },
+  "raw_report_path": "cloud/emergency_availability_20260920/forward_reconciliation_candidate_v2/CORRECTION_TEST_REPORT.txt",
+  "raw_report_sha256": "1a9c7906b8b5274604977b9844cd8a9357176b01b372eeecca7b0d7ec76ef6c8",
+  "package_position": "cloud/emergency_availability_20260920/forward_reconciliation_candidate_v2",
+  "production_runtime_changed": false,
+  "site_reloaded": false,
+  "preview_changed": false,
+  "rollback_performed": false,
+  "halt_changed": false,
+  "next_action": "Independent exact-candidate review of commit 1959e37cce2d1a075a12204dbbe878d266fbc319. No main or HALT write before PASS."
+}

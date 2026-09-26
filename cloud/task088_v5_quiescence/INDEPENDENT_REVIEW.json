@@ -1,0 +1,71 @@
+{
+  "contract": "PR114-ISOLATED-QUIESCENCE-PROTOTYPE-INDEPENDENT-REVIEW-1",
+  "reviewed_at": "2026-09-15T05:31:12.912901+00:00",
+  "scope": "Read review of isolated state machine, tests and README; independent local synthetic fixture tests only. No provider API, process control, production integration, canonical permit, or writer PASS.",
+  "status": "ACCEPTED_FOR_ISOLATED_PROTOTYPE_ONLY",
+  "files": {
+    "state_machine.py": {
+      "sha256": "55c47c2bfbdd870662e4760918edab9c3f838edc0286895c976e214c8ae7c1b5",
+      "bytes": 13373
+    },
+    "test_state_machine.py": {
+      "sha256": "cb3525d6987c4df858a7c1d39b43bca9a056abc7ba9073728c1ad09e288e6ea2",
+      "bytes": 14893
+    },
+    "README.md": {
+      "sha256": "4d878a9c4f74d543e564ff0dc138b3fae63a1cac084b71e55bdaa697e3befbf8",
+      "bytes": 8495
+    }
+  },
+  "independent_verification": {
+    "command": "python -B -m unittest -v test_state_machine.py",
+    "working_directory": "/workspace/scratch/a740e84d2a41/ua-art-autopilot/cloud/task088_v5_quiescence",
+    "tests": 21,
+    "failures": 0,
+    "errors": 0,
+    "observed_result": "OK",
+    "test_source": "Synthetic fixtures explicitly identified in test_state_machine.py; no live system supplied"
+  },
+  "reviewed_invariants": [
+    "The protocol stores a detached canonical plan and checks its journal digest at every transition; callers cannot mutate returned plans/intents to change the durable operation.",
+    "Intents are appended with complete write-loop, fsync of file and directory, and one process lock before being returned; fsync failure poisons continuation and reopening first requires reconciliation.",
+    "Lost pause/install/resume replies produce read-only reconciliation under the existing operation ID; there is no timer-triggered resume, implicit PATCH replay, or new operation ID.",
+    "Provider disabled/running flags alone are insufficient: the normalized contract additionally requires complete process membership, zero live descendants/in-flight mutations, every writer accounted for, and exact phase-bound source identities.",
+    "Before installation every writer uses its before pin; after actual coherent installation the after pin is mandatory. A QUIESCED state without an issued installation boundary cannot claim COHERENT_AFTER.",
+    "Existing canonical admission remains required; prototype boundary has production_authorization=false and is not accepted by live installer.",
+    "Resume requires a coherent exact old/new version, independent DB/schema/file readback and preservation of newer operator changes; old DB restore is rejected.",
+    "Restored Running service additionally needs exactly-one-instance and actual loaded code proof; final state remains pending live acceptance."
+  ],
+  "issues_resolved_during_review": [
+    {
+      "issue": "Caller-owned mutable plan could rebind emitted supervisor/writer scope to an older journal hash.",
+      "resolution": "Canonical internal bytes, transition digest check, detached property/intent copies; targeted tests added."
+    },
+    {
+      "issue": "A single before writer digest made real AFTER install reconciliation/resume reject changed writer source bytes; fixtures had hidden this.",
+      "resolution": "Separate source_sha256 and candidate_source_sha256 with exact coherent-version checks and genuinely different fixture pins; targeted phase test added."
+    }
+  ],
+  "documented_remaining_limits": [
+    "This is not a deployable maintenance controller. Real graceful drain, complete process membership and authenticated evidence collection are not implemented.",
+    "Observation booleans/status strings/source-set hashes and canonical admission are trusted normalized inputs here; the prototype does not authenticate a JSON claim or verify the owner authorization hash.",
+    "Partial multi-supervisor pause remains fail-closed and has no selective retry/compensation. A production adapter needs terminal per-request reconciliation and bounded recovery before any real pause.",
+    "Current installed controller still requires CRM supervisor266084 enabled/Running; this prototype does not modify that condition and cannot authorize stopping CRM through that controller.",
+    "Persistent filesystem fences for the active photo/video/diagnostic/rebuild/specification writer paths remain separate required work; a quiescence prototype does not close the actual writer gap.",
+    "Long-backup freshness/rebinding, permanent locks, reader credentials, publication and live Stage3/4 acceptance remain unimplemented."
+  ],
+  "external_service_state_changed": false,
+  "historical_checks_rerun": false,
+  "existing_installation_package_changed_by_reviewer": false,
+  "canonical_pass_or_authority_created": false,
+  "author_retained_run_readback": {
+    "path": "cloud/task088_v5_quiescence/VALIDATION.json",
+    "sha256": "03e7d23b8e766a6f80a8281c337cf46bd3630a5b7bf688ffae29b51762eb8e73",
+    "tests_run": 21,
+    "exit_code": 0,
+    "scope": "ISOLATED_STATE_MACHINE_ONLY_NOT_PRODUCTION_OR_CANONICAL_ADMISSION",
+    "source_and_raw_stdout_stderr_pins_match": true,
+    "mismatches": [],
+    "actual_stderr_ends_in_21_tests_OK": true
+  }
+}

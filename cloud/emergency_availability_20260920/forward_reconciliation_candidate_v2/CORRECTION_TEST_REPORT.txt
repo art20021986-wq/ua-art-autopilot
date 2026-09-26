@@ -1,0 +1,12 @@
+operation_id=ua0022-forward-v2-corrections-upload-20260920T1133Z
+recorded_at=2026-09-20T11:36:00Z
+command=PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v test_forward_reconcile_v2.py
+tests_passed=12
+tests_failed=0
+reproducible_outputs=7/7
+active_control_plane_validate_receipt=PASS
+candidate_commit=1959e37cce2d1a075a12204dbbe878d266fbc319
+remote_exact_blob_readback=12/12
+main_changed=false
+production_changed=false
+halt_changed=false

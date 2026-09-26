@@ -1,0 +1,15 @@
+{
+  "no_production_operation": true,
+  "reason": "Native visibility path now relies on ua_site_counters.py. Verify its new mandatory source/hash/backup dependency with only 4 affected closure checks. Prior7 checks remain preserved.",
+  "source_sha256": {
+    "cloud/task088_price_sync/install_package.py": "0cc983c1b924b31c1c2313b07ab01370a327072c20deae312beb26b5de4db5ec",
+    "cloud/task088_price_sync/preflight.py": "5d7976f453d8834beb36ed44b4df993ba0c3b606310b825182dee6b8c9565ee6",
+    "cloud/task088_v5_writer_fence/test_release_closure.py": "277628e6175e2ea4250391c24160d538ac050c3d6faca414838cf9b3e2395b84"
+  },
+  "tests": [
+    "ReleaseClosureTests.test_preflight_engine_controller_and_release_have_same_closure",
+    "ReleaseClosureTests.test_pure_builder_refuses_missing_or_extra_private_dependencies",
+    "ReleaseClosureTests.test_missing_new_dependency_pin_is_rejected_before_backup",
+    "ReleaseClosureTests.test_new_sources_and_modules_are_backed_up_installed_and_scoped_restored"
+  ]
+}

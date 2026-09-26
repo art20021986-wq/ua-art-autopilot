@@ -1,0 +1,26 @@
+{
+  "operation_id": "pr114-point4-status-20260920T054458Z",
+  "observed_at": "2026-09-20T06:10:57.158Z",
+  "scope": "READ_ONLY_CURRENT_INPUT_OBSERVATION_WITH_PRIVATE_REPORTS",
+  "script_sha256": "1c983d514dabbbe88b06a0c3d77e2d1b7b84da866a3ea0ace933c370b38374ae",
+  "server_script": "/home/Carix/autopilot_inbox/cloud/pr114_point4_read_20260920_054458/observe_current_point4.py",
+  "server_output": "/home/Carix/autopilot_inbox/cloud/pr114_point4_snapshot_20260920_054458",
+  "execute_once": true,
+  "reconcile_output_before_retry": true,
+  "collection_bound_seconds": 180,
+  "production_source_DB_or_service_changes": false,
+  "public_export_only": true,
+  "independent_review": "OBSERVER_INDEPENDENT_REVIEW.json",
+  "routing_observation": {
+    "webapp": "www.uaart.com.ua",
+    "static_mappings": [
+      {
+        "url": "/video/",
+        "directory": "/home/Carix/video/"
+      }
+    ],
+    "wsgi": "/var/www/www_uaart_com_ua_wsgi.py",
+    "force_https": true,
+    "observed_via": "AUTHENTICATED_WEB_CONFIGURATION_UI"
+  }
+}

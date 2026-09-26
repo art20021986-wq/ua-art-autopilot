@@ -1,0 +1,21 @@
+{
+  "contract": "PR114-SPEC-WRITE-LOCK-INDEPENDENT-REVIEW-1",
+  "source_evidence": "/workspace/scratch/PR114_spec_lock_source_0524.json",
+  "source_sha256": "2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d",
+  "scope": "Static review of actual server-extracted write_lock function only; no import, network or execution.",
+  "observed_lock": "/home/Carix/.ua_spec84_write.lock",
+  "lock_behavior": {
+    "os_lock": "fcntl.flock(fd, LOCK_EX | LOCK_NB)",
+    "reentrant_scope": "Same-thread threading.RLock plus per-root depth/fd state",
+    "path_validation": "root.resolve(strict=True), regular lock file, O_NOFOLLOW/O_CLOEXEC when supported",
+    "timeout": "Bounded by monotonic deadline; failure raises TimeoutError",
+    "release": "Outermost exit unlocks flock/closes descriptor; RLock released in finally",
+    "publication_lock_acquired_in_function": false,
+    "database_transaction_acquired_in_function": false
+  },
+  "conclusion": "The normal per-card final ensure/write wrapper uses a separate OS lock. A Stage3 installer that holds only the publication flock plus BEGIN IMMEDIATE has not thereby acquired the spec lock. Exact active background refresher write paths still need their dependency bodies, but this helper cannot be cited as automatic publication-lock coverage.",
+  "limited_pending": "Definitions of _WRITE_LOCK_REGISTRY_GUARD and _WRITE_LOCK_REGISTRY were not included in the selected-function extraction; inspect them before claiming the entire helper dependency closure.",
+  "historical_report_modified": false,
+  "writer_gate_pass_created": false,
+  "private_identifiers_or_credentials_included": false
+}

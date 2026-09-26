@@ -1,0 +1,38 @@
+{
+  "contract": "PR114-HANDOFF006-CONTINUATION-NOT-A-GATE-1",
+  "recorded_at": "2026-09-19T16:55:21.458Z",
+  "updated_at": "2026-09-19T16:55:21.458Z",
+  "operation_id": "pr114-current-hash-read-20260919T1653Z",
+  "foreground_in_progress": false,
+  "background_in_progress": false,
+  "status": "WAIT_CONNECTION_OR_RELIABLE_CONSOLE_IO",
+  "observed_pr_head": "c029a0cb78aca3815e4846559f5f60966ad4ced9",
+  "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+  "predecessor": "cloud/task088_v5_acceptance/resume_20260919_handoff006/connection_20260919_1633/NOTICE.json",
+  "accepted_progress": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "new_criteria_accepted": []
+  },
+  "result": "Fresh GitHub coordination was clear and the authenticated console was visible. Two bounded read-only SHA256 input attempts returned new prompts without digest output, so no current server hash match is asserted. Retained private source copies remain preserved but are not yet authorized for integration.",
+  "evidence": {
+    "path": "cloud/task088_v5_acceptance/resume_20260919_handoff006/hash_read_20260919_1654/READBACK.json",
+    "sha256": "6e4ad4e6fb2a5aa9eb62621ce54f1927a37510218dc00531e3b787ac57f31a0b"
+  },
+  "connection": {
+    "state": "WAIT_CONNECTION_OR_RELIABLE_CONSOLE_IO",
+    "attempts_used": 2,
+    "do_not_repeat_this_run": true,
+    "next_run_must_recheck": true,
+    "keep_automation_enabled": true
+  },
+  "installed": false,
+  "writer_gate_pass": false,
+  "production_changed": false,
+  "crm_changed": false,
+  "website_changed": false,
+  "preflight": "NOT_RUN",
+  "canonical_launch": "NOT_RUN",
+  "next_action": "On the next scheduled attempt first read the console state. Use one supported reliable terminal interaction or the reviewed private source route to obtain fresh SHA256 only. If all three current hashes exactly match retained originals, reuse them without re-download and begin the minimal isolated integration; otherwise stop and preserve both versions. Do not start freshness preflight or production launch."
+}

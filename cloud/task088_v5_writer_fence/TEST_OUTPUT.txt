@@ -1,0 +1,16 @@
+test_cross_process_exclusion_uses_same_os_lock (test_publication_fence.PublicationFenceTests.test_cross_process_exclusion_uses_same_os_lock) ... ok
+test_cross_thread_timeout_does_not_break_owner (test_publication_fence.PublicationFenceTests.test_cross_thread_timeout_does_not_break_owner) ... ok
+test_cross_thread_waits_until_outermost_release (test_publication_fence.PublicationFenceTests.test_cross_thread_waits_until_outermost_release) ... ok
+test_exception_releases_fence (test_publication_fence.PublicationFenceTests.test_exception_releases_fence) ... ok
+test_invalid_timeout_and_poll_fail_before_effect (test_publication_fence.PublicationFenceTests.test_invalid_timeout_and_poll_fail_before_effect) ... ok
+test_lock_file_is_regular_and_not_unlinked_after_release (test_publication_fence.PublicationFenceTests.test_lock_file_is_regular_and_not_unlinked_after_release) ... ok
+test_noncanonical_path_rejected_outside_tests (test_publication_fence.PublicationFenceTests.test_noncanonical_path_rejected_outside_tests) ... ok
+test_relative_test_path_is_rejected_before_creation (test_publication_fence.PublicationFenceTests.test_relative_test_path_is_rejected_before_creation) ... ok
+test_same_instance_cannot_be_entered_twice (test_publication_fence.PublicationFenceTests.test_same_instance_cannot_be_entered_twice) ... ok
+test_same_thread_nesting_is_reentrant_and_requirement_is_scoped (test_publication_fence.PublicationFenceTests.test_same_thread_nesting_is_reentrant_and_requirement_is_scoped) ... ok
+test_symlink_lock_is_rejected_without_touching_target (test_publication_fence.PublicationFenceTests.test_symlink_lock_is_rejected_without_touching_target) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.274s
+
+OK

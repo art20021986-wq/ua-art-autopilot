@@ -1,0 +1,95 @@
+{
+  "contract": "PR114-HANDOFF006-PRIVATE-INTEGRATION-VALIDATION-1",
+  "recorded_at": "2026-09-19T19:10:45Z",
+  "status": "PASS_ISOLATED_PRIVATE_CANDIDATE",
+  "production_authority": false,
+  "installed": false,
+  "writer_gate_pass": false,
+  "source_binding": {
+    "path": "cloud/task088_v5_acceptance/resume_20260920_handoff006/source_binding_20260919_1838/NOTICE.json",
+    "authenticated_current_sha256_match": true,
+    "duplicate_download": false
+  },
+  "before_sha256": {
+    "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+    "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d"
+  },
+  "candidate": {
+    "cars_ui.py": {
+      "bytes": 225410,
+      "sha256": "9b6c210d54f2736276896ed30d32827e1ae2b057533155afa6964eab49a4aa4c"
+    },
+    "stranica.py": {
+      "bytes": 203579,
+      "sha256": "4dd48428365662ded8b761dcfa98002004bb4b227ca3f1eddc56a66ad98090df"
+    },
+    "publish_transaction_guard.py": {
+      "bytes": 32094,
+      "sha256": "b18c799d384c18fb49be04a75502776f5698587a003a886514ba53253df6d34e"
+    },
+    "publication_fence.py": {
+      "bytes": 9694,
+      "sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
+    },
+    "private_manifest_sha256": "9f58228f4ef4f0c59c2956743f60d8ed7d5019d1a9d85dd27ca33b9506f849f2",
+    "private_files_committed": false
+  },
+  "builder": {
+    "path": "cloud/task088_v5_writer_fence/integrate_private_sources.py",
+    "bytes": 25405,
+    "sha256": "8997ca684aaff9013958ccb73ed642bbcba3bfd17c5f2385e54781c3c7641ffd",
+    "input_directory_mutated": false,
+    "nonempty_output_refused": true,
+    "exact_before_hash_required": true
+  },
+  "tests": {
+    "command": "python3 -B -m unittest -v test_private_source_integration",
+    "passed": 13,
+    "failed": 0,
+    "test_source": {
+      "path": "cloud/task088_v5_writer_fence/test_private_source_integration.py",
+      "bytes": 13137,
+      "sha256": "e4e58203cceb3ac2bf3ab5aaeed480455c0addfefb1a72f7d90228f1450ee7dd"
+    },
+    "raw_output": {
+      "path": "cloud/task088_v5_writer_fence/handoff006_evidence/PRIVATE_INTEGRATION_TEST_OUTPUT.txt",
+      "bytes": 2075,
+      "sha256": "663c396d48dcfe6e2ce7d3a56b2581a013fd372155f65e160d0eba1117d4ab60"
+    }
+  },
+  "independent_review": {
+    "path": "cloud/task088_v5_writer_fence/handoff006_evidence/PRIVATE_INTEGRATION_INDEPENDENT_REVIEW.json",
+    "status": "PASS_ISOLATED_CANDIDATE_ONLY"
+  },
+  "verified_boundaries": [
+    "photo remove-all executes filesystem removal, database updates and page rebuild under one synchronous-worker fence",
+    "video remove-all executes database updates, media/file removal and page rebuild under one synchronous-worker fence",
+    "diagnostic media clear executes database update, content-classified file removal and page rebuild under one synchronous-worker fence",
+    "all three async handlers delegate their mutation phase to asyncio.to_thread",
+    "low-level media removal fails closed without current-thread fence ownership",
+    "stranica final main wrapper precedes direct __main__ execution and covers validation fallback writes",
+    "stranica writes take publication fence before nested spec84 lock",
+    "publish_transaction_guard._exclusive_lock reuses the shared reentrant registry and lock inode",
+    "rollback restores only fields still equal to this operation's after-image",
+    "every destructive media target is copied and SHA256-verified before mutation",
+    "photo and video deletion verify that all pre-enumerated targets are absent before committing success",
+    "rollback restores only missing media files and reports conflicts instead of overwriting newer operator files"
+  ],
+  "not_repeated": {
+    "software_446": true,
+    "maintenance_183": true,
+    "browser_css_120": true,
+    "preview_24": true,
+    "publication_fence_18": true,
+    "reason": "Those retained results bind unchanged inputs; only the new private integration layer received new tests."
+  },
+  "still_open": [
+    "release closure for all private runtime dependencies",
+    "complete writer membership and drain observation",
+    "old/new loaded-process source identity",
+    "fresh quota and canonical preflight only after containment is ready",
+    "verified production backup, request, manifest, Gate B, activation and marker-only launch",
+    "separate Stage3 and Stage4 receipts plus live CRM-to-card-to-catalog acceptance"
+  ]
+}

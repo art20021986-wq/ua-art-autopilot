@@ -1,0 +1,40 @@
+{
+  "actual_reconciliation_published": false,
+  "application_server_writes": false,
+  "checked_at_utc": "2026-09-22T03:23:11.593914+00:00",
+  "contract": "SEO-35552076762-PROPOSED-STATE-VALIDATION-1",
+  "exact_changed_paths": [
+    "state/AUTOPILOT_HALT.json",
+    "state/claims/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json",
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/claim.before.json",
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/halt.json",
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/receipt.json",
+    "state/halt_history/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762/transaction.before.json",
+    "state/reconciliations/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762.aborted-before-production.json",
+    "state/reconciliations/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762.authenticated-evidence.json",
+    "state/transactions/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json"
+  ],
+  "github_writes": false,
+  "normal_verify_mode": {
+    "allow_halt_for_recovery": false,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "old_tests_rerun": false,
+  "plan_sha256": "489da7b99d25f0b988601a369f4154a1b277e2e7d6de8e260b9b8cd49d3a5f23",
+  "planner_sha256": "1d091e4736c8b0649b9837042a18615893d25ae225d0b1484c3a3f039aabc4e6",
+  "production_transaction_assert_clear": {
+    "has_pending": false,
+    "pending_count": 0,
+    "status": "PASS",
+    "transaction_status": "NONE"
+  },
+  "runtime_or_policy_bytes_changed": false,
+  "runtime_source_sha256": {
+    "automation/control_plane.py": "168ce50bd7ee432573832a888f220fe02205ee4e05192db455c6af144170d74b",
+    "automation/transaction_watchdog.py": "483e7684bc19446283859ac92a942671a0e5ec66f3c84ad65b5d26df038b0395"
+  },
+  "source_main": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+  "status": "PASS_LOCAL_ACTUAL_PROPOSED_STATE_ONLY",
+  "unexpected_changed_paths": []
+}

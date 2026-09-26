@@ -1,0 +1,58 @@
+{
+  "contract": "PR114-ACTUAL-PREVIEW-CHECKPOINT-1",
+  "recorded_at": "2026-09-22T04:13:09.133223+00:00",
+  "status": "PREVIEW_RUNNING_ACCEPTANCE_INCOMPLETE_TRANSPORT_502",
+  "candidate_manifest_sha256": "95d0b4a11b1ada311c384a2cbe213b6b58ae1da540f61b640c5effecf0fb3b8e",
+  "stage_executed_once": true,
+  "dedicated_preview_wsgi_switched_once": true,
+  "dedicated_preview_reloaded_once": true,
+  "browser_observations": 52,
+  "required_browser_cases": 48,
+  "price_language_dimensions_geometry_passed": 48,
+  "completed_load_cases_passed": 47,
+  "remaining_case": {
+    "path": "/video/katalog.html",
+    "language": "RU",
+    "viewport": "mobile",
+    "reason": "Prior price/layout observation at interactive ready_state; final-load recheck met 502, one reload also 502"
+  },
+  "retained_non_html_resources": {
+    "old_manifest_sha256": "c6febae073064d66c89a553a1d23538c8dc71c40c9737c440d33a3ba457611ca",
+    "compared": 1110,
+    "different": 0,
+    "scope": "Old non-HTML resources excluding deleted UA-0002; exact new manifest verified against actual server bytes in stage"
+  },
+  "actual_gallery_checks": "UA0017 first and second photo open/close; UA0018..0022 second photo open/close; all six additional-specification panels open",
+  "touch_swipe_emulated": false,
+  "actual_catalog_filters": {
+    "all": 21,
+    "ukraine": 5,
+    "georgia": 7,
+    "sea": 4,
+    "korea": 5
+  },
+  "full_preview_gate": "NOT_ISSUED",
+  "production_written": false,
+  "stage3": "NOT_LAUNCHED",
+  "source_successor": {
+    "canonical_commit": "d6bb157288e3a3ea19ddc5d6f11a4c449b9b01eb",
+    "authenticated_git_blobs_matched": 18,
+    "original_stage2_cars_ui": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "current_cars_ui": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+    "exact_approved_before_after_chain_found": true,
+    "validator_integration": "NOT_IMPLEMENTED_NOT_REVIEWED"
+  },
+  "resume": [
+    "Recheck browser connection once on next continuation; no repeated upload, stage, switch or service reload",
+    "Complete final-load mobile RU catalog observation; retain raw originals and validate latest scoped observations",
+    "Finish current Preview resource/runtime/full-inventory binding and exact Preview gate",
+    "Integrate and independently review genuine canonical source-successor validation without modifying Stage2 receipt or replaying it",
+    "Fresh canonical preflight, writer exclusion, verified backup, genuine GateB/activation and marker-only launch",
+    "Stage3/4 live acceptance"
+  ],
+  "acceptance": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40
+  }
+}

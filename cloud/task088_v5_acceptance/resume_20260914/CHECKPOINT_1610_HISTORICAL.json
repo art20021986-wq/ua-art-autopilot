@@ -1,0 +1,72 @@
+{
+  "kind": "RESUME_CHECKPOINT_NOT_A_GATE",
+  "recorded_at": "2026-09-14T16:10:29.408731+00:00",
+  "reviewed_head": "e146c2ea8c28033050b49ccbebb33aa5276c8788",
+  "reviewed_main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "source_manifest_sha256": "18fc3c2ffb16df204cdd7318f550fbffa0a2169da3be57ff0d2bc88b1855b5c7",
+  "preview_manifest_sha256": "7c5335f921487734c5af8a94df49d1ba04ba6f5bf97492d346ab619b7205fb28",
+  "software": {
+    "combined": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 443,
+      "unexpected_successes": 0
+    },
+    "private": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 95,
+      "unexpected_successes": 0
+    },
+    "public": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests_run": 348,
+      "unexpected_successes": 0
+    }
+  },
+  "software_evidence": "software/software_checks_final.json",
+  "browser": {
+    "matrix_status": "PASS",
+    "cases": 120,
+    "assertions": 6744,
+    "archive": "browser_evidence_120_20260914.zip",
+    "candidate_manifest_sha256": "7c5335f921487734c5af8a94df49d1ba04ba6f5bf97492d346ab619b7205fb28",
+    "gallery_photo_2_status": "NOT_PASSED",
+    "gallery_defect": "Builder omitted inline kadry full-size photo references; minimal fix awaiting server rebuild and acceptance",
+    "browser_policy": "Direct full-size photo URL blocked; no bypass permitted"
+  },
+  "host_evidence": "server/hosting_observation.json",
+  "credential_presence": "Fresh server stat at 15:34 UTC returned No such file or directory; value not read",
+  "full_preview_gate": "NOT_PASSED",
+  "stage3": "OPEN",
+  "stage4": "OPEN",
+  "production_written": false,
+  "next_actions": [
+    "Finish independent links/visual raw evidence",
+    "Fresh authenticated quota and read-only install observation",
+    "Rebuild dedicated Preview with reviewed gallery extractor, exact preservation and rollback; never bypass blocked browser URL",
+    "Actual new-source software gate and full Preview mapping",
+    "Secure owner read credential handoff if still absent; no token in chat",
+    "Canonical Stage3 only after all actual Preview evidence; full backup/install/postdeploy and real Stage4"
+  ],
+  "durable_evidence_commit": "c76c4c5d09efcb11a43c37aee9b56d2c86995112",
+  "server_freshness": {
+    "observed_at": "2026-09-14T15:57:43.611061+00:00",
+    "raw_sha256": "1ef3d1e3f346268da4a4cb110f1382d7768f9ea19226d9fc9b3bf67f636fe95f",
+    "report": "server/readback_1557.json",
+    "scope": "All17DBtables/schema/880HTML/live sources/hosting unchanged;679Previewresources matched;published18rows matched capture",
+    "installation_observation": "NOT_YET_RUN"
+  },
+  "current_code": {
+    "gallery_builder_sha256": "0137d0077ef485679feea238b579b629f8c281542ca28a7277b769d5a7b8fa02",
+    "new_candidate_software_gate": "RERUN_PENDING",
+    "prior_443_and_183": "PASS_FOR_PRIOR_BOUND_SOURCE"
+  }
+}

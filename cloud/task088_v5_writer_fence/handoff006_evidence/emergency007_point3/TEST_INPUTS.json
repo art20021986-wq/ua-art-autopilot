@@ -1,0 +1,11 @@
+{
+  "observed_at": "2026-09-20T04:32:17.374460+00:00",
+  "reason": "Affected integration test compatibility: helper import added and synthetic fallback fixture updated to newly enforced source contract. Rerun affected integration modules only; no primitive18 or446/183/120.",
+  "sha256": {
+    "integrate_private_sources.py": "2c1548310fb3b27c944ee52076a45babc3c3f101b74c174286ca21a6448d659b",
+    "mutation_recovery.py": "86e61e3483341fd87138948fc77855149a7a9f09071c63ca0b5106bb1155e9b5",
+    "test_scoped_recovery.py": "35377ea4a9aa8218b699d7e6d79a4cee847090238bde2c6b5dc3d1edefaff400",
+    "test_private_source_integration.py": "323fc3ba8aee7b1b67ed208a439f758a437b8d1a4a0d1288c72dc14f73e594e1",
+    "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
+  }
+}

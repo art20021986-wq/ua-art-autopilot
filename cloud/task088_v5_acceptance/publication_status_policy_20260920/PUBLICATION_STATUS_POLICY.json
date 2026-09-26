@@ -1,0 +1,210 @@
+{
+  "contract": "PR114-PUBLICATION-STATUS-INDEPENDENCE-1",
+  "recorded_at": "2026-09-20T05:36:59.662Z",
+  "status": "IMPLEMENTED_IN_REVIEWED_CANDIDATE_NOT_DEPLOYED",
+  "instruction_language": "ru",
+  "owner_instruction": "Зафиксирую, чтобы в дальнейшем сайт на опубликованные и не опубликованные объявления не имело значения. Подумай, как это сделать так, чтобы в дальнейшем это не возникало в этом проблемы.",
+  "interpretation": "Все существующие разрешённые операции с данными и их защита охватывают опубликованные и неопубликованные записи; флаг публикации управляет публичной видимостью.",
+  "reviewed_commit": "444b0c7fc6359629b2a3983fbc539d1939b2b38c",
+  "rule_path": "cloud/task088_v5_acceptance/publication_status_policy_20260920/STATUS_INDEPENDENT_DATA_POLICY_RU.md",
+  "invariants": {
+    "data_scope": "ALL_CRM_RECORDS",
+    "public_scope": "CURRENT_PUBLISHED_RECORDS_ONLY",
+    "initial_publication": "EXISTING_AUTHORIZED_CANONICAL_ROUTE",
+    "fixed_inventory_count": null,
+    "stable_identity": "CRM_CAR_ID",
+    "draft_public_projection": "NOT_APPLICABLE_WITH_OBSERVED_VISIBILITY",
+    "new_operator_edits": "PRESERVE",
+    "operation_replay": "RECONCILE_ACTUAL_OUTCOME_BEFORE_RESUME_SAME_ID",
+    "old_receipts": "IMMUTABLE",
+    "preview_credit": "EXACT_DEPENDENCY_MATCH_ONLY",
+    "existing_approval": "RETAINED_SUBJECT_TO_MANDATORY_GATES"
+  },
+  "evidence_type": "INDEPENDENT_STATIC_CODE_REVIEW_NO_NEW_EXECUTION",
+  "findings": [
+    {
+      "id": "PS-01",
+      "status": "CLOSED_IN_OFFLINE_REVIEWED_CANDIDATE",
+      "sequence": [
+        "PUBLISHED_V5_PRICE_COMPLETED",
+        "UNPUBLISHED",
+        "DRAFT_STAGE2_PRICE_EDIT",
+        "FULL_REBUILD"
+      ],
+      "result": "POSSIBLE_TASK088_V5_UNTRACKED_CRM_PRICE_CHANGE",
+      "sources": [
+        "cloud/task088_price_sync/patch_cars_ui.py::_task088_sync_prepare",
+        "cloud/task088_price_sync/patch_guard.py::_task088_price_quiescence"
+      ],
+      "current_evidence": "cloud/task088_v5_acceptance/point4_status_completion_20260920/STATUS_LIFECYCLE_INDEPENDENT_REVIEW.json"
+    },
+    {
+      "id": "PS-02",
+      "status": "CLOSED_IN_OFFLINE_REVIEWED_CANDIDATE",
+      "sequence": [
+        "PUBLISHED_PRICE_PENDING",
+        "UNPUBLISHED",
+        "V5_RESUME",
+        "FULL_REBUILD"
+      ],
+      "result": "PUBLICATION_IDENTITY_REJECTION_LEAVES_PENDING_OPERATION_BLOCKING_FULL_REBUILD",
+      "sources": [
+        "cloud/task088_price_sync/uaart_price_sync_binding.py::resolve_identity",
+        "cloud/task088_price_sync/uaart_price_sync_runtime.py::V5Worker._full_row",
+        "cloud/task088_price_sync/patch_guard.py::_task088_price_quiescence"
+      ],
+      "current_evidence": "cloud/task088_v5_acceptance/point4_status_completion_20260920/STATUS_LIFECYCLE_INDEPENDENT_REVIEW.json"
+    }
+  ],
+  "acceptance_cases": [
+    {
+      "id": "PS-A01",
+      "status": "OPEN_NO_NEW_EXECUTION"
+    },
+    {
+      "id": "PS-A02",
+      "status": "OPEN_NO_NEW_EXECUTION"
+    },
+    {
+      "id": "PS-A03",
+      "status": "OPEN_NO_NEW_EXECUTION"
+    },
+    {
+      "id": "PS-A04",
+      "status": "OPEN_NO_NEW_EXECUTION"
+    },
+    {
+      "id": "PS-A05",
+      "status": "OPEN_NO_NEW_EXECUTION"
+    },
+    {
+      "id": "PS-A06",
+      "status": "OPEN_NO_NEW_EXECUTION"
+    },
+    {
+      "id": "PS-A07",
+      "status": "OPEN_NO_NEW_EXECUTION"
+    },
+    {
+      "id": "PS-A08",
+      "status": "OPEN_NO_NEW_EXECUTION"
+    },
+    {
+      "id": "PS-A09",
+      "status": "OPEN_NO_NEW_EXECUTION"
+    },
+    {
+      "id": "PS-A10",
+      "status": "OPEN_NO_NEW_EXECUTION"
+    }
+  ],
+  "existing_evidence_reuse": "Historical tests retained for matching dependencies; only changed-code checks executed. Current Preview remains pending.",
+  "runtime_code_changed": true,
+  "candidate_rebuilt": true,
+  "production_mutations": false,
+  "tests_rerun": false,
+  "stage3_receipt_issued": false,
+  "stage4_receipt_issued": false,
+  "acceptance": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40
+  },
+  "point4": "OPEN_CURRENT_PREVIEW_42_BROWSER_CASES_PENDING",
+  "independent_review": {
+    "agent": "/root/publication_status_review",
+    "scope": "Read-only code and proposed policy analysis; not execution acceptance",
+    "result": "POLICY_SUPPORTED_TWO_RUNTIME_GAPS_OPEN",
+    "final_policy_review": "Reviewed saved policy/report; scope wording refined for UA/GE SLA and inaccessible retired public files."
+  },
+  "last_updated_at": "2026-09-20T07:19:01.255Z",
+  "historical_initial_review": {
+    "recorded_at": "2026-09-20T05:36:59.662Z",
+    "findings": [
+      {
+        "id": "PS-01",
+        "status": "OPEN",
+        "sequence": [
+          "PUBLISHED_V5_PRICE_COMPLETED",
+          "UNPUBLISHED",
+          "DRAFT_STAGE2_PRICE_EDIT",
+          "FULL_REBUILD"
+        ],
+        "result": "POSSIBLE_TASK088_V5_UNTRACKED_CRM_PRICE_CHANGE",
+        "sources": [
+          "cloud/task088_price_sync/patch_cars_ui.py::_task088_sync_prepare",
+          "cloud/task088_price_sync/patch_guard.py::_task088_price_quiescence"
+        ]
+      },
+      {
+        "id": "PS-02",
+        "status": "OPEN",
+        "sequence": [
+          "PUBLISHED_PRICE_PENDING",
+          "UNPUBLISHED",
+          "V5_RESUME",
+          "FULL_REBUILD"
+        ],
+        "result": "PUBLICATION_IDENTITY_REJECTION_LEAVES_PENDING_OPERATION_BLOCKING_FULL_REBUILD",
+        "sources": [
+          "cloud/task088_price_sync/uaart_price_sync_binding.py::resolve_identity",
+          "cloud/task088_price_sync/uaart_price_sync_runtime.py::V5Worker._full_row",
+          "cloud/task088_price_sync/patch_guard.py::_task088_price_quiescence"
+        ]
+      }
+    ],
+    "acceptance_cases": [
+      {
+        "id": "PS-A01",
+        "status": "OPEN_NO_NEW_EXECUTION"
+      },
+      {
+        "id": "PS-A02",
+        "status": "OPEN_NO_NEW_EXECUTION"
+      },
+      {
+        "id": "PS-A03",
+        "status": "OPEN_NO_NEW_EXECUTION"
+      },
+      {
+        "id": "PS-A04",
+        "status": "OPEN_NO_NEW_EXECUTION"
+      },
+      {
+        "id": "PS-A05",
+        "status": "OPEN_NO_NEW_EXECUTION"
+      },
+      {
+        "id": "PS-A06",
+        "status": "OPEN_NO_NEW_EXECUTION"
+      },
+      {
+        "id": "PS-A07",
+        "status": "OPEN_NO_NEW_EXECUTION"
+      },
+      {
+        "id": "PS-A08",
+        "status": "OPEN_NO_NEW_EXECUTION"
+      },
+      {
+        "id": "PS-A09",
+        "status": "OPEN_NO_NEW_EXECUTION"
+      },
+      {
+        "id": "PS-A10",
+        "status": "OPEN_NO_NEW_EXECUTION"
+      }
+    ],
+    "evidence_type": "INDEPENDENT_STATIC_CODE_REVIEW_NO_NEW_EXECUTION"
+  },
+  "acceptance_cases_scope": "Original proposed case list retained historically; actual scoped executions and exact IDs are in current AFFECTED_VALIDATION_INDEX. No live/runtime acceptance is claimed.",
+  "implementation_resolution": {
+    "candidate_manifest_sha256": "53544a272be2c11c8faeac7089fd5638ba26e74d65e209c7a9b73f523a4892a7",
+    "evidence_commit": "6bb045fdd9614affee47d1b5a104cc3df27982ed",
+    "validation_index": "cloud/task088_v5_acceptance/point4_status_completion_20260920/AFFECTED_VALIDATION_INDEX.json",
+    "independent_review": "cloud/task088_v5_acceptance/point4_status_completion_20260920/STATUS_LIFECYCLE_INDEPENDENT_REVIEW.json",
+    "status": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_PENDING",
+    "production_deployed": false
+  },
+  "runtime_code_changed_scope": "OFFLINE_CANDIDATE_ONLY"
+}

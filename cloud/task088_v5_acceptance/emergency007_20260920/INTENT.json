@@ -1,0 +1,14 @@
+{
+  "operation_id": "pr114-emergency007-points12-20260920T0347Z",
+  "recorded_at": "2026-09-20T03:51:43Z",
+  "scope": "READ_ONLY_SOURCE_RECOVERY_AND_GIT_EVIDENCE_ONLY",
+  "production_write_authorized_by_this_record": false,
+  "input_pr_head": "9fde76a2b9d947e49ccd8d8e427079ef3b5592b0",
+  "input_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+  "intent": "Complete emergency007 points1/2; recover exact private dependency bytes via visible authorized editor; no Save/Run/server writes.",
+  "expected_result": "Four exact private dependencies hash-bound to server observations; point1 control reconciliation preserved.",
+  "readback": "Read saved Git commit files and ref; hash private local files without logging contents.",
+  "backup": "Git parent preserves prior evidence; no production mutation or backup required for read-only retrieval.",
+  "next_action": "Recover remaining three private dependencies by the same permitted visible-editor read.",
+  "never_repeat": "No tests, installation, launch or production transaction started."
+}

@@ -1,0 +1,41 @@
+{
+  "contract": "PR114-FINAL-CURRENT-CANDIDATE-INDEPENDENT-BINDING-2",
+  "status": "PASS_EXACT_68_FILE_V2_CURRENT_CAPTURE_BINDING",
+  "reviewed_at": "2026-09-20T07:13:23.743212+00:00",
+  "candidate_directory": "/workspace/scratch/cc71e1c55fba/private_current_candidate_20260920_v2",
+  "candidate_manifest_path": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/current_final_candidate_v2/CANDIDATE_MANIFEST.json",
+  "candidate_manifest_raw_sha256": "b99db44a534483e6db573e2847238b9791f93d03d77f7409c3fc9e7374ef4c8e",
+  "candidate_manifest_canonical_sha256": "53544a272be2c11c8faeac7089fd5638ba26e74d65e209c7a9b73f523a4892a7",
+  "result_sha256": "02ff0314dcc9bc1fbc718a530614fd74a1b4ec053b64c0fee1489306eaa7887f",
+  "prior_v1_evidence": {
+    "path": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/FINAL_CANDIDATE_BINDING_INDEPENDENT.json",
+    "sha256": "b8e75947a7006595cb50daa72cea59befbd86a2f9db407dbf867ddbaa65428ae",
+    "preserved": true
+  },
+  "candidate_files_checked": 68,
+  "candidate_file_set_exact": true,
+  "current_beforehashes_retained_from_verified_v1": 68,
+  "unchanged_files_exactly_equal_v1": 67,
+  "changed_files": [
+    "cars_ui.py"
+  ],
+  "cars_ui_sha256": "c2be2af7720a8361665fed872256760264ffc735b68a197763f5f3af1dad62e2",
+  "exact_three_part_optional_gate_inverse_recovers_v1": true,
+  "optional_gate_code_review": "Real canonical parent plus lstat-confirmed absent filename skips unknown import/register. Anchor presence preserves prior configured registration even before post_init readiness. Marker plus final outer register forbids missing-binding downgrade if anchor disappears after optional registration.",
+  "optional_gate_evidence": {
+    "path": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/OPTIONAL_PHOTO_HIDE_GATE_RESULT.json",
+    "sha256": "51c9ff419011d0a3fe7e513663213086ed9bafb510d640a28aeeb98afe731a88",
+    "author_new_targeted_tests": 3,
+    "reviewer_reruns": false
+  },
+  "current_observation_sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+  "html48_unchanged_and_prior_approved_delta_credit_retained": true,
+  "runtime11_unchanged_and_startup_review_credit_retained": true,
+  "source_execution_on_production": false,
+  "unknown_optional_extension_body_reviewed": false,
+  "preview_remaining_real_browser_cases": 42,
+  "preview_gate": "NOT_PASSED",
+  "point4_full_pass": false,
+  "unchanged_suites_repeated": false,
+  "production_mutations": false
+}

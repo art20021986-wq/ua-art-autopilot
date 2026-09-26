@@ -1,0 +1,30 @@
+{
+  "schema_version": "PR114-ANALYTICS-ROUTE-FIX-INTENT-2",
+  "operation_id": "pr114-analytics-route-fix-v2-20260920T1217Z",
+  "recorded_at": "2026-09-20T12:17:25Z",
+  "environment": "GitHub PR branch and local isolated tests only; no server, Preview, production, CRM, switch, reload or rollback write",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "branch": "codex/task088-owner-policy-20260913-0934",
+  "expected_parent": "d098d46a031e90713efb7083fcd5ed336d5398c5",
+  "observed_main": "b9c985ac924739b351e4d5535499bb6516917daf",
+  "blocking_review": "INDEPENDENT_REVIEW_BLOCKED_V1.json",
+  "intent": "Replace three inconsistent analytics capture checks with one exact validator requiring the complete receipt key set and a parsed UTC timestamp, then add missing direct negative coverage.",
+  "expected_result": {
+    "generator_uses_shared_validator": true,
+    "upgrader_uses_shared_validator": true,
+    "stage_uses_shared_validator": true,
+    "missing_timestamp_rejected": true,
+    "extra_receipt_key_rejected": true,
+    "invalid_timestamp_rejected": true,
+    "prior_exact_package_semantics_preserved": true,
+    "preview_started": false,
+    "production_written": false
+  },
+  "readback": "Fetch the resulting commit and every changed blob from GitHub; compare exact Git blob OIDs and repeat the independent exploit probes and full targeted tests.",
+  "backup": {
+    "kind": "immutable Git parent and retained first reviewed package",
+    "parent_commit": "d098d46a031e90713efb7083fcd5ed336d5398c5",
+    "package_sha256": "77f04f3786c9487631131a2d0e476caf0b6bae3ba9def9f87bf1ee1c418a8088"
+  },
+  "next_action_after_intent": "Commit the strict shared validator and tests, read back exact bytes, then request independent re-review before any Stage."
+}

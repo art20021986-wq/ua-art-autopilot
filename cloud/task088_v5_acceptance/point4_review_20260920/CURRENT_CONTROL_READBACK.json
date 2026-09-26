@@ -1,0 +1,147 @@
+{
+  "contract": "PR114-POINT4-CURRENT-CONTROL-INDEPENDENT-READBACK-NOT-A-GATE-1",
+  "observed_at": "2026-09-20T05:20:11.625296+00:00",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "main": "501e9cc08862f5994d20b852c4e83f2b7bddaed8",
+  "main_commit_at": "2026-09-20T05:11:06Z",
+  "main_before_this_read": "6c735ef544284e01834114fcb67fe082f467dbba",
+  "reader": "independent_acceptance_audit",
+  "mutations": {
+    "remote": false,
+    "production": false,
+    "browser": false,
+    "workflow_launch": false
+  },
+  "point1": {
+    "historical_acceptance_preserved": true,
+    "current_production_exclusivity": "NOT_SATISFIED",
+    "pr_checkpoint_parent_observed": "0bead0e9c2e5bb1ab9efceb4a96935d92aa4ab90",
+    "pr_checkpoint_scope": "Parent reports its own checkpoint and foreground ownership; not independently reread here."
+  },
+  "foreign_task003": {
+    "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+    "run_id": 35490449348,
+    "transaction_status": "OPEN",
+    "opened_at": "2026-09-20T05:11:06Z",
+    "claim_status": "RUNNING",
+    "backup_status": "PASS",
+    "backup_manifest_sha256": "a4d4bbc5b2776ff02b4c6be8fbb242d0027e21a65d4e7ea98048e7f953b3ff2c",
+    "backup_receipt_sha256": "381aa9633b8119abf7e52ad9a00c813f51e5e8056d33e449d112ff0af4665d7a",
+    "backup_receipt_binding_pass": true,
+    "production_controller_job_id": 106025862379,
+    "production_controller_status": "in_progress",
+    "production_controller_step": "Execute authorized CRITICAL Production controller",
+    "run_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/35490449348",
+    "job_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/35490449348/job/106025862379",
+    "terminal_install_receipt_present_in_observed_tree": false,
+    "overlap": [
+      "cars_ui.py",
+      "stranica.py",
+      "publish_transaction_guard.py",
+      "publication_fence.py",
+      "CRM publication state",
+      "site/video index and katalog HTML"
+    ],
+    "do_not_take_over": true
+  },
+  "preceding_task002": {
+    "run_id": 35489521032,
+    "metadata_status": "ROLLED_BACK",
+    "closed_at": "2026-09-20T04:54:27Z",
+    "semantic_outcome": "ABORTED_NO_CARD_OR_RUNTIME_FILE_WRITE",
+    "cause": "INSTALLER_PHASE_FAILED:CRM_SINGLETON_STILL_RUNNING",
+    "backup_phase_entered": false,
+    "install_controller_executed": false,
+    "actual_rollback_executed": false,
+    "backup_or_rollback_pass_claimed": false,
+    "actual_effects": [
+      "transport-package uploads",
+      "worker journals and results",
+      "owned worker creation/deletion",
+      "owned CRM supervisor pause/resume"
+    ],
+    "runtime_source_read_observed_at": "2026-09-20T04:48:00Z",
+    "runtime_source_timestamp_precision": "minute",
+    "authenticated_evidence_hash_binding_pass": true,
+    "crm_resume_observed": "enabled Running at that historical observation"
+  },
+  "point4_current_binding": {
+    "status": "NOT_ACCEPTED",
+    "complete_current_17_source_dependency_inputs": "UNKNOWN",
+    "current_full_database_semantic_digest": "UNKNOWN",
+    "current_schema_digest": "UNKNOWN",
+    "current_published_codes": "UNKNOWN",
+    "current_published_count": "UNKNOWN",
+    "current_published_set_equal_historical_18": "NOT_PROVEN",
+    "current_complete_HTML_manifest": "UNKNOWN",
+    "current_HTML_equal_historical_40": "NOT_PROVEN",
+    "current_loaded_process_source_identity": "UNKNOWN",
+    "backup_receipt_scope": "Task003 canonical backup receipt gives manifest hash only; no complete source/dependency, DB/schema/published-set or page digest map. Does not bind PR114 candidate.",
+    "available_source_evidence_scope": "Task002 runtime digest observation covers four source files at 04:48Z; task003 manifest pins desired input hashes and desired output hashes, not completed current output. Active task003 can change three source files and published-set/pages.",
+    "historical_legacy_log_scope": "Expected21 in a September16 legacy rebuild log is not a current published count.",
+    "historical_preview_preserved": "September15 Preview24/24 for18cars remains historical evidence; no redating or inferred current equivalence.",
+    "next_required": "Reconcile terminal task003 outcomes once complete through normal controls, then read applicable complete immutable current source, DB/schema/published-set and page evidence before rebinding candidate. No concurrent PR114 publication."
+  },
+  "evidence": {
+    "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json": {
+      "sha256": "381aa9633b8119abf7e52ad9a00c813f51e5e8056d33e449d112ff0af4665d7a",
+      "git_blob_sha": "403b505032d36bb0d7f99dede4610ad34c5434b7",
+      "git_blob_sha_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/501e9cc08862f5994d20b852c4e83f2b7bddaed8/state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json"
+    },
+    "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": {
+      "sha256": "446f3929366be4c49d1ca3ceba8f4580ea7222007974b92c38d170315857258e",
+      "git_blob_sha": "d6efada91bdf0f6ccbb3ab5a35bac20aa1b45c7b",
+      "git_blob_sha_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/501e9cc08862f5994d20b852c4e83f2b7bddaed8/state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json"
+    },
+    "state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": {
+      "sha256": "dea5a790cdb53380767b9861416d0e8067aca06af8893feba344e6bd86b61933",
+      "git_blob_sha": "501c83e520bd489d3504d7d7758520e5a768004a",
+      "git_blob_sha_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/501e9cc08862f5994d20b852c4e83f2b7bddaed8/state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json"
+    },
+    "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-002.35489521032.authenticated-evidence.json": {
+      "sha256": "1389766a82dbb9ea611a606037e4a258e7297eea0efc58206171a1d5977d1c22",
+      "git_blob_sha": "eb450495a9239786341cd381d5f44ddeb82de63d",
+      "git_blob_sha_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/501e9cc08862f5994d20b852c4e83f2b7bddaed8/state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-002.35489521032.authenticated-evidence.json"
+    },
+    "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-002.35489521032.no-card-or-runtime-write.json": {
+      "sha256": "4c580257db50ce44908de5718bebf9470aed43aac0888a0a602865f364374be1",
+      "git_blob_sha": "884fa9d90c51755e6eb30d99a7c85ff28a1828d0",
+      "git_blob_sha_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/501e9cc08862f5994d20b852c4e83f2b7bddaed8/state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-002.35489521032.no-card-or-runtime-write.json"
+    },
+    "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-002.b4abcd039f34d09fda2ef0c06709bffbe9baf908450b56c948b6ec1df2b794c5.35489521032.json": {
+      "sha256": "1d20757fabd7c738c0fe14e6037c08e4b1d8b06e40064e97673116d650d4a8da",
+      "git_blob_sha": "19cb2cff102b5ec960e8e86dd7025f827c91197d",
+      "git_blob_sha_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/501e9cc08862f5994d20b852c4e83f2b7bddaed8/state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-002.b4abcd039f34d09fda2ef0c06709bffbe9baf908450b56c948b6ec1df2b794c5.35489521032.json"
+    },
+    "tasks/manifests/UA-ART-UA0022-PUBLISH-REPAIR-003.json": {
+      "sha256": "2272bf07f7e301d2eb4c800dbe29f7bfda0c9b3230862f5a65b5c23908b6412c",
+      "git_blob_sha": "f79606cf41a5c188ce394490e6d8f7eb64422de5",
+      "git_blob_sha_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/501e9cc08862f5994d20b852c4e83f2b7bddaed8/tasks/manifests/UA-ART-UA0022-PUBLISH-REPAIR-003.json"
+    },
+    "cloud/ua0022_publication_fix/evidence/LIVE_DIAGNOSIS.json": {
+      "sha256": "720679971fad55c38855b0d1fe4effef65cafcc6482a623b131b32569b82b862",
+      "git_blob_sha": "d00c63e9953774534bd63fb1a29a5c0818a5fdc5",
+      "git_blob_sha_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/501e9cc08862f5994d20b852c4e83f2b7bddaed8/cloud/ua0022_publication_fix/evidence/LIVE_DIAGNOSIS.json"
+    }
+  },
+  "actions_workflow_artifacts_observed": [
+    "uaart-critical-validation-35490449348-1",
+    "uaart-intake-attestation-35490449348-1",
+    "uaart-critical-backup-35490449348-1"
+  ],
+  "tree_read": {
+    "truncated": false,
+    "ref": "501e9cc08862f5994d20b852c4e83f2b7bddaed8",
+    "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/trees/501e9cc08862f5994d20b852c4e83f2b7bddaed8?recursive=1"
+  },
+  "tests_rerun": false,
+  "polling": "No further polling performed after confirming active overlapping controller."
+}

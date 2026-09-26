@@ -1,0 +1,19 @@
+{
+  "recorded_at_utc": "2026-09-14T10:51:24.535435+00:00",
+  "owner_request": "Когда авто в Киеве не нужна цена в Грузии.",
+  "rule": "Hide the complete GE price and delivery caption on Kyiv cards and previews. Preserve stored GE. Other stages retain independent UA and GE.",
+  "stage_source": "Existing CRM status resolver: ua_* and sold/archive map to stage 4 (Kyiv).",
+  "applies_to": [
+    "catalog",
+    "full card",
+    "future generated individual-car home previews",
+    "price update",
+    "stage update"
+  ],
+  "production_gate_changed": false,
+  "production_written": false,
+  "status": "PREVIEW_UPDATED_AND_VERIFIED",
+  "supersedes": "Earlier unconditional public display of GE for Kyiv cars only",
+  "existing_browser_matrix": "Old receipts stay historical; candidate hashes must be verified after refresh",
+  "receipt": "KYIV_VISIBILITY_PREVIEW_RECEIPT.json"
+}

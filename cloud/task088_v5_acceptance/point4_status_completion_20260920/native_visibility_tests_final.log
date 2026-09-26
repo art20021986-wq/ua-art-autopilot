@@ -1,0 +1,19 @@
+test_ambiguous_incomplete_projection_never_blindly_repeats (test_visibility_lifecycle.NativeVisibility.test_ambiguous_incomplete_projection_never_blindly_repeats) ... ok
+test_authority_expiry_before_db_commit_rolls_back_visibility (test_visibility_lifecycle.NativeVisibility.test_authority_expiry_before_db_commit_rolls_back_visibility) ... ok
+test_authority_expiry_before_unlink_preserves_file_and_resumes_same_id (test_visibility_lifecycle.NativeVisibility.test_authority_expiry_before_unlink_preserves_file_and_resumes_same_id) ... ok
+test_forward_atomic_switch_checks_after_staging (test_visibility_lifecycle.NativeVisibility.test_forward_atomic_switch_checks_after_staging) ... ok
+test_generic_stage_image_not_a_public_listing (test_visibility_lifecycle.NativeVisibility.test_generic_stage_image_not_a_public_listing) ... ok
+test_new_operator_price_between_crash_and_resume_is_preserved (test_visibility_lifecycle.NativeVisibility.test_new_operator_price_between_crash_and_resume_is_preserved) ... ok
+test_pending_price_drained_before_republication_current_data (test_visibility_lifecycle.NativeVisibility.test_pending_price_drained_before_republication_current_data) ... ok
+test_replay_old_event_does_not_toggle_newer_visibility (test_visibility_lifecycle.NativeVisibility.test_replay_old_event_does_not_toggle_newer_visibility) ... ok
+test_sold_from_nullable_status_compares_and_reads_back (test_visibility_lifecycle.NativeVisibility.test_sold_from_nullable_status_compares_and_reads_back) ... ok
+test_sold_uses_same_visibility_closure_and_keeps_record (test_visibility_lifecycle.NativeVisibility.test_sold_uses_same_visibility_closure_and_keeps_record) ... ok
+test_unknown_alias_fails_before_visibility_or_files_change (test_visibility_lifecycle.NativeVisibility.test_unknown_alias_fails_before_visibility_or_files_change) ... ok
+test_unknown_projection_after_crash_is_inspected_not_repeated (test_visibility_lifecycle.NativeVisibility.test_unknown_projection_after_crash_is_inspected_not_repeated) ... ok
+test_withdrawal_closes_before_reconciling_each_price_checkpoint (test_visibility_lifecycle.NativeVisibility.test_withdrawal_closes_before_reconciling_each_price_checkpoint) ... ok
+test_withdrawal_retires_direct_and_alias_paths_preserves_media (test_visibility_lifecycle.NativeVisibility.test_withdrawal_retires_direct_and_alias_paths_preserves_media) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.432s
+
+OK

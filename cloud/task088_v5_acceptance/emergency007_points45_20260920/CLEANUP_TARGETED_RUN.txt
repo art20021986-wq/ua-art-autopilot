@@ -1,0 +1,12 @@
+test_begin_snapshot_failure_closes (test_media_exception_cleanup.ExceptionCleanupTests.test_begin_snapshot_failure_closes) ... ok
+test_commit_failure_rolls_back_and_closes (test_media_exception_cleanup.ExceptionCleanupTests.test_commit_failure_rolls_back_and_closes) ... ok
+test_evidence_error_propagates_rolls_back_and_closes (test_media_exception_cleanup.ExceptionCleanupTests.test_evidence_error_propagates_rolls_back_and_closes) ... ok
+test_lost_commit_ack_closes_and_retains_recovery_intent (test_media_exception_cleanup.ExceptionCleanupTests.test_lost_commit_ack_closes_and_retains_recovery_intent) ... ok
+test_missing_vehicle_is_failure_and_closes (test_media_exception_cleanup.ExceptionCleanupTests.test_missing_vehicle_is_failure_and_closes) ... ok
+test_outer_mutation_recovers_on_journal_io_failure (test_media_exception_cleanup.ExceptionCleanupTests.test_outer_mutation_recovers_on_journal_io_failure) ... ok
+test_success_closes_before_rebuild (test_media_exception_cleanup.ExceptionCleanupTests.test_success_closes_before_rebuild) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.679s
+
+OK

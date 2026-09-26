@@ -1,0 +1,45 @@
+{
+  "kind": "AUDIT_CONTINUATION_NOTICE_NOT_A_GATE",
+  "observed_at": "2026-09-14T17:44:28.847Z",
+  "specification": "UA-ART-PR114-AUDIT-CONTINUE-002 v1.0",
+  "frozen_evidence_commit": "5c3a1560c723de6a6f1f422fa33487153cef75f6",
+  "main_observed": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+  "user_direction": "Audit actual work and provide continuation specification; persist processes so completed work is not repeated after interruptions.",
+  "authorization": "Existing publication authorization after actual full PASS remains valid; no duplicate approval required. This audit is not a publication Gate.",
+  "full_preview_gate": "NOT_PASSED",
+  "stage3": "OPEN_NOT_PUBLISHED",
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "audit_transition_production_write": false,
+  "audit_transition_crm_write": false,
+  "credential_console": {
+    "console_id": "48168693",
+    "state": "SHELL_PROMPT_RECEIVER_EXITED",
+    "observed_result": "E_TOKEN_FORMAT",
+    "exit_prompt_time_utc": "17:36",
+    "action": "Submitted empty input to end unattended hidden-input prompt after the user requested audit/specification.",
+    "secret_entered_by_agent": false,
+    "credential_provisioning": "NOT_CONFIRMED_NOT_COMPLETED_BY_THIS_ATTEMPT",
+    "safety": "Old CHECKPOINT_V2 hidden-prompt waiting instructions are historical. Never type a token into a shell prompt. On continuation inspect actual state, verify the reviewed receiver, restart it only when no receiver is active, then use its hidden input.",
+    "browser_observation": "17:14 ... python3.10 -IB provision_read_credential.py; GitHub read-only token (hidden):; E_TOKEN_FORMAT; 17:36 ~/autopilot_inbox/cloud $"
+  },
+  "unique_next_action": "Read this notice and current CHECKPOINT.json, verify current Git/server/receipts and any in-flight operation, then continue the first incomplete approved step. Do not repeat the saved completed matrix or installations of Stage 1/2.",
+  "remaining": [
+    "Permitted actual full-size photo acceptance on the current Preview candidate and all 24 criteria",
+    "Protected read credential provisioning and actual reader verification",
+    "Fresh bindings/quota/writer exclusion and required GitHub statuses",
+    "Canonical Gate/runtime activation/full backup/controlled Stage 3 installation and independent receipt",
+    "Actual Stage 4 controlled CRM-card-catalog cycles, SLA, queue/recovery/restart and separate receipt"
+  ],
+  "persistence_requirements": [
+    "Before each step save task/operation ID, input hashes, scope, expected result and backup before a dangerous write.",
+    "After each completed step or batch persist raw evidence, timestamp, hashes, status and one next action; verify durable commit/version/receipt and checksum.",
+    "Split long steps into resumable batches. While running, preserve journal/external job ID/resume point at least every 5 minutes when observation is available.",
+    "Use existing request/claim/transaction/nonce/receipts and executor locks; update checkpoints atomically and retain prior versions/failures.",
+    "After interruption reconcile actual outcomes before retrying RUNNING or unknown operations; retry the same operation ID without duplicates.",
+    "Reuse completed checks only with matching relevant bytes/data/environment; rerun changed scope, missing proof or mandatory freshness checks and record the reason.",
+    "Keep sanitized code/evidence/checkpoints in this Git branch, private DB/server sources/secrets only in approved private storage.",
+    "Test interruption/resumption in isolation, including after operation success before acknowledgement; do not stop production to test preservation."
+  ],
+  "implementation_status": "Existing evidence checkpoint is saved; universal process persistence and interruption acceptance are requirements of the continuation specification, not declared implemented or PASS.",
+  "historical_evidence": "CHECKPOINT_V2.json and PR114_CHECKPOINT_V2_20260914.zip remain immutable historical snapshots."
+}

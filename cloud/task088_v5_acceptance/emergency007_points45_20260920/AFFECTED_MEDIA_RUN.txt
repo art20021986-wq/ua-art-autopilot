@@ -1,0 +1,12 @@
+test_real_video_path_success_includes_media_and_cache (test_scoped_recovery.RecoveryTests.test_real_video_path_success_includes_media_and_cache) ... ok
+test_rebuild_failure_restores_real_media_fields_cache_and_files (test_scoped_recovery.RecoveryTests.test_rebuild_failure_restores_real_media_fields_cache_and_files) ... ok
+test_failed_video_preserves_operator_updates (test_scoped_recovery.RecoveryTests.test_failed_video_preserves_operator_updates) ... ok
+test_write_raises_after_commit_is_reconciled (test_scoped_recovery.RecoveryTests.test_write_raises_after_commit_is_reconciled) ... ok
+test_raw_media_helper_requires_fence (test_scoped_recovery.RecoveryTests.test_raw_media_helper_requires_fence) ... ok
+test_direct_video_entry_uses_transactional_path (test_scoped_recovery.RecoveryTests.test_direct_video_entry_uses_transactional_path) ... ok
+test_media_journal_intent_exists_before_commit (test_scoped_recovery.RecoveryTests.test_media_journal_intent_exists_before_commit) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.580s
+
+OK

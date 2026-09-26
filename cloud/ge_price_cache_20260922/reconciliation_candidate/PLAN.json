@@ -1,0 +1,53 @@
+{
+  "schema_version": "UA-ART-DATA-ONLY-RECONCILIATION-PLAN-1",
+  "operation_id": "ge-price-cache-reconcile-prepare-20260926T1220Z",
+  "parent_main": "76115cd84ba7b802c4c3400a060f51aa7b7c8c14",
+  "candidate_branch_parent": "23a28d9a03968b9700a0925a2fc568cd394979fa",
+  "task_id": "GE-PRICE-CACHE-20260922",
+  "run_id": "35696840719",
+  "exact_changes": [
+    {
+      "operation": "modify",
+      "path": "state/claims/GE-PRICE-CACHE-20260922.c6a6b444bfe97b313b6de5d80694572b4ae50c93bde6a1f7042bac7fcc6ee2a1.35696840719.json",
+      "expected_before_sha256": "b0b3fbf4d36ace6af49e89149366fbdc1d06fffa28f13b72b870a246e9403a1b",
+      "proposed_after_sha256": "54295916f47553e47fe4b965202d46e162f669b053c182d19cef7da855570fe5"
+    },
+    {
+      "operation": "add",
+      "path": "state/halt_history/GE-PRICE-CACHE-20260922.35696840719/halt.json",
+      "sha256": "4497ef90ea3dc69552333ce5849603f3df1c062337e6f3838f2b955c6fe5b151",
+      "must_not_exist": true
+    },
+    {
+      "operation": "add",
+      "path": "state/halt_history/GE-PRICE-CACHE-20260922.35696840719/claim.before.json",
+      "sha256": "b0b3fbf4d36ace6af49e89149366fbdc1d06fffa28f13b72b870a246e9403a1b",
+      "must_not_exist": true
+    },
+    {
+      "operation": "add",
+      "path": "state/reconciliations/GE-PRICE-CACHE-20260922.35696840719.aborted-before-production.json",
+      "sha256": "ed31619b1e91cc8aa51df7052f7869e4cfdd131b56a3128e06f3e9dcb1d4f541",
+      "must_not_exist": true
+    },
+    {
+      "operation": "delete",
+      "path": "state/AUTOPILOT_HALT.json",
+      "expected_sha256": "4497ef90ea3dc69552333ce5849603f3df1c062337e6f3838f2b955c6fe5b151"
+    }
+  ],
+  "protected_unchanged": [
+    "tasks/requests/**",
+    "tasks/launch/**",
+    "state/autostart_consumed/**",
+    "state/storage/**",
+    "state/receipts/**",
+    "state/transactions/**",
+    "production/**"
+  ],
+  "application_writes": 0,
+  "backup": "Git exact parent plus byte-identical HALT and claim archives",
+  "expected_result": "Terminal failed claim plus archived HALT and reconciliation record; no replay, rollback or server write.",
+  "apply_authorized": false,
+  "apply_blocker": "INDEPENDENT_REVIEW_REQUIRED"
+}

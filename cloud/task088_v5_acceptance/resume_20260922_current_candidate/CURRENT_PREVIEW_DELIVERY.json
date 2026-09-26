@@ -1,0 +1,105 @@
+{
+  "contract": "PR114-CURRENT-EXACT-PREVIEW-DELIVERY-20260922-1",
+  "status": "PREPARED_INDEPENDENTLY_REVIEWED_NOT_UPLOADED_NOT_STAGED_NOT_SWITCHED_NOT_RELOADED",
+  "prepared_at": "2026-09-22T03:19:19.687934+00:00",
+  "candidate_manifest_sha256": "95d0b4a11b1ada311c384a2cbe213b6b58ae1da540f61b640c5effecf0fb3b8e",
+  "published_count": 21,
+  "public_html_count": 46,
+  "price_currency": "USD",
+  "current_business_facts": {
+    "UA-0002": "EXCLUDED_NOT_PUBLISHED",
+    "UA-0010_GE": 8750,
+    "UA-0018_UA": 22900,
+    "UA-0018_GE_public": "OMITTED_KYIV_POLICY"
+  },
+  "delivery_files": [
+    {
+      "local_path": "/workspace/scratch/38dfdd094ece/pr114-delivery/exact_preview_current_95d0b4a1_20260922.zip",
+      "server_target": "/home/Carix/exact_preview_current_95d0b4a1_20260922.zip",
+      "sha256": "f8582d8476c34f74578a5a4b69be5b9d0ca100946c4070ef4cbabd5e80650c9e",
+      "bytes": 627582
+    },
+    {
+      "local_path": "/workspace/scratch/38dfdd094ece/pr114-delivery/stage_exact_preview_20260922.py",
+      "server_target": "/home/Carix/stage_exact_preview_20260922.py",
+      "sha256": "5bf920f029f098d7e1b989325e2401c1fb57639c940599b5170aefbc7adcb437",
+      "bytes": 30958
+    }
+  ],
+  "existing_server_observer": {
+    "path": "/home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260922_geprice01/summary.json",
+    "sha256": "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454"
+  },
+  "planned_stage_argv": [
+    "python3.10",
+    "-I",
+    "-B",
+    "/home/Carix/stage_exact_preview_20260922.py",
+    "--self-sha256",
+    "5bf920f029f098d7e1b989325e2401c1fb57639c940599b5170aefbc7adcb437",
+    "stage",
+    "--operation-id",
+    "point4-95d0b4a1-20260922v1",
+    "--package",
+    "/home/Carix/exact_preview_current_95d0b4a1_20260922.zip",
+    "--package-sha256",
+    "f8582d8476c34f74578a5a4b69be5b9d0ca100946c4070ef4cbabd5e80650c9e",
+    "--observer",
+    "/home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260922_geprice01/summary.json",
+    "--observer-sha256",
+    "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454",
+    "--existing-config",
+    "/home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma/gallery-preview-j6b3l4hd/config.json",
+    "--expected-wsgi-sha256",
+    "9b9578fe30e233cea6e46678da60dd360cae1861fca2723c08e19272bc75b555",
+    "--expected-config-sha256",
+    "ab4b13e5f6c2a0f05801a6e89891b38474852c6cfc3db229f9fff72dabcca5ee",
+    "--max-seconds",
+    "180"
+  ],
+  "planned_stage_command": "python3.10 -I -B /home/Carix/stage_exact_preview_20260922.py --self-sha256 5bf920f029f098d7e1b989325e2401c1fb57639c940599b5170aefbc7adcb437 stage --operation-id point4-95d0b4a1-20260922v1 --package /home/Carix/exact_preview_current_95d0b4a1_20260922.zip --package-sha256 f8582d8476c34f74578a5a4b69be5b9d0ca100946c4070ef4cbabd5e80650c9e --observer /home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260922_geprice01/summary.json --observer-sha256 07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454 --existing-config /home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma/gallery-preview-j6b3l4hd/config.json --expected-wsgi-sha256 9b9578fe30e233cea6e46678da60dd360cae1861fca2723c08e19272bc75b555 --expected-config-sha256 ab4b13e5f6c2a0f05801a6e89891b38474852c6cfc3db229f9fff72dabcca5ee --max-seconds 180",
+  "operation_work": "/home/Carix/autopilot_inbox/cloud/pr114-preview-point4-95d0b4a1-20260922v1",
+  "requirements_before_run": [
+    "Verify exact delivered file hashes and actual observer hash.",
+    "Confirm fresh one-writer state and absence or reconciled outcome of operation work.",
+    "Refresh current source/DB/HTML pins against observer before staging; reject drift.",
+    "Confirm dedicated Preview config/WSGI pins and actual hosting mappings are still exact.",
+    "After Stage inspect and independently verify receipt; no automatic switch or reload."
+  ],
+  "affected_browser_cases": 48,
+  "affected_pages": [
+    "/video/UA-0017.html",
+    "/video/UA-0018.html",
+    "/video/UA-0019.html",
+    "/video/UA-0020.html",
+    "/video/UA-0021.html",
+    "/video/UA-0022.html",
+    "/video/index.html",
+    "/video/katalog.html"
+  ],
+  "language_viewport_matrix": "RU/UA/GE x desktop/mobile",
+  "metadata_retention_candidates": 15,
+  "metadata_retention_requires_current_resource_and_runtime_binding": true,
+  "reconciliation": {
+    "scope": "Only the two catalog UA-0018 price slots are reconciled from 19900 to actual CRM 22900 before the unchanged strict migrator. Original before-image hashes are preserved.",
+    "evidence_path": "/workspace/scratch/38dfdd094ece/pr114-offline/current_candidate_evidence/CATALOG_RECONCILIATION.json",
+    "evidence_sha256": "9eb8b2bdc59e36c4929c1841ab223e3aa4487d5e9ae16763e7bc4193a5758b04"
+  },
+  "private_sources_or_DB_packaged": false,
+  "production_written": false,
+  "preview_gate": "NOT_RUN",
+  "canonical_preflight_reconciliation_integration": {
+    "status": "PASS_SCOPED_OFFLINE_PREFLIGHT_INTEGRATION_REVIEW",
+    "independent_review_path": "/workspace/scratch/38dfdd094ece/pr114-offline/INDEPENDENT_PREFLIGHT_RECONCILIATION_FINAL_REVIEW.json",
+    "independent_review_sha256": "141ef2f4ad0151ef34b581a2f348c0684bee3692bda7c6b752612c5e03d97593",
+    "author_scoped_check_count": 23,
+    "all_66_candidate_files_equal_reviewed_candidate": true,
+    "actual_server_preflight": false,
+    "installation_authority": false
+  },
+  "independent_package_review": {
+    "path": "/workspace/scratch/38dfdd094ece/pr114-offline/INDEPENDENT_CURRENT_PREVIEW_PACKAGE_REVIEW.json",
+    "sha256": "1ff195a5eab10a4bcf6aad23d2d1ff5bbe2f8d2f81d2bd04be513abe0386ff26",
+    "status": "PASS_INDEPENDENT_PACKAGE_BYTES_ONLY"
+  }
+}

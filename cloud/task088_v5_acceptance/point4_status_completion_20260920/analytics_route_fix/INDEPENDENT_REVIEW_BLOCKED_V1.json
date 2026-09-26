@@ -1,0 +1,24 @@
+{
+  "schema_version": "PR114-ANALYTICS-ROUTE-FIX-INDEPENDENT-REVIEW-1",
+  "reviewed_commit": "d098d46a031e90713efb7083fcd5ed336d5398c5",
+  "reviewed_at": "2026-09-20T12:17:25Z",
+  "status": "BLOCKED",
+  "positive_findings": [
+    "Source package SHA256 d444e17e... retained with 54 members.",
+    "Output package SHA256 77f04f37... has 56 members and only adds public/ua/a.js plus evidence/ua-a-js.json.",
+    "All 48 HTML and five runtime payloads and SHA maps remain byte-identical.",
+    "The offline upgrader is deterministic and reproduces the saved package byte-for-byte.",
+    "The event endpoint is absent, other ua routes remain denied, and no private source, DB or secret bytes were added.",
+    "Seven unit tests and the targeted fixture pass."
+  ],
+  "blockers": [
+    "Stage accepted capture evidence without captured_at_utc after the evidence hash was updated.",
+    "The package generator accepted captured_at_utc equal to Z because it checked only the suffix.",
+    "Generator, upgrader and Stage therefore enforced inconsistent provenance validation.",
+    "Direct Stage negatives did not cover missing, extra and invalid timestamp fields."
+  ],
+  "stage_authorized": false,
+  "production_written": false,
+  "preview_started": false,
+  "next_action": "Centralize an exact fail-closed capture validator with exact keys and parsed UTC timestamp; use it in generator, upgrader and Stage; add direct negative tests; persist/read back and repeat independent review."
+}

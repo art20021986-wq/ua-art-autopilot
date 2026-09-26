@@ -1,0 +1,33 @@
+{
+  "status": "OBSERVED_ONLY",
+  "acceptance": "NOT_EVALUATED",
+  "observed_at": "2026-09-14T15:39:16.920Z",
+  "path": "/video/index.html",
+  "candidate_sha256": "57259685b0bf0bbd3fbdc56fa46680073d11538ba625fd2ebffaf555e7259cc8",
+  "language": "ka",
+  "requested_css_viewport": {
+    "height": 844,
+    "width": 390
+  },
+  "actual_css_viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "exact_dimensions": true,
+  "viewport_media_match": true,
+  "document_width": 375,
+  "document_scroll_width": 375,
+  "ready_state": "complete",
+  "device_pixel_ratio": 1,
+  "images_total": 10,
+  "images_decoded": 10,
+  "fonts_status": "loaded",
+  "prices": [],
+  "limitations": [
+    "Current browser CSS layout only; no mobile OS, Safari or touch emulation",
+    "Scoped HTTP sandbox restricts navigation, popups, forms and native actions",
+    "No acceptance verdict; use separate screenshots, comparisons and top-level link checks"
+  ],
+  "requested_language": "GE",
+  "collection_run": "PR114_RESUME_20260914"
+}

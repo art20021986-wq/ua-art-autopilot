@@ -1,0 +1,224 @@
+{
+  "schema": "UA-ART-PR114-RESUME-20260922-1",
+  "recorded_at_utc": "2026-09-22T02:47:31.497Z",
+  "status": "WAIT_MANUAL_TRANSFER_BROWSER_SECURITY_POLICY",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "branch": "codex/task088-owner-policy-20260913-0934",
+  "observed_pr_head": "68fa1ce71f2fa3ac361cc84c60a52e708b332678",
+  "observed_main": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+  "owner_request": "Сделай сейчас медленно, чтобы на сайте появлялась грузинская цена.",
+  "owner_authorization": "Existing authorization retained; no new general publication approval requested; original release gates remain.",
+  "live_database_read": {
+    "date_utc": "2026-09-22",
+    "console_id": "48244286",
+    "server_time_utc": "02:35",
+    "method": "sqlite3 -readonly crm.db; selected auto_number,published,status,price_uah,price_georgia",
+    "rows": 21,
+    "published_rows": 21,
+    "ua0002": "ABSENT",
+    "ua0010": {
+      "price_uah": 11700,
+      "price_georgia": 8750
+    },
+    "ua0018": {
+      "price_uah": 22900,
+      "price_georgia": null
+    },
+    "other_price_georgia": "NULL for all other observed rows",
+    "full_snapshot_export": false
+  },
+  "live_server_control_read": {
+    "seo_task": "SEO-DAILY-PODBOR-CANONICAL-20260921",
+    "run_id": "35552076762",
+    "backup_manifest": "ABSENT",
+    "upload_receipt": "ABSENT",
+    "matching_scheduled_task": "NOT_LISTED_AT_02:42_UTC",
+    "actual_remote_backup_outcome": "UNRESOLVED",
+    "halt_changed": false
+  },
+  "upload_attempt": {
+    "attempted_source": "stage_exact_preview_20260922.py",
+    "sha256": "5bf920f029f098d7e1b989325e2401c1fb57639c940599b5170aefbc7adcb437",
+    "file_chooser_opened": true,
+    "setFiles": "REJECTED_BY_BROWSER_URL_SECURITY_POLICY",
+    "reason": "requested URL protocol not allowed; only http and https allowed",
+    "file_transmission_completed": false,
+    "policy_forbids_workaround": true
+  },
+  "current_candidate": {
+    "previous_static_package_applicable": false,
+    "reason": "Historical package has22 vehicles including deletedUA0002 and oldUA0018 price; source capture must be refreshed before publication.",
+    "dynamic_observer_sha256": "50dd8832c905c0ee0430bd424dcd2883156f7350037e9b2664b5695953c94a2d",
+    "prepared_locally": true,
+    "uploaded": false,
+    "remote_executed": false
+  },
+  "local_validation": {
+    "status": "PASS_LOCAL_SYNTHETIC_ONLY",
+    "checks": {
+      "only_obsolete_count_guard_changed": "PASS",
+      "current_21_without_deleted_ua0002": "PASS",
+      "future_23_dynamic": "PASS",
+      "historical_new_code_removed": "PASS",
+      "duplicate_public_code": "REJECTED_PUBLISHED_IDENTITIES_INVALID",
+      "invalid_public_code": "REJECTED_PUBLISHED_IDENTITIES_INVALID",
+      "empty_public_set": "REJECTED_PUBLISHED_CARS_REQUIRED"
+    },
+    "observer_sha256": "50dd8832c905c0ee0430bd424dcd2883156f7350037e9b2664b5695953c94a2d",
+    "baseline_sha256": "8fe6380652bab23c3329088690d551f1cad82905de822b8f94aef16b87a62935",
+    "production_read": false,
+    "production_write": false,
+    "remote_execution": false,
+    "unchanged_full_suites_repeated": false,
+    "independent_review": "PENDING"
+  },
+  "independent_review": {
+    "author_tests_reviewed": [
+      "Current 21 records without sold UA0002; future 23-record set; removal of formerly required UA0022.",
+      "Duplicate identities, malformed identities and empty published set are rejected.",
+      "Checks bind all expected core/diagnostic paths, two SQL/schema snapshots, protected price values, unchanged synthetic source/business bytes and complete export reconstruction with byte/hash checks."
+    ],
+    "contract": "PR114-DYNAMIC-CORE-OBSERVER-INDEPENDENT-REVIEW-1",
+    "diff_verified": "Exactly one guard replacement and two explanatory comments; every other baseline byte is preserved.",
+    "findings": [],
+    "gate_b_pass_claimed": false,
+    "independent_checks": {
+      "all_synthetic_output_permissions": "0700_DIRECTORIES_0600_FILES",
+      "current_21_without_ua0002": "PASS",
+      "duplicate_published_identity": "REJECTED_PUBLISHED_IDENTITIES_INVALID",
+      "empty_published_set": "REJECTED_PUBLISHED_CARS_REQUIRED",
+      "exact_baseline_and_candidate_hashes": "PASS",
+      "exact_diff_only_requested_guard": "PASS",
+      "existing_output_replay": "REJECTED_OUTPUT_ALREADY_EXISTS_RECONCILE_DO_NOT_REPEAT",
+      "explicit_no_gate_or_business_write_claims": "PASS",
+      "operator_price_drift_between_snapshots": "REJECTED_OBSERVATION_DRIFT_DO_NOT_REUSE_CANDIDATE",
+      "private_source_row_audit_sentinels_in_all_synthetic_outputs": "ABSENT"
+    },
+    "independent_test_method": "AST-load the supplied test module only through fixture/function definitions, preserving its baseline/hash/diff assertions and avoiding its existing report write. Reuse three selected synthetic cases; separately inject a synthetic operator price change at the second SQL snapshot and inspect output permissions, privacy markers and replay refusal. Python ran with -I -B; temporary fixtures were removed.",
+    "inputs": {
+      "author_validation": {
+        "bytes": 776,
+        "path": "/workspace/scratch/38dfdd094ece/pr114-delivery/DYNAMIC_OBSERVER_VALIDATION.json",
+        "sha256": "0c90b3515e09838762bac3b201adccda7b19751ebaa6d45524ed9b8280c26aab"
+      },
+      "baseline": {
+        "bytes": 30142,
+        "path": "/workspace/scratch/ae8e0003d3b0/routefix/cloud/task088_v5_acceptance/point4_status_completion_20260920/observe_point4_core.py",
+        "sha256": "8fe6380652bab23c3329088690d551f1cad82905de822b8f94aef16b87a62935"
+      },
+      "candidate": {
+        "bytes": 30250,
+        "path": "/workspace/scratch/38dfdd094ece/pr114-delivery/observe_point4_core_dynamic.py",
+        "sha256": "50dd8832c905c0ee0430bd424dcd2883156f7350037e9b2664b5695953c94a2d"
+      },
+      "targeted_tests": {
+        "bytes": 8114,
+        "path": "/workspace/scratch/38dfdd094ece/pr114-delivery/check_dynamic_observer.py",
+        "sha256": "48d6e6055bae184f20ade9383c64738662bc4ebccd85a550968194879b2c4eaa"
+      }
+    },
+    "limitations": [
+      "NEW_CODES remains UA0019-UA0022 solely for supplemental media metadata observations. This unchanged narrow scope does not prove referenced-media coverage for every future code; downstream Preview must derive its actual current affected cases.",
+      "No server read/write or upload, remote execution, actual current DB capture, Preview execution, runtime acceptance or deployment was performed.",
+      "The retained report contract is an observation contract; it is not a source of publication authority or proof of single-writer exclusion.",
+      "The original targeted test file writes its validation report with exclusive-create; it was not rerun wholesale against the existing report. Its functions were reused without overwriting author evidence."
+    ],
+    "preserved_controls": [
+      "Published identities are still unique strings matching UA-[0-9]{4}; an empty published set is rejected.",
+      "Every currently published code drives both site/video core HTML and diagnostic checks. Published-set, full cars/audit hash, schema and row changes remain checked by two SQL snapshots.",
+      "SQLite URI mode=ro, query_only, short read transactions, quick_check, source/routing hashes, file no-follow protections, byte/time limits and all stability requirements are unchanged.",
+      "Only a new private direct-child output directory is written; existing output is rejected. Private source bytes and non-allowlisted database columns are not exported.",
+      "Output schema and explicit not-a-backup/not-Gate-B/not-writer-exclusion limits are unchanged."
+    ],
+    "preview_pass_claimed": false,
+    "production_read": false,
+    "production_write": false,
+    "recorded_at_utc": "2026-09-22T02:46:08.640274+00:00",
+    "remote_execution": false,
+    "reviewer": "independent-agent-check_pr114",
+    "runtime_pass_claimed": false,
+    "scope": "Replace only the historical 22-published-count and UA0019-UA0022 membership precondition with a nonempty validated current published-set precondition. No runtime acceptance.",
+    "status": "PASS_SCOPED_CODE_REVIEW_LOCAL_SYNTHETIC_ONLY",
+    "unrelated_full_suites_repeated": false
+  },
+  "delivery": {
+    "contract": "PR114-DYNAMIC-CORE-OBSERVER-LOCAL-DELIVERY-1",
+    "status": "PREPARED_LOCALLY_PENDING_INDEPENDENT_REVIEW_AND_MANUAL_DELIVERY",
+    "prepared_at": "2026-09-22T02:44:29.589630+00:00",
+    "source_lineage": {
+      "repository": "art20021986-wq/ua-art-autopilot",
+      "commit": "68fa1ce71f2fa3ac361cc84c60a52e708b332678",
+      "path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/observe_point4_core.py",
+      "sha256": "8fe6380652bab23c3329088690d551f1cad82905de822b8f94aef16b87a62935"
+    },
+    "source": {
+      "local_path": "/workspace/scratch/38dfdd094ece/pr114-delivery/observe_point4_core_dynamic.py",
+      "sha256": "50dd8832c905c0ee0430bd424dcd2883156f7350037e9b2664b5695953c94a2d",
+      "bytes": 30250
+    },
+    "server_target": "/home/Carix/autopilot_inbox/cloud/observe_point4_core_dynamic.py",
+    "new_output": "/home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260922_geprice01",
+    "command_argv": [
+      "python3.10",
+      "-I",
+      "-B",
+      "/home/Carix/autopilot_inbox/cloud/observe_point4_core_dynamic.py",
+      "--output",
+      "/home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260922_geprice01",
+      "--self-sha256",
+      "50dd8832c905c0ee0430bd424dcd2883156f7350037e9b2664b5695953c94a2d",
+      "--seconds",
+      "180",
+      "--part-max-bytes",
+      "819200"
+    ],
+    "before_run": [
+      "Independently review the exact small diff and validation evidence.",
+      "Confirm server target absent before manual upload; never overwrite an unrelated or prior observer.",
+      "Verify delivered SHA256 before executing.",
+      "Confirm output path absent; if it exists inspect its actual outcome and never repeat that operation."
+    ],
+    "change": "Replace obsolete snapshot requirement of exactly22 published codes includingUA0019-22 with requirement of a nonempty database-validated published set. No other observer code changes.",
+    "unchanged_constraints": [
+      "Read production source files only; never import them.",
+      "SQLite URI mode=ro, query_only, bounded short read transactions.",
+      "Published IDs remain exact UA-four-digit strings and unique; DB/source/HTML/routing double-read stability required.",
+      "Self SHA verification, isolated Python, maximum180seconds and export byte bounds unchanged.",
+      "Only new0700 direct-child private output directory and0600 exclusive report/publicHTML copies.",
+      "Private source contents/fullDB rows never exported.",
+      "Terminal receipt schema and PASS conditions unchanged except obsolete22-car membership assumption.",
+      "Existing media stat scope forUA0019-22 retained; no claim about full or future media inventory.",
+      "No Preview/installation/Gate/backup/writer-exclusion PASS is implied."
+    ],
+    "validation": {
+      "path": "/workspace/scratch/38dfdd094ece/pr114-delivery/DYNAMIC_OBSERVER_VALIDATION.json",
+      "sha256": "0c90b3515e09838762bac3b201adccda7b19751ebaa6d45524ed9b8280c26aab",
+      "status": "PASS_LOCAL_SYNTHETIC_ONLY"
+    },
+    "diff": {
+      "path": "/workspace/scratch/38dfdd094ece/pr114-delivery/DYNAMIC_OBSERVER_CHANGE.diff",
+      "sha256": "a8eee2bb2a2c4121876928041744220e54e60751db84711f7fa75f4d67057e03"
+    },
+    "remote_execution": false,
+    "server_upload": false,
+    "production_write": false,
+    "github_write": false,
+    "independent_review": "PENDING"
+  },
+  "next_action": "Owner/manual operator uploads reviewed dynamic observer through normal PythonAnywhere Files UI after checking target absence. Agent first verifies exact delivered SHA and output absence, executes bounded observer once, then reconstructs genuine current capture. If no permitted transfer, remain stopped. No console/base64/raw-CDP/API workaround for browser denial.",
+  "downstream_open": [
+    "Resolve actual SEO control-plane outcome and release hold through legitimate exact evidence",
+    "Refresh current candidate and affected Preview; preserve exact historical scopes",
+    "Single-writer exclusion and complete verified backup",
+    "Fresh request/manifest/Gate/activation and canonical marker-only installation",
+    "Independent Stage3 receipt and live CRM-card-catalog verification, Stage4"
+  ],
+  "production_business_mutations": false,
+  "preview_switch": false,
+  "production_reload": false,
+  "stage3": "OPEN_NOT_PUBLISHED",
+  "stage4": "OPEN_NOT_ACCEPTED",
+  "accepted_criteria": 8,
+  "total_criteria": 20,
+  "percent": 40
+}

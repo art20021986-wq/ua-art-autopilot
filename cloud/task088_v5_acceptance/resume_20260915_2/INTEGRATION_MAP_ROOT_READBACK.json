@@ -1,0 +1,92 @@
+{
+  "contract": "PR114-INTEGRATION-MAP-ROOT-SOURCE-READBACK-1",
+  "commit": "4219b77fd5142ff0d11d7381694fc09d75f3b066",
+  "scope": "Read-only Git blob identity of all14 inspected source files; no tests rerun or production admission",
+  "files": [
+    {
+      "blob_sha": "7251a577777ad2cc37bf3fadce57ab28752836c6",
+      "matched": true,
+      "path": ".github/workflows/uaart_critical.yml",
+      "sha256": "4523f30fd01fa9e1b578be9e18593101270564cf1f51849df02e887c808fb80e"
+    },
+    {
+      "blob_sha": "51907560ad23dbb47567444e80aa93ebc97f1ad7",
+      "matched": true,
+      "path": ".github/workflows/uaart_transaction_watchdog.yml",
+      "sha256": "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe"
+    },
+    {
+      "blob_sha": "f0bb4caf8e619797ea6d329d7782b2843c845624",
+      "matched": true,
+      "path": "automation/control_plane.py",
+      "sha256": "6e3f6962d160bd778cadadb9ae24ff5d82df5ecc847a95ade2553e3c34719d5d"
+    },
+    {
+      "blob_sha": "89d247cea29714ffad809136251407a174288926",
+      "matched": true,
+      "path": "automation/critical_adapter.py",
+      "sha256": "94935cbb5331306bf37ee8a386aa0bc27a55cdbdf8ba82778fa99fa726dccd47"
+    },
+    {
+      "blob_sha": "157ebe30c2a24d1a0ff946d9c5b34e4ca0735f87",
+      "matched": true,
+      "path": "automation/execution_contract.py",
+      "sha256": "22d167dbfd8b75881d60316a23cbd69da44b84b8ba6ea9c36322413b0b436985"
+    },
+    {
+      "blob_sha": "7bb5b1a5d3a50cb4cab2df2473640637fe46b42e",
+      "matched": true,
+      "path": "automation/transaction_watchdog.py",
+      "sha256": "483e7684bc19446283859ac92a942671a0e5ec66f3c84ad65b5d26df038b0395"
+    },
+    {
+      "blob_sha": "8a3fbebe47652cb5b31782448fa48110a71ebc1a",
+      "matched": true,
+      "path": "cloud/task088_price_sync/install_package.py",
+      "sha256": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673"
+    },
+    {
+      "blob_sha": "334befc6b17350902ba6868a5612fb2517409f5e",
+      "matched": true,
+      "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/derive_candidate_parts.py",
+      "sha256": "afa9d4363d7a8ada6014a73af305e948452e260b704827dc3a044114973695b9"
+    },
+    {
+      "blob_sha": "865409add69264533534b8bcc38c8089eaca285b",
+      "matched": true,
+      "path": "cloud/task088_v5_install/build_release.py",
+      "sha256": "81808e30e5d60c626290fa848fbf31ae7435c5f41fc4f54372c6914f2b0f5357"
+    },
+    {
+      "blob_sha": "f2a29a8bb548ccfeff67fad02fc814c6612ecdce",
+      "matched": true,
+      "path": "cloud/task088_v5_install/controller.py",
+      "sha256": "71722965e09f59d0afb9fab86a6571c713efb60111d970a632d80a4f05e3cf9c"
+    },
+    {
+      "blob_sha": "56cfc50f5f2fff37ee8ab28973a081387afc93f5",
+      "matched": true,
+      "path": "cloud/task088_v5_install/remote_adapter.py",
+      "sha256": "9def8122a4a60c6685197048adf2f9b494b6767a79b3d9c35c6de0b01e2fabeb"
+    },
+    {
+      "blob_sha": "5a2530c749b9df7cfc1b0078136d505e432a2e84",
+      "matched": true,
+      "path": "cloud/task088_v5_quiescence/state_machine.py",
+      "sha256": "55c47c2bfbdd870662e4760918edab9c3f838edc0286895c976e214c8ae7c1b5"
+    },
+    {
+      "blob_sha": "01d3a1405f2e39963118289a116301c1f2fa0a4e",
+      "matched": true,
+      "path": "cloud/ua_ge_price_protection/gate.py",
+      "sha256": "bda31a6a7a01e3ec940f898605ff5cbd1a118443ec5ebb5f63d23ec34d31e445"
+    },
+    {
+      "blob_sha": "6b4ae6d4309f8083c95648fb74485a1544a4a528",
+      "matched": true,
+      "path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+      "sha256": "2b3b75c686a41f4f6a48b2f9e2d57da12574c2b498505150899b66645d7cd2c5"
+    }
+  ],
+  "all_match": true
+}

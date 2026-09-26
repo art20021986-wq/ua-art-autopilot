@@ -1,0 +1,19 @@
+{
+  "scope": "SYNTHETIC_ISOLATED_REVIEW_NOT_PRODUCTION",
+  "reason": "Newly composed media/direct renderer can enter between V5 price checkpoints.",
+  "candidate_sha256": {
+    "cars_ui.py": "c312c10d4ea78be783d1dc25968ca19c66e2c9c6c1c00c66d4a5a95f406ece2a",
+    "stranica.py": "62ad5aa2f9cbb4a2e2777910ecc2faf1f44a7e5bde622093c04a1e1b86210f6e",
+    "publish_transaction_guard.py": "9a1c8eea3baa7f4b33fc5298ab1604780f745bd8c08d0cdfcd41b8f8c1913b30",
+    "ua_spec_permanent.py": "59135f68b2f4b2c5a677e4da700cdce502dbde8a147e7fd4eb4026e3b6f9902a"
+  },
+  "unchanged_test_suites_rerun": false,
+  "persisted_price_checkpoint": "DB_COMMITTED",
+  "guard_rejection": "TASK088_V5_UNVERIFIED_PRICE_INTENTS_BLOCK_FULL_PUBLICATION",
+  "direct_main_renderer_called": true,
+  "direct_main_unverified_ge_observed": [
+    8700
+  ],
+  "finding": "DIRECT_REBUILD_BYPASSES_PRICE_QUIESCENCE",
+  "status": "BLOCKER_REPRODUCED"
+}

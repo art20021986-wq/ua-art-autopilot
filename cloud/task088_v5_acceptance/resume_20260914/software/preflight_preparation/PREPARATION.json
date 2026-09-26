@@ -1,0 +1,314 @@
+{
+  "actual_observation": {
+    "bytes": 1282938,
+    "dependency_sha256": {
+      "cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+      "catalog_design_golden.html": "228aaf503ef9728683020e15cb83c66550b77d45c8d7c341cc87f5f5768eb2c7",
+      "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "master_card.py": "27e32420bbec9f1e0a25621e1c20dda20944537daa40c1ccac574689cd6c3f6e",
+      "publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+      "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "team_bot.py": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+    },
+    "environment": "PRODUCTION_READ_ONLY",
+    "inventory_bytes": 986727605,
+    "inventory_files": 9625,
+    "observed_at": "2026-09-14T16:50:36.435375+00:00",
+    "path": "cloud/task088_v5_acceptance/resume_20260914/server/install_1650.json",
+    "raw_sha256": "7f0bf4c31088350fed169366e46e19f04ef85bca00238f23bd56c8c7342f1806",
+    "source_sha256": {
+      "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+      "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+      "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+      "ua_stage_catalog_sync.py": "c349d44821f92950234705d41507587c3ca2780dd750abda0028c060569a5beb",
+      "yadro.py": "1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793"
+    },
+    "stage_counts": {
+      "georgia": 5,
+      "kiev": 5,
+      "korea": 4,
+      "sea": 4
+    },
+    "status": "PASS"
+  },
+  "archive_expected_members": [
+    "initial_html_prices.py",
+    "install_package.py",
+    "owner_policy.py",
+    "patch_cars_ui.py",
+    "patch_catalog_design_guard.py",
+    "patch_guard.py",
+    "patch_stage_catalog_sync.py",
+    "patch_stranica.py",
+    "patch_yadro.py",
+    "preflight.py",
+    "preflight_bundle.json",
+    "price_publication.py",
+    "uaart_market_prices.py",
+    "uaart_price_control_reader.py",
+    "uaart_price_sync_binding.py",
+    "uaart_price_sync_confirmation.py",
+    "uaart_price_sync_outbox.py",
+    "uaart_price_sync_runtime.py"
+  ],
+  "builder": {
+    "repository_path": "cloud/task088_price_sync/build_preflight_bundle.py",
+    "sha256": "b3ac89ba2006c196259f94667ad58a0467738387a3ec6ba9c8ca9d5f61f15c73"
+  },
+  "code_files": {
+    "initial_html_prices.py": {
+      "bytes": 13034,
+      "repository_path": "cloud/task088_stage3_renderer/initial_html_prices.py",
+      "sha256": "c34be563fcdc90740bcf99dd6c81f3b9dc44f3f9ef883a0cc118314f5c741333"
+    },
+    "install_package.py": {
+      "bytes": 37425,
+      "repository_path": "cloud/task088_price_sync/install_package.py",
+      "sha256": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673"
+    },
+    "owner_policy.py": {
+      "bytes": 15018,
+      "repository_path": "cloud/task088_autopilot_owner_policy/owner_policy.py",
+      "sha256": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb"
+    },
+    "patch_cars_ui.py": {
+      "bytes": 28002,
+      "repository_path": "cloud/task088_price_sync/patch_cars_ui.py",
+      "sha256": "6a695ae16e6710516383f472d454e96d813893c80d4f39cf96bd2df687f2388c"
+    },
+    "patch_catalog_design_guard.py": {
+      "bytes": 3319,
+      "repository_path": "cloud/task088_stage3_renderer/patch_catalog_design_guard.py",
+      "sha256": "a251b3e6c036645701ae8473f3c0020f8589c04815509b533cf0a531656c024f"
+    },
+    "patch_guard.py": {
+      "bytes": 12163,
+      "repository_path": "cloud/task088_price_sync/patch_guard.py",
+      "sha256": "fb36683ff114f82f10696e16eca17676507f52461b8929243e877af0efb7e08b"
+    },
+    "patch_stage_catalog_sync.py": {
+      "bytes": 3489,
+      "repository_path": "cloud/task088_stage3_renderer/patch_stage_catalog_sync.py",
+      "sha256": "2c59fea132f1bff9b55a8c4ab911035509078836f2ebdb5f5e388787b7e109be"
+    },
+    "patch_stranica.py": {
+      "bytes": 4740,
+      "repository_path": "cloud/task088_stage3_renderer/patch_stranica.py",
+      "sha256": "7fe01235678cbdbeecafc3d402c75ba95c80643ea295d355208eb8749a5e5848"
+    },
+    "patch_yadro.py": {
+      "bytes": 4370,
+      "repository_path": "cloud/task088_stage3_renderer/patch_yadro.py",
+      "sha256": "873fbfcd05d0d740810cb898302090f75239ca7c1d115992e524c3290f2b7fb1"
+    },
+    "preflight.py": {
+      "bytes": 20142,
+      "repository_path": "cloud/task088_price_sync/preflight.py",
+      "sha256": "71927589e9c2c847fdafb9078c5c2aab0ba40af0dbebed31804a1a616348fcde"
+    },
+    "price_publication.py": {
+      "bytes": 5660,
+      "repository_path": "cloud/task088_autopilot_owner_policy/price_publication.py",
+      "sha256": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741"
+    },
+    "uaart_market_prices.py": {
+      "bytes": 9608,
+      "repository_path": "cloud/task088_stage3_renderer/uaart_market_prices.py",
+      "sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed"
+    },
+    "uaart_price_control_reader.py": {
+      "bytes": 18422,
+      "repository_path": "cloud/task088_price_sync/uaart_price_control_reader.py",
+      "sha256": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c"
+    },
+    "uaart_price_sync_binding.py": {
+      "bytes": 45287,
+      "repository_path": "cloud/task088_price_sync/uaart_price_sync_binding.py",
+      "sha256": "efecb6371e0ecccde75df053d740ec5316bdf1a1a3573171fe7b25de4657348f"
+    },
+    "uaart_price_sync_confirmation.py": {
+      "bytes": 5691,
+      "repository_path": "cloud/task088_price_sync/uaart_price_sync_confirmation.py",
+      "sha256": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d"
+    },
+    "uaart_price_sync_outbox.py": {
+      "bytes": 30268,
+      "repository_path": "cloud/task088_price_sync/outbox.py",
+      "sha256": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b"
+    },
+    "uaart_price_sync_runtime.py": {
+      "bytes": 96660,
+      "repository_path": "cloud/task088_price_sync/uaart_price_sync_runtime.py",
+      "sha256": "688f56ff655621ba876651213210cc94ccc613e4e3d9aad87241eaf1821af73a"
+    }
+  },
+  "current_gallery_builder_sha256": "ce6fb512f2b2c5dadb81c6412b1da28a43b8ba0d8b9d325f93c03833d9368cc9",
+  "current_tested_source_manifest_sha256": "0dae6071812640061367ef54dedb52a4b6a8e155449d526202f2496f52b55f38",
+  "kind": "READ_ONLY_PREFLIGHT_INPUT_AND_MAPPING_PREPARATION",
+  "observation_vs_captured_routing_root_files": {
+    "analitika_wsgi.py": true,
+    "site/index.html": true,
+    "uaart_bridge_wsgi.py": true,
+    "video/index.html": true
+  },
+  "package_code_source_binding": {
+    "initial_html_prices.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "install_package.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "owner_policy.py": {
+      "binding": "UNCHANGED_GIT_BLOB_NOT_ENUMERATED_IN_V2_SOFTWARE_SOURCE_MANIFEST",
+      "commit": "0de18dffe5f7db768aa7e27e3bf96c2a99a9ad8f",
+      "matches": true
+    },
+    "patch_cars_ui.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "patch_catalog_design_guard.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "patch_guard.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "patch_stage_catalog_sync.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "patch_stranica.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "patch_yadro.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "preflight.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "price_publication.py": {
+      "binding": "UNCHANGED_GIT_BLOB_NOT_ENUMERATED_IN_V2_SOFTWARE_SOURCE_MANIFEST",
+      "commit": "0de18dffe5f7db768aa7e27e3bf96c2a99a9ad8f",
+      "matches": true
+    },
+    "uaart_market_prices.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "uaart_price_control_reader.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "uaart_price_sync_binding.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "uaart_price_sync_confirmation.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "uaart_price_sync_outbox.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    },
+    "uaart_price_sync_runtime.py": {
+      "binding": "V2_OFFLINE_PASS_SOURCE_MANIFEST",
+      "matches": true
+    }
+  },
+  "prepared_at_utc": "2026-09-14T16:53:36.613714+00:00",
+  "private_capture_contents_exported": false,
+  "production_gate_created": false,
+  "quota_reference": {
+    "actual_observer_must_carry_same_or_genuinely_newer_authenticated_quota": true,
+    "expires_at_utc": "2026-09-14T17:11:42.701Z",
+    "path": "cloud/task088_v5_acceptance/resume_20260914/server/quota_1642.json",
+    "sha256": "e7337930f213783670cd7ff7c74076288e2f204b974cf01f9409d015939c874a"
+  },
+  "routing": {
+    "bytes": 2230,
+    "capture_binding": {
+      "analitika_wsgi.py": {
+        "actual_sha256": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+        "expected_sha256": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+        "matches": true
+      },
+      "observed_wsgi_config.py": {
+        "actual_sha256": "3067d39ec9c2eb976114afc6744e2c34b088a8414e98eb3e33e0a47c1849e308",
+        "expected_sha256": "3067d39ec9c2eb976114afc6744e2c34b088a8414e98eb3e33e0a47c1849e308",
+        "matches": true
+      },
+      "site/index.html": {
+        "actual_sha256": "1118916dc956d1226786698eb389ec0a8b3f74bbd61c40a2b7a33c042e629c69",
+        "expected_sha256": "1118916dc956d1226786698eb389ec0a8b3f74bbd61c40a2b7a33c042e629c69",
+        "matches": true
+      },
+      "uaart_bridge_wsgi.py": {
+        "actual_sha256": "b0c93d88d67e8c285c1bffb40bd6f2e40c2779af7a01cebd6beab4beda685150",
+        "expected_sha256": "b0c93d88d67e8c285c1bffb40bd6f2e40c2779af7a01cebd6beab4beda685150",
+        "matches": true
+      },
+      "video/index.html": {
+        "actual_sha256": "57259685b0bf0bbd3fbdc56fa46680073d11538ba625fd2ebffaf555e7259cc8",
+        "expected_sha256": "57259685b0bf0bbd3fbdc56fa46680073d11538ba625fd2ebffaf555e7259cc8",
+        "matches": true
+      }
+    },
+    "current_live_verification": "REQUIRED_BY_UNMODIFIED_PREFLIGHT_BEFORE_AND_AFTER",
+    "fresh_readback_binding": {
+      "analitika_wsgi.py": {
+        "actual_sha256": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+        "matches": true
+      },
+      "observed_wsgi_config.py": {
+        "actual_sha256": "3067d39ec9c2eb976114afc6744e2c34b088a8414e98eb3e33e0a47c1849e308",
+        "matches": true
+      },
+      "site/index.html": {
+        "actual_sha256": "1118916dc956d1226786698eb389ec0a8b3f74bbd61c40a2b7a33c042e629c69",
+        "matches": true
+      },
+      "uaart_bridge_wsgi.py": {
+        "actual_sha256": "b0c93d88d67e8c285c1bffb40bd6f2e40c2779af7a01cebd6beab4beda685150",
+        "matches": true
+      },
+      "video/index.html": {
+        "actual_sha256": "57259685b0bf0bbd3fbdc56fa46680073d11538ba625fd2ebffaf555e7259cc8",
+        "matches": true
+      }
+    },
+    "fresh_readback_static_mapping_matches": true,
+    "hosting_path": "cloud/task088_v5_acceptance/resume_20260914/server/hosting_observation.json",
+    "hosting_raw_sha256": "9ed510d3d197a3da6902e05c66c730ea2ad52fc1a79352537e9b425d1e4453b4",
+    "observed_at_utc": "2026-09-14T06:30:00Z",
+    "raw_sha256": "91688089f048d7181fb719a533f90f028c736aa9146dd55ea14350b69bee9e35",
+    "readback_path": "cloud/task088_v5_acceptance/resume_20260914/server/readback_1557.json",
+    "readback_raw_sha256": "1ef3d1e3f346268da4a4cb110f1382d7768f9ea19226d9fc9b3bf67f636fe95f",
+    "repository_path": "cloud/task088_v5_acceptance/route_observations.json",
+    "strict_validator": "PASS",
+    "writer_exclusion": "NOT_PROVEN_BY_ROUTING"
+  },
+  "server_executed": false,
+  "stage2": {
+    "bytes": 1689,
+    "capture_cars_ui_sha256_match": true,
+    "installed_source_sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "normalized_sha256": "2b8136092450c6fe75a1ad70c30ed7820db6f13e8d18eb0241bf063daa7185eb",
+    "raw_sha256": "d0b731b93a73da0d041a1af6e987f0e6634823001a2461bc882c927a588faae7",
+    "repository_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json",
+    "stage1_prerequisite": "PASS",
+    "stage2_status": "PASS",
+    "stage3_allowed": true,
+    "status": "FINISHED",
+    "task_id": "TASK088-GE-PRICE-CRM-STAGE2"
+  },
+  "status": "ACTUAL_PACKAGE_BUILT_PENDING_AUTHENTICATED_SERVER_PREFLIGHT"
+}

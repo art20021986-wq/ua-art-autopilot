@@ -1,0 +1,99 @@
+test_all_direct_entries_reject_actual_db_committed_checkpoint_before_work (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_all_direct_entries_reject_actual_db_committed_checkpoint_before_work) ... ERROR
+test_concurrent_thread_waits_for_outer_lease_and_cannot_bypass_fence (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_concurrent_thread_waits_for_outer_lease_and_cannot_bypass_fence) ... ERROR
+test_exact_legacy_helper_changes_only_connection_yield (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_exact_legacy_helper_changes_only_connection_yield) ... ERROR
+test_fork_child_rejects_reentry_and_parent_context_cleanup_without_sqlite_calls (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_fork_child_rejects_reentry_and_parent_context_cleanup_without_sqlite_calls) ... ERROR
+test_guard_main_nested_writes_use_one_reserved_transaction_before_spec (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_guard_main_nested_writes_use_one_reserved_transaction_before_spec) ... ERROR
+test_nested_exception_releases_connection_and_next_entry_succeeds (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_nested_exception_releases_connection_and_next_entry_succeeds) ... ERROR
+test_reentry_rejects_database_rebinding_and_ended_transaction (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_reentry_rejects_database_rebinding_and_ended_transaction) ... ERROR
+test_writer_only_missing_price_helper_fails_explicitly (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_writer_only_missing_price_helper_fails_explicitly) ... ERROR
+test_guard_reuses_shared_fence_registry (test_private_source_integration.IntegrationTests.test_guard_reuses_shared_fence_registry) ... ok
+test_stranica_nested_write_order (test_private_source_integration.IntegrationTests.test_stranica_nested_write_order) ... ok
+test_dependency_drift_cannot_be_composed (test_release_closure.ExactPrivateCompositionTests.test_dependency_drift_cannot_be_composed) ... ok
+test_exact_price_composition_preserves_all_price_helpers_and_renderers (test_release_closure.ExactPrivateCompositionTests.test_exact_price_composition_preserves_all_price_helpers_and_renderers) ... FAIL
+test_partial_dependency_set_cannot_be_composed (test_release_closure.ExactPrivateCompositionTests.test_partial_dependency_set_cannot_be_composed) ... ok
+test_price_afterimage_drift_cannot_be_composed (test_release_closure.ExactPrivateCompositionTests.test_price_afterimage_drift_cannot_be_composed) ... ok
+
+======================================================================
+ERROR: test_all_direct_entries_reject_actual_db_committed_checkpoint_before_work (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_all_direct_entries_reject_actual_db_committed_checkpoint_before_work)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cc71e1c55fba/pr114_review/cloud/task088_v5_writer_fence/test_direct_rebuild_quiescence.py", line 55, in setUp
+    exec(compile(self.composed['publish_transaction_guard.py'], '<exact-composed-guard>', 'exec'), self.guard.__dict__)
+  File "<exact-composed-guard>", line 905, in <module>
+ModuleNotFoundError: No module named 'ua_site_counters'
+
+======================================================================
+ERROR: test_concurrent_thread_waits_for_outer_lease_and_cannot_bypass_fence (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_concurrent_thread_waits_for_outer_lease_and_cannot_bypass_fence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cc71e1c55fba/pr114_review/cloud/task088_v5_writer_fence/test_direct_rebuild_quiescence.py", line 55, in setUp
+    exec(compile(self.composed['publish_transaction_guard.py'], '<exact-composed-guard>', 'exec'), self.guard.__dict__)
+  File "<exact-composed-guard>", line 905, in <module>
+ModuleNotFoundError: No module named 'ua_site_counters'
+
+======================================================================
+ERROR: test_exact_legacy_helper_changes_only_connection_yield (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_exact_legacy_helper_changes_only_connection_yield)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cc71e1c55fba/pr114_review/cloud/task088_v5_writer_fence/test_direct_rebuild_quiescence.py", line 55, in setUp
+    exec(compile(self.composed['publish_transaction_guard.py'], '<exact-composed-guard>', 'exec'), self.guard.__dict__)
+  File "<exact-composed-guard>", line 905, in <module>
+ModuleNotFoundError: No module named 'ua_site_counters'
+
+======================================================================
+ERROR: test_fork_child_rejects_reentry_and_parent_context_cleanup_without_sqlite_calls (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_fork_child_rejects_reentry_and_parent_context_cleanup_without_sqlite_calls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cc71e1c55fba/pr114_review/cloud/task088_v5_writer_fence/test_direct_rebuild_quiescence.py", line 55, in setUp
+    exec(compile(self.composed['publish_transaction_guard.py'], '<exact-composed-guard>', 'exec'), self.guard.__dict__)
+  File "<exact-composed-guard>", line 905, in <module>
+ModuleNotFoundError: No module named 'ua_site_counters'
+
+======================================================================
+ERROR: test_guard_main_nested_writes_use_one_reserved_transaction_before_spec (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_guard_main_nested_writes_use_one_reserved_transaction_before_spec)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cc71e1c55fba/pr114_review/cloud/task088_v5_writer_fence/test_direct_rebuild_quiescence.py", line 55, in setUp
+    exec(compile(self.composed['publish_transaction_guard.py'], '<exact-composed-guard>', 'exec'), self.guard.__dict__)
+  File "<exact-composed-guard>", line 905, in <module>
+ModuleNotFoundError: No module named 'ua_site_counters'
+
+======================================================================
+ERROR: test_nested_exception_releases_connection_and_next_entry_succeeds (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_nested_exception_releases_connection_and_next_entry_succeeds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cc71e1c55fba/pr114_review/cloud/task088_v5_writer_fence/test_direct_rebuild_quiescence.py", line 55, in setUp
+    exec(compile(self.composed['publish_transaction_guard.py'], '<exact-composed-guard>', 'exec'), self.guard.__dict__)
+  File "<exact-composed-guard>", line 905, in <module>
+ModuleNotFoundError: No module named 'ua_site_counters'
+
+======================================================================
+ERROR: test_reentry_rejects_database_rebinding_and_ended_transaction (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_reentry_rejects_database_rebinding_and_ended_transaction)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cc71e1c55fba/pr114_review/cloud/task088_v5_writer_fence/test_direct_rebuild_quiescence.py", line 55, in setUp
+    exec(compile(self.composed['publish_transaction_guard.py'], '<exact-composed-guard>', 'exec'), self.guard.__dict__)
+  File "<exact-composed-guard>", line 905, in <module>
+ModuleNotFoundError: No module named 'ua_site_counters'
+
+======================================================================
+ERROR: test_writer_only_missing_price_helper_fails_explicitly (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_writer_only_missing_price_helper_fails_explicitly)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cc71e1c55fba/pr114_review/cloud/task088_v5_writer_fence/test_direct_rebuild_quiescence.py", line 55, in setUp
+    exec(compile(self.composed['publish_transaction_guard.py'], '<exact-composed-guard>', 'exec'), self.guard.__dict__)
+  File "<exact-composed-guard>", line 905, in <module>
+ModuleNotFoundError: No module named 'ua_site_counters'
+
+======================================================================
+FAIL: test_exact_price_composition_preserves_all_price_helpers_and_renderers (test_release_closure.ExactPrivateCompositionTests.test_exact_price_composition_preserves_all_price_helpers_and_renderers)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cc71e1c55fba/pr114_review/cloud/task088_v5_writer_fence/test_release_closure.py", line 167, in test_exact_price_composition_preserves_all_price_helpers_and_renderers
+    self.assertTrue(selected(self.prices[name]), name)
+AssertionError: {} is not true : publish_transaction_guard.py
+
+----------------------------------------------------------------------
+Ran 14 tests in 5.210s
+
+FAILED (failures=1, errors=8)

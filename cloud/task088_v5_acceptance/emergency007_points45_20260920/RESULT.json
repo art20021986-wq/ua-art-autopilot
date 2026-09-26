@@ -1,0 +1,266 @@
+{
+  "operation_id": "pr114-emergency007-points45-20260920",
+  "updated_at": "2026-09-20T04:59:18.989Z",
+  "foreground_in_progress": false,
+  "status": "POINT4_SCOPED_FIX_AND_RELEASE_PREPARATION_COMPLETE_FULL_ACCEPTANCE_OPEN",
+  "input_head": "e01af749e3da3704bad88282bbd9ca3d393b1965",
+  "accepted_criteria": 8,
+  "total_criteria": 20,
+  "percent": 40,
+  "point4": {
+    "status": "PARTIAL_NOT_ACCEPTED",
+    "completed": [
+      "P4-SAFETY-001 fixed; exact helper cleanup and independent narrow PASS",
+      "Exact price-patch plus writer integration API with immutable private input pins",
+      "Preflight/stager/controller/install/rollback/runtime closure updated and independently reviewed",
+      "Generated public release refreshed from reviewed source with exact readback"
+    ],
+    "tests": {
+      "new_cleanup": 7,
+      "affected_media": 7,
+      "new_closure": 11,
+      "new_admission": 5,
+      "after_fixture_change_selected": 8,
+      "historical_446_183_120_repeated": false
+    },
+    "independent_media_fix_review": "cloud/task088_v5_acceptance/emergency007_points45_20260920/INDEPENDENT_FIX_REVIEW.json",
+    "independent_closure_review": "cloud/task088_v5_acceptance/emergency007_points45_20260920/INDEPENDENT_CLOSURE_REVIEW.json",
+    "closure_validation": "cloud/task088_v5_acceptance/emergency007_points45_20260920/CLOSURE_VALIDATION.json",
+    "remaining": [
+      "Complete all private source/HTML inputs and combined candidate manifest",
+      "Affected source_generation/no_unrelated_diff and exact Preview applicability; preserve historical visual/gallery acceptance"
+    ]
+  },
+  "point5": {
+    "status": "BLOCKED_NOT_EXECUTED",
+    "current_control": "cloud/task088_v5_acceptance/emergency007_points45_20260920/CURRENT_CONTROL_READBACK.json",
+    "reasons": [
+      "Foreign canonical UA-0022 task003 active; no resource takeover",
+      "P5-COVERAGE-COLLECTOR: continuous authenticated complete writer/process/drain contract is not integrated across maintenance, backup, installation and runtime",
+      "Existing generic VERIFIED writer list cannot establish complete writer exclusion"
+    ],
+    "historical_halt_not_current": true,
+    "production_writes": false
+  },
+  "browser_read": {
+    "status": "WAIT_CONNECTION",
+    "action": "Read missing original yadro.py through authenticated Files UI",
+    "last_confirmed": "Directory links observed after bounded reconciliation of navigation timeout",
+    "failure": "Editor link click returned Runtime.evaluate timeout; no further retries in attempt",
+    "download_completed": false,
+    "server_command_or_write": false
+  },
+  "candidate_manifest": "cloud/task088_v5_acceptance/emergency007_points45_20260920/CANDIDATE_V4_MANIFEST.json",
+  "generated_release_source_map": "cloud/task088_v5_install/release/release_sources.json",
+  "source_hashes": {
+    "cloud/task088_price_sync/build_preflight_bundle.py": {
+      "sha": "761c01f191b4e3b3230ea2bfedded162310bc2b6",
+      "sha256": "f393a85b4051b35c3e03a9a6908ce2a391983824660e98ce7dc522dfccfdc34b",
+      "bytes": 6194
+    },
+    "cloud/task088_price_sync/install_package.py": {
+      "sha": "388aa91f5a594b3a8827148e1b8c4754c04476bd",
+      "sha256": "04dcd630ff5cd58e133083cb58c34cb0a45b8b1b51f381d7c93a086079aa82e0",
+      "bytes": 40032
+    },
+    "cloud/task088_price_sync/preflight.py": {
+      "sha": "d0acca380eb81e9fb11c5f942ec998d4e604f1c5",
+      "sha256": "6e3a85fd088c0b8d087fe98f2f24ed709228e16e0d99acb77c01eb590d00104b",
+      "bytes": 20082
+    },
+    "cloud/task088_price_sync/stage_preflight.py": {
+      "sha": "5049d9f350d82e2a98330d3bdfadbef7ee92e6e6",
+      "sha256": "65010a2a599f5ef7daee871420f2165e7e7a2fda495a31568040dfa3cde9c72e",
+      "bytes": 4183
+    },
+    "cloud/task088_price_sync/test_binding.py": {
+      "sha": "095dce21bb503e016c11c9f93af7958431a10f4a",
+      "sha256": "e50707adb44ec33b36be3b3f986347fd37fb31eba1ca3d42483d3692dc0ea627",
+      "bytes": 31407
+    },
+    "cloud/task088_price_sync/uaart_price_sync_binding.py": {
+      "sha": "d0d8796debc77bede8eaf32ecaa80ad2fbe64af7",
+      "sha256": "71c36f59d7100faeaede17c580b391349f7dab081099d0de21975f926fb7d174",
+      "bytes": 45802
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/CANDIDATE_V4_MANIFEST.json": {
+      "sha": "c92e55763895ba0a5f85a3c8ce2befe0f1e36e33",
+      "sha256": "f55122b580315e9c28c2c9a69e59d0a5bf7edd0308a76e8efcf8e7ba6d50dedd",
+      "bytes": 2274
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/CLOSURE_FIRST_RUN.txt": {
+      "sha": "b076435d64e89afb3d20565f29bd77d7f0c518a8",
+      "sha256": "0be95d93cc63aa45c84ff7dc86da86e6c5c82a56c78b9e1a33574a68835efbc5",
+      "bytes": 2009
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/CLOSURE_SECOND_RUN.txt": {
+      "sha": "a3a1a00f7804b909719701173ad234868ab0ffed",
+      "sha256": "378d44f2be565049ba01c8cb6432b7ec37688651b1c4f4a414680ddd652fc483",
+      "bytes": 951
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/CLOSURE_THIRD_RUN.txt": {
+      "sha": "dbadf7e15500e5258bd3090e4f75d7f70af1f8a4",
+      "sha256": "d8e0ef2fb11564d517d6f73dc3e755b03157317060bad1bb1ca1f1ea1ddadf3b",
+      "bytes": 1422
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/CLOSURE_THIRD_RUN_INPUTS.json": {
+      "sha": "351d559d3a4f0d0b2001bc86edf306ca4520bb52",
+      "sha256": "a5c9e5cc0a3212d2473b397e971df5865ec8160a29b42d140ba4170d6af6e768",
+      "bytes": 1690
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/CLOSURE_VALIDATION.json": {
+      "sha": "cb333c0542f13c890bcf212f54a55cca8b03b073",
+      "sha256": "2995bc0ac671c2c1f466f942c246e0baa96880b9a97736e69e4be9b8eec4cc9c",
+      "bytes": 3862
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/INDEPENDENT_CLOSURE_REVIEW.json": {
+      "sha": "2991cd57583d0cc443bd1fe6fa56211cf5ed0fc2",
+      "sha256": "11b37062f86c51a54a8ced0004f6a58df3bf5c3757332c5b751473c70866d47a",
+      "bytes": 5504
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/INDEPENDENT_FIX_REVIEW.json": {
+      "sha": "164b8fc6d097ab733d6d84c9d639b98e900411f0",
+      "sha256": "443b9e3c4e0cdca75f542443f30c9651e6b75360ca68f7317f0f853d74cff7c5",
+      "bytes": 2916
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/INITIAL_FAILURE_REPRODUCTION.json": {
+      "sha": "629e1334713911642dc153380ac102a34ba79bc8",
+      "sha256": "db99850e1ae34a2ef7bf81db25d478e2a138e12037174dec8c5d5e7cfbf894df",
+      "bytes": 294
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/INITIAL_SAFETY_REVIEW.json": {
+      "sha": "c0b066a50e1a7da05de1ad96e3fd44247741c912",
+      "sha256": "d5e85f499c5ea6bbce7a72e70c8490ad7ef6f055f804fc3877932f6443e5d2f8",
+      "bytes": 2051
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/TEST_FIXTURE_INITIAL_ERROR.json": {
+      "sha": "cced3e7467cfa2f98d754ad6de35e8dda7ed0002",
+      "sha256": "6ae6edfc81cdc17174efd2e3ada8b93c7bce66dbc71d2b4a78a1f452b5201c56",
+      "bytes": 291
+    },
+    "cloud/task088_v5_acceptance/emergency007_points45_20260920/exception_transaction_fixed_report.json": {
+      "sha": "d53d53f04c8ca9a96e7f5ebda6e50028a1752683",
+      "sha256": "bccd0c9667a21999fe291aed4457c24ba553991c1e0c177e81557ffa617e3df9",
+      "bytes": 571
+    },
+    "cloud/task088_v5_install/build_release.py": {
+      "sha": "f31c8819a627b71aa47b9ba14618d9272af04506",
+      "sha256": "981e1d91560a2003ed63b6ddac25c27ca8f744655806df7001bc2bece758e695",
+      "bytes": 4015
+    },
+    "cloud/task088_v5_install/controller.py": {
+      "sha": "8177e700b337bc0fff0623a145bc569c87763a83",
+      "sha256": "0801407ceeb4edf4533e5df5ade2c23d56cbeb46562ce40ab117f491f17c2eca",
+      "bytes": 26810
+    },
+    "cloud/task088_v5_install/release/backup_controller.py": {
+      "sha": "49e3e10958f6f36581f62ff1e08f2c52fe011f7d",
+      "sha256": "5080826a2a7fa0afef24134e1d69fbb48596cc824d97e939e63c3ef6b25a61a1",
+      "bytes": 93
+    },
+    "cloud/task088_v5_install/release/controller.py": {
+      "sha": "8177e700b337bc0fff0623a145bc569c87763a83",
+      "sha256": "0801407ceeb4edf4533e5df5ade2c23d56cbeb46562ce40ab117f491f17c2eca",
+      "bytes": 26810
+    },
+    "cloud/task088_v5_install/release/install_package.py": {
+      "sha": "388aa91f5a594b3a8827148e1b8c4754c04476bd",
+      "sha256": "04dcd630ff5cd58e133083cb58c34cb0a45b8b1b51f381d7c93a086079aa82e0",
+      "bytes": 40032
+    },
+    "cloud/task088_v5_install/release/mutation_recovery.py": {
+      "sha": "104e71d24257e4c83c308b151948f1e114b0af06",
+      "sha256": "dfecaae1d98dcd10475d699a59519e847bda3bb4a2726a752e3d5c2dc83475c9",
+      "bytes": 14114
+    },
+    "cloud/task088_v5_install/release/outbox.py": {
+      "sha": "544ba5fa4d81de07288eaf740b7d64e7a267ccac",
+      "sha256": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+      "bytes": 30268
+    },
+    "cloud/task088_v5_install/release/owner_policy.py": {
+      "sha": "bc625c24a3d7c81cfee7c1370b441d39d6496e25",
+      "sha256": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+      "bytes": 15018
+    },
+    "cloud/task088_v5_install/release/price_publication.py": {
+      "sha": "051e55e6b54fc80a66d1b2ad78bbf5d91ccb2cd2",
+      "sha256": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+      "bytes": 5660
+    },
+    "cloud/task088_v5_install/release/publication_fence.py": {
+      "sha": "e522107ae80d8f4e9b59603bd1a16a881f622398",
+      "sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+      "bytes": 9694
+    },
+    "cloud/task088_v5_install/release/release_sources.json": {
+      "sha": "3b996b9db69e8d2798ed5d7cab9bf38dee5754c3",
+      "sha256": "20bcd6e12b2afd502549c79f2e09225be1845974d0fea33afcca596df6e6a818",
+      "bytes": 4100
+    },
+    "cloud/task088_v5_install/release/remote_adapter.py": {
+      "sha": "bd4be49fe927e822249b5ac8ba890f8b6303d835",
+      "sha256": "3fb5974eb89a2d10d18455b3f17a45620a1c1a94013ff34fe40a7dcbdc50f3da",
+      "bytes": 26039
+    },
+    "cloud/task088_v5_install/release/rollback_controller.py": {
+      "sha": "dc308ec2a01e750e248bd205175420331412e936",
+      "sha256": "a5e21ac45f93bd31f410cffd19649ce7655a1c9eb706f51df894293f403bcd0b",
+      "bytes": 95
+    },
+    "cloud/task088_v5_install/release/test_adapter.py": {
+      "sha": "2d4efa66a7125f000f17188337f6a56d2624cea4",
+      "sha256": "5e4b08c67bddc3900b1582a338cf96f8a0839882a66054468e1f9b75efb30aff",
+      "bytes": 13944
+    },
+    "cloud/task088_v5_install/release/test_install_package.py": {
+      "sha": "ddcfc0984689016d76b6c0238ba1cc278a45a05f",
+      "sha256": "17fd48cf06e7454a9fee75cbec7ff68af6c2fe17b403e534301043ff64ed1f2e",
+      "bytes": 20557
+    },
+    "cloud/task088_v5_install/release/test_operation_recovery.py": {
+      "sha": "0188210fe44ae3d8d7b01a67fa30f009b69bc4b9",
+      "sha256": "302e755ed9145823ec6d3599b74c076b94cedea7de43ea33487dbe4299f3fdc7",
+      "bytes": 20698
+    },
+    "cloud/task088_v5_install/release/uaart_market_prices.py": {
+      "sha": "9b7f402b094d0bfa8b2742cbe21e3c8c32b32657",
+      "sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+      "bytes": 9608
+    },
+    "cloud/task088_v5_install/release/uaart_price_control_reader.py": {
+      "sha": "ba707245d43312e49fb411b1d8eced2289bd7c26",
+      "sha256": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c",
+      "bytes": 18422
+    },
+    "cloud/task088_v5_install/release/uaart_price_sync_binding.py": {
+      "sha": "d0d8796debc77bede8eaf32ecaa80ad2fbe64af7",
+      "sha256": "71c36f59d7100faeaede17c580b391349f7dab081099d0de21975f926fb7d174",
+      "bytes": 45802
+    },
+    "cloud/task088_v5_install/release/uaart_price_sync_confirmation.py": {
+      "sha": "3ef98fdcd2f991fbc6002dcf946ecd9c1facf205",
+      "sha256": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+      "bytes": 5691
+    },
+    "cloud/task088_v5_install/release/uaart_price_sync_outbox.py": {
+      "sha": "544ba5fa4d81de07288eaf740b7d64e7a267ccac",
+      "sha256": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+      "bytes": 30268
+    },
+    "cloud/task088_v5_install/release/uaart_price_sync_runtime.py": {
+      "sha": "8bde71d991e05d54cc70da1bec43cb38d6b4a0ad",
+      "sha256": "688f56ff655621ba876651213210cc94ccc613e4e3d9aad87241eaf1821af73a",
+      "bytes": 96660
+    },
+    "cloud/task088_v5_writer_fence/test_release_closure.py": {
+      "sha": "73254fb753fd5b719e3732c8d20f3b0cdf50d245",
+      "sha256": "32295d98cb665e914f0358b43ce027bfb4f928e7c695c0a04ca4a5778abecec6",
+      "bytes": 12826
+    }
+  },
+  "production_changed": false,
+  "stage3_receipt_obtained": false,
+  "stage4_receipt_obtained": false,
+  "next_action": "Resume bounded read-only retrieval of missing exact private inputs, then build the full combined candidate for affected Preview checks. Reconcile current UA-0022 outcomes before any production admission."
+}

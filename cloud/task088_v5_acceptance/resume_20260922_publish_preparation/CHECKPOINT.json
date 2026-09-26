@@ -1,0 +1,83 @@
+{
+  "browser": {
+    "cases": 48,
+    "full_preview_gate": "NOT_ISSUED",
+    "raw_observations_sha256": "28e3afac76cc2352ac5444c609729011cd50f69a5885252971827e8b89e4f3ca",
+    "status": "PASS_SCOPED_48_CASES"
+  },
+  "canonical_main_commit": "d6bb157288e3a3ea19ddc5d6f11a4c449b9b01eb",
+  "canonical_status": {
+    "database_written": false,
+    "full_preview_gate": "NOT_ISSUED",
+    "main_written": false,
+    "production_business_files_written": false,
+    "request_owner_launch_artifacts": "NOT_GENERATED",
+    "services_stopped_or_restarted": false,
+    "stage3": "NOT_LAUNCHED",
+    "stage4": "NOT_ACTIVATED",
+    "writer_gate": "NOT_ISSUED"
+  },
+  "contract": "TASK088-GE-PRICE-PUBLICATION-CONTINUATION-20260922-1",
+  "current_candidate_manifest_sha256": "95d0b4a11b1ada311c384a2cbe213b6b58ae1da540f61b640c5effecf0fb3b8e",
+  "factual_blockers": [
+    "Existing loaded CRM includes unguarded media/page writers; no implemented and accepted operational drain/restore bridge. Current controller requires CRM supervisor Running; disabling alone is not safe containment.",
+    "No discovered existing approved persistent authenticated GitHub control-reader credential/configuration on target. Runtime binding and automatic synchronization cannot be activated from prepared code alone."
+  ],
+  "no_completion_receipt_invented": true,
+  "recorded_at": "2026-09-22T06:05:47.817502+00:00",
+  "release_verification": {
+    "actual_execution_contract": "PASS_NONPRODUCTION_TEST_REQUEST",
+    "compile": "PASS",
+    "contract": "TASK088-REBUILT-RELEASE-VERIFICATION-1",
+    "local_test_request_removed": true,
+    "logs": {
+      "RELEASE_COMPILE.json": "465a7a029c78f5d1d94273b7f1457c86072a3dafc4c331a0b99e64e56eae425a",
+      "RELEASE_EXECUTION_CONTRACT.json": "f70558fa533abac299a3e840ef594c2d1d255772d8536120a16a5ea3fa1924ed",
+      "RELEASE_TESTS.txt": "affe7b9cb626618e76100b945a632bac8e08fa20a0e3b47b21494ba123f2b5ea"
+    },
+    "observed_at": "2026-09-22T06:05:47.816382+00:00",
+    "production_receipt_created": false,
+    "production_written": false,
+    "public_python_files": 21,
+    "release_sources_sha256": "04d42e4851594dddfe683248905f365c26b9230c1562b57d0f1497beaebd285b",
+    "source_and_release_bytes_equal": true,
+    "source_commit": "580b811dd860e25f61f591c9d8f87235da15caff",
+    "status": "PASS_ISOLATED_RELEASE_ONLY",
+    "tests": {
+      "failed": 0,
+      "skipped": 0,
+      "test_adapter.py": 23,
+      "test_install_package.py": 25,
+      "test_operation_recovery.py": 23,
+      "total": 71
+    }
+  },
+  "reserved_stage3_task_id": "TASK088-GE-PRICE-SITE-STAGE3-20260922-PUBLISH02",
+  "resume": [
+    "Read this checkpoint and current branch/main refs; reconcile actual remote results before repeating any action.",
+    "Reuse delivered server files/private captures and reviewed successor chain; do not ask owner to reupload unchanged files.",
+    "Finish reviewed bounded old-writer containment with genuine membership/drain/restoration facts; preserve current CRM until executable.",
+    "Establish an explicitly approved persistent authenticated control-reader binding through supported provisioning; no copied browser tokens.",
+    "Build fresh exact canonical preflight and complete runtime/full-inventory Preview binding against current data. Retain only unchanged applicable browser cases.",
+    "Generate exact finalized delegation and scoped request using actual writer/quota/Preview records; finalize runtime with unchanged genuine mode validator.",
+    "After full reviewed gates, additive current-main commit preserving live state, then separate marker-only launch. Verify backup/install, public GE prices, restoration and live acceptance before declaring completion."
+  ],
+  "retained_private_observation": {
+    "comparison_scope": "Source-pinned core capture equality; not whole system inventory or loaded writer identity",
+    "comparison_to_retained_capture": "PASS_EQUAL_CORE_DATABASE_SCHEMA_DIAGNOSTIC_RUNTIME_SOURCE_ROUTING_SUPPORT_HTML_AND_PUBLISHED_ROWS",
+    "local_path": "/workspace/scratch/summary.json",
+    "present_local": true,
+    "scope": "PRIVATE_FRESH_CORE_OBSERVATION_NOT_COMMITTED",
+    "server_directory": "/home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260922_publish02",
+    "sha256": "38e74701a2a94c4a9a2624b9bac18c2233dcf5986f9a0f80bc0d4f007c30a8c6",
+    "status": "PASS_CORE_DOUBLE_READ_STABLE_OBSERVATION"
+  },
+  "saved_work_requires_no_new_owner_approval": true,
+  "source_successor": {
+    "actual_chain_verified": true,
+    "original_Stage2_receipt_preserved": true,
+    "scoped_tests": 85
+  },
+  "source_successor_commit": "580b811dd860e25f61f591c9d8f87235da15caff",
+  "status": "PREPARED_NOT_PUBLISHED_GENUINE_RUNTIME_BLOCKERS"
+}

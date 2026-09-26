@@ -1,0 +1,146 @@
+{
+  "task": "UA-ART-GE-UA-MARKET-PRICE-001",
+  "kind": "CONTINUATION_PROGRESS_NOT_A_PRODUCTION_GATE",
+  "recorded_at": "2026-09-14T13:13:33.095Z",
+  "reviewed_pr": 114,
+  "reviewed_commit": "93515742d3ff70c7d57ffeb5e0b1a8e421f6e131",
+  "reviewed_tree": "e6c510cf120f1d65e2da9f8c8ecafd7a7cc452d0",
+  "matching_local_commit": "822826a02f2ce022aeeabc3e95a9cd5fd856e336",
+  "source_manifest_sha256": "18fc3c2ffb16df204cdd7318f550fbffa0a2169da3be57ff0d2bc88b1855b5c7",
+  "preview_manifest_sha256": "7c5335f921487734c5af8a94df49d1ba04ba6f5bf97492d346ab619b7205fb28",
+  "owner_authorization": {
+    "publication": "AUTHORIZED_AFTER_100_PERCENT_PASS",
+    "renewed_permission_required": false,
+    "kyiv": "Show only UA on site; retain GE in CRM",
+    "stage1": "CLOSED_DO_NOT_REINSTALL",
+    "stage2": "CLOSED_DO_NOT_REINSTALL"
+  },
+  "software": {
+    "status": "PASS",
+    "public": 348,
+    "private": 95,
+    "total": 443,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "notes": "Fresh unique checks. Six initial missing-input errors were preserved and only those tests rerun with the hash-verified existing 65-file routing capture. This is software/captured-source verification, not a live CRM cycle.",
+    "private_capture_directory": "/workspace/scratch/256f936ac1c5/private_v5_routing",
+    "raw_result": "/workspace/scratch/bb84e57911cb/qa/software_checks_final.json"
+  },
+  "browser": {
+    "total_planned": 120,
+    "previously_verified": 48,
+    "newly_observed": 60,
+    "total_observed": 108,
+    "percent": 90,
+    "current_browser": "Chrome CSS viewport harness; not native iPhone/Safari",
+    "dimensions": [
+      [
+        390,
+        844
+      ],
+      [
+        1280,
+        900
+      ]
+    ],
+    "languages": [
+      "RU",
+      "UA",
+      "GE"
+    ],
+    "newly_observed_paths": [
+      "/video/index.html",
+      "/video/UA-0003.html",
+      "/video/UA-0004.html",
+      "/video/UA-0005.html",
+      "/video/UA-0006.html",
+      "/video/UA-0009.html",
+      "/video/UA-0011.html",
+      "/video/UA-0012.html",
+      "/video/UA-0013.html",
+      "/video/UA-0014.html"
+    ],
+    "pending_paths": [
+      "/video/UA-0015.html",
+      "/video/UA-0016.html"
+    ],
+    "pending_cases": 12,
+    "observations": "New cases returned ready_state complete, requested language and viewport, expected price-box count and no document horizontal overflow. Independent source-hash comparison found every observed per-path hash equal to rebuilt expected HTML; final full evaluator did not complete before environment loss.",
+    "raw_observations": "/workspace/scratch/bb84e57911cb/qa/browser_css_observations.json",
+    "full_preview_gate": "NOT_PASSED"
+  },
+  "links": {
+    "detail_pages_opened": 18,
+    "diagnostic_pages_opened": 18,
+    "other_pages_opened": [
+      "/video/info.html",
+      "/video/podbor.html"
+    ],
+    "catalog_photos_decoded": 18,
+    "kyiv_cards_ua_only": 5,
+    "other_cards_ua_ge": 13,
+    "own_diagnostic_link_all_cards": true,
+    "additional_specification_summary_all_cards": true,
+    "observed_additional_specification_expanded": {
+      "car": "UA-0002",
+      "parameters": 47
+    },
+    "cta_targets": {
+      "kyiv": "kupit",
+      "other_stages": "bron"
+    },
+    "actual_contact_messages_sent": false,
+    "sample_photo_overlay_opened": {
+      "car": "UA-0002",
+      "counter": "1 / 33"
+    },
+    "screenshots_reviewed": [
+      "preview-kyiv-ua0002.jpg",
+      "preview-ge-numeric-ua0010.jpg"
+    ],
+    "remaining": [
+      "nullable GE and catalog screenshot review",
+      "gallery next/close interactions",
+      "native/external-app actions not executed"
+    ],
+    "raw_observations": "/workspace/scratch/bb84e57911cb/qa/browser_links.json"
+  },
+  "server": {
+    "credential_presence_check": {
+      "command": "stat ~/.config/uaart-price-control/github-read.token",
+      "result": "No such file or directory",
+      "secret_value_read": false
+    },
+    "fresh_crm_full_inventory_check": "NOT_RUN",
+    "read_only_checker_prepared": "/workspace/scratch/bb84e57911cb/qa/check_server_preview_freshness.py",
+    "checker_sha256": "125c0609a18c6e04b9e7b516e7f14089009b14824298bd1f9105f435fd797e7a",
+    "checker_uploaded": false,
+    "checker_executed": false,
+    "crm_written": false,
+    "production_written": false,
+    "preview_changed": false
+  },
+  "blocker": {
+    "code": "EXEC_SERVER_TRANSPORT_DISCONNECTED",
+    "message": "exec-server transport disconnected; failed to resume exec-server session: recovery timed out after 25s",
+    "affected": [
+      "exec_command",
+      "node_repl browser"
+    ],
+    "github_connector": "AVAILABLE"
+  },
+  "remaining_gates": [
+    "12 browser cases",
+    "remaining visual/gallery QA",
+    "fresh independent CRM/DB/source/HTML/hosting readbacks",
+    "real writer fence and full backup",
+    "actual Stage3 canonical registration/delegation",
+    "publication and post-deploy",
+    "persistent authenticated reader and real Stage4 cycle"
+  ],
+  "production_published": false,
+  "stage3_closed": false,
+  "stage4_closed": false,
+  "raw_artifact_persistence": "Raw new observations/logs saved to workspace before disconnect; not uploaded to GitHub in this checkpoint. This summary preserves observed progress and must not substitute for raw acceptance evidence."
+}

@@ -1,0 +1,68 @@
+{
+  "candidate_commit": "23220e2ac5b69c9060c212b6053eae2dabf9e4e9",
+  "db": {
+    "mode": "ro",
+    "published_set_sha256": "d1d74c2bac62217533a1c4e444af738bcb7b08069579934de65270cc680d223d",
+    "query_only": true,
+    "same_before_after": true,
+    "status": "PASS"
+  },
+  "finished_at": "2026-09-14T06:06:50.171789+00:00",
+  "html_count": 880,
+  "html_failures": [],
+  "html_unchanged": 880,
+  "page_failures": [],
+  "pages_pass": 38,
+  "pages_total": 38,
+  "preview_gate": {
+    "production_allowed": false,
+    "status": "FAIL",
+    "unperformed_required_checks": [
+      "CURRENT_HOMEPAGE_ROUTE_AND_PRICE_ONLY_MIGRATION",
+      "ACTUAL_RU_UA_GE_LANGUAGE_SWITCHING",
+      "DESKTOP_MOBILE_LAYOUT_AND_INTERACTION",
+      "COMPLETE_CURRENT_GENERATOR_PUBLICATION_CHAIN",
+      "FULL_CRM_PROTECTED_ROW_VERIFICATION",
+      "SHARED_WRITER_EXCLUSION_AND_DEPLOYMENT_RECOVERY_BINDING"
+    ]
+  },
+  "published_count": 18,
+  "report_path": "/home/Carix/autopilot_inbox/cloud/task088-v5-readonly-uhs_q6hw/report.json",
+  "report_sha256": "31db9a360379d4aa949a89efce78f91ad1d0a2773b6617e2a5f5068ac498b2ce",
+  "snapshot_checks": "PASS",
+  "source_checks": [
+    {
+      "candidate_compiles": true,
+      "candidate_sha256": "2d409f6046e8bdd12c26108bd1edd97b161fb1e3b7fecb9fc4543937eee54add",
+      "expected_sha256": "1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793",
+      "path": "yadro.py",
+      "same_before_after": true,
+      "sha256": "1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793",
+      "status": "PASS"
+    },
+    {
+      "candidate_compiles": true,
+      "candidate_sha256": "ccec8321dbf4e90b972efd12ba34f73221d1a547aba0b2955d4cea0b7e8c72b2",
+      "expected_sha256": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+      "path": "stranica.py",
+      "same_before_after": true,
+      "sha256": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a",
+      "status": "PASS"
+    },
+    {
+      "candidate_compiles": true,
+      "candidate_sha256": "4fc4539bb3b3ccebfbdfa3589c5964ee42a782805c0ab7b8084302c0c0497404",
+      "expected_sha256": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+      "path": "catalog_design_guard.py",
+      "same_before_after": true,
+      "sha256": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+      "status": "PASS"
+    }
+  ],
+  "started_at": "2026-09-14T06:06:37.195975+00:00",
+  "record_type": "OBSERVED_SERVER_SNAPSHOT_AUDIT_SUMMARY",
+  "html_count_scope": "root/*.html + video/**/*.html + site/**/*.html; includes nested and historical files; not the public vehicle count",
+  "production_source_written": false,
+  "crm_price_written": false,
+  "public_html_written": false
+}

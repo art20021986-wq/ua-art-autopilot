@@ -1,0 +1,7 @@
+{
+  "finding": "SQLITE_TRANSACTION_REMAINS_OPEN_AFTER_SWALLOWED_PRECOMMIT_ERROR",
+  "exception_propagated": false,
+  "write_transaction_still_locked": true,
+  "journal_change_count": 2,
+  "scope": "exact extracted candidate helper with journal evidence failure; isolated SQLite fixture only"
+}

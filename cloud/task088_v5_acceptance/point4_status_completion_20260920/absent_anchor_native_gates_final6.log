@@ -1,0 +1,11 @@
+test_background_stage_and_postregister_media_job_do_not_touch_data (test_activation_gates.ActivationGates.test_background_stage_and_postregister_media_job_do_not_touch_data) ... ok
+test_direct_media_and_manual_handlers_refuse_before_first_effect (test_activation_gates.ActivationGates.test_direct_media_and_manual_handlers_refuse_before_first_effect) ... ok
+test_fence_denies_unconfigured_crm_before_even_creating_lock (test_activation_gates.ActivationGates.test_fence_denies_unconfigured_crm_before_even_creating_lock) ... ok
+test_native_missing_binding_replies_before_creating_an_operation (test_activation_gates.ActivationGates.test_native_missing_binding_replies_before_creating_an_operation) ... ok
+test_stage_data_saved_status_does_not_claim_site_updated (test_activation_gates.ActivationGates.test_stage_data_saved_status_does_not_claim_site_updated) ... ok
+test_valid_and_external_process_states_preserve_existing_callbacks (test_activation_gates.ActivationGates.test_valid_and_external_process_states_preserve_existing_callbacks) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.016s
+
+OK

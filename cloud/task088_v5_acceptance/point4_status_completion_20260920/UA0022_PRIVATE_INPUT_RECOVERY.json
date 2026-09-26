@@ -1,0 +1,55 @@
+{
+  "actual_receipt_binding_source": "Root supplied after-image pins; receipt was not independently fetched in this subtask.",
+  "candidate_generation_performed": false,
+  "code_imported_or_executed": false,
+  "contract": "PR114-UA0022-EXACT-RETAINED-PRIVATE-INPUT-RECOVERY-1",
+  "current_live_binding": false,
+  "current_live_binding_pending_with_root": true,
+  "files": {
+    "cars_ui.py": {
+      "bytes": 208266,
+      "copy_readback": true,
+      "matches_retained_candidate_manifest": true,
+      "matches_supplied_actual_receipt_after_pin": true,
+      "private_copy_path": "/workspace/scratch/cc71e1c55fba/private_inputs_ua0022_current/cars_ui.py",
+      "sha256": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+      "source_path": "/workspace/scratch/dae95f6235ba/ua0022_fix/candidate_v2/private_runtime/cars_ui.py"
+    },
+    "publication_fence.py": {
+      "bytes": 9694,
+      "copy_readback": true,
+      "matches_retained_candidate_manifest": true,
+      "matches_supplied_actual_receipt_after_pin": true,
+      "private_copy_path": "/workspace/scratch/cc71e1c55fba/private_inputs_ua0022_current/publication_fence.py",
+      "sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+      "source_path": "/workspace/scratch/dae95f6235ba/ua0022_fix/candidate_v2/private_runtime/publication_fence.py"
+    },
+    "publish_transaction_guard.py": {
+      "bytes": 32110,
+      "copy_readback": true,
+      "matches_retained_candidate_manifest": true,
+      "matches_supplied_actual_receipt_after_pin": true,
+      "private_copy_path": "/workspace/scratch/cc71e1c55fba/private_inputs_ua0022_current/publish_transaction_guard.py",
+      "sha256": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+      "source_path": "/workspace/scratch/dae95f6235ba/ua0022_fix/candidate_v2/private_runtime/publish_transaction_guard.py"
+    },
+    "stranica.py": {
+      "bytes": 203345,
+      "copy_readback": true,
+      "matches_retained_candidate_manifest": true,
+      "matches_supplied_actual_receipt_after_pin": true,
+      "private_copy_path": "/workspace/scratch/cc71e1c55fba/private_inputs_ua0022_current/stranica.py",
+      "sha256": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+      "source_path": "/workspace/scratch/dae95f6235ba/ua0022_fix/candidate_v2/private_runtime/stranica.py"
+    }
+  },
+  "git_mutations": false,
+  "other_workspace_modified": false,
+  "production_changed": false,
+  "public_builder_sha256": "c31b2f0d38248266100e2300baeda20daa5d8ab5224b5f77a1eaec96af15f4cb",
+  "reason": "Recover exact UA0022 task003 installed-after-image pins supplied by root, preserving unrelated dirty work and the narrow installed fix when composing PR114.",
+  "recorded_at_utc": "2026-09-20T05:50:00.818453+00:00",
+  "retained_manifest_path": "/workspace/scratch/dae95f6235ba/ua0022_fix/candidate_v2/manifest.json",
+  "retained_manifest_sha256": "0fe48b2b30b065314da0131b95aeebc1dc38168725618195a4ade99c57fa510f",
+  "status": "PASS_EXACT_RETAINED_BYTES_AND_COPY_READBACK"
+}

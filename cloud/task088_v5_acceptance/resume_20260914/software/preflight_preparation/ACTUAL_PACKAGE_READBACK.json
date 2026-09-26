@@ -1,0 +1,84 @@
+{
+  "archive_members": 18,
+  "archive_sha256": "9ed05a24792193ead1af70ad582130c0d02ae4d6115a6ed57bbf7442cf0ff8f1",
+  "bundle_sha256": "27234daf72b5e27588a5360ae93b3253228657210e8b9159e23e67fc5d77483f",
+  "kind": "ACTUAL_BUILDER_ARCHIVE_INDEPENDENT_READBACK",
+  "live_preflight_executed": false,
+  "members": {
+    "initial_html_prices.py": {
+      "bytes": 13034,
+      "sha256": "c34be563fcdc90740bcf99dd6c81f3b9dc44f3f9ef883a0cc118314f5c741333"
+    },
+    "install_package.py": {
+      "bytes": 37425,
+      "sha256": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673"
+    },
+    "owner_policy.py": {
+      "bytes": 15018,
+      "sha256": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb"
+    },
+    "patch_cars_ui.py": {
+      "bytes": 28002,
+      "sha256": "6a695ae16e6710516383f472d454e96d813893c80d4f39cf96bd2df687f2388c"
+    },
+    "patch_catalog_design_guard.py": {
+      "bytes": 3319,
+      "sha256": "a251b3e6c036645701ae8473f3c0020f8589c04815509b533cf0a531656c024f"
+    },
+    "patch_guard.py": {
+      "bytes": 12163,
+      "sha256": "fb36683ff114f82f10696e16eca17676507f52461b8929243e877af0efb7e08b"
+    },
+    "patch_stage_catalog_sync.py": {
+      "bytes": 3489,
+      "sha256": "2c59fea132f1bff9b55a8c4ab911035509078836f2ebdb5f5e388787b7e109be"
+    },
+    "patch_stranica.py": {
+      "bytes": 4740,
+      "sha256": "7fe01235678cbdbeecafc3d402c75ba95c80643ea295d355208eb8749a5e5848"
+    },
+    "patch_yadro.py": {
+      "bytes": 4370,
+      "sha256": "873fbfcd05d0d740810cb898302090f75239ca7c1d115992e524c3290f2b7fb1"
+    },
+    "preflight.py": {
+      "bytes": 20142,
+      "sha256": "71927589e9c2c847fdafb9078c5c2aab0ba40af0dbebed31804a1a616348fcde"
+    },
+    "preflight_bundle.json": {
+      "bytes": 1287336,
+      "sha256": "27234daf72b5e27588a5360ae93b3253228657210e8b9159e23e67fc5d77483f"
+    },
+    "price_publication.py": {
+      "bytes": 5660,
+      "sha256": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741"
+    },
+    "uaart_market_prices.py": {
+      "bytes": 9608,
+      "sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed"
+    },
+    "uaart_price_control_reader.py": {
+      "bytes": 18422,
+      "sha256": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c"
+    },
+    "uaart_price_sync_binding.py": {
+      "bytes": 45287,
+      "sha256": "efecb6371e0ecccde75df053d740ec5316bdf1a1a3573171fe7b25de4657348f"
+    },
+    "uaart_price_sync_confirmation.py": {
+      "bytes": 5691,
+      "sha256": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d"
+    },
+    "uaart_price_sync_outbox.py": {
+      "bytes": 30268,
+      "sha256": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b"
+    },
+    "uaart_price_sync_runtime.py": {
+      "bytes": 96660,
+      "sha256": "688f56ff655621ba876651213210cc94ccc613e4e3d9aad87241eaf1821af73a"
+    }
+  },
+  "private_capture_source_or_database_copied": false,
+  "production_gate_created": false,
+  "status": "PASS"
+}

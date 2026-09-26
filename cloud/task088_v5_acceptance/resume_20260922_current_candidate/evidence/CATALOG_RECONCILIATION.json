@@ -1,0 +1,75 @@
+{
+  "contract": "PR114-BOUND-CATALOG-UA-RECONCILIATION-1",
+  "current_row": {
+    "auto_number": "UA-0018",
+    "id": 28,
+    "price_georgia": null,
+    "price_uah": 22900,
+    "published": 1,
+    "status": "ua_arrived"
+  },
+  "database": {
+    "audit_sha256": "cfddee1843d0971e75246234bdc1a34a4d947e8567579a005006a1a5b60236fa",
+    "cars_sha256": "0d710d0939c4fc8d78455d7fda3329c8f4003492ee9a6f62621e96db37bb4760",
+    "published_codes": [
+      "UA-0001",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0008",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016",
+      "UA-0017",
+      "UA-0018",
+      "UA-0019",
+      "UA-0020",
+      "UA-0021",
+      "UA-0022"
+    ],
+    "published_sha256": "e9401da0b9f394c041c3fa6b9b5b9f161b7b2426d84f0744cd3ac0e5282890d5"
+  },
+  "database_changed": false,
+  "installation_authority": false,
+  "observer_sha256": "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454",
+  "pages": {
+    "site/katalog.html": {
+      "actual_committed_crm_ua_usd": 22900,
+      "auto_number": "UA-0018",
+      "captured_original_overwritten": false,
+      "car_id": 28,
+      "char_end": 19081,
+      "char_start": 19028,
+      "intermediate_sha256": "711082354473ac502e2419feb7cdbc510bb871aa0dead92b99d8749a4079ac2c",
+      "new_fragment": "<b data-ru=\"22 900 $\" data-uk=\"22 900 $\">22 900 $</b>",
+      "observed_catalog_ua_usd": 19900,
+      "old_fragment": "<b data-ru=\"19 900 $\" data-uk=\"19 900 $\">19 900 $</b>",
+      "original_sha256": "279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01",
+      "outside_exact_price_slot_unchanged": true
+    },
+    "video/katalog.html": {
+      "actual_committed_crm_ua_usd": 22900,
+      "auto_number": "UA-0018",
+      "captured_original_overwritten": false,
+      "car_id": 28,
+      "char_end": 19081,
+      "char_start": 19028,
+      "intermediate_sha256": "711082354473ac502e2419feb7cdbc510bb871aa0dead92b99d8749a4079ac2c",
+      "new_fragment": "<b data-ru=\"22 900 $\" data-uk=\"22 900 $\">22 900 $</b>",
+      "observed_catalog_ua_usd": 19900,
+      "old_fragment": "<b data-ru=\"19 900 $\" data-uk=\"19 900 $\">19 900 $</b>",
+      "original_sha256": "279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01",
+      "outside_exact_price_slot_unchanged": true
+    }
+  },
+  "schema_sha256": "2f11c8573be88b0dc8da1adf12fcdc6c5105844f0a0300797fc907f9544ff8c2",
+  "status": "EXACT_OFFLINE_INTERMEDIATE_DERIVED_NOT_INSTALLED",
+  "strict_initial_price_guard_changed": false
+}

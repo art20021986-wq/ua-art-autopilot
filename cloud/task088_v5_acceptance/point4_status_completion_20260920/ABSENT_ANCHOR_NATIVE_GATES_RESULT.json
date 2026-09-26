@@ -1,0 +1,26 @@
+{
+  "contract": "PR114-ABSENT-ANCHOR-PROTECTED-CRM-GATES-1",
+  "utc": "2026-09-20T06:48:21.482326+00:00",
+  "production_mutations": false,
+  "source_sha256": {
+    "task088_v5_writer_fence/integrate_private_sources.py": "0785054dd1f804944b5e894a25cc3fd267530fa3ac83d434676a7d1ab06d5910",
+    "task088_v5_writer_fence/publication_fence.py": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+    "task088_v5_writer_fence/test_activation_gates.py": "3d760f83700898132913bd54e659b5f1ee58cf904133058dfde58c03ea5ef2aa",
+    "task088_price_sync/patch_cars_ui.py": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+    "task088_price_sync/uaart_price_sync_runtime.py": "d92ed1c613c0b08c4c382c47e51125d85efa3853a16d0154368ea4e14f97ae5b",
+    "task088_price_sync/uaart_price_sync_binding.py": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1"
+  },
+  "output_sha256": {
+    "cars_ui.py": "2df5f6d71d1d043a544a2abb6786b4f1d0e9b0f31a195827d3fa0f5504ef6749",
+    "stranica.py": "56abe3a0f569702c6d1830ac910571ccb222e7636023acdd6458043663b07bc5",
+    "publish_transaction_guard.py": "beb4d9ffc872317432ba806b98b3c1c6afcb437e4027b383c1777bae4b9ece16",
+    "ua_spec_permanent.py": "59135f68b2f4b2c5a677e4da700cdce502dbde8a147e7fd4eb4026e3b6f9902a"
+  },
+  "compiles": true,
+  "targeted_test_methods": 5,
+  "targeted_tests": "PASS",
+  "unchanged_native_lifecycle_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+  "behavior": "Explicit unconfigured/pending-bot CRM blocks protected effects; verified CRM and external canonical process keep their previous fenced behavior. Stage edits may persist with a truthful pending-site reply; unrelated data editing is not globally disabled.",
+  "current_source_composition_supersedes": "NATIVE_VISIBILITY_RESULT.json/output_sha256",
+  "preserved_native_evidence": "Lifecycle module unchanged; exact real retirement probes and 14method results remain credited by hash. New wrapper/fence dispatch tested separately; no historic suites rerun."
+}

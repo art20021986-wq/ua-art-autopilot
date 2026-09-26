@@ -1,0 +1,17 @@
+test_absent_anchor_preserves_existing_application_without_binding_or_jobs (test_unconfigured_startup.UnconfiguredStartupTests.test_absent_anchor_preserves_existing_application_without_binding_or_jobs) ... ok
+test_actual_generated_register_keeps_base_handlers_but_skips_new_worker_jobs (test_unconfigured_startup.UnconfiguredStartupTests.test_actual_generated_register_keeps_base_handlers_but_skips_new_worker_jobs) ... ok
+test_direct_or_inherited_worker_cannot_mutate_claims_files_or_send_until_ready (test_unconfigured_startup.UnconfiguredStartupTests.test_direct_or_inherited_worker_cannot_mutate_claims_files_or_send_until_ready) ... ok
+test_existing_invalid_or_broken_symlink_anchor_still_hard_fails (test_unconfigured_startup.UnconfiguredStartupTests.test_existing_invalid_or_broken_symlink_anchor_still_hard_fails) ... ok
+test_price_and_confirmation_cannot_write_queue_or_data_until_configured (test_unconfigured_startup.UnconfiguredStartupTests.test_price_and_confirmation_cannot_write_queue_or_data_until_configured) ... ok
+test_readiness_is_pid_bound_and_unregistered_installer_gets_no_runtime_grant (test_unconfigured_startup.UnconfiguredStartupTests.test_readiness_is_pid_bound_and_unregistered_installer_gets_no_runtime_grant) ... ok
+test_real_validated_binding_becomes_ready_only_after_verified_post_init (test_unconfigured_startup.UnconfiguredStartupTests.test_real_validated_binding_becomes_ready_only_after_verified_post_init) ... ok
+test_registered_callbacks_wait_for_real_bot_post_init (test_unconfigured_startup.UnconfiguredStartupTests.test_registered_callbacks_wait_for_real_bot_post_init) ... ok
+test_bootstrap_preserves_post_init_and_does_not_read_uninitialized_bot (test_binding.BindingTests.test_bootstrap_preserves_post_init_and_does_not_read_uninitialized_bot) ... ok
+test_ordinary_halt_keeps_crm_bootstrap_available_but_blocks_prices (test_binding.BindingTests.test_ordinary_halt_keeps_crm_bootstrap_available_but_blocks_prices) ... ok
+test_nonprice_handlers_and_stage_job_remain_unchanged (test_cars_ui_hook.CarsHookTests.test_nonprice_handlers_and_stage_job_remain_unchanged) ... ok
+test_each_authorized_operator_can_submit_both_markets (test_cars_ui_hook.CarsHookTests.test_each_authorized_operator_can_submit_both_markets) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 4.093s
+
+OK

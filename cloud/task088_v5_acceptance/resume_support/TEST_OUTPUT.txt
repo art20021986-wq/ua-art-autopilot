@@ -1,0 +1,25 @@
+test_audit_notice_supersedes_stale_pending_prompt_narrative (__main__.ResumeTests.test_audit_notice_supersedes_stale_pending_prompt_narrative) ... ok
+test_correct_receipt_at_unrequested_path_requires_reconciliation (__main__.ResumeTests.test_correct_receipt_at_unrequested_path_requires_reconciliation) ... ok
+test_crash_after_publish_before_ack_finds_same_complete_report (__main__.ResumeTests.test_crash_after_publish_before_ack_finds_same_complete_report) ... ok
+test_crash_before_publish_leaves_no_partial_final_and_retains_previous (__main__.ResumeTests.test_crash_before_publish_leaves_no_partial_final_and_retains_previous) ... ok
+test_failed_receipt_cannot_confirm_finished_claim (__main__.ResumeTests.test_failed_receipt_cannot_confirm_finished_claim) ... ok
+test_freshness_boundary_future_and_missing (__main__.ResumeTests.test_freshness_boundary_future_and_missing) ... ok
+test_missing_and_corrupted_evidence_do_not_become_completed (__main__.ResumeTests.test_missing_and_corrupted_evidence_do_not_become_completed) ... ok
+test_missing_receipt_is_not_permission_even_for_terminal_claim (__main__.ResumeTests.test_missing_receipt_is_not_permission_even_for_terminal_claim) ... ok
+test_new_batch_preserves_all_previous_reports (__main__.ResumeTests.test_new_batch_preserves_all_previous_reports) ... ok
+test_new_checkout_with_only_pinned_archive_restores_software_without_writes (__main__.ResumeTests.test_new_checkout_with_only_pinned_archive_restores_software_without_writes) ... ok
+test_nonobject_record_is_reported_without_aborting_inspection (__main__.ResumeTests.test_nonobject_record_is_reported_without_aborting_inspection) ... ok
+test_orphan_terminal_transaction_requires_reconciliation (__main__.ResumeTests.test_orphan_terminal_transaction_requires_reconciliation) ... ok
+test_path_escape_and_symlink_are_rejected (__main__.ResumeTests.test_path_escape_and_symlink_are_rejected) ... ok
+test_quota_uses_original_raw_timestamp_not_updated_checkpoint (__main__.ResumeTests.test_quota_uses_original_raw_timestamp_not_updated_checkpoint) ... ok
+test_receipt_wrong_identity_requires_reconciliation (__main__.ResumeTests.test_receipt_wrong_identity_requires_reconciliation) ... ok
+test_request_changed_after_claim_is_reconciled (__main__.ResumeTests.test_request_changed_after_claim_is_reconciled) ... ok
+test_source_drift_identifies_changed_scope (__main__.ResumeTests.test_source_drift_identifies_changed_scope) ... ok
+test_success_before_ack_requires_reconciliation_never_replay (__main__.ResumeTests.test_success_before_ack_requires_reconciliation_never_replay) ... ok
+test_terminal_snapshot_never_authorizes_action (__main__.ResumeTests.test_terminal_snapshot_never_authorizes_action) ... ok
+test_unchanged_evidence_retained_without_rerun_or_timestamp_refresh (__main__.ResumeTests.test_unchanged_evidence_retained_without_rerun_or_timestamp_refresh) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.025s
+
+OK

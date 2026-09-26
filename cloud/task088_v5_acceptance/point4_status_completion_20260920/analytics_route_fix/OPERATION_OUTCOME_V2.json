@@ -1,0 +1,31 @@
+{
+  "schema_version": "PR114-ANALYTICS-ROUTE-FIX-OUTCOME-2",
+  "operation_id": "pr114-analytics-route-fix-v2-20260920T1217Z",
+  "finished_at": "2026-09-20T12:23:48Z",
+  "status": "PASS_SAVED_AND_INDEPENDENTLY_REVIEWED_NOT_STAGED",
+  "intent_commit": "362a56308105a000c15c13d457cd072803b83c90",
+  "result_commit": "68c713b5ce1063d7e4a1cc8e5fd91971d605c287",
+  "result_tree": "e30698793a38970e50b9b1f34afa29af1969c1d4",
+  "github_readback": {
+    "changed_blobs_checked": 7,
+    "exact_git_blob_oid_matches": 7,
+    "branch_update_force": false
+  },
+  "independent_review": "PASS",
+  "review_path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/analytics_route_fix/INDEPENDENT_REVIEW_PASS_V2.json",
+  "package_path": "cloud/task088_v5_acceptance/point4_status_completion_20260920/exact_preview_current_53544a27_20260920_v3_analytics.zip",
+  "package_sha256": "77f04f3786c9487631131a2d0e476caf0b6bae3ba9def9f87bf1ee1c418a8088",
+  "production_written": false,
+  "preview_started": false,
+  "switch_performed": false,
+  "reload_performed": false,
+  "historical_suites_repeated": false,
+  "pr114_acceptance": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "incremented": false
+  },
+  "package_position": "Exact reviewed public Preview Stage input; no Stage receipt yet.",
+  "single_next_action": "Freshly verify one writer, current server WSGI/config/observer/package pins and prior operation outcome; then run one new Stage under a new operation_id, without switch or reload."
+}

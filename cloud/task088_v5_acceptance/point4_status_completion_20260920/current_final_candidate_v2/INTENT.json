@@ -1,0 +1,16 @@
+{
+  "expected_cars_sha256": "c2be2af7720a8361665fed872256760264ffc735b68a197763f5f3af1dad62e2",
+  "expected_integrator_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+  "installation_authority": false,
+  "previous_candidate_manifest_sha256": "2881e87087bcecc6d8e3e9e15cf02903b3c430eb69f3d7279708ba5b75ef1305",
+  "production_written": false,
+  "public_code_changes": {
+    "cloud/task088_v5_writer_fence/integrate_private_sources.py": {
+      "after_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+      "before_sha256": "32fe8299bd6acab0b8201f10d9a186e3c80069340e31e0df71cae5fd25d4e08f"
+    }
+  },
+  "reason": "A final review found the optional photo_hide import/register boundary before the missing-anchor gate. Recompose only canonical private sources; replace only cars_ui.py and prove the other 67 candidate files unchanged. Reuse all HTML generation and established checks.",
+  "recorded_at_utc": "2026-09-20T07:11:36.242966+00:00",
+  "script_sha256": "0cb66da8915f1be193841bb9edcb74c4ff86ef6142fa503ab121f6054ff47db4"
+}

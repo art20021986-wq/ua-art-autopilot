@@ -1,0 +1,40 @@
+{
+  "schema_version": "PR114-ANALYTICS-ROUTE-FIX-INTENT-1",
+  "operation_id": "pr114-analytics-route-fix-20260920T1208Z",
+  "recorded_at": "2026-09-20T12:08:20Z",
+  "environment": "GitHub PR branch only; offline package assembly; no server, Preview, production, CRM, switch, reload or rollback write",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "branch": "codex/task088-owner-policy-20260913-0934",
+  "expected_parent": "b5211db7b2639a7b1033e4c8c002689d9cba34e4",
+  "observed_main": "b9c985ac924739b351e4d5535499bb6516917daf",
+  "active_pr_or_main_workflow_runs_observed": 0,
+  "inputs": {
+    "source_preview_package_sha256": "d444e17e7b62e917bef0821a7a2d8bb257655b8124740f72526d32b67e34eccb",
+    "public_ua_a_js_sha256": "52b3188b25a5e01cc5fc494fb8aebd76f6b2fc0ccbb21dccfb40bdc88cea070b",
+    "public_capture_receipt_sha256": "1e6e6635e53d029fd65436becbf0e59eb90e81c727f0bea05846274970b7c650",
+    "source_wrapper_sha256": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94"
+  },
+  "intent": "Persist the bounded ua/a.js package/stage correction and exact contract-2 package for independent review. Permit only hash-bound GET /ua/a.js; keep /ua/a/e and every other ua route denied.",
+  "expected_result": {
+    "package_contract": "PR114-EXACT-PUBLIC-PREVIEW-PACKAGE-2",
+    "package_sha256": "77f04f3786c9487631131a2d0e476caf0b6bae3ba9def9f87bf1ee1c418a8088",
+    "package_members": 56,
+    "added_members": [
+      "evidence/ua-a-js.json",
+      "public/ua/a.js"
+    ],
+    "shared_source_payload_drift": 0,
+    "negative_unit_tests": 7,
+    "targeted_fixture_status": "PASS_TARGETED_LOCAL_FIXTURE",
+    "preview_started": false,
+    "production_written": false
+  },
+  "readback": "Fetch the resulting commit and every changed blob from GitHub; compare exact blob bytes/SHA256 and verify the branch ref is a non-force fast-forward descendant.",
+  "backup": {
+    "kind": "immutable Git parent plus retained exact source package",
+    "parent_commit": "b5211db7b2639a7b1033e4c8c002689d9cba34e4",
+    "source_package_retained": "cloud/task088_v5_acceptance/point4_status_completion_20260920/exact_preview_current_53544a27_20260920_v2.zip",
+    "source_package_sha256": "d444e17e7b62e917bef0821a7a2d8bb257655b8124740f72526d32b67e34eccb"
+  },
+  "next_action_after_intent": "Atomically upload the exact corrected files on this branch, read them back, then obtain independent review before any Preview stage."
+}

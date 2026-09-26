@@ -1,0 +1,526 @@
+{
+  "contract": "PR114-EXACT-NEXT-CANONICAL-REQUIREMENTS-1",
+  "status": "PREPARATION_NOT_EXECUTABLE_AUTHORITY",
+  "task_id": "TASK088-GE-PRICE-SITE-STAGE3-20260915-0455",
+  "reviewed_at": "2026-09-15T05:07:27.557094+00:00",
+  "mutations": {
+    "github": false,
+    "server": false,
+    "canonical_authority": false,
+    "tests_rerun": false
+  },
+  "available": {
+    "preview": {
+      "path": "cloud/task088_v5_acceptance/resume_20260915_2/PREVIEW_GATE.json",
+      "sha256": "3ed070183d19de801348aef5a521d30781c6528aa585441c6593ab34ae7f864a"
+    },
+    "software": {
+      "path": "/workspace/scratch/a740e84d2a41/release-review/actual_inputs_0455/software.PUBLIC_GATE.json",
+      "sha256": "3b79b2ed85d879f2dea0a3f91a0e59cb82bd8ab48d541385eb61493239d741b0"
+    },
+    "old_preflight": {
+      "path": "/workspace/scratch/a740e84d2a41/release-review/actual_inputs_0455/historical.preflight.report.json",
+      "sha256": "f5d1a56840288a012d334fd8f3362194d90cc86dc81877cf69ed0328e4c30fc7",
+      "fresh": false
+    },
+    "owner_decisions_provenance": {
+      "path": "cloud/task088_autopilot_owner_policy/owner_decisions.json",
+      "sha256": "58785d779daf4a912d50ee6239e4a2b8b951b91f984a3fc2cb54202c44a289dc"
+    },
+    "candidate_files": 54,
+    "schema_before": "2f11c8573be88b0dc8da1adf12fcdc6c5105844f0a0300797fc907f9544ff8c2",
+    "schema_after": "39ba2901e3bc21c80ac4becf1d2bdd91eab89a08539e8af144c44681b4e45ffb"
+  },
+  "missing_authenticated_inputs": [
+    "Fresh private preflight report and actual private server output directory; old observed_at03:39 is expired for derive helper. Preserve old report and do not restamp it.",
+    "Fresh authenticated account quota; normalized canonical state/storage probe can derive total=limit, used=used, free=limit-used with original observed timestamp/provenance. Installer also checks real OS free capacity.",
+    "Actual current writer exclusion covering source/process/scheduler/WSGI writers; per-writer evidence and actual final candidate hashes, age<=300sec; no uncovered writers only after established.",
+    "Current unique published id/auto_number pairs, current staff user_id/role/active and actual existing permission/chat scope. Do not infer Telegram ID from GitHub owner_actor_id321059821.",
+    "Independent existing authenticated bot/private-chat raw observation and summary, bound by SHA; a staff owner row is insufficient.",
+    "Exact served surface paths/URLs and HOME applicability from existing routing; do not map unserved site/index to a different public page.",
+    "Reviewed real delegation/control paths/recovery scope/detail URL; final binding and reader configuration are installed only after the real installation receipt."
+  ],
+  "canonical_files_after_inputs": {
+    "request": "tasks/requests/TASK088-GE-PRICE-SITE-STAGE3-20260915-0455.json",
+    "manifest": "tasks/manifests/TASK088-GE-PRICE-SITE-STAGE3-20260915-0455.json",
+    "gate": "tasks/gates/TASK088-GE-PRICE-SITE-STAGE3-20260915-0455.json",
+    "owner_approval": "tasks/approvals/TASK088-GE-PRICE-SITE-STAGE3-20260915-0455.production.json",
+    "storage_probe": "state/storage/TASK088-GE-PRICE-SITE-STAGE3-20260915-0455.json",
+    "runtime_previous_mode": "state/runtime_activations/TASK088-PRICE-V5-STAGE3.previous-mode.json",
+    "runtime_previous_manifest": "state/runtime_activations/TASK088-PRICE-V5-STAGE3.previous-manifest.json",
+    "runtime_manifest": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+    "runtime_activation": "state/runtime_activations/TASK088-PRICE-V5-STAGE3.json",
+    "mode": "state/EXECUTION_MODE.json"
+  },
+  "request_fields": {
+    "required_top": [
+      "task_id",
+      "title",
+      "description",
+      "changed_paths",
+      "production_required",
+      "read_only",
+      "requested_min_class",
+      "control_plane_version",
+      "execution",
+      "critical",
+      "health_checks",
+      "storage_probe"
+    ],
+    "fixed": {
+      "task_id": "TASK088-GE-PRICE-SITE-STAGE3-20260915-0455",
+      "requested_min_class": "CRITICAL",
+      "control_plane_version": "TASK107-R2",
+      "production_required": true,
+      "read_only": false
+    },
+    "critical_keys": [
+      "manifest_path",
+      "manifest_sha256",
+      "gate_a_path",
+      "gate_a_sha256",
+      "owner_approval_path",
+      "owner_approval_sha256",
+      "gate_b_authorized",
+      "allow_crm_vehicle_data"
+    ],
+    "execution_controller_paths": {
+      "controller_path": "cloud/task088_v5_install/release/controller.py",
+      "backup_controller_path": "cloud/task088_v5_install/release/backup_controller.py",
+      "rollback_controller_path": "cloud/task088_v5_install/release/rollback_controller.py"
+    },
+    "execution_file_sha256": {
+      "cloud/task088_v5_install/release/backup_controller.py": "5080826a2a7fa0afef24134e1d69fbb48596cc824d97e939e63c3ef6b25a61a1",
+      "cloud/task088_v5_install/release/controller.py": "71722965e09f59d0afb9fab86a6571c713efb60111d970a632d80a4f05e3cf9c",
+      "cloud/task088_v5_install/release/install_package.py": "3d74fc2a71160af18cb8dc705fbaa76ca367a348a6c984f59a4b4768e6fac673",
+      "cloud/task088_v5_install/release/outbox.py": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+      "cloud/task088_v5_install/release/owner_policy.py": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+      "cloud/task088_v5_install/release/price_publication.py": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+      "cloud/task088_v5_install/release/remote_adapter.py": "9def8122a4a60c6685197048adf2f9b494b6767a79b3d9c35c6de0b01e2fabeb",
+      "cloud/task088_v5_install/release/rollback_controller.py": "a5e21ac45f93bd31f410cffd19649ce7655a1c9eb706f51df894293f403bcd0b",
+      "cloud/task088_v5_install/release/test_adapter.py": "5e4b08c67bddc3900b1582a338cf96f8a0839882a66054468e1f9b75efb30aff",
+      "cloud/task088_v5_install/release/test_install_package.py": "17fd48cf06e7454a9fee75cbec7ff68af6c2fe17b403e534301043ff64ed1f2e",
+      "cloud/task088_v5_install/release/uaart_market_prices.py": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+      "cloud/task088_v5_install/release/uaart_price_control_reader.py": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c",
+      "cloud/task088_v5_install/release/uaart_price_sync_binding.py": "efecb6371e0ecccde75df053d740ec5316bdf1a1a3573171fe7b25de4657348f",
+      "cloud/task088_v5_install/release/uaart_price_sync_confirmation.py": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+      "cloud/task088_v5_install/release/uaart_price_sync_outbox.py": "c6f1818a600adfae7f0f73d49b0db07375c75a73529899955a146fa580076e5b",
+      "cloud/task088_v5_install/release/uaart_price_sync_runtime.py": "688f56ff655621ba876651213210cc94ccc613e4e3d9aad87241eaf1821af73a"
+    },
+    "execution_test_paths": [
+      "cloud/task088_v5_install/release/test_install_package.py",
+      "cloud/task088_v5_install/release/test_adapter.py"
+    ],
+    "execution_dependency_paths": [
+      "cloud/task088_v5_install/release/backup_controller.py",
+      "cloud/task088_v5_install/release/controller.py",
+      "cloud/task088_v5_install/release/install_package.py",
+      "cloud/task088_v5_install/release/outbox.py",
+      "cloud/task088_v5_install/release/owner_policy.py",
+      "cloud/task088_v5_install/release/price_publication.py",
+      "cloud/task088_v5_install/release/remote_adapter.py",
+      "cloud/task088_v5_install/release/rollback_controller.py",
+      "cloud/task088_v5_install/release/uaart_market_prices.py",
+      "cloud/task088_v5_install/release/uaart_price_control_reader.py",
+      "cloud/task088_v5_install/release/uaart_price_sync_binding.py",
+      "cloud/task088_v5_install/release/uaart_price_sync_confirmation.py",
+      "cloud/task088_v5_install/release/uaart_price_sync_outbox.py",
+      "cloud/task088_v5_install/release/uaart_price_sync_runtime.py"
+    ],
+    "execution_evidence_paths": [
+      "state/receipts/TASK088-GE-PRICE-SITE-STAGE3-20260915-0455.json",
+      "state/receipts/TASK088-GE-PRICE-SITE-STAGE3-20260915-0455-BACKUP.json",
+      "state/receipts/TASK088-GE-PRICE-SITE-STAGE3-20260915-0455-ROLLBACK.json"
+    ],
+    "execution_notes": [
+      "Pin actual three controller hashes plus corresponding exact receipt paths; production_required true.",
+      "Set meaningful timeout_seconds10..3600 for actual operations; remote child polls max900s per operation.",
+      "file_sha256 exact keys must equal test_paths union dependency_paths; controller files are included in dependency_paths when all16 map entries are retained."
+    ],
+    "storage_probe_reference_keys": [
+      "evidence_path",
+      "evidence_sha256"
+    ],
+    "storage_probe_data_required": [
+      "target_environment=production",
+      "read_only=true",
+      "measured_at original actual UTC",
+      "total_bytes",
+      "used_bytes",
+      "free_bytes"
+    ],
+    "storage_budget": "Use actual DB file size + sum(inventory bytes) + sum(candidate bytes); installer requires3*sum+1MiB and account used+need<=80%limit plus OSfree>=need."
+  },
+  "manifest_fields": {
+    "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+    "task_class": "CRITICAL",
+    "acceptance_scope": "STAGE3_INSTALLATION_AND_SOURCE_SCHEMA_HTML_READBACK",
+    "stage3_complete": false,
+    "must_true": [
+      "backup_required",
+      "rollback_required",
+      "live_verify_required",
+      "explicit_crm_vehicle_approval"
+    ],
+    "derived": [
+      "install_files_sha256",
+      "price_event_delegation_sha256",
+      "runtime_registration",
+      "operations"
+    ],
+    "operations": "All54 candidate resources as production/<path>, create iff preimage null else replace; exact55th production/crm.db/schema operation has content_kind SQLITE_SCHEMA; changed_paths identical set.",
+    "protected_scope": "Actual full inventory excluding operation targets, plus exact preservation of existing cars/audit data. protected_paths nonempty and must not exactly overlap target paths.",
+    "deployment_plan_keys": [
+      "contract=TASK088-CANONICAL-STAGE3-ADAPTER-1",
+      "install_blueprint",
+      "preflight_directory",
+      "preflight_report_sha256",
+      "remote_package_sha256",
+      "evidence_paths",
+      "nonce",
+      "routing_evidence_sha256"
+    ],
+    "blueprint_keys": [
+      "contract=UA-ART-GE-PRICE-STAGE3-INSTALL-5",
+      "observed_at",
+      "files",
+      "manifest_sha256",
+      "database",
+      "schema_sha256",
+      "candidate_schema_sha256",
+      "published_count",
+      "system_inventory",
+      "runtime_journal_relative=.uaart_price_sync_journal",
+      "dependencies_sha256",
+      "preflight_report_sha256",
+      "homepage_policy",
+      "routing_evidence_sha256"
+    ],
+    "evidence_path_keys": [
+      "gate_b",
+      "quota",
+      "writers",
+      "preview_gate",
+      "routing"
+    ],
+    "routing_hash_note": "Pin routing SHA both in deployment_plan and install_blueprint; exact existing legacy HOME policy is site/index.html:PROTECTED_LEGACY_NOT_SERVED."
+  },
+  "gate_fields": {
+    "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+    "required": [
+      "task_id",
+      "status=PASS after real evaluation",
+      "tests=PASS from actual source-bound evidence",
+      "production_write=false",
+      "unexpected_changes=0",
+      "backup_plan_ready=true",
+      "rollback_plan_ready=true",
+      "manifest_sha256",
+      "protected_snapshot nonempty",
+      "evaluated_at actual evaluation",
+      "writer_fence_report_sha256",
+      "price_protection_preview_path",
+      "preview_gate_sha256"
+    ],
+    "scope_note": "This PASS file is called gate_b by install adapter and gate_a by request. GATE_B_AUTHORIZED is a separate validator result; it cannot replace this raw report."
+  },
+  "owner_authorization_exact_keys": [
+    "approved_at",
+    "authorization_id",
+    "authorized_environment",
+    "expires_at",
+    "gate_a_sha256",
+    "launch_nonce",
+    "manifest_sha256",
+    "mode_epoch",
+    "owner",
+    "owner_authorized",
+    "production_allowed",
+    "request_path",
+    "request_subject_sha256",
+    "schema_version",
+    "task_id"
+  ],
+  "owner_authorization_scope": {
+    "schema_version": "UA-ART-PRODUCTION-AUTHORIZATION-1",
+    "owner": "Артём Бровинский / UA ART COMPANY LLC",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "authorized_environment": "production",
+    "authorization_id_pattern": "prod-auth-[A-Za-z0-9._-]{16,100}",
+    "nonce_pattern": "[A-Za-z0-9._-]{16,128}",
+    "note": "Materialize existing actual owner authorization; no renewed publish approval. Preserve its actual provenance separately; do not invent a new user message."
+  },
+  "hash_order": [
+    "Exact reviewed code/release and all raw evidence",
+    "Actual delegation and new runtime manifest",
+    "Manifest",
+    "Actually evaluated Gate bound to manifest/Preview/writers",
+    "Request subject with only critical.owner_approval_sha256 zeroed for hash",
+    "Actual owner authorization bytes bound to subject",
+    "Final request replacing only owner_approval_sha256",
+    "Activation exact5 artifact refs + preserved previous snapshots",
+    "Mode changing only3 runtime-reference fields",
+    "Separate exact launch marker after candidate registration"
+  ],
+  "hash_encodings": {
+    "canonical_request_manifest_owner_mode_activation": "UTF8 JSON ensure_ascii=false sort_keys=true separators comma/colon plus newline",
+    "candidate_inventory_delegation_and_install_blueprint": "ASCII JSON ensure_ascii=true sort_keys=true separators comma/colon without newline",
+    "file_references": "SHA256 of exact raw bytes"
+  },
+  "activation": {
+    "contract": "UA-ART-TASK088-PRICE-V5-ACTIVATION-1",
+    "scope": "REGISTER_TASK088_V5_PRICE_PIPELINE",
+    "contract_id": "UA-ART-GE-UA-MARKET-PRICE-001 FINAL v5.0",
+    "task_id": "TASK088-GE-PRICE-SITE-STAGE3-20260915-0455",
+    "source_commit": "Actual reviewed candidate commit",
+    "registered_at": "Actual time with Gate<=1800sec and owner authorization valid",
+    "artifacts_exact": [
+      "request",
+      "manifest",
+      "owner_approval",
+      "gate_b",
+      "preview_gate"
+    ],
+    "changed_code_pins": [
+      ".github/workflows/uaart_critical.yml",
+      ".github/workflows/uaart_maintenance.yml",
+      "automation/control_plane.py"
+    ],
+    "mode_changes_only": [
+      "runtime_manifest_sha256",
+      "runtime_activation_path",
+      "runtime_activation_sha256"
+    ],
+    "previous_snapshots": "Copy original current mode and manifest raw bytes; do not reserialize historical snapshots."
+  },
+  "delegation_schema_source": "cloud/task088_price_sync/uaart_price_sync_binding.py Provider._validate_delegation/_artifacts/_reader_config",
+  "delegation_required": {
+    "contract": "UA-ART-PRICE-EVENT-DELEGATION-2",
+    "operation": "UPDATE_PUBLISHED_CAR_HOME_CATALOG_PRICES",
+    "identity_policy": "AUTHENTICATED_CRM_PUBLISHED_CARS",
+    "root": "/home/Carix",
+    "environment": "PRODUCTION",
+    "activation": "BOUNDED_PRICE_EVENTS",
+    "initial_publication": "OWNER_MANUAL",
+    "fields": [
+      "price_uah",
+      "price_georgia"
+    ],
+    "currency": "USD",
+    "non_price_changes": "FORBIDDEN",
+    "dynamic_fields": [
+      "car_identities current unique pairs",
+      "installed_code_sha256 all20 required module/writer/dependency pins",
+      "schema_sha256 candidate schema",
+      "database_path",
+      "publication_lock",
+      "journal_root",
+      "surface_templates exact kind,path,url,price_applicable",
+      "owner_chat_id",
+      "bot_id",
+      "owner_private_chat_fact_sha256",
+      "owner_policy",
+      "writer_fence_report_sha256",
+      "control_contract",
+      "authorization_ttl_ms1000..30000",
+      "verified_recovery_successor_allowed bool",
+      "detail_url existing HTTPS report"
+    ],
+    "operator_policy_exact_keys": [
+      "source",
+      "permission",
+      "chat_types",
+      "roles"
+    ],
+    "operator_policy_fixed": {
+      "source": "AUTHENTICATED_TELEGRAM_UPDATE",
+      "permission": "EXISTING_CRM_EDIT_CAR_ACL",
+      "roles": [
+        "owner",
+        "admin",
+        "manager"
+      ]
+    },
+    "operator_chat_types": "Actual existing private/group/supergroup scope, not guessed example"
+  },
+  "identity_summary_schema": {
+    "source": "AUTHENTICATED_CRM_BOT_PRIVATE_CHAT",
+    "chat_type": "private",
+    "verification": "VERIFIED only from actual raw proof",
+    "owner_user_id": "Actual current owner user ID and equals chat_id",
+    "chat_id": "Actual positive int",
+    "bot_id": "Actual positive int",
+    "evidence": "Separately pinned actual {path,sha256} raw observation with same identity fields and observed_ms"
+  },
+  "server_uploads": {
+    "before_canonical_launch": [
+      "Reviewed readonly observer/preflight bundle in fresh private task directories; root-owned readonly identity probe if needed"
+    ],
+    "canonical_controller_owned": [
+      "remote_adapter.py",
+      "install_package.py",
+      "uaart_market_prices.py",
+      "uaart_price_sync_outbox.py",
+      "uaart_price_sync_runtime.py",
+      "uaart_price_sync_binding.py",
+      "uaart_price_sync_confirmation.py",
+      "uaart_price_control_reader.py",
+      "owner_policy.py",
+      "price_publication.py"
+    ],
+    "controller_remote_root": "/home/Carix/autopilot_inbox/cloud/task088_v5_install/runs/<actual-run-id>-<actual-request-sha>",
+    "controller_behavior": "Uploads exact10 public package files and operation-plan JSON; creates identified temporary Always-On, polls, readbacks and removes only own runner. Existing CRM supervisor266084 must already be Running and is not restarted here.",
+    "after_installed_receipt": [
+      "Private actual raw artifacts and owner/chat/writer provenance",
+      "Private reader config and cache directories",
+      "Private binding config",
+      "Anchor /home/Carix/.uaart_price_sync_anchor.json written last"
+    ],
+    "reader_credential": "Existing user-only protected handoff; not needed for Preview or Stage3 installer."
+  },
+  "readonly_validation_commands": [
+    [
+      "python3",
+      "-I",
+      "-B",
+      "automation/control_plane.py",
+      "verify-mode",
+      "--require",
+      "AUTOMATIC"
+    ],
+    [
+      "python3",
+      "-I",
+      "-B",
+      "automation/control_plane.py",
+      "verify-request",
+      "tasks/requests/TASK088-GE-PRICE-SITE-STAGE3-20260915-0455.json",
+      "--sha256",
+      "ACTUAL_FINAL_REQUEST_SHA"
+    ],
+    [
+      "python3",
+      "-I",
+      "-B",
+      "automation/execution_contract.py",
+      "validate",
+      "tasks/requests/TASK088-GE-PRICE-SITE-STAGE3-20260915-0455.json",
+      "--expected-class",
+      "CRITICAL"
+    ],
+    [
+      "python3",
+      "-I",
+      "-B",
+      "cloud/ua_ge_price_protection/verify_preview.py",
+      "--request-path",
+      "tasks/requests/TASK088-GE-PRICE-SITE-STAGE3-20260915-0455.json",
+      "--request-sha256",
+      "ACTUAL_FINAL_REQUEST_SHA"
+    ],
+    [
+      "python3",
+      "-I",
+      "-B",
+      "automation/autostart_intake.py",
+      "ACTUAL_LAUNCH_PATH",
+      "--run-id",
+      "ACTUAL_RUN_ID",
+      "--source-commit",
+      "ACTUAL_MARKER_COMMIT",
+      "--validate-only",
+      "--root",
+      "ACTUAL_ISOLATED_CHECKOUT"
+    ]
+  ],
+  "launch": {
+    "shape": "Separate single-parent commit adding exactly one new tasks/launch/AUTO-*.json; no request/activation/merge changes in marker commit",
+    "schema": "UA-ART-AUTOSTART-LAUNCH-1",
+    "action": "RUN_EXACT_TASK",
+    "keys": [
+      "action",
+      "created_at",
+      "expires_at",
+      "nonce",
+      "mode_epoch",
+      "owner_authorized",
+      "production_allowed",
+      "request_path",
+      "request_sha256",
+      "schema_version",
+      "task_id"
+    ],
+    "expiry": "At most2h, exact equality to owner expiry, genuine unique nonce",
+    "workflow_owned_only": [
+      "nonce reservation",
+      "autostart consumed ledger",
+      "claim",
+      "transaction",
+      "PREPARING/OPEN/ROLLING_BACK reconciliation"
+    ],
+    "no_direct_child_command": "Do not manually invoke controller.py or remote_adapter.py with invented runtime env/claim."
+  },
+  "timing_risk": "Actual prior preflight took452sec; observer used2 inventory hashes. Writers freshness300sec includes canonical backup and execution revalidation. Given current CPU tarpit, do not assume backup finishes inside5min or restamp evidence; preserve failure and reconcile if a real timed gate expires.",
+  "minimal_fence_source_review": {
+    "publish_transaction_guard.py": [
+      "Exact DB/shared-lock constants",
+      "_exclusive_lock",
+      "_publish_locked",
+      "rebuild_catalog",
+      "Every invoked write/replace helper and caller that can bypass these entrypoints"
+    ],
+    "ua_stage_catalog_sync.py": [
+      "Complete reconcile and its lock/replace helpers; candidate preserves reconcile byte-identical"
+    ],
+    "publikaciya.py and master_card.py": [
+      "Public publication entrypoints and actual call route to guard or direct writes"
+    ],
+    "cars_ui.py": [
+      "_task088_apply_selected_price",
+      "apply_value",
+      "_v168_cas_write",
+      "Publish handlers and SQLite write paths"
+    ],
+    "start_safe.py -> run_all.py -> team_bot.py": [
+      "Actual launch/import/handler registration chain, current supervisor process and scheduled-task commands"
+    ],
+    "analitika_wsgi.py": [
+      "_storozh stop-file branch and actual WSGI module/worker provenance; do not remove/overwrite stop file"
+    ],
+    "uaart_connection_monitor.py": [
+      "Currently running according to04:45 UI; inspect relevant file/process mutation functions, not yet covered by prepared facts probe"
+    ],
+    "verdict": "Source-hash equality or presence of a lock call alone is not complete writer fencing."
+  },
+  "crm_stop_boundary": {
+    "supervisor_id": 266084,
+    "required_command": "python3.10 /home/Carix/start_safe.py",
+    "required_state": "Running",
+    "required_enabled": true,
+    "checked_before_after_each_operation": true,
+    "stopping_supported_by_stage3_code": false,
+    "reason": "controller.API.supervisor requires Running; scoped child only manages its own temporary Always-On runner. An unfenced legacy path is a concrete review gap, not authority to disable this requirement."
+  },
+  "secure_receiver": {
+    "repo_path": "cloud/task088_v5_access/provision_read_credential.py",
+    "sha256": "e30b3c66e046b567b6b1be00dc476433c7f36bc08745d05b21b4c35250e0151d",
+    "known_server_path": "/home/Carix/autopilot_inbox/cloud/provision_read_credential.py",
+    "known_waiting_console": "https://www.pythonanywhere.com/user/Carix/consoles/48168693/",
+    "known_waiting_console_observed_at": "2026-09-14T17:14:45.915Z",
+    "command": [
+      "python3.10",
+      "-I",
+      "-B",
+      "/home/Carix/autopilot_inbox/cloud/provision_read_credential.py"
+    ],
+    "protocol": [
+      "Reconcile current presence and old receiver process before another launch",
+      "Verify exact current receiver SHA",
+      "Controlling TTY; hidden getpass prompt; owner enters key directly",
+      "No token in chat, argv, env, or input redirection",
+      "Final fixed path .config/uaart-price-control/github-read.token0600; private dir0700; no overwrite",
+      "Success UAART_READ_CREDENTIAL_READY; E_ALREADY_EXISTS means metadata reconciliation without displaying value"
+    ],
+    "agent_reads_or_enters_secret": false
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "kind": "PR114_COMPACT_CHECKPOINT_ARCHIVE_SHA256",
+  "recorded_at": "2026-09-14T17:19:19.125262+00:00",
+  "archive": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/PR114_CHECKPOINT_V2_20260914.zip",
+    "bytes": 812377,
+    "sha256": "ce3558e1869c77f81104a9f3c8be5ef592596c579da10dc0f3ba1e31a590081d"
+  },
+  "entries": 55,
+  "uncompressed_bytes": 3220645,
+  "verification": "CRC_AND_EVERY_ENTRY_RAW_HASH_MATCH",
+  "preflight_package_copies": 1,
+  "old_evidence_zip_copies": 0,
+  "full_preview": "NOT_PASSED",
+  "checkpoint": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/CHECKPOINT_V2.json",
+    "bytes": 23899,
+    "sha256": "f0d4007fcd1345fad99a5398027736dde0ed624608a21f3bfb972dbd53f41554"
+  },
+  "criteria_map": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREVIEW_CRITERIA_MAP.json",
+    "bytes": 69803,
+    "sha256": "7ae93f51824511c80104070352b5594781f329e09957a18c23390ae8059dfd4b"
+  },
+  "pr_body": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/PR_BODY_CURRENT_RU.md",
+    "bytes": 6336,
+    "sha256": "0b677cf9088edf9423d4ceb8939791361777fd7b63047d43dbe178957c551d1e"
+  },
+  "preflight_browser_binding": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PREFLIGHT_BROWSER_BINDING_V2.json",
+    "bytes": 7120,
+    "sha256": "3320408164e34afbd7781e5594cb5fa6fbbb0a4d2f5e04cf6e52f098fccc5c99"
+  },
+  "published_identity_binding": {
+    "path": "cloud/task088_v5_acceptance/resume_20260914/canonical/PUBLISHED_IDENTITY_BINDING_V2.json",
+    "bytes": 1925,
+    "sha256": "788fb7e1e66d6d1afe97a7195cded051bc85d314b4990a96455cd49e243766da"
+  },
+  "existing_large_archives_referenced": 9
+}

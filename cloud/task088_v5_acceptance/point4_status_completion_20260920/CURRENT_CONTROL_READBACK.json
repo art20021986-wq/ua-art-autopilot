@@ -1,0 +1,416 @@
+{
+  "contract": "PR114-POINT4-CURRENT-CONTROL-INDEPENDENT-READBACK-NOT-A-GATE-2",
+  "observed_at": "2026-09-20T05:49:31.706Z",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "main_commit_at": "2026-09-20T05:28:34Z",
+  "pr_checkpoint_parent_supplied": "48f54dcc860ffc6bfa4912022d9ba2fd7fc26f50",
+  "read_only": true,
+  "remote_actions_performed": [],
+  "current_control": {
+    "active_GitHub_in_progress": 0,
+    "queued": 0,
+    "waiting": 0,
+    "pending": 0,
+    "requested": 0,
+    "queries_page_size": 50,
+    "all_status_queries_total_count_zero": true,
+    "workflow_active_writer_observed": false,
+    "runtime_writer_exclusion": "NOT_PROVEN",
+    "unresolved_foreign_transaction": "ROLLING_BACK",
+    "claim": "BLOCKED_ROOT_CAUSE",
+    "halt": {
+      "halted_at": "2026-09-20T05:28:34Z",
+      "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+      "reason": "CRITICAL Production pipeline failed; GitHub Actions run 35490449348; rollback reserved true; rollback performed false",
+      "request_path": "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+      "request_sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba",
+      "run_id": "35490449348",
+      "status": "EMERGENCY_HALT",
+      "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003"
+    },
+    "point1_historical_acceptance_preserved": true,
+    "current_production_exclusivity": "NOT_ACCEPTED_UNRESOLVED_REMOTE_TRANSACTION",
+    "absence_of_running_workflow_does_not_prove_absence_of_remote_worker": true
+  },
+  "task003": {
+    "id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+    "run_id": 35490449348,
+    "workflow_status": "completed",
+    "workflow_conclusion": "failure",
+    "workflow_updated_at": "2026-09-20T05:28:41Z",
+    "transaction": {
+      "autostart_ledger_path": "state/autostart_consumed/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.json",
+      "backup_manifest_sha256": "a4d4bbc5b2776ff02b4c6be8fbb242d0027e21a65d4e7ea98048e7f953b3ff2c",
+      "backup_receipt_path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json",
+      "backup_receipt_sha256": "381aa9633b8119abf7e52ad9a00c813f51e5e8056d33e449d112ff0af4665d7a",
+      "expires_at": "2026-09-20T06:45:00Z",
+      "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+      "opened_at": "2026-09-20T05:11:06Z",
+      "prepared_at": "2026-09-20T04:59:48Z",
+      "request_path": "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+      "request_sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba",
+      "run_id": "35490449348",
+      "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
+      "status": "ROLLING_BACK",
+      "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+      "transaction_id": "tx-35490449348-334c361c22ebee11"
+    },
+    "backup_receipt_status": "PASS",
+    "backup_manifest_sha256": "a4d4bbc5b2776ff02b4c6be8fbb242d0027e21a65d4e7ea98048e7f953b3ff2c",
+    "backup_receipt_bound_to_transaction": true,
+    "install_receipt_present": false,
+    "rollback_receipt_present": false,
+    "absence_basis": "Complete nontruncated immutable main Git tree",
+    "controller_failure": {
+      "job_id": 106025862379,
+      "at": "2026-09-20T05:28:04Z",
+      "code": "PUBLIC_BYTES_MISMATCH",
+      "url": "https://www.uaart.com.ua/video/UA-0022-diag.html",
+      "trace_site": "controller.py execute line217 -> verify_public line186"
+    },
+    "rollback_failure": {
+      "job_id": 106027785087,
+      "at": "2026-09-20T05:28:25Z",
+      "codes": [
+        "AUTOSTART_NONCE_RESERVATION_MISSING",
+        "TRANSACTION_LEDGER_INVALID"
+      ],
+      "failing_step": "Validate durable one-shot rollback reservation",
+      "execute_rollback_step": "skipped",
+      "canonical_rollback_performed": false
+    },
+    "current_source_hashes": "UNKNOWN",
+    "current_full_DB_schema_published_set": "UNKNOWN",
+    "current_full_HTML_manifest": "UNKNOWN",
+    "current_CRM_enabled_Running": "UNKNOWN",
+    "current_published_set_equal_historical18": "NOT_PROVEN",
+    "inference_from_hash_pinned_code_and_trace": {
+      "type": "CONTROL_FLOW_INFERENCE_NOT_FRESH_RUNTIME_OBSERVATION",
+      "controller_source_matches_manifest_sha256": true,
+      "meaning": "Reaching execute line217 follows remote() terminal PASS with crm_resume enabled/Running, all installer postcheck booleans and canonical backup binding checks. Remote success requires committed publication, installed source postimages and public page digests. Thus no-mutation or original-source continuity cannot be inferred from final workflow failure.",
+      "limit": "Raw server install_verify-result.json was not directly read by this audit; parent separately reports reading it. Present-time source/DB/HTML and CRM state require current readback.",
+      "later_corroboration": "Now corroborated by independently reviewed retained authenticated server receipt observation; current-runtime readback remains pending."
+    },
+    "parent_reported_server_receipt": {
+      "source": "Root agent message after authenticated Files UI read of install_verify-result.json",
+      "independently_retrieved_by_this_auditor": false,
+      "installer": "PASS",
+      "crm_resume": "Running",
+      "source_after_sha256": {
+        "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+        "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+        "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+        "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
+      },
+      "scope": "Historical terminal operation receipt; current runtime hashes pending parent readback.",
+      "retained_observation_independently_read": true,
+      "retained_observation_sha256": "018a99891750cb13ff43407342ecefeb084cedfb5bc75b41cb557acfa086250a"
+    },
+    "read_existing_server_evidence": [
+      "/home/Carix/autopilot_inbox/cloud/ua0022_publication_fix/35490449348/install_verify-result.json",
+      "/home/Carix/autopilot_inbox/cloud/ua0022_publication_fix/35490449348/install_verify-result.journal.json",
+      "/home/Carix/rezerv_publikacii/UA-ART-UA0022-PUBLISH-REPAIR-003-ua0022-20260920t045500z-44b23189de/transaction.json",
+      "/home/Carix/rezerv_publikacii/UA-ART-UA0022-PUBLISH-REPAIR-003-ua0022-20260920t045500z-44b23189de/install_verify_receipt.json",
+      "/home/Carix/rezerv_publikacii/UA-ART-UA0022-PUBLISH-REPAIR-003-ua0022-20260920t045500z-44b23189de/backup_manifest.json"
+    ],
+    "actual_remote_receipt_review": {
+      "local_observation_path": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/UA0022_ACTUAL_INSTALL_RECEIPT_OBSERVED.json",
+      "local_observation_sha256": "018a99891750cb13ff43407342ecefeb084cedfb5bc75b41cb557acfa086250a",
+      "source": "AUTHENTICATED_PYTHONANYWHERE_FILE_EDITOR",
+      "server_path": "/home/Carix/autopilot_inbox/cloud/ua0022_publication_fix/35490449348/install_verify-result.json",
+      "observed_at": "2026-09-20T05:49:33.223Z",
+      "installation_timestamp_utc": "2026-09-20T05:23:45+00:00",
+      "binding_checks": {
+        "operation_and_task": true,
+        "inner_outer_plan_hash": true,
+        "backup_manifest_matches_canonical_transaction": true,
+        "terminal_remote_PASS": true,
+        "reported_CRM_resumed": true,
+        "source_after_matches_parent_summary": true,
+        "all_affected_preservation_flags": true
+      },
+      "protected_pages_count": 890,
+      "source_after_sha256": {
+        "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+        "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+        "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+        "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687"
+      },
+      "expected_public_http_sha256": {
+        "https://www.uaart.com.ua/video/UA-0022-diag.html": "79e8841525985e14d240d4e706668498250d63394af4a8ace1eeacdf261619ad",
+        "https://www.uaart.com.ua/video/UA-0022.html": "2504c9689aed2b564d04b6c0906a858f3eaa86e5345d56f40bf2a5286645d153",
+        "https://www.uaart.com.ua/video/index.html": "d1a6d6c055464cf8e4bde751ee9a5479a5d4abf5bf669aa491dd8f3670dcc628",
+        "https://www.uaart.com.ua/video/katalog.html": "0f53dba42a8ddc3fb99f333b16eee6ce796218b0da07ee750684c9cb4e0d5454"
+      },
+      "source_attribution": "Root captured authenticated Files editor JSON; independent auditor read and checked retained observation. Hash above binds the local observation wrapper, not an asserted raw server byte digest.",
+      "scope_limit": "Proves operation receipt reports committed installation, protected-page/row/price preservation and CRM resume at that operation. Fresh on-disk hashes, full DB/schema/published list, all HTML and currently loaded runtime identities remain required. HTTP hashes are expected server bytes; outer HTTP verification failed for UA-0022-diag and no canonical installation receipt exists."
+    }
+  },
+  "diagnostic_route_assessment": {
+    "existing_GET_only_route": "cloud/task088_crm_preflight/controller.py + read_existing.py (TASK088 READ2)",
+    "allowed_current_business_files": [
+      "cars_ui.py",
+      "cars_schema.py",
+      "db.py",
+      "start_safe.py"
+    ],
+    "prior_run_fixed": "34608152298",
+    "scope": "Authenticated PythonAnywhere GET only; no remote uploads/process/business write. Reads four approved sources plus fixed prior records/log, returns source hash/shape; database_acceptance NOT_PERFORMED.",
+    "satisfies_full_PR114_17_inputs_DB_inventory_HTML": false,
+    "cannot_repurpose_or_bypass_existing_allowlist": true,
+    "ua0022_controller_read_route": "API.read scopes GET to own numeric run inbox. Existing result read is safe in principle; executing remote() uploads/triggers and is not read-only.",
+    "maintenance_workflow": ".github/workflows/uaart_maintenance.yml",
+    "maintenance_scope": "GitHub control-plane compile/tests/mode only; no PythonAnywhere inventory collection.",
+    "legacy_probe_workflows": "Archived under .github/legacy-workflows; not active diagnostic routes.",
+    "full_inventory_route_found": "NONE_IN_INSPECTED_ACTIVE_WORKFLOWS_AND_READ2",
+    "safe_next_step": "Authorized read-only server access: read existing receipts and complete current source/DB/schema/published/HTML digests; reconcile actual operation before any new write. Do not rerun install or rollback blindly."
+  },
+  "canonical_ua0022_builder": {
+    "repo_path": "cloud/ua0022_publication_fix/build_candidate.py",
+    "local_path": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/UA0022_build_candidate.py",
+    "sha256": "c31b2f0d38248266100e2300baeda20daa5d8ab5224b5f77a1eaec96af15f4cb",
+    "git_blob_sha": "7113607a55685ef97d28a986d8c349c7b11798d1",
+    "bytes": 6935,
+    "manifest_pin_verified": true,
+    "candidate_reconstructed_by_this_auditor": false
+  },
+  "evidence": {
+    "state/AUTOPILOT_HALT.json": {
+      "path": "state/AUTOPILOT_HALT.json",
+      "sha256": "3e4b804fbc76ae0fc330db8a0add69fae3bb6d0d9a846d0a91cb41e4ff94e3a9",
+      "git_blob_sha": "7982f47958d4e656b0edbb64d8a40bcdd3836183",
+      "git_blob_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/state/AUTOPILOT_HALT.json"
+    },
+    "state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": {
+      "path": "state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json",
+      "sha256": "59920fe94343f94373f4d93da1c2785ddfbd36101890baf2e6b7133cabbefa9c",
+      "git_blob_sha": "3f34ca885bcb09b04d6c3561e8d63c79bb9bb776",
+      "git_blob_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json"
+    },
+    "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": {
+      "path": "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json",
+      "sha256": "c9123be192ff44ad89605c52e4fbad5b75504dd5e54ba4f172541e3575ddf7b3",
+      "git_blob_sha": "cfccccb058abac735639bb41debdf8486808a742",
+      "git_blob_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json"
+    },
+    "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json": {
+      "path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json",
+      "sha256": "381aa9633b8119abf7e52ad9a00c813f51e5e8056d33e449d112ff0af4665d7a",
+      "git_blob_sha": "403b505032d36bb0d7f99dede4610ad34c5434b7",
+      "git_blob_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json"
+    },
+    "cloud/ua0022_publication_fix/controller.py": {
+      "path": "cloud/ua0022_publication_fix/controller.py",
+      "sha256": "4b8dc0f7c7462297a8021694d4acc90fbc599e05789d873395b328e1710c1096",
+      "git_blob_sha": "0c2f19419568cfe916dd4a8d0070bd9ecf693023",
+      "git_blob_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/cloud/ua0022_publication_fix/controller.py"
+    },
+    "cloud/ua0022_publication_fix/remote_lifecycle.py": {
+      "path": "cloud/ua0022_publication_fix/remote_lifecycle.py",
+      "sha256": "21f17e5cf5d5c41c09861e7da7cbd5f16b449cd57899d72c6594805deb922a18",
+      "git_blob_sha": "05e227bbb273f3d589fa582beb0dbeca97da57b5",
+      "git_blob_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/cloud/ua0022_publication_fix/remote_lifecycle.py"
+    },
+    "cloud/ua0022_publication_fix/remote_installer.py": {
+      "path": "cloud/ua0022_publication_fix/remote_installer.py",
+      "sha256": "510bb2bdb0d2be4cd199f118d0a3fd04155214f34f84f9dbeca6a0518fea5162",
+      "git_blob_sha": "69988f3ad01f1443b6126d1ae0df907287612e5e",
+      "git_blob_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/cloud/ua0022_publication_fix/remote_installer.py"
+    },
+    "cloud/task088_crm_preflight/controller.py": {
+      "path": "cloud/task088_crm_preflight/controller.py",
+      "sha256": "a109618fcdede0ab157e5a2a87bdfcfcbb5c347d5ab24700972176bd69367cfc",
+      "git_blob_sha": "df5c551d9e0c1fb64beba050d73d3f061bdb5b38",
+      "git_blob_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/cloud/task088_crm_preflight/controller.py"
+    },
+    "cloud/task088_crm_preflight/read_existing.py": {
+      "path": "cloud/task088_crm_preflight/read_existing.py",
+      "sha256": "9246b50c9bbc364271b8ddbe19ef01f97d5f2fd7cbe07af33af00e7750e681ce",
+      "git_blob_sha": "983dd7294cc8bc8f45f1a95f68f3f741e8a9f8f2",
+      "git_blob_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/cloud/task088_crm_preflight/read_existing.py"
+    },
+    "cloud/task088_crm_preflight/READ2.md": {
+      "path": "cloud/task088_crm_preflight/READ2.md",
+      "sha256": "d7ec67b4ae5049082792e7e115edc8e579d16a4ba4f56e45cbc3caf74c12d306",
+      "git_blob_sha": "df7f7330dc37e3e192c8ba67031cf961e6203a47",
+      "git_blob_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/cloud/task088_crm_preflight/READ2.md"
+    },
+    ".github/workflows/uaart_maintenance.yml": {
+      "path": ".github/workflows/uaart_maintenance.yml",
+      "sha256": "9de321b12e06173a773a07af5954ff27b467b492a247ca7a04751dab776f24fb",
+      "git_blob_sha": "6fe1eaef6ad54b67b7c16c30f899fe3ceee483a4",
+      "git_blob_verified": true,
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7/.github/workflows/uaart_maintenance.yml"
+    },
+    "/workspace/scratch/cc71e1c55fba/status_point4_evidence/UA0022_ACTUAL_INSTALL_RECEIPT_OBSERVED.json": {
+      "sha256": "018a99891750cb13ff43407342ecefeb084cedfb5bc75b41cb557acfa086250a",
+      "bytes": 2487,
+      "source": "AUTHENTICATED_PYTHONANYWHERE_FILE_EDITOR",
+      "server_path": "/home/Carix/autopilot_inbox/cloud/ua0022_publication_fix/35490449348/install_verify-result.json",
+      "observed_at": "2026-09-20T05:49:33.223Z"
+    }
+  },
+  "job_summary": [
+    {
+      "id": 106024364040,
+      "name": "context",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106024371972,
+      "name": "intake",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106024391578,
+      "name": "persist",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106024413198,
+      "name": "execute / validate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106024432656,
+      "name": "execute / plan",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106024456343,
+      "name": "execute / critical / main_only",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106024456402,
+      "name": "execute / fast",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 106024456468,
+      "name": "execute / standard",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 106024467279,
+      "name": "execute / critical / validate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106024488177,
+      "name": "execute / critical / prepare",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106024488830,
+      "name": "execute / critical / controller_nonproduction",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 106024565987,
+      "name": "execute / critical / backup",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106025769626,
+      "name": "execute / critical / open",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106025862379,
+      "name": "execute / critical / controller_production",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 106027766259,
+      "name": "execute / critical / rollback_mark",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106027766429,
+      "name": "execute / critical / finalize",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 106027785087,
+      "name": "execute / critical / rollback_execute",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 106027803260,
+      "name": "execute / critical / recover",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 106027823186,
+      "name": "execute / critical / result",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "available_workflow_artifacts": [
+    {
+      "id": 10599086588,
+      "name": "uaart-critical-validation-35490449348-1",
+      "digest": "sha256:c7ff253efaf7254eb408294e32959d1608ce41560f557129eb583bb2e7faf9b3",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/artifacts/10599086588"
+    },
+    {
+      "id": 10598896915,
+      "name": "uaart-intake-attestation-35490449348-1",
+      "digest": "sha256:3aec0c8631367a940d9ce06e21cacc4154bfdbde14e2cbde1d4f223bc1923712",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/artifacts/10598896915"
+    },
+    {
+      "id": 10598837738,
+      "name": "uaart-critical-backup-35490449348-1",
+      "digest": "sha256:303e810068bd8a8e0c0513e4eeb3bbefc28e9cd9a5746f91ff6b65bce7c9c832",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/artifacts/10598837738"
+    }
+  ],
+  "proof_links": {
+    "main_tree": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/trees/6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7?recursive=1",
+    "run": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/35490449348",
+    "controller_log": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/35490449348/job/106025862379",
+    "rollback_log": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/35490449348/job/106027785087",
+    "workflow_status_queries": [
+      "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=in_progress&per_page=50",
+      "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=queued&per_page=50",
+      "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=waiting&per_page=50",
+      "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=pending&per_page=50",
+      "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=requested&per_page=50"
+    ]
+  },
+  "point4_acceptance": "NOT_INFERRED_FROM_WORKFLOW_COMPLETION",
+  "tests_rerun": false,
+  "updated_at": "2026-09-20T05:50:30.451837+00:00"
+}

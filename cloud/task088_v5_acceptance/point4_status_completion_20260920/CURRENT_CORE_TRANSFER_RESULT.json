@@ -1,0 +1,17 @@
+{
+  "status": "PASS_EXACT_CORE_EXPORT_RECONSTRUCTION",
+  "terminal_summary_sha256": "bb9b9e1d7937aafd9edac33b7f3b614260f7335d0651746eab640e802f228228",
+  "export_manifest_sha256": "e2eab31d1f8e239442a79a2bcace8a1e83de32798e47fdc4534db035cca77b2c",
+  "parts": 5,
+  "artifacts": 102,
+  "records": 3148,
+  "core_html": 48,
+  "diagnostic_html": 44,
+  "supporting_html": 4,
+  "published_count": 22,
+  "observation_started_at": "2026-09-20T06:39:03.085246+00:00",
+  "observation_finished_at": "2026-09-20T06:39:20.995451+00:00",
+  "scope": "core_only double-read candidate inputs; not full inventory, backup, Gate B or writer exclusion.",
+  "production_written": false,
+  "checksums": "All five parts and all 102 artifacts independently verified against actual terminal export manifest."
+}

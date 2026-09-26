@@ -1,0 +1,30 @@
+test_atomic_restore_preserves_racing_file (test_scoped_recovery.RecoveryTests.test_atomic_restore_preserves_racing_file) ... ok
+test_cache_recovery_keeps_permissions_and_unrelated_entry (test_scoped_recovery.RecoveryTests.test_cache_recovery_keeps_permissions_and_unrelated_entry) ... ok
+test_cache_same_key_conflict_keeps_operator_value (test_scoped_recovery.RecoveryTests.test_cache_same_key_conflict_keeps_operator_value) ... ok
+test_corrupt_backup_never_becomes_visible (test_scoped_recovery.RecoveryTests.test_corrupt_backup_never_becomes_visible) ... ok
+test_diagnostic_failure_restores_files_and_field (test_scoped_recovery.RecoveryTests.test_diagnostic_failure_restores_files_and_field) ... ok
+test_direct_video_entry_uses_transactional_path (test_scoped_recovery.RecoveryTests.test_direct_video_entry_uses_transactional_path) ... ok
+test_failed_video_preserves_operator_updates (test_scoped_recovery.RecoveryTests.test_failed_video_preserves_operator_updates) ... ok
+test_fields_compare_and_swap_preserves_new_value (test_scoped_recovery.RecoveryTests.test_fields_compare_and_swap_preserves_new_value) ... ok
+test_html_missing_media_aborts_instead_of_false_success (test_scoped_recovery.RecoveryTests.test_html_missing_media_aborts_instead_of_false_success) ... ok
+test_html_validation_fallback_restores_then_signals_failure (test_scoped_recovery.RecoveryTests.test_html_validation_fallback_restores_then_signals_failure) ... ok
+test_large_media_copy_and_restore_use_bounded_reads (test_scoped_recovery.RecoveryTests.test_large_media_copy_and_restore_use_bounded_reads) ... ok
+test_legacy_transaction_guard_reuses_held_registry (test_scoped_recovery.RecoveryTests.test_legacy_transaction_guard_reuses_held_registry) ... ok
+test_media_journal_intent_exists_before_commit (test_scoped_recovery.RecoveryTests.test_media_journal_intent_exists_before_commit) ... ok
+test_obsolete_video_primitive_stops_before_deletion (test_scoped_recovery.RecoveryTests.test_obsolete_video_primitive_stops_before_deletion) ... ok
+test_photo_failure_preserves_operator_field (test_scoped_recovery.RecoveryTests.test_photo_failure_preserves_operator_field) ... ok
+test_private_spec_lock_acquires_publication_first (test_scoped_recovery.RecoveryTests.test_private_spec_lock_acquires_publication_first) ... ok
+test_raw_media_helper_requires_fence (test_scoped_recovery.RecoveryTests.test_raw_media_helper_requires_fence) ... ok
+test_real_reload_and_main_failure_stay_inside_shared_fence (test_scoped_recovery.RecoveryTests.test_real_reload_and_main_failure_stay_inside_shared_fence) ... ok
+test_real_video_path_success_includes_media_and_cache (test_scoped_recovery.RecoveryTests.test_real_video_path_success_includes_media_and_cache) ... ok
+test_rebuild_failure_restores_real_media_fields_cache_and_files (test_scoped_recovery.RecoveryTests.test_rebuild_failure_restores_real_media_fields_cache_and_files) ... ok
+test_restore_keeps_original_file_permissions (test_scoped_recovery.RecoveryTests.test_restore_keeps_original_file_permissions) ... ok
+test_restore_rejects_swapped_parent_symlink (test_scoped_recovery.RecoveryTests.test_restore_rejects_swapped_parent_symlink) ... ok
+test_symlinked_photo_root_rejected_before_mutation (test_scoped_recovery.RecoveryTests.test_symlinked_photo_root_rejected_before_mutation) ... ok
+test_waiting_field_restore_observes_later_operator_commit (test_scoped_recovery.RecoveryTests.test_waiting_field_restore_observes_later_operator_commit) ... ok
+test_write_raises_after_commit_is_reconciled (test_scoped_recovery.RecoveryTests.test_write_raises_after_commit_is_reconciled) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 9.706s
+
+OK

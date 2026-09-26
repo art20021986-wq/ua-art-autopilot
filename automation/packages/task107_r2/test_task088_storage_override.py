@@ -38,6 +38,28 @@ class Task088StorageOverrideTests(unittest.TestCase):
             shutil.copyfile(source, self.root / target)
         self.old_mode = CP.read_json(self.root / CP.TASK088_PREVIOUS_MODE_PATH)
         self.runtime = CP.read_json(self.root / CP.TASK088_PREVIOUS_MANIFEST_PATH)
+        # This fixture models the earlier CRM-only waiver, which cannot approve
+        # the later price-protection maintenance change. Reconstruct its exact
+        # historical maintenance bytes only in the temporary fixture, retaining
+        # the independently pinned previous-manifest hash as the authority.
+        maintenance_path = ".github/workflows/uaart_maintenance.yml"
+        maintenance = self.root / maintenance_path
+        expected_maintenance_sha = self.runtime["files"][maintenance_path]
+        if CP.sha256_file(maintenance) != expected_maintenance_sha:
+            price_gate_step = (
+                "      - name: UA/GE PRICE PROTECTION scheduled regression\n"
+                "        shell: bash\n"
+                "        run: |\n"
+                "          set -euo pipefail\n"
+                "          python3 -I -B cloud/ua_ge_price_protection/gate.py \\\n"
+                "            --output \"$RUNNER_TEMP/ua-ge-price-protection-maintenance.json\"\n\n"
+            )
+            source = maintenance.read_text(encoding="utf-8")
+            self.assertEqual(source.count(price_gate_step), 1)
+            baseline = source.replace(price_gate_step, "", 1).encode("utf-8")
+            self.assertEqual(CP.sha256_bytes(baseline), expected_maintenance_sha)
+            maintenance.write_bytes(baseline)
+        self.assertEqual(CP.sha256_file(maintenance), expected_maintenance_sha)
         self.runtime["files"]["automation/control_plane.py"] = CP.sha256_file(ROOT / "automation/control_plane.py")
         self.runtime["files"][".github/workflows/uaart_critical.yml"] = CP.sha256_file(ROOT / ".github/workflows/uaart_critical.yml")
         self.runtime["generated_at"] = CP.utc_now()
@@ -173,6 +195,13 @@ class Task088StorageOverrideTests(unittest.TestCase):
         self.activation["runtime_manifest_sha256"] = self.mode["runtime_manifest_sha256"]
         self.persist_activation()
         with self.assertRaisesRegex(CP.ControlPlaneError, "TASK088_RUNTIME_CHANGE_SCOPE"):
+            CP.verify_execution_mode(root=self.root)
+
+    def test_maintenance_workflow_drift_is_rejected_by_full_mode_validation(self):
+        target = self.root / ".github/workflows/uaart_maintenance.yml"
+        target.write_bytes(target.read_bytes() + b"\n# unapproved later maintenance change\n")
+        with self.assertRaisesRegex(CP.ControlPlaneError,
+                                    "RUNTIME_PINNED_FILE_SHA_MISMATCH:.*uaart_maintenance.yml"):
             CP.verify_execution_mode(root=self.root)
 
     def test_write_preflight_or_extra_target_blocks(self):

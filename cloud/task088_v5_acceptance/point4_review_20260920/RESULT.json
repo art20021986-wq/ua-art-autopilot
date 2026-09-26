@@ -1,0 +1,78 @@
+{
+  "operation_id": "pr114-point4-review-20260920T0511Z",
+  "recorded_at": "2026-09-20T05:24:23.686445+00:00",
+  "foreground_in_progress": false,
+  "status": "POINT4_SCOPED_CODE_PASS_CURRENT_BINDING_OPEN",
+  "input_head": "e0c62b342bcf1156f010c2af4e9e29d858486689",
+  "point1": {
+    "historical_scope": "Confirmed prior checkpoint and evidence hashes; credit preserved",
+    "current_scope": "No unknown PR114 mutation replayed; foreign UA0022 writer observed, no production takeover"
+  },
+  "point2": {
+    "status": "CONFIRMED_EXACT_PINNED_BYTES",
+    "missing_dependencies_matched": 4,
+    "retained_originals_matched": 3,
+    "additional_historical_inputs_recovered_without_download": true
+  },
+  "point3": {
+    "status": "HISTORICAL_ISOLATED_COMPLETION_CONFIRMED",
+    "historical_checks": 41,
+    "limits": "Not deployment; changed direct-wrapper acceptance now covered by new point4 scoped checks, old41 not relabelled as fresh"
+  },
+  "point4": {
+    "status": "PARTIAL_NOT_FULLY_ACCEPTED",
+    "code_review": "SCOPED_PASS_INDEPENDENT",
+    "fixed": "Direct media/page regeneration could render unfinished V5 price. Composed main/zapisat/etalon now share validated reentrant guard price quiescence.",
+    "unique_affected_tests_passed": 14,
+    "candidate_files": 57,
+    "python_compile_passed": 17,
+    "historical_html_matched": 40,
+    "historical_html_total": 40,
+    "candidate_manifest_sha256": "382bde9611f1a2d9f0dfe48bef226ba2eaa94bf388b4c02874ca5e74bc09ca29",
+    "exact_reviewed_candidate_binding": {
+      "path": "/workspace/scratch/cc71e1c55fba/private_combined_candidate_v2",
+      "exact_reviewed_candidate_files_match": {
+        "cars_ui.py": true,
+        "stranica.py": true,
+        "publish_transaction_guard.py": true,
+        "ua_spec_permanent.py": true
+      },
+      "status": "PASS",
+      "candidate_files_manifest_sha256": "382bde9611f1a2d9f0dfe48bef226ba2eaa94bf388b4c02874ca5e74bc09ca29",
+      "candidate_manifest_file_sha256": "098b5bd5412ad9b72e059b762bf732f7e11ca45f1d6762c8ec3c05c73e4b5fa1"
+    },
+    "remaining": [
+      "Obtain applicable complete current private source/dependency/DB/schema/published-set/HTML binding after foreign transaction reconciliation",
+      "Refresh only changed or expired Preview observations and issue actual applicable exact-candidate24/24 contract"
+    ]
+  },
+  "evidence_sha256": {
+    "final_candidate/COMBINED_BUILD_INTENT.json": "ac4e8e5c329386dbf8402ee7218e72f5c61fa4fe419b8b077dc175b842b8bdca",
+    "final_candidate/COMBINED_CANDIDATE_MANIFEST.json": "098b5bd5412ad9b72e059b762bf732f7e11ca45f1d6762c8ec3c05c73e4b5fa1",
+    "final_candidate/COMBINED_HISTORICAL_COMPARISON.json": "ae01685519b5615dbc3f3ffc3e11737eaa66987a49773133d49ad082d1a432f4",
+    "final_candidate/COMBINED_CANDIDATE_IMPACT.json": "54ea6d670e8d4d1f0b8631a3c2134db2457c5f6381141d229831dfe33f6e7dbf",
+    "composed_safety_independent_review.json": "65638b52f0af8c916ee0af477cbdbab3131ccfbf4ab5a9c61ffb4cdd804cdaa7",
+    "direct_rebuild_fix_report.json": "cc5e20b52cdb56f09aee49b7a0fdfe6f274e9bbba400adf1b89e0a57d0f493f5",
+    "direct_rebuild_quiescence_fixed_result.json": "02ab715e93e9854e3685884daebab3302ea33c0f3ee49e13387b8050380018b4",
+    "CURRENT_CONTROL_READBACK.json": "7beaf5d3fbd210736e4fa727b87d5c7d067f63c0c60d31e045aca287b3036616",
+    "CURRENT_OBSERVATION_BLOCKER.json": "24f4dd3fe15eb4b681059441acaea10e227606849fef293bfa0a2957362643e3",
+    "PREVIEW_APPLICABILITY.json": "f3bf724e515f15021541bab1fd38252ba42c1fe10273506030d4ddbd4ce2ed17"
+  },
+  "product_acceptance": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "criterion10": "OPEN",
+    "new_criteria": []
+  },
+  "historical_suites_446_183_120_rerun": false,
+  "historical_visual_or_gallery_repeated": false,
+  "canonical_preview_issued": false,
+  "stage3_receipt_obtained": false,
+  "stage4_receipt_obtained": false,
+  "production_changes_by_this_operation": false,
+  "private_source_bytes_committed": false,
+  "console_read_state": "Incomplete read-only input cleared; no hash observation executed. Console empty prompt independently confirmed.",
+  "next_action": "Read actual outcome of existing UA0022 task003 without relaunch; if terminal and resource admissible obtain bounded complete current read-only binding, reusing exact candidate checks unless inputs changed. Do not restart prior preflight or replay unknown writes.",
+  "authorization": "Existing conditional owner authorization retained; no duplicate approval requested."
+}

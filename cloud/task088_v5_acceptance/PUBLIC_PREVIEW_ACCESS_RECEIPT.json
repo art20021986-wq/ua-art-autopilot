@@ -1,0 +1,43 @@
+{
+  "recorded_at_utc": "2026-09-14T10:18:35.679074+00:00",
+  "scope": "PARTIAL_LIVE_BROWSER_CSS_AND_PRICE_CHECKS",
+  "public_preview_url": "https://carix.pythonanywhere.com/video/katalog.html",
+  "public_preview_access": "OPENED_WITHOUT_PASSWORD",
+  "preview_wsgi_reload": "Performed through separate Preview Web app Reload button; live candidate catalog and cards observed afterwards",
+  "planned_cases": 120,
+  "observed_unique_cases": 42,
+  "validated_cases": 42,
+  "case_failures": [],
+  "unaccepted_loading_observations": 48,
+  "unaccepted_reason": "Selected candidate not yet loaded; these observations provide no acceptance evidence",
+  "covered_paths": [
+    "/video/UA-0001.html",
+    "/video/UA-0002.html",
+    "/video/UA-0003.html",
+    "/video/UA-0005.html",
+    "/video/UA-0008.html",
+    "/video/index.html",
+    "/video/katalog.html"
+  ],
+  "checks": [
+    "correct car IDs and both market rows",
+    "exact captured DB amounts",
+    "RU/UA/GE visible country names and missing-price text",
+    "full-card delivery captions",
+    "390x844 and 1280x900 actual CSS viewport",
+    "no document horizontal overflow",
+    "price and caption fonts at least 14px"
+  ],
+  "limitations": [
+    "Not a native iPhone/Safari test",
+    "Remaining pages not yet fully measured",
+    "Lazy-loaded photos are not all decoded; photo UI verification remains pending",
+    "Links, buttons, fresh CRM/DB read-back and complete protected-data gate remain pending"
+  ],
+  "software_source_checks_passed": 428,
+  "manifest_resources_in_process_passed": 679,
+  "production_written": false,
+  "stage3_preview_gate": "NOT_PASSED",
+  "stage3_closed": false,
+  "stage4_closed": false
+}

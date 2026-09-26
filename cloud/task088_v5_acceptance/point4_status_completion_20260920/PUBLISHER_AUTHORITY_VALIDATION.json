@@ -1,0 +1,60 @@
+{
+  "recorded_at": "2026-09-20T06:15:04.368980+00:00",
+  "status": "PASS_7_TARGETED_PUBLISHER_AUTHORITY_CHECKS",
+  "candidate": {
+    "before_sha256": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+    "after_sha256": "0159e67a3dcd595887ebbeedee8d13e70795c4f3b9895444532241d5cfc32633",
+    "bytes": 25946,
+    "forward_atomic_switches": 1,
+    "explicit_legacy_recovery_boundaries": 1,
+    "private_source_imported": false,
+    "scope": "Visibility authority hook only; legacy behavior retained outside context",
+    "recovery_limit": "Requires active operation/journal ownership and cooperative publication fence; does not prove arbitrary external HTML conflict exclusion"
+  },
+  "inputs_after_run": {
+    "cloud/task088_price_sync/patch_publikaciya.py": {
+      "sha256": "e480d86082dab21b530d7efffa4254b6fdf902b7b64a22641d215e76171c2a5a",
+      "bytes": 3504
+    },
+    "cloud/task088_price_sync/test_publikaciya_authority.py": {
+      "sha256": "4295588b3f3a4dfbbd2cc38db8e611a48a053948a87fd2e09558e1d86a533e64",
+      "bytes": 7453
+    },
+    "cloud/task088_v5_writer_fence/visibility_lifecycle.py": {
+      "sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+      "bytes": 27871
+    },
+    "cloud/task088_v5_writer_fence/publication_fence.py": {
+      "sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+      "bytes": 9694
+    }
+  },
+  "tests": {
+    "passed": 7,
+    "failed": 0,
+    "names": [
+      "rejects_source_drift_and_reapplication",
+      "removing_exact_hooks_restores_complete_original_AST",
+      "legacy_atomic_write_unchanged_outside_context",
+      "expiry_during_render_blocks_actual_forward_switch",
+      "legacy_compensation_unchanged_outside_context",
+      "recovery_ownership_refusal_propagates_before_swallowed_copy",
+      "owned_compensation_can_finish_after_expiry_and_scope_is_restored"
+    ],
+    "real_private_primitive_extracted": true,
+    "private_module_imported": false,
+    "actual_visibility_TLS_hooks_used": true,
+    "recovery_fence_assertion_mocked": "Only recovery-scope boundary tests stub require_publication_fence. Actual runtime fence ownership/row-journal checks are separate native lifecycle tests.",
+    "old_suites_rerun": false
+  },
+  "safety_scope": {
+    "forward": "Hook immediately before actual os.replace; expiry during render prevents switch. Temporary .rem2tmp may exist after refusal as with previous failed replace; no target overwrite occurred.",
+    "compensation": "_otkat enters explicit recovery_scope before swallowed per-file try. Same operation/journal/current row/fence authority required during visibility operations.",
+    "operator_preservation": "Test proves rejection before copies on recovery authorization failure and leaves changed page intact. Arbitrary uncooperative HTML writers are outside this patch proof and must be excluded by Point5.",
+    "outside_context": "Complete original AST recovered by deleting only inserted hooks; original primitive writes and restores retained."
+  },
+  "production_read": false,
+  "production_written": false,
+  "private_source_committed": false,
+  "independent_review": "REQUESTED"
+}

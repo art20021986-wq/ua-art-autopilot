@@ -1,0 +1,190 @@
+{
+  "contract": "UA-ART-GE-UA-MARKET-PRICE-001 FINAL v5.0",
+  "report_kind": "OFFLINE_CANDIDATE_DIAGNOSTICS",
+  "observed_at_utc": "2026-09-14T06:00:59.334961+00:00",
+  "production_tested": false,
+  "production_touched": false,
+  "telegram_delivery": "FAKE_BOT_ONLY",
+  "public_reads": "LOCAL_FIXTURE_ONLY",
+  "source_hashes": {
+    "cloud/task088_price_sync/outbox.py": "c1a351bd9f93af523574e3920ebad7ceebe6a40f17d38a2dfeffe6e2e01f2e73",
+    "cloud/task088_price_sync/patch_cars_ui.py": "18418ea87e031a469bf845c978ce341bd15ccfa939733b54631a42c8f7f647f1",
+    "cloud/task088_price_sync/uaart_price_sync_runtime.py": "7b93ebd25bbfe1db8181c34dd5d4234b503891084f25e7dcd22fe3f49ad700b4",
+    "cloud/task088_price_sync/uaart_price_sync_binding.py": "9d456598d6a395155329901c820b7e7e9fdd49f063620d496bdba2af37c8e540",
+    "cloud/task088_price_sync/test_cars_ui_hook.py": "fef4a032355606f595740f126afbebe0d23bb69d2aa789b2d44bdbdb05fb1f8f",
+    "cloud/task088_price_sync/test_runtime.py": "69a4d6d9fe77f49e04d01a5c4f238ed0921cf40a9a17f492538c49dcbbcbd473",
+    "cloud/task088_stage3_renderer/uaart_market_prices.py": "d3d28c5cb9a63f2c70aeede5b1636020393f24f4678144eedcb42f09226c8bc0",
+    "cloud/task088_autopilot_owner_policy/owner_policy.py": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+    "cloud/task088_autopilot_owner_policy/price_publication.py": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+    "private_cars_ui_source": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde"
+  },
+  "checks": [
+    {
+      "id": "conscious_inputs_not_superseded",
+      "v5_clauses": [
+        11,
+        16
+      ],
+      "status": "FAIL",
+      "expected": {
+        "accepted": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "states_before_worker": [
+          "PENDING",
+          "PENDING",
+          "PENDING",
+          "PENDING"
+        ],
+        "unique_operation_count": 4,
+        "stored_ua": 10000,
+        "stored_ge": 18900,
+        "rule": "Every conscious input remains eligible for its own verified pipeline."
+      },
+      "observed": {
+        "accepted": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "revisions": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "states_before_worker": [
+          "SUPERSEDED",
+          "SUPERSEDED",
+          "SUPERSEDED",
+          "PENDING"
+        ],
+        "georgia_usd": [
+          "18000.00",
+          "18500.00",
+          "18300.00",
+          "18900.00"
+        ],
+        "unique_operation_count": 4,
+        "stored_ua": 10000,
+        "stored_ge": 18900
+      }
+    },
+    {
+      "id": "anomaly_245_requires_confirmation",
+      "v5_clauses": [
+        12
+      ],
+      "status": "FAIL",
+      "expected": {
+        "write_accepted": false,
+        "whole_car_unchanged": true,
+        "outbox_event_count": 0,
+        "confirmation_signal": true,
+        "rule": "Display the actual suspicious amount and request confirmation before saving."
+      },
+      "observed": {
+        "input_usd": 245,
+        "write_accepted": true,
+        "reply": "Цена Грузии сохранена: 245 USD.",
+        "stored_ge_before": 8000,
+        "stored_ge_after": 245,
+        "whole_car_unchanged": false,
+        "outbox_event_count": 1,
+        "confirmation_signal": false
+      }
+    },
+    {
+      "id": "anomaly_245000_requires_confirmation",
+      "v5_clauses": [
+        12
+      ],
+      "status": "FAIL",
+      "expected": {
+        "write_accepted": false,
+        "whole_car_unchanged": true,
+        "outbox_event_count": 0,
+        "confirmation_signal": true,
+        "rule": "Display the actual suspicious amount and request confirmation before saving."
+      },
+      "observed": {
+        "input_usd": 245000,
+        "write_accepted": true,
+        "reply": "Цена Грузии сохранена: 245000 USD.",
+        "stored_ge_before": 8000,
+        "stored_ge_after": 245000,
+        "whole_car_unchanged": false,
+        "outbox_event_count": 1,
+        "confirmation_signal": false
+      }
+    },
+    {
+      "id": "restart_resumes_committed_operation",
+      "v5_clauses": [
+        17,
+        27
+      ],
+      "status": "FAIL",
+      "expected": {
+        "state": "PUBLISHED",
+        "publication_receipt_present": true,
+        "operator_reentry": false,
+        "rule": "Automatically finish a confirmed operation after ordinary restart."
+      },
+      "observed": {
+        "checkpoint": "CLAIM_COMMITTED_BEFORE_EXECUTE",
+        "worker_recreated": true,
+        "ticks": [
+          "IDLE",
+          "IDLE"
+        ],
+        "state": "STOPPED",
+        "reason": "INTERRUPTED_REQUIRES_RECONCILIATION",
+        "publication_receipt_present": false,
+        "operator_reentry": false,
+        "manual_recovery_called": false
+      }
+    },
+    {
+      "id": "verified_success_receipt_to_operator",
+      "v5_clauses": [
+        15,
+        24,
+        27
+      ],
+      "status": "FAIL",
+      "expected": {
+        "event_state": "PUBLISHED",
+        "success_receipt_count": 1,
+        "recipient_chat_id": 700,
+        "receipt_contains": [
+          "✅ Завершено",
+          "Грузии",
+          "UA-0001",
+          "5 000"
+        ],
+        "rule": "Only after verification, send completion to the editing operator."
+      },
+      "observed": {
+        "pipeline_result": "PUBLISHED",
+        "event_state": "PUBLISHED",
+        "initiating_operator_chat_id": 700,
+        "configured_owner_chat_id": 123,
+        "queued_notice_kinds": [],
+        "fake_telegram_calls": [],
+        "success_receipt_count": 0
+      }
+    }
+  ],
+  "summary": {
+    "pass": 0,
+    "fail": 5,
+    "error": 0
+  },
+  "status": "FAIL",
+  "gate_implication": "These offline checks cannot authorize Production or close Stage 4; any FAIL or ERROR blocks an overall v5 PASS claim."
+}

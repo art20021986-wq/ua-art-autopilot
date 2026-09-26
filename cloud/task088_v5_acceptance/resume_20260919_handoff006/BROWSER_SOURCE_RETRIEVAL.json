@@ -1,0 +1,39 @@
+{
+  "contract": "PR114-HANDOFF006-BROWSER-SOURCE-RETRIEVAL-1",
+  "scope": "Actual browser transport observations; no production mutation or new preflight",
+  "initial_tabs": [
+    {
+      "id": "1",
+      "role": "PythonAnywhere Bash console 48168693",
+      "initial_state": "shell prompt observed; no command submitted"
+    },
+    {
+      "id": "2",
+      "role": "cars_ui.py editor",
+      "initial_state": "source header and editor DOM metadata visible"
+    }
+  ],
+  "source_copy": {
+    "method": "editor selection and copy",
+    "returned_bytes": 0,
+    "result": "NOT_OBTAINED",
+    "private_source_written_locally": false,
+    "raw_source_logged": false
+  },
+  "transport_errors": [
+    "CDP operation get tabs timed out after 20000ms",
+    "CDP operation refresh tabs was superseded by browser recovery",
+    "CDP operation refresh tabs timed out after 20000ms"
+  ],
+  "exact_error_timestamps_recorded": false,
+  "diagnosis": "Managed browser transport did not recover; this does not establish website or PythonAnywhere service downtime",
+  "mutations": {
+    "server_commands": false,
+    "save_or_run_editor": false,
+    "production": false,
+    "crm": false,
+    "website": false,
+    "workflow_launch": false
+  },
+  "next_action": "Restore authenticated browser transport, inspect current console/editor state, privately read cars_ui.py and stranica.py exact bytes, and independently match server/local pinned SHA256 before integration."
+}

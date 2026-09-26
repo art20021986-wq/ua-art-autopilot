@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "scope": "ISOLATED_FIXTURE_SQLITE_REAL_FENCE_NO_LIVE_PASS",
+  "reason": "Publisher primitive tests mocked fence; verify native recovery checks actual lock ownership and journal epoch.",
+  "checks": [
+    "MISSING_ACTUAL_FIXTURE_FENCE_REJECTED",
+    "OWNED_DURABLE_REVISION_COMPENSATES_AFTER_TTL",
+    "NEWER_OPERATOR_ROW_BLOCKS_STALE_COMPENSATION",
+    "RECOVERY_SCOPE_DOES_NOT_REAUTHORIZE_FORWARD_WRITE",
+    "UNKNOWN_PROJECTION_AND_NEW_OPERATOR_ROW_PRESERVED"
+  ],
+  "lifecycle_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+  "fence_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+  "test_path_selection_redirected": true,
+  "lock_ownership_check_mocked": false,
+  "unchanged_suites_rerun": false
+}

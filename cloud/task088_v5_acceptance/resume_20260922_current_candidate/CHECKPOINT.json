@@ -1,0 +1,84 @@
+{
+  "kind": "PR114_CURRENT_GEORGIAN_PRICE_DELIVERY_CHECKPOINT",
+  "recorded_at": "2026-09-22T03:29:15.652Z",
+  "status": "REVIEWED_CURRENT_PACKAGE_READY_MANUAL_FILE_DELIVERY_REQUIRED",
+  "owner_request": "Сделай сейчас медленно, чтобы на сайте появлялась грузинская цена. Загрузил.",
+  "owner_observer_upload_completed": true,
+  "actual_capture": {
+    "status": "PASS_CORE_DOUBLE_READ_STABLE_OBSERVATION",
+    "summary_sha256": "07e07f499c20d5db62e0ae58cb4922be2cfacd4e8956879dbcd374322bb71454",
+    "published_records": 21,
+    "core_html": 46,
+    "archive": "cloud/task088_v5_acceptance/resume_20260922_current_candidate/verified_current_capture_20260922.tar.gz",
+    "archive_sha256": "a1b5ce9dc70a98ab9b6943298c29c7e268926192a2f174bfed3359b1d801f6fd"
+  },
+  "candidate": {
+    "canonical_manifest_sha256": "95d0b4a11b1ada311c384a2cbe213b6b58ae1da540f61b640c5effecf0fb3b8e",
+    "files": 66,
+    "independent_review": "PASS_SCOPED_ONLY",
+    "ua0010_ge_usd": 8750,
+    "ua0018_ua_usd": 22900,
+    "ua0002_excluded_from_listings": true
+  },
+  "code_and_artifacts_saved": {
+    "status": "PASS_EXACT_GIT_BLOB_READBACK",
+    "files": 38,
+    "commit": "26d2f08adbeeb8c2bb5db45552d9b4abdd0f896b",
+    "tree": "71dc38219ebafd2c9674732ebb021bee8dc3309f",
+    "at": "2026-09-22T03:28:07.801Z"
+  },
+  "preflight": {
+    "optional_exact_observer_bound_catalog_reconciliation": true,
+    "strict_migrator_unchanged": true,
+    "independent_review": "PASS",
+    "scoped_local_checks": 23,
+    "actual_server_run": false
+  },
+  "seo_reconciliation": {
+    "main_commit": "d6bb157288e3a3ea19ddc5d6f11a4c449b9b01eb",
+    "status": "PASS_ACTUAL_GITHUB_RECOVERY_READBACK",
+    "pending_transactions": 0,
+    "active_halt_absent": true,
+    "remote_backup_outcome": "UNKNOWN",
+    "rollback_executed": false,
+    "old_run_replayed": false,
+    "evidence": "cloud/task088_v5_acceptance/resume_20260922_current_candidate/seo_reconciliation/POST_APPLICATION_READBACK.json"
+  },
+  "manual_delivery": {
+    "reason": "Browser file chooser upload rejected by URL security policy; no workaround attempted.",
+    "files": [
+      {
+        "name": "exact_preview_current_95d0b4a1_20260922.zip",
+        "server_target": "/home/Carix/exact_preview_current_95d0b4a1_20260922.zip",
+        "sha256": "f8582d8476c34f74578a5a4b69be5b9d0ca100946c4070ef4cbabd5e80650c9e"
+      },
+      {
+        "name": "stage_exact_preview_20260922.py",
+        "server_target": "/home/Carix/stage_exact_preview_20260922.py",
+        "sha256": "5bf920f029f098d7e1b989325e2401c1fb57639c940599b5170aefbc7adcb437"
+      }
+    ],
+    "owner_need_not_run_commands": true,
+    "exact_plan": "cloud/task088_v5_acceptance/resume_20260922_current_candidate/CURRENT_PREVIEW_DELIVERY.json"
+  },
+  "next_action": "After owner upload verify exact2fileSHA, reconcile current controls/writers/inputpins/Previewmapping and unusedoperation before oneboundedStage. Inspectreceipt before Preview switch/reload, then48real affectedbrowsercases and15conditionalretentions; fullcurrent preflight, singlewriter,fullbackup, GateB/activation, canonical marker-onlyinstall andactualStage4 stillrequired.",
+  "preview": {
+    "staged": false,
+    "switched": false,
+    "reloaded": false,
+    "affected_browser_cases_completed": 0,
+    "affected_browser_cases_required": 48
+  },
+  "production": {
+    "business_files_written": false,
+    "database_written": false,
+    "services_changed": false,
+    "stage3_installed": false,
+    "stage4_accepted": false
+  },
+  "acceptance": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40
+  }
+}

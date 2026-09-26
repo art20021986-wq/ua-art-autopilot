@@ -1,0 +1,97 @@
+{
+  "canonical_gate_created": false,
+  "contract": "TASK088-V5-REVIEWED-RELEASE-SOURCE-MAP-1",
+  "controller_path": "cloud/task088_v5_install/release/controller.py",
+  "production_written": false,
+  "sources": {
+    "backup_controller.py": {
+      "sha256": "5080826a2a7fa0afef24134e1d69fbb48596cc824d97e939e63c3ef6b25a61a1",
+      "source_path": "cloud/task088_v5_install/backup_controller.py"
+    },
+    "controller.py": {
+      "sha256": "3fe2c18cb19951f1dafd7e7d8978664487c6fc8223a1db04609235148236a76b",
+      "source_path": "cloud/task088_v5_install/controller.py"
+    },
+    "install_package.py": {
+      "sha256": "3d9fe9d45423691f5602edc380a61b373d71dda96e809a614f013f3d98e4a509",
+      "source_path": "cloud/task088_price_sync/install_package.py"
+    },
+    "mutation_recovery.py": {
+      "sha256": "dfecaae1d98dcd10475d699a59519e847bda3bb4a2726a752e3d5c2dc83475c9",
+      "source_path": "cloud/task088_v5_writer_fence/mutation_recovery.py"
+    },
+    "outbox.py": {
+      "sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+      "source_path": "cloud/task088_price_sync/outbox.py"
+    },
+    "owner_policy.py": {
+      "sha256": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+      "source_path": "cloud/task088_autopilot_owner_policy/owner_policy.py"
+    },
+    "price_publication.py": {
+      "sha256": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+      "source_path": "cloud/task088_autopilot_owner_policy/price_publication.py"
+    },
+    "publication_fence.py": {
+      "sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+      "source_path": "cloud/task088_v5_writer_fence/publication_fence.py"
+    },
+    "remote_adapter.py": {
+      "sha256": "3fb5974eb89a2d10d18455b3f17a45620a1c1a94013ff34fe40a7dcbdc50f3da",
+      "source_path": "cloud/task088_v5_install/remote_adapter.py"
+    },
+    "rollback_controller.py": {
+      "sha256": "a5e21ac45f93bd31f410cffd19649ce7655a1c9eb706f51df894293f403bcd0b",
+      "source_path": "cloud/task088_v5_install/rollback_controller.py"
+    },
+    "source_successor.py": {
+      "sha256": "7111488541bbc88aa6426d5de76b223cb8e99ab4ca17c934424025a1c4428d28",
+      "source_path": "cloud/task088_price_sync/source_successor.py"
+    },
+    "test_adapter.py": {
+      "sha256": "5e4b08c67bddc3900b1582a338cf96f8a0839882a66054468e1f9b75efb30aff",
+      "source_path": "cloud/task088_v5_install/test_adapter.py"
+    },
+    "test_install_package.py": {
+      "sha256": "17fd48cf06e7454a9fee75cbec7ff68af6c2fe17b403e534301043ff64ed1f2e",
+      "source_path": "cloud/task088_price_sync/test_install_package.py"
+    },
+    "test_operation_recovery.py": {
+      "sha256": "302e755ed9145823ec6d3599b74c076b94cedea7de43ea33487dbe4299f3fdc7",
+      "source_path": "cloud/task088_v5_install/test_operation_recovery.py"
+    },
+    "uaart_market_prices.py": {
+      "sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+      "source_path": "cloud/task088_stage3_renderer/uaart_market_prices.py"
+    },
+    "uaart_price_control_reader.py": {
+      "sha256": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c",
+      "source_path": "cloud/task088_price_sync/uaart_price_control_reader.py"
+    },
+    "uaart_price_sync_binding.py": {
+      "sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+      "source_path": "cloud/task088_price_sync/uaart_price_sync_binding.py"
+    },
+    "uaart_price_sync_confirmation.py": {
+      "sha256": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+      "source_path": "cloud/task088_price_sync/uaart_price_sync_confirmation.py"
+    },
+    "uaart_price_sync_outbox.py": {
+      "sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+      "source_path": "cloud/task088_price_sync/outbox.py"
+    },
+    "uaart_price_sync_runtime.py": {
+      "sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+      "source_path": "cloud/task088_price_sync/uaart_price_sync_runtime.py"
+    },
+    "visibility_lifecycle.py": {
+      "sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+      "source_path": "cloud/task088_v5_writer_fence/visibility_lifecycle.py"
+    }
+  },
+  "test_paths": [
+    "cloud/task088_v5_install/release/test_install_package.py",
+    "cloud/task088_v5_install/release/test_adapter.py",
+    "cloud/task088_v5_install/release/test_operation_recovery.py"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "result": "ERROR",
+  "tests": 7,
+  "errors": 5,
+  "cause": "Test connection namespace omitted sqlite3.Row; fixture corrected, candidate code unchanged between runs",
+  "original_error": "AttributeError: 'types.SimpleNamespace' object has no attribute 'Row'",
+  "tests_accepted": false
+}

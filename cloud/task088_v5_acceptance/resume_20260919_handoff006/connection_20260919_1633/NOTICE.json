@@ -1,0 +1,44 @@
+{
+  "contract": "PR114-HANDOFF006-CONTINUATION-NOT-A-GATE-1",
+  "recorded_at": "2026-09-19T16:34:48.333Z",
+  "updated_at": "2026-09-19T16:34:48.333Z",
+  "operation_id": "pr114-connection-readback-20260919T1628Z",
+  "foreground_in_progress": false,
+  "background_in_progress": false,
+  "status": "WAIT_CONNECTION_WITH_RETAINED_PRIVATE_SOURCES_IDENTIFIED",
+  "observed_pr_head": "02a10a40b2aea2f3adc9ef5a98fe023cbb7aa248",
+  "observed_main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+  "predecessor": "cloud/task088_v5_acceptance/resume_20260919_handoff006/CHECKPOINT.json",
+  "accepted_progress": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "new_criteria_accepted": []
+  },
+  "result": "Authenticated file manager recovered from 502 after one reload. Browser download failed before a verified local result. Existing private originals for cars_ui.py, stranica.py and publish_transaction_guard.py were found and SHA256-matched to their private capture manifest and retained server observations; fresh server SHA read was not confirmed. No duplicate download or test run.",
+  "evidence": {
+    "path": "cloud/task088_v5_acceptance/resume_20260919_handoff006/connection_20260919_1633/READBACK.json",
+    "sha256": "ef404dd13d54fc17e4508011f955d16e0ef66d5b0c2c2f61e7c770fd927f2066"
+  },
+  "connection": {
+    "state": "WAIT_CONNECTION_FOR_CONFIRMED_SOURCE_HASH_READ",
+    "retry_budget_used": 1,
+    "next_run_must_recheck": true,
+    "keep_automation_enabled": true,
+    "not_evidence_of_site_outage": true
+  },
+  "private_sources": {
+    "local_directory": "/workspace/scratch/256f936ac1c5/private_v5_current",
+    "reuse_if_hashes_match": true,
+    "not_added_to_git": true,
+    "current_server_hashes_unconfirmed": true
+  },
+  "installed": false,
+  "writer_gate_pass": false,
+  "production_changed": false,
+  "crm_changed": false,
+  "website_changed": false,
+  "preflight": "NOT_RUN",
+  "canonical_launch": "NOT_RUN",
+  "next_action": "Inspect current console and use real terminal keyboard input for a read-only SHA256 check of cars_ui.py, stranica.py and publish_transaction_guard.py. Reuse the retained private snapshot on exact match; no repeat download is needed then. Integrate the reviewed fence in isolation only after fresh source binding, preserving the legacy shared lock registry and inode; retain old results."
+}

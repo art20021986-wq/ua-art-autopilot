@@ -1,0 +1,51 @@
+{
+  "contract": "PR114-ISOLATED-PERMANENT-WRITER-FENCE-CANDIDATE-1",
+  "production_authority": false,
+  "installed": false,
+  "writer_gate_pass": false,
+  "lock_path": "/home/Carix/.ua_art_publish_transaction.lock",
+  "lock_order": {
+    "mutation": [
+      "publication_fence",
+      "SQLite write transaction",
+      "commit and close",
+      "rebuild/spec84"
+    ],
+    "render": [
+      "publication_fence",
+      "spec84",
+      "spec SQLite read"
+    ],
+    "rule": "No outstanding SQLite write transaction when entering spec84; direct spec84 entry acquires publication fence first."
+  },
+  "before_source_sha256": {
+    "/home/Carix/cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "/home/Carix/stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+  },
+  "required_boundaries": [
+    "cars_ui._ubrat_fayly_foto: before first media deletion through related DB/page rebuild",
+    "cars_ui photo/video remove-all callbacks: before DB mutation through deletion/cache/rebuild",
+    "cars_ui._peresobrat_stranicy and stranica reload/main: complete direct and fallback HTML write path"
+  ],
+  "async_rule": "Acquire inside the synchronous mutation worker; never acquire in event-loop thread and then reacquire through to_thread.",
+  "acceptance_needed": [
+    "Exact private before-source bytes and independently reviewed minimal patch",
+    "Candidate source SHA-256 and complete generated release closure",
+    "Tests against realistic extracted call paths including rollback and validation-fallback writes",
+    "Authenticated after-image readback and loaded-process identity",
+    "Complete writer membership/drain observation under the same operation identity",
+    "Canonical request, manifest, Gate B, activation and verified backup"
+  ],
+  "private_integration_candidate": {
+    "assembled": true,
+    "installed": false,
+    "writer_gate_pass": false,
+    "builder": "cloud/task088_v5_writer_fence/integrate_private_sources.py",
+    "validation": "cloud/task088_v5_writer_fence/handoff006_evidence/emergency007_point3/VALIDATION.json",
+    "private_candidate_files_committed": false,
+    "tests_passed": 41,
+    "current_manifest": "cloud/task088_v5_writer_fence/handoff006_evidence/emergency007_point3/CANDIDATE_MANIFEST.json",
+    "independent_review": "PENDING_POINT4",
+    "historical_validation": "cloud/task088_v5_writer_fence/PRIVATE_INTEGRATION_VALIDATION.json"
+  }
+}

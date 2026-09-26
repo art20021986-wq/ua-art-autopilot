@@ -1,0 +1,1815 @@
+{
+  "contract": "PR114-POINT4-AFFECTED-VALIDATION-INDEX-1",
+  "recorded_at": "2026-09-20T07:15:49.719088+00:00",
+  "scope": "Evidence index refreshed for exact v2 cars-only delta; no tests rerun, no Git or production mutation, no private source bytes copied.",
+  "status": "FROZEN_V2_AFFECTED_VALIDATIONS_AND_INDEPENDENT_CODE_REVIEW_PREVIEW_PENDING",
+  "counting_policy": {
+    "overall_sum": null,
+    "reason": "Do not add overlapping suite runs, retries, independent probes, or historical credit into a fabricated combined PASS count. Unique counts below are local to named groups; closure/zero overlap explicitly removed.",
+    "test_methods_not_assertions": true,
+    "initial_failures_retained": true
+  },
+  "groups": {
+    "price": {
+      "scope": "Unified all-record FIFO, immutable data-only proofs, draft/public transitions, ACL/delegation, quiescence, visibility+expiry boundary and recovery",
+      "per_module_distinct_counts": {
+        "test_visibility_price_lifecycle": 13,
+        "test_v5_runtime": 26,
+        "test_v5_outbox": 5,
+        "test_binding": 45,
+        "test_cars_ui_hook": 37,
+        "test_guard_fence": 24,
+        "legacy_atomic_compensation_selected": 2
+      },
+      "test_ids": [
+        "test_binding.BindingTests.test_anchor_external_pin_required_when_supplied",
+        "test_binding.BindingTests.test_bootstrap_preserves_post_init_and_does_not_read_uninitialized_bot",
+        "test_binding.BindingTests.test_changed_code_mapping_cannot_publish_another_car",
+        "test_binding.BindingTests.test_changed_code_stops_existing_provider",
+        "test_binding.BindingTests.test_changed_schema_stops_existing_provider",
+        "test_binding.BindingTests.test_duplicate_json_key_cannot_override_pinned_semantics",
+        "test_binding.BindingTests.test_edited_receipt_bytes_are_detected_even_when_flags_remain_true",
+        "test_binding.BindingTests.test_external_cache_binds_fresh_observations_and_caps_authorization_expiry",
+        "test_binding.BindingTests.test_external_cache_future_timestamp_or_wrong_contents_never_authorizes",
+        "test_binding.BindingTests.test_false_numeric_control_value_is_not_boolean_clear",
+        "test_binding.BindingTests.test_forged_gate_pass_without_canonical_reference_fails",
+        "test_binding.BindingTests.test_halt_revocation_or_manual_mode_immediately_blocks_existing_binding",
+        "test_binding.BindingTests.test_in_memory_scope_mutation_cannot_bypass_pinned_configuration",
+        "test_binding.BindingTests.test_local_callback_claim_without_real_durable_row_is_rejected",
+        "test_binding.BindingTests.test_missing_observed_control_file_is_not_assumed_safe",
+        "test_binding.BindingTests.test_no_global_publication_lock_no_authorization",
+        "test_binding.BindingTests.test_ordinary_halt_keeps_crm_bootstrap_available_but_blocks_prices",
+        "test_binding.BindingTests.test_owner_fact_group_chat_even_fully_rehashed_is_rejected",
+        "test_binding.BindingTests.test_private_chat_summary_must_match_independently_read_raw_fact",
+        "test_binding.BindingTests.test_public_anchor_or_config_rejected",
+        "test_binding.BindingTests.test_read_only_preflight_does_not_bootstrap_or_create_authorization_records",
+        "test_binding.BindingTests.test_read_only_preflight_without_actual_anchor_reports_blocked",
+        "test_binding.BindingTests.test_real_artifact_hash_chain_creates_unique_durable_event_authority",
+        "test_binding.BindingTests.test_symlink_to_pinned_code_is_rejected",
+        "test_binding.BindingTests.test_test_fixture_cannot_bootstrap_production_root",
+        "test_binding.BindingTests.test_unapproved_surface_path_is_rejected",
+        "test_binding.BindingTests.test_unverified_running_bot_cannot_authorize",
+        "test_binding.BindingTests.test_wrong_running_bot_refuses_after_initialize",
+        "test_binding.BindingV5Tests.test_claim_vin_must_match_independent_current_db_read",
+        "test_binding.BindingV5Tests.test_current_acl_and_controls_still_fence_visibility_transitions",
+        "test_binding.BindingV5Tests.test_draft_without_public_identity_has_data_authority_and_no_public_paths",
+        "test_binding.BindingV5Tests.test_dynamic_policy_does_not_unpin_existing_identity",
+        "test_binding.BindingV5Tests.test_future_published_identity_needs_no_new_config_or_approval",
+        "test_binding.BindingV5Tests.test_hidden_surface_inventory_requires_same_unique_identity",
+        "test_binding.BindingV5Tests.test_home_applicability_is_explicit_and_read_only_when_no_vehicle_tiles",
+        "test_binding.BindingV5Tests.test_missing_actual_permission_or_wrong_bot_blocks_claim",
+        "test_binding.BindingV5Tests.test_missing_installed_reader_pin_refuses_v5_binding",
+        "test_binding.BindingV5Tests.test_mutated_event_is_not_a_durable_claim",
+        "test_binding.BindingV5Tests.test_old_price_only_scope_cannot_authorize_new_visibility_actions",
+        "test_binding.BindingV5Tests.test_revoked_existing_staff_permission_blocks_previously_claimed_work",
+        "test_binding.BindingV5Tests.test_synthetic_provenance_cannot_be_used_by_production_verifier",
+        "test_binding.BindingV5Tests.test_template_cannot_change_origin_escape_root_or_omit_home",
+        "test_binding.BindingV5Tests.test_unpublished_or_ambiguous_identity_cannot_get_surfaces",
+        "test_binding.BindingV5Tests.test_unrecognized_staff_role_cannot_be_delegated",
+        "test_binding.BindingV5Tests.test_verified_operator_claim_binds_actor_origin_and_actual_vin",
+        "test_cars_ui_hook.CarsHookTests.test_actual_crm_corrections_complete_every_fifo_runtime_operation",
+        "test_cars_ui_hook.CarsHookTests.test_actual_numeric_autocatch_returns_confirmation_buttons",
+        "test_cars_ui_hook.CarsHookTests.test_all_four_operator_inputs_are_queued_without_superseding",
+        "test_cars_ui_hook.CarsHookTests.test_all_real_price_callers_forward_stable_identity_and_provenance",
+        "test_cars_ui_hook.CarsHookTests.test_anomalous_prices_show_exact_amount_and_do_not_commit",
+        "test_cars_ui_hook.CarsHookTests.test_anomaly_confirmation_survives_new_context_and_connection",
+        "test_cars_ui_hook.CarsHookTests.test_anomaly_proposal_trigger_cannot_corrupt_other_car",
+        "test_cars_ui_hook.CarsHookTests.test_cancelled_confirmation_never_saves_and_new_input_can_repeat",
+        "test_cars_ui_hook.CarsHookTests.test_causal_voice_sequence_still_blocks_external_drift_before_commit",
+        "test_cars_ui_hook.CarsHookTests.test_confirmation_cannot_be_used_by_another_operator_or_chat",
+        "test_cars_ui_hook.CarsHookTests.test_confirmation_decision_failure_rolls_back_submit",
+        "test_cars_ui_hook.CarsHookTests.test_confirmation_ledger_is_immutable_and_permanent",
+        "test_cars_ui_hook.CarsHookTests.test_confirmation_replay_only_accepts_once",
+        "test_cars_ui_hook.CarsHookTests.test_cross_market_inputs_and_car_scopes_are_distinct",
+        "test_cars_ui_hook.CarsHookTests.test_draft_anomaly_confirmation_submits_same_fifo_transaction",
+        "test_cars_ui_hook.CarsHookTests.test_draft_confirmation_trigger_audit_corruption_rolls_back_everything",
+        "test_cars_ui_hook.CarsHookTests.test_draft_technical_replay_does_not_duplicate_audit",
+        "test_cars_ui_hook.CarsHookTests.test_each_authorized_operator_can_submit_both_markets",
+        "test_cars_ui_hook.CarsHookTests.test_enqueue_failure_rolls_back_all_effects",
+        "test_cars_ui_hook.CarsHookTests.test_explicit_same_voice_price_is_an_operator_action",
+        "test_cars_ui_hook.CarsHookTests.test_intent_precedes_mutation_and_independent_connection_readback",
+        "test_cars_ui_hook.CarsHookTests.test_no_identity_or_provenance_cannot_mutate",
+        "test_cars_ui_hook.CarsHookTests.test_non_usd_input_is_never_converted_or_enqueued",
+        "test_cars_ui_hook.CarsHookTests.test_nonprice_handlers_and_stage_job_remain_unchanged",
+        "test_cars_ui_hook.CarsHookTests.test_old_draft_message_replay_after_publication_does_not_become_new_operation",
+        "test_cars_ui_hook.CarsHookTests.test_old_published_message_replay_after_unpublication_cannot_run_stage2_again",
+        "test_cars_ui_hook.CarsHookTests.test_outbox_trigger_audit_insert_is_rolled_back",
+        "test_cars_ui_hook.CarsHookTests.test_outbox_trigger_cross_car_write_is_rolled_back",
+        "test_cars_ui_hook.CarsHookTests.test_pin_rejects_source_drift",
+        "test_cars_ui_hook.CarsHookTests.test_real_explicit_ge_button_handler_shows_confirmation_before_write",
+        "test_cars_ui_hook.CarsHookTests.test_revoked_operator_cannot_submit_confirm_or_cancel",
+        "test_cars_ui_hook.CarsHookTests.test_same_amount_new_message_is_a_new_intent",
+        "test_cars_ui_hook.CarsHookTests.test_same_technical_anomaly_delivery_reuses_proposal",
+        "test_cars_ui_hook.CarsHookTests.test_successive_explicit_voice_corrections_do_not_bind_stale_old_price",
+        "test_cars_ui_hook.CarsHookTests.test_technical_replay_does_not_duplicate_old_or_new_intent",
+        "test_cars_ui_hook.CarsHookTests.test_unpublished_intent_uses_same_fifo_without_early_price_write",
+        "test_cars_ui_hook.CarsHookTests.test_voice_cas_and_nullable_undo_have_queue_guards",
+        "test_guard_fence.GuardFenceTests.test_active_crm_transaction_fails_before_any_publication_work",
+        "test_guard_fence.GuardFenceTests.test_claimed_other_car_blocks_without_releasing_nonce",
+        "test_guard_fence.GuardFenceTests.test_crm_writer_cannot_commit_between_preflight_and_catalog_switch",
+        "test_guard_fence.GuardFenceTests.test_every_unfinished_v5_checkpoint_blocks_whole_generator",
+        "test_guard_fence.GuardFenceTests.test_failure_rolls_back_publication_and_releases_database_fence",
+        "test_guard_fence.GuardFenceTests.test_latest_reconciled_does_not_mean_its_crm_price_was_published",
+        "test_guard_fence.GuardFenceTests.test_latest_v5_pair_supersedes_old_published_v1_snapshot",
+        "test_guard_fence.GuardFenceTests.test_legitimate_later_nonprice_change_does_not_invalidate_current_prices",
+        "test_guard_fence.GuardFenceTests.test_new_v5_queued_intent_blocks_even_after_completed_event",
+        "test_guard_fence.GuardFenceTests.test_normal_manual_first_publish_remains_allowed_when_no_unresolved_prices",
+        "test_guard_fence.GuardFenceTests.test_pending_other_car_blocks_before_backup_render_or_write",
+        "test_guard_fence.GuardFenceTests.test_source_is_pinned_and_other_guard_functions_unchanged",
+        "test_guard_fence.GuardFenceTests.test_stopped_other_car_blocks_without_erasing_stop",
+        "test_guard_fence.GuardFenceTests.test_unknown_missing_outbox_or_database_fails_closed",
+        "test_guard_fence.GuardFenceTests.test_untracked_crm_price_edit_after_receipt_is_not_published",
+        "test_guard_fence.GuardFenceTests.test_v5_accepted_intent_blocks_before_any_price_mutation_or_generation",
+        "test_guard_fence.GuardFenceTests.test_v5_completed_current_pair_allows_publish_and_rebuild",
+        "test_guard_fence.GuardFenceTests.test_v5_completed_label_without_actual_completion_proof_blocks",
+        "test_guard_fence.GuardFenceTests.test_v5_corrupted_receipt_checksum_blocks",
+        "test_guard_fence.GuardFenceTests.test_v5_does_not_hide_uncertain_legacy_intents",
+        "test_guard_fence.GuardFenceTests.test_v5_immutable_audit_trigger_and_schema_are_required",
+        "test_guard_fence.GuardFenceTests.test_v5_nullable_ge_completed_snapshot_is_supported",
+        "test_guard_fence.GuardFenceTests.test_v5_receipt_does_not_authorize_untracked_other_market_price",
+        "test_guard_fence.GuardFenceTests.test_verified_price_event_allows_ordinary_publish_and_rebuild",
+        "test_runtime.RuntimeTests.test_foreign_bytes_never_overwritten_during_rollback",
+        "test_runtime.RuntimeTests.test_partial_switch_rolls_back_only_known_files_and_keeps_crm",
+        "test_v5_outbox.V5OutboxTests.test_intent_and_audit_history_are_permanent_and_linked",
+        "test_v5_outbox.V5OutboxTests.test_intentions_do_not_mutate_cars_and_duplicate_is_noop",
+        "test_v5_outbox.V5OutboxTests.test_later_intent_cannot_claim_before_previous_completes",
+        "test_v5_outbox.V5OutboxTests.test_same_identity_different_value_is_conflict",
+        "test_v5_outbox.V5OutboxTests.test_schema_install_rollback_preserves_existing_schema_and_prices",
+        "test_v5_runtime.V5RuntimeTests.test_ambiguous_telegram_delivery_never_replays_execution_or_dispatch",
+        "test_v5_runtime.V5RuntimeTests.test_authority_failure_cannot_mutate_db_or_site",
+        "test_v5_runtime.V5RuntimeTests.test_checkpoint_versions_and_receipt_follow_full_verification",
+        "test_v5_runtime.V5RuntimeTests.test_control_stop_recovers_only_after_fresh_authorization",
+        "test_v5_runtime.V5RuntimeTests.test_existing_unselected_site_price_mismatch_blocks_before_db_mutation",
+        "test_v5_runtime.V5RuntimeTests.test_expired_authority_lease_rolls_back_before_db_commit",
+        "test_v5_runtime.V5RuntimeTests.test_four_conscious_changes_fully_complete_fifo_and_preserve_ua",
+        "test_v5_runtime.V5RuntimeTests.test_kyiv_and_georgia_concurrent_price_operations_keep_distinct_market_visibility",
+        "test_v5_runtime.V5RuntimeTests.test_kyiv_restart_uses_committed_stage_snapshot_without_reintroducing_ge",
+        "test_v5_runtime.V5RuntimeTests.test_kyiv_snapshot_mismatch_or_public_ge_cannot_pass_semantic_verification",
+        "test_v5_runtime.V5RuntimeTests.test_kyiv_ua_and_ge_edits_preserve_hidden_ge_and_all_protected_data",
+        "test_v5_runtime.V5RuntimeTests.test_missing_ge_stays_nullable_and_preserves_ua",
+        "test_v5_runtime.V5RuntimeTests.test_parallel_cars_have_no_shared_or_db_lock_during_http",
+        "test_v5_runtime.V5RuntimeTests.test_partial_local_switch_crash_resumes_without_repeating_db_commit",
+        "test_v5_runtime.V5RuntimeTests.test_postcommit_schema_drift_fails_independent_readback",
+        "test_v5_runtime.V5RuntimeTests.test_protected_html_change_after_db_commit_is_not_adopted_as_baseline",
+        "test_v5_runtime.V5RuntimeTests.test_public_failure_is_not_success_and_rechecks_checkpoint",
+        "test_v5_runtime.V5RuntimeTests.test_public_price_lag_reverifies_without_repeating_db_update",
+        "test_v5_runtime.V5RuntimeTests.test_replay_completed_operation_has_no_duplicate_effects",
+        "test_v5_runtime.V5RuntimeTests.test_restart_after_committed_claim_resumes_without_reentry",
+        "test_v5_runtime.V5RuntimeTests.test_restart_after_each_durable_execution_checkpoint",
+        "test_v5_runtime.V5RuntimeTests.test_same_value_new_operation_is_not_deduplicated",
+        "test_v5_runtime.V5RuntimeTests.test_success_receipt_sent_once_to_initiating_operator",
+        "test_v5_runtime.V5RuntimeTests.test_ua_then_ge_serialized_without_cross_write",
+        "test_v5_runtime.V5RuntimeTests.test_unauthorized_other_car_public_price_cannot_hide_in_shared_mask",
+        "test_v5_runtime.V5RuntimeTests.test_verified_restart_rechecks_site_before_success",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_blank_draft_identity_assigned_before_commit_still_has_valid_rebuild_proof",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_blocked_old_public_view_reconciles_same_operation_after_actual_retirement",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_completed_draft_replay_after_identity_assignment_does_not_write",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_expiry_after_last_replace_does_not_commit_site_checkpoint",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_hidden_completion_rechecks_authority_expiry_after_file_observation",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_incomplete_draft_ge_ua_empty_ge_fifo_without_publication",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_newer_untracked_price_survives_and_gets_bounded_diagnosis",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_public_complete_then_draft_edit_allows_rebuild_and_keeps_history",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_public_switch_reserves_database_against_visibility_race",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_public_temp_fsync_expiry_blocks_replace_and_fresh_resume_preserves_db_commit",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_site_checkpoint_audit_work_cannot_commit_after_authority_expiry",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_stale_public_files_cannot_receive_false_hidden_completion",
+        "test_visibility_price_lifecycle.VisibilityPriceTests.test_withdrawal_at_every_saved_checkpoint_without_price_replay"
+      ],
+      "implementation_report": {
+        "path": "PRICE_LIFECYCLE_IMPLEMENTATION_RESULT.json",
+        "sha256": "a4d6e5e826f1bdebed86cacda8927e9d9037974bb07f69ef322f9d7d52165353",
+        "bytes": 3241
+      },
+      "current_pins": {
+        "cloud/task088_price_sync/outbox.py": {
+          "evidence_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+          "current_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/uaart_price_sync_runtime.py": {
+          "evidence_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
+          "current_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+          "current_match": false
+        },
+        "cloud/task088_price_sync/uaart_price_sync_binding.py": {
+          "evidence_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
+          "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+          "current_match": false
+        },
+        "cloud/task088_price_sync/patch_cars_ui.py": {
+          "evidence_sha256": "98c33c0e9f00b9e0bde026393af088ecd12c5f67ec083925dff9624de0877bd4",
+          "current_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+          "current_match": false
+        },
+        "cloud/task088_price_sync/patch_guard.py": {
+          "evidence_sha256": "9a213e1800e801fd773d7735529bd5b1864dad19c5cf7aa11697c47250e4a6ad",
+          "current_sha256": "9a213e1800e801fd773d7735529bd5b1864dad19c5cf7aa11697c47250e4a6ad",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/test_visibility_price_lifecycle.py": {
+          "evidence_sha256": "d0a014077274def9cadf5ccb2e5199648363d4f25eb01a2f790c6ca55e9ee829",
+          "current_sha256": "d0a014077274def9cadf5ccb2e5199648363d4f25eb01a2f790c6ca55e9ee829",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/test_binding.py": {
+          "evidence_sha256": "ba2e4cfb46efb401856f6a75f3783ab223fa141409238441b5004960090b1ef2",
+          "current_sha256": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177",
+          "current_match": false
+        },
+        "cloud/task088_price_sync/test_cars_ui_hook.py": {
+          "evidence_sha256": "1ccef2055cb1947d509158b7a0bcc19dc68ff7df8e24ac6ab72278f6b451c97d",
+          "current_sha256": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96",
+          "current_match": false
+        },
+        "cloud/task088_price_sync/test_guard_fence.py": {
+          "evidence_sha256": "7944efaf7af24286a1cd3dc6b02a86b6a82f578b71afb8a5385117f28d257a23",
+          "current_sha256": "7944efaf7af24286a1cd3dc6b02a86b6a82f578b71afb8a5385117f28d257a23",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/BINDING_CONTRACT.md": {
+          "evidence_sha256": "59ce990c8d81165b2ec910d21829097e36d997d356ff74c4f231e75e4ed4eb1d",
+          "current_sha256": "22870bc73b4fde0b503be9f6980bdad4b7a2e993ea4b2f42b08a26b9407494ea",
+          "current_match": false
+        }
+      },
+      "runs": [
+        {
+          "path": "price_affected_tests.log",
+          "sha256": "eed80e69bfbc39c01c35a9df1ff79013ea864cfde912f7acdaf07ddc763d3f06",
+          "bytes": 31927,
+          "run_counts": [
+            134
+          ],
+          "outcomes": [
+            "FAILED (failures=7, errors=24)"
+          ],
+          "passed_named_test_ids": []
+        },
+        {
+          "path": "price_retry_tests.log",
+          "sha256": "01d861d5669123b286e8d5e24c4db66a8ca7526a728b0f3dca81d81eb00a9923",
+          "bytes": 137,
+          "run_counts": [
+            38
+          ],
+          "outcomes": [
+            "OK"
+          ],
+          "passed_named_test_ids": []
+        },
+        {
+          "path": "binding_scope_tests.log",
+          "sha256": "1a824ed185b8aaf99ff2f2953d110959009fe87e0c3432a4e683747ee3be2573",
+          "bytes": 121,
+          "run_counts": [
+            22
+          ],
+          "outcomes": [
+            "OK"
+          ],
+          "passed_named_test_ids": []
+        },
+        {
+          "path": "recovery_scope_tests.log",
+          "sha256": "b1ef6bc00f4cbe180c3a0585c3fcdf89c74c4864638c472426435c3d1fa74a79",
+          "bytes": 130,
+          "run_counts": [
+            31
+          ],
+          "outcomes": [
+            "OK"
+          ],
+          "passed_named_test_ids": []
+        },
+        {
+          "path": "hidden_expiry_tests.log",
+          "sha256": "40f52161d5c338daa51ea6c4d5e63438da514e406717d65abbdc4ffea8c291d8",
+          "bytes": 101,
+          "run_counts": [
+            3
+          ],
+          "outcomes": [
+            "OK"
+          ],
+          "passed_named_test_ids": []
+        },
+        {
+          "path": "price_replace_boundary_tests.log",
+          "sha256": "fb1e3bd4597586ca5fed09b520d7f81ef57b2b471d03222961c20898e83aac92",
+          "bytes": 101,
+          "run_counts": [
+            3
+          ],
+          "outcomes": [
+            "OK"
+          ],
+          "passed_named_test_ids": []
+        },
+        {
+          "path": "price_replace_compatibility_tests.log",
+          "sha256": "58f650a1a42d366cbe2886ee9c4506d032bbbc702bcfbfe6b533fd5614e37f0d",
+          "bytes": 103,
+          "run_counts": [
+            5
+          ],
+          "outcomes": [
+            "OK"
+          ],
+          "passed_named_test_ids": []
+        }
+      ],
+      "reuse_reason": "Earlier unaffected tests retained by implementation report dependency reasoning. Late authority replace-boundary fix specifically validated by3new tests,5affected/compensation checks and independent after-probe; earlier147 label alone did not cover that failure.",
+      "unique_recorded_test_ids": 152,
+      "pin_scope": "Earlier exact implementation pins retained. Startup/worker-entry changes are superseded only in their changed scope by absent_anchor_startup; 152 unchanged checks were not rerun."
+    },
+    "native_visibility": {
+      "scope": "Local native publish/unpublish/sold ordering, same-id recovery, exact owned HTML retirement, preserved media/new edits, shared fence/quiescence",
+      "distinct_subgroups": {
+        "native_visibility": 14,
+        "changed_guard_quiescence": 8,
+        "guard_registry_fixture": 1
+      },
+      "runs": [
+        {
+          "path": "native_visibility_tests_final.log",
+          "sha256": "52b961b78ae7ae1349fbdf491a8975af95bf934fa1a2f473531bdc9eb25d2d35",
+          "bytes": 2471,
+          "run_counts": [
+            14
+          ],
+          "outcomes": [
+            "OK"
+          ],
+          "passed_named_test_ids": [
+            "test_visibility_lifecycle.NativeVisibility.test_ambiguous_incomplete_projection_never_blindly_repeats",
+            "test_visibility_lifecycle.NativeVisibility.test_authority_expiry_before_db_commit_rolls_back_visibility",
+            "test_visibility_lifecycle.NativeVisibility.test_authority_expiry_before_unlink_preserves_file_and_resumes_same_id",
+            "test_visibility_lifecycle.NativeVisibility.test_forward_atomic_switch_checks_after_staging",
+            "test_visibility_lifecycle.NativeVisibility.test_generic_stage_image_not_a_public_listing",
+            "test_visibility_lifecycle.NativeVisibility.test_new_operator_price_between_crash_and_resume_is_preserved",
+            "test_visibility_lifecycle.NativeVisibility.test_pending_price_drained_before_republication_current_data",
+            "test_visibility_lifecycle.NativeVisibility.test_replay_old_event_does_not_toggle_newer_visibility",
+            "test_visibility_lifecycle.NativeVisibility.test_sold_from_nullable_status_compares_and_reads_back",
+            "test_visibility_lifecycle.NativeVisibility.test_sold_uses_same_visibility_closure_and_keeps_record",
+            "test_visibility_lifecycle.NativeVisibility.test_unknown_alias_fails_before_visibility_or_files_change",
+            "test_visibility_lifecycle.NativeVisibility.test_unknown_projection_after_crash_is_inspected_not_repeated",
+            "test_visibility_lifecycle.NativeVisibility.test_withdrawal_closes_before_reconciling_each_price_checkpoint",
+            "test_visibility_lifecycle.NativeVisibility.test_withdrawal_retires_direct_and_alias_paths_preserves_media"
+          ]
+        },
+        {
+          "path": "native_guard_quiescence_retry.log",
+          "sha256": "1120e8227a5680905b0e00bd673c8cb6e4fd8de84453997f7da73c49f8cb6f8f",
+          "bytes": 1714,
+          "run_counts": [
+            8
+          ],
+          "outcomes": [
+            "OK"
+          ],
+          "passed_named_test_ids": [
+            "test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_all_direct_entries_reject_actual_db_committed_checkpoint_before_work",
+            "test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_concurrent_thread_waits_for_outer_lease_and_cannot_bypass_fence",
+            "test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_exact_legacy_helper_changes_only_connection_yield",
+            "test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_fork_child_rejects_reentry_and_parent_context_cleanup_without_sqlite_calls",
+            "test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_guard_main_nested_writes_use_one_reserved_transaction_before_spec",
+            "test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_nested_exception_releases_connection_and_next_entry_succeeds",
+            "test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_reentry_rejects_database_rebinding_and_ended_transaction",
+            "test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_writer_only_missing_price_helper_fails_explicitly"
+          ]
+        },
+        {
+          "path": "native_integration_guard_test.log",
+          "sha256": "aca49bdfee59ddbdd803a7f97146ec7d21e16b1f6e5cc364ebbfd3ff5ffb67b9",
+          "bytes": 235,
+          "run_counts": [
+            1
+          ],
+          "outcomes": [
+            "OK"
+          ],
+          "passed_named_test_ids": [
+            "test_private_source_integration.IntegrationTests.test_guard_reuses_shared_fence_registry"
+          ]
+        }
+      ],
+      "implementation_report": {
+        "path": "NATIVE_VISIBILITY_RESULT.json",
+        "sha256": "75266d44180694e0285aba6437f88cfe25d5dacaea73fd4c0c553b8550b858ff",
+        "bytes": 2276
+      },
+      "current_pins": {
+        "cloud/task088_v5_writer_fence/visibility_lifecycle.py": {
+          "evidence_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+          "current_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+          "current_match": true
+        },
+        "cloud/task088_v5_writer_fence/integrate_private_sources.py": {
+          "evidence_sha256": "a65fe90ff559ecc883f0b4f3596ebba3340d8e7dc565cfc8338bde259766fe51",
+          "current_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+          "current_match": false
+        },
+        "cloud/task088_v5_writer_fence/test_visibility_lifecycle.py": {
+          "evidence_sha256": "11ba702923b1d4db3b45a86084ef773e558a959d35ed1913ad9621f74102a37c",
+          "current_sha256": "11ba702923b1d4db3b45a86084ef773e558a959d35ed1913ad9621f74102a37c",
+          "current_match": true
+        },
+        "cloud/task088_v5_writer_fence/test_private_source_integration.py": {
+          "evidence_sha256": "7c36b45f704f0887c0d45cfe8a85f525cfbd16feca86bb093897835bb3e8cf03",
+          "current_sha256": "7c36b45f704f0887c0d45cfe8a85f525cfbd16feca86bb093897835bb3e8cf03",
+          "current_match": true
+        },
+        "cloud/task088_v5_writer_fence/test_direct_rebuild_quiescence.py": {
+          "evidence_sha256": "fc92061f4cfe505df707adb7645151ad43264e943505448760147c487a7053a0",
+          "current_sha256": "fc92061f4cfe505df707adb7645151ad43264e943505448760147c487a7053a0",
+          "current_match": true
+        },
+        "cloud/task088_stage3_renderer/patch_stranica.py": {
+          "evidence_sha256": "8ed2aea9f18d3955931496485199d6bb91f9fdc5d5e57e410c1deab69f35dfe7",
+          "current_sha256": "8ed2aea9f18d3955931496485199d6bb91f9fdc5d5e57e410c1deab69f35dfe7",
+          "current_match": true
+        }
+      },
+      "unaccepted_scope": "No live HTTP retirement, no arbitrary uncooperative HTML writer exclusion or production operation."
+    },
+    "counters": {
+      "scope": "Exact source server/client identity parsing and inline HTML migration",
+      "unique": 13,
+      "subgroups": {
+        "server_client_and_actual_saved_html": 9,
+        "inline_migration": 4
+      },
+      "runs": [
+        {
+          "path": "counter_fix/targeted_tests.log",
+          "sha256": "535c2a96da33e64f47e8b6cecdfd7fddbea1f714d7f62b975050c91ec8a6a0cb",
+          "bytes": 1722,
+          "run_counts": [
+            9
+          ],
+          "outcomes": [
+            "OK"
+          ],
+          "passed_named_test_ids": [
+            "test_site_counters_patch.SiteCounterPatchTests.test_actual_retained_dual_price_catalog_counts_without_editing_input",
+            "test_site_counters_patch.SiteCounterPatchTests.test_conflicting_valid_ids_and_duplicate_stages_remain_rejected",
+            "test_site_counters_patch.SiteCounterPatchTests.test_count_updates_preserve_unrelated_layout_and_language_attributes",
+            "test_site_counters_patch.SiteCounterPatchTests.test_exact_source_pin_refuses_drift_and_double_apply",
+            "test_site_counters_patch.SiteCounterPatchTests.test_explicit_malformed_marker_never_uses_valid_href_fallback",
+            "test_site_counters_patch.SiteCounterPatchTests.test_legacy_href_fallback_and_explicit_id_precedence_are_preserved",
+            "test_site_counters_patch.SiteCounterPatchTests.test_translation_captions_and_legacy_descendant_match_client",
+            "test_site_counters_patch.SiteCounterPatchTests.test_unrelated_server_methods_and_client_program_unchanged",
+            "test_site_counters_patch.SiteCounterPatchTests.test_zero_new_car_and_same_stage_duplicates_are_dynamic"
+          ]
+        },
+        {
+          "path": "counter_fix/inline_targeted_tests.log",
+          "sha256": "a67ccda5829872e6f26a7d6f42fae6b4cb7e61eaa2f9926856f6f658b2bfd74f",
+          "bytes": 834,
+          "run_counts": [
+            4
+          ],
+          "outcomes": [
+            "OK"
+          ],
+          "passed_named_test_ids": [
+            "test_site_counters_patch.SiteCounterPatchTests.test_inline_script_migration_preserves_all_other_html_and_is_idempotent",
+            "test_site_counters_patch.SiteCounterPatchTests.test_absent_inline_script_does_not_inject_or_change_layout",
+            "test_site_counters_patch.SiteCounterPatchTests.test_unknown_duplicate_or_broken_inline_counter_script_fails_closed",
+            "test_site_counters_patch.SiteCounterPatchTests.test_inline_migration_rejects_source_and_candidate_drift"
+          ]
+        }
+      ],
+      "report": {
+        "path": "counter_fix/RESULT.json",
+        "sha256": "35b3ec4ed0e2fdb5e909afe5c7e0dc56a635ffd62f6e4418019b9de977f47588",
+        "bytes": 2009
+      },
+      "current_pins": {
+        "cloud/task088_price_sync/patch_site_counters.py": {
+          "evidence_sha256": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
+          "current_sha256": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/test_site_counters_patch.py": {
+          "evidence_sha256": "e012334152ffd75d5863f6e6363a0b1b3175506e5e3ca5a2918a407a77de2ba3",
+          "current_sha256": "e012334152ffd75d5863f6e6363a0b1b3175506e5e3ca5a2918a407a77de2ba3",
+          "current_match": true
+        }
+      },
+      "candidate_sha256": "0636a7ecea3813af5461290464017e54094bebedc7dd6c4c9c3551582b966fb4",
+      "unaccepted_scope": "Node synthetic DOM and saved HTML grammar; no live browser guarantee."
+    },
+    "publisher_authority": {
+      "scope": "Exact private primitive extracted without full import; forward expiry at os.replace and owned compensation semantics",
+      "unique": 7,
+      "test_names": [
+        "rejects_source_drift_and_reapplication",
+        "removing_exact_hooks_restores_complete_original_AST",
+        "legacy_atomic_write_unchanged_outside_context",
+        "expiry_during_render_blocks_actual_forward_switch",
+        "legacy_compensation_unchanged_outside_context",
+        "recovery_ownership_refusal_propagates_before_swallowed_copy",
+        "owned_compensation_can_finish_after_expiry_and_scope_is_restored"
+      ],
+      "report": {
+        "path": "PUBLISHER_AUTHORITY_VALIDATION.json",
+        "sha256": "abb6b1467e3f1d31770c671187a6b5bef095535ca9d6e78bf436339670e0a176",
+        "bytes": 3182
+      },
+      "current_pins": {
+        "cloud/task088_price_sync/patch_publikaciya.py": {
+          "evidence_sha256": "e480d86082dab21b530d7efffa4254b6fdf902b7b64a22641d215e76171c2a5a",
+          "current_sha256": "e480d86082dab21b530d7efffa4254b6fdf902b7b64a22641d215e76171c2a5a",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/test_publikaciya_authority.py": {
+          "evidence_sha256": "4295588b3f3a4dfbbd2cc38db8e611a48a053948a87fd2e09558e1d86a533e64",
+          "current_sha256": "4295588b3f3a4dfbbd2cc38db8e611a48a053948a87fd2e09558e1d86a533e64",
+          "current_match": true
+        },
+        "cloud/task088_v5_writer_fence/visibility_lifecycle.py": {
+          "evidence_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+          "current_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+          "current_match": true
+        },
+        "cloud/task088_v5_writer_fence/publication_fence.py": {
+          "evidence_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+          "current_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+          "current_match": false
+        }
+      },
+      "unaccepted_scope": "Requires active operation/journal ownership and cooperative publication fence; does not prove arbitrary external HTML conflict exclusion"
+    },
+    "closure": {
+      "chronology": [
+        "visibility_closure",
+        "counters_dependency_closure",
+        "final_counter_source_closure",
+        "publisher_source_closure"
+      ],
+      "runs": [
+        {
+          "evidence": {
+            "path": "visibility_closure/VALIDATION.json",
+            "sha256": "3126f8f41cdd93550d3fcee5d69985bc805d9ab8830ef45ec3861ed189026fe6",
+            "bytes": 1327
+          },
+          "log": {
+            "path": "visibility_closure/RESULT.txt",
+            "sha256": "83022d41aa3513241b09bb1806e795fa0102707cdf55f07f5a9a99c372513181",
+            "bytes": 1351,
+            "run_counts": [
+              7
+            ],
+            "outcomes": [
+              "OK"
+            ],
+            "passed_named_test_ids": [
+              "test_release_closure.ReleaseClosureTests.test_preflight_engine_controller_and_release_have_same_closure",
+              "test_release_closure.ReleaseClosureTests.test_complete_builder_refuses_missing_helper_before_source_processing",
+              "test_release_closure.ReleaseClosureTests.test_rebound_partial_manifest_is_rejected_before_preparing_backup",
+              "test_release_closure.ReleaseClosureTests.test_new_sources_and_modules_are_backed_up_installed_and_scoped_restored",
+              "test_release_closure.StagingAndV5AdmissionTests.test_staging_paths_match_hash_bound_archive_without_network",
+              "test_release_closure.StagingAndV5AdmissionTests.test_v5_rejects_new_helper_missing_from_code_pins",
+              "test_release_closure.StagingAndV5AdmissionTests.test_v5_accepts_explicit_complete_synthetic_writer_closure"
+            ]
+          },
+          "result": "PASS",
+          "input_pins": {
+            "cloud/task088_price_sync/build_preflight_bundle.py": {
+              "evidence_sha256": "2b983211bcc9c5268a05e2d47ae679a43de322b7d178ffb3eb78fad42c6ebf7c",
+              "current_sha256": "91b2672cd75253167e81c5bf1784ae2f2b91eef56d5c27105eaf389ea8d2e98d",
+              "current_match": false
+            },
+            "cloud/task088_price_sync/install_package.py": {
+              "evidence_sha256": "4eea9d3db702103e84cb91303401de536b7e6816c3b4b0f25d4cc6940a780621",
+              "current_sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+              "current_match": false
+            },
+            "cloud/task088_price_sync/preflight.py": {
+              "evidence_sha256": "fce070c2a5bfbfcfac1dda2c13369201748e3c53685770de3af2e6b123bf5a40",
+              "current_sha256": "a483c2dad6cb9125fca662d84ae1ca858af1386f54e00883226bd89c1e2f8555",
+              "current_match": false
+            },
+            "cloud/task088_price_sync/stage_preflight.py": {
+              "evidence_sha256": "676bb2d48d5602c488e8df7b53af682a3c3b30c343abec1fd94ff93a742e467f",
+              "current_sha256": "4783e756776192f811fd6fe406ebccb4396f2935947fd1e36c8b8b53cc45fcbc",
+              "current_match": false
+            },
+            "cloud/task088_price_sync/uaart_price_sync_binding.py": {
+              "evidence_sha256": "ec2aa3a41d5c3ca8680228089f85ade641f153505f3e460bc9e76c0721594a2a",
+              "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+              "current_match": false
+            },
+            "cloud/task088_v5_install/build_release.py": {
+              "evidence_sha256": "1744ab8daf29564fb6b228ca65cc06749bb11854f060380cb22c827bc49ea734",
+              "current_sha256": "1744ab8daf29564fb6b228ca65cc06749bb11854f060380cb22c827bc49ea734",
+              "current_match": true
+            },
+            "cloud/task088_v5_install/controller.py": {
+              "evidence_sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+              "current_sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+              "current_match": true
+            },
+            "cloud/task088_v5_writer_fence/test_release_closure.py": {
+              "evidence_sha256": "97912c8836e3565310c1625964dda410b5e0f23365991fbf4e20084c7c9d4785",
+              "current_sha256": "f271b6427a07bdec0730efb1b3476510e283e59e600a385f23062a0a927139df",
+              "current_match": false
+            },
+            "cloud/task088_v5_writer_fence/visibility_lifecycle.py": {
+              "evidence_sha256": "23e0fcc524694157d177f0356d51e91d696551739aee1088add9272c6fee391a",
+              "current_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+              "current_match": false
+            }
+          },
+          "scope": "Mapping/installation/staging/admission validation at the recorded source hashes; not visibility runtime behavior."
+        },
+        {
+          "evidence": {
+            "path": "counters_dependency_closure/VALIDATION.json",
+            "sha256": "3f576b7de8d16c718e5c9480daaa740084ea69cd46da8a2b4587dd859fe9e467",
+            "bytes": 566
+          },
+          "log": {
+            "path": "counters_dependency_closure/RESULT.txt",
+            "sha256": "3717dabd4126cfe109b533baa494e148fecadbef5842db2cbc2fd641f69845ab",
+            "bytes": 814,
+            "run_counts": [
+              4
+            ],
+            "outcomes": [
+              "OK"
+            ],
+            "passed_named_test_ids": [
+              "test_release_closure.ReleaseClosureTests.test_preflight_engine_controller_and_release_have_same_closure",
+              "test_release_closure.ReleaseClosureTests.test_pure_builder_refuses_missing_or_extra_private_dependencies",
+              "test_release_closure.ReleaseClosureTests.test_missing_new_dependency_pin_is_rejected_before_backup",
+              "test_release_closure.ReleaseClosureTests.test_new_sources_and_modules_are_backed_up_installed_and_scoped_restored"
+            ]
+          },
+          "result": "PASS",
+          "input_pins": {
+            "cloud/task088_price_sync/install_package.py": {
+              "evidence_sha256": "0cc983c1b924b31c1c2313b07ab01370a327072c20deae312beb26b5de4db5ec",
+              "current_sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+              "current_match": false
+            },
+            "cloud/task088_price_sync/preflight.py": {
+              "evidence_sha256": "5d7976f453d8834beb36ed44b4df993ba0c3b606310b825182dee6b8c9565ee6",
+              "current_sha256": "a483c2dad6cb9125fca662d84ae1ca858af1386f54e00883226bd89c1e2f8555",
+              "current_match": false
+            },
+            "cloud/task088_v5_writer_fence/test_release_closure.py": {
+              "evidence_sha256": "277628e6175e2ea4250391c24160d538ac050c3d6faca414838cf9b3e2395b84",
+              "current_sha256": "f271b6427a07bdec0730efb1b3476510e283e59e600a385f23062a0a927139df",
+              "current_match": false
+            }
+          },
+          "scope": "Mapping/installation/staging/admission validation at the recorded source hashes; not visibility runtime behavior."
+        },
+        {
+          "evidence": {
+            "path": "final_counter_source_closure/VALIDATION.json",
+            "sha256": "11b6de5a95975d93f63101187e3b9f6dded0767ccd086b62c8295412213628e3",
+            "bytes": 1719
+          },
+          "log": {
+            "path": "final_counter_source_closure/RESULT.txt",
+            "sha256": "9075b671d4ad37b0b13e004f9f063128a33f342e1069bcc65540783a9cf71c96",
+            "bytes": 1752,
+            "run_counts": [
+              9
+            ],
+            "outcomes": [
+              "OK"
+            ],
+            "passed_named_test_ids": [
+              "test_release_closure.ReleaseClosureTests.test_preflight_engine_controller_and_release_have_same_closure",
+              "test_release_closure.ReleaseClosureTests.test_pure_builder_refuses_missing_promoted_counter_source",
+              "test_release_closure.ReleaseClosureTests.test_rebound_partial_manifest_is_rejected_before_preparing_backup",
+              "test_release_closure.ReleaseClosureTests.test_new_sources_and_modules_are_backed_up_installed_and_scoped_restored",
+              "test_release_closure.StagingAndV5AdmissionTests.test_staging_paths_match_hash_bound_archive_without_network",
+              "test_release_closure.StagingAndV5AdmissionTests.test_v5_rejects_new_helper_missing_from_code_pins",
+              "test_release_closure.StagingAndV5AdmissionTests.test_v5_accepts_explicit_complete_synthetic_writer_closure",
+              "test_release_closure.CounterClientCandidateTests.test_composed_empty_inventory_updates_served_client_and_preserves_legacy_home",
+              "test_empty_candidate_composition.EmptyCandidateCompositionTests.test_zero_published_cars_compose_only_four_unchanged_inventory_pages"
+            ]
+          },
+          "result": "PASS",
+          "input_pins": {
+            "cloud/task088_price_sync/build_preflight_bundle.py": {
+              "evidence_sha256": "1b45af6e778cd82df1d8e18766311733eb93f604f25ff6691c65a4d7c41ea1fa",
+              "current_sha256": "91b2672cd75253167e81c5bf1784ae2f2b91eef56d5c27105eaf389ea8d2e98d",
+              "current_match": false
+            },
+            "cloud/task088_price_sync/install_package.py": {
+              "evidence_sha256": "90f0e61209afb055b86f6afb0b4260fbbf15a76c0205097bcaea40b67e2b092d",
+              "current_sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+              "current_match": false
+            },
+            "cloud/task088_price_sync/patch_site_counters.py": {
+              "evidence_sha256": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
+              "current_sha256": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
+              "current_match": true
+            },
+            "cloud/task088_price_sync/preflight.py": {
+              "evidence_sha256": "25702826fd7e250c87b3052a84ca9f8287361ca743efe12adf5699a2f9b635bd",
+              "current_sha256": "a483c2dad6cb9125fca662d84ae1ca858af1386f54e00883226bd89c1e2f8555",
+              "current_match": false
+            },
+            "cloud/task088_price_sync/stage_preflight.py": {
+              "evidence_sha256": "130d8cd0f9cc9f8fa2c212b293e08f47ef03d14b3b7647364c363aac2968f032",
+              "current_sha256": "4783e756776192f811fd6fe406ebccb4396f2935947fd1e36c8b8b53cc45fcbc",
+              "current_match": false
+            },
+            "cloud/task088_price_sync/uaart_price_sync_binding.py": {
+              "evidence_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
+              "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+              "current_match": false
+            },
+            "cloud/task088_stage3_renderer/initial_html_prices.py": {
+              "evidence_sha256": "ff6ba14b32d89dd874eb398f40106931236206af2fc2189bfeb8d9594942c26d",
+              "current_sha256": "ff6ba14b32d89dd874eb398f40106931236206af2fc2189bfeb8d9594942c26d",
+              "current_match": true
+            },
+            "cloud/task088_stage3_renderer/test_empty_candidate_composition.py": {
+              "evidence_sha256": "0a4f42bdc7adaff20ff36ff5ad65d270221ac16dc8ca287a340329e66d9052ae",
+              "current_sha256": "0a4f42bdc7adaff20ff36ff5ad65d270221ac16dc8ca287a340329e66d9052ae",
+              "current_match": true
+            },
+            "cloud/task088_v5_install/build_release.py": {
+              "evidence_sha256": "1744ab8daf29564fb6b228ca65cc06749bb11854f060380cb22c827bc49ea734",
+              "current_sha256": "1744ab8daf29564fb6b228ca65cc06749bb11854f060380cb22c827bc49ea734",
+              "current_match": true
+            },
+            "cloud/task088_v5_install/controller.py": {
+              "evidence_sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+              "current_sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+              "current_match": true
+            },
+            "cloud/task088_v5_writer_fence/test_release_closure.py": {
+              "evidence_sha256": "160e37245fabc02ed180c23a95bc32bae48c33957815543f7f2256c410f21288",
+              "current_sha256": "f271b6427a07bdec0730efb1b3476510e283e59e600a385f23062a0a927139df",
+              "current_match": false
+            },
+            "cloud/task088_v5_writer_fence/visibility_lifecycle.py": {
+              "evidence_sha256": "a24ade7489ce410eb7f62dd12bbae24157d30189932cfd108b0d97e861f9aa9d",
+              "current_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+              "current_match": false
+            }
+          },
+          "scope": "Mapping/installation/staging/admission validation at the recorded source hashes; not visibility runtime behavior."
+        },
+        {
+          "evidence": {
+            "path": "publisher_source_closure/VALIDATION.json",
+            "sha256": "35ada492ecd780a99cc047c133ac69551723061e5e6b25b4ae2f7cf16d55f155",
+            "bytes": 900
+          },
+          "log": {
+            "path": "publisher_source_closure/RESULT.txt",
+            "sha256": "2e105b4789f683c362ea6d645e50b1fec5ebb19b3f6c7cc32cafc61245835fad",
+            "bytes": 995,
+            "run_counts": [
+              5
+            ],
+            "outcomes": [
+              "OK"
+            ],
+            "passed_named_test_ids": [
+              "test_release_closure.ReleaseClosureTests.test_preflight_engine_controller_and_release_have_same_closure",
+              "test_release_closure.ReleaseClosureTests.test_pure_builder_refuses_missing_promoted_counter_source",
+              "test_release_closure.ReleaseClosureTests.test_rebound_partial_manifest_is_rejected_before_preparing_backup",
+              "test_release_closure.ReleaseClosureTests.test_new_sources_and_modules_are_backed_up_installed_and_scoped_restored",
+              "test_release_closure.StagingAndV5AdmissionTests.test_staging_paths_match_hash_bound_archive_without_network"
+            ]
+          },
+          "result": "PASS",
+          "input_pins": {
+            "cloud/task088_price_sync/build_preflight_bundle.py": {
+              "evidence_sha256": "91b2672cd75253167e81c5bf1784ae2f2b91eef56d5c27105eaf389ea8d2e98d",
+              "current_sha256": "91b2672cd75253167e81c5bf1784ae2f2b91eef56d5c27105eaf389ea8d2e98d",
+              "current_match": true
+            },
+            "cloud/task088_price_sync/install_package.py": {
+              "evidence_sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+              "current_sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+              "current_match": true
+            },
+            "cloud/task088_price_sync/patch_publikaciya.py": {
+              "evidence_sha256": "e480d86082dab21b530d7efffa4254b6fdf902b7b64a22641d215e76171c2a5a",
+              "current_sha256": "e480d86082dab21b530d7efffa4254b6fdf902b7b64a22641d215e76171c2a5a",
+              "current_match": true
+            },
+            "cloud/task088_price_sync/preflight.py": {
+              "evidence_sha256": "a483c2dad6cb9125fca662d84ae1ca858af1386f54e00883226bd89c1e2f8555",
+              "current_sha256": "a483c2dad6cb9125fca662d84ae1ca858af1386f54e00883226bd89c1e2f8555",
+              "current_match": true
+            },
+            "cloud/task088_price_sync/stage_preflight.py": {
+              "evidence_sha256": "4783e756776192f811fd6fe406ebccb4396f2935947fd1e36c8b8b53cc45fcbc",
+              "current_sha256": "4783e756776192f811fd6fe406ebccb4396f2935947fd1e36c8b8b53cc45fcbc",
+              "current_match": true
+            },
+            "cloud/task088_v5_writer_fence/test_release_closure.py": {
+              "evidence_sha256": "f271b6427a07bdec0730efb1b3476510e283e59e600a385f23062a0a927139df",
+              "current_sha256": "f271b6427a07bdec0730efb1b3476510e283e59e600a385f23062a0a927139df",
+              "current_match": true
+            }
+          },
+          "scope": "Mapping/installation/staging/admission validation at the recorded source hashes; not visibility runtime behavior."
+        }
+      ],
+      "all_recorded_unique_test_ids_including_overlap": 12,
+      "closure_only_unique_test_ids": 11,
+      "closure_only_ids": [
+        "test_release_closure.CounterClientCandidateTests.test_composed_empty_inventory_updates_served_client_and_preserves_legacy_home",
+        "test_release_closure.ReleaseClosureTests.test_complete_builder_refuses_missing_helper_before_source_processing",
+        "test_release_closure.ReleaseClosureTests.test_missing_new_dependency_pin_is_rejected_before_backup",
+        "test_release_closure.ReleaseClosureTests.test_new_sources_and_modules_are_backed_up_installed_and_scoped_restored",
+        "test_release_closure.ReleaseClosureTests.test_preflight_engine_controller_and_release_have_same_closure",
+        "test_release_closure.ReleaseClosureTests.test_pure_builder_refuses_missing_or_extra_private_dependencies",
+        "test_release_closure.ReleaseClosureTests.test_pure_builder_refuses_missing_promoted_counter_source",
+        "test_release_closure.ReleaseClosureTests.test_rebound_partial_manifest_is_rejected_before_preparing_backup",
+        "test_release_closure.StagingAndV5AdmissionTests.test_staging_paths_match_hash_bound_archive_without_network",
+        "test_release_closure.StagingAndV5AdmissionTests.test_v5_accepts_explicit_complete_synthetic_writer_closure",
+        "test_release_closure.StagingAndV5AdmissionTests.test_v5_rejects_new_helper_missing_from_code_pins"
+      ],
+      "latest_changed_publisher_mapping_run": {
+        "count": 5,
+        "evidence": {
+          "path": "publisher_source_closure/VALIDATION.json",
+          "sha256": "35ada492ecd780a99cc047c133ac69551723061e5e6b25b4ae2f7cf16d55f155",
+          "bytes": 900
+        }
+      },
+      "earlier_counter_scope_run": {
+        "count": 9,
+        "evidence": {
+          "path": "final_counter_source_closure/VALIDATION.json",
+          "sha256": "11b6de5a95975d93f63101187e3b9f6dded0767ccd086b62c8295412213628e3",
+          "bytes": 1719
+        },
+        "not_additive_to_latest_five": true
+      },
+      "source_pin_differences_policy": "Earlier validations retain historical exact input scope. Later publisher5 revalidated changed9-source/9-dependency/package maps; current unchanged binding keeps prior V5 admission evidence. Native module body changed a24...→020...; package mapping checks do not certify its behavior, which native14 and independent review cover. Final release/candidate must bind latest bytes."
+    },
+    "zero_published_composition": {
+      "scope": "PS-A08, zero published inventory with stale car projections refused and exact home topology retained",
+      "unique": 5,
+      "log": {
+        "path": "zero_published_composition/RESULT.txt",
+        "sha256": "ccfa74ceb3795844c4bacd7724f060ae38b96732f031afbfe0fbccec5fd0ecf4",
+        "bytes": 987,
+        "run_counts": [
+          5
+        ],
+        "outcomes": [
+          "OK"
+        ],
+        "passed_named_test_ids": [
+          "test_empty_candidate_composition.EmptyCandidateCompositionTests.test_zero_catalog_refuses_car_link_outside_article",
+          "test_empty_candidate_composition.EmptyCandidateCompositionTests.test_zero_catalog_refuses_retained_public_card",
+          "test_empty_candidate_composition.EmptyCandidateCompositionTests.test_zero_home_refuses_car_projection",
+          "test_empty_candidate_composition.EmptyCandidateCompositionTests.test_zero_home_still_requires_exact_known_stage_topology",
+          "test_empty_candidate_composition.EmptyCandidateCompositionTests.test_zero_published_cars_compose_only_four_unchanged_inventory_pages"
+        ]
+      },
+      "evidence": {
+        "path": "zero_published_composition/VALIDATION.json",
+        "sha256": "f77ddf371f38e0d7dbc5c7bf94ec739c8a83b2fc7fbfa81358bd6cf095d02ce7",
+        "bytes": 635
+      },
+      "input_pins": {
+        "cloud/task088_price_sync/install_package.py": {
+          "evidence_sha256": "11c62a3f2e9a17ebf712fba6e3f2b7830e3ce19289ead0fa96578053721feff9",
+          "current_sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+          "current_match": false
+        },
+        "cloud/task088_stage3_renderer/initial_html_prices.py": {
+          "evidence_sha256": "ff6ba14b32d89dd874eb398f40106931236206af2fc2189bfeb8d9594942c26d",
+          "current_sha256": "ff6ba14b32d89dd874eb398f40106931236206af2fc2189bfeb8d9594942c26d",
+          "current_match": true
+        },
+        "cloud/task088_stage3_renderer/test_empty_candidate_composition.py": {
+          "evidence_sha256": "a095fd1f9f0977f3a459e782ff795b2fa1b22335c7ca0877b4e90b2bfbc6c9be",
+          "current_sha256": "0a4f42bdc7adaff20ff36ff5ad65d270221ac16dc8ca287a340329e66d9052ae",
+          "current_match": false
+        }
+      },
+      "overlap_with_closure": [
+        "test_empty_candidate_composition.EmptyCandidateCompositionTests.test_zero_published_cars_compose_only_four_unchanged_inventory_pages"
+      ],
+      "zero_plus_closure_distinct_recorded_ids": 16,
+      "note": "Current composed empty case rerun in later counterclosure; initial standalone raw-result5 remains separate historical source scope."
+    },
+    "absent_anchor_startup": {
+      "scope": "Stage3 ordinary CRM startup before Stage4 authority, exact absent-anchor classification, actual post_init, PID-bound readiness, fail-closed price/worker mutation and truthful job registration",
+      "report": {
+        "path": "ABSENT_ANCHOR_PRICE_STARTUP_FINAL.json",
+        "sha256": "c24403780c9c0ecb297b614331f8cee54180327c6ffaec4ea6c65bda88ce7e0e",
+        "bytes": 4885
+      },
+      "new_test_ids": 8,
+      "selected_existing_startup_checks": 4,
+      "selected_existing_worker_compatibility_checks": 6,
+      "distinct_targeted_test_ids": 18,
+      "validation": [
+        {
+          "path": "unconfigured_startup_final_tests.log",
+          "sha256": "e14284e55d2782f3600eaa1ed7be6c86c3697f7d8c6f18bb77f9e4e57d4feba9",
+          "passed": 12,
+          "test_ids": [
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_absent_anchor_preserves_existing_application_without_binding_or_jobs",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_actual_generated_register_keeps_base_handlers_but_skips_new_worker_jobs",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_direct_or_inherited_worker_cannot_mutate_claims_files_or_send_until_ready",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_existing_invalid_or_broken_symlink_anchor_still_hard_fails",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_price_and_confirmation_cannot_write_queue_or_data_until_configured",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_readiness_is_pid_bound_and_unregistered_installer_gets_no_runtime_grant",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_real_validated_binding_becomes_ready_only_after_verified_post_init",
+            "test_unconfigured_startup.UnconfiguredStartupTests.test_registered_callbacks_wait_for_real_bot_post_init",
+            "test_binding.BindingTests.test_bootstrap_preserves_post_init_and_does_not_read_uninitialized_bot",
+            "test_binding.BindingTests.test_ordinary_halt_keeps_crm_bootstrap_available_but_blocks_prices",
+            "test_cars_ui_hook.CarsHookTests.test_nonprice_handlers_and_stage_job_remain_unchanged",
+            "test_cars_ui_hook.CarsHookTests.test_each_authorized_operator_can_submit_both_markets"
+          ]
+        },
+        {
+          "path": "unconfigured_worker_compatibility_tests.log",
+          "sha256": "c667e8e4e981a2d820d0f709e3f0bcb343444a75e314c3f72a6ebe43e3b79d44",
+          "passed": 6,
+          "test_ids": [
+            "test_v5_runtime.V5RuntimeTests.test_four_conscious_changes_fully_complete_fifo_and_preserve_ua",
+            "test_v5_runtime.V5RuntimeTests.test_success_receipt_sent_once_to_initiating_operator",
+            "test_runtime.RuntimeTests.test_register_requires_verified_binding_and_uses_vietnam_10am",
+            "test_runtime.RuntimeTests.test_runtime_failure_notifies_without_working_crm_database",
+            "test_runtime.RuntimeTests.test_daily_fallback_survives_database_outage_without_repeating_same_day",
+            "test_visibility_price_lifecycle.VisibilityPriceTests.test_blocked_old_public_view_reconciles_same_operation_after_actual_retirement"
+          ]
+        }
+      ],
+      "current_pins": {
+        "cloud/task088_price_sync/uaart_price_sync_runtime.py": {
+          "evidence_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+          "current_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/uaart_price_sync_binding.py": {
+          "evidence_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+          "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/patch_cars_ui.py": {
+          "evidence_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+          "current_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/test_unconfigured_startup.py": {
+          "evidence_sha256": "43c8c28935557a7a8b1cae94946089a8d626fb1d3a5cfa13ca9cc54939ba3714",
+          "current_sha256": "43c8c28935557a7a8b1cae94946089a8d626fb1d3a5cfa13ca9cc54939ba3714",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/test_binding.py": {
+          "evidence_sha256": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177",
+          "current_sha256": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/test_cars_ui_hook.py": {
+          "evidence_sha256": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96",
+          "current_sha256": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/BINDING_CONTRACT.md": {
+          "evidence_sha256": "22870bc73b4fde0b503be9f6980bdad4b7a2e993ea4b2f42b08a26b9407494ea",
+          "current_sha256": "22870bc73b4fde0b503be9f6980bdad4b7a2e993ea4b2f42b08a26b9407494ea",
+          "current_match": true
+        }
+      },
+      "not_added_to_price_152": true,
+      "independent_review": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_PENDING"
+    },
+    "absent_anchor_native_gates": {
+      "scope": "Stage/media background and manual protected mutation gates plus central publication fence",
+      "report": {
+        "path": "ABSENT_ANCHOR_NATIVE_GATES_FINAL.json",
+        "sha256": "a3ad44a6df3bec0e252c3324d1c1e7b11487d3b7849e66685085e8e618d9752d",
+        "bytes": 2298
+      },
+      "new_targeted_test_methods": 6,
+      "recorded_result": "PASS",
+      "current_pins": {
+        "cloud/task088_v5_writer_fence/integrate_private_sources.py": {
+          "evidence_sha256": "32fe8299bd6acab0b8201f10d9a186e3c80069340e31e0df71cae5fd25d4e08f",
+          "current_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+          "current_match": false
+        },
+        "cloud/task088_v5_writer_fence/publication_fence.py": {
+          "evidence_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+          "current_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+          "current_match": true
+        },
+        "cloud/task088_v5_writer_fence/test_activation_gates.py": {
+          "evidence_sha256": "af3f323fefb89d10989799ab7e6e3d4037f62db37fa2315207adfcfbb36d985e",
+          "current_sha256": "af3f323fefb89d10989799ab7e6e3d4037f62db37fa2315207adfcfbb36d985e",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/patch_cars_ui.py": {
+          "evidence_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+          "current_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+          "current_match": true
+        },
+        "cloud/task088_price_sync/uaart_price_sync_runtime.py": {
+          "evidence_sha256": "d92ed1c613c0b08c4c382c47e51125d85efa3853a16d0154368ea4e14f97ae5b",
+          "current_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+          "current_match": false
+        },
+        "cloud/task088_price_sync/uaart_price_sync_binding.py": {
+          "evidence_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+          "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+          "current_match": true
+        }
+      },
+      "runtime_pin_note": "Recorded runtime d92ed1c6 is intermediate; final da28632f keeps identical native tri-state APIs and adds stricter worker-entry guards. Native source and generated composition unchanged; separate startup final tests bind final runtime."
+    },
+    "optional_photo_hide_startup_gate": {
+      "report": {
+        "path": "OPTIONAL_PHOTO_HIDE_GATE_RESULT.json",
+        "sha256": "51c9ff419011d0a3fe7e513663213086ed9bafb510d640a28aeeb98afe731a88",
+        "bytes": 1953
+      },
+      "scope": "Only optional registration during exact CRM startup: genuine missing anchor skips import/register. Presence retains prior registration even while readiness=False; strict bootstrap validation remains unchanged. If anchor disappears after optional registration, final invariant forbids a downgrade to unconfigured startup. No claim of universal readonly media.",
+      "distinct_new_test_methods": 3,
+      "test_ids": [
+        "test_optional_photo_hide_gate.OptionalPhotoHideGate.test_absent_anchor_never_imports_or_registers_optional_media_extension",
+        "test_optional_photo_hide_gate.OptionalPhotoHideGate.test_anchor_removed_after_registration_cannot_downgrade_to_unconfigured",
+        "test_optional_photo_hide_gate.OptionalPhotoHideGate.test_present_anchor_keeps_original_optional_registration_while_readiness_false"
+      ],
+      "runs": [
+        {
+          "path": "optional_photo_hide_gate_tests.log",
+          "sha256": "2b693ac032d17bda837d7587ba221c6a9ec59ca416aece34d5b1d1a7b49e82c1",
+          "bytes": 520
+        },
+        {
+          "path": "optional_photo_hide_gate_final_tests.log",
+          "sha256": "e84c66e83a532bc67c2580cd92a5d127d7b186cad4e19bddef9e77a53d613503",
+          "bytes": 725
+        }
+      ],
+      "counting_note": "Initial2 plus final3 overlap; only3 distinct methods, never5.",
+      "current_pins": {
+        "cloud/task088_v5_writer_fence/integrate_private_sources.py": {
+          "evidence_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+          "current_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+          "current_match": true
+        },
+        "cloud/task088_v5_writer_fence/test_optional_photo_hide_gate.py": {
+          "evidence_sha256": "7b5020997751c33df22a737566d0e2f6323556567f930d53ab4196422ecfae86",
+          "current_sha256": "7b5020997751c33df22a737566d0e2f6323556567f930d53ab4196422ecfae86",
+          "current_match": true
+        }
+      },
+      "generated_cars_ui_sha256": "c2be2af7720a8361665fed872256760264ffc735b68a197763f5f3af1dad62e2",
+      "private_extension_body_known": false,
+      "independent_review": {
+        "path": "FINAL_CANDIDATE_BINDING_INDEPENDENT_V2.json",
+        "sha256": "8270b5485b984f57544da2f2a1635216091b5b39d06c95238e795cd42465c78d",
+        "bytes": 2454
+      }
+    },
+    "preview_counter_csp": {
+      "report": {
+        "path": "PREVIEW_COUNTER_CSP_VALIDATION.json",
+        "sha256": "a1f1cede274c3babb786dec7721538b34bed3e579fc2042bd48e45ae531c857b",
+        "bytes": 1038
+      },
+      "scope": "Only dedicated Preview CSP: home and catalog may connect to exact same-origin /video/katalog.html if pinned in manifest; runtime retains authentication, host, GET/HEAD and byte-pin enforcement. Card and harness connect policies unchanged.",
+      "distinct_targeted_test_methods": 2,
+      "test_names": [
+        "test_counter_csp_allows_only_exact_catalogue_on_two_counter_surfaces",
+        "test_public_counter_catalogue_still_enforces_pinned_bytes_and_no_fallback"
+      ],
+      "current_pins": {
+        "cloud/task088_v5_preview/wsgi_preview.py": {
+          "evidence_sha256": "191989bd07d0eea55782671778b8bb2dd1b531eda88a561bbc4b229afcd7d289",
+          "current_sha256": "191989bd07d0eea55782671778b8bb2dd1b531eda88a561bbc4b229afcd7d289",
+          "current_match": true
+        },
+        "cloud/task088_v5_preview/test_preview.py": {
+          "evidence_sha256": "2e28d0c5b4e5ff1e9daf012d7b829744c5bf1ff9a7ccb66342411ccacb6d9710",
+          "current_sha256": "2e28d0c5b4e5ff1e9daf012d7b829744c5bf1ff9a7ccb66342411ccacb6d9710",
+          "current_match": true
+        }
+      },
+      "browser_run": false,
+      "preview_gate": "NOT_PASSED",
+      "not_added_to_historical24": true
+    }
+  },
+  "independent_review": {
+    "evidence": {
+      "path": "STATUS_LIFECYCLE_INDEPENDENT_REVIEW.json",
+      "sha256": "17147e41e1c73a6d17a2470fa0e83a6f2737ac1bcc82ef8ff9b2a20f8cc445da",
+      "bytes": 26415
+    },
+    "status": "SCOPED_CODE_AND_CURRENT_CANDIDATE_PASS_PREVIEW_PENDING",
+    "current_pins": {
+      "cloud/task088_price_sync/outbox.py": {
+        "evidence_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "current_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "current_match": true
+      },
+      "cloud/task088_price_sync/uaart_price_sync_runtime.py": {
+        "evidence_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+        "current_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+        "current_match": true
+      },
+      "cloud/task088_price_sync/uaart_price_sync_binding.py": {
+        "evidence_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+        "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+        "current_match": true
+      },
+      "cloud/task088_price_sync/patch_cars_ui.py": {
+        "evidence_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+        "current_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+        "current_match": true
+      },
+      "cloud/task088_price_sync/patch_guard.py": {
+        "evidence_sha256": "9a213e1800e801fd773d7735529bd5b1864dad19c5cf7aa11697c47250e4a6ad",
+        "current_sha256": "9a213e1800e801fd773d7735529bd5b1864dad19c5cf7aa11697c47250e4a6ad",
+        "current_match": true
+      },
+      "cloud/task088_price_sync/patch_publikaciya.py": {
+        "evidence_sha256": "e480d86082dab21b530d7efffa4254b6fdf902b7b64a22641d215e76171c2a5a",
+        "current_sha256": "e480d86082dab21b530d7efffa4254b6fdf902b7b64a22641d215e76171c2a5a",
+        "current_match": true
+      },
+      "cloud/task088_price_sync/patch_site_counters.py": {
+        "evidence_sha256": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
+        "current_sha256": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
+        "current_match": true
+      },
+      "cloud/task088_v5_writer_fence/visibility_lifecycle.py": {
+        "evidence_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+        "current_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+        "current_match": true
+      },
+      "cloud/task088_v5_writer_fence/integrate_private_sources.py": {
+        "evidence_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+        "current_sha256": "93da376846b8d54c1c4812f97a923564ba97c6a7d8efa5dbe9a271f3a09715c2",
+        "current_match": true
+      },
+      "cloud/task088_v5_writer_fence/publication_fence.py": {
+        "evidence_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+        "current_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+        "current_match": true
+      }
+    },
+    "probes": [
+      {
+        "evidence": {
+          "path": "REAL_PAGE_RETIREMENT_PROBE_BEFORE.json",
+          "sha256": "1e164d2aa25895bfc6a59706017c8b3638c52eb6e857b3a3a8f835021434a5d8",
+          "bytes": 860
+        },
+        "status": "BLOCKER_REPRODUCED",
+        "scope": "SAVED_REAL_COMPOSED_HTML_AND_SAVED_ACTUAL_COUNTER_SOURCE_NO_PRODUCTION",
+        "included_in_unit_test_totals": false,
+        "observed_pins": {
+          "source_sha256": "500ca67145faa38ca9f72ac6da85e2a7d1c351f8f2fcca4a2edeb34c22734c23",
+          "catalog_sha256": "27001794768a827678715b859f5e2e9b32e740c2330d30ad7e44ae94df2620c2"
+        }
+      },
+      {
+        "evidence": {
+          "path": "REAL_PAGE_RETIREMENT_PROBE.json",
+          "sha256": "a589be42aaca10d5116d798dbd7175c4c0e35336521ec5d49079edef91f937b0",
+          "bytes": 1027
+        },
+        "status": "PASS",
+        "scope": "SAVED_REAL_HTML_ISOLATED_COPY_SYNTHETIC_ROUTING_NO_LIVE_PASS",
+        "included_in_unit_test_totals": false,
+        "observed_pins": {
+          "source_sha256": {
+            "video/katalog.html": "27001794768a827678715b859f5e2e9b32e740c2330d30ad7e44ae94df2620c2",
+            "video/index.html": "57259685b0bf0bbd3fbdc56fa46680073d11538ba625fd2ebffaf555e7259cc8",
+            "site/katalog.html": "27001794768a827678715b859f5e2e9b32e740c2330d30ad7e44ae94df2620c2",
+            "site/index.html": "1118916dc956d1226786698eb389ec0a8b3f74bbd61c40a2b7a33c042e629c69"
+          },
+          "implementation_sha256": "c0db06a4d58ab150b266431f942f233881643afa877e4353b6fd4cad4145a60e",
+          "counter_dependency_sha256": "0636a7ecea3813af5461290464017e54094bebedc7dd6c4c9c3551582b966fb4"
+        }
+      },
+      {
+        "evidence": {
+          "path": "RETIREMENT_PLAN_RECOVERY_PROBE.json",
+          "sha256": "0fce86f5f0eda5501e25e0af7d5c6a18802022e3812b6467e3fe21cda4f1e5da",
+          "bytes": 557
+        },
+        "status": "PASS",
+        "scope": "SAVED_REAL_HTML_ISOLATED_COPY_NO_LIVE_PASS",
+        "included_in_unit_test_totals": false,
+        "observed_pins": {
+          "lifecycle_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+          "counter_sha256": "0636a7ecea3813af5461290464017e54094bebedc7dd6c4c9c3551582b966fb4"
+        }
+      },
+      {
+        "evidence": {
+          "path": "NATIVE_RECOVERY_OWNERSHIP_PROBE.json",
+          "sha256": "24abdaf1d88ace76ff8bfe3fe555c62675b80bfb5839c1f9731df7a8ad9bf37e",
+          "bytes": 785
+        },
+        "status": "PASS",
+        "scope": "ISOLATED_FIXTURE_SQLITE_REAL_FENCE_NO_LIVE_PASS",
+        "included_in_unit_test_totals": false,
+        "observed_pins": {
+          "lifecycle_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+          "fence_sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
+        }
+      },
+      {
+        "evidence": {
+          "path": "PRICE_SWITCH_EXPIRY_PROBE_BEFORE.json",
+          "sha256": "4f06d15c24790d9f3a5e3c43bf08e1164fc9c5559ad557bee344f949df23f355",
+          "bytes": 474
+        },
+        "status": "BLOCKER_REPRODUCED",
+        "scope": "ISOLATED_SYNTHETIC_AUTHORITY_NO_LIVE_PASS",
+        "included_in_unit_test_totals": false,
+        "observed_pins": {
+          "runtime_sha256": "9cc84fb9af71ba8f93eeff8d416838c270f47302c8a1e33fb20b385f57ad9037"
+        }
+      },
+      {
+        "evidence": {
+          "path": "PRICE_SWITCH_EXPIRY_PROBE_AFTER.json",
+          "sha256": "dcf9efc5787edf167627e07e5c89b99253129e23d41939b0237325bd2639d37f",
+          "bytes": 523
+        },
+        "status": "PASS_NO_EXPIRED_WRITE",
+        "scope": "ISOLATED_SYNTHETIC_AUTHORITY_NO_LIVE_PASS",
+        "included_in_unit_test_totals": false,
+        "observed_pins": {
+          "runtime_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32"
+        }
+      }
+    ],
+    "final_candidate_binding": {
+      "status": "PASS_EXACT_CURRENT_V2_68_FILES",
+      "path": "/workspace/scratch/cc71e1c55fba/private_current_candidate_20260920_v2",
+      "canonical_manifest_sha256": "53544a272be2c11c8faeac7089fd5638ba26e74d65e209c7a9b73f523a4892a7",
+      "raw_manifest_sha256": "b99db44a534483e6db573e2847238b9791f93d03d77f7409c3fc9e7374ef4c8e",
+      "independent_report": "/workspace/scratch/cc71e1c55fba/status_point4_evidence/FINAL_CANDIDATE_BINDING_INDEPENDENT_V2.json",
+      "independent_report_sha256": "8270b5485b984f57544da2f2a1635216091b5b39d06c95238e795cd42465c78d",
+      "v1_independent_evidence_preserved": true,
+      "changed_from_v1": [
+        "cars_ui.py"
+      ],
+      "unchanged_files": 67,
+      "beforehashes_bound_to_current_observation": 68,
+      "code_and_module_files": 20,
+      "core_html_files": 48
+    },
+    "final_candidate_v2_evidence": {
+      "path": "FINAL_CANDIDATE_BINDING_INDEPENDENT_V2.json",
+      "sha256": "8270b5485b984f57544da2f2a1635216091b5b39d06c95238e795cd42465c78d",
+      "bytes": 2454
+    },
+    "previous_main_review": {
+      "path": "STATUS_LIFECYCLE_INDEPENDENT_REVIEW_PRE_FINAL_BINDING.json",
+      "sha256": "1bc34eb8155359994837aa0ddb96d3d6498f6d2cff21833d38f82aeef621ab07",
+      "bytes": 15314
+    },
+    "previous_v1_binding": {
+      "path": "FINAL_CANDIDATE_BINDING_INDEPENDENT.json",
+      "sha256": "b8e75947a7006595cb50daa72cea59befbd86a2f9db407dbf867ddbaa65428ae",
+      "bytes": 2582
+    }
+  },
+  "historical_unchanged_not_rerun": {
+    "program_suite_446": true,
+    "maintenance_183": true,
+    "price_css_matrix_120": true,
+    "historical_preview_24": {
+      "rerun": false,
+      "current_applicability": "Parent task must independently bind current inputs/HTML/routes; historical pass is not automatically current"
+    },
+    "no_global_historical_fullpass_claim": true
+  },
+  "release_readback": {
+    "evidence": {
+      "path": "startup_final_generated_release/RESULT.json",
+      "sha256": "6c6ce657249048e69dee846d63daf27afde5696e9f0a86d65a5f1d199eebd891",
+      "bytes": 2297
+    },
+    "recorded_status": "PASS_PUBLIC_RELEASE_AND_CANDIDATE_MODULE_READBACK",
+    "recorded_files": 20,
+    "current_release_pin_checks": {
+      "backup_controller.py": {
+        "evidence_sha256": "5080826a2a7fa0afef24134e1d69fbb48596cc824d97e939e63c3ef6b25a61a1",
+        "current_release_sha256": "5080826a2a7fa0afef24134e1d69fbb48596cc824d97e939e63c3ef6b25a61a1",
+        "match": true
+      },
+      "controller.py": {
+        "evidence_sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+        "current_release_sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+        "match": true
+      },
+      "install_package.py": {
+        "evidence_sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+        "current_release_sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+        "match": true
+      },
+      "mutation_recovery.py": {
+        "evidence_sha256": "dfecaae1d98dcd10475d699a59519e847bda3bb4a2726a752e3d5c2dc83475c9",
+        "current_release_sha256": "dfecaae1d98dcd10475d699a59519e847bda3bb4a2726a752e3d5c2dc83475c9",
+        "match": true
+      },
+      "outbox.py": {
+        "evidence_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "current_release_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "match": true
+      },
+      "owner_policy.py": {
+        "evidence_sha256": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+        "current_release_sha256": "279714069168c2b14447119269e5df49c5c967374de22db23b8714efc0cb9dcb",
+        "match": true
+      },
+      "price_publication.py": {
+        "evidence_sha256": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+        "current_release_sha256": "7e0ae48d2eb055ea2908b57223434c5188c2630830c32b6b8a82cce1f6b96741",
+        "match": true
+      },
+      "publication_fence.py": {
+        "evidence_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+        "current_release_sha256": "00305780e349cfea7f0b5c6533552a3a8eed1f3ac7ff405c9fee7b37e3a21a9f",
+        "match": true
+      },
+      "remote_adapter.py": {
+        "evidence_sha256": "3fb5974eb89a2d10d18455b3f17a45620a1c1a94013ff34fe40a7dcbdc50f3da",
+        "current_release_sha256": "3fb5974eb89a2d10d18455b3f17a45620a1c1a94013ff34fe40a7dcbdc50f3da",
+        "match": true
+      },
+      "rollback_controller.py": {
+        "evidence_sha256": "a5e21ac45f93bd31f410cffd19649ce7655a1c9eb706f51df894293f403bcd0b",
+        "current_release_sha256": "a5e21ac45f93bd31f410cffd19649ce7655a1c9eb706f51df894293f403bcd0b",
+        "match": true
+      },
+      "test_adapter.py": {
+        "evidence_sha256": "5e4b08c67bddc3900b1582a338cf96f8a0839882a66054468e1f9b75efb30aff",
+        "current_release_sha256": "5e4b08c67bddc3900b1582a338cf96f8a0839882a66054468e1f9b75efb30aff",
+        "match": true
+      },
+      "test_install_package.py": {
+        "evidence_sha256": "17fd48cf06e7454a9fee75cbec7ff68af6c2fe17b403e534301043ff64ed1f2e",
+        "current_release_sha256": "17fd48cf06e7454a9fee75cbec7ff68af6c2fe17b403e534301043ff64ed1f2e",
+        "match": true
+      },
+      "test_operation_recovery.py": {
+        "evidence_sha256": "302e755ed9145823ec6d3599b74c076b94cedea7de43ea33487dbe4299f3fdc7",
+        "current_release_sha256": "302e755ed9145823ec6d3599b74c076b94cedea7de43ea33487dbe4299f3fdc7",
+        "match": true
+      },
+      "uaart_market_prices.py": {
+        "evidence_sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+        "current_release_sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed",
+        "match": true
+      },
+      "uaart_price_control_reader.py": {
+        "evidence_sha256": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c",
+        "current_release_sha256": "839dd178039c513548e28a77233b14e3083cf239fcf8019eb188077df971326c",
+        "match": true
+      },
+      "uaart_price_sync_binding.py": {
+        "evidence_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+        "current_release_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+        "match": true
+      },
+      "uaart_price_sync_confirmation.py": {
+        "evidence_sha256": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+        "current_release_sha256": "c5922ee0a17a5656db375f7fa2f053ced2911bc7873b365cb69312b5bab9325d",
+        "match": true
+      },
+      "uaart_price_sync_outbox.py": {
+        "evidence_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "current_release_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "match": true
+      },
+      "uaart_price_sync_runtime.py": {
+        "evidence_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+        "current_release_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+        "match": true
+      },
+      "visibility_lifecycle.py": {
+        "evidence_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+        "current_release_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+        "match": true
+      }
+    },
+    "provenance_sha256": "d416d967300b4363a56a3ffa3f99f58ab8f2ac2e4721813f4e7134cc78c32b17",
+    "pending_source_promotion": "RESOLVED_FINAL_STARTUP_RELEASE_EXACT20_READBACK",
+    "previous_receipts": [
+      {
+        "path": "final_generated_release/RESULT.json",
+        "sha256": "1f81b1aca310eda5e14128be424c2d7ea4559a6c66044bffe4f82b4ea71b89fb",
+        "bytes": 2241
+      },
+      {
+        "path": "generated_release/RESULT.json",
+        "sha256": "4f7bff2c50bf74ec3d237bb228ab218e2bd7e71bacc9e10375e378a7c4007c68",
+        "bytes": 2254
+      }
+    ],
+    "pin_scope": "Latest frozen startup runtime da28632f, binding e6605725 and publication fence00305780; all20 generated public module bytes independently rehashed by index author.",
+    "v2_unchanged_binding": {
+      "result_sha256": "02ff0314dcc9bc1fbc718a530614fd74a1b4ec053b64c0fee1489306eaa7887f",
+      "unchanged_public_files": 20,
+      "unchanged_runtime_modules": 11,
+      "refresh_required": false,
+      "provenance_sha256": "d416d967300b4363a56a3ffa3f99f58ab8f2ac2e4721813f4e7134cc78c32b17"
+    }
+  },
+  "privacy": {
+    "report": {
+      "path": "PRIVACY_SCAN_INDEX.json",
+      "sha256": "4f578c7622296e9d6ceae67c399cc4da23254e64ba1c7fff438d0ca7917649d1",
+      "bytes": 809
+    },
+    "scanned_files": 134,
+    "literal_credential_findings": 0,
+    "false_positive_assignments": 1,
+    "private_source_exclusions": [
+      "CURRENT_PREVIEW_WSGI_OBSERVED.py",
+      "private_inputs_* directories",
+      "private_source_candidate* directories",
+      "private_combined_candidate* directories",
+      "compiled __pycache__ artifacts"
+    ],
+    "source_exclusion_reason": "Observed private WSGI code must not enter public evidence upload; expose only hash/sanitized route facts. Public patch/build scripts are repository-backed implementations and may contain narrowly scoped transformation anchors. No actual full private production source is intended for public upload.",
+    "upload_status": "No Git upload performed by index author; final parent allowlist must enforce exclusions.",
+    "startup_delta_scan": {
+      "path": "STARTUP_PRIVACY_DELTA.json",
+      "sha256": "d6ef89e5a5e9fcc39cdb9dde3be4941afec86c6ecd39dfab8b75bb8a1347392b",
+      "files": 13,
+      "literal_credential_findings": 0
+    },
+    "log_allowlist": {
+      "path": "PUBLIC_LOG_ALLOWLIST.json",
+      "sha256": "9cae23fd78c486b0f5e5a40f53d9ce44b45f4f23675eac17d1481f815b9158bc",
+      "bytes": 15404
+    },
+    "traceback_log_exclusions": [
+      "native_guard_quiescence.log",
+      "native_visibility_tests.log",
+      "price_affected_tests.log"
+    ]
+  },
+  "pending_public_map_snapshot": {
+    "evidence": {
+      "path": "PENDING_PUBLIC_FILES.json",
+      "sha256": "8ed283d6cea21a521123a780da12f1ed658bf86dd77293cdfa66f4a17dc3d56d",
+      "bytes": 10339
+    },
+    "current_file_checks": [
+      {
+        "path": "cloud/task088_v5_writer_fence/integrate_private_sources.py",
+        "snapshot_sha256": "a65fe90ff559ecc883f0b4f3596ebba3340d8e7dc565cfc8338bde259766fe51",
+        "current_sha256": "32fe8299bd6acab0b8201f10d9a186e3c80069340e31e0df71cae5fd25d4e08f",
+        "snapshot_current_match": false
+      },
+      {
+        "path": "cloud/task088_v5_writer_fence/visibility_lifecycle.py",
+        "snapshot_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+        "current_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_writer_fence/test_visibility_lifecycle.py",
+        "snapshot_sha256": "11ba702923b1d4db3b45a86084ef773e558a959d35ed1913ad9621f74102a37c",
+        "current_sha256": "11ba702923b1d4db3b45a86084ef773e558a959d35ed1913ad9621f74102a37c",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_writer_fence/test_private_source_integration.py",
+        "snapshot_sha256": "7c36b45f704f0887c0d45cfe8a85f525cfbd16feca86bb093897835bb3e8cf03",
+        "current_sha256": "7c36b45f704f0887c0d45cfe8a85f525cfbd16feca86bb093897835bb3e8cf03",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_writer_fence/test_direct_rebuild_quiescence.py",
+        "snapshot_sha256": "fc92061f4cfe505df707adb7645151ad43264e943505448760147c487a7053a0",
+        "current_sha256": "fc92061f4cfe505df707adb7645151ad43264e943505448760147c487a7053a0",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_writer_fence/test_release_closure.py",
+        "snapshot_sha256": "f271b6427a07bdec0730efb1b3476510e283e59e600a385f23062a0a927139df",
+        "current_sha256": "f271b6427a07bdec0730efb1b3476510e283e59e600a385f23062a0a927139df",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/BINDING_CONTRACT.md",
+        "snapshot_sha256": "59ce990c8d81165b2ec910d21829097e36d997d356ff74c4f231e75e4ed4eb1d",
+        "current_sha256": "22870bc73b4fde0b503be9f6980bdad4b7a2e993ea4b2f42b08a26b9407494ea",
+        "snapshot_current_match": false
+      },
+      {
+        "path": "cloud/task088_price_sync/test_guard_fence.py",
+        "snapshot_sha256": "7944efaf7af24286a1cd3dc6b02a86b6a82f578b71afb8a5385117f28d257a23",
+        "current_sha256": "7944efaf7af24286a1cd3dc6b02a86b6a82f578b71afb8a5385117f28d257a23",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/uaart_price_sync_runtime.py",
+        "snapshot_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
+        "current_sha256": "da28632f409eb91c77f14306e4711e09ae841913621750b924ffb27935b96591",
+        "snapshot_current_match": false
+      },
+      {
+        "path": "cloud/task088_price_sync/test_cars_ui_hook.py",
+        "snapshot_sha256": "1ccef2055cb1947d509158b7a0bcc19dc68ff7df8e24ac6ab72278f6b451c97d",
+        "current_sha256": "4469d3136e9f1d110602a7fd18c7c7f249c15e3478d321b42044e4e412fc7e96",
+        "snapshot_current_match": false
+      },
+      {
+        "path": "cloud/task088_price_sync/patch_cars_ui.py",
+        "snapshot_sha256": "98c33c0e9f00b9e0bde026393af088ecd12c5f67ec083925dff9624de0877bd4",
+        "current_sha256": "fa71d5eb47f14b73c8370091e6c4c018752e324180339eee5259db22f17432a4",
+        "snapshot_current_match": false
+      },
+      {
+        "path": "cloud/task088_price_sync/test_site_counters_patch.py",
+        "snapshot_sha256": "e012334152ffd75d5863f6e6363a0b1b3175506e5e3ca5a2918a407a77de2ba3",
+        "current_sha256": "e012334152ffd75d5863f6e6363a0b1b3175506e5e3ca5a2918a407a77de2ba3",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/patch_site_counters.py",
+        "snapshot_sha256": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
+        "current_sha256": "3a65827e1d6d668a1b2f9940b8fc1d37e372a88bf006e567c183b02fa4b6d305",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/stage_preflight.py",
+        "snapshot_sha256": "4783e756776192f811fd6fe406ebccb4396f2935947fd1e36c8b8b53cc45fcbc",
+        "current_sha256": "4783e756776192f811fd6fe406ebccb4396f2935947fd1e36c8b8b53cc45fcbc",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/build_preflight_bundle.py",
+        "snapshot_sha256": "91b2672cd75253167e81c5bf1784ae2f2b91eef56d5c27105eaf389ea8d2e98d",
+        "current_sha256": "91b2672cd75253167e81c5bf1784ae2f2b91eef56d5c27105eaf389ea8d2e98d",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/outbox.py",
+        "snapshot_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "current_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/test_publikaciya_authority.py",
+        "snapshot_sha256": "4295588b3f3a4dfbbd2cc38db8e611a48a053948a87fd2e09558e1d86a533e64",
+        "current_sha256": "4295588b3f3a4dfbbd2cc38db8e611a48a053948a87fd2e09558e1d86a533e64",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/patch_guard.py",
+        "snapshot_sha256": "9a213e1800e801fd773d7735529bd5b1864dad19c5cf7aa11697c47250e4a6ad",
+        "current_sha256": "9a213e1800e801fd773d7735529bd5b1864dad19c5cf7aa11697c47250e4a6ad",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/patch_publikaciya.py",
+        "snapshot_sha256": "e480d86082dab21b530d7efffa4254b6fdf902b7b64a22641d215e76171c2a5a",
+        "current_sha256": "e480d86082dab21b530d7efffa4254b6fdf902b7b64a22641d215e76171c2a5a",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/test_visibility_price_lifecycle.py",
+        "snapshot_sha256": "d0a014077274def9cadf5ccb2e5199648363d4f25eb01a2f790c6ca55e9ee829",
+        "current_sha256": "d0a014077274def9cadf5ccb2e5199648363d4f25eb01a2f790c6ca55e9ee829",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/install_package.py",
+        "snapshot_sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+        "current_sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_price_sync/uaart_price_sync_binding.py",
+        "snapshot_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
+        "current_sha256": "e6605725869c545c54909d9a41242c66ccde0f84f0142bc36eefca8fb54b7ab1",
+        "snapshot_current_match": false
+      },
+      {
+        "path": "cloud/task088_price_sync/test_binding.py",
+        "snapshot_sha256": "ba2e4cfb46efb401856f6a75f3783ab223fa141409238441b5004960090b1ef2",
+        "current_sha256": "050d4ffc9c5c28bbfd85ba2e6e45e032f44497e03cf292de47ac74fe24894177",
+        "snapshot_current_match": false
+      },
+      {
+        "path": "cloud/task088_price_sync/preflight.py",
+        "snapshot_sha256": "a483c2dad6cb9125fca662d84ae1ca858af1386f54e00883226bd89c1e2f8555",
+        "current_sha256": "a483c2dad6cb9125fca662d84ae1ca858af1386f54e00883226bd89c1e2f8555",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_stage3_renderer/test_empty_candidate_composition.py",
+        "snapshot_sha256": "0a4f42bdc7adaff20ff36ff5ad65d270221ac16dc8ca287a340329e66d9052ae",
+        "current_sha256": "0a4f42bdc7adaff20ff36ff5ad65d270221ac16dc8ca287a340329e66d9052ae",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_stage3_renderer/initial_html_prices.py",
+        "snapshot_sha256": "ff6ba14b32d89dd874eb398f40106931236206af2fc2189bfeb8d9594942c26d",
+        "current_sha256": "ff6ba14b32d89dd874eb398f40106931236206af2fc2189bfeb8d9594942c26d",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_stage3_renderer/patch_stranica.py",
+        "snapshot_sha256": "8ed2aea9f18d3955931496485199d6bb91f9fdc5d5e57e410c1deab69f35dfe7",
+        "current_sha256": "8ed2aea9f18d3955931496485199d6bb91f9fdc5d5e57e410c1deab69f35dfe7",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_install/controller.py",
+        "snapshot_sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+        "current_sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_install/build_release.py",
+        "snapshot_sha256": "1744ab8daf29564fb6b228ca65cc06749bb11854f060380cb22c827bc49ea734",
+        "current_sha256": "1744ab8daf29564fb6b228ca65cc06749bb11854f060380cb22c827bc49ea734",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_install/release/uaart_price_sync_runtime.py",
+        "snapshot_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
+        "current_sha256": "b6425b69935937050a2ff7d46fec433fda19e0684b6c7d1563a10208709f9b32",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_install/release/visibility_lifecycle.py",
+        "snapshot_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+        "current_sha256": "0203e1fa1592361b63404c80a633d07674439f0e7ac9a6c6cd0c4c7920d4a5b4",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_install/release/uaart_price_sync_outbox.py",
+        "snapshot_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "current_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_install/release/release_sources.json",
+        "snapshot_sha256": "ed655bfc035cd8a14a0fb3b98604a21184cfbe3010c193e707d8e016f0f13e68",
+        "current_sha256": "a211c41c5b0229ce16ef3353f74ea83bc2e31c4596b16f39087deef9886413f0",
+        "snapshot_current_match": false
+      },
+      {
+        "path": "cloud/task088_v5_install/release/outbox.py",
+        "snapshot_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "current_sha256": "36c8927e33ecd80f5e2474a26c53a42be20d4ff6dd5df0ec5d45a231cacda008",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_install/release/install_package.py",
+        "snapshot_sha256": "90f0e61209afb055b86f6afb0b4260fbbf15a76c0205097bcaea40b67e2b092d",
+        "current_sha256": "b9c27600061999b10842e37039a3bfd4e3558ee39b0245087207a687f41f8f23",
+        "snapshot_current_match": false
+      },
+      {
+        "path": "cloud/task088_v5_install/release/uaart_price_sync_binding.py",
+        "snapshot_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
+        "current_sha256": "cd7956d057fd7230089062b59a6a676b1617a01029422b596dc1f5c8ea856339",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_install/release/controller.py",
+        "snapshot_sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+        "current_sha256": "6c53a2c82a10fdbdf14e1835657331d07bed5b6f590fba398d53ebb6f9d81733",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_acceptance/resume_20260914_2/CONTINUATION.json",
+        "snapshot_sha256": "ba6c1de7f261719c47375332634e2a911f663dc5f81ec3a9a7894cadcae59e78",
+        "current_sha256": "ba6c1de7f261719c47375332634e2a911f663dc5f81ec3a9a7894cadcae59e78",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_acceptance/publication_status_policy_20260920/PUBLICATION_STATUS_POLICY.json",
+        "snapshot_sha256": "0311b5569b588ffe26fda5e50a855024ed2f7c9ef42352dc128174bbb57f875a",
+        "current_sha256": "0311b5569b588ffe26fda5e50a855024ed2f7c9ef42352dc128174bbb57f875a",
+        "snapshot_current_match": true
+      },
+      {
+        "path": "cloud/task088_v5_acceptance/publication_status_policy_20260920/STATUS_INDEPENDENT_DATA_POLICY_RU.md",
+        "snapshot_sha256": "66450a929a5fb1a5ea9994ccbaaede1dceff1b76ad071197d60e29a3ad7c29f4",
+        "current_sha256": "66450a929a5fb1a5ea9994ccbaaede1dceff1b76ad071197d60e29a3ad7c29f4",
+        "snapshot_current_match": true
+      }
+    ],
+    "note": "Snapshot is a staging breadcrumb, not final release manifest; current differences recorded rather than overwritten.",
+    "scope": "Pre-startup pending public map retained as historical snapshot; parent final allowlist must include new startup and activation-gate test files and latest source bytes."
+  },
+  "flags": [
+    {
+      "severity": "COUNTING_CORRECTION",
+      "finding": "Closure5 plus prior9 is not14 distinct checks: all four closure logs contain12 distinctIDs, one shared with standalone zero5. Closure-only11 plus zero5 gives16distinct recordedIDs, without claiming every old pin is current."
+    },
+    {
+      "severity": "PRIVATE_SOURCE_EXCLUSION",
+      "finding": "Exclude CURRENT_PREVIEW_WSGI_OBSERVED.py from public upload; hashes/sanitized observations suffice."
+    },
+    {
+      "severity": "STARTUP_DELTA",
+      "finding": "Earlier 152 price tests and native14+8+1 retain exact historical pins; final startup behavior separately checked by 8 new plus10 selected existing tests and native6 new checks. Do not sum overlap or describe earlier full suite as executed on latest bytes."
+    }
+  ],
+  "production_mutations": false,
+  "Git_writes": false,
+  "previous_candidate_composition": {
+    "evidence": {
+      "path": "current_final_candidate/RESULT.json",
+      "sha256": "1fdd4621a5c1b9281e43e1d59922df7d51b151c979c1c7031cf6704d80e75a01",
+      "bytes": 17532
+    },
+    "recorded_status": "PASS_SCOPED_CURRENT_CORE_COMPOSITION",
+    "candidate_files": 68,
+    "canonical_files_manifest_sha256": "2881e87087bcecc6d8e3e9e15cf02903b3c430eb69f3d7279708ba5b75ef1305",
+    "compile_without_execution_count": 20,
+    "current_core_html": 48,
+    "approved_html_delta_proofs": 48,
+    "published_count": 22,
+    "runtime_module_count": 11,
+    "public_code_pin_readback": {
+      "count": 68,
+      "mismatches": [],
+      "status": "PASS_CURRENT_SOURCE_PIN_READBACK"
+    },
+    "no_stage3_or_stage4_receipt": true,
+    "preview_gate": "NOT_ISSUED_CURRENT_RENDERING_REVIEW_SEPARATE",
+    "writer_exclusion": false
+  },
+  "final_candidate_composition": {
+    "evidence": {
+      "path": "current_final_candidate_v2/RESULT.json",
+      "sha256": "02ff0314dcc9bc1fbc718a530614fd74a1b4ec053b64c0fee1489306eaa7887f",
+      "bytes": 18394
+    },
+    "execution_evidence": {
+      "path": "CURRENT_FINAL_BUILD_V2_EXECUTION.json",
+      "sha256": "3b50c125f8f1d65b5f0119e878f04ca8c1c873c55857a18fac531af035ca8dbc",
+      "bytes": 1819
+    },
+    "recorded_status": "PASS_EXACT_ONE_SOURCE_DELTA_67_UNCHANGED",
+    "candidate_files": 68,
+    "canonical_files_manifest_sha256": "53544a272be2c11c8faeac7089fd5638ba26e74d65e209c7a9b73f523a4892a7",
+    "raw_manifest": {
+      "path": "current_final_candidate_v2/CANDIDATE_MANIFEST.json",
+      "sha256": "b99db44a534483e6db573e2847238b9791f93d03d77f7409c3fc9e7374ef4c8e",
+      "bytes": 16059
+    },
+    "changed_files": {
+      "cars_ui.py": {
+        "after_sha256": "c2be2af7720a8361665fed872256760264ffc735b68a197763f5f3af1dad62e2",
+        "before_sha256": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+        "bytes": 259248,
+        "previous_after_sha256": "d8079bd829d618fa3beeefab0d9eba70e9ee33b8b8d5e45e61ee5db326cca27f"
+      }
+    },
+    "unchanged_files_count": 67,
+    "html_bytes_unchanged": 48,
+    "runtime_modules_unchanged": 11,
+    "compile_count_this_delta": 1,
+    "unchanged_python_compile_credits_retained": 19,
+    "public_code_pin_readback": {
+      "count": 68,
+      "mismatches": [],
+      "status": "PASS_CURRENT_SOURCE_PIN_READBACK"
+    },
+    "historical_suites_rerun": false,
+    "preview_gate": "NOT_ISSUED_CURRENT_RENDERING_REVIEW_SEPARATE",
+    "no_stage3_or_stage4_receipt": true,
+    "writer_exclusion": false
+  },
+  "public_code_save_manifest": {
+    "path": "PUBLIC_CODE_SAVE_MANIFEST.json",
+    "sha256": "e67a408eb0140f7907ea4bcd3f766f859b3ce2f554745752a5767bf299c97bec",
+    "bytes": 31672
+  },
+  "public_code_save_counts": {
+    "repository_files": 95,
+    "public_evidence_helpers": 19,
+    "stale_acceptance_continuation_policy_included": false
+  },
+  "root_code_checkpoint_observation": {
+    "commit": "c424a8428b20b44753ddc083cee5dff9e08979ba",
+    "source": "Parent reports22 code files saved/readback; index author performed no external/Git write."
+  }
+}

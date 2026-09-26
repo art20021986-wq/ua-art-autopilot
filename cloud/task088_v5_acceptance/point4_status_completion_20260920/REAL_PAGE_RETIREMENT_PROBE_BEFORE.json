@@ -1,0 +1,11 @@
+{
+  "status": "BLOCKER_REPRODUCED",
+  "scope": "SAVED_REAL_COMPOSED_HTML_AND_SAVED_ACTUAL_COUNTER_SOURCE_NO_PRODUCTION",
+  "reason": "New retirement uses actual counter parser; real dual-price translation attributes require compatibility verification.",
+  "error": "HomeCounterError:INVALID_ID",
+  "first_failing_call": "ua_site_counters.catalog_snapshot(actual_composed_video_catalog)",
+  "source_sha256": "500ca67145faa38ca9f72ac6da85e2a7d1c351f8f2fcca4a2edeb34c22734c23",
+  "catalog_sha256": "27001794768a827678715b859f5e2e9b32e740c2330d30ad7e44ae94df2620c2",
+  "cause": "CatalogParser expects every nonempty data-ua attribute inside card to match UA-[0-9]{4,}; dual-price span uses Ukrainian translation text. Client JS has same semantic conflation.",
+  "files_mutated_by_probe": "isolated temporary page copies only; no retirement wrote before failure"
+}

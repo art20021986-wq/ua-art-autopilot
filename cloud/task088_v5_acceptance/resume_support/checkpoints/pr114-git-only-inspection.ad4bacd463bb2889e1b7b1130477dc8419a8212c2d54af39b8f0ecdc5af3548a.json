@@ -1,0 +1,298 @@
+{
+  "authenticity": "Hashes verify local integrity, not origin or live freshness; this is not an independent live observation.",
+  "canonical_state_written": false,
+  "checkpoint": {
+    "original_recorded_at": "2026-09-14T17:44:28.847Z",
+    "path": "cloud/task088_v5_acceptance/resume_20260914/CHECKPOINT.json",
+    "sha256": "779c58b833ef864c0b72fb584f42342ac3f7272ef4b956e5836ca7de280395c4"
+  },
+  "continuation_notice": {
+    "last_saved_console_state": "SHELL_PROMPT_RECEIVER_EXITED",
+    "observed_at": "2026-09-14T17:44:28.847Z",
+    "path": "cloud/task088_v5_acceptance/resume_20260914/AUDIT_CONTINUATION_NOTICE.json",
+    "precedence": "Audit notice overrides older checkpoint next_actions; neither proves current console state",
+    "requires_current_readback": true,
+    "sha256": "a99bf820c671e759e89c016686c727b27c2bcf270b1b496a579405833ae10fce",
+    "status": "HISTORICAL_AUDIT_OVERRIDE_READ"
+  },
+  "execution_authorized": false,
+  "historical_records_requiring_classification": 6,
+  "inspected_at": "2026-09-14T18:03:27.633526+00:00",
+  "inspector_sha256": "c6178cb606cde930a27081a1560d0969c60670c1b3fd92359dab92fc186426e8",
+  "kind": "OFFLINE_CONTINUATION_INSPECTION_NOT_A_GATE",
+  "network_used": false,
+  "next_action": "READ_CURRENT_GIT_SERVER_AND_RECEIPTS",
+  "next_action_detail": "Read actual main/head, mode/HALT/delegation, candidate/source/DB, canonical receipts and external jobs before the first incomplete step. Historical failed/superseded attempts are not presumed active. Do not reinstall closed Stage 1/2; classify prior attempts using their current canonical records. Preserve saved evidence and failures. Refresh only expired/changed required observations; Preview/Gate/quota maximum 1800 seconds, writers 300, reader 30, subject to the existing canonical validators. Never advance by this report alone.",
+  "operation_scope": "UNCLASSIFIED_LOCAL_TASK088_HISTORY_NOT_A_CURRENT_ACTIVE_OPERATION_LIST",
+  "operations": [
+    {
+      "binding_issues": [
+        "RECEIPT_MISSING_OR_CHANGED"
+      ],
+      "disposition": "RECONCILE_EXISTING_OPERATION",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/claims/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
+      "receipt_integrity": {
+        "expected_sha256": null,
+        "path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT.json",
+        "status": "MISSING_OR_INVALID"
+      },
+      "replay_allowed": false,
+      "run_id": "34608152298",
+      "saved_status": "FAILED",
+      "sha256": "92f998119fc4f87b570d740075b41f6de65e07a1924ccbc5eb1c8f6d748fec9b",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT"
+    },
+    {
+      "binding_issues": [],
+      "disposition": "RETAIN_TERMINAL_LOCAL_RECORD",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/claims/TASK088-GE-PRICE-CRM-PREFLIGHT.fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2.34625768264.json",
+      "receipt_integrity": {
+        "actual_bytes": 900,
+        "actual_sha256": "0cccc61ffe900492b16eac3b884963672d0e0a8f9dccc8308526528a6cc05622",
+        "expected_sha256": "0cccc61ffe900492b16eac3b884963672d0e0a8f9dccc8308526528a6cc05622",
+        "path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2.json",
+        "source": "DIRECT_LOCAL_FILE",
+        "status": "MATCH"
+      },
+      "replay_allowed": false,
+      "run_id": "34625768264",
+      "saved_status": "FINISHED",
+      "sha256": "500d654ba076fb2db26d8ed488b7e6820ba29f9ae81473403f54eaaadc1927bb",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT"
+    },
+    {
+      "binding_issues": [
+        "RECEIPT_MISSING_OR_CHANGED"
+      ],
+      "disposition": "RECONCILE_EXISTING_OPERATION",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/claims/TASK088-GE-PRICE-CRM-STAGE1.0b4edb818dceac55c1605bb2c7e105425c919a8998ae91096b1eb60e0c07bbbe.34591174796.json",
+      "receipt_integrity": {
+        "expected_sha256": null,
+        "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+        "status": "MISSING_OR_INVALID"
+      },
+      "replay_allowed": false,
+      "run_id": "34591174796",
+      "saved_status": "FAILED",
+      "sha256": "96da48ca060efe4b341ec486e5afb5355c35e55abef97c20d46b0c854f476e84",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE1"
+    },
+    {
+      "binding_issues": [
+        "RECEIPT_MISSING_OR_CHANGED"
+      ],
+      "disposition": "RECONCILE_EXISTING_OPERATION",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/claims/TASK088-GE-PRICE-CRM-STAGE1.37bec5fcc5fa5131634102dab5f1e1dcf6acc2c1e3c6b517509f4653a0dc4521.34627083846.json",
+      "receipt_integrity": {
+        "expected_sha256": null,
+        "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+        "status": "MISSING_OR_INVALID"
+      },
+      "replay_allowed": false,
+      "run_id": "34627083846",
+      "saved_status": "FAILED",
+      "sha256": "f30120c0aecb601b4353017eecbc53045a157b00c259fadead9d71c67b3984b6",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE1"
+    },
+    {
+      "binding_issues": [
+        "RECEIPT_MISSING_OR_CHANGED"
+      ],
+      "disposition": "RECONCILE_EXISTING_OPERATION",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/claims/TASK088-GE-PRICE-CRM-STAGE1.adefa0226fdfd81d1292e991e8744570ce0adae7f9c5602f8290d5b71eae9cb6.34631499680.json",
+      "receipt_integrity": {
+        "expected_sha256": null,
+        "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+        "status": "MISSING_OR_INVALID"
+      },
+      "replay_allowed": false,
+      "run_id": "34631499680",
+      "saved_status": "FINISHED",
+      "sha256": "eecbe5752ac512ea916010f835185d5895f5d6acebb0d079dd5faec1c90bf4b2",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE1"
+    },
+    {
+      "binding_issues": [],
+      "disposition": "RETAIN_TERMINAL_LOCAL_RECORD",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY.f6c3c3569b078ebbd5e5c5efba441266beea088ae80874d45bbc31b5791e0f63.34686469242.json",
+      "receipt_integrity": {
+        "actual_bytes": 920,
+        "actual_sha256": "7d8d25ecea1ed7a2b63c6b640ea6d25abf879e06719047f06fd2bcbf183af9d2",
+        "expected_sha256": "7d8d25ecea1ed7a2b63c6b640ea6d25abf879e06719047f06fd2bcbf183af9d2",
+        "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY.json",
+        "source": "DIRECT_LOCAL_FILE",
+        "status": "MATCH"
+      },
+      "replay_allowed": false,
+      "run_id": "34686469242",
+      "saved_status": "FINISHED",
+      "sha256": "069439ce3e752c84c065010af9e5b0fcb365cbc6b388a0f2ce1c71af7f1550a9",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY"
+    },
+    {
+      "binding_issues": [],
+      "disposition": "RETAIN_TERMINAL_LOCAL_RECORD",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-HANDLERS.a78c7dc07fdd55c233a87ded9f6e1a3969d39cde71017e32b20bf25dfcfba306.34686804781.json",
+      "receipt_integrity": {
+        "actual_bytes": 918,
+        "actual_sha256": "489ec130b5bb205d1185966301e2bfa19b87a41b8a77a2e7d912464136a4143b",
+        "expected_sha256": "489ec130b5bb205d1185966301e2bfa19b87a41b8a77a2e7d912464136a4143b",
+        "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-HANDLERS.json",
+        "source": "DIRECT_LOCAL_FILE",
+        "status": "MATCH"
+      },
+      "replay_allowed": false,
+      "run_id": "34686804781",
+      "saved_status": "FINISHED",
+      "sha256": "9bbaedaad53650929d9938dd7e1ec0d24b81dc09c3dc3456e75cb6a5f0ecc2ca",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-HANDLERS"
+    },
+    {
+      "binding_issues": [],
+      "disposition": "RETAIN_TERMINAL_LOCAL_RECORD",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.34734575941.json",
+      "receipt_integrity": {
+        "actual_bytes": 1635,
+        "actual_sha256": "350275f0ffa4cb1a27fd6ac9fa597ef0a57eefe00d60841566773d8cb1914eb8",
+        "expected_sha256": "350275f0ffa4cb1a27fd6ac9fa597ef0a57eefe00d60841566773d8cb1914eb8",
+        "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+        "source": "DIRECT_LOCAL_FILE",
+        "status": "MATCH"
+      },
+      "replay_allowed": false,
+      "run_id": "34734575941",
+      "saved_status": "FINISHED",
+      "sha256": "fa1371605993b71dbb2a5f97a8380024160ee3ee3669b64abe53414122a7199f",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL"
+    },
+    {
+      "binding_issues": [],
+      "disposition": "RETAIN_TERMINAL_LOCAL_RECORD",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2.955482850c58cffc1ea9b2a44efbe3923f0e2ae46d7b390aba495ba4a5c3dc7f.34733840685.json",
+      "receipt_integrity": {
+        "actual_bytes": 1093,
+        "actual_sha256": "bc6efff92180725f69eef620030b84f89e0bd5fbd9cb78e1e0e95f391cc8da7d",
+        "expected_sha256": "bc6efff92180725f69eef620030b84f89e0bd5fbd9cb78e1e0e95f391cc8da7d",
+        "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2.json",
+        "source": "DIRECT_LOCAL_FILE",
+        "status": "MATCH"
+      },
+      "replay_allowed": false,
+      "run_id": "34733840685",
+      "saved_status": "FINISHED",
+      "sha256": "823859bdd3a2f41dceacaf9a52cf5564006fe906341cc49728357c58aa75152f",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2"
+    },
+    {
+      "binding_issues": [
+        "RECEIPT_MISSING_OR_CHANGED"
+      ],
+      "disposition": "RECONCILE_EXISTING_OPERATION",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827.34733330869.json",
+      "receipt_integrity": {
+        "expected_sha256": null,
+        "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.json",
+        "status": "MISSING_OR_INVALID"
+      },
+      "replay_allowed": false,
+      "run_id": "34733330869",
+      "saved_status": "BLOCKED_ROOT_CAUSE",
+      "sha256": "ec887a4c46979522c480d38f61a86db6acd6c9d7a5cb6c71275338f15cf86d4d",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY"
+    },
+    {
+      "binding_issues": [
+        "TERMINAL_TRANSACTION_CLAIM_BINDING_UNCONFIRMED"
+      ],
+      "disposition": "RECONCILE_EXISTING_OPERATION",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
+      "replay_allowed": false,
+      "run_id": "34608152298",
+      "saved_status": "ROLLED_BACK",
+      "sha256": "16b6c76e361872efeceddd0521881450af6d127e9f10f234761fca4a3d4a5305",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT"
+    },
+    {
+      "binding_issues": [],
+      "disposition": "RETAIN_TERMINAL_LOCAL_RECORD",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2.34625768264.json",
+      "replay_allowed": false,
+      "run_id": "34625768264",
+      "saved_status": "FINISHED",
+      "sha256": "39bb074502345b30791363f5bfac59f46916389a40a5c49903e16a8d1cf3895e",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT"
+    },
+    {
+      "binding_issues": [],
+      "disposition": "RETAIN_TERMINAL_LOCAL_RECORD",
+      "next_read": "Read current canonical request/claim/transaction/receipt, external run and server outcome for this same identity; use existing reconciliation controls. A local terminal record or missing receipt never authorizes a retry.",
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.34734575941.json",
+      "replay_allowed": false,
+      "run_id": "34734575941",
+      "saved_status": "FINISHED",
+      "sha256": "8827d9f5cb5dbca626228e683b570a159c7e1a63f6c031c4d8ddd92df7878f2a",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL"
+    }
+  ],
+  "quota": {
+    "age_seconds": 4904.932526,
+    "checkpoint_timestamp_matches_raw": true,
+    "maximum_seconds": 1800,
+    "observed_at": "2026-09-14T16:41:42.701Z",
+    "policy_source": "Existing canonical readiness: quota maximum 1800 seconds",
+    "status": "EXPIRED"
+  },
+  "reference_integrity": "INCOMPLETE",
+  "reference_issues": [
+    {
+      "actual_bytes": 8227,
+      "actual_sha256": "87c56fafa0e5795ff6e9dd61f17078a7d57a07adcb2a4d6c436a9bcc88a2fcf2",
+      "expected_sha256": "0b677cf9088edf9423d4ceb8939791361777fd7b63047d43dbe178957c551d1e",
+      "path": "cloud/task088_v5_acceptance/resume_20260914/PR_BODY_CURRENT_RU.md",
+      "source": "DIRECT_LOCAL_FILE",
+      "status": "MISMATCH"
+    }
+  ],
+  "referenced_files_checked": 44,
+  "retry_authorized": false,
+  "saved_open_stages": {
+    "full_preview_gate": "NOT_PASSED",
+    "stage3": "OPEN_NOT_PUBLISHED",
+    "stage4": "OPEN_NOT_ACCEPTED"
+  },
+  "software": {
+    "checkpoint_binding_matches": true,
+    "disposition": "RETAIN_UNCHANGED_HISTORICAL_RESULT",
+    "original_finished_at": "2026-09-14T16:37:45.451975+00:00",
+    "report_integrity": {
+      "actual_bytes": 40630,
+      "actual_sha256": "876ab0b71f80624ec5dc96f764ec5edf99644ed1cf0e334bc8ea2853da78f3d7",
+      "archive": {
+        "bytes": 35718,
+        "path": "cloud/task088_v5_acceptance/resume_20260914/PR114_GALLERY_V2_SOFTWARE_EVIDENCE_20260914.zip",
+        "sha256": "5e392949f94ab5584c93c0083c4b6e05429f09644d7d3a0fa965a62daa766c69"
+      },
+      "expected_sha256": "876ab0b71f80624ec5dc96f764ec5edf99644ed1cf0e334bc8ea2853da78f3d7",
+      "member": "gallery_fix_v2/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+      "path": "cloud/task088_v5_acceptance/resume_20260914/software/gallery_fix_v2/FINAL_CURRENT_CANDIDATE_RESULTS.json",
+      "source": "PINNED_ARCHIVE_MEMBER_NO_EXTRACTION",
+      "status": "MATCH"
+    },
+    "rerun_instruction": "NONE",
+    "reuse_limits": "Local source bytes only. Verify exact private capture, test environment, dependencies and scope before reusing acceptance. This does not rerun tests or prove live candidate, browser, CRM or Production state.",
+    "source_differences": [],
+    "source_files_checked": 82
+  }
+}

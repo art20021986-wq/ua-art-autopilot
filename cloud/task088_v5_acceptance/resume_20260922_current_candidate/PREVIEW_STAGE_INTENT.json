@@ -1,0 +1,28 @@
+{
+  "operation_id": "point4-95d0b4a1-20260922v1",
+  "recorded_at": "2026-09-22T03:45:29.990Z",
+  "status": "INTENT_NOT_EXECUTED",
+  "scope": "DEDICATED_PREVIEW_STAGE_ONLY",
+  "package_sha256": "f8582d8476c34f74578a5a4b69be5b9d0ca100946c4070ef4cbabd5e80650c9e",
+  "helper_sha256": "5bf920f029f098d7e1b989325e2401c1fb57639c940599b5170aefbc7adcb437",
+  "fresh_input_readback_at": "2026-09-22T03:44:28.882041+00:00",
+  "db_first_and_second_match": true,
+  "schema_match": true,
+  "file_mismatches": [],
+  "preview_work_absent": true,
+  "preview_wsgi_sha256": "9b9578fe30e233cea6e46678da60dd360cae1861fca2723c08e19272bc75b555",
+  "preview_config_sha256": "ab4b13e5f6c2a0f05801a6e89891b38474852c6cfc3db229f9fff72dabcca5ee",
+  "hosting_mapping": "Carix.pythonanywhere.com exactdedicatedWSGI; no staticmapping. Productionwww separateWSGI +/video/staticmapping.",
+  "github_active_runs": {
+    "at": "2026-09-22T03:42:58.107Z",
+    "counts": {
+      "queued": 0,
+      "in_progress": 0,
+      "pending": 0,
+      "requested": 0,
+      "waiting": 0
+    }
+  },
+  "production_written": false,
+  "switch_or_reload_in_this_intent": false
+}

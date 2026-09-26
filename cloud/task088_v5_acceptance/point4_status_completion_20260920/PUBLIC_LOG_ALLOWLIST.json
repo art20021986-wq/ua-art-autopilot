@@ -1,0 +1,376 @@
+{
+  "status": "PUBLIC_LOG_ALLOWLIST_WITH_TRACEBACK_EXCLUSIONS",
+  "safe_logs": [
+    {
+      "path": "absent_anchor_native_gates.log",
+      "sha256": "eb7f3cd56be37fa171b40f6d2374c73cda532f56313f76ab15e42aa4387162b9",
+      "bytes": 967,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "absent_anchor_native_gates_final.log",
+      "sha256": "39ee8b19d16c6e963b593b983ab1e080c3027d85928debb336c3802d84d70b57",
+      "bytes": 967,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "absent_anchor_native_gates_final6.log",
+      "sha256": "e3e149be47c69675ffa93dea01c00606d9628fbccd55f28f8ebf5ea3a00eb976",
+      "bytes": 1144,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "binding_scope_tests.log",
+      "sha256": "1a824ed185b8aaf99ff2f2953d110959009fe87e0c3432a4e683747ee3be2573",
+      "bytes": 121,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "core_observer_deadline_fix.log",
+      "sha256": "b0ddc14d7c318a78d3a2ccb008795af2fd68573671eb819bf0bfbd050dc89f5a",
+      "bytes": 326,
+      "classification": "SYNTHETIC_OBSERVER_JSON_FACTS_ONLY"
+    },
+    {
+      "path": "core_observer_fixture.log",
+      "sha256": "ab8f1f71992283232b34cd3ca890227636f7f733e62ba19e26d17da0e40cde90",
+      "bytes": 797,
+      "classification": "SYNTHETIC_OBSERVER_JSON_FACTS_ONLY"
+    },
+    {
+      "path": "core_observer_fixture_final.log",
+      "sha256": "a0e5d08c69a0ed39de2fd608d0d7216d58a292e249004ac4d99105be017a7a74",
+      "bytes": 881,
+      "classification": "SYNTHETIC_OBSERVER_JSON_FACTS_ONLY"
+    },
+    {
+      "path": "counter_fix/inline_targeted_tests.log",
+      "sha256": "a67ccda5829872e6f26a7d6f42fae6b4cb7e61eaa2f9926856f6f658b2bfd74f",
+      "bytes": 834,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "counter_fix/targeted_tests.log",
+      "sha256": "535c2a96da33e64f47e8b6cecdfd7fddbea1f714d7f62b975050c91ec8a6a0cb",
+      "bytes": 1722,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "counters_dependency_closure/RESULT.txt",
+      "sha256": "3717dabd4126cfe109b533baa494e148fecadbef5842db2cbc2fd641f69845ab",
+      "bytes": 814,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "final_counter_source_closure/RESULT.txt",
+      "sha256": "9075b671d4ad37b0b13e004f9f063128a33f342e1069bcc65540783a9cf71c96",
+      "bytes": 1752,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "hidden_expiry_tests.log",
+      "sha256": "40f52161d5c338daa51ea6c4d5e63438da514e406717d65abbdc4ffea8c291d8",
+      "bytes": 101,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "native_guard_quiescence_retry.log",
+      "sha256": "1120e8227a5680905b0e00bd673c8cb6e4fd8de84453997f7da73c49f8cb6f8f",
+      "bytes": 1714,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "native_integration_guard_test.log",
+      "sha256": "aca49bdfee59ddbdd803a7f97146ec7d21e16b1f6e5cc364ebbfd3ff5ffb67b9",
+      "bytes": 235,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "native_visibility_tests_final.log",
+      "sha256": "52b961b78ae7ae1349fbdf491a8975af95bf934fa1a2f473531bdc9eb25d2d35",
+      "bytes": 2471,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "native_visibility_tests_retry.log",
+      "sha256": "64820b853efc0e9d1dd22b8c405310c97f5873616cb2ad912e2e2ceb443ae7d6",
+      "bytes": 1468,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "native_visibility_tests_retry2.log",
+      "sha256": "0a3aa7566c1b14877832827696ab3aa755621c504cf3bd9edcd1108230bc4a7c",
+      "bytes": 1468,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "native_visibility_tests_retry3.log",
+      "sha256": "e3bc9d32bc2b6e56685d409eca7a210252f29a1fecf684ed810f962c165f72ff",
+      "bytes": 1468,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "native_visibility_tests_retry4.log",
+      "sha256": "b33074931e410bbde39308e7d62cd3519f1674144b4c36542901cab4c2376895",
+      "bytes": 1468,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "optional_photo_hide_gate_final_tests.log",
+      "sha256": "e84c66e83a532bc67c2580cd92a5d127d7b186cad4e19bddef9e77a53d613503",
+      "bytes": 725,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "optional_photo_hide_gate_tests.log",
+      "sha256": "2b693ac032d17bda837d7587ba221c6a9ec59ca416aece34d5b1d1a7b49e82c1",
+      "bytes": 520,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "price_replace_boundary_tests.log",
+      "sha256": "fb1e3bd4597586ca5fed09b520d7f81ef57b2b471d03222961c20898e83aac92",
+      "bytes": 101,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "price_replace_compatibility_tests.log",
+      "sha256": "58f650a1a42d366cbe2886ee9c4506d032bbbc702bcfbfe6b533fd5614e37f0d",
+      "bytes": 103,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "price_retry_tests.log",
+      "sha256": "01d861d5669123b286e8d5e24c4db66a8ca7526a728b0f3dca81d81eb00a9923",
+      "bytes": 137,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "price_retry_tests.txt",
+      "sha256": "15b3c1f98103393d57353f39e068817ab735c6c060bd1819cc31b549fa1f1d5d",
+      "bytes": 2795,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "publisher_source_closure/RESULT.txt",
+      "sha256": "2e105b4789f683c362ea6d645e50b1fec5ebb19b3f6c7cc32cafc61245835fad",
+      "bytes": 995,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "recovery_scope_tests.log",
+      "sha256": "b1ef6bc00f4cbe180c3a0585c3fcdf89c74c4864638c472426435c3d1fa74a79",
+      "bytes": 130,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "unconfigured_startup_final_tests.log",
+      "sha256": "e14284e55d2782f3600eaa1ed7be6c86c3697f7d8c6f18bb77f9e4e57d4feba9",
+      "bytes": 2361,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "unconfigured_startup_tests.log",
+      "sha256": "96da2b39d89ce89765ade64d392830af2a5a8c80940b08c62f54346e16197c4b",
+      "bytes": 109,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "unconfigured_worker_compatibility_tests.log",
+      "sha256": "c667e8e4e981a2d820d0f709e3f0bcb343444a75e314c3f72a6ebe43e3b79d44",
+      "bytes": 1125,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "visibility_closure/RESULT.txt",
+      "sha256": "83022d41aa3513241b09bb1806e795fa0102707cdf55f07f5a9a99c372513181",
+      "bytes": 1351,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    },
+    {
+      "path": "zero_published_composition/RESULT.txt",
+      "sha256": "ccfa74ceb3795844c4bacd7724f060ae38b96732f031afbfe0fbccec5fd0ecf4",
+      "bytes": 987,
+      "classification": "PLAIN_UNITTEST_OUTPUT_OR_METHOD_ID_LIST"
+    }
+  ],
+  "excluded_logs_sanitized_outcomes": [
+    {
+      "path": "native_guard_quiescence.log",
+      "sha256": "ab66c3f431fe5b1588c373ab06274fb879d1e2fbb908ef38e0d6d6bc75c96e52",
+      "bytes": 773,
+      "reason": "TRACEBACK_MAY_EXPOSE_PRIVATE_SOURCE_CONTEXT",
+      "run_counts": [
+        0
+      ],
+      "outcomes": [
+        "FAILED (errors=1)"
+      ],
+      "failed_test_ids": [],
+      "source_frames_redacted": true,
+      "raw_log_public_upload": false
+    },
+    {
+      "path": "native_visibility_tests.log",
+      "sha256": "c1b0041b5230fa63296db5af885fd0c57a788b8b9e63a64e9fd8e3a3c75c2a3c",
+      "bytes": 1173,
+      "reason": "TRACEBACK_MAY_EXPOSE_PRIVATE_SOURCE_CONTEXT",
+      "run_counts": [
+        1
+      ],
+      "outcomes": [
+        "FAILED (errors=1)"
+      ],
+      "failed_test_ids": [
+        [
+          "test_visibility_lifecycle",
+          "unittest.loader._FailedTest.test_visibility_lifecycle"
+        ]
+      ],
+      "source_frames_redacted": true,
+      "raw_log_public_upload": false
+    },
+    {
+      "path": "price_affected_tests.log",
+      "sha256": "eed80e69bfbc39c01c35a9df1ff79013ea864cfde912f7acdaf07ddc763d3f06",
+      "bytes": 31927,
+      "reason": "TRACEBACK_MAY_EXPOSE_PRIVATE_SOURCE_CONTEXT",
+      "run_counts": [
+        134
+      ],
+      "outcomes": [
+        "FAILED (failures=7, errors=24)"
+      ],
+      "failed_test_ids": [
+        [
+          "test_visibility_price_lifecycle",
+          "unittest.loader._FailedTest.test_visibility_price_lifecycle"
+        ],
+        [
+          "test_active_crm_transaction_fails_before_any_publication_work",
+          "test_guard_fence.GuardFenceTests.test_active_crm_transaction_fails_before_any_publication_work"
+        ],
+        [
+          "test_claimed_other_car_blocks_without_releasing_nonce",
+          "test_guard_fence.GuardFenceTests.test_claimed_other_car_blocks_without_releasing_nonce"
+        ],
+        [
+          "test_crm_writer_cannot_commit_between_preflight_and_catalog_switch",
+          "test_guard_fence.GuardFenceTests.test_crm_writer_cannot_commit_between_preflight_and_catalog_switch"
+        ],
+        [
+          "test_every_unfinished_v5_checkpoint_blocks_whole_generator",
+          "test_guard_fence.GuardFenceTests.test_every_unfinished_v5_checkpoint_blocks_whole_generator"
+        ],
+        [
+          "test_failure_rolls_back_publication_and_releases_database_fence",
+          "test_guard_fence.GuardFenceTests.test_failure_rolls_back_publication_and_releases_database_fence"
+        ],
+        [
+          "test_latest_reconciled_does_not_mean_its_crm_price_was_published",
+          "test_guard_fence.GuardFenceTests.test_latest_reconciled_does_not_mean_its_crm_price_was_published"
+        ],
+        [
+          "test_latest_v5_pair_supersedes_old_published_v1_snapshot",
+          "test_guard_fence.GuardFenceTests.test_latest_v5_pair_supersedes_old_published_v1_snapshot"
+        ],
+        [
+          "test_legitimate_later_nonprice_change_does_not_invalidate_current_prices",
+          "test_guard_fence.GuardFenceTests.test_legitimate_later_nonprice_change_does_not_invalidate_current_prices"
+        ],
+        [
+          "test_new_v5_queued_intent_blocks_even_after_completed_event",
+          "test_guard_fence.GuardFenceTests.test_new_v5_queued_intent_blocks_even_after_completed_event"
+        ],
+        [
+          "test_normal_manual_first_publish_remains_allowed_when_no_unresolved_prices",
+          "test_guard_fence.GuardFenceTests.test_normal_manual_first_publish_remains_allowed_when_no_unresolved_prices"
+        ],
+        [
+          "test_pending_other_car_blocks_before_backup_render_or_write",
+          "test_guard_fence.GuardFenceTests.test_pending_other_car_blocks_before_backup_render_or_write"
+        ],
+        [
+          "test_stopped_other_car_blocks_without_erasing_stop",
+          "test_guard_fence.GuardFenceTests.test_stopped_other_car_blocks_without_erasing_stop"
+        ],
+        [
+          "test_unknown_missing_outbox_or_database_fails_closed",
+          "test_guard_fence.GuardFenceTests.test_unknown_missing_outbox_or_database_fails_closed"
+        ],
+        [
+          "test_untracked_crm_price_edit_after_receipt_is_not_published",
+          "test_guard_fence.GuardFenceTests.test_untracked_crm_price_edit_after_receipt_is_not_published"
+        ],
+        [
+          "test_v5_accepted_intent_blocks_before_any_price_mutation_or_generation",
+          "test_guard_fence.GuardFenceTests.test_v5_accepted_intent_blocks_before_any_price_mutation_or_generation"
+        ],
+        [
+          "test_v5_completed_current_pair_allows_publish_and_rebuild",
+          "test_guard_fence.GuardFenceTests.test_v5_completed_current_pair_allows_publish_and_rebuild"
+        ],
+        [
+          "test_v5_completed_label_without_actual_completion_proof_blocks",
+          "test_guard_fence.GuardFenceTests.test_v5_completed_label_without_actual_completion_proof_blocks"
+        ],
+        [
+          "test_v5_corrupted_receipt_checksum_blocks",
+          "test_guard_fence.GuardFenceTests.test_v5_corrupted_receipt_checksum_blocks"
+        ],
+        [
+          "test_v5_does_not_hide_uncertain_legacy_intents",
+          "test_guard_fence.GuardFenceTests.test_v5_does_not_hide_uncertain_legacy_intents"
+        ],
+        [
+          "test_v5_immutable_audit_trigger_and_schema_are_required",
+          "test_guard_fence.GuardFenceTests.test_v5_immutable_audit_trigger_and_schema_are_required"
+        ],
+        [
+          "test_v5_nullable_ge_completed_snapshot_is_supported",
+          "test_guard_fence.GuardFenceTests.test_v5_nullable_ge_completed_snapshot_is_supported"
+        ],
+        [
+          "test_v5_receipt_does_not_authorize_untracked_other_market_price",
+          "test_guard_fence.GuardFenceTests.test_v5_receipt_does_not_authorize_untracked_other_market_price"
+        ],
+        [
+          "test_verified_price_event_allows_ordinary_publish_and_rebuild",
+          "test_guard_fence.GuardFenceTests.test_verified_price_event_allows_ordinary_publish_and_rebuild"
+        ],
+        [
+          "test_draft_anomaly_confirmation_keeps_stage2_transaction",
+          "test_cars_ui_hook.CarsHookTests.test_draft_anomaly_confirmation_keeps_stage2_transaction"
+        ],
+        [
+          "test_draft_confirmation_trigger_audit_corruption_rolls_back_everything",
+          "test_cars_ui_hook.CarsHookTests.test_draft_confirmation_trigger_audit_corruption_rolls_back_everything"
+        ],
+        [
+          "test_draft_technical_replay_does_not_duplicate_audit",
+          "test_cars_ui_hook.CarsHookTests.test_draft_technical_replay_does_not_duplicate_audit"
+        ],
+        [
+          "test_old_draft_message_replay_after_publication_does_not_become_new_operation",
+          "test_cars_ui_hook.CarsHookTests.test_old_draft_message_replay_after_publication_does_not_become_new_operation"
+        ],
+        [
+          "test_old_published_message_replay_after_unpublication_cannot_run_stage2_again",
+          "test_cars_ui_hook.CarsHookTests.test_old_published_message_replay_after_unpublication_cannot_run_stage2_again"
+        ],
+        [
+          "test_pin_rejects_source_drift",
+          "test_cars_ui_hook.CarsHookTests.test_pin_rejects_source_drift"
+        ],
+        [
+          "test_unpublished_legacy_commit_audit_and_readback_preserved",
+          "test_cars_ui_hook.CarsHookTests.test_unpublished_legacy_commit_audit_and_readback_preserved"
+        ]
+      ],
+      "source_frames_redacted": true,
+      "raw_log_public_upload": false
+    }
+  ],
+  "scope": "Plain unittest/method-list/synthetic fixture logs only; three original failed logs retained privately with public hash/count/outcome. New optional gate final3 and initial2 recorded without adding repeated tests.",
+  "no_private_source_bytes_in_report": true
+}

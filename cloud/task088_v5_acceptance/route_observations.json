@@ -1,0 +1,63 @@
+{
+  "report_kind": "READ_ONLY_OBSERVED_ROUTING",
+  "observed_at_utc": "2026-09-14T06:30:00Z",
+  "source_capture_sha256": "4d61160e87e437567f354540541b86e6f962b42acae23dde0b1d50505f2fce48",
+  "hosting_configuration_url": "https://www.pythonanywhere.com/user/Carix/webapps/",
+  "web_app": "www.uaart.com.ua",
+  "static_mappings": [
+    {
+      "url": "/video/",
+      "directory": "/home/Carix/video/"
+    }
+  ],
+  "wsgi_file": "/var/www/www_uaart_com_ua_wsgi.py",
+  "base_response": {
+    "status": 302,
+    "location": "https://www.uaart.com.ua/video/index.html"
+  },
+  "wrapper_routes": {
+    "seo": [
+      "/robots.txt",
+      "/sitemap.xml"
+    ],
+    "analytics": [
+      "/ua/a.js",
+      "/ua/a/e"
+    ],
+    "bridge": [
+      "/uaart-bridge",
+      "/uaart-bridge/health"
+    ]
+  },
+  "source_sha256": {
+    "observed_wsgi_config.py": "3067d39ec9c2eb976114afc6744e2c34b088a8414e98eb3e33e0a47c1849e308",
+    "analitika_wsgi.py": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+    "uaart_bridge_wsgi.py": "b0c93d88d67e8c285c1bffb40bd6f2e40c2779af7a01cebd6beab4beda685150",
+    "video/index.html": "57259685b0bf0bbd3fbdc56fa46680073d11538ba625fd2ebffaf555e7259cc8",
+    "site/index.html": "1118916dc956d1226786698eb389ec0a8b3f74bbd61c40a2b7a33c042e629c69"
+  },
+  "conclusion": {
+    "served_home": "video/index.html",
+    "site/index.html": "UNSERVED_LEGACY_PRESERVE_EXACT_BYTES",
+    "new_preview_route_present": false
+  },
+  "writer_observation": {
+    "module": "analitika_wsgi.py",
+    "function": "_storozh",
+    "interval_seconds": 120,
+    "effect": "Adds analytics marker to top-level HTML in video/site if absent",
+    "existing_stop_path": "/home/Carix/analitika_stop.txt",
+    "stop_file_presence": "NOT_OBSERVED",
+    "writer_exclusion": "NOT_VERIFIED"
+  },
+  "production_written": false,
+  "route_configuration_changed": false,
+  "stage3_gate": "NOT_PASSED",
+  "source_server_paths": {
+    "observed_wsgi_config.py": "/var/www/www_uaart_com_ua_wsgi.py",
+    "analitika_wsgi.py": "/home/Carix/analitika_wsgi.py",
+    "uaart_bridge_wsgi.py": "/home/Carix/uaart_bridge_wsgi.py",
+    "video/index.html": "/home/Carix/video/index.html",
+    "site/index.html": "/home/Carix/site/index.html"
+  }
+}

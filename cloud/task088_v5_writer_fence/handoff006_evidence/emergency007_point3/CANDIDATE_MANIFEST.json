@@ -1,0 +1,59 @@
+{
+  "before_sha256": {
+    "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+    "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+    "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+  },
+  "candidate": {
+    "cars_ui.py": {
+      "bytes": 232946,
+      "sha256": "6502a7aaf47303d7533b3c34d5f6fa702721c10fe13de6774691c4a48e517cce"
+    },
+    "mutation_recovery.py": {
+      "bytes": 14103,
+      "sha256": "86e61e3483341fd87138948fc77855149a7a9f09071c63ca0b5106bb1155e9b5"
+    },
+    "publication_fence.py": {
+      "bytes": 9694,
+      "sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
+    },
+    "publish_transaction_guard.py": {
+      "bytes": 32094,
+      "sha256": "b18c799d384c18fb49be04a75502776f5698587a003a886514ba53253df6d34e"
+    },
+    "stranica.py": {
+      "bytes": 203541,
+      "sha256": "572cb11e7d2227961ed6b5d7e7e53d4cea01d4033ac96d6d69be409ef7402024"
+    },
+    "ua_spec_permanent.py": {
+      "bytes": 14732,
+      "sha256": "59135f68b2f4b2c5a677e4da700cdce502dbde8a147e7fd4eb4026e3b6f9902a"
+    }
+  },
+  "contract": "PR114-HANDOFF006-PRIVATE-INTEGRATION-1",
+  "dependency_before_sha256": {
+    "lock4_zhurnal.py": "6461e34b137f55c3bd6df60f859c04b8d00e8ddea5b42e95fc8f9cde7d00cac9",
+    "ua_additional_spec.py": "6d2ab7b2bace29b8c0be58a6668264e695fd24f9e5e8f3ed6406da41ea45c672",
+    "ua_spec_permanent.py": "2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d",
+    "vin_spec_service.py": "1d4d54a6cd70f03dcdf2c599d4a9c6362bfd842f18c40a231dfd0ecbc965ce4a"
+  },
+  "installed": false,
+  "lock_order": {
+    "mutation": [
+      "publication_fence",
+      "SQLite write transaction",
+      "commit and close",
+      "rebuild/spec84"
+    ],
+    "render": [
+      "publication_fence",
+      "spec84",
+      "spec SQLite read"
+    ],
+    "rule": "No outstanding SQLite write transaction when entering spec84; direct spec84 entry acquires publication fence first."
+  },
+  "lock_path": "/home/Carix/.ua_art_publish_transaction.lock",
+  "private_sources_committed": false,
+  "production_authority": false,
+  "writer_gate_pass": false
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": "UA-ART-DATA-ONLY-RECONCILIATION-APPLICATION-READBACK-1",
+  "operation_id": "ge-price-cache-reconcile-prepare-20260926T1220Z",
+  "recorded_at": "2026-09-26T13:10:53Z",
+  "subject_candidate_commit": "c1894c646d75f1384066db00ca4585949f6880b9",
+  "independent_review_receipt_commit": "b19f7f6c2c5fd08da2ee247f952881daf2ae52a9",
+  "independent_review_status": "PASS",
+  "authorization": "EXACT_PARENT_DATA_ONLY_APPLY",
+  "main_parent": "76115cd84ba7b802c4c3400a060f51aa7b7c8c14",
+  "main_commit": "36194bf03bcdb1c7cd7077a7a169b743623ea7f4",
+  "main_commit_time": "2026-09-26T13:08:31Z",
+  "atomic_fast_forward": true,
+  "readback": {
+    "main_head_matches": true,
+    "main_parent_matches": true,
+    "active_halt_absent": true,
+    "claim_sha256": "54295916f47553e47fe4b965202d46e162f669b053c182d19cef7da855570fe5",
+    "halt_archive_sha256": "4497ef90ea3dc69552333ce5849603f3df1c062337e6f3838f2b955c6fe5b151",
+    "claim_archive_sha256": "b0b3fbf4d36ace6af49e89149366fbdc1d06fffa28f13b72b870a246e9403a1b",
+    "reconciliation_sha256": "ed31619b1e91cc8aa51df7052f7869e4cfdd131b56a3128e06f3e9dcb1d4f541",
+    "workflow_runs_for_main_commit": 0,
+    "active_actions_runs_after_commit": 0
+  },
+  "public_http_readback": {
+    "apex": 302,
+    "catalog": 200,
+    "UA-0010": 200,
+    "UA-0018": 200,
+    "raw_UA0010_price_uah_usd": 11700,
+    "raw_UA0018_price_uah_usd": 22900,
+    "prior_dynamic_price_readback_commit": "7ecdb92ab18c2b4b02a7b9955b68b0cf8bbd186b"
+  },
+  "prohibited_actions_confirmed_absent": {
+    "launch_replay": true,
+    "transaction_create": true,
+    "production_write": true,
+    "crm_write": true,
+    "preview_stage": true,
+    "preview_switch": true,
+    "service_reload": true,
+    "rollback": true
+  },
+  "pr114_progress": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "increment_for_reconciliation": 0
+  },
+  "next_action": "Resume the saved PR114 acceptance from the first unfinished source-successor/writer-exclusion step. Preserve the accepted 48/48 Preview evidence; do not repeat Stage, switch or reload. Then require fresh full backup, Gate B and canonical marker-only Stage3/Stage4 receipts."
+}

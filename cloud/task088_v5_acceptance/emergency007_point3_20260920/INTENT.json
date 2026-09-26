@@ -1,0 +1,25 @@
+{
+  "operation_id": "pr114-emergency007-point3-20260920",
+  "recorded_at": "2026-09-20T04:12:11.459Z",
+  "updated_at": "2026-09-20T04:12:11.459Z",
+  "foreground_in_progress": true,
+  "scope": "ISOLATED_PRIVATE_INTEGRATION_ONLY",
+  "head": "86031095841c9c0ea91bcfc5aaf9c43958c45a9f",
+  "main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+  "input_validation": "cloud/task088_v5_acceptance/emergency007_20260920/SOURCE_RECOVERY_VALIDATION.json",
+  "input_validation_sha256": "5dc998e274af88b26011c45460619bdf1e006014e171867fe006e9889129d519",
+  "builder_before_sha256": "ac9dcfb1f580f3d740c8ddd31e4d75f3440edea0679205cefd38f789c113d526",
+  "intent": "Integrate fail-closed source-pinned media/database/cache rollback and shared writer lock boundaries using recovered exact dependencies. Test only changed boundaries locally; preserve private input bytes and old outputs.",
+  "expected_result": "New isolated candidate with exact manifest, targeted behavior evidence, and explicit remaining independent review/runtime gates.",
+  "backup": "Immutable private originals retained; separate new candidate directory. No production write or production backup in this step.",
+  "readback": "Compare branch head and every saved sanitized file byte-for-byte; private candidate manifest SHA256 and local inputs.",
+  "control_reconciliation": {
+    "main_pr_state_subtrees_unchanged": true,
+    "active_runs": 0,
+    "queued_runs": 0,
+    "prior_operations_reconciled": true
+  },
+  "test_reason": "New private dependencies now available; previously unverified DB/media/cache rollback and lock-order call paths need execution against exact extracted implementations.",
+  "next_action": "Inspect exact mutation dependencies and implement isolated candidate.",
+  "production_authority": false
+}

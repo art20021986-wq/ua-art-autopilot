@@ -1,0 +1,17 @@
+2026-09-14T18:32:47.9402037Z Traceback (most recent call last):
+2026-09-14T18:32:47.9403706Z   File "/home/runner/work/ua-art-autopilot/ua-art-autopilot/automation/transaction_watchdog.py", line 972, in <module>
+2026-09-14T18:32:47.9404579Z     main()
+2026-09-14T18:32:47.9405476Z   File "/home/runner/work/ua-art-autopilot/ua-art-autopilot/automation/transaction_watchdog.py", line 961, in main
+2026-09-14T18:32:47.9406771Z     result, payloads = recovery_proposal(args.command, args.expected_main, args.queue_dir,
+2026-09-14T18:32:47.9407557Z                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-09-14T18:32:47.9408556Z   File "/home/runner/work/ua-art-autopilot/ua-art-autopilot/automation/transaction_watchdog.py", line 817, in recovery_proposal
+2026-09-14T18:32:47.9409533Z     proof = _rcanary(root, data, expected_main)
+2026-09-14T18:32:47.9410019Z             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-09-14T18:32:47.9410862Z   File "/home/runner/work/ua-art-autopilot/ua-art-autopilot/automation/transaction_watchdog.py", line 757, in _rcanary
+2026-09-14T18:32:47.9411894Z     _rr(receipt.get("schema_version") == "UA-ART-RECOVERY-ROUTE-CANARY-1"
+2026-09-14T18:32:47.9412885Z   File "/home/runner/work/ua-art-autopilot/ua-art-autopilot/automation/transaction_watchdog.py", line 517, in _rr
+2026-09-14T18:32:47.9413817Z     raise WatchdogError("RECOVERY_" + code)
+2026-09-14T18:32:47.9414349Z WatchdogError: RECOVERY_CANARY_RECEIPT_BINDING
+2026-09-14T18:32:47.9625063Z ##[error]Process completed with exit code 1.
+2026-09-14T18:32:48.4217783Z SHA256 digest of uploaded artifact zip is edc36fd437ead87159287c40d4e6751370c31b920d13f581a451d7a40ebdf2a7
+2026-09-14T18:32:48.6071426Z Artifact task120-recovery-canary-34881423575-1.zip successfully finalized. Artifact ID 10362952554

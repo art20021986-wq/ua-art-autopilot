@@ -1,0 +1,14 @@
+{
+  "criterion": "PS-A08",
+  "exit_code": 0,
+  "input_stable": true,
+  "output_sha256": "ccfa74ceb3795844c4bacd7724f060ae38b96732f031afbfe0fbccec5fd0ecf4",
+  "production_written": false,
+  "source_sha256": {
+    "cloud/task088_price_sync/install_package.py": "11c62a3f2e9a17ebf712fba6e3f2b7830e3ce19289ead0fa96578053721feff9",
+    "cloud/task088_stage3_renderer/initial_html_prices.py": "ff6ba14b32d89dd874eb398f40106931236206af2fc2189bfeb8d9594942c26d",
+    "cloud/task088_stage3_renderer/test_empty_candidate_composition.py": "a095fd1f9f0977f3a459e782ff795b2fa1b22335c7ca0877b4e90b2bfbc6c9be"
+  },
+  "status": "PASS",
+  "tests": 5
+}

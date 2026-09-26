@@ -1,0 +1,21 @@
+{
+  "operation_id": "pr114-point4-status-20260920T054458Z",
+  "recorded_at": "2026-09-20T05:52:08.520Z",
+  "foreground_in_progress": true,
+  "status": "IMPLEMENTING_ISOLATED_STATUS_TRANSITIONS",
+  "facts": [
+    "UA0022_INSTALL_RECEIPT_PASS_OBSERVED",
+    "FOUR_INSTALLED_AFTER_IMAGES_RECOVERED_EXACTLY",
+    "FOREIGN_FINAL_HTTP_CHECK_FAILED_ROLLBACK_NOT_EXECUTED",
+    "CURRENT_FULL_BINDING_PENDING"
+  ],
+  "candidate_code_edits_in_progress": true,
+  "product_acceptance": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40
+  },
+  "runtime_changes_by_this_operation": false,
+  "production_gate": false,
+  "next_action": "Finish isolated compatible lifecycle implementation/review and current complete input binding. Do not replay UA0022 operation or prior preflight."
+}

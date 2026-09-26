@@ -1,0 +1,47 @@
+{
+  "schema_version": "UAART-UA0022-FORWARD-RECONCILIATION-VALIDATION-2",
+  "operation_id": "ua0022-forward-reconcile-v2-20260920T1109Z",
+  "recorded_at": "2026-09-20T11:30:00Z",
+  "input_heads": {
+    "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "pr": "7a306b25b12432a0bf10325102956578fd512553"
+  },
+  "status": "READY_FOR_INDEPENDENT_REVIEW_NOT_EXECUTED",
+  "tests": {
+    "passed": 12,
+    "failed": 0,
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v test_forward_reconcile_v2.py"
+  },
+  "hashes": {
+    "builder_sha256": "a288b7b5131c43f997f4d0cf23c6005db3f3d2aeb2b561905afb2ab2b84e8f53",
+    "tests_sha256": "7190d8e747dbae0297ae2269040ebf10e7d0887b1029ec2123171f1793d408b4",
+    "input_manifest_sha256": "1b4b9db80c69945be841da6ca16e55411116e773f0d4e45fd0861d6635960fa7",
+    "health_sha256": "29c86557518848b7be03a127b39dcaa2e8fa8d7afb7af6a5e2bf4b36fc778f75",
+    "install_evidence_sha256": "018a99891750cb13ff43407342ecefeb084cedfb5bc75b41cb557acfa086250a"
+  },
+  "corrections": [
+    "All five repository inputs now match exact main SHA256 and blob OIDs.",
+    "HALT archive bytes exactly equal main HALT.",
+    "Fresh health requires exact five-route keyset, HTTP 200, SHA256, healthy, exit_code 0 and <=3600 seconds.",
+    "Actual authenticated install receipt is hash-bound and validates integrity, post-check, protected pages, other rows, media, UA/GE values and CRM resume.",
+    "Receipt contains every active canonical validation field; tests and unexpected_changes claims are explicitly scoped to the hash-bound install evidence and current health evidence.",
+    "Rollback readiness is split into rollback_ready/backup_available=true and canonical_rollback_execution_ready=false with the exact ledger/nonce blocker retained.",
+    "Manifest is read once with a stable inode/stat check and the exact same bytes are hashed into the result.",
+    "Install and health evidence provenance is pinned by path, blob SHA and source commit.",
+    "Negative tests cover input drift, provenance drift, aliased route URLs, false changed-byte declarations, empty routes, failed monitor, stale health, runtime keyset and pre-existing additions."
+  ],
+  "current_live_readback": {
+    "status": "healthy",
+    "finished_at": "2026-09-20T11:15:55.449844Z",
+    "http_200_routes": 5,
+    "public_bytes_changed_after_install_observation": [
+      "ua0022_card",
+      "ua0022_diagnostic"
+    ]
+  },
+  "production_changes": false,
+  "halt_removed": false,
+  "main_commit_created": false,
+  "independent_review": "PENDING",
+  "next_action": "Independent exact-candidate review; if PASS, fresh main/actions/health read and one non-force exact-parent atomic state commit with post-readback."
+}

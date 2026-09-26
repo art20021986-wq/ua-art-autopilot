@@ -10,11 +10,13 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import hashlib
+import importlib.util
 import json
 import os
 import pathlib
 import re
 import shutil
+import sys
 import tempfile
 import time
 import urllib.request
@@ -63,6 +65,24 @@ TASK088_PREVIOUS_MODE_PATH = "state/runtime_activations/TASK088-STORAGE-OVERRIDE
 TASK088_PREVIOUS_MANIFEST_SHA256 = "a287f583bf5b7e1df8d3d562d7c99afc540e6c74cea7a9c0c0b4d276da6b945c"
 TASK088_PREVIOUS_MODE_SHA256 = "1075e1cfdd9d0ed09c45546c93a522eb5f28b7cd02c783f7db0439c350175281"
 TASK088_PREVIOUS_ACTIVATION_SHA256 = "9e46455965d91b544d55b37698da453a94be25ab7f5a43d546f5e16766dac031"
+PRICE_V5_ACTIVATION_PATH = "state/runtime_activations/TASK088-PRICE-V5-STAGE3.json"
+PRICE_V5_PREVIOUS_MODE_PATH = "state/runtime_activations/TASK088-PRICE-V5-STAGE3.previous-mode.json"
+PRICE_V5_PREVIOUS_MANIFEST_PATH = "state/runtime_activations/TASK088-PRICE-V5-STAGE3.previous-manifest.json"
+PRICE_V5_PREVIOUS_MODE_SHA256 = "11af7c738faa902412d35f0755a0a829df49ec939d32960abf343203f93bb715"
+PRICE_V5_PREVIOUS_MANIFEST_SHA256 = "2b3b75c686a41f4f6a48b2f9e2d57da12574c2b498505150899b66645d7cd2c5"
+PRICE_V5_PREVIOUS_ACTIVATION_SHA256 = "4567f604bebac3d198e361ee49a3ba239585e6e07cca57e9f4fec8a316e9024c"
+# These exact reviewed workflow candidates add price regression/Preview gates.
+# Allowing their code form does not activate it: the full runtime registration
+# below and the existing verify_execution_mode chain remain mandatory.
+PRICE_V5_WORKFLOW_SHA256 = {
+    ".github/workflows/uaart_critical.yml": "4523f30fd01fa9e1b578be9e18593101270564cf1f51849df02e887c808fb80e",
+    ".github/workflows/uaart_maintenance.yml": "04e0b6636789d5fe67da3ac3f31ab713603fb71066dd72b0f0f44fcd12346fa5",
+}
+PRICE_V5_RUNTIME_PATHS = frozenset((*PRICE_V5_WORKFLOW_SHA256, "automation/control_plane.py"))
+PRICE_V5_PREREQUISITES = {
+    "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json": "f8a2325b036010e2d5f35b277fe3039eed7d974c708f8fd73dc61318a8779d82",
+    "state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json": "d0b731b93a73da0d041a1af6e987f0e6634823001a2461bc882c927a588faae7",
+}
 TASK088_PACKAGE_ROOTS = {
     "TASK088-GE-PRICE-CRM-PREFLIGHT": "cloud/task088_crm_preflight/",
     "TASK088-GE-PRICE-CRM-STAGE1": "cloud/task_088_ge_price_crm_stage1/",
@@ -1730,7 +1750,10 @@ def _verify_write_job_runtime_bootstrap_policy(source: str, relative: str) -> No
         ".github/workflows/uaart_transaction_watchdog.yml": WATCHDOG_WORKFLOW_SHA256,
     }[relative]
     actual_source_sha = sha256_bytes(source.encode("utf-8"))
-    if actual_source_sha != expected_source_sha:
+    accepted_source_hashes = {expected_source_sha}
+    if relative == ".github/workflows/uaart_critical.yml":
+        accepted_source_hashes.add(PRICE_V5_WORKFLOW_SHA256[relative])
+    if actual_source_sha not in accepted_source_hashes:
         raise ControlPlaneError("WRITE_WORKFLOW_EXACT_SHA256_MISMATCH:" + relative)
 
 
@@ -2021,6 +2044,214 @@ def _verify_task088_runtime_activation(
     return registered_at
 
 
+def _price_v5_artifact(root: pathlib.Path, reference: Any) -> tuple[pathlib.Path, dict[str, Any]]:
+    """Read an exact bounded canonical artifact; never generate authority."""
+    if not isinstance(reference, dict) or set(reference) != {"path", "sha256"}:
+        raise ControlPlaneError("PRICE_V5_ARTIFACT_REFERENCE")
+    relative = safe_repo_path(str(reference["path"]))
+    path = root / relative
+    for candidate in (path, *path.parents):
+        if candidate.is_symlink():
+            raise ControlPlaneError("PRICE_V5_ARTIFACT_SYMLINK")
+        if candidate == root:
+            break
+    if not path.is_file() or path.stat().st_size > 4 * 1024 * 1024:
+        raise ControlPlaneError("PRICE_V5_ARTIFACT_FILE")
+    if sha256_file(path) != require_sha(reference["sha256"], "price_v5_artifact"):
+        raise ControlPlaneError("PRICE_V5_ARTIFACT_SHA")
+    return path, _runtime_activation_json(path)
+
+
+def _verify_price_v5_authority(
+    *, root: pathlib.Path, activation: Mapping[str, Any], runtime: Mapping[str, Any],
+    runtime_sha: str, registered_at: dt.datetime,
+) -> None:
+    """Bind this route registration to the real Stage 3 owner/Preview chain.
+
+    Preview freshness is checked at registration. The immutable registration
+    remains historical authority afterwards; every actual publication still
+    requires its normal fresh controls, transaction and applicable live gate.
+    """
+    references = activation.get("artifacts")
+    if not isinstance(references, dict) or set(references) != {"request", "manifest", "owner_approval", "gate_b", "preview_gate"}:
+        raise ControlPlaneError("PRICE_V5_COMPLETE_AUTHORITY_CHAIN_REQUIRED")
+    records = {name: _price_v5_artifact(root, value)[1] for name, value in references.items()}
+    task_id = activation["task_id"]
+    request, manifest, owner, gate, preview = (records[name] for name in ("request", "manifest", "owner_approval", "gate_b", "preview_gate"))
+    request_rel = references["request"]["path"]
+    _, _, loaded, request_sha = load_request(request_rel, root)
+    if (loaded != request or request.get("task_id") != task_id
+            or request.get("requested_min_class") != "CRITICAL" or request.get("production_required") is not True
+            or not references["owner_approval"]["path"].startswith("tasks/approvals/")
+            or not references["manifest"]["path"].startswith("tasks/manifests/")):
+        raise ControlPlaneError("PRICE_V5_CANONICAL_REQUEST_REQUIRED")
+    critical = request.get("critical")
+    if not isinstance(critical, dict) or critical.get("gate_b_authorized") is not True:
+        raise ControlPlaneError("PRICE_V5_CANONICAL_GATE_REQUIRED")
+    for field, name in (("manifest", "manifest"), ("owner_approval", "owner_approval"), ("gate_a", "gate_b")):
+        if (critical.get(field + "_path") != references[name]["path"]
+                or critical.get(field + "_sha256") != references[name]["sha256"]):
+            raise ControlPlaneError("PRICE_V5_REQUEST_ARTIFACT_BINDING")
+    if (manifest.get("task_id") != task_id or manifest.get("task_class") != "CRITICAL"
+            or manifest.get("contract_id") != "UA-ART-CRITICAL-ADAPTER-V1.0"
+            or any(manifest.get(key) is not True for key in ("backup_required", "rollback_required", "live_verify_required"))):
+        raise ControlPlaneError("PRICE_V5_PRICE_MANIFEST_REQUIRED")
+    for field in ("install_files_sha256", "price_event_delegation_sha256"):
+        require_sha(manifest.get(field), "price_v5_" + field)
+    registration = manifest.get("runtime_registration")
+    validation_files = {
+        "preview_validator_sha256": "cloud/ua_ge_price_protection/verify_preview.py",
+        "software_gate_sha256": "cloud/ua_ge_price_protection/gate.py",
+        "installer_sha256": "cloud/task088_price_sync/install_package.py",
+    }
+    expected = {
+        "contract": "UA-ART-TASK088-PRICE-V5-RUNTIME-1",
+        "runtime_manifest_sha256": runtime_sha,
+        "previous_runtime_manifest_sha256": PRICE_V5_PREVIOUS_MANIFEST_SHA256,
+        "changed_runtime_paths": sorted(PRICE_V5_RUNTIME_PATHS),
+        "runtime_file_sha256": {name: runtime["files"][name] for name in sorted(PRICE_V5_RUNTIME_PATHS)},
+    }
+    if not isinstance(registration, dict) or set(registration) != set(expected) | set(validation_files):
+        raise ControlPlaneError("PRICE_V5_MANIFEST_RUNTIME_REGISTRATION_REQUIRED")
+    if any(registration.get(key) != value for key, value in expected.items()):
+        raise ControlPlaneError("PRICE_V5_MANIFEST_RUNTIME_BINDING")
+    for field, relative in validation_files.items():
+        path = root / relative
+        for candidate in (path, *path.parents):
+            if candidate.is_symlink():
+                raise ControlPlaneError("PRICE_V5_VALIDATOR_SYMLINK")
+            if candidate == root:
+                break
+        if not path.is_file() or sha256_file(path) != require_sha(registration[field], "price_v5_validator"):
+            raise ControlPlaneError("PRICE_V5_PINNED_PREVIEW_VALIDATOR_REQUIRED")
+    if (gate.get("task_id") != task_id or gate.get("status") != "PASS" or gate.get("tests") != "PASS"
+            or type(gate.get("unexpected_changes")) is not int or gate["unexpected_changes"] != 0
+            or gate.get("backup_plan_ready") is not True or gate.get("rollback_plan_ready") is not True
+            or gate.get("manifest_sha256") != references["manifest"]["sha256"]
+            or gate.get("price_protection_preview_path") != references["preview_gate"]["path"]
+            or gate.get("preview_gate_sha256") != references["preview_gate"]["sha256"]):
+        raise ControlPlaneError("PRICE_V5_BOUND_FULL_GATE_REQUIRED")
+    gate_at = parse_utc(str(gate.get("evaluated_at", "")))
+    if not 0 <= (registered_at - gate_at).total_seconds() <= 1800:
+        raise ControlPlaneError("PRICE_V5_GATE_STALE_AT_REGISTRATION")
+    subject = json.loads(json.dumps(request))
+    subject["critical"]["owner_approval_sha256"] = "0" * 64
+    expected_owner_keys = {"approved_at", "authorization_id", "authorized_environment", "expires_at",
+        "gate_a_sha256", "launch_nonce", "manifest_sha256", "mode_epoch", "owner", "owner_authorized",
+        "production_allowed", "request_path", "request_subject_sha256", "schema_version", "task_id"}
+    if (set(owner) != expected_owner_keys or owner.get("schema_version") != "UA-ART-PRODUCTION-AUTHORIZATION-1"
+            or owner.get("task_id") != task_id or owner.get("owner") != "Артём Бровинский / UA ART COMPANY LLC"
+            or owner.get("owner_authorized") is not True or owner.get("production_allowed") is not True
+            or owner.get("authorized_environment") != "production"
+            or owner.get("mode_epoch") != activation["mode_epoch"]
+            or owner.get("manifest_sha256") != references["manifest"]["sha256"]
+            or owner.get("gate_a_sha256") != references["gate_b"]["sha256"]
+            or owner.get("request_path") != request_rel
+            or owner.get("request_subject_sha256") != sha256_bytes(canonical_json(subject))
+            or re.fullmatch(r"[A-Za-z0-9._-]{16,128}", str(owner.get("launch_nonce", ""))) is None
+            or re.fullmatch(r"prod-auth-[A-Za-z0-9._-]{16,100}", str(owner.get("authorization_id", ""))) is None):
+        raise ControlPlaneError("PRICE_V5_EXACT_OWNER_AUTHORIZATION_REQUIRED")
+    if not (parse_utc(str(owner.get("approved_at", ""))) <= registered_at < parse_utc(str(owner.get("expires_at", "")))):
+        raise ControlPlaneError("PRICE_V5_OWNER_AUTHORIZATION_TIME")
+    adapter_path = _runtime_activation_file(root, "automation/critical_adapter.py")
+    if sha256_file(adapter_path) != require_sha(runtime["files"]["automation/critical_adapter.py"], "price_v5_critical_adapter"):
+        raise ControlPlaneError("PRICE_V5_CRITICAL_ADAPTER_PIN")
+    adapter_spec = importlib.util.spec_from_file_location("uaart_price_v5_critical_adapter", adapter_path)
+    if adapter_spec is None or adapter_spec.loader is None:
+        raise ControlPlaneError("PRICE_V5_CRITICAL_ADAPTER_LOAD")
+    adapter = importlib.util.module_from_spec(adapter_spec)
+    sys.modules[adapter_spec.name] = adapter
+    try:
+        adapter_spec.loader.exec_module(adapter)
+        flat = {"task_id": task_id, "title": request["title"], "description": request.get("description", ""),
+            "changed_paths": request.get("changed_paths"), "production_required": True,
+            "requested_min_class": "CRITICAL", "gate_b_authorized": True,
+            "allow_crm_vehicle_data": critical.get("allow_crm_vehicle_data", False),
+            **{key: critical.get(key) for key in ("owner_approval_path", "owner_approval_sha256", "manifest_path", "manifest_sha256")}}
+        authorized = adapter.authorize_gate_b(adapter.CriticalRequest.from_mapping(flat),
+            (root / references["owner_approval"]["path"]).read_bytes(), manifest, gate)
+    except Exception as exc:
+        raise ControlPlaneError("PRICE_V5_CANONICAL_GATE_B_REJECTED") from exc
+    if authorized.get("status") != "GATE_B_AUTHORIZED":
+        raise ControlPlaneError("PRICE_V5_CANONICAL_GATE_B_REQUIRED")
+    # The existing full Preview validator checks every named check, complete
+    # candidate source inventory, DB/schema/publication-set binding and time.
+    # No replacement PASS flag, shortened test list or manufactured observation.
+    spec = importlib.util.spec_from_file_location("uaart_price_v5_activation_preview", root / validation_files["preview_validator_sha256"])
+    if spec is None or spec.loader is None:
+        raise ControlPlaneError("PRICE_V5_PREVIEW_VALIDATOR_LOAD")
+    validator = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(validator)
+        result = validator.verify(root, request_rel, request_sha, now=registered_at.timestamp())
+    except Exception as exc:
+        raise ControlPlaneError("PRICE_V5_FULL_PREVIEW_REJECTED") from exc
+    if result.get("evidence_binding") != "PASS" or result.get("task_id") != task_id:
+        raise ControlPlaneError("PRICE_V5_FULL_PREVIEW_REQUIRED")
+
+
+def _verify_task088_price_runtime_activation(
+    *, root: pathlib.Path, mode: Mapping[str, Any], approval: Mapping[str, Any],
+    runtime: Mapping[str, Any], runtime_sha: str,
+) -> dt.datetime:
+    """Register only FINAL v5 price code after the complete real Preview gate."""
+    path = _runtime_activation_file(root, PRICE_V5_ACTIVATION_PATH)
+    if sha256_file(path) != require_sha(mode.get("runtime_activation_sha256"), "price_v5_activation"):
+        raise ControlPlaneError("PRICE_V5_ACTIVATION_SHA")
+    activation = _runtime_activation_json(path)
+    expected = {
+        "schema_version": "UA-ART-TASK088-PRICE-V5-ACTIVATION-1",
+        "scope": "REGISTER_TASK088_V5_PRICE_PIPELINE",
+        "contract_id": "UA-ART-GE-UA-MARKET-PRICE-001 FINAL v5.0",
+        "owner": "Артём Бровинский / UA ART COMPANY LLC", "owner_actor_id": "321059821",
+        "repository": "art20021986-wq/ua-art-autopilot", "mode_epoch": mode.get("mode_epoch"),
+        "runtime_manifest_path": RUNTIME_MANIFEST_PATH, "runtime_manifest_sha256": runtime_sha,
+        "previous_manifest_path": PRICE_V5_PREVIOUS_MANIFEST_PATH,
+        "previous_manifest_sha256": PRICE_V5_PREVIOUS_MANIFEST_SHA256,
+        "previous_mode_path": PRICE_V5_PREVIOUS_MODE_PATH, "previous_mode_sha256": PRICE_V5_PREVIOUS_MODE_SHA256,
+        "previous_activation_path": TASK088_ACTIVATION_PATH,
+        "previous_activation_sha256": PRICE_V5_PREVIOUS_ACTIVATION_SHA256,
+        "changed_runtime_paths": sorted(PRICE_V5_RUNTIME_PATHS),
+    }
+    if set(activation) != set(expected) | {"task_id", "registered_at", "source_commit", "artifacts"}:
+        raise ControlPlaneError("PRICE_V5_ACTIVATION_KEYS")
+    if any(activation.get(key) != value for key, value in expected.items()):
+        raise ControlPlaneError("PRICE_V5_ACTIVATION_SCOPE")
+    if (re.fullmatch(r"TASK088-GE-PRICE-SITE-STAGE3-[A-Za-z0-9-]+", str(activation.get("task_id", ""))) is None
+            or re.fullmatch(r"[0-9a-f]{40}", str(activation.get("source_commit", ""))) is None):
+        raise ControlPlaneError("PRICE_V5_ACTIVATION_IDENTITY")
+    snapshots = {}
+    for name in ("mode", "manifest", "activation"):
+        snapshot = _runtime_activation_file(root, activation["previous_" + name + "_path"])
+        if sha256_file(snapshot) != activation["previous_" + name + "_sha256"]:
+            raise ControlPlaneError("PRICE_V5_PREVIOUS_CHAIN_SHA")
+        snapshots[name] = _runtime_activation_json(snapshot)
+    old_mode, old_runtime = snapshots["mode"], snapshots["manifest"]
+    preserved = dict(mode)
+    for key in ("runtime_manifest_sha256", "runtime_activation_path", "runtime_activation_sha256"):
+        preserved[key] = old_mode[key]
+    if preserved != old_mode:
+        raise ControlPlaneError("PRICE_V5_PREVIOUS_MODE_POLICY_DRIFT")
+    previous_at = _verify_task088_runtime_activation(root=root, mode=old_mode, approval=approval,
+        runtime=old_runtime, runtime_sha=PRICE_V5_PREVIOUS_MANIFEST_SHA256)
+    for relative, expected_sha in PRICE_V5_PREREQUISITES.items():
+        receipt = _runtime_activation_file(root, relative)
+        if sha256_file(receipt) != expected_sha:
+            raise ControlPlaneError("PRICE_V5_CLOSED_PREREQUISITE_CHANGED")
+    files = runtime.get("files")
+    if (not isinstance(files, dict) or set(files) != set(RUNTIME_PINNED_PATHS)
+            or {name for name in RUNTIME_PINNED_PATHS if files[name] != old_runtime["files"][name]} != PRICE_V5_RUNTIME_PATHS):
+        raise ControlPlaneError("PRICE_V5_RUNTIME_CHANGE_SCOPE")
+    if any(files[name] != expected_sha for name, expected_sha in PRICE_V5_WORKFLOW_SHA256.items()):
+        raise ControlPlaneError("PRICE_V5_EXACT_WORKFLOW_CANDIDATES_REQUIRED")
+    registered_at = parse_utc(str(activation.get("registered_at", "")))
+    if not previous_at <= registered_at <= dt.datetime.now(dt.timezone.utc):
+        raise ControlPlaneError("PRICE_V5_REGISTRATION_TIME_ORDER")
+    _verify_price_v5_authority(root=root, activation=activation, runtime=runtime,
+        runtime_sha=runtime_sha, registered_at=registered_at)
+    return registered_at
+
+
 def _verify_runtime_activation(
     *, root: pathlib.Path, mode: Mapping[str, Any], approval: Mapping[str, Any],
     runtime: Mapping[str, Any], runtime_sha: str,
@@ -2032,6 +2263,10 @@ def _verify_runtime_activation(
     The dependency order is code -> manifest -> registration -> mode, with no
     hash of a file embedded into itself.
     """
+    if mode.get("runtime_activation_path") == PRICE_V5_ACTIVATION_PATH:
+        return _verify_task088_price_runtime_activation(
+            root=root, mode=mode, approval=approval, runtime=runtime, runtime_sha=runtime_sha,
+        )
     if mode.get("runtime_activation_path") == TASK088_ACTIVATION_PATH:
         return _verify_task088_runtime_activation(
             root=root, mode=mode, approval=approval, runtime=runtime, runtime_sha=runtime_sha,

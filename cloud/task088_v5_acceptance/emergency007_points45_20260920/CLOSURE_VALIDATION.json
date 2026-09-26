@@ -1,0 +1,101 @@
+{
+  "artifacts": {
+    "FIRST_RUN.txt": "0be95d93cc63aa45c84ff7dc86da86e6c5c82a56c78b9e1a33574a68835efbc5",
+    "SECOND_RUN.txt": "378d44f2be565049ba01c8cb6432b7ec37688651b1c4f4a414680ddd652fc483",
+    "THIRD_RUN.txt": "d8e0ef2fb11564d517d6f73dc3e755b03157317060bad1bb1ca1f1ea1ddadf3b",
+    "THIRD_RUN_INPUTS.json": "a5c9e5cc0a3212d2473b397e971df5865ec8160a29b42d140ba4170d6af6e768"
+  },
+  "changed_files": {
+    "cloud/task088_price_sync/build_preflight_bundle.py": {
+      "bytes": 6194,
+      "sha256": "f393a85b4051b35c3e03a9a6908ce2a391983824660e98ce7dc522dfccfdc34b"
+    },
+    "cloud/task088_price_sync/install_package.py": {
+      "bytes": 40032,
+      "sha256": "04dcd630ff5cd58e133083cb58c34cb0a45b8b1b51f381d7c93a086079aa82e0"
+    },
+    "cloud/task088_price_sync/preflight.py": {
+      "bytes": 20082,
+      "sha256": "6e3a85fd088c0b8d087fe98f2f24ed709228e16e0d99acb77c01eb590d00104b"
+    },
+    "cloud/task088_price_sync/stage_preflight.py": {
+      "bytes": 4183,
+      "sha256": "65010a2a599f5ef7daee871420f2165e7e7a2fda495a31568040dfa3cde9c72e"
+    },
+    "cloud/task088_price_sync/test_binding.py": {
+      "bytes": 31407,
+      "sha256": "e50707adb44ec33b36be3b3f986347fd37fb31eba1ca3d42483d3692dc0ea627"
+    },
+    "cloud/task088_price_sync/uaart_price_sync_binding.py": {
+      "bytes": 45802,
+      "sha256": "71c36f59d7100faeaede17c580b391349f7dab081099d0de21975f926fb7d174"
+    },
+    "cloud/task088_v5_install/build_release.py": {
+      "bytes": 4015,
+      "sha256": "981e1d91560a2003ed63b6ddac25c27ca8f744655806df7001bc2bece758e695"
+    },
+    "cloud/task088_v5_install/controller.py": {
+      "bytes": 26810,
+      "sha256": "0801407ceeb4edf4533e5df5ade2c23d56cbeb46562ce40ab117f491f17c2eca"
+    },
+    "cloud/task088_v5_writer_fence/test_release_closure.py": {
+      "bytes": 12826,
+      "sha256": "32295d98cb665e914f0358b43ce027bfb4f928e7c695c0a04ca4a5778abecec6"
+    }
+  },
+  "closure": {
+    "controller_remote_modules": 12,
+    "dependencies": 10,
+    "generated_release_refreshed": false,
+    "runtime_modules": 10,
+    "sources": 7,
+    "staging_matches_archive": true
+  },
+  "compile_changed_public_files": "PASS",
+  "diff_check_exit": 0,
+  "fresh_preflight_executed": false,
+  "full_release_pass": false,
+  "historical_446_183_120_rerun": false,
+  "preview24_rebound": false,
+  "private_source_committed": false,
+  "production_written": false,
+  "recorded_at": "2026-09-20T04:53:37.311616+00:00",
+  "remaining": [
+    "Independent review of this closure change",
+    "Complete combined private candidate/HTML equivalence and exact Preview applicability",
+    "P5-COVERAGE-COLLECTOR: authenticated complete continuous writer contract shared by maintenance/install/runtime; install _validate still accepts generic nonempty VERIFIED writer list",
+    "Actual runtime containment and loaded source identity",
+    "Generated release refresh only after review"
+  ],
+  "runs": [
+    {
+      "capture": "Saved completed tool stdout without rerun",
+      "failed": 0,
+      "file": "FIRST_RUN.txt",
+      "passed": 11,
+      "scope": "New exact composition and package/manifest/backup/install/rollback TEST-root checks",
+      "seconds": 3.252,
+      "selected": 11
+    },
+    {
+      "capture": "Saved completed tool stdout without rerun",
+      "failed": 0,
+      "file": "SECOND_RUN.txt",
+      "passed": 5,
+      "scope": "New staging and v5 admission checks before legacy V5 fixture upgrade",
+      "seconds": 0.259,
+      "selected": 5
+    },
+    {
+      "capture": "Captured directly by subprocess",
+      "failed": 0,
+      "file": "THIRD_RUN.txt",
+      "inputs": "THIRD_RUN_INPUTS.json",
+      "passed": 8,
+      "scope": "Changed V5 TEST fixture; five new checks plus three existing affected V5 admission checks",
+      "seconds": 0.224,
+      "selected": 8
+    }
+  ],
+  "scope": "LOCAL_RELEASE_CLOSURE_PREPARATION_ONLY"
+}

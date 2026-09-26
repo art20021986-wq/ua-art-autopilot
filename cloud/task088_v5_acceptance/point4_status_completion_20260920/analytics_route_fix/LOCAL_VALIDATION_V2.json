@@ -1,0 +1,55 @@
+{
+  "schema_version": "PR114-ANALYTICS-ROUTE-FIX-LOCAL-VALIDATION-2",
+  "operation_id": "pr114-analytics-route-fix-v2-20260920T1217Z",
+  "validated_at": "2026-09-20T12:19:56Z",
+  "status": "PASS_LOCAL_REVIEW_FIX_NOT_STAGED",
+  "parent": "362a56308105a000c15c13d457cd072803b83c90",
+  "blocking_review_addressed": "INDEPENDENT_REVIEW_BLOCKED_V1.json",
+  "shared_validator": {
+    "location": "stage_exact_preview.py::validate_public_analytics_capture",
+    "exact_key_set_required": true,
+    "parsed_utc_timestamp_required": true,
+    "used_by_generator": true,
+    "used_by_upgrader": true,
+    "used_by_stage": true
+  },
+  "tests": {
+    "analytics_route_fix_unittest": {
+      "passed": 10,
+      "failed": 0
+    },
+    "targeted_stage_fixture": {
+      "status": "PASS_TARGETED_LOCAL_FIXTURE",
+      "unsafe_analytics_variants_failed_closed": 8,
+      "new_direct_stage_negatives": [
+        "missing captured_at_utc",
+        "extra receipt key",
+        "invalid captured_at_utc"
+      ]
+    },
+    "python_ast_parse": {
+      "passed": 5,
+      "failed": 0
+    },
+    "git_diff_check": "PASS"
+  },
+  "package_reproduction": {
+    "status": "BYTE_IDENTICAL",
+    "expected_sha256": "77f04f3786c9487631131a2d0e476caf0b6bae3ba9def9f87bf1ee1c418a8088",
+    "actual_sha256": "77f04f3786c9487631131a2d0e476caf0b6bae3ba9def9f87bf1ee1c418a8088",
+    "bytes": 655049
+  },
+  "changed_file_sha256": {
+    "check_preview_stage_fixture.py": "65f65769659f6975422657e8bc48470898518d9550703a1b6042cf45a7d5d672",
+    "package_exact_preview.py": "61e6cc673238cb5fe9bb9d90b0b0dda2f164dd0c2ec3aa5b61b0bbdd4656b86e",
+    "stage_exact_preview.py": "5bf920f029f098d7e1b989325e2401c1fb57639c940599b5170aefbc7adcb437",
+    "test_analytics_route_fix.py": "0d72cb4998afde4c1e2984b00d312371c3ed35618035bb86e16aeb1991fdebbe",
+    "upgrade_preview_package_analytics.py": "3a2452449dfbc1a45e41f56b0b4b155379451dedd319ef41e5e8ae1610fb4522"
+  },
+  "production_written": false,
+  "preview_started": false,
+  "switch_performed": false,
+  "reload_performed": false,
+  "accepted_historical_suites_repeated": false,
+  "next_action": "Persist and read back the strict validator patch, then repeat independent review before any Preview Stage."
+}

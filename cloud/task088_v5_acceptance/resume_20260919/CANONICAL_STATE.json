@@ -1,0 +1,161 @@
+{
+  "activation": {
+    "allows_site_changes": false,
+    "note": "Old narrow storage override is not site publication authority/activation. Existing PR114 deployment prerequisites need fresh canonical records after reviewed release preparation.",
+    "path": "state/runtime_activations/TASK088-STORAGE-OVERRIDE-20260911.json",
+    "registered_request": "tasks/requests/TASK088-GE-PRICE-CRM-PREFLIGHT-20260911-READ2.json",
+    "scope": "TASK088_CRM_ONLY_STORAGE_OWNER_OVERRIDE"
+  },
+  "active_actions": {
+    "in_progress": 0,
+    "note": "Three fresh status-filtered API reads; scheduled jobs can appear later.",
+    "queued": 0,
+    "waiting": 0
+  },
+  "claim_counts": {
+    "nonterminal": 1,
+    "terminal": 28,
+    "total": 29
+  },
+  "evidence_urls": [
+    "https://github.com/art20021986-wq/ua-art-autopilot/blob/aadf60b6f2b6acb0fba598792895fb93564b0451/state/AUTOPILOT_HALT.json",
+    "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/35064800624/job/104692611297",
+    "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/35446008700/job/105904925560",
+    "https://github.com/art20021986-wq/ua-art-autopilot/blob/aadf60b6f2b6acb0fba598792895fb93564b0451/.github/workflows/uaart_crm_runtime_readonly_probe.yml"
+  ],
+  "halt": {
+    "halted_at": "2026-09-16T06:40:56Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "Production watchdog discovery failed in run 35064800624",
+    "request_path": "",
+    "request_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "run_id": "35064800624",
+    "status": "EMERGENCY_HALT",
+    "task_id": "SYSTEM-WATCHDOG"
+  },
+  "main_commit": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+  "mode": {
+    "automatic_production": true,
+    "mode": "AUTOMATIC",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "runtime_activation_path": "state/runtime_activations/TASK088-STORAGE-OVERRIDE-20260911.json",
+    "runtime_manifest_sha256": "2b3b75c686a41f4f6a48b2f9e2d57da12574c2b498505150899b66645d7cd2c5"
+  },
+  "nonterminal_claims": [
+    {
+      "failure_history": [
+        {
+          "action": "CLASSIFY_ROOT_CAUSE",
+          "at": "2026-09-13T02:35:15Z",
+          "class": "UNKNOWN",
+          "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 34733330869",
+          "retries_remaining": 3,
+          "retry_allowed": false,
+          "signature": "6ac8d471bc65819d"
+        }
+      ],
+      "identity": {
+        "run_id": "34733330869",
+        "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY",
+        "task_sha256": "1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827"
+      },
+      "interpretation": "Historical failed verification superseded by VERIFY-R2 FINISHED; still canonically BLOCKED_ROOT_CAUSE. READ_ONLY locks never conflict under locks_conflict; blocks only exact same task+hash replay, not fresh stage3 production scope. Do not silently mark terminal.",
+      "path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827.34733330869.json",
+      "production_required": false,
+      "resource_locks": [
+        "READ_ONLY:5b74afb8a929e83a"
+      ],
+      "status": "BLOCKED_ROOT_CAUSE",
+      "updated_at": "2026-09-13T02:35:15Z"
+    }
+  ],
+  "not_new_release_blockers": [
+    "Historical TASK088 stage1/stage2 receipts remain, and all9 production transaction records are terminal.",
+    "The one historical Stage2 VERIFY claim is read-only and creates no resource conflict for distinct stage3 task identity.",
+    "Latest monitor run35439075646 succeeded; watchdog failure alone does not establish production site or CRM outage."
+  ],
+  "observed_at": "2026-09-19T15:14:46.766Z",
+  "read_only": true,
+  "release_blockers": [
+    "Canonical EMERGENCY_HALT currently rejects normal verify-mode with AUTOMATIC_MODE_HALTED.",
+    "Even allow-halt-for-recovery verify-mode fails exact active workflow policy due to separately added CRM probe.",
+    "Resolve probe policy violation through reviewed canonical remediation; retain halt history and validate recovery before clearing HALT. Do not widen policy/rename control state solely to make gate pass.",
+    "TASK088 stage3 publication not registered on main; fresh exact package/request/activation/Gate B/backup/live evidence still required."
+  ],
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "root_cause": {
+    "error": "ACTIVE_WORKFLOW_SET_MISMATCH:missing=-:unexpected=.github/workflows/uaart_crm_runtime_readonly_probe.yml",
+    "explanation": "verify_execution_mode calls credential workflow policy before transaction discovery. Added unregistered active workflow is excluded from exact ACTIVE_WORKFLOW_EVENT_POLICY and consumes PYTHONANYWHERE_API_TOKEN. Its read-only label does not satisfy policy. No evidence of TASK088 open rollback caused this halt.",
+    "first_job": "104692611297",
+    "first_run": "35064800624",
+    "introduced_at": "2026-09-16T04:59:09Z",
+    "introduced_in_commit": "7c9606d917145dcf4a53f721d224e14264dd666c",
+    "latest_error_at": "2026-09-19T13:31:21.6842521Z",
+    "latest_observed_job": "105904925560",
+    "latest_observed_run": "35446008700",
+    "latest_probe_commit": "2a125a0189c42777c44a4767b467795107778a2a",
+    "source": "automation/control_plane.py:1737–1759"
+  },
+  "task088_stage3_stage4": {
+    "note": "No TASK088 V5/stage3/stage4 package, request, launch, approval, gate, claim, transaction or receipt found on current main. PR114 is separate candidate branch; do not infer registration from its documents.",
+    "registered_main_paths": []
+  },
+  "transactions": [
+    {
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
+      "run_id": "34608152298",
+      "status": "ROLLED_BACK",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT"
+    },
+    {
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2.34625768264.json",
+      "run_id": "34625768264",
+      "status": "FINISHED",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT"
+    },
+    {
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.34734575941.json",
+      "run_id": "34734575941",
+      "status": "FINISHED",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL"
+    },
+    {
+      "path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+      "run_id": "33942536609",
+      "status": "ROLLED_BACK",
+      "task_id": "TASK115-REMOVE-VIN-ADS"
+    },
+    {
+      "path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+      "run_id": "33945882409",
+      "status": "FINISHED",
+      "task_id": "TASK115-REMOVE-VIN-ADS"
+    },
+    {
+      "path": "state/transactions/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+      "run_id": "34107568301",
+      "status": "FINISHED",
+      "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS"
+    },
+    {
+      "path": "state/transactions/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+      "run_id": "34117903252",
+      "status": "FINISHED",
+      "task_id": "TASK118-EMERGENCY-SITE-RECOVERY"
+    },
+    {
+      "path": "state/transactions/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+      "run_id": "34119998399",
+      "status": "FINISHED",
+      "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2"
+    },
+    {
+      "path": "state/transactions/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+      "run_id": "34134692609",
+      "status": "ROLLED_BACK",
+      "task_id": "TASK120-PUBLISH-UA-0017-UA-0018"
+    }
+  ],
+  "tree_complete": true,
+  "tree_sha": "aab702a17da94f7d9e4630210323ce8f850b5678"
+}

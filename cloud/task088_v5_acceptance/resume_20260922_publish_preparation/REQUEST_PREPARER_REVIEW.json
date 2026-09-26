@@ -1,0 +1,25 @@
+{
+  "actual_genuine_request_generation": "NOT_RUN_MISSING_FACTUAL_INPUTS",
+  "boundary_negatives": {
+    "duplicate_JSON": "REJECTED",
+    "future_writer": "REJECTED",
+    "path_escape": "REJECTED",
+    "stale_writer": "REJECTED"
+  },
+  "contract": "TASK088-REQUEST-PREPARER-SCOPED-REVIEW-1",
+  "full_canonical_mode_preview_execution_validation": "PENDING_FINAL_ASSEMBLED_FACTUAL_REQUEST",
+  "observed_at": "2026-09-22T06:05:47.815607+00:00",
+  "production_written": false,
+  "reviewed_properties": [
+    "Canonical newline manifest/request/owner hashing; private delegation compact hash",
+    "Exact owner request subject cycle, separate provenance",
+    "Released source review coverage and preserved raw factual evidence timestamps",
+    "300-second writer and1800-second Preview/preflight/quota requirements",
+    "Launch payload separate from candidate tree; no claim/transaction/receipt creation"
+  ],
+  "reviewer": "release_review; root accepted checkpoint save",
+  "source_path": "cloud/task088_v5_install/build_stage3_request.py",
+  "source_sha256": "00c7415ac15d14c49296a3b903604be2e0daa9b1944aeda1857ccd486419fecf",
+  "status": "REVIEWED_PREPARATION_ONLY",
+  "syntax": "PASS"
+}

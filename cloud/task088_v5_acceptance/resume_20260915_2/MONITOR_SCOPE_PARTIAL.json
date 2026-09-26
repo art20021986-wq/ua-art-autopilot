@@ -1,0 +1,24 @@
+{
+  "contract": "PR114-MONITOR-SCOPE-PARTIAL-1",
+  "status": "PARTIAL_SOURCE_REVIEW_NOT_WRITER_PASS",
+  "source_sha256": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+  "actual_command": "python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json",
+  "actual_provider_state": "Running",
+  "reviewed_functions": [
+    "isolated_probe",
+    "write_evidence",
+    "monitor_lock"
+  ],
+  "configured_evidence_path": "/home/Carix/uaart-monitor/latest.json",
+  "configuration_source": "Authenticated PythonAnywhere Tasks UI",
+  "scope_limits": [
+    "Complete main,run_watch,run_monitor,probe_once source not reviewed; no READ_ONLY_PROVEN verdict",
+    "Generic write_evidence can write any passed path; only actual configured path observed here"
+  ],
+  "production_written": false,
+  "configuration_observation_window": {
+    "after": "2026-09-15T05:26:57Z",
+    "before": "2026-09-15T05:28:02.877826+00:00",
+    "fresh_gate_timestamp": false
+  }
+}

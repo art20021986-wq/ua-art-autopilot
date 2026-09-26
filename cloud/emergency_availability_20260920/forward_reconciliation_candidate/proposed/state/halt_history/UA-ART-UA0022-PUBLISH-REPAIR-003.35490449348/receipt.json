@@ -1,0 +1,32 @@
+{
+  "automatic_rollback_retried": false,
+  "availability_evidence_path": "state/reconciliations/UA-ART-UA0022-PUBLISH-REPAIR-003.35490449348.availability-evidence.json",
+  "availability_evidence_sha256": "d56928f897db00586bdaf72eb73b824433528f64d8452ae372b580d00e9eb4e0",
+  "decision": "ACCEPT_VERIFIED_SUCCESSFUL_INSTALLATION",
+  "expected_parent": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "halt_removed": true,
+  "input_sha256": {
+    "external/live.json": "7bb50cd3f9f924f19360efc2ad988b3311e31baf5f6304e74fd56ecbde0684e8",
+    "state/AUTOPILOT_HALT.json": "2629bf003f889d1ab47a7745ede754ff1c1405e95bdd114cba0fc4bb44d63cc0",
+    "state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": "f78b74b747d2255fcc89035a5b02565b87002e5e52176da96b797af7149c56b5",
+    "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json": "2d5856cf31a1adf0eff7ad83b068ca28fdc6b340cad0096aacc8b3ed16fe065c",
+    "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json": "04eae89f483139d5d5500a9fceb3c648e7052c24cace2107c698379f3f13a205",
+    "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-003.json": "d8145cde2812a3c6969fd5bf7dc8abae68dfa4a2856699599810057025e159f1"
+  },
+  "preview_changed": false,
+  "production_runtime_changed": false,
+  "receipt_path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+  "receipt_sha256": "fd8139422bb82b5243c169baee5a3dc5091bfdfb98c35de3e46ffe6ca2747ef9",
+  "reconciled_at": "2026-09-20T08:57:00Z",
+  "reconciliation_payload_sha256": "17762f624567320e68f168c355e1c75cf5b1b52b4c5324c7713fccf5d34d4bba",
+  "request_sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba",
+  "rollback_performed": false,
+  "run_id": "35490449348",
+  "schema_version": "UA-ART-MANUAL-FORWARD-RECONCILIATION-2",
+  "scope": "ATOMIC_REPOSITORY_STATE_RECONCILIATION_ONLY",
+  "site_reloaded": false,
+  "task_id": "UA-ART-UA0022-PUBLISH-REPAIR-003",
+  "transaction_after": "FINISHED",
+  "transaction_before": "ROLLING_BACK",
+  "transaction_id": "tx-35490449348-334c361c22ebee11"
+}

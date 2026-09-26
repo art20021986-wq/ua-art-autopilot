@@ -1,0 +1,26 @@
+{
+  "schema_version": "UAART-UA0022-FORWARD-RECONCILIATION-V2-INTENT-1",
+  "operation_id": "ua0022-forward-reconcile-v2-20260920T1109Z",
+  "recorded_at": "2026-09-20T11:18:00Z",
+  "input_heads": {
+    "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "pr": "f61a5b35617025e133cbbef57965536ce80ec8ae"
+  },
+  "intent": "Prepare corrected data-only UA0022 forward-reconciliation candidate after blocked review; do not apply main or remove HALT.",
+  "exact_input_manifest_sha256": "6930b2f87a6112f8a22c9d0af1eab064108309a99a732e0d53abab8a45323899",
+  "install_evidence_sha256": "018a99891750cb13ff43407342ecefeb084cedfb5bc75b41cb557acfa086250a",
+  "fresh_health_sha256": "29c86557518848b7be03a127b39dcaa2e8fa8d7afb7af6a5e2bf4b36fc778f75",
+  "builder_sha256": "39c6baafd9eb5b0e11b23be4e35a3d7e2604f34bf5098f100a9c2b619f8424d4",
+  "tests_sha256": "3a8ad46e11d905338051a943fa8ba623afaba6a330ddc5a31ae01ff21559ec72",
+  "tests": {
+    "passed": 8,
+    "failed": 0
+  },
+  "expected_result": "Exact candidate ready for independent review, with main/HALT/runtime unchanged.",
+  "readback": "Fetch branch ref and every uploaded blob; re-run independent review before any state commit.",
+  "required_backup": "Existing verified UA0022 backup receipt is an exact pinned input; no new backup because preparation performs no production write.",
+  "production_changes": false,
+  "halt_removed": false,
+  "preview_changed": false,
+  "rollback_retried": false
+}

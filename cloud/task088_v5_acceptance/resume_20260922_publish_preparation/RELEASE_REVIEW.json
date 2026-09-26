@@ -1,0 +1,27 @@
+{
+  "actual_execution_contract": "PASS_NONPRODUCTION_TEST_REQUEST",
+  "compile": "PASS",
+  "contract": "TASK088-REBUILT-RELEASE-VERIFICATION-1",
+  "local_test_request_removed": true,
+  "logs": {
+    "RELEASE_COMPILE.json": "465a7a029c78f5d1d94273b7f1457c86072a3dafc4c331a0b99e64e56eae425a",
+    "RELEASE_EXECUTION_CONTRACT.json": "f70558fa533abac299a3e840ef594c2d1d255772d8536120a16a5ea3fa1924ed",
+    "RELEASE_TESTS.txt": "affe7b9cb626618e76100b945a632bac8e08fa20a0e3b47b21494ba123f2b5ea"
+  },
+  "observed_at": "2026-09-22T06:05:47.816382+00:00",
+  "production_receipt_created": false,
+  "production_written": false,
+  "public_python_files": 21,
+  "release_sources_sha256": "04d42e4851594dddfe683248905f365c26b9230c1562b57d0f1497beaebd285b",
+  "source_and_release_bytes_equal": true,
+  "source_commit": "580b811dd860e25f61f591c9d8f87235da15caff",
+  "status": "PASS_ISOLATED_RELEASE_ONLY",
+  "tests": {
+    "failed": 0,
+    "skipped": 0,
+    "test_adapter.py": 23,
+    "test_install_package.py": 25,
+    "test_operation_recovery.py": 23,
+    "total": 71
+  }
+}

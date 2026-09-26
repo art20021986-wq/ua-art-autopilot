@@ -1,0 +1,48 @@
+{
+  "reviewer_role": "independent reviewer; not fix author",
+  "recorded_at": "2026-09-20T04:49:44.804401+00:00",
+  "review_type": "narrow rereview of P4-SAFETY-001 correction",
+  "verdict": "PASS_SCOPED_P4_SAFETY_001_FIXED",
+  "previous_verdict_preserved": "INDEPENDENT_REVIEW.json",
+  "source_sha256": {
+    "integrate_private_sources.py": "a9970515d4a42707f1b8273fef4648bb62a02a050068070b033adfe33af49fa0",
+    "mutation_recovery.py": "dfecaae1d98dcd10475d699a59519e847bda3bb4a2726a752e3d5c2dc83475c9"
+  },
+  "reviewed_changes": [
+    "Instrumented legacy helper propagates precommit/commit failures rather than swallowing them",
+    "Every helper exit rolls back outstanding transaction and closes connection through finally",
+    "Missing-row early return becomes explicit failure",
+    "Snapshot/begin failure ownership stays with caller cleanup"
+  ],
+  "independent_reproduction": {
+    "file": "recheck_exception_transaction.py",
+    "sha256": "bcb5db6c634da49fafdebbe7385171bd4b1fa6b0c434c4a2ca0d1a3dfc14eba1",
+    "result_file": "exception_transaction_fixed_report.json",
+    "result_sha256": "bccd0c9667a21999fe291aed4457c24ba553991c1e0c177e81557ffa617e3df9",
+    "exception_propagated": true,
+    "write_transaction_still_locked": false,
+    "media_before_state_preserved": true
+  },
+  "author_regression_tests_reviewed": {
+    "count": 7,
+    "rerun_by_reviewer": false,
+    "scope": "evidence I/O error; commit before; lost acknowledgement after commit; missing row; begin snapshot; success cleanup; complete outer recovery"
+  },
+  "lock_order_static_assessment": {
+    "cooperative_new_writers": "No demonstrated cycle in reviewed callgraph: legacy publication holds shared publication fence before CRM BEGIN IMMEDIATE and subsequent spec84; direct spec entry takes same publication fence before spec84, so cooperative holders serialize first. Separate CRM read connections are compatible with the reserved write transaction; specification writes use sidecar database. Media helper transaction is now closed before rebuild.",
+    "vin_spec_order": "Observed store_facts commits its sidecar transaction before _refresh_published; later job update occurs after publication callback.",
+    "old_processes": "Old loaded or uncooperative spec84 holders are not proven excluded by source review. Point5 must demonstrate containment; no writer gate inferred.",
+    "scope": "Static source review; no composed release installation/runtime acceptance performed"
+  },
+  "remaining_gates": [
+    "Exact composed price+fence release closure and independent review",
+    "Actual runtime writer exclusion and old-process containment",
+    "Fresh production preflight/backup/Gate B",
+    "Durable crash/restart acceptance and Stage3/Stage4 receipts"
+  ],
+  "whole_point4_pass": false,
+  "production_gate_pass": false,
+  "product_criterion_accepted": false,
+  "repo_modified": false,
+  "production_modified": false
+}

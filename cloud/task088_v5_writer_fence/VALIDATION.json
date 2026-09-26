@@ -1,0 +1,35 @@
+{
+  "contract": "PR114-ISOLATED-PERMANENT-WRITER-FENCE-VALIDATION-1",
+  "validated_at": "2026-09-19T15:52:50.720Z",
+  "scope": "New isolated writer-fence candidate only; historical 446/183/120 and prior 21 quiescence tests were not repeated.",
+  "command": "python3 -B -m unittest -v test_publication_fence.py",
+  "result": "PASS",
+  "tests_passed": 11,
+  "failures": 0,
+  "errors": 0,
+  "compile_command": "python3 -I -W error -m py_compile publication_fence.py test_publication_fence.py",
+  "compile_exit_code": 0,
+  "rerun_reason": "The first new-suite run exposed a cross-thread registry lifecycle defect in the new candidate. The candidate bytes changed to retain the shared state while waiters exist; the final 11-test run above is the post-fix result. No historical suite was rerun.",
+  "raw_output": {
+    "path": "cloud/task088_v5_writer_fence/TEST_OUTPUT.txt",
+    "sha256": "093d1616e5d3092947ffefb99f383bb7c72f38452de7d899feb195799a196454"
+  },
+  "source_sha256": {
+    "publication_fence.py": "12b523a15ea53f0359436ebe35429b497133720a8718e64e4bef84504efd8f39",
+    "test_publication_fence.py": "1b49551beae6697628d91cea716489c1982222ad6a4ac3c7652644ccad6dc4c5",
+    "README.md": "9eb2a96aa0417c6ffe9272276bf519c5e309f17937a56d2c81d0a384766d2bd0",
+    "INTEGRATION_CONTRACT.json": "1c740e471825fa82997d04109c1d72564273bc08036f562156850ae071625e04"
+  },
+  "validated_properties": [
+    "Same-thread nested calls reuse one cooperative lease",
+    "Other threads wait through the outermost release and fail closed on timeout",
+    "Other processes are excluded by the existing publication flock",
+    "Forked children discard inherited registry descriptors before acquiring their own lease",
+    "Alternate production paths, relative paths and symlink lock targets are rejected",
+    "Exception exit releases the lease without deleting the lock file"
+  ],
+  "production_authority": false,
+  "installed": false,
+  "writer_gate_pass": false,
+  "site_or_crm_written": false
+}

@@ -1,0 +1,64 @@
+{
+  "operation_id": "pr114-emergency007-point3-20260920",
+  "recorded_at": "2026-09-20T04:35:13.347Z",
+  "updated_at": "2026-09-20T04:35:13.347Z",
+  "foreground_in_progress": false,
+  "status": "POINT3_COMPLETE_ISOLATED_CANDIDATE_READY_FOR_POINT4",
+  "scope": "Emergency007 point3 only. Not installation, independent review or product acceptance.",
+  "validation_path": "cloud/task088_v5_writer_fence/handoff006_evidence/emergency007_point3/VALIDATION.json",
+  "validation_sha256": "8dfba5b91e6fd066f8a5661bb38771212aaace00d748d6b2ac20b5fa2b9b1d5e",
+  "candidate_manifest_path": "cloud/task088_v5_writer_fence/handoff006_evidence/emergency007_point3/CANDIDATE_MANIFEST.json",
+  "candidate_manifest_sha256": "3a4843722a7c8c4186d3c6eef3e17f09e8cf87affe5f4d303183b9d15560acc4",
+  "candidate_directory": "/workspace/scratch/eb425df3a207/private_v5_candidate_emergency007_v3",
+  "completed": [
+    "Photo/video/diagnostic mutation entry points share publication registry.",
+    "Real media-table SQL helper has before/after images in its transaction; rollback preserves changed rows.",
+    "Field rollback uses atomic SQLite compare-and-swap; committed write with lost acknowledgement reconciles.",
+    "Media backups/restores are bounded, verified, permission-preserving, no-follow and no-replace.",
+    "Video cache rollback restores one vehicle entry and preserves other/new operator values.",
+    "Reload/main and HTML fallback remain inside publication fence; fallback cannot report false success.",
+    "Direct spec84 entry takes publication fence first; actual rendering SQLite reads under spec84 documented.",
+    "Seven private original hashes and six candidate file hashes/compilation verified."
+  ],
+  "tests": {
+    "passed": 41,
+    "failed": 0,
+    "skipped": 0,
+    "new_scoped_tests": 25,
+    "affected_existing_integration_tests": 16,
+    "historical_product_suites_rerun": false,
+    "rerun_reason": "Affected integration test compatibility: helper import added and synthetic fallback fixture updated to newly enforced source contract. Rerun affected integration modules only; no primitive18 or446/183/120."
+  },
+  "test_limits": [
+    "Real private media SQL helper, reload helper, fallback wrappers and spec84 lock extracted and run against isolated fixtures.",
+    "db.update_card_field is represented by committed SQLite fixture writes, including a lost acknowledgement; full bot module/production DB are not imported.",
+    "Shared-lock participants are serialized. Uncooperative/old loaded writers must be excluded by the separate production writer gate.",
+    "Point4 independent review is not performed by the implementing assistant.",
+    "Crash/restart production acceptance and canonical Stage3/Stage4 receipts remain later gates."
+  ],
+  "production_changed": false,
+  "crm_changed": false,
+  "private_sources_committed": false,
+  "independent_review": "PENDING_POINT4",
+  "progress": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "new_product_criteria": []
+  },
+  "control": {
+    "head": "8cc33403fc97faa4e99f7fb85569f3ff4630f66d",
+    "main": "e4d4ecd21071592bc715b56060869d25428dc577",
+    "active": 0,
+    "queued": 0,
+    "observed_at": "2026-09-20T04:33:49.627Z"
+  },
+  "concurrent_main_change": {
+    "commit": "e4d4ecd21071592bc715b56060869d25428dc577",
+    "task": "UA-ART-UA0022-PUBLISH-REPAIR-001",
+    "run_id": 35489064155,
+    "outcome": "FAILED_BEFORE_PRODUCTION; claim terminal FAILED; prepare/backup/open/controller skipped; unchanged production transactions and receipts trees",
+    "verification": "Fresh immutable evidence, claim and external run read; no repeat launch or main mutation by PR114."
+  },
+  "next_action": "Emergency007 point4: independently review exact candidate and release closure; accept criterion10 only with genuine independent evidence."
+}

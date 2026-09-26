@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "scope": "LOCAL_SYNTHETIC_ONLY",
+  "checks": {
+    "scoped48_core44_diagnostics4_supporting_no_scan_no_media_read": "PASS",
+    "one_line_parts_exact_byte_bound_roundtrip_private_data_excluded_private_modes": "PASS",
+    "existing_output_refused_without_overwrite": "PASS",
+    "source_drift_detected_preserved_no_rollback": "PASS",
+    "second_read_operator_price_drift_detected": "PASS",
+    "interrupted_core_pass_retains_completed_capture_and_partial_outcome": "PASS",
+    "total_alarm_interrupts_collection_and_saves_partial_export_outcome": "PASS",
+    "source_symlink_refused": "PASS"
+  },
+  "observer_sha256": "bfa56ffe7fa1ba093d025f40fa79d774bba356494fa810f6711892635fa1474f",
+  "production_read": false,
+  "production_write": false,
+  "remote_execution": false
+}

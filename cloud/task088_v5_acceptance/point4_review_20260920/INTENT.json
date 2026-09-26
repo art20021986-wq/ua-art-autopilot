@@ -1,0 +1,30 @@
+{
+  "operation_id": "pr114-point4-review-20260920T0511Z",
+  "recorded_at": "2026-09-20T05:11:19Z",
+  "status": "IN_PROGRESS_ISOLATED_REVIEW",
+  "input_head": "e0c62b342bcf1156f010c2af4e9e29d858486689",
+  "latest_predecessor": "POINT4_SCOPED_FIX_AND_RELEASE_PREPARATION_COMPLETE_FULL_ACCEPTANCE_OPEN",
+  "scope": "Review points1-3 and complete point4 only. No production launch.",
+  "observed_main": "6c735ef544284e01834114fcb67fe082f467dbba",
+  "foreign_run": {
+    "id": 35490449348,
+    "status": "in_progress",
+    "task": "UA-ART-UA0022-PUBLISH-REPAIR-003"
+  },
+  "historical_progress": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40
+  },
+  "reason_for_affected_checks": "Prior RESULT lacks exact complete composed private source/module/HTML candidate, source_generation/no_unrelated_diff binding and final independent composition review.",
+  "repeat_historical_suites": false,
+  "planned_checks": [
+    "Verify retained inputs against immutable server/preflight hashes",
+    "Build complete isolated candidate and compare unchanged generated HTML to historical Preview",
+    "Independent actual call graph safety review; targeted reproduction only if a concrete risk exists"
+  ],
+  "private_sources_to_git": false,
+  "production_authority": false,
+  "expected_outcome": "Sanitized exact-candidate evidence or explicit safety/current-binding blockers; acceptance only when all point4 requirements met.",
+  "readback": "Commit/ref and exact blob hash readback before continuation."
+}

@@ -1,0 +1,54 @@
+{
+  "blocking_code_findings": [],
+  "canonical_inputs": {
+    "all_captured_files_match_canonical_git_blobs": true,
+    "captured_file_count": 26,
+    "complete_transaction_inventory_count": 12,
+    "main_commit": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+    "path": "canonical_inputs.json",
+    "proposed_new_artifact_path_collisions_at_canonical_main": 0,
+    "sha256": "7d72329f249bbfd9b2fa47c252f0ac7e877c8ac40e69781a1e8eb855a1c071b4"
+  },
+  "generator": {
+    "path": "plan_recovery.py",
+    "previous_reviewed_sha256": "e6d5dd868f431ea656a9131be2f0db05dc26ad88178856fdcf88b4682110212b",
+    "sha256": "1d091e4736c8b0649b9837042a18615893d25ae225d0b1484c3a3f039aabc4e6"
+  },
+  "limitations": [
+    "No actual fresh authenticated evidence or generated proposal was available for this code review; their truth, completeness and exact diff are not accepted by this record.",
+    "Hash integrity and supplied timestamps do not authenticate observations. Independent manual review must verify actual process command matching, task inventories, artifact absence, current target and HTTP, and all five GitHub active-run states.",
+    "This is not a reusable authority to remove HALT, apply repository changes or install prices. Existing independent execution and successor gates remain required.",
+    "No test suite or generator execution was run in the delta review."
+  ],
+  "previous_review": {
+    "path": "INDEPENDENT_REVIEW.json",
+    "preserved": true,
+    "sha256": "7bbfae14dd2bbab3dfe213c1264b1ace47ee59b494b888b0a4b96397170d6ca2"
+  },
+  "proposal_applied": false,
+  "repository_mutations_performed": false,
+  "required_before_application": [
+    "Review the actual fresh embedded proof bytes and their scoped claims.",
+    "Review the exact generated nine-path change set and run unchanged pinned validators against the complete proposed repository.",
+    "Recheck actual main and active writers immediately before one atomic commit using an exact expected-parent comparison.",
+    "After application, independently read back exact commit, diff, archived HALT bytes, terminal states, preserved anti-replay inputs and absence of old launch replay."
+  ],
+  "reviewed_findings": [
+    "Eight fixed proposed writes and one exact HALT deletion; no network, subprocess, server, Git or application-write capability in the generator.",
+    "Transaction changes only status to ROLLED_BACK and adds closed_at; claim terminal statuses and updated_at change, with an appended manual reconciliation failure-history entry.",
+    "Original transaction identity, opened_at=null, backup hashes=null, history, request, approval, anti-replay ledger, nonce marker, runtime and gates remain unchanged.",
+    "Authoritative semantic outcome is ABORTED_NO_PRODUCTION_WRITE within explicitly bounded live-business-file scope. Remote backup outcome remains UNKNOWN; no backup PASS, rollback execution or historical target equality is asserted.",
+    "The four exact proof-file bytes are now decoded strictly as UTF-8, bounded to 128 KiB each, hash-checked and embedded with byte length, hash and observation time into the proposed authenticated evidence record.",
+    "Each proof timestamp must be timezone-aware and no more than 300 seconds old without future timestamps; global evidence freshness is also retained.",
+    "Server summary must name the exact lowercase matcher seo_daily_podbor_canonical_20260921.py.",
+    "The former evidence-durability finding is resolved by embedded exact proof contents without broadening the proposed write set.",
+    "The proposed authenticated evidence now embeds the complete retrieved workflow-job list from hash-pinned canonical inputs, the exact original workflow run URL and the canonical source commit.",
+    "Three SEO package source SHA256 bindings are derived from canonical input bytes; these source bytes were already independently matched to the canonical Git commit.",
+    "This final delta expands evidence content only. Guards, eight-write-plus-HALT-delete scope, transaction/claim mutations and backup UNKNOWN semantics are unchanged."
+  ],
+  "reviewer": "/root/check_pr114/recovery_semantics",
+  "schema_version": "UA-ART-SCOPED-INDEPENDENT-CODE-REVIEW-1",
+  "scope": "Offline exact-incident recovery proposal generator; final durability-only delta reviewed. Prior guard, terminal-state semantics and change-scope review retained.",
+  "server_mutations_performed": false,
+  "status": "PASS_SCOPED_CODE_REVIEW_NOT_EXECUTION_APPROVAL"
+}

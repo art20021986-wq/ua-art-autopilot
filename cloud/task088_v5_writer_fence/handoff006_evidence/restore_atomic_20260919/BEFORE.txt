@@ -1,0 +1,21 @@
+FF.
+======================================================================
+FAIL: test_restore_refuses_corrupt_backup_without_publishing_it (test_private_source_integration.IntegrationTests.test_restore_refuses_corrupt_backup_without_publishing_it)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/eb425df3a207/pr114_current/cloud/task088_v5_writer_fence/test_private_source_integration.py", line 272, in test_restore_refuses_corrupt_backup_without_publishing_it
+    self.assertFalse(original.exists())
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_restore_preserves_operator_file_created_during_copy (test_private_source_integration.IntegrationTests.test_restore_preserves_operator_file_created_during_copy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/eb425df3a207/pr114_current/cloud/task088_v5_writer_fence/test_private_source_integration.py", line 289, in test_restore_preserves_operator_file_created_during_copy
+    self.assertEqual(original.read_bytes(), b"new operator bytes")
+AssertionError: b'old' != b'new operator bytes'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.025s
+
+FAILED (failures=2)

@@ -1,0 +1,22 @@
+{
+  "operation_id": "pr114-point4-review-20260920T0511Z",
+  "updated_at": "2026-09-20T05:16:57Z",
+  "foreground_in_progress": true,
+  "status": "COMPLETE_COMPOSITION_BUILT_SAFETY_FIX_IN_PROGRESS",
+  "input_head": "e0c62b342bcf1156f010c2af4e9e29d858486689",
+  "candidate_files": 57,
+  "compiled_python": 17,
+  "historical_html_matches": 40,
+  "historical_html_total": 40,
+  "independent_safety_review": {
+    "status": "BLOCKER_REPRODUCED",
+    "evidence": "cloud/task088_v5_acceptance/point4_review_20260920/direct_rebuild_quiescence_result.json",
+    "problem": "Direct media rebuild can enter stranica.main while a V5 price operation remains DB_COMMITTED; guard publication rejects same state."
+  },
+  "next_action": "Fix direct rebuild price-quiescence integration and independently verify only affected cases.",
+  "current_runtime_binding": "NOT_OBTAINED_BOUNDED_INPUT_TIMEOUT",
+  "accepted_criteria": 8,
+  "total": 20,
+  "percent": 40,
+  "production_changed": false
+}

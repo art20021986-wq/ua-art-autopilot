@@ -1,0 +1,19 @@
+{
+  "contract": "PR114-PREVIEW-COUNTER-CSP-DELTA-1",
+  "status": "PASS_TWO_TARGETED_HEADER_AND_BOUNDARY_TESTS_BROWSER_PENDING",
+  "runtime_before_sha256": "ba8188817fe309e42082024007ff892342283937a76a45fe8e3fcc2c975c2ee4",
+  "runtime_after_sha256": "191989bd07d0eea55782671778b8bb2dd1b531eda88a561bbc4b229afcd7d289",
+  "test_file_sha256": "2e28d0c5b4e5ff1e9daf012d7b829744c5bf1ff9a7ccb66342411ccacb6d9710",
+  "tests": [
+    "test_counter_csp_allows_only_exact_catalogue_on_two_counter_surfaces",
+    "test_public_counter_catalogue_still_enforces_pinned_bytes_and_no_fallback"
+  ],
+  "tests_run": 2,
+  "tests_passed": 2,
+  "historical_suites_rerun": false,
+  "scope": "Only dedicated Preview CSP: home and catalog may connect to exact same-origin /video/katalog.html if pinned in manifest; runtime retains authentication, host, GET/HEAD and byte-pin enforcement. Card and harness connect policies unchanged.",
+  "browser_run": false,
+  "production_written": false,
+  "source_renderer_html_changed": false,
+  "preview_gate": "NOT_PASSED"
+}

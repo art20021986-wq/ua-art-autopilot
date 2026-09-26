@@ -1,0 +1,286 @@
+{
+  "contract": "PR114-INDEPENDENT-FINAL24-EVIDENCE-REVIEW-NOT-A-GATE-1",
+  "reviewed_pr_head": "3026f7bb11a9aa58b0970694793d9d5100251c44",
+  "criteria_count": 24,
+  "criteria": [
+    {
+      "id": "all_published_cars",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "All 18 distinct published cards appear in 120 unique page/locale/CSS cases and 18 actual detail/diagnostic navigations.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "The total is the observed current set, not a permanent limit."
+    },
+    {
+      "id": "homepage",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Six raw home CSS cases, actual home stage links/counts 5/5/4/4=18 and later 10/10 decoded images support home availability and preservation.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_observed_1620.json",
+        "cloud/task088_v5_acceptance/resume_20260915/browser/PREVIEW_HOME_OBSERVATION.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Earlier 9/10 lazy-image snapshot remains unchanged; later natural scrolling yielded 10/10."
+    },
+    {
+      "id": "catalog",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Six catalog cases contain all 18 prices; actual stage filters show correct 5/5/4/4/all18 sets and 18 images decoded.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_images_after_filters_raw.json"
+      ],
+      "scope_limit": "Card routes and price changes are covered; native app launches are outside this check."
+    },
+    {
+      "id": "full_cards",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "18 card+diagnostic identities, 108 card CSS records, VIN/spec entries and preserved nonprice HTML are supported; separate owner photo acceptance closes the targeted gallery gap.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json"
+      ],
+      "scope_limit": "Full cards refers to changed/preserved page behavior; not newly rendering every media asset."
+    },
+    {
+      "id": "ru",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "40 raw RU records across all 20 surfaces, exact country/value/caption checks, and RU screenshots support the price UI.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_nullable_ge_UA0015_desktop_RU.jpg"
+      ],
+      "scope_limit": "Existing whole-site wording is preserved; this is not a new translation audit."
+    },
+    {
+      "id": "ua",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "40 raw UA records use locale uk and the source-bound exact price strings.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/top_level_language_switching.json"
+      ],
+      "scope_limit": "Price text and locale behavior are covered; unrelated copy is preserved."
+    },
+    {
+      "id": "ge",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "40 raw GE records use locale ka; Georgian mobile numeric and missing-price samples have measured boxes.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_mobile_UA0010_GE_numeric.jpg"
+      ],
+      "scope_limit": "Price UI localized behavior is covered; independent linguistic proofreading of all site copy is not claimed."
+    },
+    {
+      "id": "language_switching",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Actual top-level RU→UA→GE observations contain matching ru/uk/ka and matching catalog headings; raw cases retain requested/actual locale.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/top_level_language_switching.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json"
+      ],
+      "scope_limit": "Retained real UI evidence; no new clicks or JS setters used in this review."
+    },
+    {
+      "id": "ua_price",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "UA values are consistent for each car across locales, sizes, card and catalog; original validator matched independent captured source rows and current preflight preserves the DB.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/canonical/PUBLISHED_IDENTITY_BINDING_V2.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Raw private source rows were not reopened by this reviewer; original validator source digest plus independent DB bridge is retained."
+    },
+    {
+      "id": "ge_price",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "13 non-Kyiv cars have independent GE rows; five Kyiv cars have UA only in every raw case. DB/schema/inventory remain unchanged.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Suppressing display does not delete the stored GE value. Live CRM edits remain later acceptance."
+    },
+    {
+      "id": "missing_ge",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Source-bound matrix includes empty GE text; saved UA-0015 RU screenshot visibly reads Цена уточняется with Rustavi caption.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_nullable_ge_UA0015_desktop_RU.jpg"
+      ],
+      "scope_limit": "No new null data was written to CRM."
+    },
+    {
+      "id": "desktop",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "60 actual 1280×900 CSS cases and retained visual samples show readable price rows and captions.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_UA0010_numeric_GE_desktop_RU.jpg",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_nullable_ge_UA0015_desktop_RU.jpg"
+      ],
+      "scope_limit": "Geometry across all cases plus screenshots of representative numeric/null/catalog samples."
+    },
+    {
+      "id": "mobile",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "60 actual 390×844 CSS cases match viewport/media/font/overflow assertions; independently inspected GE numeric and Kyiv UA-only screenshots are readable.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/RAW_BROWSER_EVIDENCE_VALIDATION.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_mobile_UA0010_GE_numeric.jpg",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_mobile_UA0002_RU_kyiv_only.jpg"
+      ],
+      "scope_limit": "CSS mobile layout in Chrome; not blanket iPhone/Safari/touch/network emulation. Owner phone gallery confirmation is separate."
+    },
+    {
+      "id": "links",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Primary raw observations contain 18 actual detail URLs and 18 own diagnostic URLs/bodies with matching car codes; destinations of CTAs/home/return links are retained.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json"
+      ],
+      "scope_limit": "No customer messages, calls, forms, shares, or native app launches were sent."
+    },
+    {
+      "id": "buttons",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Actual catalog filter/language actions, diagnostic navigation and UA-0015 specification expansion are recorded. Owner confirms gallery switching/closing after repair.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/top_level_language_switching.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_interaction_observations.json",
+        "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json"
+      ],
+      "scope_limit": "CTA destination validation is distinct from sending external actions. Arrow-key navigation was not implemented and touch swipe was not independently tested."
+    },
+    {
+      "id": "vin",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "All 18 primary card texts contain VIN data; candidate reports preserve all nonprice HTML.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "VIN presence/preservation, not an independent vehicle decoding or duplicate-VIN redesign."
+    },
+    {
+      "id": "photos",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Actual V2 receipt records 679 preserved+542 added assets and 1221 in-process resources; 560 gallery routes unchanged. Owner screenshots/confirmation resolve photo2/37→photo3 and close.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/server/gallery_1640.json",
+        "cloud/task088_v5_acceptance/resume_20260915/OWNER_FULLSCREEN_OBSERVATION.json",
+        "cloud/task088_v5_acceptance/resume_20260915/PHOTOS_ACCEPTANCE_20260915.json"
+      ],
+      "scope_limit": "Original owner image files were previously accepted, not re-rendered by this reviewer. Old blocked-resource failure remains untouched; no retry occurred."
+    },
+    {
+      "id": "specifications",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "All 40 candidate HTML reports preserve nonprice regions and underlying DB/schema/full inventory; card texts retain specification tables.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json"
+      ],
+      "scope_limit": "No new enrichment or accuracy audit of external specification sources."
+    },
+    {
+      "id": "additional_specification",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "All 18 primary card texts contain the entry. UA-0015 expansion exposes 31 parameters; candidate preservation protects the markup.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/ALL_TOP_LEVEL_LINK_OBSERVATIONS.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/visual_interaction_observations.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Existing entry and expansion behavior; future timed enrichment is not proved here."
+    },
+    {
+      "id": "stages",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Actual filtered code sets 5 Kyiv/5 Georgia/4 ferry/4 Korea match source-bound expectations and preflight stage counts.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/BROWSER_SCOPED_FINAL_REPORT.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Live stage transition acceptance is not invented from static filters."
+    },
+    {
+      "id": "counters",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Actual homepage DOM and actual catalog filters independently show 5/5/4/4 and total18, with matching destinations/code sets.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260914/browser/homepage_counters_observed_1620.json",
+        "cloud/task088_v5_acceptance/resume_20260914/browser/catalog_filters_raw.json",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64"
+      ],
+      "scope_limit": "Matching fresh DB/published-set bridge is required before reusing these exact counts."
+    },
+    {
+      "id": "no_unrelated_diff",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Exact completed preflight has 40 protected HTML surfaces, 54-file candidate and 9625-file inventory equality with independent observer. Gallery receipt preserves old resources.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260915/server/install_1509_0327.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260914/server/gallery_1640.json"
+      ],
+      "scope_limit": "This is preflight preservation, not completed deployment/rollback evidence."
+    },
+    {
+      "id": "source_generation",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Completed preflight contains compiled source after-images, exact 54 candidate files and candidate verification PASS; 20 served page hashes equal genuine browser harness hashes.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/PREFLIGHT_COMPLETION_VERIFICATION.json"
+      ],
+      "scope_limit": "Current full software source pins must be checked by root. Live regeneration and repeated CRM edits remain Stage4."
+    },
+    {
+      "id": "independent_db_readback",
+      "assessment": "SUPPORTED_RETAINED_PENDING_ROOT_CURRENT_BINDING",
+      "support": "Raw completed preflight and independent observer compare equal for DB tuple, schema and complete 9625-file inventory. Raw report confirms protected readback PASS and all live mutation flags false.",
+      "evidence": [
+        "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+        "cloud/task088_v5_acceptance/resume_20260915/server/install_1509_0327.json.gz.b64"
+      ],
+      "scope_limit": "Original top-level BLOCKED_CANONICAL_CONTROL_BRIDGE is retained. Freshness/writer exclusion/authority belong to current execution inputs."
+    }
+  ],
+  "primary_evidence_inspection": "RETAINED_EVIDENCE_INSPECTION.json",
+  "primary_comparisons": 26,
+  "primary_comparison_failures": [],
+  "conclusion": "The retained evidence supports all 24 existing Preview criteria within their defined scope, conditional on root fresh current source/DB/schema/inventory/HTML/runtime/resource equality and exact canonical input binding. No additional gallery-owner repetition or whole historical test rerun is warranted by these inputs.",
+  "canonical_preview_issued": false,
+  "historical_statuses_modified": false,
+  "tests_rerun": false,
+  "remaining_for_root": [
+    "Validate genuinely current complete source/DB/schema/protected inventory and Preview HTML/config/runtime/resource bindings.",
+    "Finalize all24 criteria into an actual exact-task/candidate canonical Preview contract; this independent evidence review is not that contract.",
+    "Observe fresh quota, authority/HALT/delegation and writer exclusion when required; do not redate old observations.",
+    "After Preview, complete canonical GateB, backup/rollback, installation and live synchronization according to the authorized scope."
+  ],
+  "explicit_limits": [
+    "No new rendering is claimed; raw browser snapshots and screenshots are inspected.",
+    "Owner full-screen screenshots remain previously accepted evidence; this inspection verified their accepted observation record, not the original image bytes.",
+    "Price observations are consistent and tied to original source-bound validator; private raw source rows are not loaded by this reviewer.",
+    "The original preflight remains BLOCKED; Preview, canonical Gate B, publication and live synchronization are separate stages."
+  ],
+  "reviewer_visual_checks": [
+    "Inspected retained GE numeric mobile screenshot: UA 11 700 $, GE 8 750 $, readable captions; GE amount wraps to another line without clipping.",
+    "Inspected Kyiv RU mobile screenshot: UA 8 000 $ and no GE row; specification remains visible.",
+    "Inspected nullable GE RU desktop screenshot: UA 10 000 $, GE Цена уточняется, Rustavi caption, specification and its entry remain visible."
+  ]
+}

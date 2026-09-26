@@ -1,0 +1,65 @@
+{
+  "recorded_at_utc": "2026-09-14T09:03:33.264093+00:00",
+  "task": "UA-ART-GE-UA-MARKET-PRICE-001 FINAL v5.0",
+  "owner_authorization": {
+    "source": "current conversation: Да разрешаю",
+    "second_webapp_monthly_total_usd": "24.50",
+    "monthly_increase_usd": "3.00",
+    "github_read_access": {
+      "repository": "art20021986-wq/ua-art-autopilot",
+      "permission": "Contents: read"
+    }
+  },
+  "observed_webapp_creation": {
+    "method": "authenticated PythonAnywhere Web UI",
+    "result": "All done! Your web app is now set up. Details below.",
+    "existing_domain": "www.uaart.com.ua",
+    "new_domain": "Carix.pythonanywhere.com",
+    "python_version": "3.10",
+    "wsgi_path": "/var/www/carix_pythonanywhere_com_wsgi.py",
+    "static_mappings": [],
+    "force_https_setting": true,
+    "protected_candidate_installed": false,
+    "default_app_reload_performed": true,
+    "default_app_visible_result": "Hello, World!",
+    "browser_origin": "https://carix.pythonanywhere.com"
+  },
+  "payment_status": "APPLIED_CONFIRMED_BY_OWNER_SCREENSHOT_AND_SECOND_WEBAPP_CREATION",
+  "credential_status": "NOT_PROVISIONED",
+  "preview_activated": false,
+  "production_written": false,
+  "stage3_status": "OPEN",
+  "stage4_status": "OPEN",
+  "note": "Owner permission remains granted. New app default page works; exact protected Preview readiness check completed without writes. Both credential-receiving sources are verified on server. Owner secret input remains necessary; no Production or candidate activation occurred.",
+  "prior_observation": {
+    "recorded_at_utc": "2026-09-14T08:05:58.604873+00:00",
+    "observed_webapp_creation": {
+      "method": "authenticated PythonAnywhere Web UI reload and Add a new web app",
+      "existing_domain": "www.uaart.com.ua",
+      "current_plan_webapp_limit": 1,
+      "result": "Upgrade to add a new web app"
+    },
+    "payment_status": "FINAL_CONFIRMATION_NOT_YET_APPLIED"
+  },
+  "credential_receiver_server_sha256": "e30b3c66e046b567b6b1be00dc476433c7f36bc08745d05b21b4c35250e0151d",
+  "preview_provisioner_server_sha256": "206ec6f601a4997e2f1129f9e6deb158293b811ce188eba7eff6d02ce062d3f6",
+  "preview_readiness_check": {
+    "files_written": false,
+    "hosting": {
+      "domain_name": "carix.pythonanywhere.com",
+      "force_https": true,
+      "python_version": "3.10",
+      "static_mappings": []
+    },
+    "kind": "NEW_PREVIEW_READINESS_CHECK_ONLY",
+    "manifest_sha256": "083cd2de139f2f9e695f76c4e9873252c3291b4adb90af488c069315b37abdd6",
+    "password_requested": false,
+    "preview_gate": "NOT_PASSED",
+    "reload_requested": false
+  },
+  "browser_incident": {
+    "initial_result": "Page.navigate and refresh-tabs timeouts, then visible 502",
+    "recovery": "Connection recovered; new default webapp reloaded via observed Reload button keyboard activation",
+    "current_result": "Default Hello, World! visibly confirmed; protected candidate not yet installed"
+  }
+}

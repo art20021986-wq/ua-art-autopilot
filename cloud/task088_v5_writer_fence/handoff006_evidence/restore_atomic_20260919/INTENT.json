@@ -1,0 +1,15 @@
+{
+  "operation_id": "pr114-restore-atomic-20260919T1941Z",
+  "status": "INTENT",
+  "recorded_at": "2026-09-19T19:41:53.230460+00:00",
+  "head": "f77f02ad639b932809567de53f761909e663ec09",
+  "scope": "local isolated candidate only; no server or launch",
+  "input_sha256": {
+    "integrate_private_sources.py": "8997ca684aaff9013958ccb73ed642bbcba3bfd17c5f2385e54781c3c7641ffd",
+    "test_private_source_integration.py": "e4e58203cceb3ac2bf3ab5aaeed480455c0addfefb1a72f7d90228f1450ee7dd"
+  },
+  "action": "Reproduce then fix restore check/copy race and corrupted backup publication; qualify prior self-review as not independent.",
+  "validation": "Three targeted filesystem regressions; rebuild private candidate and hash readback; no historical suites.",
+  "backup": "Original candidate and source retained; Git parent preserves tracked bytes.",
+  "readback": "Read saved Git files at resulting commit and compare SHA256."
+}

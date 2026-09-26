@@ -1,0 +1,14 @@
+test_all_direct_entries_reject_actual_db_committed_checkpoint_before_work (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_all_direct_entries_reject_actual_db_committed_checkpoint_before_work) ... ok
+test_concurrent_thread_waits_for_outer_lease_and_cannot_bypass_fence (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_concurrent_thread_waits_for_outer_lease_and_cannot_bypass_fence) ... ok
+test_exact_legacy_helper_changes_only_connection_yield (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_exact_legacy_helper_changes_only_connection_yield) ... ok
+test_fork_child_rejects_reentry_and_parent_context_cleanup_without_sqlite_calls (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_fork_child_rejects_reentry_and_parent_context_cleanup_without_sqlite_calls) ... ok
+test_guard_main_nested_writes_use_one_reserved_transaction_before_spec (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_guard_main_nested_writes_use_one_reserved_transaction_before_spec) ... ok
+test_nested_exception_releases_connection_and_next_entry_succeeds (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_nested_exception_releases_connection_and_next_entry_succeeds) ... ok
+test_reentry_rejects_database_rebinding_and_ended_transaction (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_reentry_rejects_database_rebinding_and_ended_transaction) ... ok
+test_writer_only_missing_price_helper_fails_explicitly (test_direct_rebuild_quiescence.DirectRebuildQuiescenceTests.test_writer_only_missing_price_helper_fails_explicitly) ... ok
+test_exact_price_composition_preserves_all_price_helpers_and_renderers (test_release_closure.ExactPrivateCompositionTests.test_exact_price_composition_preserves_all_price_helpers_and_renderers) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 5.491s
+
+OK

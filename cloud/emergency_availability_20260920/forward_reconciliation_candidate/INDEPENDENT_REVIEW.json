@@ -1,0 +1,87 @@
+{
+  "schema_version": "UAART-UA0022-FORWARD-RECONCILIATION-INDEPENDENT-REVIEW-1",
+  "recorded_at": "2026-09-20T10:13:38Z",
+  "reviewed_candidate_commit": "99d1b5669bd2fedd7dabe2bdf60363b4c47a730a",
+  "reviewed_main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+  "operation_id": "ua0022-forward-reconcile-prep-20260920T0857Z",
+  "status": "BLOCKED",
+  "production_changes": false,
+  "halt_removed": false,
+  "exact_main_input_mismatches": [
+    {
+      "path": "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json",
+      "actual_sha256": "c9123be192ff44ad89605c52e4fbad5b75504dd5e54ba4f172541e3575ddf7b3",
+      "planned_sha256": "04eae89f483139d5d5500a9fceb3c648e7052c24cace2107c698379f3f13a205"
+    },
+    {
+      "path": "state/claims/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json",
+      "actual_sha256": "59920fe94343f94373f4d93da1c2785ddfbd36101890baf2e6b7133cabbefa9c",
+      "planned_sha256": "f78b74b747d2255fcc89035a5b02565b87002e5e52176da96b797af7149c56b5"
+    },
+    {
+      "path": "state/AUTOPILOT_HALT.json",
+      "actual_sha256": "3e4b804fbc76ae0fc330db8a0add69fae3bb6d0d9a846d0a91cb41e4ff94e3a9",
+      "planned_sha256": "2629bf003f889d1ab47a7745ede754ff1c1405e95bdd114cba0fc4bb44d63cc0"
+    },
+    {
+      "path": "state/receipts/UA-ART-UA0022-PUBLISH-REPAIR-003-BACKUP.json",
+      "actual_sha256": "381aa9633b8119abf7e52ad9a00c813f51e5e8056d33e449d112ff0af4665d7a",
+      "planned_sha256": "2d5856cf31a1adf0eff7ad83b068ca28fdc6b340cad0096aacc8b3ed16fe065c"
+    },
+    {
+      "path": "tasks/requests/UA-ART-UA0022-PUBLISH-REPAIR-003.json",
+      "actual_sha256": "334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba",
+      "planned_sha256": "d8145cde2812a3c6969fd5bf7dc8abae68dfa4a2856699599810057025e159f1"
+    }
+  ],
+  "findings": [
+    {
+      "id": "FR-01",
+      "severity": "BLOCKER",
+      "detail": "All repository input fixtures contain bytes different from immutable main, so read_exact fails closed before candidate generation. Expected hashes must not be patched in place; rebuild from exact main bytes."
+    },
+    {
+      "id": "FR-02",
+      "severity": "BLOCKER",
+      "detail": "Proposed HALT archive is not byte-for-byte equal to main HALT; actual main blob 7982f47958d4e656b0edbb64d8a40bcdd3836183, proposed archive blob 7ac72866…."
+    },
+    {
+      "id": "FR-03",
+      "severity": "BLOCKER",
+      "detail": "public_local_sha256_matches uses all(values) without an exact required key set, so an empty object passes. connection_monitor.status, exit_code and freshness are not required."
+    },
+    {
+      "id": "FR-04",
+      "severity": "BLOCKER",
+      "detail": "Pinned live fixture ends at 2026-09-20T08:17:58Z while VALIDATION claims 2026-09-20T08:52:23Z; the actual server install receipt is not included in the hash chain."
+    },
+    {
+      "id": "FR-05",
+      "severity": "MAJOR",
+      "detail": "Receipt claims tests/production/live_verify PASS, unexpected_changes=0 and rollback_ready=true beyond fields proven by the builder. rollback_ready must be scoped to backup availability because canonical rollback execution failed nonce/ledger preflight."
+    }
+  ],
+  "negative_probe": {
+    "empty_public_match_map": true,
+    "monitor_status": "failed",
+    "monitor_exit_code": 1,
+    "builder_incorrectly_emitted_live_verify_pass": true
+  },
+  "confirmed": [
+    "expected_parent main is correct",
+    "seven proposed output SHA256 values are internally consistent",
+    "all proposed repository changes are under state/",
+    "no runtime, network, CRM, site or Preview write exists in the builder",
+    "rollback is declared NOT_PERFORMED and is not retried",
+    "existing synthetic suite passes 5/5"
+  ],
+  "required_fix": [
+    "Re-read exact raw main blobs and regenerate fixtures, outputs and PLAN.",
+    "Archive the exact current HALT bytes.",
+    "Hash-bind fresh health evidence and the actual install receipt/source evidence.",
+    "Require an exact non-empty public match key set, monitor healthy, exit_code 0 and explicit freshness.",
+    "Narrow or remove unsupported receipt claims and scope rollback_ready.",
+    "Add immutable-main, empty-map, failed-monitor, CAS-parent and must-not-exist negative tests."
+  ],
+  "next_action": "Regenerate corrected candidate only; do not apply main, remove HALT, reload, retry rollback or resume PR114 production."
+}

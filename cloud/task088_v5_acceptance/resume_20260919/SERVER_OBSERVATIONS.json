@@ -1,0 +1,55 @@
+{
+  "account": "Carix",
+  "always_on": [
+    {
+      "command": "python3.10 /home/Carix/start_safe.py",
+      "id": 266084,
+      "state": "Running"
+    },
+    {
+      "command": "python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json",
+      "id": 270984,
+      "state": "Running"
+    }
+  ],
+  "complete_writer_membership_proven": false,
+  "console_end_state": "SHELL_PROMPT",
+  "console_id": "48168693",
+  "contract": "PR114-AUTHENTICATED-UI-OBSERVATIONS-NOT-A-GATE-1",
+  "database_readback_performed": false,
+  "loaded_process_identity_proven": false,
+  "observed_approximately_utc": "15:00",
+  "observed_date": "2026-09-19",
+  "production_written": false,
+  "scheduled_observations": [
+    {
+      "command": "cd /home/Carix/autopilot_inbox/cloud/seo_rehab_guard_068 && python3.10 seo_rehab_guard_068_repair.py --dry-run",
+      "enabled": true,
+      "log_id": 1502215,
+      "schedule": "daily 21:28"
+    },
+    {
+      "command": "cd /home/Carix/autopilot_inbox/cloud/task_083_catalog_dedup && python3.10 installer.py install",
+      "enabled": false,
+      "log_id": 1502679,
+      "schedule": "daily 08:02"
+    },
+    {
+      "description": "TASK096 v7 fallback 1",
+      "enabled": true,
+      "full_command_review": "NOT_COMPLETE",
+      "log_id": 1505035,
+      "schedule": "daily 19:00"
+    }
+  ],
+  "source": "Authenticated PythonAnywhere dashboard, Tasks and console; visible UI readback",
+  "source_readback": "cloud/task088_v5_acceptance/resume_20260919/SOURCE_READBACK.json",
+  "storage_display": {
+    "gate_eligible": false,
+    "limit_rounded_gb": 35.0,
+    "percent": 21,
+    "used_rounded_gb": 7.2
+  },
+  "supervisors_restarted_or_disabled": false,
+  "writer_drain_performed": false
+}

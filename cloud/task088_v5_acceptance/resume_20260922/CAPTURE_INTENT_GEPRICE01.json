@@ -1,0 +1,18 @@
+{
+  "schema": "PR114-DYNAMIC-CORE-CAPTURE-INTENT-1",
+  "recorded_at": "2026-09-22T03:00:06.289Z",
+  "operation_id": "pr114_point4_core_20260922_geprice01",
+  "owner_uploaded": true,
+  "observed_server_script": "/home/Carix/observe_point4_core_dynamic.py",
+  "server_sha256": "50dd8832c905c0ee0430bd424dcd2883156f7350037e9b2664b5695953c94a2d",
+  "verified_server_sha_matches": true,
+  "pr_head": "eb35eb26d0f700fb42b6663f6b635825a3c02232",
+  "main": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+  "output": "/home/Carix/autopilot_inbox/cloud/pr114_point4_core_20260922_geprice01",
+  "scope": "Read-only production business data; one new private capture directory only; no publishing, reload, WSGI switch, CRM values or source changes",
+  "seconds_bound": 180,
+  "readback": "Read exact terminal summary and export manifest. Unknown outcome reconciled before any repeat; never overwrite prior output.",
+  "backup": "Not applicable to business data because none written; collector exclusive-created output can be retained.",
+  "gate": "Not a production/Preview gate",
+  "result": "NOT_YET_STARTED"
+}

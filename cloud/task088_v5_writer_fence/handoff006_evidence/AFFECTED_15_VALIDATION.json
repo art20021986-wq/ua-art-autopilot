@@ -1,0 +1,21 @@
+{
+  "contract": "PR114-ISOLATED-WRITER-FENCE-FORK-FIX-VALIDATION-1",
+  "validated_at": "2026-09-19T16:15:51.816801+00:00",
+  "scope": "ISOLATED_FORK_FIX_ONLY",
+  "reason": "Changed fence bytes require affected 15-test module suite. Historical 446/183/120 product suites were not rerun.",
+  "command": "python3 -B -m unittest -v test_publication_fence test_fork_regressions",
+  "exit_code": 0,
+  "result": "PASS",
+  "test_count": 15,
+  "before_source_sha256": "12b523a15ea53f0359436ebe35429b497133720a8718e64e4bef84504efd8f39",
+  "sha256": {
+    "publication_fence.py": "b9450a817c397b8a48b8388652d6aee6955108fbaadc4072f069297f228d1913",
+    "test_publication_fence.py": "1b49551beae6697628d91cea716489c1982222ad6a4ac3c7652644ccad6dc4c5",
+    "test_fork_regressions.py": "0a08a5c93a7ca9f53a250cbdb9853935443a315bb91b9b82795411fe03547c84",
+    "AFFECTED_15_TEST_OUTPUT.txt": "e1c441d9d2be8192c6c8ad6fd48bcf19f6e32a138061598ab3fe697ff2964009"
+  },
+  "production_authority": false,
+  "installed": false,
+  "writer_gate_pass": false,
+  "private_source_integration_completed": false
+}

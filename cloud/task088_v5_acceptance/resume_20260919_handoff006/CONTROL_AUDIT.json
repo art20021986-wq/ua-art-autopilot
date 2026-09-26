@@ -1,0 +1,1647 @@
+{
+  "contract": "PR114-HANDOFF006-READONLY-CONTROL-AUDIT-1",
+  "file_created_at_utc": "2026-09-19T16:16:04.892427+00:00",
+  "exact_tool_observation_timestamp_recorded": false,
+  "observation_time_policy": "These are actual read-only tool responses obtained during this audit. Tool-call timestamps were not captured. Document timestamps below are source fields, not claimed current observation times. File creation timestamp is populated separately.",
+  "scope": "GitHub control plane and existing automation metadata. Not server writer exclusion, fresh source readback, production approval or runtime acceptance.",
+  "auditor": "delegated read-only check_controls agent",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "snapshots": {
+    "actual_main_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+    "pr_snapshot_ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+    "pr_branch": "codex/task088-owner-policy-20260913-0934",
+    "main_tree_complete": true,
+    "pr_tree_complete": true
+  },
+  "source_routes": [
+    {
+      "id": "main_ref",
+      "ref": "main",
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/ref/heads/main",
+      "observed_at_utc": null,
+      "observation_time_note": "Exact call timestamp was not recorded; do not substitute file creation time."
+    },
+    {
+      "id": "main_tree",
+      "ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/trees/93726ef91ebab538c174db9fee7a3df80a706f0d?recursive=1",
+      "observed_at_utc": null,
+      "observation_time_note": "Exact call timestamp was not recorded; do not substitute file creation time."
+    },
+    {
+      "id": "pr_tree",
+      "ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/trees/94763fba9da31e247431c69637cb5148ff2095b8?recursive=1",
+      "observed_at_utc": null,
+      "observation_time_note": "Exact call timestamp was not recorded; do not substitute file creation time."
+    },
+    {
+      "id": "in_progress_workflows",
+      "ref": null,
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=in_progress&per_page=100",
+      "observed_at_utc": null,
+      "observation_time_note": "Exact call timestamp was not recorded; do not substitute file creation time."
+    },
+    {
+      "id": "queued_workflows",
+      "ref": null,
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?status=queued&per_page=100",
+      "observed_at_utc": null,
+      "observation_time_note": "Exact call timestamp was not recorded; do not substitute file creation time."
+    },
+    {
+      "id": "blocked_verify_workflow",
+      "ref": null,
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs/34733330869",
+      "observed_at_utc": null,
+      "observation_time_note": "Exact call timestamp was not recorded; do not substitute file creation time."
+    }
+  ],
+  "file_sources": [
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914_2/CONTINUATION.json",
+      "ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/94763fba9da31e247431c69637cb5148ff2095b8/cloud/task088_v5_acceptance/resume_20260914_2/CONTINUATION.json"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260919/WRITER_FENCE_CANDIDATE_NOTICE.json",
+      "ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/94763fba9da31e247431c69637cb5148ff2095b8/cloud/task088_v5_acceptance/resume_20260919/WRITER_FENCE_CANDIDATE_NOTICE.json"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260914/AUDIT_CONTINUATION_NOTICE.json",
+      "ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/94763fba9da31e247431c69637cb5148ff2095b8/cloud/task088_v5_acceptance/resume_20260914/AUDIT_CONTINUATION_NOTICE.json"
+    },
+    {
+      "path": "cloud/task088_v5_quiescence/README.md",
+      "ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/94763fba9da31e247431c69637cb5148ff2095b8/cloud/task088_v5_quiescence/README.md"
+    },
+    {
+      "path": "cloud/task088_v5_writer_fence/INTEGRATION_CONTRACT.json",
+      "ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/94763fba9da31e247431c69637cb5148ff2095b8/cloud/task088_v5_writer_fence/INTEGRATION_CONTRACT.json"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/capture_private_snapshot.py",
+      "ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/94763fba9da31e247431c69637cb5148ff2095b8/cloud/task088_v5_acceptance/capture_private_snapshot.py"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/run_private_server_build.py",
+      "ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/94763fba9da31e247431c69637cb5148ff2095b8/cloud/task088_v5_acceptance/run_private_server_build.py"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/SERVER_PRIVATE_BUILD_0836.json",
+      "ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/94763fba9da31e247431c69637cb5148ff2095b8/cloud/task088_v5_acceptance/SERVER_PRIVATE_BUILD_0836.json"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260919/SERVER_OBSERVATIONS.json",
+      "ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/94763fba9da31e247431c69637cb5148ff2095b8/cloud/task088_v5_acceptance/resume_20260919/SERVER_OBSERVATIONS.json"
+    },
+    {
+      "path": "cloud/task088_v5_acceptance/resume_20260919/SOURCE_READBACK.json",
+      "ref": "94763fba9da31e247431c69637cb5148ff2095b8",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/94763fba9da31e247431c69637cb5148ff2095b8/cloud/task088_v5_acceptance/resume_20260919/SOURCE_READBACK.json"
+    },
+    {
+      "path": "state/EXECUTION_MODE.json",
+      "ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/93726ef91ebab538c174db9fee7a3df80a706f0d/state/EXECUTION_MODE.json"
+    },
+    {
+      "path": "cloud/pr114_halt_recovery_20260919/RECOVERY_EVIDENCE.json",
+      "ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/93726ef91ebab538c174db9fee7a3df80a706f0d/cloud/pr114_halt_recovery_20260919/RECOVERY_EVIDENCE.json"
+    },
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json",
+      "ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/93726ef91ebab538c174db9fee7a3df80a706f0d/state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json"
+    }
+  ],
+  "continuation": {
+    "source_path": "cloud/task088_v5_acceptance/resume_20260914_2/CONTINUATION.json",
+    "latest_checkpoint": "cloud/task088_v5_acceptance/resume_20260919/WRITER_FENCE_CANDIDATE_NOTICE.json",
+    "recorded_at_source": "2026-09-19T15:52:50.720Z",
+    "background_task_state_source": "ENABLED_READBACK_CONFIRMED_20260919",
+    "recorded_progress": {
+      "completed": 8,
+      "percent": 40,
+      "stage1": {
+        "completed": 8,
+        "percent": 100,
+        "total": 8
+      },
+      "total": 20
+    },
+    "stage3": "OPEN_NOT_PUBLISHED",
+    "stage4": "OPEN_NOT_ACCEPTED",
+    "running_operation": {
+      "blockers": [
+        "CANONICAL_CONTROL_BRIDGE_GATE_B_AND_ACTIVATION_NOT_RUN"
+      ],
+      "candidate_manifest_sha256": "eaceee78bcdbabc03e2430fd096c921d19ca1942e62fb5aa528dbf57a3eb8611",
+      "candidate_verification": "PASS",
+      "completed_at": "2026-09-15T03:47:13.988456+00:00",
+      "gzip_sha256": "c7659699b0948c1822ccbeaa1a9be73638e45f7c15ffe421699fc8506da22dea",
+      "independent_verification": "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/PREFLIGHT_COMPLETION_VERIFICATION.json",
+      "kind": "PRIVATE_PREFLIGHT_NOT_PUBLICATION",
+      "launched_once": true,
+      "observed_at": "2026-09-15T03:39:41.680759+00:00",
+      "outcome": "COMPLETED_RECONCILED_DO_NOT_RELAUNCH",
+      "output_id": "preflight-resume1509-0334",
+      "production_authority": false,
+      "quota_expires": "2026-09-15T03:56:07.967Z",
+      "raw_bytes": 1306122,
+      "raw_sha256": "f5d1a56840288a012d334fd8f3362194d90cc86dc81877cf69ed0328e4c30fc7",
+      "report": "cloud/task088_v5_acceptance/resume_20260915/preflight_retry/completed_report.json.gz.b64",
+      "status": "BLOCKED"
+    }
+  },
+  "latest_notice": {
+    "source_path": "cloud/task088_v5_acceptance/resume_20260919/WRITER_FENCE_CANDIDATE_NOTICE.json",
+    "updated_at_source": "2026-09-19T15:52:50.720Z",
+    "foreground_in_progress": false,
+    "production_written": false,
+    "crm_written": false,
+    "installed": false,
+    "writer_gate_pass": false,
+    "remaining_blockers": [
+      "Exact minimal patch of the pinned private cars_ui.py and stranica.py sources and realistic extracted call-path tests are absent.",
+      "Authenticated candidate after-image and loaded-process identity are absent.",
+      "Complete writer membership/drain and phase-aware canonical integration remain unproven.",
+      "Fresh exact candidate request/manifest/Gate B/activation, verified backup and canonical Stage3 installation are absent.",
+      "Stage4 Contents:read reader and live CRM to card to catalog acceptance remain absent."
+    ],
+    "next_action": "Obtain the exact pinned private source bytes through the already reviewed canonical source-handling route, apply the smallest fence integration at the recorded mutation boundaries, and run only new affected call-path tests. Do not launch a freshness preflight or production installation before after-image and complete writer containment review PASS."
+  },
+  "automation": {
+    "source_tool": "mcp__codex_apps__automations_peek",
+    "id": "6aa838e44e688191acb636f6597ac587",
+    "title": "Продолжение PR 114",
+    "is_enabled": false,
+    "last_run_time": "2026-09-19T15:56:02.392994+00:00",
+    "updated_at": "2026-09-19T15:59:05.071921+00:00",
+    "next_run_time": null,
+    "schedule": "BEGIN:VEVENT\nDTSTART:20260914T181248Z\nRRULE:FREQ=HOURLY\nEND:VEVENT",
+    "timing_mode": "condition_watch",
+    "default_timezone": "Asia/Ho_Chi_Minh",
+    "observation_timestamp": null,
+    "comparison": "Actual service reports disabled. CONTINUATION and AUTOPILOT_CONTINUATION_NOTICE enabled values predate actual service updated_at and are stale on automation state.",
+    "mutated_by_auditor": false
+  },
+  "workflow_observations": {
+    "in_progress": {
+      "total_count": 0,
+      "workflow_runs": []
+    },
+    "queued": {
+      "total_count": 0,
+      "workflow_runs": []
+    },
+    "blocked_verify_external_run": {
+      "id": 34733330869,
+      "status": "completed",
+      "conclusion": "failure",
+      "updated_at": "2026-09-13T02:35:20Z",
+      "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34733330869",
+      "source": "Direct current GET actions/runs/34733330869; exact call timestamp not recorded."
+    },
+    "recent_runs": [
+      {
+        "id": 35453273983,
+        "name": "UA ART Read-Only Monitor",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "updated_at": "2026-09-19T15:54:53Z"
+      },
+      {
+        "id": 35446008700,
+        "name": "UA ART Production Transaction Watchdog",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-19T13:31:35Z"
+      },
+      {
+        "id": 35439075646,
+        "name": "UA ART Read-Only Monitor",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-19T11:04:32Z"
+      },
+      {
+        "id": 35435793331,
+        "name": "UA ART Production Transaction Watchdog",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-19T09:51:20Z"
+      },
+      {
+        "id": 35431473904,
+        "name": "UA ART Control-Plane Maintenance",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-19T08:15:04Z"
+      },
+      {
+        "id": 35425158513,
+        "name": "UA ART Production Transaction Watchdog",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-19T05:54:33Z"
+      },
+      {
+        "id": 35421958224,
+        "name": "UA ART Read-Only Monitor",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-19T04:41:23Z"
+      },
+      {
+        "id": 35411811365,
+        "name": "UA ART Production Transaction Watchdog",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-19T01:10:50Z"
+      },
+      {
+        "id": 35404787021,
+        "name": "UA ART Production Transaction Watchdog",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-18T23:13:10Z"
+      },
+      {
+        "id": 35394690200,
+        "name": "UA ART Production Transaction Watchdog",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-18T21:03:29Z"
+      },
+      {
+        "id": 35394125151,
+        "name": "UA ART Read-Only Monitor",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-18T20:56:29Z"
+      },
+      {
+        "id": 35379922929,
+        "name": "UA ART Production Transaction Watchdog",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-18T18:24:06Z"
+      },
+      {
+        "id": 35368530521,
+        "name": "UA ART Read-Only Monitor",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-18T16:27:10Z"
+      },
+      {
+        "id": 35360711379,
+        "name": "UA ART Production Transaction Watchdog",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-18T15:10:08Z"
+      },
+      {
+        "id": 35340983967,
+        "name": "UA ART Production Transaction Watchdog",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "aadf60b6f2b6acb0fba598792895fb93564b0451",
+        "updated_at": "2026-09-18T11:43:07Z"
+      }
+    ]
+  },
+  "execution_mode": {
+    "source_path": "state/EXECUTION_MODE.json",
+    "document": {
+      "activated_at": "2026-09-04T17:49:04Z",
+      "allow_replay_existing_launch_markers": false,
+      "automatic_nonproduction": true,
+      "automatic_production": true,
+      "mode": "AUTOMATIC",
+      "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+      "owner_approval_path": "tasks/approvals/TASK107-R2-AUTOMATIC-MODE.json",
+      "owner_approval_sha256": "6e6071e5a06e7d69a20aebc035bd57f74ef903e353cfe5a7e017df947a3eb643",
+      "production_requires_backup": true,
+      "production_requires_exact_launch": true,
+      "production_requires_gate_b": true,
+      "production_requires_live_receipt": true,
+      "production_requires_owner_approval": true,
+      "production_requires_pre_post_health": true,
+      "runtime_activation_path": "state/runtime_activations/TASK088-STORAGE-OVERRIDE-20260911.json",
+      "runtime_activation_sha256": "4567f604bebac3d198e361ee49a3ba239585e6e07cca57e9f4fec8a316e9024c",
+      "runtime_manifest_path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+      "runtime_manifest_sha256": "2b3b75c686a41f4f6a48b2f9e2d57da12574c2b498505150899b66645d7cd2c5",
+      "schema_version": "UA-ART-EXECUTION-MODE-1",
+      "stop_on_safety_failure": true,
+      "task107_receipt_path": "state/receipts/TASK107-R2.json",
+      "task107_receipt_sha256": "bdf5d474d2186b4d37190b7a74f3a31b868b504c7caaad7b8a99d4a6ca120e0c"
+    }
+  },
+  "halt": {
+    "active_halt_present_in_complete_main_tree": false,
+    "archive_paths": [
+      "state/halt_history/SYSTEM-WATCHDOG-20260916-35064800624/halt.json",
+      "state/halt_history/TASK088-GE-PRICE-CRM-PREFLIGHT.34608152298/halt.json",
+      "state/halt_history/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.34734575941/halt.json",
+      "state/halt_history/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.34734575941/receipt.json"
+    ],
+    "inference_limit": "Absence at pinned Git main is not an independent observation of every runtime process."
+  },
+  "transactions": {
+    "count": 9,
+    "by_status": {
+      "ROLLED_BACK": 3,
+      "FINISHED": 6
+    },
+    "nonterminal_count": 0,
+    "entries": [
+      {
+        "source_path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "3669e62e69b33e4cb528026fae74ecec9e4925fb",
+        "document": {
+          "autostart_ledger_path": "state/autostart_consumed/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.json",
+          "backup_manifest_sha256": "6b922c9656d46fafdf8c51f82cf3cb4fa512b4db82e4cf1113429b7d5c1ff34b",
+          "backup_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-BACKUP.json",
+          "backup_receipt_sha256": "979e4d09cb8219aa6de1737cc8bfd83f543ba1ab0f1250368cf2f6ee27219ef3",
+          "closed_at": "2026-09-11T17:03:36Z",
+          "expires_at": "2026-09-11T16:03:29Z",
+          "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+          "opened_at": "2026-09-11T14:08:59Z",
+          "prepared_at": "2026-09-11T14:08:25Z",
+          "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-PREFLIGHT-20260911.json",
+          "request_sha256": "062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a",
+          "run_id": "34608152298",
+          "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
+          "status": "ROLLED_BACK",
+          "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+          "transaction_id": "tx-34608152298-062ad76555efb682"
+        }
+      },
+      {
+        "source_path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2.34625768264.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "6e57b1e7deb33e97c5fc67186d6e32480e06fd76",
+        "document": {
+          "autostart_ledger_path": "state/autostart_consumed/TASK088-GE-PRICE-CRM-PREFLIGHT.fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2.json",
+          "backup_manifest_sha256": "a79809ff03e4b6bf0aa94950d6f6a541cd4a1b3eae8b02548703ee5118bb4211",
+          "backup_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2-BACKUP.json",
+          "backup_receipt_sha256": "b1e4f34259c301aeecc72af8de1ba81ca796c673619dc843b1d93f694d79fa76",
+          "closed_at": "2026-09-11T17:09:24Z",
+          "expires_at": "2026-09-11T18:59:59Z",
+          "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+          "opened_at": "2026-09-11T17:08:42Z",
+          "prepared_at": "2026-09-11T17:08:08Z",
+          "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-PREFLIGHT-20260911-READ2.json",
+          "request_sha256": "fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2",
+          "run_id": "34625768264",
+          "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
+          "status": "FINISHED",
+          "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+          "transaction_id": "tx-34625768264-fbbc58b7033e56ee"
+        }
+      },
+      {
+        "source_path": "state/transactions/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.34734575941.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "fedb02442400a87ba009117f66ef035b4de3730d",
+        "document": {
+          "autostart_ledger_path": "state/autostart_consumed/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.json",
+          "backup_manifest_sha256": "c7fec58b1b43d076e866f78f4ac1f6a1377cc04b114b3767f21a2e1a426562bf",
+          "backup_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL-BACKUP.json",
+          "backup_receipt_sha256": "65f41a21edeca20ad2ea6a67f431ae934252494b169b4455ec91c814e6682c6b",
+          "closed_at": "2026-09-13T05:26:23Z",
+          "expires_at": "2026-09-13T03:15:40Z",
+          "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+          "opened_at": "2026-09-13T03:09:16Z",
+          "prepared_at": "2026-09-13T03:06:45Z",
+          "request_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+          "request_sha256": "f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e",
+          "run_id": "34734575941",
+          "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
+          "status": "FINISHED",
+          "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+          "transaction_id": "tx-34734575941-f9cf3ff6cfaba7e1"
+        }
+      },
+      {
+        "source_path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "773f24003e84d0f73b45549d9c372c8dd2fa090f",
+        "document": {
+          "autostart_ledger_path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.json",
+          "backup_manifest_sha256": "97d19410c275541a0c3b86ee361687f24f0640956e5a4dabd4f2efe2d440db41",
+          "backup_receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS-BACKUP.json",
+          "backup_receipt_sha256": "1920e01ef6ae66079901210b223caecbe8ad99a4f5886aeb7a3551cebdac03cc",
+          "expires_at": "2026-09-05T04:25:00Z",
+          "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+          "opened_at": "2026-09-05T03:59:50Z",
+          "prepared_at": "2026-09-05T03:43:51Z",
+          "request_path": "tasks/requests/TASK115-REMOVE-VIN-ADS.json",
+          "request_sha256": "22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0",
+          "run_id": "33942536609",
+          "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
+          "status": "ROLLED_BACK",
+          "task_id": "TASK115-REMOVE-VIN-ADS",
+          "transaction_id": "tx-33942536609-22411bf9f56d42ee",
+          "closed_at": "2026-09-05T04:04:27Z"
+        }
+      },
+      {
+        "source_path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "2da59f669a85cabdc2f31b13b8d22504a33fb407",
+        "document": {
+          "autostart_ledger_path": "state/autostart_consumed/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.json",
+          "backup_manifest_sha256": "8376d9d6ed2f53e154f3991e975dd9411c710531cbe50d95ef3e5224c4a66204",
+          "backup_receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS-BACKUP.json",
+          "backup_receipt_sha256": "445754518d7b862d7b637e6db2dc147fff4634beb3d61d2c01ac9e4f300fe1de",
+          "closed_at": "2026-09-05T05:11:37Z",
+          "expires_at": "2026-09-05T06:49:17Z",
+          "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+          "opened_at": "2026-09-05T05:02:09Z",
+          "prepared_at": "2026-09-05T04:58:31Z",
+          "request_path": "tasks/requests/TASK115-REMOVE-VIN-ADS.json",
+          "request_sha256": "aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7",
+          "run_id": "33945882409",
+          "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
+          "status": "FINISHED",
+          "task_id": "TASK115-REMOVE-VIN-ADS",
+          "transaction_id": "tx-33945882409-aa2c7cecc1f0c898"
+        }
+      },
+      {
+        "source_path": "state/transactions/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "922a7d8a5b2b49b2a2992f03733652517ea78755",
+        "document": {
+          "autostart_ledger_path": "state/autostart_consumed/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.json",
+          "backup_manifest_sha256": "a35c44e5ffb893f803578fb2959356a6784992c2df37c6094f5781fd726f1d31",
+          "backup_receipt_path": "state/receipts/TASK117-REMOVE-CRM-STAGE-BUTTONS-BACKUP.json",
+          "backup_receipt_sha256": "8447079fbc88464c987c6822236eb6af29e9f04e96534fa63ad9a1a8ad238eab",
+          "closed_at": "2026-09-07T09:53:03Z",
+          "expires_at": "2026-09-07T11:04:04Z",
+          "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+          "opened_at": "2026-09-07T09:47:27Z",
+          "prepared_at": "2026-09-07T09:45:22Z",
+          "request_path": "tasks/requests/TASK117-REMOVE-CRM-STAGE-BUTTONS.json",
+          "request_sha256": "bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185",
+          "run_id": "34107568301",
+          "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
+          "status": "FINISHED",
+          "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+          "transaction_id": "tx-34107568301-bb03fb76a6bad001"
+        }
+      },
+      {
+        "source_path": "state/transactions/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "927d1059e48836d08691c19c1510c1be17d088e9",
+        "document": {
+          "autostart_ledger_path": "state/autostart_consumed/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.json",
+          "backup_manifest_sha256": "95541f9133b261aebdd5bdc5251768cefc7d8f6c5b4a87de2ffded78d3ae85f0",
+          "backup_receipt_path": "state/receipts/TASK118-EMERGENCY-SITE-RECOVERY-BACKUP.json",
+          "backup_receipt_sha256": "2cccfb239a61a142cb25e9e95d47cbdecd249487c0a7e917f2fcbf864c75105a",
+          "closed_at": "2026-09-07T11:45:29Z",
+          "expires_at": "2026-09-07T13:18:30Z",
+          "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+          "opened_at": "2026-09-07T11:44:02Z",
+          "prepared_at": "2026-09-07T11:43:35Z",
+          "request_path": "tasks/requests/TASK118-EMERGENCY-SITE-RECOVERY.json",
+          "request_sha256": "4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3",
+          "run_id": "34117903252",
+          "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
+          "status": "FINISHED",
+          "task_id": "TASK118-EMERGENCY-SITE-RECOVERY",
+          "transaction_id": "tx-34117903252-4a0872c57eb69158"
+        }
+      },
+      {
+        "source_path": "state/transactions/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "295b395ed49e885c30a63aea70e32c5ccbf4da36",
+        "document": {
+          "autostart_ledger_path": "state/autostart_consumed/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.json",
+          "backup_manifest_sha256": "b0ad5c9af3b6c2f3a4cf9e913e9b6f51f7b5951e5caf539d54122c4ada5f4863",
+          "backup_receipt_path": "state/receipts/TASK119-EMERGENCY-SITE-RECOVERY-R2-BACKUP.json",
+          "backup_receipt_sha256": "083ec70743dfc609f93e6c8d892c3481a850418ddb9a0fc2fcac5dc44f334a99",
+          "closed_at": "2026-09-07T12:09:25Z",
+          "expires_at": "2026-09-07T13:24:00Z",
+          "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+          "opened_at": "2026-09-07T12:08:12Z",
+          "prepared_at": "2026-09-07T12:07:43Z",
+          "request_path": "tasks/requests/TASK119-EMERGENCY-SITE-RECOVERY-R2.json",
+          "request_sha256": "0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7",
+          "run_id": "34119998399",
+          "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
+          "status": "FINISHED",
+          "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2",
+          "transaction_id": "tx-34119998399-0e4284a6792c645f"
+        }
+      },
+      {
+        "source_path": "state/transactions/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "47237c2abaf7ad1a186b7264938b675d86a44a92",
+        "document": {
+          "autostart_ledger_path": "state/autostart_consumed/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.json",
+          "backup_manifest_sha256": null,
+          "backup_receipt_path": "state/receipts/TASK120-PUBLISH-UA-0017-UA-0018-BACKUP.json",
+          "backup_receipt_sha256": null,
+          "expires_at": "2026-09-07T16:13:14Z",
+          "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+          "opened_at": null,
+          "prepared_at": "2026-09-07T14:47:35Z",
+          "request_path": "tasks/requests/TASK120-PUBLISH-UA-0017-UA-0018.json",
+          "request_sha256": "a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442",
+          "run_id": "34134692609",
+          "schema_version": "UA-ART-PRODUCTION-TRANSACTION-2",
+          "status": "ROLLED_BACK",
+          "task_id": "TASK120-PUBLISH-UA-0017-UA-0018",
+          "transaction_id": "tx-34134692609-a4662a876b037595",
+          "closed_at": "2026-09-07T14:57:16Z"
+        }
+      }
+    ]
+  },
+  "claims": {
+    "count": 29,
+    "by_status": {
+      "FAILED": 10,
+      "FINISHED": 18,
+      "BLOCKED_ROOT_CAUSE": 1
+    },
+    "entries": [
+      {
+        "source_path": "state/claims/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "f6e10164d001e1a8bc74cb54dd82aac9cdb34107",
+        "identity": {
+          "run_id": "34608152298",
+          "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+          "task_sha256": "062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a"
+        },
+        "task_execution_status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "READ_ONLY:0355ae2639e03869"
+        ],
+        "heartbeat_at": "2026-09-11T14:08:59Z",
+        "updated_at": "2026-09-11T17:03:36Z",
+        "finished_at": null,
+        "production_transaction_status": "ROLLED_BACK",
+        "transaction_path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
+        "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT.json",
+        "receipt_validation_status": "PENDING",
+        "failure_history": [
+          {
+            "action": "CLASSIFY_ROOT_CAUSE",
+            "at": "2026-09-11T14:14:38Z",
+            "class": "UNKNOWN",
+            "message": "CRITICAL Production failed; inspect GitHub Actions run 34608152298",
+            "retries_remaining": 1,
+            "retry_allowed": false,
+            "signature": "160587c164831ebf"
+          },
+          {
+            "action": "STOP_FAIL_CLOSED_TERMINAL",
+            "at": "2026-09-11T17:03:36Z",
+            "class": "TRANSIENT",
+            "message": "Read-only diagnostic aborted; owner screenshot confirms temporary task absent; no business mutation capability in pinned package; error detail unknown. Manual reconciliation, no rollback executed.",
+            "retries_remaining": 0,
+            "retry_allowed": false,
+            "signature": "04e19682bf1b7fa1"
+          }
+        ]
+      },
+      {
+        "source_path": "state/claims/TASK088-GE-PRICE-CRM-PREFLIGHT.fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2.34625768264.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "8d75ebcc1db8e9d4533a301f29c6f5b63530e079",
+        "identity": {
+          "run_id": "34625768264",
+          "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+          "task_sha256": "fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "READ_ONLY:0355ae2639e03869"
+        ],
+        "heartbeat_at": "2026-09-11T17:09:23Z",
+        "updated_at": "2026-09-11T17:09:24Z",
+        "finished_at": "2026-09-11T17:09:23Z",
+        "production_transaction_status": "FINISHED",
+        "transaction_path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2.34625768264.json",
+        "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK088-GE-PRICE-CRM-STAGE1.0b4edb818dceac55c1605bb2c7e105425c919a8998ae91096b1eb60e0c07bbbe.34591174796.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "f0c8f854bccce4192f5ffd3d064ee85891b2fb8c",
+        "identity": {
+          "run_id": "34591174796",
+          "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+          "task_sha256": "0b4edb818dceac55c1605bb2c7e105425c919a8998ae91096b1eb60e0c07bbbe"
+        },
+        "task_execution_status": "FAILED",
+        "production_required": false,
+        "resource_locks": [
+          "CRM_DB"
+        ],
+        "heartbeat_at": "2026-09-11T10:53:44Z",
+        "updated_at": "2026-09-11T11:39:29Z",
+        "finished_at": null,
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+        "receipt_validation_status": "PENDING",
+        "failure_history": [
+          {
+            "action": "STOP_FAIL_CLOSED_TERMINAL",
+            "at": "2026-09-11T11:39:29Z",
+            "class": "UNKNOWN",
+            "message": "Confirmed GitHub run 34591174796 attempt 1 job 103237399158 failed TOKEN_MISSING at controller.execute before API initialization or remote writes. Attempt 2 skipped execution. Handoff v3.2 closes this stale claim; consumed ledger and nonce retained. Fresh identity requires corrected Stage 1 preflight.",
+            "retries_remaining": 0,
+            "retry_allowed": false,
+            "signature": "cbc49cfd147ee87c"
+          }
+        ]
+      },
+      {
+        "source_path": "state/claims/TASK088-GE-PRICE-CRM-STAGE1.37bec5fcc5fa5131634102dab5f1e1dcf6acc2c1e3c6b517509f4653a0dc4521.34627083846.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "b132c0ab96449bded28cfdc5ba3434288220f526",
+        "identity": {
+          "run_id": "34627083846",
+          "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+          "task_sha256": "37bec5fcc5fa5131634102dab5f1e1dcf6acc2c1e3c6b517509f4653a0dc4521"
+        },
+        "task_execution_status": "FAILED",
+        "production_required": false,
+        "resource_locks": [
+          "CRM_DB"
+        ],
+        "heartbeat_at": "2026-09-11T17:21:35Z",
+        "updated_at": "2026-09-11T18:05:20Z",
+        "finished_at": null,
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+        "receipt_validation_status": "PENDING",
+        "failure_history": [
+          {
+            "action": "STOP_FAIL_CLOSED_TERMINAL",
+            "at": "2026-09-11T18:05:20Z",
+            "class": "UNKNOWN",
+            "message": "Previous TASK088 Stage 1 run 34627083846 failed before CRM write because the non-production PythonAnywhere token was missing; no CRM/DB mutation occurred. Closing stale claim terminal FAILED to release CRM_DB for fresh execution.",
+            "retries_remaining": 0,
+            "retry_allowed": false,
+            "signature": "2be27bbdf87792e8"
+          }
+        ]
+      },
+      {
+        "source_path": "state/claims/TASK088-GE-PRICE-CRM-STAGE1.adefa0226fdfd81d1292e991e8744570ce0adae7f9c5602f8290d5b71eae9cb6.34631499680.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "dd45d890e797de0618322f26db1facf7e84bae71",
+        "identity": {
+          "run_id": "34631499680",
+          "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+          "task_sha256": "adefa0226fdfd81d1292e991e8744570ce0adae7f9c5602f8290d5b71eae9cb6"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "CRM_DB"
+        ],
+        "heartbeat_at": "2026-09-11T18:52:00Z",
+        "updated_at": "2026-09-11T18:52:00Z",
+        "finished_at": null,
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY.f6c3c3569b078ebbd5e5c5efba441266beea088ae80874d45bbc31b5791e0f63.34686469242.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "5717182f60f4eabb7ad5edd6354a1dac2b96b76e",
+        "identity": {
+          "run_id": "34686469242",
+          "task_id": "TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY",
+          "task_sha256": "f6c3c3569b078ebbd5e5c5efba441266beea088ae80874d45bbc31b5791e0f63"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "READ_ONLY:f61a5ededf3e0446"
+        ],
+        "heartbeat_at": "2026-09-12T09:42:06Z",
+        "updated_at": "2026-09-12T09:42:06Z",
+        "finished_at": "2026-09-12T09:42:06Z",
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-HANDLERS.a78c7dc07fdd55c233a87ded9f6e1a3969d39cde71017e32b20bf25dfcfba306.34686804781.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "132b4308febdef2573aa1a7117f057e22710272c",
+        "identity": {
+          "run_id": "34686804781",
+          "task_id": "TASK088-GE-PRICE-CRM-STAGE2-HANDLERS",
+          "task_sha256": "a78c7dc07fdd55c233a87ded9f6e1a3969d39cde71017e32b20bf25dfcfba306"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "READ_ONLY:7d52b26e78613af6"
+        ],
+        "heartbeat_at": "2026-09-12T09:50:16Z",
+        "updated_at": "2026-09-12T09:50:16Z",
+        "finished_at": "2026-09-12T09:50:16Z",
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-HANDLERS.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.34734575941.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "e56874b59dbd67225e95d724f65d0ee572e9ec13",
+        "identity": {
+          "run_id": "34734575941",
+          "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+          "task_sha256": "f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "CRM_DB"
+        ],
+        "heartbeat_at": "2026-09-13T05:26:23Z",
+        "updated_at": "2026-09-13T05:26:23Z",
+        "finished_at": "2026-09-13T05:26:23Z",
+        "production_transaction_status": "FINISHED",
+        "transaction_path": "state/transactions/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.34734575941.json",
+        "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": [
+          {
+            "action": "CLASSIFY_ROOT_CAUSE",
+            "at": "2026-09-13T03:17:43Z",
+            "class": "UNKNOWN",
+            "message": "CRITICAL Production failed; inspect GitHub Actions run 34734575941",
+            "retries_remaining": 1,
+            "retry_allowed": false,
+            "signature": "63a7d429445e6391"
+          }
+        ]
+      },
+      {
+        "source_path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2.955482850c58cffc1ea9b2a44efbe3923f0e2ae46d7b390aba495ba4a5c3dc7f.34733840685.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "80b3d9159c6af1afdc818eb2b4108416fb0be969",
+        "identity": {
+          "run_id": "34733840685",
+          "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2",
+          "task_sha256": "955482850c58cffc1ea9b2a44efbe3923f0e2ae46d7b390aba495ba4a5c3dc7f"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "READ_ONLY:a35bb0a49afb2aa5"
+        ],
+        "heartbeat_at": "2026-09-13T02:47:27Z",
+        "updated_at": "2026-09-13T02:47:27Z",
+        "finished_at": "2026-09-13T02:47:27Z",
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827.34733330869.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "2b112ad4f28e76ab1506b38dd2fd5066f3155e9f",
+        "identity": {
+          "run_id": "34733330869",
+          "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY",
+          "task_sha256": "1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827"
+        },
+        "task_execution_status": "BLOCKED_ROOT_CAUSE",
+        "production_required": false,
+        "resource_locks": [
+          "READ_ONLY:5b74afb8a929e83a"
+        ],
+        "heartbeat_at": "2026-09-13T02:34:40Z",
+        "updated_at": "2026-09-13T02:35:15Z",
+        "finished_at": null,
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.json",
+        "receipt_validation_status": "PENDING",
+        "failure_history": [
+          {
+            "action": "CLASSIFY_ROOT_CAUSE",
+            "at": "2026-09-13T02:35:15Z",
+            "class": "UNKNOWN",
+            "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 34733330869",
+            "retries_remaining": 3,
+            "retry_allowed": false,
+            "signature": "6ac8d471bc65819d"
+          }
+        ]
+      },
+      {
+        "source_path": "state/claims/TASK107-R2-CANARY-1-FAST.1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5.33776437497.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "a00d7d1fd7eca31d0894356766350666430c587f",
+        "identity": {
+          "run_id": "33776437497",
+          "task_id": "TASK107-R2-CANARY-1-FAST",
+          "task_sha256": "1c45af20f87c613f520b85169cba50a7359e388f3c697611a184feba2186a5c5"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "PATH_SCOPE:dd103d2185f56ece"
+        ],
+        "heartbeat_at": "2026-09-03T16:05:24Z",
+        "updated_at": "2026-09-03T16:05:24Z",
+        "finished_at": "2026-09-03T16:05:24Z",
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK107-R2-CANARY-1-FAST.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK107-R2-CANARY-2-STANDARD.1494882607a6e7fc8c06ed1f01d5d5d86c85d2ecaa3054aba1602c78f10a02a5.33776437497.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "75b233e362798e4bf6a12b1691945605f98d2f48",
+        "identity": {
+          "run_id": "33776437497",
+          "task_id": "TASK107-R2-CANARY-2-STANDARD",
+          "task_sha256": "1494882607a6e7fc8c06ed1f01d5d5d86c85d2ecaa3054aba1602c78f10a02a5"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "CONTROL_PLANE"
+        ],
+        "heartbeat_at": "2026-09-03T16:05:57Z",
+        "updated_at": "2026-09-03T16:05:57Z",
+        "finished_at": "2026-09-03T16:05:57Z",
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK107-R2-CANARY-2-STANDARD.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK107-R2-CANARY-3-CRITICAL.dd8754c7729d000cd25c0b319280e3908e9c88897e6fc0757dd08df632cc6770.33776437497.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "fb861ffe0c22b53717e833fab7ec9341ac369f75",
+        "identity": {
+          "run_id": "33776437497",
+          "task_id": "TASK107-R2-CANARY-3-CRITICAL",
+          "task_sha256": "dd8754c7729d000cd25c0b319280e3908e9c88897e6fc0757dd08df632cc6770"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "CONTROL_PLANE"
+        ],
+        "heartbeat_at": "2026-09-03T16:06:24Z",
+        "updated_at": "2026-09-03T16:06:24Z",
+        "finished_at": "2026-09-03T16:06:24Z",
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK107-R2-CANARY-3-CRITICAL.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.0875de8561ad5b677cc7d4156512dda8acfb3584f08f38b2bded006dc2f1637f.33827926268.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "21eb51abc202a901c4e7331c378cb1085ae9603c",
+        "identity": {
+          "run_id": "33827926268",
+          "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+          "task_sha256": "0875de8561ad5b677cc7d4156512dda8acfb3584f08f38b2bded006dc2f1637f"
+        },
+        "task_execution_status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_ALL_CARDS",
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-04T02:14:57Z",
+        "updated_at": "2026-09-04T02:14:57Z",
+        "finished_at": null,
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK109-CONTAINER-TRACK-INLINE.json",
+        "receipt_validation_status": "PENDING",
+        "failure_history": [
+          {
+            "action": "CLASSIFY_ROOT_CAUSE",
+            "at": "2026-09-04T02:01:48Z",
+            "class": "UNKNOWN",
+            "message": "CRITICAL pipeline failed; inspect GitHub Actions run 33827926268",
+            "retries_remaining": 1,
+            "retry_allowed": false,
+            "signature": "07fc9b97f94a4555"
+          }
+        ]
+      },
+      {
+        "source_path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.4d6d19d301e2bc61232c698d7bf5975959f7e4321fba109a28037cce713b6246.33829829770.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "328f1628f7f4ea06409e85eae5ae4d9a1585a724",
+        "identity": {
+          "run_id": "33829829770",
+          "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+          "task_sha256": "4d6d19d301e2bc61232c698d7bf5975959f7e4321fba109a28037cce713b6246"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_ALL_CARDS",
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-04T02:41:28Z",
+        "updated_at": "2026-09-04T02:41:28Z",
+        "finished_at": "2026-09-04T02:41:28Z",
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK109-CONTAINER-TRACK-INLINE.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK109-CONTAINER-TRACK-INLINE.8f96365f812fc9cffd53d4827fc750d175f14b14d0c505548151505ac80c04b9.33827333029.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "dd2a83e63dbbe615a63e82256d4131105eb81a88",
+        "identity": {
+          "run_id": "33827333029",
+          "task_id": "TASK109-CONTAINER-TRACK-INLINE",
+          "task_sha256": "8f96365f812fc9cffd53d4827fc750d175f14b14d0c505548151505ac80c04b9"
+        },
+        "task_execution_status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_ALL_CARDS",
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-04T01:52:10Z",
+        "updated_at": "2026-09-04T02:00:00Z",
+        "finished_at": null,
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK109-CONTAINER-TRACK-INLINE.json",
+        "receipt_validation_status": "PENDING",
+        "failure_history": [
+          {
+            "action": "CLASSIFY_ROOT_CAUSE",
+            "at": "2026-09-04T01:52:10Z",
+            "class": "UNKNOWN",
+            "message": "CRITICAL pipeline failed; inspect GitHub Actions run 33827333029",
+            "retries_remaining": 1,
+            "retry_allowed": false,
+            "signature": "dbad42fbdc6414dc"
+          }
+        ]
+      },
+      {
+        "source_path": "state/claims/TASK110-VIN-SPEC-3SRC.49138842d8fb5909f57cfc622d7bb943ca90379a39702ef26b7ecc16d0540717.33835385104.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "aecbbcd58abef15667c05307080e47a4f2038bad",
+        "identity": {
+          "run_id": "33835385104",
+          "task_id": "TASK110-VIN-SPEC-3SRC",
+          "task_sha256": "49138842d8fb5909f57cfc622d7bb943ca90379a39702ef26b7ecc16d0540717"
+        },
+        "task_execution_status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_ALL_CARDS",
+          "CRM_DB"
+        ],
+        "heartbeat_at": "2026-09-04T04:11:55Z",
+        "updated_at": "2026-09-04T04:20:15Z",
+        "finished_at": null,
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK110-VIN-SPEC-3SRC.json",
+        "receipt_validation_status": "FAIL_EXACT_IDENTITY_MISSING",
+        "failure_history": [
+          {
+            "action": "CLASSIFY_ROOT_CAUSE",
+            "at": "2026-09-04T04:11:55Z",
+            "class": "UNKNOWN",
+            "message": "CRITICAL pipeline failed; inspect GitHub Actions run 33835385104",
+            "retries_remaining": 1,
+            "retry_allowed": false,
+            "signature": "627369ded141205b"
+          }
+        ]
+      },
+      {
+        "source_path": "state/claims/TASK110-VIN-SPEC-3SRC.4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95.33836434535.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "09b6781c33c5cfa092e0eaf18f8521629adf1f99",
+        "identity": {
+          "run_id": "33836434535",
+          "task_id": "TASK110-VIN-SPEC-3SRC",
+          "task_sha256": "4eed950a637a248f61a49e449bb6714c0051d5ed4125230bb3719ba9e638ba95"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_ALL_CARDS",
+          "CRM_DB"
+        ],
+        "heartbeat_at": "2026-09-04T04:26:05Z",
+        "updated_at": "2026-09-04T04:26:05Z",
+        "finished_at": "2026-09-04T04:26:05Z",
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK110-VIN-SPEC-3SRC.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK111-VIN-SPEC-10SRC.15c38cdc5d0bfd25252e07e0df92d62fcc78aad1d89cfb602a31863143fe43c3.33850054689.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "d9b0b92f2f3637b28d88c190b383c365f5fa0a9c",
+        "identity": {
+          "run_id": "33850054689",
+          "task_id": "TASK111-VIN-SPEC-10SRC",
+          "task_sha256": "15c38cdc5d0bfd25252e07e0df92d62fcc78aad1d89cfb602a31863143fe43c3"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "CRM_DB"
+        ],
+        "heartbeat_at": "2026-09-04T07:55:34Z",
+        "updated_at": "2026-09-04T07:55:34Z",
+        "finished_at": "2026-09-04T07:55:34Z",
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK111-VIN-SPEC-10SRC.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK113-GLOBAL-AUTO-CANARY.091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781.33885007450.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "95b88e90135e804ce6b944998fa7b90d912f710f",
+        "identity": {
+          "run_id": "33885007450",
+          "task_id": "TASK113-GLOBAL-AUTO-CANARY",
+          "task_sha256": "091fad8c82fc25a8a3e79f2bf0121c5e2dafe6149f96b6b4bb4124759fdda781"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "PATH_SCOPE:34afad063f5164e0"
+        ],
+        "heartbeat_at": "2026-09-04T14:40:10Z",
+        "updated_at": "2026-09-04T14:40:10Z",
+        "finished_at": "2026-09-04T14:40:10Z",
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK113-GLOBAL-AUTO-CANARY.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK114-POSTMERGE-AUTO-CANARY.23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5.33902756545.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "be8a7844a54f14174199926ce49bc22eccfef485",
+        "identity": {
+          "run_id": "33902756545",
+          "task_id": "TASK114-POSTMERGE-AUTO-CANARY",
+          "task_sha256": "23dc6173271d02920389d519f9201e4db153ec33f352ac06c42c446b21eb8df5"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": false,
+        "resource_locks": [
+          "PATH_SCOPE:e083ecf0eed19659"
+        ],
+        "heartbeat_at": "2026-09-04T17:52:50Z",
+        "updated_at": "2026-09-04T17:52:50Z",
+        "finished_at": "2026-09-04T17:52:50Z",
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK114-POSTMERGE-AUTO-CANARY.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK115-REMOVE-VIN-ADS.1e07de40b1bbea73a79be0159bcb9a6e5176bb88b62fa809c621097940ca518a.33941649559.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "36fde7a4d006fb47f9d3d52cfa56eb64012c1bdf",
+        "identity": {
+          "run_id": "33941649559",
+          "task_id": "TASK115-REMOVE-VIN-ADS",
+          "task_sha256": "1e07de40b1bbea73a79be0159bcb9a6e5176bb88b62fa809c621097940ca518a"
+        },
+        "task_execution_status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-05T03:22:58Z",
+        "updated_at": "2026-09-05T03:35:00Z",
+        "finished_at": null,
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS.json",
+        "receipt_validation_status": "PENDING",
+        "failure_history": [
+          {
+            "action": "CLASSIFY_ROOT_CAUSE",
+            "at": "2026-09-05T03:24:09Z",
+            "class": "UNKNOWN",
+            "message": "CRITICAL Production failed; inspect GitHub Actions run 33941649559",
+            "retries_remaining": 1,
+            "retry_allowed": false,
+            "signature": "ed9d5bab31dc4a11"
+          }
+        ]
+      },
+      {
+        "source_path": "state/claims/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "b3455053c5da4c5e69844e21abad6afc5907db1d",
+        "identity": {
+          "run_id": "33942536609",
+          "task_id": "TASK115-REMOVE-VIN-ADS",
+          "task_sha256": "22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0"
+        },
+        "task_execution_status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-05T04:04:27Z",
+        "updated_at": "2026-09-05T04:04:27Z",
+        "finished_at": null,
+        "production_transaction_status": "ROLLED_BACK",
+        "transaction_path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+        "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS.json",
+        "receipt_validation_status": "PENDING",
+        "failure_history": [
+          {
+            "action": "CLASSIFY_ROOT_CAUSE",
+            "at": "2026-09-05T03:47:30Z",
+            "class": "UNKNOWN",
+            "message": "CRITICAL Production failed; inspect GitHub Actions run 33942536609",
+            "retries_remaining": 1,
+            "retry_allowed": false,
+            "signature": "cc88d3aeb574c70b"
+          },
+          {
+            "action": "MANUAL_RECONCILIATION",
+            "at": "2026-09-05T04:04:27Z",
+            "class": "CONTROL_PLANE_RECOVERY_BUG",
+            "message": "Watchdog run 33943450237 stopped before Production rollback step; no Production controller or rollback command executed",
+            "retries_remaining": 0,
+            "retry_allowed": false,
+            "signature": "watchdog-nonce-missing"
+          }
+        ]
+      },
+      {
+        "source_path": "state/claims/TASK115-REMOVE-VIN-ADS.6fe897f3f0da1550bd802e6c8ae5867aa4e04d2e4a78383d15f83c2db3cdaadb.33942322588.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "573e62a7c609141c17176f169d7241de582c3d41",
+        "identity": {
+          "run_id": "33942322588",
+          "task_id": "TASK115-REMOVE-VIN-ADS",
+          "task_sha256": "6fe897f3f0da1550bd802e6c8ae5867aa4e04d2e4a78383d15f83c2db3cdaadb"
+        },
+        "task_execution_status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-05T03:37:25Z",
+        "updated_at": "2026-09-05T03:40:00Z",
+        "finished_at": null,
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS.json",
+        "receipt_validation_status": "PENDING",
+        "failure_history": [
+          {
+            "action": "CLASSIFY_ROOT_CAUSE",
+            "at": "2026-09-05T03:38:34Z",
+            "class": "UNKNOWN",
+            "message": "CRITICAL Production failed; inspect GitHub Actions run 33942322588",
+            "retries_remaining": 1,
+            "retry_allowed": false,
+            "signature": "0ff13eba208865e6"
+          }
+        ]
+      },
+      {
+        "source_path": "state/claims/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "5175865a45a67fa99b95e7d6b7979a617109db1a",
+        "identity": {
+          "run_id": "33945882409",
+          "task_id": "TASK115-REMOVE-VIN-ADS",
+          "task_sha256": "aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "CARD:UA-0001",
+          "CATALOG_RENDERER"
+        ],
+        "heartbeat_at": "2026-09-05T05:11:37Z",
+        "updated_at": "2026-09-05T05:11:37Z",
+        "finished_at": "2026-09-05T05:11:37Z",
+        "production_transaction_status": "FINISHED",
+        "transaction_path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+        "receipt_path": "state/receipts/TASK115-REMOVE-VIN-ADS.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "46437401a809176bdf226240749561269709b55f",
+        "identity": {
+          "run_id": "34107568301",
+          "task_id": "TASK117-REMOVE-CRM-STAGE-BUTTONS",
+          "task_sha256": "bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "PATH_SCOPE:99102478c07aca7f"
+        ],
+        "heartbeat_at": "2026-09-07T09:53:03Z",
+        "updated_at": "2026-09-07T09:53:03Z",
+        "finished_at": "2026-09-07T09:53:03Z",
+        "production_transaction_status": "FINISHED",
+        "transaction_path": "state/transactions/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+        "receipt_path": "state/receipts/TASK117-REMOVE-CRM-STAGE-BUTTONS.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "d972ffc93a35d5cda1f5059a71d8dbfee69bcc4b",
+        "identity": {
+          "run_id": "34117903252",
+          "task_id": "TASK118-EMERGENCY-SITE-RECOVERY",
+          "task_sha256": "4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "PATH_SCOPE:242e7709889e82d8"
+        ],
+        "heartbeat_at": "2026-09-07T11:45:29Z",
+        "updated_at": "2026-09-07T11:45:29Z",
+        "finished_at": "2026-09-07T11:45:29Z",
+        "production_transaction_status": "FINISHED",
+        "transaction_path": "state/transactions/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+        "receipt_path": "state/receipts/TASK118-EMERGENCY-SITE-RECOVERY.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "e4f6057879b97e6946063ebf9ab5d1e1a6b614aa",
+        "identity": {
+          "run_id": "34119998399",
+          "task_id": "TASK119-EMERGENCY-SITE-RECOVERY-R2",
+          "task_sha256": "0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7"
+        },
+        "task_execution_status": "FINISHED",
+        "production_required": true,
+        "resource_locks": [
+          "PATH_SCOPE:242e7709889e82d8"
+        ],
+        "heartbeat_at": "2026-09-07T12:09:25Z",
+        "updated_at": "2026-09-07T12:09:25Z",
+        "finished_at": "2026-09-07T12:09:25Z",
+        "production_transaction_status": "FINISHED",
+        "transaction_path": "state/transactions/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+        "receipt_path": "state/receipts/TASK119-EMERGENCY-SITE-RECOVERY-R2.json",
+        "receipt_validation_status": "PASS",
+        "failure_history": []
+      },
+      {
+        "source_path": "state/claims/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "743af93c99d3398e1262e86c78bb378f33a168ed",
+        "identity": {
+          "run_id": "34134692609",
+          "task_id": "TASK120-PUBLISH-UA-0017-UA-0018",
+          "task_sha256": "a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442"
+        },
+        "task_execution_status": "FAILED",
+        "production_required": true,
+        "resource_locks": [
+          "CARD:UA-0017",
+          "CARD:UA-0018"
+        ],
+        "heartbeat_at": "2026-09-07T14:57:16Z",
+        "updated_at": "2026-09-07T14:57:16Z",
+        "finished_at": null,
+        "production_transaction_status": "ROLLED_BACK",
+        "transaction_path": "state/transactions/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+        "receipt_path": "state/receipts/TASK120-PUBLISH-UA-0017-UA-0018.json",
+        "receipt_validation_status": "PENDING",
+        "failure_history": [
+          {
+            "action": "CLASSIFY_ROOT_CAUSE",
+            "at": "2026-09-07T14:48:16Z",
+            "class": "UNKNOWN",
+            "message": "CRITICAL Production failed; inspect GitHub Actions run 34134692609",
+            "retries_remaining": 1,
+            "retry_allowed": false,
+            "signature": "14ddddab6457d3ef"
+          },
+          {
+            "action": "MANUAL_RECONCILIATION",
+            "at": "2026-09-07T14:57:16Z",
+            "class": "CONTROL_PLANE_TRANSPORT_UNAVAILABLE",
+            "message": "Backup job 101783419001 stopped at MUTATING_ALWAYS_ON_UNAVAILABLE before remote probe or backup; controller_production and rollback_execute were skipped",
+            "retries_remaining": 0,
+            "retry_allowed": false,
+            "signature": "580b5aa49ac266b5"
+          }
+        ]
+      }
+    ],
+    "nonterminal_preserved": [
+      {
+        "source_path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827.34733330869.json",
+        "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+        "git_blob_sha": "2b112ad4f28e76ab1506b38dd2fd5066f3155e9f",
+        "identity": {
+          "run_id": "34733330869",
+          "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY",
+          "task_sha256": "1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827"
+        },
+        "task_execution_status": "BLOCKED_ROOT_CAUSE",
+        "production_required": false,
+        "resource_locks": [
+          "READ_ONLY:5b74afb8a929e83a"
+        ],
+        "heartbeat_at": "2026-09-13T02:34:40Z",
+        "updated_at": "2026-09-13T02:35:15Z",
+        "finished_at": null,
+        "production_transaction_status": null,
+        "transaction_path": null,
+        "receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.json",
+        "receipt_validation_status": "PENDING",
+        "failure_history": [
+          {
+            "action": "CLASSIFY_ROOT_CAUSE",
+            "at": "2026-09-13T02:35:15Z",
+            "class": "UNKNOWN",
+            "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 34733330869",
+            "retries_remaining": 3,
+            "retry_allowed": false,
+            "signature": "6ac8d471bc65819d"
+          }
+        ]
+      }
+    ],
+    "interpretation": "The BLOCKED_ROOT_CAUSE claim remains unchanged. Its run was independently observed completed/failure. No stale heartbeat was used to infer that a runtime process stopped."
+  },
+  "task088_requests": [
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-PREFLIGHT-20260911-READ2.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "64ffdbe5d60df7a51ca244587dc96ac2790b4331",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+      "production_required": true,
+      "read_only": true
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-PREFLIGHT-20260911.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "7d21f676fb3c9e46d60cd5d3db7e5deca3881581",
+      "task_id": "TASK088-GE-PRICE-CRM-PREFLIGHT",
+      "production_required": true,
+      "read_only": true
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE1-R2.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "5a0e6df8f59d0e57ec6b51b45b71f979950a19dd",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+      "production_required": false,
+      "read_only": false
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE1-R3.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "8dae091936a2e7dcf7f07fd394843672813f7449",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+      "production_required": false,
+      "read_only": false
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE1-R4.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "ae72b660c728b4159d8cee44284c36f0876f916a",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+      "production_required": false,
+      "read_only": false
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE1.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "e4d7789181ac55e66008119bdf91795493cf42dc",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+      "production_required": false,
+      "read_only": false
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "a73e2d1ca2a8ff757690afe640b8e7d53286a17f",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY",
+      "production_required": false,
+      "read_only": true
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-HANDLERS.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "a9e1de81a0eda4c0509fcb55d066fe627576aaa7",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-HANDLERS",
+      "production_required": false,
+      "read_only": true
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "110928fe3416e7034690c9079c6e7e2630c99484",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-INSTALL",
+      "production_required": true,
+      "read_only": false
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-R2.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "b39abc5bf293f7e8560d769c80bb6b1fdee1a941",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2",
+      "production_required": true,
+      "read_only": true
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "7f0fdee934f39fb881c75147bd000da57d83988f",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2",
+      "production_required": false,
+      "read_only": true
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "6d20682f8fa07d562595b6893c84df0788b2a0e1",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2-VERIFY",
+      "production_required": false,
+      "read_only": true
+    },
+    {
+      "source_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE2.json",
+      "source_ref": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+      "git_blob_sha": "aca7c0f3c6a8a0af78f6b3e5a7945f23d7adbe5a",
+      "task_id": "TASK088-GE-PRICE-CRM-STAGE2",
+      "production_required": true,
+      "read_only": true
+    }
+  ],
+  "original_stage3_stage4": {
+    "requests_in_main": [],
+    "claims_in_main": [],
+    "receipts_in_main": [],
+    "source": "Complete pinned main Git tree and current TASK088 request documents. No TASK088 Stage3/4 canonical artifact is present; unrelated TASK114 is not PR114 completion.",
+    "stage2_receipt_path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json",
+    "stage2_receipt_summary": {
+      "status": "FINISHED",
+      "stage2_status": "PASS",
+      "closed_at": "2026-09-13T05:56:14Z",
+      "installed_source_sha256": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde"
+    }
+  },
+  "source_handling": {
+    "reviewed_capture_script": "cloud/task088_v5_acceptance/capture_private_snapshot.py",
+    "reviewed_build_script": "cloud/task088_v5_acceptance/run_private_server_build.py",
+    "source_receipt": "cloud/task088_v5_acceptance/SERVER_PRIVATE_BUILD_0836.json",
+    "scope": "Exact task sources only; private sources may contain credentials. Raw source must not be printed, placed in public Git or published. Only sanitized reports, patch logic and hashes belong in Git.",
+    "historical_server_stage": "/home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma",
+    "historical_snapshot_paths": [
+      "/home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma/snapshot/cars_ui.py",
+      "/home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma/snapshot/stranica.py",
+      "/home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma/snapshot/capture_manifest.json"
+    ],
+    "historical_expanded_archive": "/home/Carix/autopilot_inbox/cloud/task088-v5-preview-stage-zlcw0vma/task088-v5-private-expanded.zip",
+    "historical_expanded_archive_sha256": "dc601bf08ff2ff584992025caea8b821708408d6d60d27742c8d2225be0b3b4a",
+    "historical_expanded_manifest_sha256": "1e9be2779e1c6f7b508ed58e947a74d789b23fa9895bb865fa106f4671bb40bf",
+    "required_source_pins": {
+      "/home/Carix/cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "/home/Carix/stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+    },
+    "current_snapshot_readback_performed_by_auditor": false,
+    "next": "Read exact scoped files through authorized authenticated source interface, keep private, and compare current server and local SHA-256 before use. Historical paths/hashes are references, not fresh integrity proof."
+  },
+  "runtime_quiescence": {
+    "source_path": "cloud/task088_v5_quiescence/README.md",
+    "status": "ISOLATED_PROTOTYPE_NOT_INTEGRATED",
+    "crm_supervisor_id": 266084,
+    "crm_command": "python3.10 /home/Carix/start_safe.py",
+    "existing_controller_requires": "Enabled and Running before/after every child; does not permit stopping CRM unchanged.",
+    "missing": [
+      "Authenticated complete writer inventory and loaded-process identity",
+      "Phase-aware canonical maintenance authorization and integration",
+      "Actual graceful drain including descendants and in-flight filesystem work",
+      "Provider adapter and partial provider-action recovery",
+      "Long-backup evidence refresh",
+      "Permanent fences at real media removal/rebuild/fallback boundaries"
+    ],
+    "not_proof": [
+      "Provider enabled=false by itself",
+      "Two ps snapshots",
+      "Supervisor Running by itself",
+      "Presence of analitika_stop.txt",
+      "New fence source while old process is already loaded"
+    ]
+  },
+  "browser_retrieval_blocker": {
+    "source": "Parent agent message received in this task; not independently observed by this delegated auditor.",
+    "error": "CDP operation refresh tabs was superseded by browser recovery",
+    "reported_context": "Repeated failures after initial read-only panels; parent reported no server effects.",
+    "status": "SOURCE_RETRIEVAL_NOT_COMPLETED",
+    "next": "Preserve this missing prerequisite and do not manufacture exact source integration or launch freshness preflight while it remains missing."
+  },
+  "mutations": {
+    "remote": false,
+    "production": false,
+    "crm": false,
+    "automations": false,
+    "workflow_launches": false,
+    "people_messaged": false
+  },
+  "conclusion": {
+    "accepted_progress_unchanged": "8/20 (40%) is retained historical accepted criterion count, not new audit credit.",
+    "eligible_next_work": "Exact private-source retrieval and isolated fence integration/review.",
+    "production_installation": "BLOCKED_PENDING_REAL_WRITER_CONTAINMENT_AND_CANONICAL_GATES"
+  }
+}

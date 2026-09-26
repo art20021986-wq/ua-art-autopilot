@@ -1,0 +1,46 @@
+{
+  "schema_version": "UAART-UA0022-FORWARD-RECONCILIATION-VALIDATION-1",
+  "operation_id": "ua0022-forward-reconcile-prep-20260920T0857Z",
+  "recorded_at": "2026-09-20T10:13:38Z",
+  "input_heads": {
+    "main": "6e3eb6a68bb65caa34e3ea40c3f386f19d5f14b7",
+    "pr": "341c11ea732d976a7c1d21f63fa56a9feb2a8d3f"
+  },
+  "status": "BLOCKED_REBUILD_REQUIRED",
+  "tests": {
+    "passed": 5,
+    "failed": 0,
+    "command": "python3 -m unittest -v test_forward_reconcile.py"
+  },
+  "hashes": {
+    "builder_sha256": "952951ac8e1a7af95b6762acb82a3658fb7a70cb00a4e2a3a503749802efc95a",
+    "tests_sha256": "7ab40f5300d98af488855f171bb429cb50f4ddf8780375f791a73cf2de9db9ad",
+    "plan_sha256": "46db899ae5f4c58e4d6339ee6b9d1c74de56fdca128f63b8b30846446aee193f"
+  },
+  "assertions": [
+    "Exact transaction, claim, HALT, backup, request and live-evidence SHA256 are pinned.",
+    "Only repository state paths are proposed; no application/runtime/CRM/site file is changed.",
+    "ROLLING_BACK is reconciled to FINISHED only when install receipt, publisher result, runtime hashes and current public-byte matches are PASS.",
+    "Rollback is explicitly NOT_PERFORMED and is never retried.",
+    "HALT is archived byte-for-byte before proposed deletion.",
+    "Execution requires one atomic exact-parent commit; force is forbidden.",
+    "Current main transaction and HALT were not changed by this preparation."
+  ],
+  "current_live_readback": {
+    "monitor_status": "healthy",
+    "finished_at": "2026-09-20T08:52:23.611Z",
+    "http_200_routes": 4
+  },
+  "production_changes": false,
+  "halt_removed": false,
+  "main_commit_created": false,
+  "independent_review": "BLOCKED",
+  "next_action": "Rebuild from exact main blob bytes, hash-bind fresh health and actual install evidence, add fail-closed negative tests, then obtain a new independent review. Do not apply main or remove HALT.",
+  "independent_review_path": "cloud/emergency_availability_20260920/forward_reconciliation_candidate/INDEPENDENT_REVIEW.json",
+  "independent_review_findings": [
+    "Five repository fixture SHA256 values do not match immutable main bytes; read_exact cannot apply the candidate.",
+    "Proposed HALT archive is not byte-for-byte equal to main.",
+    "Live gate accepts an empty public byte-match map and does not require monitor healthy/exit_code 0/freshness.",
+    "Fresh 08:52 validation observation and actual install receipt are not hash-bound to generated outputs."
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "operation_id": "pr114-restore-atomic-20260919T1941Z",
+  "recorded_at": "2026-09-19T19:43:51.614004+00:00",
+  "status": "PASS_TARGETED_RESTORE_FIX_ONLY",
+  "foreground_in_progress": false,
+  "predecessor": "cloud/task088_v5_acceptance/resume_20260920_handoff006/integration_20260919_1844/NOTICE.json",
+  "result": "Two defects reproduced against the previous builder: check/copy restore overwrote a concurrent operator file, and corrupt backup bytes became visible at the original path. Restore now stages and SHA256-verifies bytes then atomically links without replacing an existing destination.",
+  "tests": {
+    "before": {
+      "passed": 1,
+      "failed": 2
+    },
+    "after": {
+      "passed": 3,
+      "failed": 0
+    },
+    "scope": "Three new filesystem regressions only. Historical 13 tests not rerun or claimed current."
+  },
+  "evidence_sha256": {
+    "cloud/task088_v5_writer_fence/handoff006_evidence/restore_atomic_20260919/INTENT.json": "1ce85234f1f9037cc3a0472d2e965d17f22e6604585f6c78e1f854e02fa9912f",
+    "cloud/task088_v5_writer_fence/handoff006_evidence/restore_atomic_20260919/BEFORE.txt": "cbf307608d596be7afc8f988efb29ea2d2650faf7b95e4073797c776da9e2e66",
+    "cloud/task088_v5_writer_fence/handoff006_evidence/restore_atomic_20260919/AFTER.txt": "f9509899b0785aa5fe98a7f1fd4861ef5254a839521cb915b3596c7a969a95bb",
+    "cloud/task088_v5_writer_fence/integrate_private_sources.py": "ac9dcfb1f580f3d740c8ddd31e4d75f3440edea0679205cefd38f789c113d526",
+    "cloud/task088_v5_writer_fence/test_private_source_integration.py": "6d09fb85fdae81e487b7fa8d376c26ad924a87d838d72179f5d97837e3e4c50b"
+  },
+  "candidate": {
+    "before_sha256": {
+      "cars_ui.py": "4c00512c56ee19ccda4ff0086aa696facf8aeea013c894168007c78c9490adde",
+      "publish_transaction_guard.py": "3d80712290e0881ebe7583231b532de422f808e6f18b5f6a90566d9e1eed3e0d",
+      "stranica.py": "2794f01c00a49f1a55c66f3e6af4657808f857e9167f59a5da84c9b8430d724a"
+    },
+    "candidate": {
+      "cars_ui.py": {
+        "bytes": 226132,
+        "sha256": "6741b115b9a19e4be3ee645b68ac10e6ed7bed86b6cb96e3cf03e5ddf52cb1ba"
+      },
+      "publication_fence.py": {
+        "bytes": 9694,
+        "sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
+      },
+      "publish_transaction_guard.py": {
+        "bytes": 32094,
+        "sha256": "b18c799d384c18fb49be04a75502776f5698587a003a886514ba53253df6d34e"
+      },
+      "stranica.py": {
+        "bytes": 203579,
+        "sha256": "4dd48428365662ded8b761dcfa98002004bb4b227ca3f1eddc56a66ad98090df"
+      }
+    },
+    "contract": "PR114-HANDOFF006-PRIVATE-INTEGRATION-1",
+    "installed": false,
+    "lock_order": [
+      "publication_fence",
+      "sqlite",
+      "spec84"
+    ],
+    "lock_path": "/home/Carix/.ua_art_publish_transaction.lock",
+    "private_sources_committed": false,
+    "production_authority": false,
+    "writer_gate_pass": false
+  },
+  "candidate_manifest_sha256": "f70a802bc05106058c716cc90ea2168f3348eb4621e168ab47ccac85642cba88",
+  "review_correction": {
+    "supersedes_review_authority": "cloud/task088_v5_writer_fence/handoff006_evidence/PRIVATE_INTEGRATION_INDEPENDENT_REVIEW.json",
+    "status": "INDEPENDENCE_NOT_ESTABLISHED_REVIEW_REQUIRED",
+    "reason": "The prior integration review was authored by the implementing assistant; it must not count as independent acceptance. Its rollback guarantee is also contradicted by the new reproductions. Historic file and original test results are retained unchanged.",
+    "does_not_revoke": "Earlier separate primitive publication_fence review and its historical 18 tests."
+  },
+  "unverified_boundaries": [
+    "Complete coverage of private runtime dependencies and old loaded writers",
+    "Atomic database after-image restoration and media-table/cache restoration in video remove-all",
+    "Directory/symlink containment throughout backup and restore",
+    "Full fresh backup, Gate B, canonical installation and Stage3/Stage4 receipts"
+  ],
+  "connection": {
+    "state": "WAIT_CONNECTION_FOR_DEPENDENCY_TRANSFER",
+    "file": "lock4_zhurnal.py",
+    "attempts": 2,
+    "error": "Timed out after 3000ms waiting for download.",
+    "diagnosis": "Files tab remains at authenticated listing; no named local downloaded file observed. No further download retry in this attempt.",
+    "server_write_attempted": false
+  },
+  "coordination": {
+    "pr_head": "f77f02ad639b932809567de53f761909e663ec09",
+    "main": "93726ef91ebab538c174db9fee7a3df80a706f0d",
+    "in_progress_runs": 0,
+    "queued_runs": 0,
+    "state_subtrees_match_main": [
+      "claims",
+      "transactions",
+      "receipts"
+    ],
+    "production_transactions": {
+      "FINISHED": 6,
+      "ROLLED_BACK": 3
+    },
+    "scope": "Branch candidate preparation only; not writer gate or takeover of runtime claims."
+  },
+  "accepted_progress": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "new_criteria_accepted": []
+  },
+  "production_installed": false,
+  "stage3_receipt": false,
+  "stage4_receipt": false,
+  "next_action": "Recover exact missing private dependency bytes with reconciled browser download outcome, then complete review of database/media/cache restore and writer closure before any freshness preflight or install."
+}

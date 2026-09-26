@@ -1,0 +1,85 @@
+{
+  "contract": "PR114-CURRENT-WRITER-CONTAINMENT-REVIEW-20260922-1",
+  "status": "ACTUAL_PREDECESSOR_UNFENCED_BOOTSTRAP_BLOCKED",
+  "production_mutation": false,
+  "writer_gate_created": false,
+  "code_committed": false,
+  "scope": "Static review of hash-matched retained sources and current Stage3 admission; not a complete account writer inventory or runtime drain attestation.",
+  "current_source_sha256": {
+    "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+    "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+    "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+    "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+    "vin_spec_service.py": "1d4d54a6cd70f03dcdf2c599d4a9c6362bfd842f18c40a231dfd0ecbc965ce4a",
+    "ua_spec84_runtime.py": "938b8dd68f6eafa8b3022ef1dd1f03aa44fd27ec9979bef0819c36941fe022be"
+  },
+  "provenance": {
+    "cars_ui_source": "/workspace/scratch/38dfdd094ece/pr114-offline/private_before_20260920/cars_ui.py",
+    "additional_runtime_sources": "/workspace/scratch/946ab28b8831/private_sources",
+    "live_hash_confirmation": "live_acceptance independently reported current cars_ui hash matches and current run_all/ua_spec84_runtime server hashes match at 2026-09-22 05:59Z; this reviewer did not use browser.",
+    "process_membership": "NOT_COMPLETE: provider process list still loading; no absence inference from another process namespace"
+  },
+  "current_unfenced_paths": [
+    {
+      "path": "cars_ui.py",
+      "function": "photo_remove_all",
+      "line": 1027,
+      "fact": "Registered callback calls _ubrat_fayly_foto before db.update_card_field; helper at line3136 directly os.walk/os.remove without publication flock."
+    },
+    {
+      "path": "cars_ui.py",
+      "function": "diag_clear",
+      "line": 715,
+      "fact": "Commits DB field through db.update_card_field, then removes protected diagnostic media and calls _peresobrat_stranicy outside publication flock."
+    },
+    {
+      "path": "cars_ui.py",
+      "function": "video_remove_all",
+      "line": 3229,
+      "fact": "DB commits precede direct media removal; installer SQLite reservation cannot exclude subsequent file writes."
+    },
+    {
+      "path": "stranica.py",
+      "function": "main wrappers",
+      "line": 2014,
+      "fact": "Direct io.open write rollback remains reachable through _peresobrat_stranicy; caller lacks enclosing publication flock."
+    }
+  ],
+  "confirmed_existing_primitives_and_limits": [
+    {
+      "primitive": ".start_safe.singleton.lock",
+      "fact": "Current start_safe main obtains lifetime flock before startup mutation and runpy.run_path(run_all.py).",
+      "limit": "Same-inode acquisition after disable proves prior lock holder gone; does not prove graceful operation completion, external descendant absence, or other writer exclusion."
+    },
+    {
+      "primitive": "run_all application shutdown finally",
+      "fact": "Calls updater.stop, app.stop, app.shutdown; no SIGTERM handler, diagnostic stop, or specification stop call exists.",
+      "limit": "Do not infer that provider disable invokes graceful finally or drains daemon threads."
+    },
+    {
+      "primitive": "ua_spec84_runtime writer guard",
+      "fact": "Acquires task082 locks, task083 lock, publication lock, CRM lock, then ua_spec_permanent.write_lock around the guarded write section.",
+      "limit": "Background daemon lifecycle is not joined by run_all shutdown; this lock protection does not cover old media callbacks."
+    },
+    {
+      "primitive": "startup restore",
+      "fact": "start_safe invokes pochinit_imena, ubrat_musor, apply_all and db_clean_split before the CRM loop.",
+      "limit": "Supervisor Running after resume does not independently prove unchanged intended source/database state; actual readback is required."
+    }
+  ],
+  "additional_retained_writer_requiring_live_hash_and_review": {
+    "path": "kadry_diagnostiki.py",
+    "sha256": "696a3b73af8e47a79d3352c6ead3a2364dd357b140a9cf7320fc4cad3d3106c0",
+    "caller": "run_all.run_bots calls zapustit_iz_run_all before starting bot applications",
+    "effect": "Daemon loop downloads, replaces and deletes video/diag assets; lifetime .kadry_diagnostiki.lock; no cooperative stop method.",
+    "live_source_confirmation": "REQUESTED_PENDING",
+    "installer_source_or_dependency_inventory_contains_module": false
+  },
+  "existing_admission_conflict": {
+    "controller": "API.supervisor requires exact service266084 enabled and Running before/after every backup, execute, verify and rollback child.",
+    "engine": "Requires every supplied writer fence VERIFIED, uncovered_writers empty, exact candidate identity and observation age <=300 seconds.",
+    "prototype": "cloud/task088_v5_quiescence/state_machine.py is explicitly isolated and has no provider executor, process observer, real drain mechanism or canonical permit producer.",
+    "result": "Cannot use provider disable under the unchanged controller or convert NOT_EVALUATED/static after-image findings into VERIFIED."
+  },
+  "implementation_boundary": "No live-capable pause executor added because prerequisite complete membership, actual graceful drain, exact canonical maintenance authority and bounded restoration cannot currently be proved. Forced termination followed by drift detection does not protect a concurrent unguarded media mutation; blanket restore could lose operator edits. See MAINTENANCE_ADAPTER_DESIGN.md for integration boundaries."
+}

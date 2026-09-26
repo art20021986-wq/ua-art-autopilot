@@ -1,0 +1,345 @@
+{
+  "schema_version": "TASK088-CURRENT-CONTROL-READ-1",
+  "observed_at": "2026-09-15T03:47:50.637Z",
+  "read_only": true,
+  "gate_result": false,
+  "source_urls": [
+    "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/pulls/114",
+    "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/ref/heads/main",
+    "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/trees/f64e53cf9ecf6bd0946c9da5858f2571979ae901?recursive=1",
+    "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/git/trees/075ce52b7b099e32632f506c0f68d696a5680428",
+    "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?per_page=10"
+  ],
+  "candidate": {
+    "pr": 114,
+    "head": "879a9c39a6aa1f6d57b6e0b5d78cdf6b654d92d2",
+    "main": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+    "pr_open": true,
+    "draft": true,
+    "merged": false,
+    "head_tree_sha": "f64e53cf9ecf6bd0946c9da5858f2571979ae901",
+    "state_tree_sha": "43c498777a2021487a1cec3d931c9424dd45284a",
+    "state_tree_equal_main": true,
+    "tree_truncated": false
+  },
+  "recent_runs": [
+    {
+      "run_id": 34912613369,
+      "name": "UA ART Production Transaction Watchdog",
+      "head_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-09-15T00:18:08Z",
+      "updated_at": "2026-09-15T00:18:33Z",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34912613369"
+    },
+    {
+      "run_id": 34901733027,
+      "name": "UA ART Production Transaction Watchdog",
+      "head_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-09-14T21:58:56Z",
+      "updated_at": "2026-09-14T21:59:24Z",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34901733027"
+    },
+    {
+      "run_id": 34901083650,
+      "name": "UA ART Read-Only Monitor",
+      "head_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-14T21:51:25Z",
+      "updated_at": "2026-09-14T21:51:35Z",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34901083650"
+    },
+    {
+      "run_id": 34881423575,
+      "name": "UA ART Production Transaction Watchdog",
+      "head_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-09-14T18:32:30Z",
+      "updated_at": "2026-09-14T18:32:51Z",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34881423575"
+    },
+    {
+      "run_id": 34847065870,
+      "name": "UA ART Production Transaction Watchdog",
+      "head_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-09-14T13:05:15Z",
+      "updated_at": "2026-09-14T13:05:41Z",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34847065870"
+    },
+    {
+      "run_id": 34845908715,
+      "name": "UA ART Read-Only Monitor",
+      "head_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-14T12:53:19Z",
+      "updated_at": "2026-09-14T12:53:32Z",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34845908715"
+    },
+    {
+      "run_id": 34826661805,
+      "name": "UA ART Control-Plane Maintenance",
+      "head_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-09-14T09:12:14Z",
+      "updated_at": "2026-09-14T09:12:42Z",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34826661805"
+    },
+    {
+      "run_id": 34813395311,
+      "name": "UA ART Production Transaction Watchdog",
+      "head_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-09-14T06:25:12Z",
+      "updated_at": "2026-09-14T06:25:39Z",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34813395311"
+    },
+    {
+      "run_id": 34808042131,
+      "name": "UA ART Read-Only Monitor",
+      "head_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-14T05:00:17Z",
+      "updated_at": "2026-09-14T05:00:34Z",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34808042131"
+    },
+    {
+      "run_id": 34795540829,
+      "name": "UA ART Production Transaction Watchdog",
+      "head_sha": "0c85a6561d80c4d8789b3a482ae41cdaf9d0f667",
+      "event": "schedule",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-09-14T01:53:30Z",
+      "updated_at": "2026-09-14T01:53:32Z",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34795540829"
+    }
+  ],
+  "active_actions": {
+    "scope": "Five authoritative GET status filters; total_count=0 for each, so first page is complete. This is an observation, not a launch-time writer exclusion or server-process census.",
+    "filters": [
+      {
+        "status": "pending",
+        "total_count": 0,
+        "source_url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?per_page=10&status=pending"
+      },
+      {
+        "status": "queued",
+        "total_count": 0,
+        "source_url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?per_page=10&status=queued"
+      },
+      {
+        "status": "in_progress",
+        "total_count": 0,
+        "source_url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?per_page=10&status=in_progress"
+      },
+      {
+        "status": "requested",
+        "total_count": 0,
+        "source_url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?per_page=10&status=requested"
+      },
+      {
+        "status": "waiting",
+        "total_count": 0,
+        "source_url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs?per_page=10&status=waiting"
+      }
+    ]
+  },
+  "watchdog": {
+    "run_id": 34912613369,
+    "job_id": 104203268959,
+    "source_run_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34912613369",
+    "source_jobs_url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/runs/34912613369/jobs",
+    "source_log_url": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/jobs/104203268959/logs",
+    "raw_error_excerpt": [
+      "2026-09-15T00:18:30.2480697Z WatchdogError: RECOVERY_CANARY_RECEIPT_BINDING",
+      "2026-09-15T00:18:30.2644515Z ##[error]Process completed with exit code 1."
+    ],
+    "same_failure_class_as_prior_run": 34881423575,
+    "github_commit_step": "skipped",
+    "recovery_execute": "skipped",
+    "rollback_open": "skipped",
+    "artifact": {
+      "id": 10374768180,
+      "sha256": "558ef265e10065577e062fb8ef27878c5234cd451aa3c428b978a70bc4d103f7",
+      "size_bytes": 2942,
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/34912613369/artifacts/10374768180",
+      "zip_contents_read": false
+    }
+  },
+  "current_control_paths": [
+    {
+      "path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+      "git_blob_sha": "6b4ae6d4309f8083c95648fb74485a1544a4a528",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/0c85a6561d80c4d8789b3a482ae41cdaf9d0f667/state/AUTOPILOT_RUNTIME_MANIFEST.json",
+      "sha256": "2b3b75c686a41f4f6a48b2f9e2d57da12574c2b498505150899b66645d7cd2c5"
+    },
+    {
+      "path": "state/EXECUTION_MODE.json",
+      "git_blob_sha": "c16e348a2a72010d3497d63be99d9ec0aa863d30",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/0c85a6561d80c4d8789b3a482ae41cdaf9d0f667/state/EXECUTION_MODE.json",
+      "sha256": "11af7c738faa902412d35f0755a0a829df49ec939d32960abf343203f93bb715"
+    },
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json",
+      "git_blob_sha": "44ea2abf82b9caafab4665925a86a4cb2d24344d",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/0c85a6561d80c4d8789b3a482ae41cdaf9d0f667/state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json",
+      "sha256": "d0b731b93a73da0d041a1af6e987f0e6634823001a2461bc882c927a588faae7"
+    },
+    {
+      "path": "state/recovery_route_receipts/UA-ART-RECOVERY-TASK120-002.json",
+      "git_blob_sha": "4f64d64aab6b38ea378a8de2f03e4ef0caf03186",
+      "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/0c85a6561d80c4d8789b3a482ae41cdaf9d0f667/state/recovery_route_receipts/UA-ART-RECOVERY-TASK120-002.json",
+      "sha256": "6e1bd4c94db6ff6a332af64fed2255d7b6716189a8a223e1cf07617537cf32fd"
+    }
+  ],
+  "active_halt_file_present": false,
+  "new_stage3_or_stage4_request_claim_transaction_receipt_present": false,
+  "mutations": {
+    "github_writes": 0,
+    "workflow_launches": 0,
+    "halt_changes": 0,
+    "lock_changes": 0,
+    "server_actions": 0
+  },
+  "conclusion": "Known watchdog receipt-binding failure recurred before any canary commit; main and control tree are unchanged. No active GitHub Actions executor was observed. Stage 3/4 publication and acceptance remain unexecuted; no PASS or authority is inferred.",
+  "next_action": "Continue the in-flight private preflight by reconciling its actual result before any repeat; retain the watchdog failure and existing blocked read-only claim without mutation. Refresh canonical launch-time controls only when a real candidate is ready.",
+  "durable_claims": {
+    "source_state_tree_sha": "43c498777a2021487a1cec3d931c9424dd45284a",
+    "read_method": "Fresh API tree identity matched local Git object; parsed immutable git show bytes, not mutable working files.",
+    "total_count": 29,
+    "execution_status_counts": {
+      "FAILED": 10,
+      "FINISHED": 18,
+      "BLOCKED_ROOT_CAUSE": 1
+    },
+    "active_by_control_plane_definition": [
+      {
+        "path": "state/claims/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827.34733330869.json",
+        "git_blob_sha": "2b112ad4f28e76ab1506b38dd2fd5066f3155e9f",
+        "sha256": "ec887a4c46979522c480d38f61a86db6acd6c9d7a5cb6c71275338f15cf86d4d",
+        "task_execution_status": "BLOCKED_ROOT_CAUSE",
+        "resource_locks": [
+          "READ_ONLY:5b74afb8a929e83a"
+        ],
+        "updated_at": "2026-09-13T02:35:15Z",
+        "source_url": "https://github.com/art20021986-wq/ua-art-autopilot/blob/0c85a6561d80c4d8789b3a482ae41cdaf9d0f667/state/claims/TASK088-GE-PRICE-CRM-STAGE2-VERIFY.1f0100d8a3e5fcca179041360e6d4ad7ba914a5198082477263683656707e827.34733330869.json"
+      }
+    ],
+    "interpretation": "One old BLOCKED_ROOT_CAUSE read-only verify claim remains active by canonical definition. Its only resource lock is READ_ONLY:5b74afb8a929e83a; locks_conflict treats an all-READ_ONLY side as non-conflicting. It is not a running executor and is left intact."
+  },
+  "durable_transactions": {
+    "total_count": 9,
+    "status_counts": {
+      "ROLLED_BACK": 3,
+      "FINISHED": 6
+    },
+    "pending_count": 0
+  },
+  "task088_existing_receipts": [
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-BACKUP.json",
+      "status": "PASS",
+      "git_blob_sha": "5b37db61b2ebbb891bd5d21e89d4124a738cc797",
+      "sha256": "979e4d09cb8219aa6de1737cc8bfd83f543ba1ab0f1250368cf2f6ee27219ef3",
+      "finished_at": null
+    },
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2-BACKUP.json",
+      "status": "PASS",
+      "git_blob_sha": "2414e203c0a4928544b7c4bb2f2a24149d1bbb24",
+      "sha256": "b1e4f34259c301aeecc72af8de1ba81ca796c673619dc843b1d93f694d79fa76",
+      "finished_at": null
+    },
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-PREFLIGHT-READ2.json",
+      "status": "FINISHED",
+      "git_blob_sha": "22d714cfe6088d1cf016b95c3aebc6a656499617",
+      "sha256": "0cccc61ffe900492b16eac3b884963672d0e0a8f9dccc8308526528a6cc05622",
+      "finished_at": "2026-09-11T17:09:04Z"
+    },
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE1.json",
+      "status": "FINISHED",
+      "git_blob_sha": "9deb88f0f4d43d180add138d0aeae13c1c970544",
+      "sha256": "f8a2325b036010e2d5f35b277fe3039eed7d974c708f8fd73dc61318a8779d82",
+      "finished_at": "2026-09-11T18:12:23Z"
+    },
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-DISCOVERY.json",
+      "status": "FINISHED",
+      "git_blob_sha": "25eacca71fd34b037ac88061d28bd2af5cb3a834",
+      "sha256": "7d8d25ecea1ed7a2b63c6b640ea6d25abf879e06719047f06fd2bcbf183af9d2",
+      "finished_at": "2026-09-12T09:41:45Z"
+    },
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-HANDLERS.json",
+      "status": "FINISHED",
+      "git_blob_sha": "d0bd451f7fd95304fd690d693cd99182c8f7e912",
+      "sha256": "489ec130b5bb205d1185966301e2bfa19b87a41b8a77a2e7d912464136a4143b",
+      "finished_at": "2026-09-12T09:49:54Z"
+    },
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL-BACKUP.json",
+      "status": "PASS",
+      "git_blob_sha": "11df2057d70c7db4591590228d9e965ab4c12f64",
+      "sha256": "65f41a21edeca20ad2ea6a67f431ae934252494b169b4455ec91c814e6682c6b",
+      "finished_at": null
+    },
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.json",
+      "status": "FINISHED",
+      "git_blob_sha": "ce1d0b237cbbc6d1cbbe3c569462a97fc6b05619",
+      "sha256": "350275f0ffa4cb1a27fd6ac9fa597ef0a57eefe00d60841566773d8cb1914eb8",
+      "finished_at": "2026-09-13T03:16:31.774779Z"
+    },
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2-VERIFY-R2.json",
+      "status": "FINISHED",
+      "git_blob_sha": "426e751274e2ecf5bbd5c5e409c63e7c319ce1f4",
+      "sha256": "bc6efff92180725f69eef620030b84f89e0bd5fbd9cb78e1e0e95f391cc8da7d",
+      "finished_at": "2026-09-13T02:47:06Z"
+    },
+    {
+      "path": "state/receipts/TASK088-GE-PRICE-CRM-STAGE2.json",
+      "status": "FINISHED",
+      "git_blob_sha": "44ea2abf82b9caafab4665925a86a4cb2d24344d",
+      "sha256": "d0b731b93a73da0d041a1af6e987f0e6634823001a2461bc882c927a588faae7",
+      "finished_at": "2026-09-13T05:56:14Z"
+    }
+  ],
+  "execution_mode": {
+    "mode": "AUTOMATIC",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "automatic_nonproduction": true,
+    "automatic_production": true,
+    "production_requires_backup": true,
+    "production_requires_exact_launch": true,
+    "production_requires_gate_b": true,
+    "production_requires_live_receipt": true,
+    "production_requires_owner_approval": true,
+    "production_requires_pre_post_health": true,
+    "stop_on_safety_failure": true,
+    "allow_replay_existing_launch_markers": false
+  },
+  "read_completed_at": "2026-09-15T03:48:39.200104Z"
+}
