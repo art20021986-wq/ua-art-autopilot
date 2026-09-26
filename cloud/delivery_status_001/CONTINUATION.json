@@ -1,0 +1,31 @@
+{
+  "task_id": "UA-ART-DELIVERY-STATUS-001",
+  "status": "CANDIDATE_VALIDATED_INSTALLATION_DEFERRED_CPU",
+  "production_installed": false,
+  "production_touched": false,
+  "owner_authorized": true,
+  "preflight_run_id": 36262362403,
+  "preflight_tests": 27,
+  "actual_golden_tests": 8,
+  "quota": {
+    "daily_cpu_limit_seconds": 5000,
+    "daily_cpu_total_usage_seconds": 6079.193945,
+    "next_reset_time": "2026-09-27T08:37:11+00:00"
+  },
+  "continuation": {
+    "automation_id": "6ab80e71aa688191868f657b5631fcae",
+    "enabled": true,
+    "timezone": "Asia/Ho_Chi_Minh",
+    "starts_at": "2026-09-27T15:40:00+07:00",
+    "maximum_attempts": 3,
+    "interval": "hourly",
+    "disable_after_success": true
+  },
+  "remaining": [
+    "Build and rehearse CRITICAL deployment contract, backup, rollback and watchdog",
+    "Recheck current pinned source and exclude concurrent production writers",
+    "Apply reviewed migration and source changes through main Actions only",
+    "Verify bot restart, full publication/reactivation, both catalog roots and public counters"
+  ],
+  "not_full_acceptance": true
+}
