@@ -1,0 +1,38 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/price_live_20260926/evidence.json",
+    "cloud/price_live_20260926/pages.json"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Read-only probe. Record how card pages and catalog are served (static mappings, WSGI routing, response headers) and compare the price in each published page with the live CRM price endpoint. GET requests only. Do not write to the remote account, CRM data, cards, media or website.",
+  "execution": {
+    "controller_path": "cloud/price_live_20260926/controller.py",
+    "controller_sha256": "2684a4b14769b6a2ebfc4a39865a3622cfb9e622f821f4c73379640a6a7920bb",
+    "dependency_paths": [
+      "cloud/price_live_20260926/probe.py"
+    ],
+    "evidence_paths": [
+      "cloud/price_live_20260926/evidence.json",
+      "cloud/price_live_20260926/pages.json",
+      "state/receipts/PRICE-LIVE-PROBE-20260926.json"
+    ],
+    "file_sha256": {
+      "cloud/price_live_20260926/probe.py": "b7ecf4afda2ac2744885b93967b8506f155d0b6961e7187b8ed48f702b1d1e5d",
+      "cloud/price_live_20260926/test_contract.py": "0b810eca69e9732992509c3de9b07295791300833ef43c67ae310959eeb3eaf8"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/PRICE-LIVE-PROBE-20260926.json",
+    "test_paths": [
+      "cloud/price_live_20260926/test_contract.py"
+    ],
+    "timeout_seconds": 600
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 16777216,
+  "task_id": "PRICE-LIVE-PROBE-20260926",
+  "title": "Probe live card price serving"
+}
