@@ -1,0 +1,34 @@
+{
+  "schema_version": "UA-ART-RECOVERY-INTENT-1",
+  "operation_id": "ge-price-cache-reconcile-prepare-20260926T1220Z",
+  "recorded_at": "2026-09-26T12:19:08.848Z",
+  "target_environment": "github-main-control-plane-metadata-only",
+  "exact_inputs": {
+    "main_head": "76115cd84ba7b802c4c3400a060f51aa7b7c8c14",
+    "pr_head": "7ecdb92ab18c2b4b02a7b9955b68b0cf8bbd186b",
+    "halt_blob_sha": "eced7de5bf56a7818107cdec48a7feeffab1bb15",
+    "claim_blob_sha": "d89e86be8ab70de6916cbd353c363fca601187de",
+    "request_blob_sha": "ff30e6c66c2ab493ef81c04948a0e8dd070ae87e",
+    "original_run_id": "35696840719",
+    "failed_job_id": "106645820373",
+    "live_readback_commit": "7ecdb92ab18c2b4b02a7b9955b68b0cf8bbd186b"
+  },
+  "observed_outcome": "STORAGE_PROBE_STALE_OR_FUTURE before transaction creation, backup, controller execution, production write or rollback",
+  "intent": "Prepare an exact-parent, data-only reconciliation candidate. Preserve original failure and consumed launch; terminalize claim as FAILED, archive HALT byte-identically, and add reconciliation evidence. Do not apply to main in this operation.",
+  "expected_result": "Independently reviewable candidate only; active main HALT remains unchanged.",
+  "readback": "Fetch PR branch ref and intent bytes after commit; later candidate must bind exact main parent and input SHA256.",
+  "backup": {
+    "production_backup_required": false,
+    "reason": "No server/application write; Git exact-parent metadata proposal only. Active HALT bytes must be archived byte-identically in any later application."
+  },
+  "safety": {
+    "production_write": false,
+    "crm_write": false,
+    "service_reload": false,
+    "launch_replay": false,
+    "rollback": false,
+    "main_write": false,
+    "halt_remove": false
+  },
+  "next_action": "Build and validate exact candidate from current main bytes; independent review required before any main ref update."
+}
