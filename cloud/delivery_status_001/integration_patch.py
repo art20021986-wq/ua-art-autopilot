@@ -7,6 +7,7 @@ import hashlib
 SOURCE_SHA256 = {
     "db.py": "cee4e2da897a136c4471e85a115d018a9ea94134e7ec187f50fa90e03e5d8a6d",
     "cars_ui.py": "63a926d752d1c0662c8700521db748d1dff98276df168e9ce693bd9e7c2a378b",
+    "konteyner.py": "bdf6b953e95cf5ae78d3d640b9ba438202e9708d48cb1c7f4e1556bb59921824",
     "cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
     "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
     "master_card.py": "27e32420bbec9f1e0a25621e1c20dda20944537daa40c1ccac574689cd6c3f6e",
@@ -85,6 +86,17 @@ def patch_stage_set(source):
     start = source.index('    if code == "ge_to_kyiv":')
     end = source.index('    card = card_of(cid)', start)
     return source[:start] + source[end:]
+
+
+def patch_fallback_menu(source):
+    source = inject_function(source, "    from ua_delivery_status import CHOICES, public_status\n")
+    source = once(source, '("• " if card.get("status") == code else "")',
+                  '("• " if public_status(card.get("status")) == code else "")')
+    return once(source,
+                'for code, (stage_no, label) in S.STATUSES.items()\n'
+                '                if stage_no == nomer_etapa and code not in _UA117_HIDDEN_STATUS_CODES',
+                'for code, _stored, stage_no, label in CHOICES\n'
+                '                if stage_no == nomer_etapa')
 
 
 def patch_sync(source):
@@ -192,6 +204,7 @@ def build_candidate(sources, policy_source):
     ui = replace_function(ui, "_ua117_block_removed_stage", lambda _: '''async def _ua117_block_removed_stage(update, context):
     await stage_set(update, context)''')
     output["cars_ui.py"] = ui
+    output["konteyner.py"] = replace_function(output["konteyner.py"], "gde_mashina", patch_fallback_menu)
     output["db.py"] = replace_function(output["db.py"], "update_card_field", lambda s: inject_function(s,
         '    from ua_delivery_status import storage_status\n    if table == "cars" and field == "status":\n        value = storage_status(value)\n'))
     output["stranica.py"] = replace_function(output["stranica.py"], "sobrat_katalog", lambda s: inject_function(s,

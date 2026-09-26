@@ -13,13 +13,14 @@ import unittest
 from unittest.mock import AsyncMock, Mock, patch
 
 import delivery_status as policy
-from integration_patch import patch_menu, patch_stage_set
+from integration_patch import patch_fallback_menu, patch_menu, patch_stage_set
 from verify_catalog_integration import load_module
 
 
 FUNCTION_SHA256 = {
     "stage_set": "0e2d101a38834781acb5d9a8668ecacff3acec9a61d03f842dfbdb8129432aa4",
     "stage_menu": "768e216898902c1c6d0f51761962ae61c4d4abc4fdb147862528abc66e5137ff",
+    "gde_mashina": "c834833e2bddd13a6411535f2a1df42c1d3f1794b14ed4a93009e444b64da28c",
 }
 
 
@@ -32,16 +33,18 @@ class CRMIntegrationTest(unittest.IsolatedAsyncioTestCase):
         root = Path(os.environ.get("DELIVERY_SOURCE_ROOT", "/home/Carix"))
         self.card = {"id": 1, "auto_number": "UA-0001", "status": "kr_bought", "published": 1}
         self.writes = []
-        self.query = SimpleNamespace(data="car_stage:1", from_user=SimpleNamespace(id=1),
+        self.query = SimpleNamespace(data="car_stage:1", answer=AsyncMock(), from_user=SimpleNamespace(id=1),
                                      message=SimpleNamespace(reply_text=AsyncMock()))
         self.update = SimpleNamespace(callback_query=self.query)
-        self.context = SimpleNamespace()
+        self.context = SimpleNamespace(user_data={})
         self.guard = SimpleNamespace(safe_callback_answer=AsyncMock(return_value=("test", 0)),
                                      remaining=Mock(return_value=5), finish_operation=Mock())
         self.sync = AsyncMock(return_value="")
         self.namespace = {
             "ApplicationHandlerStop": HandlerStop, "_v168_ack": AsyncMock(),
             "drop_wait": Mock(), "card_of": lambda _: self.card, "set_field": self.set_field,
+            "_karta": lambda _: self.card,
+            "_podpis_statusa": lambda s: policy.public_label(s) or "Скрыт из каталога",
             "_date": datetime.date, "eta_of": lambda _: (None, None),
             "_ua004_sync_current_stage": self.sync, "log": logging.getLogger(__name__),
             "InlineKeyboardButton": lambda text, **kw: SimpleNamespace(text=text, **kw),
@@ -55,8 +58,9 @@ class CRMIntegrationTest(unittest.IsolatedAsyncioTestCase):
         self.addCleanup(self.modules.stop)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        for name, transform in (("stage_set", patch_stage_set), ("stage_menu", patch_menu)):
-            full = root / "cars_ui.py"
+        for name, transform in (("stage_set", patch_stage_set), ("stage_menu", patch_menu),
+                                ("gde_mashina", patch_fallback_menu)):
+            full = root / ("konteyner.py" if name == "gde_mashina" else "cars_ui.py")
             if full.is_file():
                 source = full.read_text(encoding="utf-8")
                 nodes = [n for n in ast.parse(source).body if isinstance(n, ast.AsyncFunctionDef) and n.name == name]
@@ -92,6 +96,30 @@ class CRMIntegrationTest(unittest.IsolatedAsyncioTestCase):
         message = self.query.message.reply_text.call_args.args[0]
         self.assertIn("Скрыт из каталога", message)
         self.assertNotIn("Этап 1 из 4", message)
+
+    async def test_fallback_menu_has_four_working_canonical_callbacks(self):
+        self.card["status"] = "sea_loaded"
+        await self.invoke("gde_mashina")
+        markup = self.query.message.reply_text.call_args.kwargs["reply_markup"]
+        buttons = [button for row in markup.inline_keyboard for button in row
+                   if button.callback_data.startswith("car_setstage:")]
+        self.assertEqual([button.callback_data for button in buttons],
+                         ["car_setstage:1:" + code for code, _, _, _ in policy.CHOICES])
+        self.assertEqual([button.text for button in buttons],
+                         ["В Корее", "• На пароме", "В Грузии", "В Киеве"])
+        for button, (_, stored, _, _) in zip(buttons, policy.CHOICES):
+            self.query.data = button.callback_data
+            await self.invoke("stage_set")
+            self.assertEqual(self.card["status"], stored)
+
+    async def test_fallback_menu_hides_unknown_and_removed_labels(self):
+        for value in ("archive", "Продано", "unexpected"):
+            with self.subTest(status=value):
+                self.card["status"] = value
+                await self.invoke("gde_mashina")
+                message = self.query.message.reply_text.call_args.args[0]
+                self.assertIn("Скрыт из каталога", message)
+                self.assertNotIn(value, message)
 
     async def test_four_active_callbacks_persist_and_sync(self):
         for public, stored, _, _ in policy.CHOICES:
