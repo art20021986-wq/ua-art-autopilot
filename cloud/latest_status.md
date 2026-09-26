@@ -22,13 +22,15 @@ NOTE_PRICE: public_fields.py не сверяет цену; исходная жа
 
 
 DELIVERY_STATUS_TASK: UA-ART-DELIVERY-STATUS-001
-DELIVERY_STATUS_STATUS: PREVIEW_PASSED_INSTALL_AUTHORIZED_PENDING_LAUNCH
-DELIVERY_STATUS_CHECKPOINT: 2026-09-26 20:07 UTC — main Actions preview 36267876577 PASS, exact current plan 67279c4ec97fd9652db7af262562c3d0dd54e38b35d8f6651b539980a0cf4a66. Server calculation used 1.689 CPU seconds; allowed bounded operation at elevated CPU usage, no heavy media rebuild.
-DELIVERY_STATUS_COUNTS: korea=4; ferry=4; georgia=6; kyiv=5; active total=19. Two archived rows project to hidden.
-DELIVERY_STATUS_INSTALL_SCOPE: Eleven runtime Python files, two catalog pages, two home pages. Preserve all CRM rows and 112 protected files. Backup, conditional rollback, publication/worker/SQLite locks, bot pause/resume, health checks and transaction watchdog retained.
-DELIVERY_STATUS_TESTS: 10 deployment recovery/transport tests; 7 policy and 10 SQLite migration tests. Prior live source integration run 36266189044: 39 tests and 8 actual golden template checks PASS.
-DELIVERY_STATUS_SQL: Safe migration remains supplied and tested; this code/catalog transaction does not execute SQL against the CRM. Existing stored statuses are hidden by the runtime projection.
-DELIVERY_STATUS_PENDING: Launch tasks/requests/DELIVERY-STATUS-INSTALL-20260927.json by its exact approval-bound marker, verify actual installation receipt and public catalog counts, then update this checkpoint. Do not declare production completion before receipt.
-DELIVERY_STATUS_PRODUCTION_TOUCHED: NO live source, HTML, CRM row or bot changes yet. Preview uploaded a private candidate package and created/removed one isolated temporary task through Actions.
-DELIVERY_STATUS_CONTINUATION: Existing automation 6ab80e71aa688191868f657b5631fcae remains enabled. Check current transaction before any next attempt; disable after verified runtime completion. No repeat owner approval for this scope.
+DELIVERY_STATUS_STATUS: INSTALLED_PUBLIC_VERIFIED_BLOCKED_RECOVERY_AND_PENDING_ROUTER_FIX
+DELIVERY_STATUS_CHECKPOINT: 2026-09-26T21:17:53.267Z
+DELIVERY_STATUS_INSTALL_RUN: 36268504600 FAILURE; remote backup/install/verify PASS. Bot 266084 is Running and enabled. All 15 installed file hashes match plan; all 112 protected files and all CRM rows remain unchanged as observed at 2026-09-26T21:15:09Z.
+DELIVERY_STATUS_PUBLIC: https://www.uaart.com.ua/video/katalog.html HTTP 200, body equals installed HTML; ordinary and cache-busted requests both match. Browser cache-busted counters: korea=4, ferry=4, georgia=6, kyiv=5, total=19.
+DELIVERY_STATUS_FAILURE: Controller mistakenly checked /katalog.html, which redirects to /video/index.html. Automatic rollback reserved but not invoked: pinned recovery checkout omitted existing ledger-bound nonce, causing AUTOSTART_NONCE_RESERVATION_MISSING.
+DELIVERY_STATUS_BLOCKER: state/AUTOPILOT_HALT.json active; transaction tx-36268504600-54c3be3cfc4dd0da remains ROLLING_BACK. No state marker was reset and no automatic rollback retry was attempted.
+DELIVERY_STATUS_CORRECTIONS: Candidate routes all car_setstage callbacks through group -100 before legacy date side effects; controller checks the actual /video/katalog.html route and reports failures. These follow-up corrections are repository code only, not deployed.
+DELIVERY_STATUS_TESTS: 55 local tests PASS, including legacy callback ordering and public redirect rejection.
+DELIVERY_STATUS_SQL: Supplied and tested; not executed on live CRM. Two archived rows currently excluded by runtime projection.
+DELIVERY_STATUS_NEXT: Read cloud/delivery_status_001/CONTINUATION.json and reconciliation_evidence_20260926.json. Resolve current transaction through registered manual recovery, correct and rehearse nonce copying in the rollback runtime, then create a fresh plan and install the router fix through main Actions. Do not replay the old installer, clear HALT without reconciliation, or repurpose TASK120-only recovery.
+DELIVERY_STATUS_CONTINUATION: Existing automation 6ab80e71aa688191868f657b5631fcae remains enabled. It must inspect current recovery state before doing any installation.
 DELIVERY_STATUS_FULL_ACCEPTANCE: NO

@@ -6,6 +6,7 @@ import hashlib
 import logging
 import os
 from pathlib import Path
+import re
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -13,7 +14,7 @@ import unittest
 from unittest.mock import AsyncMock, Mock, patch
 
 import delivery_status as policy
-from integration_patch import patch_fallback_menu, patch_menu, patch_stage_set
+from integration_patch import patch_fallback_menu, patch_menu, patch_stage_router, patch_stage_set
 from verify_catalog_integration import load_module
 
 
@@ -22,6 +23,14 @@ FUNCTION_SHA256 = {
     "stage_menu": "768e216898902c1c6d0f51761962ae61c4d4abc4fdb147862528abc66e5137ff",
     "gde_mashina": "c834833e2bddd13a6411535f2a1df42c1d3f1794b14ed4a93009e444b64da28c",
 }
+
+# Live registration fragment, SHA-256 54bd8d52ad23eefa83b058d90821f9d1569007a94839e3e0535cd3bab103df08.
+STAGE_REGISTRATION = r'''def register(app):
+    _UA117_BASE_REGISTER(app)
+    app.add_handler(CallbackQueryHandler(
+        _ua117_block_removed_stage,
+        pattern=r"^car_setstage:\d+:(?:sea_loaded|sea_transit|ua_handed)$"),
+        group=-100)'''
 
 
 class HandlerStop(Exception):
@@ -150,6 +159,44 @@ class CRMIntegrationTest(unittest.IsolatedAsyncioTestCase):
         await self.invoke("stage_set")
         self.assertEqual(self.writes, [])
         self.sync.assert_not_awaited()
+
+    async def dispatch_registered_stage(self):
+        handlers = []
+        legacy = AsyncMock()
+        namespace = dict(self.namespace)
+        namespace.update({
+            "_UA117_BASE_REGISTER": lambda app: app.add_handler(
+                (legacy, re.compile(r"^car_setstage:")), group=-4),
+            "CallbackQueryHandler": lambda callback, pattern: (callback, re.compile(pattern)),
+            "_ua117_block_removed_stage": self.namespace["stage_set"],
+        })
+        exec(patch_stage_router(STAGE_REGISTRATION), namespace)
+        namespace["register"](SimpleNamespace(
+            add_handler=lambda handler, group: handlers.append((group, handler))))
+        try:
+            for _, (callback, pattern) in sorted(handlers, key=lambda item: item[0]):
+                if pattern.match(self.query.data):
+                    await callback(self.update, self.context)
+        except HandlerStop:
+            pass
+        legacy.assert_not_awaited()
+
+    async def test_removed_departure_button_is_caught_before_legacy_side_effects(self):
+        self.query.data = "car_setstage:1:ge_to_kyiv"
+        await self.dispatch_registered_stage()
+        self.assertEqual(self.writes, [(1, "status", "hidden", 1)])
+        self.sync.assert_awaited_once()
+
+    async def test_early_router_handles_every_status_and_malformed_button(self):
+        for requested in ("korea", "ferry", "georgia", "kyiv", "archive", "unknown", ""):
+            with self.subTest(requested=requested):
+                self.query.data = "car_setstage:1:" + requested
+                await self.dispatch_registered_stage()
+                self.assertEqual(self.card["status"], policy.crm_status_from_input(requested))
+        self.writes.clear()
+        self.query.data = "car_setstage:bad-id:ferry"
+        await self.dispatch_registered_stage()
+        self.assertEqual(self.writes, [])
 
 
 if __name__ == "__main__":

@@ -1,13 +1,18 @@
 """Recovery rehearsal against temporary files and a temporary CRM database."""
 from contextlib import nullcontext
+from io import BytesIO
 import json
 import os
 from pathlib import Path
 import sqlite3
 import tempfile
 import unittest
+import urllib.error
+import urllib.parse
 from unittest.mock import patch
+from types import SimpleNamespace
 
+import deployment_controller as controller
 import deployment_remote as remote
 from deployment_transport import canonical, sha
 from deployment_transport import API, BOT_ID, BOT_COMMAND, TransportError
@@ -144,6 +149,54 @@ class TransportTests(unittest.TestCase):
                 api.set_bot(False)
             self.assertEqual(call.call_count, 1)
             self.assertEqual(call.call_args.args[0], 'GET')
+
+
+class PublicVerificationTests(unittest.TestCase):
+    def setUp(self):
+        self.counter_source = b'def catalog_snapshot(page):\n import json\n value=json.loads(page)\n return value["records"], value["counts"]\n'
+        self.api = SimpleNamespace(file=lambda _: self.counter_source)
+        self.records = {'UA-0001': 'sea', 'UA-0002': 'kiev'}
+        self.counts = {'all': 2, 'korea': 0, 'sea': 1, 'georgia': 0, 'kiev': 1}
+        self.plan = {'protected': {'ua_site_counters.py': sha(self.counter_source)},
+                     'catalog_records_sha256': sha(canonical(self.records)), 'counts': self.counts}
+        self.sleep = patch.object(controller.time, 'sleep')
+        self.sleep.start()
+        self.addCleanup(self.sleep.stop)
+
+    def response(self, request, timeout, *, final_url=None, records=None):
+        response = BytesIO(json.dumps({'records': self.records if records is None else records,
+                                      'counts': self.counts}).encode())
+        response.url = final_url or request.full_url
+        return response
+
+    def verify(self):
+        return controller.public_verify(self.api, 'a'*64, 'b'*64, self.plan)
+
+    def test_public_catalog_is_checked_with_and_without_cache_buster(self):
+        with patch.object(controller.urllib.request, 'urlopen', side_effect=self.response) as fetch:
+            self.assertEqual(set(self.verify().values()), {'PASS'})
+        urls = [call.args[0].full_url for call in fetch.call_args_list]
+        self.assertEqual(len(urls), 2)
+        self.assertEqual([urllib.parse.urlsplit(url).path for url in urls], ['/video/katalog.html']*2)
+        self.assertEqual(urllib.parse.urlsplit(urls[0]).query, '')
+        self.assertTrue(urllib.parse.urlsplit(urls[1]).query.startswith('delivery_verify='))
+
+    def test_redirect_to_home_is_rejected_even_with_matching_content(self):
+        with patch.object(controller.urllib.request, 'urlopen', side_effect=lambda *a, **kw:
+                          self.response(*a, **kw, final_url='https://www.uaart.com.ua/video/index.html')):
+            with self.assertRaisesRegex(RuntimeError, 'PUBLIC_CATALOG_REDIRECT'):
+                self.verify()
+
+    def test_matching_counts_cannot_hide_wrong_car_statuses(self):
+        with patch.object(controller.urllib.request, 'urlopen', side_effect=lambda *a, **kw:
+                          self.response(*a, **kw, records={'UA-0001': 'kiev', 'UA-0002': 'sea'})):
+            with self.assertRaisesRegex(RuntimeError, 'CATALOG_MISMATCH'):
+                self.verify()
+
+    def test_network_failure_remains_visible_in_error(self):
+        with patch.object(controller.urllib.request, 'urlopen', side_effect=urllib.error.URLError('offline')):
+            with self.assertRaisesRegex(RuntimeError, 'URLError:.*offline'):
+                self.verify()
 
 
 if __name__ == '__main__':

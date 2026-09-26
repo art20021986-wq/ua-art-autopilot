@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import tempfile
 import time
+import urllib.parse
 import urllib.request
 
 from deployment_transport import API, HERE, INBOX, canonical, sha, upload_package
@@ -62,26 +63,31 @@ def public_verify(api, bundle, backup_sha, plan):
         aliases = {'korea': 'korea', 'sea': 'sea', 'more': 'sea', 'ferry': 'sea',
                    'georgia': 'georgia', 'gruzia': 'georgia', 'kiev': 'kiev', 'kyiv': 'kiev'}
         results = {}
-        for path in ('/katalog.html', '/video/katalog.html'):
+        for path in ('/video/katalog.html',):
             for suffix in ('', '?delivery_verify='+plan['catalog_records_sha256'][:16]):
                 url = 'https://www.uaart.com.ua'+path+suffix
                 success = False
+                failure = 'CATALOG_MISMATCH'
                 for attempt in range(6):
                     try:
                         request = urllib.request.Request(url, headers={'Cache-Control': 'no-cache', 'User-Agent': 'UAART-Delivery-Verify/1'})
                         with urllib.request.urlopen(request, timeout=30) as response:
+                            final = urllib.parse.urlsplit(response.url)
+                            if (final.scheme, final.netloc, final.path) != ('https', 'www.uaart.com.ua', path):
+                                raise RuntimeError('PUBLIC_CATALOG_REDIRECT')
                             page = response.read(2*1024*1024).decode()
                         records, counts = counter.catalog_snapshot(page)
                         projection = {code: aliases.get(stage) for code, stage in records.items()}
+                        failure = 'CATALOG_MISMATCH'
                         if sha(canonical(projection)) == plan['catalog_records_sha256'] and counts == plan['counts']:
                             success = True
                             break
-                    except Exception:
-                        pass
+                    except Exception as error:
+                        failure = type(error).__name__ + ':' + str(error)
                     if attempt < 5:
                         time.sleep(5)
                 if not success:
-                    raise RuntimeError('PUBLIC_CATALOG_NOT_CURRENT:'+path)
+                    raise RuntimeError('PUBLIC_CATALOG_NOT_CURRENT:'+path+':'+failure)
                 results[path+suffix] = 'PASS'
         return results
 

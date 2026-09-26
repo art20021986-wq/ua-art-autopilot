@@ -1,8 +1,8 @@
 {
   "task_id": "UA-ART-DELIVERY-STATUS-001",
-  "status": "CANDIDATE_AND_SAFE_MIGRATION_PREPARED_PRODUCTION_DEFERRED",
-  "production_installed": false,
-  "production_touched": false,
+  "status": "INSTALLED_PUBLIC_VERIFIED_BLOCKED_RECOVERY_AND_PENDING_ROUTER_FIX",
+  "production_installed": true,
+  "production_touched": true,
   "owner_authorized": true,
   "preflight_run_id": 36266189044,
   "preflight_tests": 39,
@@ -23,14 +23,15 @@
     "disable_after_success": true
   },
   "remaining": [
-    "Build and rehearse the bounded CRITICAL install/lifecycle adapter, manifest, backup and rollback contract; the tested SQLite migrator does not replace them.",
-    "Recheck current source pins, CPU and active production writers; never overlap the CRM/site consistency transaction.",
-    "Install source and apply the reviewed migration only through main Actions with publication fence and writer exclusion.",
-    "Verify bot restart, full publication/reactivation, both catalog roots and visible public counters; disable continuation after full acceptance."
+    "Reconcile the failed run 36268504600 against the authenticated evidence. The installation is present and the bot is Running; do not replay the original installer or mark a rollback that did not run.",
+    "Prepare an explicitly registered, evidence-bound recovery for the current ROLLING_BACK transaction. The existing TASK120-only route does not cover it. Retain the consumed one-shot marker, original request, approval, nonce, ledger, failure history and backup.",
+    "Correct the pinned rollback workspace omission of its ledger-bound nonce through the approved runtime update process and rehearse it. Do not alter runtime pins or weaken validations to unblock a deployment.",
+    "After recovery, create a fresh bounded installation plan for the current installed sources; deploy the group -100 callback router correction through main Actions. The original plan cannot be reused.",
+    "Verify four CRM buttons, rejected legacy callbacks without delivery-date writes, correct public catalog address, 19 active cars, preserved data, bot health, and a durable final receipt. SQL remains supplied and tested but unexecuted."
   ],
   "not_full_acceptance": true,
-  "checkpoint_at": "2026-09-26T19:31:00.989Z",
-  "local_tests": 39,
+  "checkpoint_at": "2026-09-26T21:17:53.267Z",
+  "local_tests": 55,
   "migration_tests": 10,
   "merged_prs": [
     121,
@@ -63,12 +64,11 @@
     "resolved_by": "R4 execute passed with bounded GET handling"
   },
   "runtime_observation": {
-    "observed_at": "2026-09-26T19:17:00Z",
+    "observed_at": "2026-09-26T21:15:09.443220+00:00",
     "bot_task": {
       "id": 266084,
       "enabled": true,
-      "state": "Running",
-      "command": "python3.10 /home/Carix/start_safe.py"
+      "state": "Running"
     },
     "catalog_roots": [
       "/home/Carix/video",
@@ -87,7 +87,15 @@
       "sea_loaded": 4,
       "ua_arrived": 5
     },
-    "database_observed_at": "2026-09-26T19:09:00Z"
+    "database_observed_at": "2026-09-26T19:09:00Z",
+    "crm_unchanged": true,
+    "public_counts": {
+      "korea": 4,
+      "ferry": 4,
+      "georgia": 6,
+      "kyiv": 5,
+      "all": 19
+    }
   },
   "fallback_preview": {
     "source_sha256": "bdf6b953e95cf5ae78d3d640b9ba438202e9708d48cb1c7f4e1556bb59921824",
@@ -96,10 +104,11 @@
     "production_written": false
   },
   "watchdog_observation": {
-    "run_id": 36262813826,
-    "error": "RECOVERY_CANARY_RECEIPT_BINDING",
-    "old_transaction_status": "ROLLED_BACK",
-    "require_before_install": "Verify the normal watcher/recovery route without bypassing gates."
+    "run_id": 36268504600,
+    "error": "AUTOSTART_NONCE_RESERVATION_MISSING -> TRANSACTION_LEDGER_INVALID",
+    "transaction_status": "ROLLING_BACK",
+    "rollback_invoked": false,
+    "require_before_install": "Registered manual reconciliation and a verified nonce-complete rollback route"
   },
   "candidate_sha256": {
     "cars_schema.py": "16d53277834ecfad1eabc10f75e5cabb1060b35416b61b6f534ec024ce9dbc07",
@@ -113,5 +122,13 @@
     "ua_crm_public_sync.py": "2b5f6a2473b263fddd6ab3266a3ba76cc9738da15178f865862098821cabcc41",
     "ua_delivery_status.py": "c544bc121b7b3b66d45519d5b63ed3687567af7e9d5f7011ae2fb53cc372bdd0",
     "ua_stage_catalog_sync.py": "a8d2784e73d005b5a02328f63c9233d78da665547266276df69291383616a255"
-  }
+  },
+  "full_acceptance": false,
+  "current_evidence": "cloud/delivery_status_001/reconciliation_evidence_20260926.json",
+  "database_migration_executed": false,
+  "installation_run_id": 36268504600,
+  "installation_run_conclusion": "failure",
+  "transaction_status": "ROLLING_BACK",
+  "halt_active": true,
+  "automatic_retry_allowed": false
 }
