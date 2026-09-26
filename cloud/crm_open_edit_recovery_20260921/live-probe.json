@@ -1,0 +1,59 @@
+{
+  "task": "CRM-CARD-RECOVERY-20260921",
+  "observed_at": "2026-09-21T08:47:07.601793+00:00",
+  "business_writes": false,
+  "sources": {
+    "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+    "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+    "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+  },
+  "log": {
+    "modified_at": 1789979833.514,
+    "sample_bytes_max": 120000,
+    "counts": {
+      "database is locked": 0,
+      "message is too long": 0,
+      "can't parse entities": 0,
+      "timedout": 0,
+      "conflict": 0,
+      "badrequest": 0,
+      "traceback": 13,
+      "application started": 4,
+      "photos opening timeout": 0,
+      "videos opening timeout": 0
+    },
+    "exception_classes": {},
+    "last_application_frames": [
+      "Sep 21 08:35:17   File \"/home/Carix/publish_transaction_guard.py\", line 623, in _validate_catalog",
+      "Sep 21 08:35:32   File \"/home/Carix/cars_ui.py\", line 4351, in _ua004_stage_reconcile_job",
+      "Sep 21 08:35:32   File \"/home/Carix/ua_stage_catalog_sync.py\", line 152, in reconcile",
+      "Sep 21 08:35:32   File \"/home/Carix/publish_transaction_guard.py\", line 623, in _validate_catalog",
+      "Sep 21 08:35:47   File \"/home/Carix/cars_ui.py\", line 4351, in _ua004_stage_reconcile_job",
+      "Sep 21 08:35:47   File \"/home/Carix/ua_stage_catalog_sync.py\", line 152, in reconcile",
+      "Sep 21 08:35:47   File \"/home/Carix/publish_transaction_guard.py\", line 623, in _validate_catalog",
+      "Sep 21 08:36:02   File \"/home/Carix/cars_ui.py\", line 4351, in _ua004_stage_reconcile_job",
+      "Sep 21 08:36:02   File \"/home/Carix/ua_stage_catalog_sync.py\", line 152, in reconcile",
+      "Sep 21 08:36:02   File \"/home/Carix/publish_transaction_guard.py\", line 623, in _validate_catalog",
+      "Sep 21 08:36:17   File \"/home/Carix/cars_ui.py\", line 4351, in _ua004_stage_reconcile_job",
+      "Sep 21 08:36:17   File \"/home/Carix/ua_stage_catalog_sync.py\", line 152, in reconcile",
+      "Sep 21 08:36:17   File \"/home/Carix/publish_transaction_guard.py\", line 623, in _validate_catalog",
+      "Sep 21 08:36:32   File \"/home/Carix/cars_ui.py\", line 4351, in _ua004_stage_reconcile_job",
+      "Sep 21 08:36:32   File \"/home/Carix/ua_stage_catalog_sync.py\", line 152, in reconcile",
+      "Sep 21 08:36:32   File \"/home/Carix/publish_transaction_guard.py\", line 623, in _validate_catalog"
+    ],
+    "last_timestamps": [
+      "2026-09-21 08:35:47",
+      "2026-09-21 08:35:58",
+      "2026-09-21 08:36:02",
+      "2026-09-21 08:36:17",
+      "2026-09-21 08:36:32"
+    ]
+  },
+  "db": {
+    "journal_mode": "delete",
+    "quick_check": "ok",
+    "cars_count": 21,
+    "read_seconds": 0.6056,
+    "display_risks": []
+  }
+}

@@ -1,10 +1,10 @@
-TASK_ID: UA-ART-RECOVERY-TASK120-002
-ROUND: 2
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Маршрут подключён через PR81; GitHub run34323968311 и recovery_canary PASS. Добавлен ровно один служебный receipt, HALT сохранён. 151/151 локальных тестов PASS.
-FILES_CREATED: cloud/recovery_task120_002/integration/connection-report.md, cloud/recovery_task120_002/integration/evidence/live-route-result.json; код и доказательства подключения в PR81
-PRODUCTION_TOUCHED: YES — только управление GitHub. CRM, сайт и PythonAnywhere: NO
+TASK_ID: CRM-CARD-RECOVERY-20260921
+ROUND: 1
+CLAUDE_STATUS: BLOCKED
+CURRENT_ACTION: UI candidate and live diagnostic preserved; production installation blocked by unresolved SEO incident and missing fresh admission/backup.
+FILES_CREATED: cloud/crm_open_edit_recovery_20260921/
+PRODUCTION_TOUCHED: Diagnostic files only; business code, DB, website and task configuration unchanged.
 OWNER_ACTION_REQUIRED: NO
 OWNER_QUESTION: NONE
-NEXT_FOR_CHATGPT: Подключение завершено. Снятие HALT по-прежнему заблокировано EXTERNAL_WRITER_VERIFICATION_REQUIRED; требуется проверенный контроль внешних исполнителей и отдельная команда на точный план. Не выдавать canary за Gate B спецификации или публикацию карточек.
-UPDATED_AT_UTC: 2026-09-09T07:31:16.663874+00:00
+NEXT_FOR_CHATGPT: Reconcile exact SEO incident using remote evidence, obtain fresh source/process/backup admission, then install approved minimal package and verify Telegram.
+UPDATED_AT_UTC: 2026-09-21T08:57:28.893Z
