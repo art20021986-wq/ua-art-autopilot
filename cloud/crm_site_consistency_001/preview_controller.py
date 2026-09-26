@@ -14,7 +14,7 @@ NAMES=('public_fields.py','public_media.py','crm_gallery.py','crm_revision.py','
 
 def package():
     payload={name:base64.b64encode((HERE/name).read_bytes()).decode() for name in NAMES}
-    validator=base64.b64encode((HERE/'shadow_validate.py').read_bytes()).decode()
+    validator=(HERE/'shadow_validate.py').read_text()
     script='''import base64,json,pathlib,re,signal,sys,traceback
 if len(sys.argv)!=3 or sys.argv[1]!='preview' or not re.fullmatch(r'[0-9]+',sys.argv[2]):raise SystemExit(2)
 receipt=pathlib.Path(RECEIPT_PATH)
@@ -22,9 +22,7 @@ result={'status':'FAIL','run_id':sys.argv[2],'production_written':False,'full_ac
 def timeout(signum,frame):raise TimeoutError('Preview deadline')
 signal.signal(signal.SIGALRM,timeout);signal.alarm(180)
 try:
- ns={'__name__':'shadow_validation'}
- exec(compile(base64.b64decode(VALIDATOR),'<shadow-validation>','exec'),ns)
- result.update(ns['validate'](PAYLOAD,receipt_path=receipt))
+ result.update(validate(PAYLOAD,receipt_path=receipt))
 except Exception as error:
  result['error_type']=type(error).__name__
  result['failure_frames']=[{'file':pathlib.Path(x.filename).name,'function':x.name,'line':x.lineno} for x in traceback.extract_tb(error.__traceback__)[-5:]]
@@ -32,8 +30,8 @@ finally:
  signal.alarm(0)
  receipt.write_text(json.dumps(result,sort_keys=True)+'\\n')
 '''
-    prefix='RECEIPT_PATH='+repr(REMOTE_RECEIPT)+'\nVALIDATOR='+repr(validator)+'\nPAYLOAD='+repr(payload)+'\n'
-    source=prefix+script
+    prefix='RECEIPT_PATH='+repr(REMOTE_RECEIPT)+'\nPAYLOAD='+repr(payload)+'\n'
+    source=validator+'\n'+prefix+script
     compile(source,'preview-remote','exec')
     return source.encode()
 

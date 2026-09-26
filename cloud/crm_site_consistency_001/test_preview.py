@@ -1,6 +1,8 @@
 import sys
 import unittest
-from unittest.mock import patch
+import subprocess
+import tempfile
+from pathlib import Path
 from preview_controller import package
 from preview_transport import API,E
 
@@ -11,6 +13,9 @@ class PreviewTests(unittest.TestCase):
    with self.subTest(path=path),self.assertRaisesRegex(E,'PATH_SCOPE'):api.furl(path)
  def test_invalid_remote_arguments_stop_before_validation(self):
   for args in [['job.py','install','123'],['job.py','preview','not-a-run']]:
-   with self.subTest(args=args),patch.object(sys,'argv',args),self.assertRaises(SystemExit):exec(compile(package(),'remote','exec'),{})
+   with self.subTest(args=args),tempfile.TemporaryDirectory() as folder:
+    path=Path(folder)/'preview.py';path.write_bytes(package())
+    result=subprocess.run([sys.executable,'-I',str(path),*args[1:]],capture_output=True,timeout=10)
+    self.assertEqual(result.returncode,2)
 
 if __name__=='__main__':unittest.main()
