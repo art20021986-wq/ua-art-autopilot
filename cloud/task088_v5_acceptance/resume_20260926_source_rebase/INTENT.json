@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "operation_id": "PR114-SOURCE-REBASE-CHECKPOINT-20260926T1532Z",
+  "recorded_at_utc": "2026-09-26T15:32:27Z",
+  "branch": "codex/task088-owner-policy-20260913-0934",
+  "expected_branch_head": "7133d8a9d0080a27d322ea37ef048ee03eec67b3",
+  "observed_main_head": "4f1afd5cf8ca9d664c35edcffb1e38e677393ae5",
+  "environment": "github_pr_branch_only",
+  "intent": "Persist the fresh read-only server source and writer-exclusion observations, then stop. Do not install the stale candidate and do not change production, CRM, Preview, services, reload state, or public files.",
+  "expected_result": "One recoverable Git checkpoint lineage on the PR branch documenting the changed cars_ui.py input and the only safe next action.",
+  "readback": "Fetch the created file and PR branch ref; verify exact JSON fields and resulting commit ancestry.",
+  "backup": {
+    "kind": "git_parent_commit",
+    "parent_sha": "7133d8a9d0080a27d322ea37ef048ee03eec67b3",
+    "destructive_change": false
+  },
+  "safety": {
+    "production_write": false,
+    "stage": false,
+    "switch": false,
+    "reload": false,
+    "crm_write": false,
+    "private_source_content_persisted": false
+  }
+}
