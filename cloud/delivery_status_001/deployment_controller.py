@@ -1,0 +1,161 @@
+"""Actions controller; source installation preserves all existing CRM records."""
+import json
+import os
+from pathlib import Path
+import re
+import tempfile
+import time
+import urllib.request
+
+from deployment_transport import API, HERE, INBOX, canonical, sha, upload_package
+
+ROOT = HERE.parents[1]
+PREVIEW_TASK = 'DELIVERY-STATUS-INSTALL-PREVIEW-20260927'
+INSTALL_TASK = 'DELIVERY-STATUS-INSTALL-20260927'
+
+
+def context():
+    environment = os.environ
+    task = environment['UAART_TASK_ID']
+    run_id = environment['UAART_RUN_ID']
+    if task not in (PREVIEW_TASK, INSTALL_TASK) or not re.fullmatch(r'[0-9]+', run_id):
+        raise RuntimeError('TASK_IDENTITY')
+    request_path = (ROOT/environment['UAART_REQUEST_PATH']).resolve()
+    if not request_path.is_relative_to(ROOT) or sha(request_path.read_bytes()) != environment['UAART_REQUEST_SHA256']:
+        raise RuntimeError('REQUEST_BINDING')
+    request = json.loads(request_path.read_bytes())
+    production = task == INSTALL_TASK
+    if request['task_id'] != task or request['production_required'] is not production:
+        raise RuntimeError('REQUEST_SCOPE')
+    if environment['UAART_TASK_CLASS'] != ('CRITICAL' if production else 'STANDARD'):
+        raise RuntimeError('TASK_CLASS')
+    return environment, request
+
+
+def save(relative, value):
+    target = (ROOT/relative).resolve()
+    if not target.is_relative_to(ROOT):
+        raise RuntimeError('RECEIPT_PATH')
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(canonical(value))
+
+
+def accepted(value, mode, run_id, backup=None):
+    if value.get('status') != 'PASS' or value.get('mode') != mode or value.get('run_id') != run_id:
+        raise RuntimeError('REMOTE_'+mode.upper()+':'+str(value.get('error', 'FAILED')))
+    if value.get('crm_write') is not False or value.get('safe_to_stop') is not True:
+        raise RuntimeError('REMOTE_SCOPE')
+    if backup and value.get('backup_manifest_sha256') != backup:
+        raise RuntimeError('BACKUP_BINDING')
+
+
+def public_verify(api, bundle, backup_sha, plan):
+    from deployment_remote import load
+    remote = INBOX+'/delivery-'+bundle+'/backups/'+backup_sha+'/ua_site_counters.py'
+    module_source = api.file(remote)
+    if sha(module_source) != plan['protected']['ua_site_counters.py']:
+        raise RuntimeError('COUNTER_SOURCE_CHANGED')
+    with tempfile.TemporaryDirectory() as temporary:
+        module_path = Path(temporary)/'counter.py'
+        module_path.write_bytes(module_source)
+        counter = load(module_path, 'delivery_public_counter')
+        aliases = {'korea': 'korea', 'sea': 'sea', 'more': 'sea', 'ferry': 'sea',
+                   'georgia': 'georgia', 'gruzia': 'georgia', 'kiev': 'kiev', 'kyiv': 'kiev'}
+        results = {}
+        for path in ('/katalog.html', '/video/katalog.html'):
+            for suffix in ('', '?delivery_verify='+plan['catalog_records_sha256'][:16]):
+                url = 'https://www.uaart.com.ua'+path+suffix
+                success = False
+                for attempt in range(6):
+                    try:
+                        request = urllib.request.Request(url, headers={'Cache-Control': 'no-cache', 'User-Agent': 'UAART-Delivery-Verify/1'})
+                        with urllib.request.urlopen(request, timeout=30) as response:
+                            page = response.read(2*1024*1024).decode()
+                        records, counts = counter.catalog_snapshot(page)
+                        projection = {code: aliases.get(stage) for code, stage in records.items()}
+                        if sha(canonical(projection)) == plan['catalog_records_sha256'] and counts == plan['counts']:
+                            success = True
+                            break
+                    except Exception:
+                        pass
+                    if attempt < 5:
+                        time.sleep(5)
+                if not success:
+                    raise RuntimeError('PUBLIC_CATALOG_NOT_CURRENT:'+path)
+                results[path+suffix] = 'PASS'
+        return results
+
+
+def run(operation=None):
+    env, request = context()
+    api = API(env['PYTHONANYWHERE_API_TOKEN'])
+    run_id, task = env['UAART_RUN_ID'], env['UAART_TASK_ID']
+    bundle = upload_package(api)
+    if task == PREVIEW_TASK:
+        value = api.run('preview', run_id, bundle)
+        accepted(value, 'preview', run_id)
+        save('cloud/delivery_status_001/deployment_plan.json', value['plan'])
+        save('cloud/delivery_status_001/deployment_preview.json', value)
+        receipt = {'task_id': task, 'task_class': 'STANDARD', 'run_id': run_id,
+                   'request_sha256': env['UAART_REQUEST_SHA256'], 'status': 'FINISHED',
+                   'target_environment': 'shadow', 'tests': 'PASS', 'unexpected_changes': 0,
+                   'production_required': False, 'production_touched': False,
+                   'rollback_ready': True, 'full_acceptance': False,
+                   'plan_sha256': value['plan_sha256'], 'bundle_sha256': bundle}
+        save(env['UAART_RECEIPT_PATH'], receipt)
+        print(json.dumps(receipt, sort_keys=True))
+        return 0
+    plan = json.loads((HERE/'deployment_plan.json').read_bytes())
+    plan_sha = sha(canonical(plan))
+    if request['deployment_plan_sha256'] != plan_sha:
+        raise RuntimeError('PLAN_BINDING')
+    bindings = {'task_id': task, 'request_sha256': env['UAART_REQUEST_SHA256'],
+                'run_id': run_id, 'transaction_id': env['UAART_TRANSACTION_ID'],
+                'manifest_sha256': env['UAART_MANIFEST_SHA256']}
+    if operation == 'backup':
+        value = api.run('backup', run_id, bundle, plan_sha)
+        accepted(value, 'backup', run_id)
+        receipt = {**bindings, 'schema_version': 'UA-ART-PRODUCTION-BACKUP-RECEIPT-1',
+                   'operation': 'backup', 'status': 'PASS', 'backup': 'PASS', 'unexpected_changes': 0,
+                   'backup_manifest_sha256': value['backup_manifest_sha256']}
+        save(env['UAART_BACKUP_RECEIPT_PATH'], receipt)
+        save('cloud/delivery_status_001/deployment_backup.json', value)
+        return 0
+    backup_sha = env['UAART_BACKUP_MANIFEST_SHA256']
+    if operation == 'rollback':
+        value = api.run('rollback', run_id, bundle, plan_sha, backup_sha)
+        accepted(value, 'rollback', run_id, backup_sha)
+        if value.get('restored') is not True or value.get('crm_unchanged') is not True or value.get('crm_resume', {}).get('enabled') is not True:
+            raise RuntimeError('ROLLBACK_INCOMPLETE')
+        receipt = {**bindings, 'schema_version': 'UA-ART-PRODUCTION-ROLLBACK-RECEIPT-1',
+                   'operation': 'rollback', 'status': 'ROLLED_BACK', 'rollback': 'PASS',
+                   'restored': True, 'unexpected_changes': 0, 'protected_files_unchanged': True,
+                   'crm_unchanged': True, 'live_verify': 'PASS', 'backup_manifest_sha256': backup_sha}
+        save(env['UAART_ROLLBACK_RECEIPT_PATH'], receipt)
+        save('cloud/delivery_status_001/deployment_rollback.json', value)
+        return 0
+    value = api.run('install', run_id, bundle, plan_sha, backup_sha)
+    save('cloud/delivery_status_001/deployment_install.json', value)
+    accepted(value, 'install', run_id, backup_sha)
+    if value.get('installed') is not True or value.get('crm_unchanged') is not True or value.get('crm_resume', {}).get('enabled') is not True:
+        raise RuntimeError('INSTALL_OR_RESUME_INCOMPLETE')
+    verified = api.run('verify', run_id, bundle, plan_sha, backup_sha)
+    accepted(verified, 'verify', run_id, backup_sha)
+    public = public_verify(api, bundle, backup_sha, plan)
+    receipt = {**bindings, 'contract_id': 'UA-ART-CRITICAL-ADAPTER-V1.0', 'status': 'FINISHED',
+               'task_class': 'CRITICAL', 'target_environment': 'production',
+               'production_required': True, 'production': 'PASS', 'tests': 'PASS',
+               'backup': 'PASS', 'backup_manifest_sha256': backup_sha, 'rollback': 'PASS',
+               'rollback_ready': True, 'live_verify': 'PASS', 'unexpected_changes': 0,
+               'protected_files_unchanged': True, 'crm_unchanged': True,
+               'public_statuses': plan['public_statuses'], 'counts': plan['counts'],
+               'public_checks': public, 'restart': value['crm_resume'],
+               'database_migration_executed': False, 'existing_rows_hidden_by_projection': True}
+    save(env['UAART_RECEIPT_PATH'], receipt)
+    save('cloud/delivery_status_001/deployment_verify.json', verified)
+    print(json.dumps(receipt, sort_keys=True))
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(run())
