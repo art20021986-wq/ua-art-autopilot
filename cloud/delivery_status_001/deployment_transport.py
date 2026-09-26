@@ -75,9 +75,10 @@ class API:
         return value
 
     def set_bot(self, enabled):
-        self.bot()
-        self.json('PATCH', 'always_on/%d/' % BOT_ID, {'enabled': str(enabled).lower()})
-        deadline = time.monotonic()+120
+        observed = self.bot()
+        if observed.get('enabled') is not enabled:
+            self.json('PATCH', 'always_on/%d/' % BOT_ID, {'enabled': str(enabled).lower()})
+        deadline = time.monotonic()+(480 if enabled else 120)
         while time.monotonic() < deadline:
             value = self.bot()
             state = str(value.get('state', '')).lower()
