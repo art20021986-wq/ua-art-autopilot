@@ -16,15 +16,6 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "7d5fdf8c3baa3735"
-    },
-    {
-      "action": "DATA_ONLY_RECONCILIATION_PREPARED",
-      "at": "2026-09-26T12:22:45.198Z",
-      "class": "ABORTED_BEFORE_PRODUCTION",
-      "evidence_path": "cloud/ge_price_cache_20260922/reconciliation_candidate/VALIDATION.json",
-      "message": "Storage freshness gate rejected the run before transaction creation, backup, controller execution, production write or rollback. Original launch remains consumed and is not replayable.",
-      "retries_remaining": 0,
-      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-09-22T06:53:44Z",
@@ -72,6 +63,6 @@
   "storage_preflight_status": "FAIL_STALE",
   "task_class": "CRITICAL",
   "task_execution_status": "FAILED",
-  "updated_at": "2026-09-26T12:22:45.198Z",
+  "updated_at": "2026-09-22T06:54:56Z",
   "reconciliation_path": "state/reconciliations/GE-PRICE-CACHE-20260922.35696840719.aborted-before-production.json"
 }
