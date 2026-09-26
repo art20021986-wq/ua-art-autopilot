@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PRICE-LIVE-PROBE-20260926.c7d843ee000e83d9cdcddf15367a6d836cf40dbe5699601b31e3924365e836bb.json",
+  "autostart_ledger_sha256": "51b05c35c137e5c99366aac4707a8999735d7b64a7163e6a20c7b4d4ccdae239",
+  "autostart_source_commit": "7bb8f74b63f703fff291811649458d14f3ea5ccd",
+  "created_at": "2026-09-26T14:38:05Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-09-26T14:38:05Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "36249087712",
+    "task_id": "PRICE-LIVE-PROBE-20260926",
+    "task_sha256": "c7d843ee000e83d9cdcddf15367a6d836cf40dbe5699601b31e3924365e836bb"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "read_only-11909d5407252205-7cf6ce356b23e7be",
+  "receipt_path": "state/receipts/PRICE-LIVE-PROBE-20260926.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/PRICE-LIVE-PROBE-20260926.json",
+  "request_sha256": "c7d843ee000e83d9cdcddf15367a6d836cf40dbe5699601b31e3924365e836bb",
+  "resource_locks": [
+    "READ_ONLY:11909d5407252205"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "10188512676a8791ef4cd1874733edc900f0dc31",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-26T14:38:05Z"
+}
