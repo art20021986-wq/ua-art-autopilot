@@ -15,7 +15,7 @@ import urllib.request
 from integration_patch import SOURCE_SHA256, build_candidate
 
 
-TASK_ID = "DELIVERY-STATUS-PREFLIGHT-20260927"
+TASK_ID = os.environ.get("UAART_TASK_ID", "DELIVERY-STATUS-PREFLIGHT-20260927")
 BASE = "https://www.pythonanywhere.com/api/v0/user/Carix/"
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -31,7 +31,8 @@ def get(token, route):
 
 
 def main():
-    if os.environ.get("UAART_TASK_ID") != TASK_ID or os.environ.get("UAART_TASK_CLASS") != "STANDARD":
+    if (not re.fullmatch(r"DELIVERY-STATUS-PREFLIGHT-[0-9]{8}(?:-R[1-9][0-9]*)?", TASK_ID)
+            or os.environ.get("UAART_TASK_CLASS") != "STANDARD"):
         raise RuntimeError("TASK_IDENTITY")
     run_id = os.environ.get("UAART_RUN_ID", "")
     if not re.fullmatch(r"[0-9]+", run_id):
@@ -62,7 +63,7 @@ def main():
             with patch.dict(os.environ, {"DELIVERY_SOURCE_ROOT": str(source_root)}):
                 suite = unittest.defaultTestLoader.loadTestsFromNames([
                     "test_delivery_status", "verify_catalog_integration", "verify_crm_integration",
-                    "verify_worker_integration",
+                    "verify_worker_integration", "test_status_migration",
                 ])
                 result = unittest.TextTestRunner(verbosity=1).run(suite)
                 if not result.wasSuccessful():
