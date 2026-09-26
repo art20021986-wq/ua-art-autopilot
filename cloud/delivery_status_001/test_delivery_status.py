@@ -2,10 +2,30 @@ import sqlite3
 import unittest
 from pathlib import Path
 
-from delivery_status import HIDDEN, catalog_counts, public_label, public_status
+from delivery_status import (
+    HIDDEN, catalog_counts, public_label, public_status, normalize_status,
+    crm_status_from_input, storage_status, stage_number,
+)
 
 
 class DeliveryStatusTest(unittest.TestCase):
+    def test_input_accepts_only_canonical_enum(self):
+        for code in ("korea", "ferry", "georgia", "kyiv"):
+            self.assertEqual(normalize_status(code), code)
+        for value in ("kr_bought", "sea_loaded", "В Корее", "FERRY", " ferry ", None, []):
+            self.assertEqual(normalize_status(value), HIDDEN)
+
+    def test_callback_and_storage_adapters_are_distinct(self):
+        self.assertEqual(crm_status_from_input("ferry"), "sea_loaded")
+        self.assertEqual(crm_status_from_input("sea_loaded"), HIDDEN)
+        self.assertEqual(storage_status("sea_loaded"), "sea_loaded")
+        self.assertEqual(storage_status("ferry"), "sea_loaded")
+        self.assertEqual(storage_status("sold_transit"), HIDDEN)
+
+    def test_unknown_prefixes_never_become_active_stages(self):
+        for value in ("kr_unknown", "sea_transit", "ge_to_kyiv", "ua_handed", "archive"):
+            self.assertEqual(stage_number(value), 0)
+
     def test_active_internal_codes_and_public_codes(self):
         for internal, public in (
             ("kr_bought", "korea"),
