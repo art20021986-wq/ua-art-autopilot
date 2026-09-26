@@ -7,8 +7,10 @@ import os
 from pathlib import Path
 import re
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -23,11 +25,20 @@ ROOT = HERE.parents[1]
 
 def get(token, route):
     request = urllib.request.Request(BASE + route, headers={"Authorization": "Token " + token})
-    with urllib.request.urlopen(request, timeout=30) as response:
-        content = response.read(4 * 1024 * 1024 + 1)
-    if len(content) > 4 * 1024 * 1024:
-        raise RuntimeError("RESPONSE_SIZE")
-    return content
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                content = response.read(4 * 1024 * 1024 + 1)
+            if len(content) > 4 * 1024 * 1024:
+                raise RuntimeError("RESPONSE_SIZE")
+            return content
+        except urllib.error.HTTPError as error:
+            if attempt == 2 or error.code not in (500, 502, 503, 504):
+                raise
+        except (urllib.error.URLError, TimeoutError):
+            if attempt == 2:
+                raise
+        time.sleep(2 ** attempt)
 
 
 def main():
@@ -44,14 +55,14 @@ def main():
     if os.environ["UAART_RECEIPT_PATH"] != receipt_name:
         raise RuntimeError("RECEIPT_IDENTITY")
     token = os.environ["PYTHONANYWHERE_API_TOKEN"]
-    quota = json.loads(get(token, "cpu/"))
     evidence = {
         "task_id": TASK_ID, "run_id": run_id,
         "observed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "cpu": quota, "production_written": False, "full_acceptance": False,
+        "cpu": None, "production_written": False, "full_acceptance": False,
     }
-    print("CPU_EVIDENCE=" + json.dumps(evidence, sort_keys=True), flush=True)
     try:
+        evidence["cpu"] = json.loads(get(token, "cpu/"))
+        print("CPU_EVIDENCE=" + json.dumps(evidence, sort_keys=True), flush=True)
         sources = {name: get(token, "files/path/home/Carix/" + urllib.parse.quote(name))
                    for name in SOURCE_SHA256}
         candidate = build_candidate(sources, (HERE / "delivery_status.py").read_text())
