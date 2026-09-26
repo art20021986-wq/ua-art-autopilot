@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "operation_id": "PR114-SOURCE-REBASE-CHECKPOINT-20260926T1532Z",
+  "recorded_at_utc": "2026-09-26T15:33:56Z",
+  "status": "BLOCKED_CURRENT_PRIVATE_SOURCE_CHANGED",
+  "outcome": "READ_ONLY_RECONCILIATION_COMPLETE",
+  "git": {
+    "branch": "codex/task088-owner-policy-20260913-0934",
+    "input_head": "40db080570fe1074c1dabafe4ab727aa6db25bb6",
+    "observed_main_head": "4f1afd5cf8ca9d664c35edcffb1e38e677393ae5"
+  },
+  "superseding_price_consistency_receipt": {
+    "task_id": "CRM-SITE-CONSISTENCY-PROBE-20260926",
+    "workflow_run_id": 36251435028,
+    "state": "FINISHED",
+    "conclusion": "PASS",
+    "observed_inventory": {
+      "live_rows": 21,
+      "published_rows": 21
+    },
+    "price_result": "21/21 published Ukrainian prices matched the public CRM-backed endpoint; zero mismatches",
+    "scope_note": "Read-only price/site consistency evidence; not PR114 Stage3/Stage4 acceptance."
+  },
+  "server_source_observation": {
+    "observed_via": "authorized PythonAnywhere console, read-only sha256/stat",
+    "private_source_bytes_persisted": false,
+    "files": {
+      "cars_ui.py": {
+        "current_sha256": "63a926d752d1c0662c8700521db748d1dff98276df168e9ce693bd9e7c2a378b",
+        "saved_candidate_input_sha256": "d9bd8cb352d1bdaf4c20949893e2f5839c45615e71a5cf630e2eaf135c89e7f0",
+        "result": "CHANGED_FAIL_CLOSED"
+      },
+      "stranica.py": {
+        "current_sha256": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+        "result": "MATCH"
+      },
+      "publish_transaction_guard.py": {
+        "current_sha256": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+        "result": "MATCH"
+      },
+      "start_safe.py": {
+        "current_sha256": "21aded2ce1da58a6d4f41f50bd6544abbce5cd0a26966f108d8b238b282a055e",
+        "result": "MATCH"
+      },
+      "run_all.py": {
+        "current_sha256": "cc996b5b8bb6ba910235d6ef741294fd42e6ad0aaac081fc707b1e815968697c",
+        "result": "MATCH"
+      },
+      "vin_spec_service.py": {
+        "current_sha256": "1d4d54a70a0f4fe8ab4b4d6f039955ff56f3bbc3d62a2b8fc5732654c604746c",
+        "result": "MATCH"
+      },
+      "ua_spec84_runtime.py": {
+        "current_sha256": "938b8d0c2e2d310e5e5b7e550b6a7afba6b2a79f6a4c20cc94b2aa3cff67c269",
+        "result": "MATCH"
+      },
+      "kadry_diagnostiki.py": {
+        "current_sha256": "696a3b2a9dc7c97b76185db6ef469a84b79c6cd2042c168996d20c8b1111c859",
+        "result": "MATCH"
+      }
+    }
+  },
+  "writer_exclusion_observation": {
+    "observed_at_utc": "2026-09-26T15:33Z",
+    "process_name_scan": {
+      "names": [
+        "start_safe.py",
+        "run_all.py",
+        "kadry_diagnostiki.py",
+        "ua_spec84_runtime.py",
+        "vin_spec_service.py",
+        "cars_ui.py"
+      ],
+      "result": "NO_MATCHING_PROCESSES"
+    },
+    "locks": {
+      "/home/Carix/.start_safe.singleton.lock": {
+        "inode": 172975308,
+        "lslocks_result": "NO_HOLDER"
+      },
+      "/home/Carix/.kadry_diagnostiki.lock": {
+        "inode": 172946076,
+        "lslocks_result": "NO_HOLDER"
+      }
+    },
+    "limits": "Point-in-time read-only observation; does not authorize reuse after inputs or process state change."
+  },
+  "safety_outcome": {
+    "production_write": false,
+    "crm_write": false,
+    "private_source_write": false,
+    "preview_stage": false,
+    "preview_switch": false,
+    "reload": false,
+    "service_change": false,
+    "stale_candidate_installed": false
+  },
+  "acceptance": {
+    "accepted_criteria": 8,
+    "total_criteria": 20,
+    "percent": 40,
+    "increment": 0
+  },
+  "blocker": "The exact installed cars_ui.py no longer matches the source pinned by the reviewed PR114 candidate. Applying that candidate would overwrite a newer operator change and is forbidden.",
+  "only_next_action": "Obtain the exact current cars_ui.py bytes through the permitted private-source route, identify and preserve the newer change, rebuild the fence integration on that source, and run only changed-scope tests plus independent review. Do not repeat Stage, switch, reload, or full Preview unless changed public bytes make freshness mandatory."
+}
