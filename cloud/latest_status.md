@@ -1,7 +1,10 @@
-TASK_ID: PRICE-MISMATCH-DIAG-20260926
-CLAUDE_STATUS: DONE
-CURRENT_ACTION: Диагностика расхождения цены CRM и сайта. Причина: кеш старого ua-site-languages.js и цена, зашитая в HTML; задача GE-PRICE-CACHE-20260922 не установлена (HALT). Отчёт: cloud/price_mismatch_20260926/diagnosis.md
+TASK_ID: UA-ART-CRM-SITE-CONSISTENCY-001
+STATUS: IN_PROGRESS_PARTIAL_DIAGNOSTICS
+OWNER_INSTRUCTION: Запускай в работу — 2026-09-26 22:04 Asia/Ho_Chi_Minh
+CURRENT_ACTION: Подтверждён прямой read-only доступ к рабочей CRM; 21 карточка, 23/23 обычных публичных URL совпали с серверными файлами. Кандидат расширенной проверки характеристик подготовлен, не установлен. Исправлен контракт новой read-only диагностики без изменения валидаторов.
 PRODUCTION_TOUCHED: NO
-OWNER_ACTION_REQUIRED: YES — выбрать вариант A/B/C и назвать номер машины UA-XXXX
-NEXT: после выбора — подготовить пакет, описать изменение владельцу, дождаться «да», запуск через автопилот.
-UPDATED_AT_UTC: 2026-09-26T14:15:52.371208+00:00
+GATE_B: NOT_READY
+FULL_ACCEPTANCE: NO
+REPORT: cloud/crm_site_consistency_001/REPORT.md
+CHECKPOINT: cloud/crm_site_consistency_001/CHECKPOINT.json
+NEXT: Запустить ограниченный read-only probe через штатный marker-only автопилот; затем закончить реестр полей, deletion/media, статусы бота, SLA и browser tests. Уточнить политику archive для UA-0020/UA-0021. Production — только после готового Gate B и отдельной команды по ТЗ.
