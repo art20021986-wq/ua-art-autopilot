@@ -5,7 +5,7 @@
   "autostart_ledger_sha256": "b4d7c386304b053692114d4a57f9ed37055dbcd7bee3ea64c84c2d8e5b71586f",
   "autostart_source_commit": "10da8a1aa9b85c69c6d682d0fa14f987bd33137b",
   "created_at": "2026-09-22T06:53:44Z",
-  "critical_gate_status": "NOT_REACHED",
+  "critical_gate_status": "PENDING",
   "execution_mode": "AUTOMATIC",
   "failure_history": [
     {
@@ -27,12 +27,12 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PENDING",
-  "post_health_status": "NOT_REQUIRED_ABORTED_BEFORE_PRODUCTION",
+  "post_health_status": "REQUIRED",
   "pre_health_status": "REQUIRED",
   "production_required": true,
   "queue_key": "card-ua-0001-143ec3dfa3896ec3",
   "receipt_path": "state/receipts/GE-PRICE-CACHE-20260922.json",
-  "receipt_validation_status": "NOT_CREATED",
+  "receipt_validation_status": "PENDING",
   "request_path": "tasks/requests/GE-PRICE-CACHE-20260922.json",
   "request_sha256": "c6a6b444bfe97b313b6de5d80694572b4ae50c93bde6a1f7042bac7fcc6ee2a1",
   "resource_locks": [
@@ -60,9 +60,8 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "7114735fe25112d8ea32a53f4ff35f8320721ea8",
-  "storage_preflight_status": "FAIL_STALE",
+  "storage_preflight_status": "PENDING",
   "task_class": "CRITICAL",
-  "task_execution_status": "FAILED",
-  "updated_at": "2026-09-22T06:54:56Z",
-  "reconciliation_path": "state/reconciliations/GE-PRICE-CACHE-20260922.35696840719.aborted-before-production.json"
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "updated_at": "2026-09-22T06:54:56Z"
 }
