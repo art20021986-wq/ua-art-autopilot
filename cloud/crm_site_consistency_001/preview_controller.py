@@ -50,6 +50,7 @@ def main():
     source=package();api.upload(REMOTE_SCRIPT,source)
     try:
         result=api.run('preview',run)
+        print('SHADOW_RESULT='+json.dumps(result,sort_keys=True),flush=True)
         (HERE/'shadow_evidence.json').write_text(json.dumps(result,indent=2)+'\n')
         success=result.get('status')=='PASS' and result.get('protected_files_unchanged') is True and result.get('production_written') is False
         receipt={'task_id':TASK_ID,'task_class':'STANDARD','status':'FINISHED' if success else 'FAILED',
@@ -62,7 +63,7 @@ def main():
         path.write_text(json.dumps(receipt,sort_keys=True)+'\n')
         if not success:raise RuntimeError('SHADOW_RENDER_VALIDATION_FAILED')
     finally:
-        for path in (REMOTE_SCRIPT,REMOTE_RECEIPT):
+        for path in (REMOTE_SCRIPT,):
             try:api.delete(path)
             except Exception:pass
 

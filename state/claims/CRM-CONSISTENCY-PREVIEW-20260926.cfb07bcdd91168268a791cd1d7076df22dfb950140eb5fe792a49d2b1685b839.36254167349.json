@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "223bfa9a16d87bc8"
+    },
+    {
+      "action": "STOP_FAIL_CLOSED_TERMINAL",
+      "at": "2026-09-26T16:08:32Z",
+      "class": "LOGICAL",
+      "message": "Isolated renderer regression returned FAIL, run completed/failure. Structured receipt was not exported by success-only workflow; next candidate retains and logs redacted diagnostic evidence. No production installation occurred. Closing failed run, not marking successful.",
+      "retries_remaining": 0,
+      "retry_allowed": false,
+      "signature": "3003a30febbe7692"
     }
   ],
   "heartbeat_at": "2026-09-26T16:05:38Z",
@@ -42,6 +51,6 @@
   "source_commit": "bec51c6afe8e9ab5346db336d281e9ad7c19d484",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-09-26T16:07:52Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-09-26T16:08:32Z"
 }
