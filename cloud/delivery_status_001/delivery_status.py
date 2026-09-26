@@ -13,6 +13,13 @@ class DeliveryStatus(str, Enum):
 
 
 HIDDEN = "hidden"
+
+CHOICES = (
+    ("korea", "kr_bought", 1, "В Корее"),
+    ("ferry", "sea_loaded", 2, "На пароме"),
+    ("georgia", "ge_waiting", 3, "В Грузии"),
+    ("kyiv", "ua_arrived", 4, "В Киеве"),
+)
 LABELS = {
     DeliveryStatus.KOREA.value: "В Корее",
     DeliveryStatus.FERRY.value: "На пароме",
@@ -30,13 +37,42 @@ _INPUT = {
     "ge_waiting": "georgia",
     "kyiv": "kyiv",
     "ua_arrived": "kyiv",
-    **{label.casefold(): code for code, label in LABELS.items()},
 }
+
+_CANONICAL = frozenset(status.value for status in DeliveryStatus)
+_CRM_CODES = {public: internal for public, internal, _, _ in CHOICES}
+_STAGE_NUMBERS = {public: number for public, _, number, _ in CHOICES}
+
+
+def normalize_status(value: object) -> str:
+    """Accept only the public enum at an untrusted input boundary."""
+    if not isinstance(value, str):
+        return HIDDEN
+    return value if value in _CANONICAL else HIDDEN
+
+
+def crm_status_from_input(value: object) -> str:
+    """Translate a new canonical CRM callback to its existing storage code."""
+    return _CRM_CODES.get(normalize_status(value), HIDDEN)
+
+
+def storage_status(value: object) -> str:
+    """Normalize trusted existing writers and new canonical status codes."""
+    if not isinstance(value, str):
+        return HIDDEN
+    if value in _CRM_CODES.values():
+        return value
+    return crm_status_from_input(value)
+
+
+def stage_number(value: object) -> int:
+    """Return zero for a card excluded from the public catalogue."""
+    return _STAGE_NUMBERS.get(public_status(value), 0)
 
 
 def public_status(value: object) -> str:
     """Map a known active CRM value; hide everything else."""
-    return _INPUT.get(value.strip().casefold(), HIDDEN) if isinstance(value, str) else HIDDEN
+    return _INPUT.get(value, HIDDEN) if isinstance(value, str) else HIDDEN
 
 
 def public_label(value: object) -> str | None:
