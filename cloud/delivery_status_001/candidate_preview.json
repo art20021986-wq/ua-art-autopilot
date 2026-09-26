@@ -1,0 +1,33 @@
+{
+  "candidate_sha256": {
+    "cars_schema.py": "16d53277834ecfad1eabc10f75e5cabb1060b35416b61b6f534ec024ce9dbc07",
+    "cars_ui.py": "c17a45d64f17fbab2e2f032061f6037a48bb5fa038b3f02e20995b5e50fbca7b",
+    "catalog_design_guard.py": "59502b73871968c7f90511fd28af2f839220db982908b0afe7b5b6f55c6e7fd7",
+    "db.py": "af7624cbcf227b865ac98c68462ad6da8d18223881bba836f2f9a8669cf1dab7",
+    "master_card.py": "c99b6c0271586d4f8c56e4184528ab6f20541173be9a287d9d64661b4b7184b2",
+    "publish_transaction_guard.py": "9b41f15e8455ec7e579bea1e194e6c855cc50b7b0e060ee2a010301d28c981e8",
+    "stranica.py": "4d710266abb2a92754ff3e3fc7de86c628760bee3c455dfbb177dedec113b1a1",
+    "ua_delivery_status.py": "c544bc121b7b3b66d45519d5b63ed3687567af7e9d5f7011ae2fb53cc372bdd0",
+    "ua_stage_catalog_sync.py": "a8d2784e73d005b5a02328f63c9233d78da665547266276df69291383616a255",
+    "ua_crm_public_sync.py": "2b5f6a2473b263fddd6ab3266a3ba76cc9738da15178f865862098821cabcc41"
+  },
+  "observed_at": "2026-09-26T17:56:10.991353+00:00",
+  "production_written": false,
+  "source_sha256": {
+    "cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
+    "cars_ui.py": "63a926d752d1c0662c8700521db748d1dff98276df168e9ce693bd9e7c2a378b",
+    "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+    "db.py": "cee4e2da897a136c4471e85a115d018a9ea94134e7ec187f50fa90e03e5d8a6d",
+    "master_card.py": "27e32420bbec9f1e0a25621e1c20dda20944537daa40c1ccac574689cd6c3f6e",
+    "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+    "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+    "ua_stage_catalog_sync.py": "c349d44821f92950234705d41507587c3ca2780dd750abda0028c060569a5beb",
+    "ua_crm_public_sync.py": "31e47106dc65ac1a2e013708bd58112fc1fffae06445351ea5f08246cf984e5c"
+  },
+  "status": "COMPILE_PASS",
+  "local_tests": {
+    "passed": 27,
+    "production_end_to_end": false
+  },
+  "scope": "Nine-module candidate compiled as one build; worker extension separately transformed and compiled in the same read-only session. No live behavior or deployment acceptance."
+}
