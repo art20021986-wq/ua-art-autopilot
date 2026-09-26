@@ -13,6 +13,7 @@ SOURCE_SHA256 = {
     "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
     "ua_stage_catalog_sync.py": "c349d44821f92950234705d41507587c3ca2780dd750abda0028c060569a5beb",
     "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
+    "ua_crm_public_sync.py": "31e47106dc65ac1a2e013708bd58112fc1fffae06445351ea5f08246cf984e5c",
 }
 
 
@@ -142,6 +143,26 @@ def patch_master_catalog(source):
     return once(source, '    if not _rows:\n        raise RuntimeError("TASK090_NO_PUBLISHED_ROWS")\n', '')
 
 
+def patch_public_sync(source):
+    source = replace_function(source, "snapshot", lambda s: once(
+        inject_function(s, '    from ua_delivery_status import public_status\n'),
+        "        result[str(row['id'])] = {'code': code, 'sha256': hashlib.sha256(raw).hexdigest()}",
+        "        result[str(row['id'])] = {'code': code, 'sha256': hashlib.sha256(raw).hexdigest(), 'delivery_status': public_status(row.get('status'))}"))
+    source = once(source, "            if revision == state['revisions'].get(identity):",
+                  "            if revision['sha256'] == state['revisions'].get(identity, {}).get('sha256'):")
+    start = source.index('                if publish is None:')
+    end = source.index('                if snapshot().get(identity) != revision:', start)
+    active = source[start:end]
+    replacement = '''                if revision['delivery_status'] == 'hidden':
+                    from ua_stage_catalog_sync import reconcile
+                    reconcile(apply=True)
+                else:
+''' + ''.join('    ' + line for line in active.splitlines(keepends=True))
+    source = source[:start] + replacement + source[end:]
+    return once(source, "                return 'published'",
+                "                return 'hidden' if revision['delivery_status'] == 'hidden' else 'published'")
+
+
 def build_candidate(sources, policy_source):
     if set(sources) != set(SOURCE_SHA256):
         raise ValueError("SOURCE_SET")
@@ -186,6 +207,7 @@ def build_candidate(sources, policy_source):
     output["publish_transaction_guard.py"] = publisher
     output["ua_stage_catalog_sync.py"] = patch_sync(output["ua_stage_catalog_sync.py"])
     output["catalog_design_guard.py"] = patch_catalog_design(output["catalog_design_guard.py"])
+    output["ua_crm_public_sync.py"] = patch_public_sync(output["ua_crm_public_sync.py"])
     output["ua_delivery_status.py"] = policy_source
     for name, source in output.items():
         compile(source, name, "exec")
