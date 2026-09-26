@@ -1,0 +1,38 @@
+{
+  "schema_version": "UA-ART-DATA-ONLY-RECONCILIATION-VALIDATION-1",
+  "recorded_at": "2026-09-26T12:22:45.198Z",
+  "status": "PASS_CANDIDATE_ONLY",
+  "parent_main": "76115cd84ba7b802c4c3400a060f51aa7b7c8c14",
+  "plan_sha256": "0733692a955b0696fb5f001910ad8c446cdae40e0d88fef94ece6bcef52408a4",
+  "checks": {
+    "halt_identity_match": true,
+    "claim_identity_match": true,
+    "failed_before_transaction": true,
+    "transaction_paths_observed": 0,
+    "receipt_paths_observed": 0,
+    "backup_executed": false,
+    "controller_executed": false,
+    "production_write_executed": false,
+    "rollback_executed": false,
+    "halt_archive_byte_identity": true,
+    "claim_archive_byte_identity": true,
+    "claim_terminal_status": true,
+    "original_failure_preserved": true,
+    "launch_replay_prohibited": true
+  },
+  "checks_passed": 13,
+  "checks_failed": 0,
+  "output_sha256": {
+    "proposed_claim": "2bf1014cda6d05baab8469f8a3b4709aa1a83dc3c1158aed0151b17480f299ae",
+    "proposed_reconciliation": "2e093fa55e937c31e3cdeeca41985d83abf6ff775e98294747cce4c2bae0f589",
+    "proposed_halt_archive": "4497ef90ea3dc69552333ce5849603f3df1c062337e6f3838f2b955c6fe5b151",
+    "proposed_claim_archive": "b0b3fbf4d36ace6af49e89149366fbdc1d06fffa28f13b72b870a246e9403a1b",
+    "plan": "0733692a955b0696fb5f001910ad8c446cdae40e0d88fef94ece6bcef52408a4"
+  },
+  "limitations": [
+    "No independent review in this operation.",
+    "No main ref update or HALT removal.",
+    "Live readback does not attribute the existing production installation to failed run 35696840719."
+  ],
+  "next_action": "Independent read-only review against current main; only exact-parent atomic application if PASS."
+}
