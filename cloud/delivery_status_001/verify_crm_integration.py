@@ -7,12 +7,14 @@ import logging
 import os
 from pathlib import Path
 import sys
+import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest.mock import AsyncMock, Mock, patch
 
 import delivery_status as policy
 from integration_patch import patch_menu, patch_stage_set
+from verify_catalog_integration import load_module
 
 
 FUNCTION_SHA256 = {
@@ -51,6 +53,8 @@ class CRMIntegrationTest(unittest.IsolatedAsyncioTestCase):
         self.modules = patch.dict(sys.modules, {"ua_delivery_status": policy, "crm_online_guard": self.guard})
         self.modules.start()
         self.addCleanup(self.modules.stop)
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
         for name, transform in (("stage_set", patch_stage_set), ("stage_menu", patch_menu)):
             full = root / "cars_ui.py"
             if full.is_file():
@@ -61,7 +65,11 @@ class CRMIntegrationTest(unittest.IsolatedAsyncioTestCase):
             else:
                 fragment = (root / (name + ".py")).read_text(encoding="utf-8").rstrip("\n")
             self.assertEqual(hashlib.sha256(fragment.encode()).hexdigest(), FUNCTION_SHA256[name])
-            exec(compile("from __future__ import annotations\n" + transform(fragment), name, "exec"), self.namespace)
+            candidate = Path(self.temp.name) / (name + ".py")
+            candidate.write_text("from __future__ import annotations\n" + transform(fragment), encoding="utf-8")
+            module = load_module(candidate)
+            module.__dict__.update(self.namespace)
+            self.namespace[name] = getattr(module, name)
 
     def set_field(self, card_id, field, value, actor_id):
         self.writes.append((card_id, field, value, actor_id))
