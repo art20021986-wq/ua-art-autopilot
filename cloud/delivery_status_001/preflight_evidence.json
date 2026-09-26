@@ -13,14 +13,14 @@
   },
   "cpu": {
     "daily_cpu_limit_seconds": 5000,
-    "daily_cpu_total_usage_seconds": 6079.193945,
+    "daily_cpu_total_usage_seconds": 6528.855077,
     "next_reset_time": "2026-09-27T08:37:11+00:00"
   },
   "full_acceptance": false,
   "live_golden_tests_passed": 8,
-  "observed_at": "2026-09-26T18:25:09.039376+00:00",
+  "observed_at": "2026-09-26T19:17:50.800023+00:00",
   "production_written": false,
-  "run_id": "36262362403",
+  "run_id": "36265486133",
   "source_sha256": {
     "cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
     "cars_ui.py": "63a926d752d1c0662c8700521db748d1dff98276df168e9ce693bd9e7c2a378b",
@@ -33,6 +33,6 @@
     "ua_stage_catalog_sync.py": "c349d44821f92950234705d41507587c3ca2780dd750abda0028c060569a5beb"
   },
   "status": "PASS",
-  "task_id": "DELIVERY-STATUS-PREFLIGHT-20260927",
-  "tests_passed": 27
+  "task_id": "DELIVERY-STATUS-PREFLIGHT-20260927-R2",
+  "tests_passed": 37
 }
