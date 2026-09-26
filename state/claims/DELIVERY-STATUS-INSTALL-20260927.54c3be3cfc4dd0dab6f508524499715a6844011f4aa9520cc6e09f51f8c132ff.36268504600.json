@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "46cfa0a0ffaa2370bb0c65225fb39f3b19822e2b9165041c55121a2c149b747f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-26T20:32:01Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 36268504600",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "064f62f96778aaec"
+    }
+  ],
   "heartbeat_at": "2026-09-26T20:15:04Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -71,7 +82,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "19e463824e26656ce1af74bb0cf73d974b96862d0e2e8fcb3997c6ee244fc403",
     "file_sha256": {
@@ -90,5 +101,5 @@
       "cloud/delivery_status_001/verify_worker_integration.py": "ece3fb278d1fe49606f01904207a1024d7e6becdd9e71efb6c348bc7f515f68a"
     }
   },
-  "updated_at": "2026-09-26T20:31:40Z"
+  "updated_at": "2026-09-26T20:32:01Z"
 }
