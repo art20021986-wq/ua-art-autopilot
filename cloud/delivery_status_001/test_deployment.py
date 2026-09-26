@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 import deployment_remote as remote
 from deployment_transport import canonical, sha
+from deployment_transport import API, BOT_ID, BOT_COMMAND, TransportError
 
 
 class RecoveryTests(unittest.TestCase):
@@ -122,6 +123,27 @@ class RecoveryTests(unittest.TestCase):
         (self.root/'alias.py').symlink_to(self.root/'db.py')
         with self.assertRaises(remote.DeploymentError):
             remote.read(self.root/'alias.py')
+
+
+class TransportTests(unittest.TestCase):
+    def test_resume_does_not_reset_an_already_starting_bot(self):
+        api = API('test-token')
+        with patch.object(api, 'bot', side_effect=[
+            {'enabled': True, 'state': 'Starting'},
+            {'enabled': True, 'state': 'Running'},
+        ]), patch.object(api, 'json') as mutate:
+            self.assertTrue(api.set_bot(True)['enabled'])
+            mutate.assert_not_called()
+
+    def test_wrong_bot_identity_is_rejected_before_pause(self):
+        api = API('test-token')
+        with patch.object(api, 'json', return_value={
+            'id': BOT_ID, 'command': BOT_COMMAND+' --other', 'enabled': True,
+        }) as call:
+            with self.assertRaisesRegex(TransportError, 'BOT_IDENTITY'):
+                api.set_bot(False)
+            self.assertEqual(call.call_count, 1)
+            self.assertEqual(call.call_args.args[0], 'GET')
 
 
 if __name__ == '__main__':
