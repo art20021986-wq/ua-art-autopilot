@@ -1,0 +1,23 @@
+{
+ "acceptance_scope": "Ukraine price presence only; not full CRM or browser acceptance",
+ "crm_vehicle_data_touched": false,
+ "finished_at": "2026-09-26T15:19:45Z",
+ "full_consistency_accepted": false,
+ "media_touched": false,
+ "mismatches": [],
+ "observation_environment": "production_read_only",
+ "production_required": false,
+ "production_touched": false,
+ "read_only": true,
+ "request_sha256": "9166fe8d0e58d964c48a3ef07de48024ed9e5ba21538eeb8b60809c9f8673a1c",
+ "rollback_ready": true,
+ "rollback_reason": "GET/HEAD only; no production mutation to roll back",
+ "run_id": "36251435028",
+ "site_touched": false,
+ "status": "FINISHED",
+ "target_environment": "shadow",
+ "task_class": "STANDARD",
+ "task_id": "CRM-SITE-CONSISTENCY-PROBE-20260926",
+ "tests": "PASS",
+ "unexpected_changes": 0
+}

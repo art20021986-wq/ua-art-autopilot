@@ -1,0 +1,38 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/crm_site_consistency_probe_20260926/evidence.json",
+    "cloud/crm_site_consistency_probe_20260926/pages.json"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Read-only continuation after owner instruction on 2026-09-26. Collect current serving, price evidence and sync-module excerpts with GET/HEAD only. Correct receipt contract failure of prior run 36249087712 without changing validators. No site/CRM writes, no installation. This is limited diagnostic evidence, not full specification acceptance.",
+  "execution": {
+    "controller_path": "cloud/crm_site_consistency_probe_20260926/controller.py",
+    "controller_sha256": "362f5e311ef4047ce4801c43e120663f765502efd871c9026668628471b85550",
+    "dependency_paths": [
+      "cloud/crm_site_consistency_probe_20260926/probe.py"
+    ],
+    "evidence_paths": [
+      "cloud/crm_site_consistency_probe_20260926/evidence.json",
+      "cloud/crm_site_consistency_probe_20260926/pages.json",
+      "state/receipts/CRM-SITE-CONSISTENCY-PROBE-20260926.json"
+    ],
+    "file_sha256": {
+      "cloud/crm_site_consistency_probe_20260926/probe.py": "dda65fb3be0ed33b0fb1ef9d322c791a2b68a55c731fc43ea7174dde897a618d",
+      "cloud/crm_site_consistency_probe_20260926/test_contract.py": "3b8b36767b0c1909506481edf05549574e6cbf00183827f120e79edf56998956"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/CRM-SITE-CONSISTENCY-PROBE-20260926.json",
+    "test_paths": [
+      "cloud/crm_site_consistency_probe_20260926/test_contract.py"
+    ],
+    "timeout_seconds": 600
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 16777216,
+  "task_id": "CRM-SITE-CONSISTENCY-PROBE-20260926",
+  "title": "CRM site consistency diagnostic continuation"
+}

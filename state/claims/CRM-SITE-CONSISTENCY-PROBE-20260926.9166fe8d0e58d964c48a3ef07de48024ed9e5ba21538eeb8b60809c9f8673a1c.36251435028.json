@@ -1,0 +1,54 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-SITE-CONSISTENCY-PROBE-20260926.9166fe8d0e58d964c48a3ef07de48024ed9e5ba21538eeb8b60809c9f8673a1c.json",
+  "autostart_ledger_sha256": "287bbc13a702b38c618567a2c1406b599d139b85acd945f7cf3b11ce30bcf733",
+  "autostart_source_commit": "284fb06ef269335b8cb06f436a822b2c05dc6082",
+  "created_at": "2026-09-26T15:18:32Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-09-26T15:20:05Z",
+  "heartbeat_at": "2026-09-26T15:20:05Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "36251435028",
+    "task_id": "CRM-SITE-CONSISTENCY-PROBE-20260926",
+    "task_sha256": "9166fe8d0e58d964c48a3ef07de48024ed9e5ba21538eeb8b60809c9f8673a1c"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "read_only-e8dc1350d5e48e50-f544dc91338258ad",
+  "receipt_path": "state/receipts/CRM-SITE-CONSISTENCY-PROBE-20260926.json",
+  "receipt_sha256": "651460cdf54d62629e661a1bb794fd1fa37b7d6c22fb18535bc556e3e153e58b",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CRM-SITE-CONSISTENCY-PROBE-20260926.json",
+  "request_sha256": "9166fe8d0e58d964c48a3ef07de48024ed9e5ba21538eeb8b60809c9f8673a1c",
+  "resource_locks": [
+    "READ_ONLY:e8dc1350d5e48e50"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "8be17bc68f89391101249da44bd2e35a2183a145",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92136357888,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 16777216,
+    "status": "PASS",
+    "usage_percent": 40.506
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "362f5e311ef4047ce4801c43e120663f765502efd871c9026668628471b85550",
+    "file_sha256": {
+      "cloud/crm_site_consistency_probe_20260926/probe.py": "dda65fb3be0ed33b0fb1ef9d322c791a2b68a55c731fc43ea7174dde897a618d",
+      "cloud/crm_site_consistency_probe_20260926/test_contract.py": "3b8b36767b0c1909506481edf05549574e6cbf00183827f120e79edf56998956"
+    }
+  },
+  "updated_at": "2026-09-26T15:20:05Z"
+}

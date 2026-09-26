@@ -1,0 +1,56 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-CONSISTENCY-PREVIEW-20260926.43cbb5669a1331cab1962a6b2efff7ef0ebadea42655a129571b44428aa7f486.json",
+  "autostart_ledger_sha256": "e9943febb4375fb8952fa7f1d57fd8ab69b0fe8989d89dbf33e904a47e72d608",
+  "autostart_source_commit": "bebbc6136f1dfa366276daaa891384e9d44f664e",
+  "created_at": "2026-09-26T16:15:17Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-26T16:16:57Z",
+      "class": "UNKNOWN",
+      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 36254742734",
+      "retries_remaining": 3,
+      "retry_allowed": false,
+      "signature": "0185f410748a4dbc"
+    },
+    {
+      "action": "STOP_FAIL_CLOSED_TERMINAL",
+      "at": "2026-09-26T16:18:20Z",
+      "class": "LOGICAL",
+      "message": "Regression: checker assumed VIN inside short specification table; UA-0001 uses explicit ua-vin-value block. Corrected selector with mismatch and duplicate tests. Server CPU 5023/5000, new heavy runs deferred per CLAUDE.md. Completed failed run, no installation.",
+      "retries_remaining": 0,
+      "retry_allowed": false,
+      "signature": "46ce067e1285cf21"
+    }
+  ],
+  "heartbeat_at": "2026-09-26T16:15:17Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "36254742734",
+    "task_id": "CRM-CONSISTENCY-PREVIEW-20260926",
+    "task_sha256": "43cbb5669a1331cab1962a6b2efff7ef0ebadea42655a129571b44428aa7f486"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/CRM-CONSISTENCY-PREVIEW-20260926.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CRM-CONSISTENCY-PREVIEW-20260926.json",
+  "request_sha256": "43cbb5669a1331cab1962a6b2efff7ef0ebadea42655a129571b44428aa7f486",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "97439619fe4855b6776128bb6d0cc14f3cd4e230",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-09-26T16:18:20Z"
+}
