@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-36268504600-54c3be3cfc4dd0da",
   "production_transaction_path": "state/transactions/DELIVERY-STATUS-INSTALL-20260927.54c3be3cfc4dd0dab6f508524499715a6844011f4aa9520cc6e09f51f8c132ff.36268504600.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "ROLLING_BACK",
   "queue_key": "catalog_renderer-e9376e6e32707c55",
   "receipt_path": "state/receipts/DELIVERY-STATUS-INSTALL-20260927.json",
   "receipt_validation_status": "PENDING",
@@ -90,5 +90,5 @@
       "cloud/delivery_status_001/verify_worker_integration.py": "ece3fb278d1fe49606f01904207a1024d7e6becdd9e71efb6c348bc7f515f68a"
     }
   },
-  "updated_at": "2026-09-26T20:15:04Z"
+  "updated_at": "2026-09-26T20:31:40Z"
 }
