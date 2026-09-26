@@ -4,6 +4,7 @@
     "cars_ui.py": "c17a45d64f17fbab2e2f032061f6037a48bb5fa038b3f02e20995b5e50fbca7b",
     "catalog_design_guard.py": "59502b73871968c7f90511fd28af2f839220db982908b0afe7b5b6f55c6e7fd7",
     "db.py": "af7624cbcf227b865ac98c68462ad6da8d18223881bba836f2f9a8669cf1dab7",
+    "konteyner.py": "cb09e8cfac57f05a004f7dae73d57f76c422132a8e0d6a16f28f0a949647760e",
     "master_card.py": "c99b6c0271586d4f8c56e4184528ab6f20541173be9a287d9d64661b4b7184b2",
     "publish_transaction_guard.py": "9b41f15e8455ec7e579bea1e194e6c855cc50b7b0e060ee2a010301d28c981e8",
     "stranica.py": "4d710266abb2a92754ff3e3fc7de86c628760bee3c455dfbb177dedec113b1a1",
@@ -13,19 +14,20 @@
   },
   "cpu": {
     "daily_cpu_limit_seconds": 5000,
-    "daily_cpu_total_usage_seconds": 6528.855077,
+    "daily_cpu_total_usage_seconds": 6647.962026,
     "next_reset_time": "2026-09-27T08:37:11+00:00"
   },
   "full_acceptance": false,
   "live_golden_tests_passed": 8,
-  "observed_at": "2026-09-26T19:17:50.800023+00:00",
+  "observed_at": "2026-09-26T19:29:57.479280+00:00",
   "production_written": false,
-  "run_id": "36265486133",
+  "run_id": "36266189044",
   "source_sha256": {
     "cars_schema.py": "1dd5d950eb4514901ca51911b4c5f89481263956ceea28f30e1fa2888cdd8d73",
     "cars_ui.py": "63a926d752d1c0662c8700521db748d1dff98276df168e9ce693bd9e7c2a378b",
     "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
     "db.py": "cee4e2da897a136c4471e85a115d018a9ea94134e7ec187f50fa90e03e5d8a6d",
+    "konteyner.py": "bdf6b953e95cf5ae78d3d640b9ba438202e9708d48cb1c7f4e1556bb59921824",
     "master_card.py": "27e32420bbec9f1e0a25621e1c20dda20944537daa40c1ccac574689cd6c3f6e",
     "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
     "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
@@ -33,6 +35,6 @@
     "ua_stage_catalog_sync.py": "c349d44821f92950234705d41507587c3ca2780dd750abda0028c060569a5beb"
   },
   "status": "PASS",
-  "task_id": "DELIVERY-STATUS-PREFLIGHT-20260927-R2",
-  "tests_passed": 37
+  "task_id": "DELIVERY-STATUS-PREFLIGHT-20260927-R4",
+  "tests_passed": 39
 }
