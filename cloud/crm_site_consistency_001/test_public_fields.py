@@ -32,6 +32,15 @@ class Checks(unittest.TestCase):
  def test_stale_catalog_specs(self):
   for old,new in [('1999','2000'),('LPI','diesel'),('Автомат','Механика')]:
    with self.subTest(field=old), self.assertRaises(RuntimeError):verify_core_fields(CAT.replace(old,new),CARD,True)
+ def test_separate_visible_vin_block(self):
+  no_row=PAGE.replace('<tr><td>VIN</td><td>'+CARD['vin']+'</td></tr>','')
+  verify_core_fields(no_row+'<div class="ua-vin-value">'+CARD['vin']+'</div>',CARD)
+  with self.assertRaises(RuntimeError):verify_core_fields(no_row+'<!--'+CARD['vin']+'-->',CARD)
+ def test_wrong_separate_vin_not_masked_by_table(self):
+  with self.assertRaises(RuntimeError):verify_core_fields(PAGE+'<div class="ua-vin-value">WRONG</div>',CARD)
+ def test_duplicate_separate_vin_blocks(self):
+  block='<div class="ua-vin-value">'+CARD['vin']+'</div>'
+  with self.assertRaisesRegex(RuntimeError,'ambiguous'):verify_core_fields(PAGE+block+block,CARD)
  def test_adapter_builder_rejects_unreviewed_source(self):
   from build_candidate import build
   with tempfile.TemporaryDirectory() as d:

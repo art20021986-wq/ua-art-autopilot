@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "0185f410748a4dbc"
+    },
+    {
+      "action": "STOP_FAIL_CLOSED_TERMINAL",
+      "at": "2026-09-26T16:18:20Z",
+      "class": "LOGICAL",
+      "message": "Regression: checker assumed VIN inside short specification table; UA-0001 uses explicit ua-vin-value block. Corrected selector with mismatch and duplicate tests. Server CPU 5023/5000, new heavy runs deferred per CLAUDE.md. Completed failed run, no installation.",
+      "retries_remaining": 0,
+      "retry_allowed": false,
+      "signature": "46ce067e1285cf21"
     }
   ],
   "heartbeat_at": "2026-09-26T16:15:17Z",
@@ -42,6 +51,6 @@
   "source_commit": "97439619fe4855b6776128bb6d0cc14f3cd4e230",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-09-26T16:16:57Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-09-26T16:18:20Z"
 }

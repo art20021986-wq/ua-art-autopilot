@@ -1,0 +1,42 @@
+{
+  "actual_adapter_stale_mileage_rejected": true,
+  "blocked_io": [],
+  "candidate_sha256": {
+    "master_card.py": "f63a552d956e18ffa489dbd8a5bc8f6ce37675fc6288124f118110a0b07bb4bc",
+    "publikaciya.py": "0fcdb641094d12101ec758782fec9a6c11a0675e6d26fbbb29d5ff0b8d19a38d",
+    "stranica.py": "122e8f190a80e3a423074ca5277789e8ee56f22018ce8c21ff92d94b58011be0",
+    "ua_crm_public_sync.py": "3050b91b311e64ebfd0bd9f5db920b7bfe76a16a5e74cf52174e08920d2533a1",
+    "ua_public_freshness.py": "0ccf765ba196b98ebc5f8aff7ce0f14150fc39509376cf9583054032b81fed96"
+  },
+  "cards": [],
+  "checking_code": "UA-0001",
+  "elapsed_seconds": 18.74,
+  "error_type": "RuntimeError",
+  "failure_frames": [
+    {
+      "file": "crm_consistency_preview_20260926.py",
+      "function": "validate",
+      "line": 147
+    },
+    {
+      "file": "publikaciya.py",
+      "function": "_master",
+      "line": 604
+    },
+    {
+      "file": "public_fields.py",
+      "function": "verify_core_fields",
+      "line": 103
+    },
+    {
+      "file": "public_fields.py",
+      "function": "one",
+      "line": 100
+    }
+  ],
+  "full_acceptance": false,
+  "production_written": false,
+  "protected_files_unchanged": true,
+  "run_id": "36254742734",
+  "status": "FAIL"
+}

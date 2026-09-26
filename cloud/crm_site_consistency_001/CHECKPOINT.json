@@ -1,36 +1,27 @@
 {
   "task_id": "UA-ART-CRM-SITE-CONSISTENCY-001",
-  "status": "IN_PROGRESS_PARTIAL_DIAGNOSTICS",
-  "production_modified": false,
-  "production_installation_allowed_by_this_checkpoint": false,
+  "status": "BLOCKED_CPU_QUOTA_AND_PENDING_FULL_REHEARSAL",
+  "production_installation_started": false,
   "full_acceptance": false,
-  "live_db_rows": 21,
-  "published_rows": 21,
-  "duplicate_codes": 0,
-  "duplicate_vins": 0,
-  "public_byte_checks": {
-    "checked": 23,
-    "matched": 23,
-    "at": "2026-09-26T15:10:40Z"
-  },
-  "candidate_tests": {
-    "field_tests": 12,
-    "probe_tests": 6,
-    "recorded_html_checks": 42
-  },
-  "archive_policy_unresolved": [
-    "UA-0020",
-    "UA-0021"
-  ],
-  "next_readonly_task": "CRM-SITE-CONSISTENCY-PROBE-20260926",
   "gate_b": "NOT_READY",
-  "report": "cloud/crm_site_consistency_001/REPORT.md",
-  "diagnostic_run": {
-    "id": 36251435028,
-    "status": "completed",
-    "conclusion": "success",
-    "finished_utc": "2026-09-26T15:19:45Z",
-    "scope": "limited read-only price/serving probe",
-    "full_consistency_accepted": false
-  }
+  "local_tests": {
+    "passed": 55,
+    "failed": 0,
+    "scope": "clean pinned package"
+  },
+  "last_shadow_run": "36254742734",
+  "last_shadow_status": "FAIL",
+  "last_shadow_root_cause": "VIN is in dedicated visible block, absent from short table on UA-0001",
+  "root_cause_fixed_locally": true,
+  "full_shadow_after_last_fix": "NOT_RUN_CPU_QUOTA",
+  "resource_evidence": "resource_blocker_20260926.json",
+  "next_reset_utc": "2026-09-27T08:37:11Z",
+  "next_steps": [
+    "Read fresh CPU usage; no heavy action at >=85 percent",
+    "Run exact current shadow request from main with a fresh authorization-bound nonce",
+    "Pass full 21-card renderer and transaction/rollback rehearsal",
+    "Prepare exact production manifest, source CAS backup, rollback and Gate B",
+    "Install through main CRITICAL Actions using existing owner authorization; restart exact verified start_safe.py task 266084 as required",
+    "Verify ordinary public HTML, hidden photo exclusion/order/cover, next real CRM edits, browser pages; do not claim full acceptance early"
+  ]
 }

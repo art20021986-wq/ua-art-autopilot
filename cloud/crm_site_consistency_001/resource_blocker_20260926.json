@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-09-26T16:16:00Z",
+  "source": "PythonAnywhere authenticated GET cpu/ and always_on/ through existing server console",
+  "daily_cpu_limit_seconds": 5000,
+  "daily_cpu_total_usage_seconds": 5023.208252,
+  "usage_percent": 100.464,
+  "next_reset_time": "2026-09-27T08:37:11+00:00",
+  "project_heavy_operation_threshold_percent": 85,
+  "decision": "DEFER_HEAVY_PRODUCTION_OPERATIONS",
+  "production_installation_started": false,
+  "always_on": [
+    {
+      "id": 266084,
+      "enabled": true,
+      "state": "Running",
+      "script": "start_safe.py"
+    },
+    {
+      "id": 270984,
+      "enabled": true,
+      "state": "Running",
+      "script": "uaart_connection_monitor.py"
+    }
+  ]
+}

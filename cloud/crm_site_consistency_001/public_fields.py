@@ -16,6 +16,7 @@ class Fields(HTMLParser):
         self.tables=[]
         self.paragraphs=[]
         self.spans=[]
+        self.visible_vins=[]
         self.current_table=None
         self.row=None
 
@@ -41,6 +42,7 @@ class Fields(HTMLParser):
         if tag in {'title','h1','h2'}:self.headings.append((tag,text))
         if tag=='p':self.paragraphs.append(text)
         if tag=='span':self.spans.append(text)
+        if 'ua-vin-value' in node[1].get('class','').split():self.visible_vins.append(text)
         if tag=='td' and self.row is not None:self.row.append(text)
         if tag=='tr' and self.row is not None:
             self.current_table.append(self.row);self.row=None
@@ -100,7 +102,12 @@ def verify_core_fields(source,card,catalog=False):
             if len(found)!=1:raise RuntimeError('Missing or ambiguous '+label)
             return found[0]
         vin=str(card.get('vin') or '').strip().upper()
-        if not vin or one('VIN').strip().upper()!=vin:raise RuntimeError('CRM VIN differs in visible row')
+        table_vins=[r[1] for r in rows if len(r)==2 and r[0]=='VIN']
+        if len(table_vins)>1 or len(doc.visible_vins)>1:
+            raise RuntimeError('Missing or ambiguous VIN')
+        visible_vins=table_vins+doc.visible_vins
+        if not vin or not visible_vins or any(v.strip().upper()!=vin for v in visible_vins):
+            raise RuntimeError('CRM VIN differs in visible row')
         found=re.fullmatch(r'([\d\s\u00a0\u202f]+)\s*км',one('Пробег'))
         if not found or int(re.sub(r'\s','',found[1]))!=mileage:
             raise RuntimeError('CRM mileage differs in visible row')
