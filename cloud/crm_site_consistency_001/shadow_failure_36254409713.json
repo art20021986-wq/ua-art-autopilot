@@ -1,0 +1,43 @@
+{
+  "actual_adapter_stale_mileage_rejected": true,
+  "blocked_io": [],
+  "elapsed_seconds": 16.27,
+  "error_type": "OperationalError",
+  "failure_frames": [
+    {
+      "file": "ua_additional_spec.py",
+      "function": "fetch_specs",
+      "line": 103
+    },
+    {
+      "file": "ua_additional_spec.py",
+      "function": "connect",
+      "line": 661
+    },
+    {
+      "file": "crm_consistency_preview_20260926.py",
+      "function": "restricted_connect",
+      "line": 93
+    },
+    {
+      "file": "lock4_zhurnal.py",
+      "function": "_ua_connect",
+      "line": 80
+    },
+    {
+      "file": "svyaz.py",
+      "function": "_connect",
+      "line": 136
+    },
+    {
+      "file": "lock4_zhurnal.py",
+      "function": "__init__",
+      "line": 44
+    }
+  ],
+  "full_acceptance": false,
+  "production_written": false,
+  "protected_files_unchanged": true,
+  "run_id": "36254409713",
+  "status": "FAIL"
+}

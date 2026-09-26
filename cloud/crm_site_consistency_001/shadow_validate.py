@@ -32,7 +32,7 @@ def validate(payload, production=Path('/home/Carix'), receipt_path=None):
     result = {'status':'FAIL', 'production_written':False, 'full_acceptance':False}
     try:
         candidates={p for pattern in ('*.py','*.json','.*.json','*.txt') for p in production.glob(pattern) if p.is_file() and p.stat().st_size<=8*1024*1024}
-        if sum(p.stat().st_size for p in candidates)+(production/'crm.db').stat().st_size>128*1024*1024:
+        if sum(p.stat().st_size for p in candidates)+sum((production/n).stat().st_size for n in ('crm.db','vin_specs_task111_v3.db'))>128*1024*1024:
             raise RuntimeError('SHADOW_COPY_BUDGET_EXCEEDED')
         # Private local copies; no source or CRM rows are returned in the receipt.
         for pattern in ('*.py', '*.json', '.*.json', '*.txt'):
@@ -58,11 +58,13 @@ def validate(payload, production=Path('/home/Carix'), receipt_path=None):
         if (production/'video'/'stage').is_dir():
             for p in (production/'video'/'stage').iterdir():
                 if p.is_file():shutil.copy2(p,sandbox/'video'/'stage'/p.name)
-        src=sqlite3.connect((production/'crm.db').as_uri()+'?mode=ro',uri=True)
-        dst=sqlite3.connect(sandbox/'crm.db')
-        try:src.backup(dst)
-        finally:dst.close();src.close()
-        os.chmod(sandbox/'crm.db',0o600)
+        for name in ('crm.db','vin_specs_task111_v3.db'):
+            src=sqlite3.connect((production/name).as_uri()+'?mode=ro',uri=True)
+            dst=sqlite3.connect(sandbox/name)
+            try:src.backup(dst)
+            finally:dst.close();src.close()
+            os.chmod(sandbox/name,0o600)
+        os.environ['UA_ART_SPEC_DB']=str(sandbox/'vin_specs_task111_v3.db')
         for name,encoded in payload.items():
             if not name.endswith('.py') or Path(name).name != name:
                 raise ValueError('Invalid payload path')
@@ -74,6 +76,7 @@ def validate(payload, production=Path('/home/Carix'), receipt_path=None):
             (sandbox/name).write_bytes(build_gallery_patch.build(name,original))
         import build_candidate
         build_candidate.build(production/'ua_public_freshness.py',sandbox/'ua_public_freshness.py')
+        result['candidate_sha256']={name:sha((sandbox/name).read_bytes()) for name in list(build_gallery_patch.SOURCES)+['ua_public_freshness.py']}
         # Rewrite filesystem roots only in private source copies.
         for p in sandbox.glob('*.py'):
             source=p.read_text()
@@ -137,8 +140,10 @@ def validate(payload, production=Path('/home/Carix'), receipt_path=None):
         rows=[dict(r) for r in conn.execute('SELECT * FROM cars WHERE published=1 ORDER BY id')]
         conn.close()
         checks=[]
+        result['cards']=checks
         for row in rows:
             code=row['auto_number']
+            result['checking_code']=code
             html,diag,model=publikaciya._master(code)
             verify_core_fields(html,row)
             verify_photo_structure(html,row,gallery_paths(row,root=sandbox))
@@ -146,6 +151,7 @@ def validate(payload, production=Path('/home/Carix'), receipt_path=None):
             if errors:raise RuntimeError('EXISTING_RENDER_VALIDATOR_FAILED')
             checks.append({'code':code,'html_sha256':sha(html.encode()),'photos':len(gallery_paths(row,root=sandbox))})
         import publish_transaction_guard as guard
+        result['checking_code']='catalog'
         catalog, catalog_rows=guard._build_catalog()
         guard._validate_catalog(catalog,{r['auto_number']:r for r in rows})
         if blocked:raise RuntimeError('SHADOW_ATTEMPTED_FORBIDDEN_IO')

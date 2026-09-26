@@ -3,6 +3,7 @@ import ast
 import hashlib
 
 SOURCES = {
+ 'publikaciya.py': ('296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72', None, "\n# Validate completed public card before existing transaction writes any HTML.\n_CRM_CONSISTENCY_MASTER = _master\ndef _master(kod):\n    html, diag, card = _CRM_CONSISTENCY_MASTER(kod)\n    if html is None or card is None:\n        raise RuntimeError('CRM public card missing')\n    from public_fields import verify_core_fields\n    from public_media import verify_photo_structure\n    from crm_gallery import gallery_paths\n    verify_core_fields(html, card)\n    verify_photo_structure(html, card, gallery_paths(card))\n    return html, diag, card\n"),
  'stranica.py': ('cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687', 'kadry_mashiny', '''def kadry_mashiny(m):
     from crm_gallery import gallery_paths
     return gallery_paths(m)
@@ -33,7 +34,7 @@ def build(name, raw):
     expected, function, replacement = SOURCES[name]
     if hashlib.sha256(raw).hexdigest() != expected:
         raise ValueError('Runtime source changed; re-read before applying')
-    source = replace_function(raw.decode('utf-8'), function, replacement)
+    source = (raw.decode('utf-8') + replacement) if function is None else replace_function(raw.decode('utf-8'), function, replacement)
     if name == 'master_card.py':
         nodes = [n for n in ast.parse(source).body if isinstance(n, ast.FunctionDef) and n.name == 'sdelat_vitrinnoe']
         if len(nodes) != 1:

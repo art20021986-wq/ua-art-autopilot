@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "7e86b13af4a5d44d"
+    },
+    {
+      "action": "STOP_FAIL_CLOSED_TERMINAL",
+      "at": "2026-09-26T16:13:53Z",
+      "class": "LOGICAL",
+      "message": "Regression: shadow copy omitted vin_specs_task111_v3.db used by ua_additional_spec.connect. All original hashes match and production_written=false. Corrected shadow database inputs and actual sidecar revision coverage. Completed failed run, no installation.",
+      "retries_remaining": 0,
+      "retry_allowed": false,
+      "signature": "e947b860b7c6cea9"
     }
   ],
   "heartbeat_at": "2026-09-26T16:09:47Z",
@@ -42,6 +51,6 @@
   "source_commit": "b6e77213366769a780b11d0aae88db2d2e003264",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-09-26T16:13:13Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-09-26T16:13:53Z"
 }

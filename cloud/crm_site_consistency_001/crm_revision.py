@@ -1,6 +1,7 @@
 """Include related photo/download and specification state in sync revisions."""
 import hashlib
 import json
+import os
 import re
 import sqlite3
 from pathlib import Path
@@ -18,6 +19,8 @@ def snapshot(root='/home/Carix'):
     result = {}
     codes = set()
     try:
+        spec_path=Path(os.environ.get('UA_ART_SPEC_DB', str(root/'vin_specs_task111_v3.db'))).resolve()
+        conn.execute('ATTACH DATABASE ? AS public_specs', (spec_path.as_uri()+'?mode=ro',))
         conn.execute('BEGIN')
         for row in conn.execute('SELECT * FROM cars WHERE published=1 ORDER BY id').fetchall():
             row = dict(row)
@@ -26,9 +29,11 @@ def snapshot(root='/home/Carix'):
                 raise RuntimeError('Missing or duplicate published auto_number')
             codes.add(code)
             related = {
-                'schema': 2, 'car': row, 'photos': ledger.get('foto:' + code),
+                'schema': 3, 'car': row, 'photos': ledger.get('foto:' + code),
                 'media': [dict(r) for r in conn.execute('SELECT * FROM media WHERE car_id=? ORDER BY id', (row['id'],))],
-                'specification': [dict(r) for r in conn.execute('SELECT * FROM additional_specification WHERE car_uid=? ORDER BY id', (code,))],
+                'specification': [dict(r) for r in conn.execute('SELECT * FROM public_specs.additional_specification WHERE car_uid=? ORDER BY id', (code,))],
+                'spec_meta': [dict(r) for r in conn.execute('SELECT * FROM public_specs.additional_specification_meta WHERE car_uid=? ORDER BY field_key', (code,))],
+                'spec_binding': [dict(r) for r in conn.execute('SELECT * FROM public_specs.spec84_fact_bindings WHERE car_uid=? ORDER BY vin,generation', (code,))],
             }
             digest = hashlib.sha256(json.dumps(related, sort_keys=True, ensure_ascii=False, default=str).encode()).hexdigest()
             result[str(row['id'])] = {'code': code, 'sha256': digest}
