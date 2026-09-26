@@ -1,11 +1,14 @@
 --- ua_public_freshness.py
 +++ ua_public_freshness.py
-@@ -43,6 +43,8 @@
+@@ -43,6 +43,11 @@
              heading = re.search(r'<title\b[^>]*>(.*?)</title>', html, re.S | re.I)
          if vin not in fragment or not heading or not re.search(r'(?<!\d)' + year + r'(?!\d)', heading[1]):
              raise RuntimeError('Generated HTML does not match CRM VIN/year: ' + name)
 +        from public_fields import verify_core_fields
 +        verify_core_fields(fragment, card, catalog=(name == 'katalog.html'))
++        if name != 'katalog.html':
++            from public_media import verify_photo_structure
++            verify_photo_structure(fragment, card)
          digest = hashlib.sha256(expected).digest()
          for fresh in (True, False):
              url = BASE + name + ('?_crm_verify=' + str(time.time_ns()) if fresh else '')

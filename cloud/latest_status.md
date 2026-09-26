@@ -12,3 +12,8 @@ NEXT: Запустить ограниченный read-only probe через ш�
 DIAGNOSTIC_RUN: 36251435028 — completed/success; read-only only; Ukrainian price mismatches=0; full_consistency_accepted=false.
 DIAGNOSTIC_RECEIPT: state/receipts/CRM-SITE-CONSISTENCY-PROBE-20260926.json
 BACKGROUND_REPAIR_RUNNING: NO — this diagnostic run has finished; production candidate is not installed.
+
+PHOTO_AUDIT: 2026-09-26T15:32:08Z — 21 galleries compared by count; UA-0017 40 vs 39 allowed; UA-0019 32 vs 31 allowed. Matching counts for other 19 do not prove image identity.
+PHOTO_CANDIDATE: structural guard added to hash-pinned freshness adapter; 24 field/photo tests passed; not installed. Do not deploy guard alone before fixing gallery source.
+PHOTO_REPORT: cloud/crm_site_consistency_001/PHOTO_REPORT.md
+CURRENT_NEXT: Reconstruct verified CRM file_id-to-asset mapping, fix gallery source/filter/order/cover and related-table revision tracking; complete public field and browser acceptance before Gate B. No production writes performed.
