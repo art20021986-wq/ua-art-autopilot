@@ -1,0 +1,105 @@
+{
+  "schema_version": "DELIVERY-STATUS-READONLY-RECONCILIATION-EVIDENCE-1",
+  "task_id": "UA-ART-DELIVERY-STATUS-001",
+  "workflow_run_id": "36268504600",
+  "workflow_conclusion": "failure",
+  "evidence_kind": "Authenticated PythonAnywhere console and GitHub Actions read-only observations; not a final production receipt",
+  "read_only": true,
+  "observations": {
+    "observed_at": "2026-09-26T21:15:09.443220+00:00",
+    "bundle": "delivery-5a3b1c816a5be255a0aafed57f32d2577ed62de3d8b7cc31db31432c9738204f",
+    "installed_files": 15,
+    "installed_hash_mismatches": [],
+    "protected_files": 112,
+    "protected_hash_mismatches": [],
+    "crm_rows": 21,
+    "crm_sha256": "5bbdfcd3f939bdf41f0d8df5f2cdfc1bf132dbf921a779f0ddb4da2ecb405bf0",
+    "crm_unchanged": true,
+    "bot": {
+      "id": 266084,
+      "enabled": true,
+      "state": "Running"
+    },
+    "remote_receipts": [
+      {
+        "mode": "install",
+        "status": "PASS",
+        "safe_to_stop": true,
+        "crm_write": false,
+        "crm_unchanged": true,
+        "installed": true,
+        "restored": null,
+        "cpu_seconds": 0.914
+      },
+      {
+        "mode": "verify",
+        "status": "PASS",
+        "safe_to_stop": true,
+        "crm_write": false,
+        "crm_unchanged": true,
+        "installed": null,
+        "restored": null,
+        "cpu_seconds": 0.123
+      },
+      {
+        "mode": "backup",
+        "status": "PASS",
+        "safe_to_stop": true,
+        "crm_write": false,
+        "crm_unchanged": null,
+        "installed": null,
+        "restored": null,
+        "cpu_seconds": 1.812
+      }
+    ]
+  },
+  "public_catalog": {
+    "observed_at": "2026-09-26T21:10:47Z",
+    "url": "https://www.uaart.com.ua/video/katalog.html",
+    "normal_and_cache_busted_http": 200,
+    "html_sha256": "9b1baba90fdce6f39e55fcc7df00700d67194ddba9ee7382b66800cf010d2313",
+    "counts": {
+      "korea": 4,
+      "ferry": 4,
+      "georgia": 6,
+      "kyiv": 5,
+      "all": 19
+    },
+    "browser_cache_busted_counts_match": true,
+    "obsolete_check_url": "https://www.uaart.com.ua/katalog.html",
+    "obsolete_check_final_url": "https://www.uaart.com.ua/video/index.html",
+    "obsolete_check_html_sha256": "7ea35b1b843f32540e322753974070237b4959f9b65739378b02ecde03018d3e"
+  },
+  "transaction": {
+    "id": "tx-36268504600-54c3be3cfc4dd0da",
+    "status": "ROLLING_BACK",
+    "halt_path": "state/AUTOPILOT_HALT.json",
+    "request_sha256": "54c3be3cfc4dd0dab6f508524499715a6844011f4aa9520cc6e09f51f8c132ff",
+    "plan_sha256": "67279c4ec97fd9652db7af262562c3d0dd54e38b35d8f6651b539980a0cf4a66",
+    "backup_manifest_sha256": "7debcda6ef2ab08f87abeed07123c8c6c4e81b8dd6b96d4b043ad114a0564ac7",
+    "rollback_reserved": true,
+    "rollback_invoked": false,
+    "rollback_job_id": "108481549843",
+    "rollback_error": "AUTOSTART_NONCE_RESERVATION_MISSING -> TRANSACTION_LEDGER_INVALID",
+    "cause": "Pinned recovery checkout copies five durable records but omits the existing ledger-bound nonce reservation.",
+    "nonce_exists_in_main": true,
+    "nonce_path": "state/autostart_nonces/delivery-status-install-20260926T200657Z.json",
+    "nonce_sha256": "c64544e36f346dfde7271c0f12fb31090979c5c63893efb8b65053611e7ae55a",
+    "halt_and_transaction_changed_by_this_followup": false,
+    "automatic_rollback_retried": false
+  },
+  "pending_fix": {
+    "live_cars_ui_sha256": "c17a45d64f17fbab2e2f032061f6037a48bb5fa038b3f02e20995b5e50fbca7b",
+    "candidate_cars_ui_sha256": "04af190b8fb13c5819abcc24c53c56218a056842276c68a52d409c7eed950191",
+    "change": "Match every car_setstage: callback in group -100 so validation precedes the legacy ge_to_kyiv date writer in group -4.",
+    "installed": false
+  },
+  "tests": {
+    "local_suite": 55,
+    "status": "PASS",
+    "scope": "Policy, migration, isolated CRM routing, catalog, worker, temporary deployment recovery and public verification; no live Telegram mutation"
+  },
+  "database_migration_executed": false,
+  "full_acceptance": false,
+  "checkpoint_at": "2026-09-26T21:17:53.267Z"
+}

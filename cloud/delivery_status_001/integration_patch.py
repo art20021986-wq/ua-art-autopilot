@@ -88,6 +88,12 @@ def patch_stage_set(source):
     return source[:start] + source[end:]
 
 
+def patch_stage_router(source):
+    return once(source,
+                'pattern=r"^car_setstage:\\d+:(?:sea_loaded|sea_transit|ua_handed)$"',
+                'pattern=r"^car_setstage:"')
+
+
 def patch_fallback_menu(source):
     source = inject_function(source, "    from ua_delivery_status import CHOICES, public_status\n")
     source = once(source, '("• " if card.get("status") == code else "")',
@@ -203,7 +209,7 @@ def build_candidate(sources, policy_source):
     ui = replace_function(ui, "stage_set", patch_stage_set)
     ui = replace_function(ui, "_ua117_block_removed_stage", lambda _: '''async def _ua117_block_removed_stage(update, context):
     await stage_set(update, context)''')
-    output["cars_ui.py"] = ui
+    output["cars_ui.py"] = patch_stage_router(ui)
     output["konteyner.py"] = replace_function(output["konteyner.py"], "gde_mashina", patch_fallback_menu)
     output["db.py"] = replace_function(output["db.py"], "update_card_field", lambda s: inject_function(s,
         '    from ua_delivery_status import storage_status\n    if table == "cars" and field == "status":\n        value = storage_status(value)\n'))
