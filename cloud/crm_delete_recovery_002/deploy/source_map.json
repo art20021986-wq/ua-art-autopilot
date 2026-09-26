@@ -1,0 +1,232 @@
+{
+  "authority_created": false,
+  "files": [
+    {
+      "destination": "deploy/package_install.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "7fc417060df8a788aa6fd55de4901740c19b5b753de14b9c88faae68254d4c9b",
+      "source": "install/package_install.py"
+    },
+    {
+      "destination": "deploy/lifecycle_controller.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "7ee033d34734206e3f95d562325272815950c2e42879a7ecf2532620e7bb195a",
+      "source": "install/lifecycle_controller.py"
+    },
+    {
+      "destination": "deploy/lifecycle_worker.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "6b2a92f1fa4db6667885e56c0cf21422b86dfa58f39776b308aadd618ee3296f",
+      "source": "install/lifecycle_worker.py"
+    },
+    {
+      "destination": "deploy/watchdog.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "bb3b5c9d8a76e230a5f5bf7e2208c9a1c4984cdb91dffb27087d511a9f314de5",
+      "source": "install/watchdog.py"
+    },
+    {
+      "destination": "deploy/remote_worker.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "1f85c2e829e9c73d1da845bfe01846f03e0ef976aa047b4c38bb3a7b4f1dd431",
+      "source": "install/remote_worker.py"
+    },
+    {
+      "destination": "deploy/recipe/build_release.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "163605029c5c7d8ded59b1f305f5cc8b1163e515c8cb926644d53b087cc6de99",
+      "source": "build_release.py"
+    },
+    {
+      "destination": "deploy/recipe/list_patch/build_list_patch.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "4b94b2e42dfaeaa6bd908e333e8b8ea2a53bb9be2833dea959dc6d424963bd05",
+      "source": "list_patch/build_list_patch.py"
+    },
+    {
+      "destination": "deploy/recipe/list_patch/ua_crm_resilient_list.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "f80874a906185e4703166c059f605d530e125ef77515e23a0b57b63ffa496b31",
+      "source": "list_patch/ua_crm_resilient_list.py"
+    },
+    {
+      "destination": "deploy/recipe/bot_patch/build_bot_patch.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "46702fa245f1ca37eee60a51358a3479c4c974ad8654172d802a9b07b9da6907",
+      "source": "bot_patch/build_bot_patch.py"
+    },
+    {
+      "destination": "deploy/recipe/bot_patch/ua_crm_delete_bot.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "e2c563055752c512a912ad5c3f7e4bd4318d012737517011ec5599e99159ae33",
+      "source": "bot_patch/ua_crm_delete_bot.py"
+    },
+    {
+      "destination": "deploy/recipe/writer_patch/build_writer_patch.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "338707eabce2cd5552fa62a3d9e414589ffd4374ac009e31d18043a185c1db2a",
+      "source": "writer_patch/build_writer_patch.py"
+    },
+    {
+      "destination": "deploy/recipe/writer_patch/cars_publication_patch.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "a32f3b839aba04b1f8839f97949463afdc79013614d3c53db6ebdf779d9fdadc",
+      "source": "writer_patch/cars_publication_patch.py"
+    },
+    {
+      "destination": "deploy/recipe/writer_patch/ua_delete_public_guard.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "0a309c8740aa1d87ab1d3bc44ded2976ec67504610184c85ad2ffdd848dc32f0",
+      "source": "writer_patch/ua_delete_public_guard.py"
+    },
+    {
+      "destination": "deploy/recipe/route_patch/build_route_patch.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "86bc4022c321dcbc1e6d21661ba52ea6ff4170839a2ec89ec3897061019cae6a",
+      "source": "route_patch/build_route_patch.py"
+    },
+    {
+      "destination": "deploy/recipe/route_patch/ua_crm_deleted_routes.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "51a8e8482b32aa9408d42247705064f2c2984a058dab93c7df3b8297531e9706",
+      "source": "route_patch/ua_crm_deleted_routes.py"
+    },
+    {
+      "destination": "deploy/recipe/deletion_core/__init__.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "d5586e7d918456a61527291c1f80c9e8a31c9c675ea5a1c27c93763c8a7c1430",
+      "source": "deletion_core/__init__.py"
+    },
+    {
+      "destination": "deploy/recipe/deletion_core/coordinator.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "287f277b9b471557486f0fef6a08c96e45391d38dce96507a5c0b5ad5601a7d0",
+      "source": "deletion_core/coordinator.py"
+    },
+    {
+      "destination": "deploy/recipe/deletion_core/deletion_state.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "35dd94313de833515afb611e41c620190e244f5fc91ffdb786d8dd5fcf4af31e",
+      "source": "deletion_core/deletion_state.py"
+    },
+    {
+      "destination": "deploy/recipe/deletion_core/retirement.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "3464c47ece14c642ccc49e4c7bf737aaaf08332f098ceb78037316228a39f4a6",
+      "source": "deletion_core/retirement.py"
+    },
+    {
+      "destination": "deploy/recipe/deletion_core/public_write_guard.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "79248e9a172e491b51797d7786429be8ead0927e1b767ce4635e8184fa39330f",
+      "source": "deletion_core/public_write_guard.py"
+    },
+    {
+      "destination": "deploy/recipe/deletion_core/runtime.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "a6a917eb9a48a2504e3d5174669723798722f382537a6d4350f08f1def5a7f85",
+      "source": "deletion_core/runtime.py"
+    },
+    {
+      "destination": "deploy/recipe/list_patch/replacement_block.py.txt",
+      "executed": false,
+      "hash_only_qa": false,
+      "sha256": "9af99a35ad235dfe9e1851e6ee245d01abedd99a33306810ef43aad4e4ef11ab",
+      "source": "list_patch/replacement_block.py.txt"
+    },
+    {
+      "destination": "deploy/recipe/bot_patch/register_block.py.txt",
+      "executed": false,
+      "hash_only_qa": false,
+      "sha256": "7619866905eb596c8fcd0563c82fc2b1ac2ee7ca68e04109d09bbd90309f62de",
+      "source": "bot_patch/register_block.py.txt"
+    },
+    {
+      "destination": "deploy/recipe/bot_patch/replacement_handlers.py.txt",
+      "executed": false,
+      "hash_only_qa": false,
+      "sha256": "cd68303c7b6391ef408737785621558c0d5e8d96cf81c2c6c1794b6b3a11da19",
+      "source": "bot_patch/replacement_handlers.py.txt"
+    },
+    {
+      "destination": "deploy/recipe/writer_patch/offline_validation.json",
+      "executed": false,
+      "hash_only_qa": false,
+      "sha256": "c38ef621e88e41856d852559e4ab63f2a91190e8df74e3cbf1a9998c642c5bd2",
+      "source": "writer_patch/offline_validation.json"
+    },
+    {
+      "destination": "deploy/recipe/install/package_install.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "7fc417060df8a788aa6fd55de4901740c19b5b753de14b9c88faae68254d4c9b",
+      "source": "install/package_install.py"
+    },
+    {
+      "destination": "deploy/recipe/install/lifecycle_controller.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "7ee033d34734206e3f95d562325272815950c2e42879a7ecf2532620e7bb195a",
+      "source": "install/lifecycle_controller.py"
+    },
+    {
+      "destination": "deploy/recipe/install/lifecycle_worker.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "6b2a92f1fa4db6667885e56c0cf21422b86dfa58f39776b308aadd618ee3296f",
+      "source": "install/lifecycle_worker.py"
+    },
+    {
+      "destination": "deploy/recipe/install/watchdog.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "bb3b5c9d8a76e230a5f5bf7e2208c9a1c4984cdb91dffb27087d511a9f314de5",
+      "source": "install/watchdog.py"
+    },
+    {
+      "destination": "deploy/recipe/install/remote_worker.py",
+      "executed": true,
+      "hash_only_qa": false,
+      "sha256": "1f85c2e829e9c73d1da845bfe01846f03e0ef976aa047b4c38bb3a7b4f1dd431",
+      "source": "install/remote_worker.py"
+    },
+    {
+      "destination": "deploy/recipe/writer_patch/test_writer_guard.py.txt",
+      "executed": false,
+      "hash_only_qa": true,
+      "sha256": "b6be0ed00a45cb89328241772d0a4929ecd962e4a27ace98921165d7616c9744",
+      "source": "writer_patch/test_writer_guard.py"
+    },
+    {
+      "destination": "deploy/recipe/writer_patch/test_publication_worker.py.txt",
+      "executed": false,
+      "hash_only_qa": true,
+      "sha256": "df417f7979003e0cf739a26c62e371a27d51ec1097e1dcd34808151c2df5dde0",
+      "source": "writer_patch/test_publication_worker.py"
+    }
+  ],
+  "format": 1,
+  "production_touched": false,
+  "status": "SOURCE_CLOSURE_MATERIALIZED"
+}
