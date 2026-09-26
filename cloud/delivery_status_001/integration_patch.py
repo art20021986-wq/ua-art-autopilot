@@ -12,6 +12,7 @@ SOURCE_SHA256 = {
     "master_card.py": "27e32420bbec9f1e0a25621e1c20dda20944537daa40c1ccac574689cd6c3f6e",
     "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
     "ua_stage_catalog_sync.py": "c349d44821f92950234705d41507587c3ca2780dd750abda0028c060569a5beb",
+    "catalog_design_guard.py": "51127bbc2be949e1d37f7b6995c0e5a7a32a497c8436139322ce5b0fea308d60",
 }
 
 
@@ -93,6 +94,17 @@ def patch_sync(source):
                   '        stage = stage_of(rows[code])\n        result = _patch_article(block, stage) if stage else ""')
     source = once(source, '    if seen != set(rows):',
                   '    visible = {code for code, row in rows.items() if stage_of(row)}\n    if seen & visible != visible:')
+    source = once(source, '    candidate = ARTICLE.sub(replace, source)', '''    spans = list(ARTICLE.finditer(source))
+    for left, right in zip(spans, spans[1:]):
+        if source[left.end():right.start()].strip():
+            raise StageSyncError("CATALOG_CARD_GAP")
+    blocks = [replace(match) for match in spans]
+    candidate = source
+    if spans:
+        rendered = "\\n".join(block for block in blocks if block)
+        candidate = (source[:spans[0].start()]
+                     + (rendered or "<!--UA090:CARD-REGION-->")
+                     + source[spans[-1].end():])''')
     source = once(source, '        rows, digest = pub._row_map()',
                   '        all_rows, digest = pub._row_map(include_hidden=True)\n        rows = {code: row for code, row in all_rows.items() if stage_of(row)}')
     source = once(source, "patch_catalog_stages(before.decode('utf-8'), rows)",
@@ -106,6 +118,28 @@ def patch_publisher_rows(source):
     source = inject_function(source, '    from ua_delivery_status import stage_number\n')
     return once(source, '    return rows, _sha(normalized)',
                 '    visible = rows if include_hidden else [row for row in rows if stage_number(row.get("status"))]\n    return visible, _sha(normalized)')
+
+
+def patch_catalog_design(source):
+    source = replace_function(source, "stage_number", lambda _: '''def stage_number(row):
+    from ua_delivery_status import stage_number as delivery_stage
+    return delivery_stage(row.get("status"))''')
+    source = replace_function(source, "_rows_by_id", lambda s: once(once(s,
+        '        if published != 1:', '        if published != 1 or not stage_number(row):'),
+        '    if not result:\n        raise CatalogDesignError("NO_PUBLISHED_ROWS")\n', ''))
+    source = replace_function(source, "build_catalog", lambda s: once(s,
+        '        + "\\n".join(cards)',
+        '        + ("\\n".join(cards) if cards else "<!--UA090:CARD-REGION-->")'))
+    return replace_function(source, "audit_catalog", lambda s: once(s,
+        '    shell = shell_audit(source)',
+        '    shell = shell_audit(source, require_cards=bool(row_map))'))
+
+
+def patch_master_catalog(source):
+    source = inject_function(source, '    from ua_delivery_status import stage_number\n')
+    source = once(source, '        if _published != 1:',
+                  '        if _published != 1 or not stage_number(_row.get("status")):')
+    return once(source, '    if not _rows:\n        raise RuntimeError("TASK090_NO_PUBLISHED_ROWS")\n', '')
 
 
 def build_candidate(sources, policy_source):
@@ -141,9 +175,7 @@ def build_candidate(sources, policy_source):
         '    from ua_delivery_status import storage_status\n    if table == "cars" and field == "status":\n        value = storage_status(value)\n'))
     output["stranica.py"] = replace_function(output["stranica.py"], "sobrat_katalog", lambda s: inject_function(s,
         '    from ua_delivery_status import stage_number\n    spisok = [row for row in spisok if stage_number(row.get("status"))]\n'), final=True)
-    output["master_card.py"] = replace_function(output["master_card.py"], "obrabotat_obshuyu", lambda s: once(
-        inject_function(s, '    from ua_delivery_status import stage_number\n'),
-        '        if _published != 1:', '        if _published != 1 or not stage_number(_row.get("status")):'), final=True)
+    output["master_card.py"] = replace_function(output["master_card.py"], "obrabotat_obshuyu", patch_master_catalog, final=True)
     publisher = replace_function(output["publish_transaction_guard.py"], "_rows", patch_publisher_rows)
     publisher = replace_function(publisher, "_row_map", lambda s: once(once(s,
         'def _row_map()', 'def _row_map(*, include_hidden=False)'),
@@ -153,6 +185,7 @@ def build_candidate(sources, policy_source):
     return stage_number(row.get("status"))''')
     output["publish_transaction_guard.py"] = publisher
     output["ua_stage_catalog_sync.py"] = patch_sync(output["ua_stage_catalog_sync.py"])
+    output["catalog_design_guard.py"] = patch_catalog_design(output["catalog_design_guard.py"])
     output["ua_delivery_status.py"] = policy_source
     for name, source in output.items():
         compile(source, name, "exec")
