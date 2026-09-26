@@ -13,6 +13,11 @@ class PhotoTests(unittest.TestCase):
     def test_hidden_must_not_count(self):
         self.card['hidden_photos']=['b']
         with self.assertRaisesRegex(RuntimeError,'count'):verify_photo_structure(self.html,self.card)
+    def test_ledger_order_required_even_with_equal_count(self):
+        with self.assertRaisesRegex(RuntimeError,'ledger order'):
+            verify_photo_structure(self.html,self.card,['foto/UA-0001/002.jpg','foto/UA-0001/001.jpg'])
+    def test_exact_ledger_order_passes_structure_only(self):
+        self.assertFalse(verify_photo_structure(self.html,self.card,['foto/UA-0001/001.jpg','foto/UA-0001/002.jpg'])['full_consistency_accepted'])
     def test_missing_photo(self):
         self.card['photos'].append('c')
         with self.assertRaisesRegex(RuntimeError,'count'):verify_photo_structure(self.html,self.card)

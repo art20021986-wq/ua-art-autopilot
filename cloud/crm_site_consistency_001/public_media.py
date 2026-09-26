@@ -50,7 +50,7 @@ class PhotoHTML(HTMLParser):
             self.script = None
 
 
-def verify_photo_structure(html, card):
+def verify_photo_structure(html, card, expected_paths=None):
     code = card.get('auto_number', '')
     if not re.fullmatch(r'UA-\d{4,}', code):
         raise RuntimeError('Invalid car code')
@@ -74,8 +74,10 @@ def verify_photo_structure(html, card):
     rendered = [x.replace(prefix + 'm/', prefix, 1) for x in doc.images if x.startswith(prefix)]
     if rendered != gallery:
         raise RuntimeError('Visible photo order differs from lightbox')
+    if expected_paths is not None and gallery != expected_paths:
+        raise RuntimeError('Gallery differs from CRM download ledger order')
     cover = card.get('cover_photo')
-    if cover:
+    if cover and expected_paths is None:
         if not isinstance(cover, str) or not re.fullmatch(r'[A-Za-z0-9_-]+\.(?:jpg|jpeg|png|webp)', cover):
             raise RuntimeError('Unverified CRM cover path')
         if not gallery or gallery[0] != prefix + cover:

@@ -1,0 +1,62 @@
+{
+  "task_id": "CRM-CONSISTENCY-PREVIEW-20260926",
+  "title": "Isolated full renderer validation before critical consistency installation",
+  "description": "Owner 2026-09-26 22:35 Asia/Ho_Chi_Minh requests critical production repair. First run the candidate renderer in a private disposable shadow directory on PythonAnywhere. The controller uploads only a preview script and receipt under uploads, creates and removes a private shadow copy, temporarily schedules only that preview, forbids production writes during rendering and compares protected hashes. No production source, website HTML, CRM rows, or original media are modified. This is not production installation or full acceptance.",
+  "control_plane_version": "TASK107-R2",
+  "requested_min_class": "STANDARD",
+  "ai_requested": false,
+  "complexity": 2,
+  "read_only": false,
+  "production_required": false,
+  "changed_paths": [
+    "cloud/crm_site_consistency_001/shadow_evidence.json"
+  ],
+  "storage_required_bytes": 16777216,
+  "execution": {
+    "controller_path": "cloud/crm_site_consistency_001/preview_controller.py",
+    "controller_sha256": "09479412a628ad0b91d5b9e463a32a2687abcd15332514984d1d115b1e22757e",
+    "dependency_paths": [
+      "cloud/crm_site_consistency_001/public_fields.py",
+      "cloud/crm_site_consistency_001/public_media.py",
+      "cloud/crm_site_consistency_001/crm_gallery.py",
+      "cloud/crm_site_consistency_001/crm_revision.py",
+      "cloud/crm_site_consistency_001/crm_assets.py",
+      "cloud/crm_site_consistency_001/build_candidate.py",
+      "cloud/crm_site_consistency_001/build_gallery_patch.py",
+      "cloud/crm_site_consistency_001/shadow_validate.py",
+      "cloud/crm_site_consistency_001/preview_transport.py"
+    ],
+    "evidence_paths": [
+      "cloud/crm_site_consistency_001/shadow_evidence.json",
+      "state/receipts/CRM-CONSISTENCY-PREVIEW-20260926.json"
+    ],
+    "file_sha256": {
+      "cloud/crm_site_consistency_001/public_fields.py": "7f535dd0625b1ca0c901e673a865e7aa1361544ca4663c5a9cb3884317043041",
+      "cloud/crm_site_consistency_001/public_media.py": "5f73de75a6c43af1828d462b4ac85e7365fbd780aae1a92de08f684bb27cd440",
+      "cloud/crm_site_consistency_001/crm_gallery.py": "3c2e9992cd60ea5393712d42b8532b1d0d13e951011f0e7046fc246fade91ba5",
+      "cloud/crm_site_consistency_001/crm_revision.py": "5dec0a8b1d3ece304aa0397e15454a7b0348193ca647da392855135595f68ac6",
+      "cloud/crm_site_consistency_001/crm_assets.py": "7aac84de7acc7f609e97ef292161ad1e6d61ee1b4549aa0218e67e25bc52e9fc",
+      "cloud/crm_site_consistency_001/build_candidate.py": "5b1c9687ed7770d52a354e4b843de0a8097aa48dd8f5f4ae2b2f51fa1cccc749",
+      "cloud/crm_site_consistency_001/build_gallery_patch.py": "de1becd2e47ce18376b5e710ce9fc4abaff1af8753387316caa0b9203f271a64",
+      "cloud/crm_site_consistency_001/shadow_validate.py": "55a12eeb92ec2870f164f482364c02ab054d13355d29890a92a7a3da5fbd6c9c",
+      "cloud/crm_site_consistency_001/preview_transport.py": "0f7a426fcf63a4adb391e89099b01b2e2742bf2808d61eaf20e420cdb211d46f",
+      "cloud/crm_site_consistency_001/test_public_fields.py": "d0a99fea4f67672e1c03f0fba8f8a0da1de4901efa9223c8e999d2f8d1ea2531",
+      "cloud/crm_site_consistency_001/test_public_media.py": "48d61ac886fc701b110f02f4b82407b0d6630946dd27cf621e65cc23902cbf5b",
+      "cloud/crm_site_consistency_001/test_crm_gallery.py": "a92eaa92c0b574efd0bb29570f55840ecaf0aa9147687400290429ddb15a0ec7",
+      "cloud/crm_site_consistency_001/test_crm_revision.py": "b1095d4195968bec091db5714adc26ff43797e99b04d60a17f246c09cb91d75c",
+      "cloud/crm_site_consistency_001/test_crm_assets.py": "f7b8e90f93e31a0fe393735cef4c82d16505ccaf05584d22eb827a508844588d",
+      "cloud/crm_site_consistency_001/test_preview.py": "9c38b6af5ea362ec0e3b3e71ceb07aee641af47bfaaed8f9a5bb32117c6e7a97"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/CRM-CONSISTENCY-PREVIEW-20260926.json",
+    "test_paths": [
+      "cloud/crm_site_consistency_001/test_public_fields.py",
+      "cloud/crm_site_consistency_001/test_public_media.py",
+      "cloud/crm_site_consistency_001/test_crm_gallery.py",
+      "cloud/crm_site_consistency_001/test_crm_revision.py",
+      "cloud/crm_site_consistency_001/test_crm_assets.py",
+      "cloud/crm_site_consistency_001/test_preview.py"
+    ],
+    "timeout_seconds": 900
+  }
+}
