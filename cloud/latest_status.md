@@ -22,10 +22,13 @@ NOTE_PRICE: public_fields.py не сверяет цену; исходная жа
 
 
 DELIVERY_STATUS_TASK: UA-ART-DELIVERY-STATUS-001
-DELIVERY_STATUS_STATUS: CANDIDATE_VALIDATED_INSTALLATION_DEFERRED_CPU
-DELIVERY_STATUS_PR: #121 merged into main as 13e549228a77eb35ad72c9945a0e66d4da49798d; no production installation.
-DELIVERY_STATUS_CHECKPOINT: 2026-09-26 18:27 UTC — STANDARD main Actions preflight 36262362403 SUCCESS; 27 tests against current pinned server source and 8 tests against actual golden HTML PASS. All 10 candidate modules built. No production source, HTML, CRM data, schedules or bot processes changed.
-DELIVERY_STATUS_RESOURCE: Fresh authenticated GET cpu/ at 18:25:09 UTC: 6079.193945 / 5000 seconds (121.584%). Reset 2026-09-27 08:37:11 UTC / 15:37 Asia/Ho_Chi_Minh. CLAUDE.md defers heavy operations at >=85%.
-DELIVERY_STATUS_PENDING: Prepare and rehearse bounded CRITICAL deployment adapter with backup/rollback/watchdog and writer exclusion; apply SQL only with verified backup; restart bot; verify normal publication, hidden/reactivated cars, both catalog copies and public counters. Preserve prices/VIN/photos. Do not combine with the consistency task transaction.
-DELIVERY_STATUS_CONTINUATION: Automation "Завершить статусы CRM" enabled. Starts 2026-09-27 15:40 Asia/Ho_Chi_Minh, hourly up to 3 attempts; check fresh quota and active writers before work, disable after verified completion. Not currently installing. Original owner authorization remains sufficient.
-DELIVERY_STATUS_EVIDENCE: cloud/delivery_status_001/preflight_evidence.json; cloud/delivery_status_001/CONTINUATION.json; state/receipts/DELIVERY-STATUS-PREFLIGHT-20260927.json. Preflight FINISHED is not production acceptance.
+DELIVERY_STATUS_STATUS: CANDIDATE_AND_SAFE_MIGRATION_VALIDATED_PRODUCTION_DEFERRED_CPU
+DELIVERY_STATUS_PRS: #121 status policy; #122 safe SQLite migration/rollback; #123 fallback CRM menu; #124 bounded GET-only preflight error handling. All merged to main; no production installation.
+DELIVERY_STATUS_CHECKPOINT: 2026-09-26 19:32 UTC — main Actions R4 preflight 36266189044 SUCCESS; 39 integration/migration tests and 8 actual-golden checks PASS. All 11 candidate modules built against current pinned source. Both CRM menus expose the four canonical statuses.
+DELIVERY_STATUS_MIGRATION: status_migration.py takes and verifies a private SQLite backup under the writer lock; only removed statuses change; rollback checks affected rows and preserves unrelated edits. Ten real SQLite tests including WAL and concurrent-edit rejection PASS. Migration has not run on production.
+DELIVERY_STATUS_RESOURCE: GET cpu/ at 19:29:57 UTC: 6647.962026 / 5000 seconds (132.959%). Reset 2026-09-27 08:37:11 UTC / 15:37 Asia/Ho_Chi_Minh. CLAUDE.md defers heavy actions at >=85%.
+DELIVERY_STATUS_PENDING: Complete and rehearse bounded CRITICAL installer/lifecycle/manifest with backup/rollback/watchdog and writer exclusion; full publisher rehearsal, source installation, SQL, bot restart and live catalog/counter checks remain pending. The tested SQLite migrator alone is not a deployment. Do not combine with the consistency task transaction.
+DELIVERY_STATUS_CONTINUATION: Existing automation "Завершить статусы CRM" confirmed enabled, starting 2026-09-27 15:40 Asia/Ho_Chi_Minh, hourly up to 3 attempts. Recheck CPU/source/active writers; disable after verified completion. Original owner authorization remains sufficient.
+DELIVERY_STATUS_PRODUCTION_TOUCHED: NO — no source, HTML, CRM rows, schedules or bot processes changed by this task.
+DELIVERY_STATUS_FULL_ACCEPTANCE: NO
+DELIVERY_STATUS_EVIDENCE: cloud/delivery_status_001/preflight_evidence.json; cloud/delivery_status_001/CONTINUATION.json; state/receipts/DELIVERY-STATUS-PREFLIGHT-20260927-R4.json. R3 provider HTTP 500 classified and addressed by PR124; old failed evidence preserved. Details and deployment inputs in TASK_DELIVERY_STATUS_20260926.md.
