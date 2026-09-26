@@ -1,0 +1,48 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/delivery_status_001/preflight_evidence.json"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Owner repeatedly authorizes completion. Fetch current CPU and pinned source by GET only; run candidate and active/hidden catalog checks on the Actions runner with current golden HTML. Do not write server files, rows, pages, schedules, or processes. This is a preflight, not production completion.",
+  "execution": {
+    "controller_path": "cloud/delivery_status_001/preflight_controller.py",
+    "controller_sha256": "22d54666a60b662d03ce19612d9290d560c6550f06abbec3eeca5283e2ffa81b",
+    "dependency_paths": [
+      "cloud/delivery_status_001/delivery_status.py",
+      "cloud/delivery_status_001/integration_patch.py",
+      "cloud/delivery_status_001/verify_catalog_integration.py",
+      "cloud/delivery_status_001/verify_crm_integration.py",
+      "cloud/delivery_status_001/verify_worker_integration.py",
+      "cloud/delivery_status_001/status_migration.py"
+    ],
+    "evidence_paths": [
+      "cloud/delivery_status_001/preflight_evidence.json",
+      "state/receipts/DELIVERY-STATUS-PREFLIGHT-20260927-R2.json"
+    ],
+    "file_sha256": {
+      "cloud/delivery_status_001/delivery_status.py": "c544bc121b7b3b66d45519d5b63ed3687567af7e9d5f7011ae2fb53cc372bdd0",
+      "cloud/delivery_status_001/integration_patch.py": "0f19f0210e64122d70ad810ad7ab2c1e94ac77fae4b6f93de139c54b0f78ead6",
+      "cloud/delivery_status_001/status_migration.py": "806fd517042c5c920179d5006f351aca32300cd29a03e01ca506e269943aa74d",
+      "cloud/delivery_status_001/test_delivery_status.py": "4669e4724c06ee37a6aa6e217340384098c071d72882351e38a28ec117dd3297",
+      "cloud/delivery_status_001/test_status_migration.py": "9c264f3377dcb308df18ee5c108eb3badbf078cc1e58812114dc473ca2f5bb74",
+      "cloud/delivery_status_001/verify_catalog_integration.py": "94dbd6aab9cdb9007ef295b6e90025a96b9071ff4c63c31e699d4008d263797f",
+      "cloud/delivery_status_001/verify_crm_integration.py": "0cfed50a43abc5355a84085585d2c4f500693ac3768c63f58ad72801578246be",
+      "cloud/delivery_status_001/verify_worker_integration.py": "ece3fb278d1fe49606f01904207a1024d7e6becdd9e71efb6c348bc7f515f68a"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/DELIVERY-STATUS-PREFLIGHT-20260927-R2.json",
+    "test_paths": [
+      "cloud/delivery_status_001/test_delivery_status.py",
+      "cloud/delivery_status_001/test_status_migration.py"
+    ],
+    "timeout_seconds": 600
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 16777216,
+  "task_id": "DELIVERY-STATUS-PREFLIGHT-20260927-R2",
+  "title": "Recheck CPU and verify safe delivery status migration with rollback"
+}
