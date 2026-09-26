@@ -1,0 +1,80 @@
+{
+  "schema_version": "UA-ART-PRICE-LIVE-PROBE-OUTCOME-1",
+  "operation_id": "price-live-probe-relaunch-20260926T143333Z",
+  "recorded_at": "2026-09-26T14:43:16Z",
+  "main_marker_commit": "7bb8f74b63f703fff291811649458d14f3ea5ccd",
+  "run_id": "36249087712",
+  "workflow_outcome": "CONTROLLER_FINISHED_ARTIFACT_PRESERVED_PERSISTENCE_BLOCKED",
+  "artifact": {
+    "artifact_id": 10908821492,
+    "name": "uaart-standard-evidence-36249087712-1",
+    "sha256": "cecf51c8d0f3d488237a2090f4742576d3cbdd44926f408abfd4c9cf6a63da0f",
+    "manifest_sha256": "not separately asserted; validated by canonical persist job before receipt validation",
+    "evidence_sha256": "17300908cfea0470f9e85b3b753e18aa0317f083cec593ba89c6531cd8a3dc2c",
+    "pages_sha256": "850e56ddf744e5d83e8210f0e4606a346c72b98fe0f02a274e796f7d02a6e580",
+    "original_receipt_sha256": "a257da524b68f8a3ee9ccd2f8029246bc3131f15b8dac1c00976c0588a15f010"
+  },
+  "observed_at": "2026-09-26T14:38:26Z",
+  "public_result": {
+    "price_endpoint_http": 200,
+    "published_cars": 21,
+    "static_ua_price_matches_live_endpoint": 21,
+    "mismatches": [],
+    "georgia_values_present": {
+      "UA-0009": "6700",
+      "UA-0010": "8750",
+      "UA-0011": "9600",
+      "UA-0012": "6400"
+    },
+    "public_script_http": 200,
+    "public_script_sha256": "3feb887740d5f01017de69d9b541f0442249f1cfb5b26db4d33aa6e749708387",
+    "public_script_fetches_live_price_endpoint": true,
+    "public_script_cache_control": "no-cache, must-revalidate"
+  },
+  "browser_visible_readback": {
+    "observed_at": "2026-09-26T14:42:00Z",
+    "UA-0010": {
+      "url": "https://www.uaart.com.ua/video/UA-0010.html",
+      "price_uah_usd": 11700,
+      "price_georgia_usd": 8750,
+      "matches_endpoint": true
+    },
+    "UA-0022": {
+      "url": "https://www.uaart.com.ua/video/UA-0022.html",
+      "price_uah_usd": 21200,
+      "price_georgia_public_state": "PRICE_PENDING",
+      "matches_endpoint": true
+    }
+  },
+  "safety": {
+    "production_touched": false,
+    "site_touched": false,
+    "crm_vehicle_data_touched": false,
+    "media_touched": false,
+    "preview_stage": false,
+    "preview_switch": false,
+    "service_reload": false,
+    "unexpected_changes": 0
+  },
+  "persistence_failure": {
+    "main_claim_commit": "a60ad7c91659c99b2f8b23c3b4f90ba8772fca0c",
+    "claim_status": "BLOCKED_ROOT_CAUSE",
+    "signature": "67a8dece23fdc4ba",
+    "first_contract_error": "RECEIPT_MISSING:rollback_ready",
+    "second_contract_error_after_local_correction": "RECEIPT_NONPROD_ENVIRONMENT_INVALID for production_read_only",
+    "retry_allowed": false,
+    "launch_repeated": false
+  },
+  "local_reconciliation_validation": {
+    "corrected_receipt_sha256": "43ce37724003f3ab00e1459b63e6f76349dc5866d2ab8670919dbfe66f0962a0",
+    "execution_contract_receipt_validation": "PASS",
+    "production_observation_repeated": false
+  },
+  "pr114_progress": {
+    "completed": 8,
+    "total": 20,
+    "percent": 40,
+    "increment_for_probe": 0
+  },
+  "next_action": "Do not rerun the consumed marker. Independently review the exact artifact and corrected receipt proposal, then reconcile the blocked read-only claim data-only. After that resume saved PR114 source-successor/writer-exclusion work without repeating accepted Preview, Stage, switch or reload."
+}
