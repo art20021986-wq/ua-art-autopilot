@@ -9,7 +9,7 @@ from preview_transport import API, TASK_ID, REMOTE_SCRIPT, REMOTE_RECEIPT
 
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
-NAMES=('public_fields.py','public_media.py','crm_gallery.py','crm_revision.py','crm_assets.py','build_candidate.py','build_gallery_patch.py')
+NAMES=('public_fields.py','public_media.py','crm_gallery.py','crm_revision.py','crm_assets.py','build_candidate.py','build_gallery_patch.py','test_public_fields.py')
 
 
 def package():

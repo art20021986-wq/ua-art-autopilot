@@ -80,6 +80,7 @@ def validate(payload, production=Path('/home/Carix'), receipt_path=None):
             p.write_text(source.replace(str(production),str(sandbox)))
         os.chdir(sandbox)
         os.environ['TMPDIR']=str(sandbox/'uploads')
+        tempfile.tempdir=str(sandbox/'uploads')
         os.environ['XDG_CACHE_HOME']=str(sandbox/'uploads')
         sys.dont_write_bytecode=True
         real_connect=sqlite3.connect
@@ -125,6 +126,9 @@ def validate(payload, production=Path('/home/Carix'), receipt_path=None):
             if any(not inside(p) for p in paths):
                 blocked.append(event);raise RuntimeError('PREVIEW_WRITE_OUTSIDE_SANDBOX')
         sys.addaudithook(audit)
+        from test_public_fields import check_actual_adapter
+        check_actual_adapter(sandbox/'ua_public_freshness.py')
+        result['actual_adapter_stale_mileage_rejected']=True
         import publikaciya
         from public_fields import verify_core_fields
         from public_media import verify_photo_structure

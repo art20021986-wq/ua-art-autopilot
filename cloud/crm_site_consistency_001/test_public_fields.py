@@ -32,21 +32,28 @@ class Checks(unittest.TestCase):
  def test_stale_catalog_specs(self):
   for old,new in [('1999','2000'),('LPI','diesel'),('Автомат','Механика')]:
    with self.subTest(field=old), self.assertRaises(RuntimeError):verify_core_fields(CAT.replace(old,new),CARD,True)
- def test_actual_adapter_rejects_stale_mileage(self):
-  spec=importlib.util.spec_from_file_location('candidate_freshness',HERE/'runtime'/'ua_public_freshness.py')
-  module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
-  class Response:
-   status=200
-   def __init__(self,data):self.data=data
-   def __enter__(self):return self
-   def __exit__(self,*args):pass
-   def read(self,limit):return self.data[:limit]
+ def test_adapter_builder_rejects_unreviewed_source(self):
+  from build_candidate import build
   with tempfile.TemporaryDirectory() as d:
-   root=pathlib.Path(d);(root/'UA-0022.html').write_text(PAGE.replace('167 007','167 008'));(root/'katalog.html').write_text(CAT)
-   def fetch(req,timeout):
-    name=req.full_url.split('/')[-1].split('?')[0]
-    return Response((root/name).read_bytes())
-   with patch.dict(sys.modules,{'ua_price_html_v2':types.SimpleNamespace(verify_prices=lambda html:None)}):
-    with self.assertRaisesRegex(RuntimeError,'mileage'):
-     module.verify_public('UA-0022',fetch=fetch,card=CARD,root=root)
+   source=pathlib.Path(d)/'source.py';source.write_text('unreviewed source')
+   with self.assertRaisesRegex(ValueError,'Live source changed'):
+    build(source,pathlib.Path(d)/'out.py')
+
+def check_actual_adapter(adapter_path):
+ spec=importlib.util.spec_from_file_location('candidate_freshness',adapter_path)
+ module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+ class Response:
+  status=200
+  def __init__(self,data):self.data=data
+  def __enter__(self):return self
+  def __exit__(self,*args):pass
+  def read(self,limit):return self.data[:limit]
+ with tempfile.TemporaryDirectory() as d:
+  root=pathlib.Path(d);(root/'UA-0022.html').write_text(PAGE.replace('167 007','167 008'));(root/'katalog.html').write_text(CAT)
+  def fetch(req,timeout):
+   name=req.full_url.split('/')[-1].split('?')[0]
+   return Response((root/name).read_bytes())
+  with patch.dict(sys.modules,{'ua_price_html_v2':types.SimpleNamespace(verify_prices=lambda html:None)}):
+   with unittest.TestCase().assertRaisesRegex(RuntimeError,'mileage'):
+    module.verify_public('UA-0022',fetch=fetch,card=CARD,root=root)
 if __name__=='__main__':unittest.main()
