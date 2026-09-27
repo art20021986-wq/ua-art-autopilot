@@ -174,10 +174,11 @@
       "https://help.pythonanywhere.com/pages/MySiteIsSlow",
       "https://help.pythonanywhere.com/pages/KindsOfDatabases"
     ],
-    "database_ui": "HTTP_502_TWICE",
+    "database_ui": "AVAILABLE: MySQL uninitialized; PostgreSQL requires plan upgrade",
     "runtime_guard": "NETWORK_FILESYSTEM_REFUSED",
     "production_mount_measured": false,
-    "new_service_or_library_added": false
+    "new_service_or_library_added": false,
+    "database_ui_checked_at_utc": "2026-09-27T11:38:03.207565+00:00"
   },
   "observed_publisher": {
     "r4": "ROLLED_BACK",
@@ -190,5 +191,11 @@
     "acknowledged_recipient_not_repeated": true,
     "pending_backoff_max_seconds": 3600,
     "real_messages_sent": false
+  },
+  "owner_launch_authorization": {
+    "received_local": "2026-09-27T18:36:32+07:00",
+    "text": "Подтверждаю ☑️ запускай",
+    "production_deployed": false,
+    "remaining": "Database credential initialization requires user handoff; MySQL adapter and Gate B still required; approved consent missing"
   }
 }
