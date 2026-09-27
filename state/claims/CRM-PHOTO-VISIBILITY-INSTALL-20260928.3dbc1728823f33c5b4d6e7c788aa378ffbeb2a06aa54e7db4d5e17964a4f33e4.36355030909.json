@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "951f9c53abd9b8384fcc895e981cfebb1655190bc019856578f175176f1fef80",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T22:27:46Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-09-27T22:35:35Z",
+  "heartbeat_at": "2026-09-27T22:35:35Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "36355030909",
     "task_id": "CRM-PHOTO-VISIBILITY-INSTALL-20260928",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 3248.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 66.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-36355030909-3dbc1728823f33c5",
   "production_transaction_path": "state/transactions/CRM-PHOTO-VISIBILITY-INSTALL-20260928.3dbc1728823f33c5b4d6e7c788aa378ffbeb2a06aa54e7db4d5e17964a4f33e4.36355030909.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "card-ua-0017-337c83bd09045849",
   "receipt_path": "state/receipts/CRM-PHOTO-VISIBILITY-INSTALL-20260928.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "97be719ded78061728c3365dd3a8ad753bb9c29a3f30683a32967449118ee321",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-PHOTO-VISIBILITY-INSTALL-20260928.json",
   "request_sha256": "3dbc1728823f33c5b4d6e7c788aa378ffbeb2a06aa54e7db4d5e17964a4f33e4",
   "resource_locks": [
@@ -71,7 +94,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "62c05f64177188d10892b06487dd9a609a77de2ed7ff96055a72436e9e90d407",
     "file_sha256": {
@@ -92,5 +115,5 @@
       "cloud/crm_photo_visibility_002/test_visibility.py": "2224be55cbe84eec54cfa1b8f11cdf28034f0b9338abaaec71f8a435db05de21"
     }
   },
-  "updated_at": "2026-09-27T22:27:46Z"
+  "updated_at": "2026-09-27T22:35:35Z"
 }
