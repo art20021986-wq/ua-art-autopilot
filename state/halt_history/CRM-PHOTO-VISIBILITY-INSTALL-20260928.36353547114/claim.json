@@ -54,11 +54,10 @@
   "production_required": true,
   "production_transaction_id": "tx-36353547114-e17944396be19be7",
   "production_transaction_path": "state/transactions/CRM-PHOTO-VISIBILITY-INSTALL-20260928.e17944396be19be777c03e3368d95d75e130180a8549ef69a794a6e329682b2e.36353547114.json",
-  "production_transaction_status": "ROLLED_BACK",
+  "production_transaction_status": "PREPARING",
   "queue_key": "card-ua-0017-337c83bd09045849",
   "receipt_path": "state/receipts/CRM-PHOTO-VISIBILITY-INSTALL-20260928.json",
   "receipt_validation_status": "PENDING",
-  "reconciliation_path": "state/reconciliations/CRM-PHOTO-VISIBILITY-INSTALL-20260928.36353547114.aborted-backup.json",
   "request_path": "tasks/requests/CRM-PHOTO-VISIBILITY-INSTALL-20260928.json",
   "request_sha256": "e17944396be19be777c03e3368d95d75e130180a8549ef69a794a6e329682b2e",
   "resource_locks": [
@@ -83,7 +82,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "FAILED",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "62c05f64177188d10892b06487dd9a609a77de2ed7ff96055a72436e9e90d407",
     "file_sha256": {
@@ -104,5 +103,5 @@
       "cloud/crm_photo_visibility_002/test_visibility.py": "2224be55cbe84eec54cfa1b8f11cdf28034f0b9338abaaec71f8a435db05de21"
     }
   },
-  "updated_at": "2026-09-27T22:12:46.561324+00:00"
+  "updated_at": "2026-09-27T22:06:22Z"
 }
