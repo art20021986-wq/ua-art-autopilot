@@ -9,7 +9,40 @@
   "media_marker": false,
   "canonical_migration_excludes_aliases": true,
   "candidate": "cloud/media_gallery_aliases_001",
-  "candidate_status": "INERT_NOT_LAUNCHED",
+  "candidate_status": "WITHDRAWN_UNCONSUMED_NOT_NEEDED_FOR_OBSERVED_URLS",
   "prerequisite": "Canonical media gallery installation with exactly matching assets",
-  "tests": "25 PASS through unchanged execution contract"
+  "tests": "25 PASS through unchanged execution contract",
+  "final_observed_at_utc": "2026-09-27T23:09:53.855Z",
+  "final_public_observation": {
+    "code": "UA-0023-956711ae",
+    "http": 200,
+    "final_url": "https://www.uaart.com.ua/video/UA-0023-956711ae.html",
+    "sha256": "e00e863033b196f07cdbd00dc66a02325e8de71f2df6c3d079dbade9e322826d",
+    "cache_control": "no-cache, must-revalidate",
+    "age": null,
+    "media_gallery": true,
+    "photo_count": 37,
+    "next_buttons": 1,
+    "first_photo": "foto/UA-0023/002.jpg"
+  },
+  "final_browser_result": "PASS: next button and enlarged loaded photo 2/37",
+  "correction": "The historical old-page observation is retained. Exclusion of alias filenames from one deployment inventory did not establish that their public URLs would remain stale. The saved UA-0023 URL now serves byte-identical current canonical HTML and passes interaction checks. No separate alias install was run.",
+  "withdrawn_files": [
+    "cloud/media_gallery_aliases_001/README.md",
+    "cloud/media_gallery_aliases_001/build_candidate.py",
+    "cloud/media_gallery_aliases_001/deployment_backup.py",
+    "cloud/media_gallery_aliases_001/deployment_bootstrap.py",
+    "cloud/media_gallery_aliases_001/deployment_controller.py",
+    "cloud/media_gallery_aliases_001/deployment_remote.py",
+    "cloud/media_gallery_aliases_001/deployment_rollback.py",
+    "cloud/media_gallery_aliases_001/deployment_transport.py",
+    "cloud/media_gallery_aliases_001/media_migration.py",
+    "cloud/media_gallery_aliases_001/release_constants.py",
+    "cloud/media_gallery_aliases_001/test_aliases.py",
+    "cloud/media_gallery_aliases_001/test_deployment.py",
+    "cloud/media_gallery_aliases_001/ua_media_gallery.py",
+    "cloud/media_gallery_aliases_001/ua_media_script.py",
+    "cloud/media_gallery_aliases_001/ua_media_styles.py",
+    "tasks/requests/MEDIA-GALLERY-ALIASES-PREFLIGHT-20260928.json"
+  ]
 }
