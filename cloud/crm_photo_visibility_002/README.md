@@ -20,6 +20,4 @@ writer locks, pauses/resumes the bot and verifies exact public bytes. Rollback i
 rehearsed, including interrupted writes and a failure before any file writes.
 A failed pre-write check never restores stale bytes over someone else's edit.
 
-Status: code prepared and 50 tests pass. Read-only preview R5 follows completed dependency recovery and waits for the
-refreshed tracking installation to finish. No photo fix is installed yet. A production
-request is prepared only after successful fresh preview and exact public review.
+Status: 50 tests pass. R6 inspects all existing CRM-hidden galleries after the tracking release. The original failed read-only preview is terminal via the existing failure transition. No photo fix is installed yet.
