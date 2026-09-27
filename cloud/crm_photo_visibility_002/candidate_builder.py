@@ -4,8 +4,8 @@ import hashlib
 from pathlib import Path
 
 SOURCE_SHA256 = {
-    'stranica.py': 'f4be056353256f88dbdb948227866a23d1ff37c5c09bb33595da8b54206cd81f',
-    'master_card.py': '5199f9f796b617c604fa01b8f4145cf7d869dcf95a28314dd0305926954348d9',
+    'stranica.py': '95dadd2093c8be0d788f34fc6a4bfdd58caf4b667dc7c4dfc134eaf6a33278a1',
+    'master_card.py': '1a3017ddedd2bceea10061cb4fffe06f507f0e697345d3a5bfb02f6a67aeb45a',
     'ai_filter.py': '7dfd84497c6d3823cd7df54834cb18aecdbc645544ca9709a88c6363a2d35cb6',
 }
 DEPENDENCY_SHA256 = {}
