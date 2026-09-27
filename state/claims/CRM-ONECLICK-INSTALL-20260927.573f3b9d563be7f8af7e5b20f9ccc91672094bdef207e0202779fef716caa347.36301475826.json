@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "33cd8a2883b017901ba47c9cc390fc447514be1218a712a0ca597785b2130036",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T07:01:24Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-09-27T07:13:00Z",
+  "heartbeat_at": "2026-09-27T07:13:00Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "36301475826",
     "task_id": "CRM-ONECLICK-INSTALL-20260927",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 721.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 254.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-36301475826-573f3b9d563be7f8",
   "production_transaction_path": "state/transactions/CRM-ONECLICK-INSTALL-20260927.573f3b9d563be7f8af7e5b20f9ccc91672094bdef207e0202779fef716caa347.36301475826.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-ONECLICK-INSTALL-20260927.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "940cff7df152b5e80546b3a162853163ce5284bf11d400481ecbed09fdb23634",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-ONECLICK-INSTALL-20260927.json",
   "request_sha256": "573f3b9d563be7f8af7e5b20f9ccc91672094bdef207e0202779fef716caa347",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "c0c0bd455ed1b138c85697fff96a084b125ffab179e994e1985fef62dd6fdc23",
     "file_sha256": {
@@ -87,5 +110,5 @@
       "cloud/crm_oneclick_release_001/ui_handlers.py": "9f5fa8e0a3da0a3a07db6042b3103d899972fdec781f28824ec810bd69cb61f4"
     }
   },
-  "updated_at": "2026-09-27T07:01:24Z"
+  "updated_at": "2026-09-27T07:13:00Z"
 }
