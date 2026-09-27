@@ -202,13 +202,14 @@ class CustomerAdapter:
 
 
 class CRMAdapter:
-    def __init__(self, repository, catalog, *, authorize):
+    def __init__(self, repository, catalog, *, authorize, menu_callback='menu'):
         self.repository,self.catalog,self.authorize=repository,catalog,authorize
+        self.menu_callback=menu_callback
 
     async def callback(self,update,context):
         from telegram.ext import ApplicationHandlerStop
         query=update.callback_query
-        # The live CRM role function is injected and consulted on every action.
+        # The host's authorization is checked before every database read.
         if not self.authorize(update):
             await query.answer('Недостаточно прав',show_alert=True)
             raise ApplicationHandlerStop
@@ -217,7 +218,8 @@ class CRMAdapter:
         try:
             if re.fullmatch(r'orders:list(?::[1-9][0-9]{0,17})?',value):
                 before=int(value.rsplit(':',1)[1]) if value.count(':')==2 else None
-                view=await asyncio.to_thread(crm.list_view,self.repository,self.catalog,before=before)
+                view=await asyncio.to_thread(crm.list_view,self.repository,self.catalog,
+                                             before=before,menu_callback=self.menu_callback)
             elif re.fullmatch(r'orders:open:[1-9][0-9]{0,17}',value):
                 row=await asyncio.to_thread(self.repository.detail,int(value.rsplit(':',1)[1]))
                 view=crm.detail_view(row,self.catalog)

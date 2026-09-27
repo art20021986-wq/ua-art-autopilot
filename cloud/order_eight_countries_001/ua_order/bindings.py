@@ -1,6 +1,6 @@
-"""Bindings verified against the current client_ui and team_bot interfaces."""
+"""Customer intake and the owner's private inbox in the client bot."""
 import asyncio
-from .crm import FOLDER_LABEL, detail_view
+from .crm import detail_view
 from .notifications import dispatch_once
 from .telegram import CRMAdapter, CustomerAdapter, _markup
 
@@ -28,66 +28,38 @@ def customer(app, runtime):
     return adapter
 
 
-def staff_allowed(staff, allowed_roles):
-    return bool(staff and staff['active'] and staff['role'] in allowed_roles)
-
-
-def manager_recipients(db):
-    # Same manager-first, owner-fallback policy as team_bot.notify_managers,
-    # with a fresh activity/role check before each delivery attempt.
-    def active(role):
-        return [user_id for user_id in db.staff_ids_by_role(role)
-                if staff_allowed(db.get_staff(user_id), (role,))]
-    return active(db.ROLE_MANAGER) or active(db.ROLE_OWNER)
-
-
-def folder_button(staff, allowed_roles):
-    from telegram import InlineKeyboardButton
-    if not staff_allowed(staff, allowed_roles):
-        return []
-    return [InlineKeyboardButton(FOLDER_LABEL, callback_data='orders:list')]
-
-
-def team(app, runtime, *, who, allowed_roles, recipients):
+def owner_inbox(app, runtime, *, owner_id):
+    owner_id = int(owner_id)
+    if owner_id <= 0:
+        raise ValueError('A private owner chat is required for order delivery')
     if not app.job_queue:
-        raise ValueError('The existing CRM job queue is required for order delivery')
+        raise ValueError('The existing client job queue is required for order delivery')
     if app.job_queue.get_jobs_by_name(JOB_NAME):
         raise ValueError('Order delivery is already registered')
 
     def authorize(update):
         return bool(update.effective_user and update.effective_chat
                     and update.effective_chat.type == 'private'
-                    and staff_allowed(who(update), allowed_roles))
+                    and update.effective_user.id == owner_id
+                    and update.effective_chat.id == owner_id)
 
     adapter = CRMAdapter(runtime.service.repository, runtime.service.catalog,
-                         authorize=authorize)
+                         authorize=authorize, menu_callback='v_start')
     adapter.register(app, group=first_group(app))
 
     async def deliver(row):
-        # Use the host's current recipient policy; re-evaluate it on every
-        # attempt. This message belongs to the CRM bot that handles orders:*.
-        targets = list(dict.fromkeys(recipients()))
-        if not targets:
-            raise RuntimeError('No active order recipient')
+        # The same client bot owns both the notification and its callback.
         view = detail_view(row, runtime.service.catalog)
         repository = runtime.service.repository
         request_id = row['data']['request_id']
         sent = await asyncio.to_thread(repository.notification_recipients_sent, request_id)
 
-        async def send(chat_id):
+        if owner_id not in sent:
             await app.bot.send_message(
-                chat_id=chat_id, text=view['text'], parse_mode='HTML',
+                chat_id=owner_id, text=view['text'], parse_mode='HTML',
                 reply_markup=_markup([[('Открыть заявку', f'orders:open:{row["id"]}')]]),
             )
-            await asyncio.to_thread(repository.notification_recipient_sent, request_id, chat_id)
-
-        # A failing/blocked recipient must not prevent the others from receiving
-        # the order. Known successful deliveries are durable and are not retried.
-        results = await asyncio.gather(*(send(target) for target in targets if target not in sent),
-                                       return_exceptions=True)
-        failures = [result for result in results if isinstance(result, BaseException)]
-        if failures:
-            raise RuntimeError('Order delivery remains pending for a recipient') from failures[0]
+            await asyncio.to_thread(repository.notification_recipient_sent, request_id, owner_id)
 
     async def job(context):
         await dispatch_once(runtime.service.repository, deliver)

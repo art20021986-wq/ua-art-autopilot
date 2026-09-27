@@ -4,7 +4,7 @@ from html import escape
 FOLDER_LABEL = '📁 Авто под заказ'
 
 
-def list_view(repository, catalog, *, before=None):
+def list_view(repository, catalog, *, before=None, menu_callback='menu'):
     rows, cursor = repository.list_requests(before=before)
     buttons = []
     for row in rows:
@@ -15,7 +15,7 @@ def list_view(repository, catalog, *, before=None):
         buttons.append([(f'{name[:45]} · {country}', f'orders:open:{row["id"]}')])
     if cursor:
         buttons.append([('Далее →', f'orders:list:{cursor}')])
-    buttons.append([('Обновить', 'orders:list'), ('В меню', 'menu')])
+    buttons.append([('Обновить', 'orders:list'), ('В меню', menu_callback)])
     return {'text': 'Авто под заказ' if rows else 'Пока нет заявок', 'buttons': buttons}
 
 
