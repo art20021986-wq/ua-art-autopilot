@@ -8,7 +8,7 @@ from uuid import UUID
 from .catalog import COUNTRIES, LANGUAGES
 
 SCHEMA = 'ua_order_request.v1'
-MAX_BYTES = 16 * 1024
+MAX_BYTES = 32 * 1024
 FIELDS = frozenset(('schema_version', 'request_id', 'config_version',
                    'purchase_country_code', 'model', 'other_model', 'budget',
                    'vehicle_type', 'delivery_country', 'delivery_city',
@@ -30,7 +30,7 @@ def text(value, field, minimum=0, maximum=80):
         raise Invalid(field)
     value = unicodedata.normalize('NFC', value).strip()
     if not minimum <= len(value) <= maximum or any(
-            unicodedata.category(c) == 'Cc' and c not in '\n\t' for c in value):
+            unicodedata.category(c) in ('Cc', 'Cs') and c not in '\n\t' for c in value):
         raise Invalid(field)
     return value
 
@@ -56,6 +56,9 @@ def decode(raw):
 
 
 def normalize(data, catalog, consent_version, *, verified_contact=False):
+    if isinstance(data, dict) and data.get('schema_version') == 'ua_order_request.v2':
+        from .preferences import normalize as normalize_preferences
+        return normalize_preferences(data, catalog, consent_version)
     if not isinstance(data, dict) or set(data) - FIELDS:
         raise Invalid('fields')
     if data.get('schema_version') != SCHEMA:

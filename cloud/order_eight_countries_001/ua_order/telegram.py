@@ -17,26 +17,40 @@ from .service import Principal
 
 def _markup(rows):
     from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-    return InlineKeyboardMarkup([[InlineKeyboardButton(label,callback_data=data) for label,data in row] for row in rows])
+    return InlineKeyboardMarkup([[InlineKeyboardButton(label,**({'url':data} if data.startswith('https://www.uaart.com.ua/video/podbor.html?') else {'callback_data':data})) for label,data in row] for row in rows])
 
 
 async def _menu(bot, chat, context, key, view, *, html=False):
     from telegram.error import BadRequest
-    options=dict(chat_id=chat, text=view['text'], reply_markup=_markup(view['buttons']),
-                 parse_mode='HTML' if html else None)
-    message_id=context.user_data.get(key)
-    if message_id:
-        try:
-            await bot.edit_message_text(message_id=message_id,**options)
-            return
+    parts = view.get('parts', [view['text']])
+    previous = context.user_data.get(key+'_parts') or ([context.user_data[key]] if context.user_data.get(key) else [])
+    message_ids = []
+    for index, text in enumerate(parts):
+        options=dict(chat_id=chat, text=text,
+                     reply_markup=_markup(view['buttons']) if index==len(parts)-1 else None,
+                     parse_mode='HTML' if html else None)
+        message_id=previous[index] if index<len(previous) else None
+        if message_id:
+            try:
+                await bot.edit_message_text(message_id=message_id,**options)
+                message_ids.append(message_id)
+                continue
+            except BadRequest as exc:
+                reason=str(exc).lower()
+                if 'message is not modified' in reason:
+                    message_ids.append(message_id)
+                    continue
+                if 'message to edit not found' not in reason: raise
+        message=await bot.send_message(**options)
+        message_ids.append(message.message_id)
+        # Retain partial progress if a later part needs a network retry.
+        context.user_data[key+'_parts']=message_ids+previous[len(message_ids):]
+    for old in previous[len(parts):]:
+        try: await bot.delete_message(chat_id=chat,message_id=old)
         except BadRequest as exc:
-            reason=str(exc).lower()
-            if 'message is not modified' in reason:
-                return
-            if 'message to edit not found' not in reason:
-                raise
-    message=await bot.send_message(**options)
-    context.user_data[key]=message.message_id
+            if 'message to delete not found' not in str(exc).lower(): raise
+    context.user_data[key]=message_ids[0]
+    context.user_data[key+'_parts']=message_ids
 
 
 class CustomerAdapter:
@@ -162,7 +176,7 @@ class CustomerAdapter:
         actor=self._actor(update,context)
         try:
             payload=decode(update.effective_message.web_app_data.data.encode())
-            if payload.get('t')!='podbor' and payload.get('schema_version')!='ua_order_request.v1':
+            if payload.get('t')!='podbor' and payload.get('schema_version') not in ('ua_order_request.v1','ua_order_request.v2'):
                 return
             if not self.allow_update(update): raise ApplicationHandlerStop
             if payload.get('t')=='podbor':

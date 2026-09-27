@@ -55,8 +55,7 @@ class RuntimeTest(unittest.TestCase):
         with patch.object(host, 'current', return_value=None):
             original = object()
             self.assertIs(host.mount_application(original), original)
-            self.assertIsNone(host.register_customer(original))
-            self.assertEqual(host.crm_folder({}, ()), [])
+            self.assertIsNone(host.register_customer(original, owner_id=789))
 
     def test_uninitialized_repository_does_not_create_a_database(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -86,10 +85,9 @@ class RuntimeTest(unittest.TestCase):
                 original = object()
                 app = SimpleNamespace(handlers={-1: [original]})
                 app.add_handler = lambda handler, group: app.handlers.setdefault(group, []).append(handler)
-                host.register_customer(app)
+                host.register_customer(app, owner_id=789)
                 self.assertIs(app.handlers[-1][0], original)
                 self.assertIn(-2, app.handlers)
-                self.assertEqual(host.crm_folder({}, ()), [])
         finally:
             host.current.cache_clear()
 

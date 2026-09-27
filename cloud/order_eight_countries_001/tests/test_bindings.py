@@ -92,73 +92,26 @@ class BindingTest(OrderFixture, unittest.IsolatedAsyncioTestCase):
         finally:
             await app.shutdown()
 
-    async def test_team_uses_existing_queue_roles_and_order_callback_then_retries_failure(self):
-        receipt = self.service.submit(self.data, Principal('telegram:123', 'telegram_bot'))
-        jobs = []
-        queue = SimpleNamespace(get_jobs_by_name=lambda _: [],
-                                run_repeating=lambda fn, **kwargs: jobs.append((fn, kwargs)))
-        app = SimpleNamespace(handlers={-3: []}, job_queue=queue,
-                              bot=SimpleNamespace(send_message=AsyncMock()))
-        app.add_handler = lambda handler, group: app.handlers.setdefault(group, []).append(handler)
-        staff = {'active': 1, 'role': 'manager'}
-        targets = [789]
-        adapter = bindings.team(app, self.runtime(), who=lambda _: staff,
-                                allowed_roles=('manager', 'owner'), recipients=lambda: targets)
-        update = SimpleNamespace(effective_user=SimpleNamespace(id=789),
-                                 effective_chat=SimpleNamespace(type='private'))
-        self.assertTrue(adapter.authorize(update))
-        staff['active'] = 0
-        self.assertFalse(adapter.authorize(update))
-        staff['active'] = 1
-        update.effective_chat.type = 'group'
-        self.assertFalse(adapter.authorize(update))
-        self.assertEqual(jobs[0][1]['name'], bindings.JOB_NAME)
-        app.bot.send_message.side_effect = TimeoutError('offline failure')
-        with self.assertRaises(RuntimeError):
-            await jobs[0][0](None)
-        with self.repo.connection() as db:
-            self.assertEqual(db.execute('SELECT state FROM order_outbox').fetchone()[0], 'pending')
-            db.execute('UPDATE order_outbox SET available_at=0')
-        app.bot.send_message.side_effect = None
-        await jobs[0][0](None)
-        options = app.bot.send_message.call_args.kwargs
-        self.assertIn(receipt['number'], options['text'])
-        self.assertEqual(options['reply_markup'].inline_keyboard[0][0].callback_data, 'orders:open:1')
-        with self.repo.connection() as db:
-            self.assertEqual(db.execute('SELECT state FROM order_outbox').fetchone()[0], 'sent')
-
-    async def test_failed_manager_does_not_block_or_repeat_successful_recipient(self):
+    async def test_owner_delivery_retry_is_private_and_idempotent(self):
         self.service.submit(self.data, Principal('telegram:123', 'telegram_bot'))
-        jobs, calls = [], []
-        async def send(**options):
-            calls.append(options['chat_id'])
-            if options['chat_id'] == 10:
-                from telegram.error import Forbidden
-                raise Forbidden('Offline blocked recipient')
-        app = SimpleNamespace(handlers={}, bot=SimpleNamespace(send_message=send),
-                              job_queue=SimpleNamespace(get_jobs_by_name=lambda _: [],
-                                run_repeating=lambda fn, **kwargs: jobs.append(fn)))
-        app.add_handler = lambda handler, group: app.handlers.setdefault(group, []).append(handler)
-        bindings.team(app, self.runtime(), who=lambda _: None,
-                      allowed_roles=('manager',), recipients=lambda: [10, 20])
-        for attempt in range(2):
-            with self.assertRaises(RuntimeError):
-                await jobs[0](None)
-            with self.repo.connection() as db:
-                db.execute('UPDATE order_outbox SET available_at=0')
-        self.assertEqual(calls.count(10), 2)
-        self.assertEqual(calls.count(20), 1)
-
-    def test_recipient_policy_rechecks_active_staff_and_falls_back_to_owner(self):
-        staff = {1: {'active': 0, 'role': 'manager'}, 2: {'active': 1, 'role': 'owner'}}
-        db = SimpleNamespace(ROLE_MANAGER='manager', ROLE_OWNER='owner',
-                             staff_ids_by_role=lambda role: [1] if role == 'manager' else [2],
-                             get_staff=staff.get)
-        self.assertEqual(bindings.manager_recipients(db), [2])
-        staff[1]['active'] = 1
-        self.assertEqual(bindings.manager_recipients(db), [1])
-        self.assertEqual(bindings.folder_button(staff[1], ('owner',)), [])
+        jobs=[]
+        app=SimpleNamespace(handlers={},bot=SimpleNamespace(send_message=AsyncMock()),
+            job_queue=SimpleNamespace(get_jobs_by_name=lambda _:[],run_repeating=lambda fn,**kw:jobs.append(fn)))
+        app.add_handler=lambda handler,group:app.handlers.setdefault(group,[]).append(handler)
+        adapter=bindings.owner_inbox(app,self.runtime(),owner_id=789)
+        update=SimpleNamespace(effective_user=SimpleNamespace(id=789),effective_chat=SimpleNamespace(id=789,type='private'))
+        self.assertTrue(adapter.authorize(update))
+        update.effective_chat.type='group';self.assertFalse(adapter.authorize(update))
+        update.effective_chat.type='private';update.effective_user.id=123;self.assertFalse(adapter.authorize(update))
+        app.bot.send_message.side_effect=TimeoutError('Offline failure')
+        with self.assertRaises(TimeoutError):await jobs[0](None)
+        self.assertEqual(self.repo.notification_recipients_sent(self.data['request_id']),set())
+        with self.repo.connection() as db:db.execute('UPDATE order_outbox SET available_at=0')
+        app.bot.send_message.side_effect=None
+        await jobs[0](None);self.assertEqual(self.repo.notification_recipients_sent(self.data['request_id']),{789})
+        sent=app.bot.send_message.await_count
+        await jobs[0](None);self.assertEqual(app.bot.send_message.await_count,sent)
+        self.assertEqual(app.bot.send_message.call_args.kwargs['chat_id'],789)
 
 
-if __name__ == '__main__':
-    unittest.main()
+if __name__=='__main__':unittest.main()

@@ -4,6 +4,7 @@ import hashlib
 from html import escape
 from html.parser import HTMLParser
 import json
+import re
 from pathlib import Path
 import shutil
 
@@ -57,18 +58,26 @@ def patch_home(source,catalog):
 
 
 def patch_form(source):
+    template=(ROOT/'web/podbor.html').read_text()
+    a,b=one_span(template,lambda tag,attrs:tag=='main' and attrs.get('id')=='ua-order')
+    fragment=template[a:b]
+    installed=ElementSpan(source,lambda tag,attrs:tag=='main' and attrs.get('id')=='ua-order').spans
+    if installed:
+        if len(installed)!=1: raise ValueError('Expected one order form')
+        start,end=installed[0]
+        result=source[:start]+fragment+source[end:]
+        for name in ('css','js'):
+            result,count=re.subn(r'(order/order\.'+name+r'\?v=)[^"\s]+',r'\g<1>20260927.3',result)
+            if count!=1: raise ValueError('Unexpected order asset includes')
+        return result
     start,_=one_span(source,lambda tag,a:tag=='div' and a.get('id')=='p_zag')
     script_start=source.index('<script>',start)
     end=source.index('</script>',script_start)+len('</script>')
     block=source[start:end]
     if "id='p_forma'" not in block or "id='p_send'" not in block or "t:'podbor'" not in block:
         raise ValueError('Unknown order form implementation; inspect before patching')
-    template=(ROOT/'web/podbor.html').read_text()
-    a,b=one_span(template,lambda tag,attrs:tag=='main' and attrs.get('id')=='ua-order')
-    fragment=template[a:b]
-    # Keep the existing navigation/footer/analytics outside the order region.
     result=source[:start]+fragment+source[end:]
-    includes='<link rel="stylesheet" href="order/order.css?v=20260927.2"><script type="module" src="order/order.js?v=20260927.2"></script>'
+    includes='<link rel="stylesheet" href="order/order.css?v=20260927.3"><script type="module" src="order/order.js?v=20260927.3"></script>'
     return result.replace('</head>',includes+'</head>',1)
 
 

@@ -67,7 +67,7 @@ def _unavailable_customer(app):
                 payload = decode(message.web_app_data.data.encode())
             except Invalid:
                 return
-            if payload.get('t') != 'podbor' and payload.get('schema_version') != 'ua_order_request.v1':
+            if payload.get('t') != 'podbor' and payload.get('schema_version') not in ('ua_order_request.v1', 'ua_order_request.v2'):
                 return
         text = 'Підбір тимчасово недоступний. Спробуйте пізніше.'
         if update.callback_query:

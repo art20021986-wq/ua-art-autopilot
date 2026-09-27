@@ -1,5 +1,6 @@
 """A flat folder view; the adapter must authorize each open/refresh action."""
 from html import escape
+from . import preference_summary
 
 FOLDER_LABEL = '📁 Авто под заказ'
 
@@ -9,7 +10,7 @@ def list_view(repository, catalog, *, before=None, menu_callback='menu'):
     buttons = []
     for row in rows:
         data = row['data']
-        country = catalog.country(data['purchase_country_code'])['name']['ru']
+        country = preference_summary.country_label(data, catalog)
         # Telegram inline labels are plain text, never HTML.
         name = ' '.join(data['customer_name'].split())
         buttons.append([(f'{name[:45]} · {country}', f'orders:open:{row["id"]}')])
@@ -21,7 +22,9 @@ def list_view(repository, catalog, *, before=None, menu_callback='menu'):
 
 def detail_view(row, catalog):
     data = row['data']
-    country = catalog.country(data['purchase_country_code'])['name']['ru']
+    if data.get('schema_version') == 'ua_order_request.v2':
+        return preference_summary.detail(row, catalog)
+    country = preference_summary.country_label(data, catalog)
     model = catalog.model(data['purchase_country_code'], data['model']) if data['model'] else None
     fields = [('Заявка', row['number']), ('Клиент', data['customer_name']),
               ('Страна подбора', country), ('Модель', model['labels']['ru'] if model else data['other_model']),

@@ -55,10 +55,12 @@ def owner_inbox(app, runtime, *, owner_id):
         sent = await asyncio.to_thread(repository.notification_recipients_sent, request_id)
 
         if owner_id not in sent:
-            await app.bot.send_message(
-                chat_id=owner_id, text=view['text'], parse_mode='HTML',
-                reply_markup=_markup([[('Открыть заявку', f'orders:open:{row["id"]}')]]),
-            )
+            parts = view.get('parts', [view['text']])
+            for index, part in enumerate(parts):
+                await app.bot.send_message(
+                    chat_id=owner_id, text=part, parse_mode='HTML',
+                    reply_markup=_markup([[('Открыть заявку', f'orders:open:{row["id"]}')]]) if index == len(parts)-1 else None,
+                )
             await asyncio.to_thread(repository.notification_recipient_sent, request_id, owner_id)
 
     async def job(context):

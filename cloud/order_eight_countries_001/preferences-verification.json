@@ -1,0 +1,17 @@
+{
+  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-final",
+  "manifest_sha256": "f6ec4c5af577f63b1a65479575a4a4da4f936ddd8cb11385e77b34779f1989af",
+  "files": 16,
+  "production_write": false,
+  "tests": {
+    "python": 57,
+    "js": "pure state, legacy routes, full DOM flow",
+    "prepublication_rollback": "exact",
+    "postpublication_rollback": "frontend restored, compatible v2 readers retained"
+  },
+  "pending": [
+    "Safari/iPhone and mobile browser visual review",
+    "isolated server runtime / MySQL integration",
+    "owner publication command after Gate B"
+  ]
+}
