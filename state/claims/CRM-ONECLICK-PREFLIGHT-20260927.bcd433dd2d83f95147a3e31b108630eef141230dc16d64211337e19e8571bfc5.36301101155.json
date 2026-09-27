@@ -7,21 +7,23 @@
   "created_at": "2026-09-27T06:47:36Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T06:47:36Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-09-27T06:51:03Z",
+  "heartbeat_at": "2026-09-27T06:51:03Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "36301101155",
     "task_id": "CRM-ONECLICK-PREFLIGHT-20260927",
     "task_sha256": "bcd433dd2d83f95147a3e31b108630eef141230dc16d64211337e19e8571bfc5"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-ONECLICK-PREFLIGHT-20260927.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b6f003946186667b3e740f02b20d8b53311ea67d0a85846ffb6caf5e425ba21e",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-ONECLICK-PREFLIGHT-20260927.json",
   "request_sha256": "bcd433dd2d83f95147a3e31b108630eef141230dc16d64211337e19e8571bfc5",
   "resource_locks": [
@@ -29,8 +31,34 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "d73df58da3896b71b301c73a84db3290e6efafb0",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92134359040,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.507
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-27T06:47:36Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "c0c0bd455ed1b138c85697fff96a084b125ffab179e994e1985fef62dd6fdc23",
+    "file_sha256": {
+      "cloud/crm_oneclick_release_001/candidate_builder.py": "ecea9693b9dd13ecdaef4929d1c5571781ddbd040a874349fa9c85b76239ab75",
+      "cloud/crm_oneclick_release_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_oneclick_release_001/deployment_bootstrap.py": "411fb137123bae2ea2f9a96d5667e18491a6eb2b1b54924b9d42c085971e4402",
+      "cloud/crm_oneclick_release_001/deployment_remote.py": "cf67f7f1ecae9a1aab77962a7fdb2b0e94a0dbd4da23b0a194b2089e00d92aec",
+      "cloud/crm_oneclick_release_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_oneclick_release_001/deployment_transport.py": "a39628ee9c09bd4a6cf3b3e8d54bea9f3531b7bc78fff59324c57bd72b59e409",
+      "cloud/crm_oneclick_release_001/performance_builder.py": "5dbfc9bd44b66ae5fff3dec5b859caabe24e3ea66973d50db4325817e382afea",
+      "cloud/crm_oneclick_release_001/release_constants.py": "e2e80108366f5d33786ea952a1cbcd948d6894e6203fd6367a915a09132745c3",
+      "cloud/crm_oneclick_release_001/stage_builder.py": "1e00a647d049fc4325bf8e28e6a766028bed34e826bd6e4bd35b3476a439d683",
+      "cloud/crm_oneclick_release_001/test_deployment.py": "ded239bba9eeaafb1592c8c597f87d17ba68e672ddb14995850cb5dfcd781ced",
+      "cloud/crm_oneclick_release_001/ua_publish_requests.py": "746657dd1c6b23968582cbb19bb6bb819ed5ad28654c1f4a657b258cd14645a1",
+      "cloud/crm_oneclick_release_001/ui_handlers.py": "9f5fa8e0a3da0a3a07db6042b3103d899972fdec781f28824ec810bd69cb61f4"
+    }
+  },
+  "updated_at": "2026-09-27T06:51:03Z"
 }
