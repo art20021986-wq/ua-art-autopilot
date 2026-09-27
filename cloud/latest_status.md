@@ -164,3 +164,15 @@ CRM_PHOTO_INTAKE_STATUS: CODE_TESTED_INSTALL_BLOCKED_BY_EXISTING_PRODUCTION_ROLL
 CRM_PHOTO_INTAKE_BLOCKER: Existing publisher run 36304601891 failed REMOTE_INSTALL:DeploymentError:WORKER_BUSY at 08:16:11 UTC; rollback_execute remains running. Photo preview run 36305025481 remains pending behind it. No photo production install request/marker has been submitted. Do not bypass the worker/publication lock or modify the other task's transaction.
 CRM_PHOTO_INTAKE_ADDITIONAL_CHECK: Exact private live db.py/cars_schema.py in a temporary database: 16 concurrent submissions create one draft; all 17 source messages linked; follow-up fills only empty fields; production year/logistics status remain empty and published=0. PASS. No live CRM data used or changed.
 CRM_PHOTO_INTAKE_CONTINUATION: cloud/crm_photo_intake_001/CHECKPOINT.json. Source and tests are on main; installation and end-to-end Telegram verification remain incomplete. The feature is not enabled yet.
+
+
+UA0021_PUBLICATION_FINAL_RECHECK_20260927:
+STATUS: PUBLICATION_CONFIRMED; this supersedes the earlier UA0021 absent/not-installed observations.
+EVIDENCE: cloud/crm_oneclick_release_001/ua0021_readonly_acceptance_20260927.json.
+SERVER_READONLY: 2026-09-27T08:21:04Z. Target resolved by auto_number: cars.id=31, published=1, sea_loaded. All four installed source SHA256 still equal the successful oneclick release. Target retry absent. All 21 active published CRM cars equal the catalog record/stage map; counts korea=4, ferry=5, georgia=6, kyiv=6. The ordinary canonical card and catalog responses match current server HTML bytes.
+BROWSER: Both ordinary https://www.uaart.com.ua/video/katalog.html and https://www.uaart.com.ua/video/UA-0021.html rendered successfully in this recheck. UA-0021 is in the ferry section, with 37 photos and one video displayed. This supersedes the previous cloud-browser 502 observation for these URLs at this check.
+RESOURCES: API now reports 10000 CPU seconds/day, 129.829948 used at 08:21 UTC; next reset 2026-09-28T08:09:11Z. Old exhausted 5000-second quota is stale.
+BOT: During unrelated publisher rollback 36304601891 the bot was paused; at 2026-09-27T08:26:07Z bot 266084 is enabled and Running. Its private rollback journal is FINISHED, restored=true and CRM/protected-files unchanged. This session did not alter, retry or take over that operation.
+SCOPE: Read-only production verification only. No application, CRM, HTML, media, SQL, bot control or protected-state mutations by this recheck. Publication was completed by the already installed worker; no duplicate installation or publication was triggered.
+LIMITS: Manual Telegram button/repeat-button/receipt-delivery journey and normal-quota callback latency were not measured. Existing regression evidence is retained; this is publication acceptance, not full UX/performance acceptance.
+CONTINUATION: Automation 6ab80e71aa688191868f657b5631fcae disabled after confirming the requested autonomous UA-0021 publication, to avoid rerunning a completed installation. Pending media/photo/tracking work remains separate.
