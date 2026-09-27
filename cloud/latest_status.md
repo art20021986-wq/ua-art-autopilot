@@ -47,3 +47,12 @@ STAGE_EDIT_RECOVERY_PRODUCTION_TOUCHED: NO live source, HTML, CRM records or bot
 STAGE_EDIT_RECOVERY_NEXT: cloud/stage_edit_recovery_001/README.md and CHECKPOINT.json. After registered recovery, use a fresh bounded two-file plan through main Actions. Do not replay the original installer, reset sync state or clear HALT without reconciliation. Coordinate overlapping source changes with the pending CRM/media repair.
 STAGE_EDIT_RECOVERY_FULL_ACCEPTANCE: NO
 
+CRM_PERFORMANCE_TASK: UA-ART-CRM-PERFORMANCE-20260927
+CRM_PERFORMANCE_STATUS: CANDIDATE_TESTED_NOT_INSTALLED
+CRM_PERFORMANCE_OBSERVED: 2026-09-27 around 05:03-05:07 UTC. PythonAnywhere tarpit confirmed, CPU 8612.62 / 5000 seconds. Read-only cars GROUP BY 14.72 ms; not Telegram latency. Production source hashes match candidate inputs. Publication fence timeout and repeated catalog mismatches observed.
+CRM_PERFORMANCE_CHANGE: Stage callback and periodic stage job notify the existing durable worker instead of competing for publication locks. Persisted catalog-error cooldown survives restarts and HTML timestamp changes; new CRM revision permits retry. Other transient failures retain per-card retries and do not starve other cars.
+CRM_PERFORMANCE_PACKAGE: cloud/crm_performance_001/README.md and candidate_manifest.json. Combined builder reuses stage_edit_recovery_001 and outputs three files (cars_ui.py, publikaciya.py, ua_crm_public_sync.py); do not install separate overlapping candidates.
+CRM_PERFORMANCE_TESTS: 40 PASS (15 performance, 18 stage recovery, 7 status policy); full-source combined candidate compile PASS; existing stage candidate outputs preserved byte-for-byte.
+CRM_PERFORMANCE_PRODUCTION_WRITTEN: NO
+CRM_PERFORMANCE_BLOCKER: Existing delivery EMERGENCY_HALT / ROLLING_BACK must be reconciled through the registered recovery route. CPU tarpit prevents meaningful speed acceptance and heavy rehearsal. No safety control was disabled; no new automatic installation was scheduled.
+CRM_PERFORMANCE_NEXT: Reconcile delivery incident, resolve catalog-set mismatch, check CPU after reset, combine with current source/router corrections, complete exact backup/rollback/Gate B and main Actions installation, confirm loaded bot code and measure live opening/edit/save latency. Owner authorization already covers this repair; no duplicate general approval needed.
