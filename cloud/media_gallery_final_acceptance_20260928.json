@@ -1,0 +1,121 @@
+{
+  "observed_at_utc": "2026-09-27T23:41:01.096275+00:00",
+  "scope": "PUBLIC_HTML_AND_DESKTOP_GALLERY_INTERACTION",
+  "status": "PASS",
+  "cards": {
+    "UA-0023": {
+      "url": "https://www.uaart.com.ua/video/UA-0023.html",
+      "http_status": 200,
+      "html_sha256": "61f2ddbd2878f7af7d2b61bab3022bf921e657e3554b95d762a1fb4787453f99",
+      "photos": 37,
+      "videos": 0,
+      "media_urls_and_order_preserved": true,
+      "exact_runtime_assets": true,
+      "native_player_without_autoplay": true,
+      "legacy_viewer_removed": true
+    },
+    "UA-0018": {
+      "url": "https://www.uaart.com.ua/video/UA-0018.html",
+      "http_status": 200,
+      "html_sha256": "0e26cf06f20d2f4659cdcc65ebed0ed3a7a04ae60584ae1ee4fabdd022746158",
+      "photos": 59,
+      "videos": 1,
+      "media_urls_and_order_preserved": true,
+      "exact_runtime_assets": true,
+      "native_player_without_autoplay": true,
+      "legacy_viewer_removed": true
+    },
+    "UA-0020": {
+      "url": "https://www.uaart.com.ua/video/UA-0020.html",
+      "http_status": 200,
+      "html_sha256": "986c69a39cb8548e7c78c978c4f8735079ae07bb9fca8f3382dd25bc04c8f33b",
+      "photos": 55,
+      "videos": 3,
+      "media_urls_and_order_preserved": true,
+      "exact_runtime_assets": true,
+      "native_player_without_autoplay": true,
+      "legacy_viewer_removed": true
+    }
+  },
+  "interactive_browser_acceptance": "PASS",
+  "real_device_acceptance": "NOT_RUN",
+  "publication_run_id": 36358562607,
+  "publication_receipt_path": "state/receipts/MEDIA-GALLERY-FINAL-INSTALL-20260928.json",
+  "publication_receipt_status": "FINISHED",
+  "runtime_changes": "Shared gallery renderer and behavior installed in run 36356222769; final run corrects scoped frame sizing and updates saved public card URLs.",
+  "desktop_checks": {
+    "photo_main": {
+      "url": "https://www.uaart.com.ua/video/UA-0023.html",
+      "view_width_px": 1348,
+      "stage_width_px": 1348,
+      "photo_count": 37,
+      "thumbnail_click": "PASS"
+    },
+    "photo_enlarged": {
+      "native_modal_open": true,
+      "thumbnail_selection": 4,
+      "counter": "Фото 4 / 37",
+      "selected_src": "foto/UA-0023/005.jpg",
+      "image_loaded": true,
+      "view_width_px": 1200,
+      "stage_width_px": 1200,
+      "thumbnail_count": 37
+    },
+    "video_main": {
+      "url": "https://www.uaart.com.ua/video/UA-0020.html",
+      "view_width_px": 1348,
+      "stage_width_px": 1348,
+      "stage_height_px": 655.1875,
+      "video_width_px": 1348,
+      "video_height_px": 655.1875
+    },
+    "video_enlarged": {
+      "panel_width_px": 1200,
+      "panel_height_px": 737.828125,
+      "video_width_px": 1200,
+      "video_height_px": 737.828125,
+      "native_controls_visible": true,
+      "native_play_clicked": true,
+      "observed_playback_time_seconds": 13.407553,
+      "paused_after_play": false,
+      "ready_state_after_play": 4,
+      "media_error": null,
+      "next_thumbnail_src": "UA-0020-02.mp4",
+      "next_thumbnail_paused": true,
+      "next_thumbnail_time_seconds": 0,
+      "video_elements": 1
+    },
+    "saved_link": {
+      "url": "https://www.uaart.com.ua/video/UA-0023-956711ae.html",
+      "photo_count": 37,
+      "view_width_px": 1348,
+      "stage_width_px": 1348,
+      "thumbnail_selection": 2,
+      "native_modal_open": true,
+      "selected_src": "foto/UA-0023/003.jpg"
+    },
+    "behavior_checked_before_css_correction": {
+      "script_unchanged_by_correction": true,
+      "script_sha256": "071ac43b5aa759f9308c6e8ab067763ffcc66f297044c75c1940be32f3ae1f7e",
+      "escape_restores_selection_focus_and_scroll": "PASS",
+      "keyboard_manual_tab_activation": "PASS",
+      "mouse_thumbnail_drag_without_selection": "PASS",
+      "fullscreen_unavailable_fallback": "PASS"
+    },
+    "native_fullscreen": "UNAVAILABLE_IN_TEST_BROWSER",
+    "real_iphone_safari_or_tiktok": "NOT_RUN"
+  },
+  "limitations": [
+    "Native fullscreen was unavailable in the test browser; the enlarged-view fallback was verified.",
+    "No real iPhone, Safari or TikTok in-app browser acceptance was performed."
+  ],
+  "finalized_at_utc": "2026-09-27T23:43:37.686512+00:00",
+  "publication_receipt_sha256": "8792b2138f74b4b2554f611fc73858526b5741585a025800af2b193b2b564a6d",
+  "public_url_checks_passed": 46,
+  "current_car_cards": 22,
+  "saved_public_card_urls": 22,
+  "planned_files_verified": 69,
+  "crm_state": "running",
+  "unexpected_changes": 0,
+  "backup_manifest_sha256": "9d631bf169d278e27d88f03ef4c93621c671d53f2f17f011d9566e7c6d904e2f"
+}
