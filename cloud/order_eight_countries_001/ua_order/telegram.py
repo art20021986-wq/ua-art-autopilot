@@ -40,11 +40,13 @@ async def _menu(bot, chat, context, key, view, *, html=False):
 
 
 class CustomerAdapter:
-    def __init__(self, service, strings, consent_text, *, media_root, allow_update):
+    def __init__(self, service, strings, consent_text, *, media_root, allow_update,
+                 menu_callback=None):
         self.service, self.strings, self.consent_text=service, strings, consent_text
         self.media_root=Path(media_root).resolve()
         self.allow_update=allow_update
-        if not callable(allow_update): raise ValueError('Existing rate limiter required')
+        self.menu_callback=menu_callback
+        if not callable(allow_update): raise ValueError('A rate limiter is required')
 
     def _actor(self, update, context):
         if not update.effective_user or not update.effective_chat or update.effective_chat.type != 'private':
@@ -55,6 +57,9 @@ class CustomerAdapter:
     async def show(self, update, context):
         state=context.user_data['order_flow']
         view=bot_flow.view(state,self.service.catalog,self.strings,self.consent_text)
+        if self.menu_callback:
+            label={'uk':'До головного меню','ru':'В главное меню','ka':'მთავარ მენიუში'}[state['data']['lang']]
+            view['buttons'].append([(label,self.menu_callback)])
         await _menu(context.bot,update.effective_chat.id,context,'order_menu_id',view)
         old=context.user_data.get('order_photo_id')
         selected=view['photo']
@@ -87,9 +92,10 @@ class CustomerAdapter:
     async def start(self, update, context):
         from telegram.ext import ApplicationHandlerStop
         self._actor(update,context)
-        if not self.allow_update(update): raise ApplicationHandlerStop
         if update.callback_query:
             await update.callback_query.answer()
+        if not self.allow_update(update): raise ApplicationHandlerStop
+        context.user_data.pop('podbor',None)
         text='' if update.callback_query else (update.effective_message.text or '')
         value=text.split(maxsplit=1)[1] if ' ' in text else ''
         data=None
@@ -174,7 +180,8 @@ class CustomerAdapter:
     async def clear(self, update, context):
         context.user_data.pop('order_flow',None)
 
-    def register(self, app, *, group):
+    def register(self, app, *, group, entry_pattern=None, exit_pattern=None,
+                 exit_commands=('start','cancel')):
         from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler, filters
         if app.concurrent_updates > 1:
             raise ValueError('Bind to sequential updates or add the host per-user queue first')
@@ -182,10 +189,15 @@ class CustomerAdapter:
             raise ValueError('The host must reserve an unused handler group')
         app.add_handler(CommandHandler('order',self.start),group=group)
         app.add_handler(CallbackQueryHandler(self.start,pattern=r'^order:open$'),group=group)
+        if entry_pattern:
+            app.add_handler(CallbackQueryHandler(self.start,pattern=entry_pattern),group=group)
         app.add_handler(MessageHandler(filters.Regex(r'^/start(?:@\w+)? (?:z_|or_)'),self.start),group=group)
         app.add_handler(CallbackQueryHandler(self.callback,pattern=r'^ord:'),group=group)
         app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA,self.webapp),group=group)
-        app.add_handler(CommandHandler(['start','cancel'],self.clear),group=group)
+        app.add_handler(CommandHandler(exit_commands,self.clear),group=group)
+        if exit_pattern:
+            # Clear only our state, then let the existing host screen handle it.
+            app.add_handler(CallbackQueryHandler(self.clear,pattern=exit_pattern),group=group)
         app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND,self.message),group=group)
 
 

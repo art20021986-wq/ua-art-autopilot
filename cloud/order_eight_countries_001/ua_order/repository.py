@@ -27,6 +27,10 @@ CREATE INDEX IF NOT EXISTS order_outbox_due ON order_outbox(state,available_at);
 CREATE TABLE IF NOT EXISTS order_drafts (
  token_hash TEXT PRIMARY KEY, owner TEXT NOT NULL, payload TEXT NOT NULL,
  expires_at INTEGER NOT NULL, telegram_owner TEXT);
+CREATE TABLE IF NOT EXISTS order_notification_receipts (
+ request_id TEXT NOT NULL REFERENCES order_requests(request_id),
+ recipient INTEGER NOT NULL, sent_at INTEGER NOT NULL,
+ PRIMARY KEY (request_id, recipient));
 '''
 
 
@@ -64,7 +68,10 @@ class Repository:
 
     @contextmanager
     def connection(self, *, write=False):
-        db = sqlite3.connect(self.path, timeout=3, isolation_level=None)
+        # Only initialize() may create the file; a bad runtime path must not
+        # silently create an empty database alongside the real one.
+        db = sqlite3.connect(self.path.as_uri()+'?mode=rw', uri=True,
+                             timeout=3, isolation_level=None)
         db.row_factory = sqlite3.Row
         db.execute('PRAGMA foreign_keys=ON')
         try:
@@ -142,6 +149,16 @@ class Repository:
             if not row: raise NotFound()
             return self._detail(row)
 
+    def notification_recipients_sent(self, request_id):
+        with self.connection() as db:
+            return {row[0] for row in db.execute(
+                'SELECT recipient FROM order_notification_receipts WHERE request_id=?', (request_id,))}
+
+    def notification_recipient_sent(self, request_id, recipient):
+        with self.connection(write=True) as db:
+            db.execute('INSERT OR IGNORE INTO order_notification_receipts VALUES (?,?,?)',
+                       (request_id, recipient, int(self.clock())))
+
     def create_draft(self, data, owner):
         token = secrets.token_urlsafe(24)
         hashed = hashlib.sha256(token.encode()).hexdigest()
@@ -178,4 +195,8 @@ class Repository:
             if delivered:
                 db.execute("UPDATE order_outbox SET state='sent',lease=NULL,lease_until=NULL WHERE id=? AND lease=?", (claim['id'], claim['lease']))
             else:
-                db.execute("UPDATE order_outbox SET state='pending',available_at=?,lease=NULL,lease_until=NULL WHERE id=? AND lease=?", (int(self.clock()) + 60, claim['id'], claim['lease']))
+                row = db.execute('SELECT attempts FROM order_outbox WHERE id=? AND lease=?',
+                                 (claim['id'], claim['lease'])).fetchone()
+                if row:
+                    delay = min(3600, 60 * 2 ** min(6, row['attempts'] - 1))
+                    db.execute("UPDATE order_outbox SET state='pending',available_at=?,lease=NULL,lease_until=NULL WHERE id=? AND lease=?", (int(self.clock()) + delay, claim['id'], claim['lease']))

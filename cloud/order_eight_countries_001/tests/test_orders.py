@@ -108,6 +108,8 @@ class OrdersTest(OrderFixture, unittest.TestCase):
         self.repo.finish_notification(second,delivered=False)
         self.assertIsNone(self.repo.claim_notification())
         self.now+=61
+        self.assertIsNone(self.repo.claim_notification())  # second attempt backs off for 120 seconds
+        self.now+=60
         third=self.repo.claim_notification()
         self.repo.finish_notification(third,delivered=True)
         self.assertIsNone(self.repo.claim_notification())

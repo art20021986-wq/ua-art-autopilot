@@ -14,7 +14,7 @@ class WebAdapter:
     def __init__(self, service, sessions, *, origin, consent_text, allow_request,
                  bot_token=None, bot_username='UA_artcompany_LLC_bot'):
         if not callable(allow_request):
-            raise ValueError('Connect the existing rate limiter before enabling intake')
+            raise ValueError('A request limiter is required before enabling intake')
         if not origin.startswith('https://') or origin.endswith('/'):
             raise ValueError('Configure the exact HTTPS origin')
         if set(consent_text) != {'uk', 'ru', 'ka'} or not all(consent_text.values()):
