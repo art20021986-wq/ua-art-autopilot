@@ -1,0 +1,171 @@
+{
+  "jobs": [
+    {
+      "id": 108716704099,
+      "run_id": 36353547114,
+      "name": "context",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108716721417,
+      "run_id": 36353547114,
+      "name": "intake",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108716749021,
+      "run_id": 36353547114,
+      "name": "persist",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108716785858,
+      "run_id": 36353547114,
+      "name": "execute / validate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108717244601,
+      "run_id": 36353547114,
+      "name": "execute / plan",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108717297030,
+      "run_id": 36353547114,
+      "name": "execute / critical / main_only",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108717297399,
+      "run_id": 36353547114,
+      "name": "execute / fast",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108717297431,
+      "run_id": 36353547114,
+      "name": "execute / standard",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108717314123,
+      "run_id": 36353547114,
+      "name": "execute / critical / validate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108717373877,
+      "run_id": 36353547114,
+      "name": "execute / critical / prepare",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108717374654,
+      "run_id": 36353547114,
+      "name": "execute / critical / controller_nonproduction",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108717489264,
+      "run_id": 36353547114,
+      "name": "execute / critical / backup",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 108718250367,
+      "run_id": 36353547114,
+      "name": "execute / critical / open",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108718250706,
+      "run_id": 36353547114,
+      "name": "execute / critical / controller_production",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108718250938,
+      "run_id": 36353547114,
+      "name": "execute / critical / rollback_mark",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108718251366,
+      "run_id": 36353547114,
+      "name": "execute / critical / finalize",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108718277204,
+      "run_id": 36353547114,
+      "name": "execute / critical / recover",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108718277781,
+      "run_id": 36353547114,
+      "name": "execute / critical / rollback_execute",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108718308487,
+      "run_id": 36353547114,
+      "name": "execute / critical / result",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "backup_error": "REMOTE_BACKUP:ValueError:SOURCE_DRIFT:stranica.py",
+  "backup_log_excerpt": [
+    "2026-09-27T22:06:02.7366753Z RuntimeError: REMOTE_BACKUP:ValueError:SOURCE_DRIFT:stranica.py",
+    "2026-09-27T22:06:02.7536766Z ExecutionContractError: BACKUP_CONTROLLER_FAILED:1"
+  ],
+  "public_health": [
+    {
+      "path": "/video/index.html",
+      "http": 200,
+      "canonical": true
+    },
+    {
+      "path": "/video/katalog.html",
+      "http": 200,
+      "canonical": true
+    },
+    {
+      "path": "/video/UA-0021.html",
+      "http": 200,
+      "canonical": true
+    }
+  ],
+  "control_flow": "backup() calls prepare(); candidate_builder.build() rejects source SHA mismatch before returning a candidate. Only a private run directory was created. The open, production controller, rollback controller and finalize jobs were skipped; transaction opened_at and backup bindings are null.",
+  "application_writes": false,
+  "service_pause_resume": false,
+  "read_method": "Exact authenticated GitHub Actions backup log and all completed job states; pinned controller/build control flow; public canonical HTTP health.",
+  "workflow_run": {
+    "id": 36353547114,
+    "head_sha": "062ae29b7f18739aea482bed35f0f623fbf93206",
+    "status": "completed",
+    "conclusion": "failure",
+    "html_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/36353547114"
+  },
+  "owner_instruction_basis": "Owner repeats the request to publish the SeaRates tracking button. This incident-specific route only closes the proven no-write photo attempt blocking that authorized task; no application installation, failed-task retry, or gate change is authorized by reconciliation."
+}
