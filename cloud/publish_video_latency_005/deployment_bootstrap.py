@@ -48,7 +48,7 @@ def main():
     result = subprocess.run([
         sys.executable, '-B', str(package / 'deployment_remote.py'),
         '--mode', args.mode, '--run', args.run, '--plan', args.plan, '--backup', args.backup,
-    ], timeout=900, check=False)
+    ], timeout=1500, check=False)
     return result.returncode
 
 

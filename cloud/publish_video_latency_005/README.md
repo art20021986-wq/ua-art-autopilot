@@ -9,3 +9,5 @@ R5 deployment transport preparation handles the actual R4 failure: transient pro
 The abandoned R4 temporary install task 273966 has a terminal FAIL safe_to_stop receipt after resuming bot 266084. Its exact command/digest/run/backup and both terminal receipts must be checked before cleanup through Actions. The failed rollback receipt must remain FAIL; do not manufacture a successful rollback receipt. Preserve legitimate subsequent CRM edits. Refresh actual server storage and source/dependency hashes before any new production binding.
 
 R5 backup first retires only temporary task 273966 after exact command, both bound terminal FAIL receipts and the Running CRM bot are reverified. Any mismatch prevents deletion. No permanent task, remote files, CRM records or pages are deleted.
+
+The remote bootstrap allows 1500 seconds, covering both bounded 480-second pause/resume waits and their in-flight requests without killing recovery at the old 900-second limit. The controller still enforces a finite deadline.
