@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-ONECLICK-INSTALL-20260927.573f3b9d563be7f8af7e5b20f9ccc91672094bdef207e0202779fef716caa347.json",
+  "autostart_ledger_sha256": "59c7a2a812c96636002a67a7232b7249069fbaa91c23d7d6297947da6c578229",
+  "autostart_source_commit": "701c6b700a63b36dd9ca883fc382cb8bbdabe4cb",
+  "created_at": "2026-09-27T06:55:09Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "36301475826",
+    "task_id": "CRM-ONECLICK-INSTALL-20260927",
+    "task_sha256": "573f3b9d563be7f8af7e5b20f9ccc91672094bdef207e0202779fef716caa347"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/CRM-ONECLICK-INSTALL-20260927.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
