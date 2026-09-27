@@ -1,7 +1,7 @@
 """Keep gallery indexes aligned and preserve all unrelated catalog cards."""
 import json
 import unittest
-from public_cleanup import cleanup_primary, cleanup_catalog, class_spans
+from public_cleanup import cleanup_primary, cleanup_catalog, cleanup_page, class_spans, gallery_match
 
 
 def primary():
@@ -13,6 +13,36 @@ def primary():
 
 
 class PublicCleanupTests(unittest.TestCase):
+    def test_desktop_viewer_keeps_controls_and_updates_only_its_sources(self):
+        source=primary()
+        original=gallery_match(source)
+        viewer='<!--ua-gallery-desktop-v1--><script>(function(sources){ const controls="UNCHANGED"; })('+original.group(1)+');</script>'
+        begin=source.index('<script>');end=source.index('</script>',begin)+len('</script>')
+        source=source[:begin]+viewer+source[end:]
+        result=cleanup_primary(source)
+        self.assertNotIn('001.jpg',result)
+        self.assertEqual(len(json.loads(gallery_match(result).group(1))),37)
+        self.assertIn('const controls="UNCHANGED";',result)
+
+    def test_hidden_middle_and_last_preserve_cover_and_renumber_remaining(self):
+        source=primary().replace('UA-0023','UA-0017')
+        value=cleanup_primary(source,'UA-0017',('017.jpg','038.jpg'),38)
+        self.assertNotIn('017.jpg',value)
+        self.assertNotIn('038.jpg',value)
+        self.assertIn("content='foto/UA-0017/001.jpg'",value)
+        self.assertIn("m/018.jpg' loading='lazy' alt='фото 17'",value)
+        self.assertEqual(len(class_spans(value,'kadr')),36)
+
+    def test_catalog_hidden_last_changes_counts_without_changing_cover(self):
+        source="<article><a href='UA-0017.html'><img src='foto/UA-0017/m/001.jpg'><span>40 фото</span></a><p>VIN TESTVIN17</p><p>Фото: 40</p></article>"
+        self.assertEqual(cleanup_catalog(source,'UA-0017','TESTVIN17',('040.jpg',),40,'001.jpg'),
+                         source.replace('40 фото','39 фото').replace('Фото: 40','Фото: 39'))
+
+    def test_page_dispatch_handles_alias_and_preserves_unrelated_diagnostic(self):
+        cards={'UA-0023':{'vin':'KNAG541BBNA169806','hidden':['001.jpg'],'before_count':38,'cover':'002.jpg'}}
+        self.assertEqual(cleanup_page(primary(),'video/UA-0023-956711ae.html',cards),cleanup_primary(primary()))
+        self.assertEqual(cleanup_page('<html>Diagnostics unchanged</html>','video/UA-0023-diag.html',cards),'<html>Diagnostics unchanged</html>')
+
     def test_primary_keeps_photo_order_and_aligned_lightbox(self):
         value=cleanup_primary(primary())
         self.assertNotIn('001.jpg',value)

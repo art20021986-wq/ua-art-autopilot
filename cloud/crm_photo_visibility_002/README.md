@@ -8,9 +8,9 @@ to `photos`; inbox linkage and existing video behavior remain. Both public galle
 and cover selectors respect `hidden_photos` through the synchronization ledger.
 Dedicated vehicle-photo editors remain available.
 
-`public_cleanup.py` removes the already-published first frame from UA-0023,
+`public_cleanup.py` removes only confirmed CRM-hidden frames from UA-0017, UA-0019 and UA-0023,
 keeps lightbox indexes and photo captions aligned, changes its cover to the first
-vehicle photograph and changes its counts from 38 to 37. It preserves all other
+vehicle photograph and adjusts each gallery count (UA-0023: 38 to 37). It preserves all other
 catalog cards. The cleanup uses authenticated public HTML snapshots and exact
 before/after hashes; existing page permissions are preserved.
 
@@ -20,4 +20,4 @@ writer locks, pauses/resumes the bot and verifies exact public bytes. Rollback i
 rehearsed, including interrupted writes and a failure before any file writes.
 A failed pre-write check never restores stale bytes over someone else's edit.
 
-Status: 50 tests pass. R6 inspects all existing CRM-hidden galleries after the tracking release. The original failed read-only preview is terminal via the existing failure transition. No photo fix is installed yet.
+Status: authenticated R6 preview PASS for UA-0017/0019/0023. R7 refreshes exact sources and public snapshots after the overlapping desktop-gallery installation, retaining its controls. 54 tests PASS; source hashes pin the reviewed desktop release. No photo correction installed yet.
