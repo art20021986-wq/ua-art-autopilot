@@ -1,0 +1,731 @@
+{
+  "task_id": "UA-ART-GALLERY-DESKTOP-001",
+  "status": "DESKTOP_PHOTO_NAVIGATION_ACCEPTED",
+  "observed_at_utc": "2026-09-27T23:09:53.855Z",
+  "scope": "Original desktop photo navigation complaint only; broader video/mobile/layout acceptance belongs to UA-ART-MEDIA-GALLERY-001.",
+  "production": {
+    "run_id": "36356222769",
+    "run_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/36356222769",
+    "conclusion": "success",
+    "completed_at_utc": "2026-09-27T23:01:28Z",
+    "receipt_path": "state/receipts/MEDIA-GALLERY-INSTALL-20260928.json",
+    "status": "FINISHED",
+    "production": "PASS",
+    "live_verify": "PASS",
+    "backup": "PASS",
+    "backup_manifest_sha256": "ac75af2b52f9d04da53c37477fa3f5fbb9b1d8b8e40c9456324ff4161b7ffc9d",
+    "restart": {
+      "enabled": true,
+      "id": 266084,
+      "state": "running"
+    },
+    "public_checks": {
+      "/video/UA-0001.html": "PASS",
+      "/video/UA-0003.html": "PASS",
+      "/video/UA-0004.html": "PASS",
+      "/video/UA-0005.html": "PASS",
+      "/video/UA-0006.html": "PASS",
+      "/video/UA-0007.html": "PASS",
+      "/video/UA-0008.html": "PASS",
+      "/video/UA-0009.html": "PASS",
+      "/video/UA-0010.html": "PASS",
+      "/video/UA-0011.html": "PASS",
+      "/video/UA-0012.html": "PASS",
+      "/video/UA-0013.html": "PASS",
+      "/video/UA-0014.html": "PASS",
+      "/video/UA-0015.html": "PASS",
+      "/video/UA-0016.html": "PASS",
+      "/video/UA-0017.html": "PASS",
+      "/video/UA-0018.html": "PASS",
+      "/video/UA-0019.html": "PASS",
+      "/video/UA-0020.html": "PASS",
+      "/video/UA-0021.html": "PASS",
+      "/video/UA-0022.html": "PASS",
+      "/video/UA-0023.html": "PASS",
+      "/video/index.html": "PASS",
+      "/video/katalog.html": "PASS"
+    },
+    "crm_unchanged": true,
+    "protected_files_unchanged": true,
+    "unexpected_changes": 0,
+    "runtime_sha256": {
+      "ua_media_gallery.py": "79875b42c5f1311197986a62add36978bf5933130cf5a9d5a770cf698269f369",
+      "ua_media_script.py": "071ac43b5aa759f9308c6e8ab067763ffcc66f297044c75c1940be32f3ae1f7e",
+      "ua_media_styles.py": "aba50c2dfbdeb3e734f8282e8f9795377e374b296a5cef80e946867f49681b2c"
+    },
+    "package": "cloud/media_gallery_002",
+    "tests": "44 PASS; JavaScript syntax PASS"
+  },
+  "desktop_results": {
+    "UA-0023": [
+      "Next and previous buttons update loaded photo and counter",
+      "Thumbnail selects photo 5",
+      "Mouse drag advances main image to photo 6 without opening dialog",
+      "Thumbnail rail mouse drag scrolls to 682 px without changing selected photo or opening dialog",
+      "Enlarged photo ArrowRight/ArrowLeft change selected photo",
+      "Full-size photos 6 and 7 loaded",
+      "Escape closes dialog; settled state restores focus to enlarge control"
+    ],
+    "UA-0018": [
+      "Next button changes photo 1 to 2 of 59",
+      "Enlarged ArrowRight changes photo 2 to 3",
+      "Escape closes dialog; settled state restores focus and loaded photo 3"
+    ],
+    "UA-0021": [
+      "Next button changes photo 1 to 2 of 37",
+      "Enlarged ArrowRight changes photo 2 to 3; full-size image loaded",
+      "Escape closes dialog; settled state restores focus and loaded photo 3"
+    ],
+    "UA-0023-956711ae": [
+      "Saved public URL opens same new gallery",
+      "Next button changes photo 1 to 2",
+      "Enlarged full-size photo 2 loaded"
+    ]
+  },
+  "observation_notes": [
+    "Immediate image load/close observations can precede browser load/close events; subsequent settled observations are retained rather than rewriting the original trace.",
+    "The saved UA-0023 URL and canonical page returned identical public HTML hashes. No mechanism for that mapping is inferred.",
+    "Original desktop-only candidates were never installed. This fix is delivered by the later owner-approved shared media gallery.",
+    "No alias companion preflight or production installation was launched; obsolete unconsumed companion and request withdrawn."
+  ],
+  "not_claimed": [
+    "Mobile Safari or iPhone/TikTok acceptance",
+    "Native video playback/fullscreen acceptance",
+    "Full acceptance of the separate media gallery layout task",
+    "New CRM publication end-to-end"
+  ],
+  "public_http_observation": {
+    "observed_at_utc": "2026-09-27T22:58:16.626487+00:00",
+    "interactive_browser_acceptance": false,
+    "cards": [
+      {
+        "code": "UA-0023",
+        "http": 200,
+        "final_url": "https://www.uaart.com.ua/video/UA-0023.html",
+        "sha256": "e00e863033b196f07cdbd00dc66a02325e8de71f2df6c3d079dbade9e322826d",
+        "cache_control": "no-cache, must-revalidate",
+        "age": null,
+        "media_gallery": true,
+        "photo_count": 37,
+        "next_buttons": 1,
+        "first_photo": "foto/UA-0023/002.jpg"
+      },
+      {
+        "code": "UA-0018",
+        "http": 200,
+        "final_url": "https://www.uaart.com.ua/video/UA-0018.html",
+        "sha256": "b4f9beef60396f91dbec5ddf46defbe6061290cdc7b13dbfe077db469b68516b",
+        "cache_control": "no-cache, must-revalidate",
+        "age": null,
+        "media_gallery": true,
+        "photo_count": 59,
+        "next_buttons": 2,
+        "first_photo": "foto/UA-0018/001.jpg"
+      },
+      {
+        "code": "UA-0021",
+        "http": 200,
+        "final_url": "https://www.uaart.com.ua/video/UA-0021.html",
+        "sha256": "304fa06979de7314434e3e3530fb3b492a2d9fe44f9e27071dfe5e9e12869928",
+        "cache_control": "no-cache, must-revalidate",
+        "age": null,
+        "media_gallery": true,
+        "photo_count": 37,
+        "next_buttons": 2,
+        "first_photo": "foto/UA-0021/001.jpg"
+      },
+      {
+        "code": "UA-0023-956711ae",
+        "http": 200,
+        "final_url": "https://www.uaart.com.ua/video/UA-0023-956711ae.html",
+        "sha256": "e00e863033b196f07cdbd00dc66a02325e8de71f2df6c3d079dbade9e322826d",
+        "cache_control": "no-cache, must-revalidate",
+        "age": null,
+        "media_gallery": true,
+        "photo_count": 37,
+        "next_buttons": 1,
+        "first_photo": "foto/UA-0023/002.jpg"
+      }
+    ]
+  },
+  "desktop_browser_evidence": {
+    "observed_at_utc": "2026-09-27T23:09:53.855Z",
+    "client": "Desktop Chromium",
+    "viewport": {
+      "width": 1363,
+      "height": 936
+    },
+    "observations": [
+      {
+        "test": "initial",
+        "state": {
+          "counter": "Фото 1 / 37",
+          "dialog": false,
+          "focus": null,
+          "imageRect": {
+            "h": 655.171875,
+            "w": 873.578125,
+            "x": 0,
+            "y": 311
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1348,
+            "x": 0,
+            "y": 966.171875
+          },
+          "railScroll": 0,
+          "selected": "0",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/m/002.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "next_button",
+        "state": {
+          "counter": "Фото 2 / 37",
+          "dialog": false,
+          "focus": "Вперёд",
+          "imageRect": {
+            "h": 655.171875,
+            "w": 873.578125,
+            "x": 0,
+            "y": 140
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1348,
+            "x": 0,
+            "y": 795.171875
+          },
+          "railScroll": 0,
+          "selected": "1",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/m/003.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "previous_button",
+        "state": {
+          "counter": "Фото 1 / 37",
+          "dialog": false,
+          "focus": null,
+          "imageRect": {
+            "h": 655.171875,
+            "w": 873.578125,
+            "x": 0,
+            "y": 140
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1348,
+            "x": 0,
+            "y": 795.171875
+          },
+          "railScroll": 0,
+          "selected": "0",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/m/002.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "thumbnail",
+        "state": {
+          "counter": "Фото 5 / 37",
+          "dialog": false,
+          "focus": "Фото 5 / 37",
+          "imageRect": {
+            "h": 655.171875,
+            "w": 873.578125,
+            "x": 0,
+            "y": -232
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1348,
+            "x": 0,
+            "y": 423.171875
+          },
+          "railScroll": 0,
+          "selected": "4",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/m/006.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "mouse_drag_main_image",
+        "state": {
+          "counter": "Фото 6 / 37",
+          "dialog": false,
+          "focus": "Увеличить фото",
+          "imageRect": {
+            "h": 655.171875,
+            "w": 873.578125,
+            "x": 0,
+            "y": -232
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1348,
+            "x": 0,
+            "y": 423.171875
+          },
+          "railScroll": 0,
+          "selected": "5",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/m/007.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "mouse_drag_thumbnail_rail",
+        "state": {
+          "counter": "Фото 6 / 37",
+          "dialog": false,
+          "focus": "Фото 11 / 37",
+          "imageRect": {
+            "h": 655.171875,
+            "w": 873.578125,
+            "x": 0,
+            "y": -232
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1348,
+            "x": 0,
+            "y": 423.171875
+          },
+          "railScroll": 682,
+          "selected": "5",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/m/007.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "open_dialog",
+        "state": {
+          "counter": "Фото 6 / 37",
+          "dialog": true,
+          "focus": "Закрыть",
+          "imageRect": {
+            "h": 727.828125,
+            "w": 1200,
+            "x": 81.5,
+            "y": 80.078125
+          },
+          "loaded": false,
+          "railRect": {
+            "h": 100,
+            "w": 1200,
+            "x": 81.5,
+            "y": 807.90625
+          },
+          "railScroll": 0,
+          "selected": "5",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/007.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "dialog_arrow_right",
+        "state": {
+          "counter": "Фото 7 / 37",
+          "dialog": true,
+          "focus": "Закрыть",
+          "imageRect": {
+            "h": 727.828125,
+            "w": 1200,
+            "x": 81.5,
+            "y": 80.078125
+          },
+          "loaded": false,
+          "railRect": {
+            "h": 100,
+            "w": 1200,
+            "x": 81.5,
+            "y": 807.90625
+          },
+          "railScroll": 0,
+          "selected": "6",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/008.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "dialog_arrow_left",
+        "state": {
+          "counter": "Фото 6 / 37",
+          "dialog": true,
+          "focus": "Закрыть",
+          "imageRect": {
+            "h": 727.828125,
+            "w": 1200,
+            "x": 81.5,
+            "y": 80.078125
+          },
+          "loaded": false,
+          "railRect": {
+            "h": 100,
+            "w": 1200,
+            "x": 81.5,
+            "y": 807.90625
+          },
+          "railScroll": 0,
+          "selected": "5",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/007.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "escape_and_focus_return",
+        "state": {
+          "counter": "Фото 6 / 37",
+          "dialog": false,
+          "focus": "Закрыть",
+          "imageRect": {
+            "h": 0,
+            "w": 0,
+            "x": 0,
+            "y": 0
+          },
+          "loaded": false,
+          "railRect": {
+            "h": 0,
+            "w": 0,
+            "x": 0,
+            "y": 0
+          },
+          "railScroll": 0,
+          "selected": "5",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/007.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "close_event_settled",
+        "state": {
+          "counter": "Фото 6 / 37",
+          "dialog": false,
+          "focus": "Увеличить",
+          "imageRect": {
+            "h": 655.171875,
+            "w": 873.578125,
+            "x": 0,
+            "y": 311
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1348,
+            "x": 0,
+            "y": 966.171875
+          },
+          "railScroll": 0,
+          "selected": "5",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/m/007.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "expanded_photo_loaded",
+        "state": {
+          "counter": "Фото 6 / 37",
+          "dialog": true,
+          "focus": "Закрыть",
+          "imageRect": {
+            "h": 727.828125,
+            "w": 1200,
+            "x": 81.5,
+            "y": 80.078125
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1200,
+            "x": 81.5,
+            "y": 807.90625
+          },
+          "railScroll": 0,
+          "selected": "5",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/007.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "expanded_next_button_loaded",
+        "state": {
+          "counter": "Фото 7 / 37",
+          "dialog": true,
+          "focus": "Вперёд",
+          "imageRect": {
+            "h": 727.828125,
+            "w": 1200,
+            "x": 81.5,
+            "y": 80.078125
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1200,
+            "x": 81.5,
+            "y": 807.90625
+          },
+          "railScroll": 0,
+          "selected": "6",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/008.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "UA0018_initial",
+        "state": {
+          "counter": "Фото 1 / 59",
+          "dialog": false,
+          "focus": null,
+          "loaded": true,
+          "src": "https://www.uaart.com.ua/video/foto/UA-0018/m/001.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0018.html",
+          "videosPaused": true
+        }
+      },
+      {
+        "test": "UA0018_next",
+        "state": {
+          "counter": "Фото 2 / 59",
+          "dialog": false,
+          "focus": "Вперёд",
+          "loaded": true,
+          "src": "https://www.uaart.com.ua/video/foto/UA-0018/m/002.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0018.html",
+          "videosPaused": true
+        }
+      },
+      {
+        "test": "UA0018_modal_arrow",
+        "state": {
+          "counter": "Фото 3 / 59",
+          "dialog": true,
+          "focus": "Закрыть",
+          "loaded": false,
+          "src": "https://www.uaart.com.ua/video/foto/UA-0018/003.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0018.html",
+          "videosPaused": true
+        }
+      },
+      {
+        "test": "UA0021_initial",
+        "state": {
+          "counter": "Фото 1 / 37",
+          "dialog": false,
+          "focus": null,
+          "loaded": true,
+          "src": "https://www.uaart.com.ua/video/foto/UA-0021/m/001.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0021.html",
+          "videosPaused": true
+        }
+      },
+      {
+        "test": "UA0021_next",
+        "state": {
+          "counter": "Фото 2 / 37",
+          "dialog": false,
+          "focus": "Вперёд",
+          "loaded": true,
+          "src": "https://www.uaart.com.ua/video/foto/UA-0021/m/002.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0021.html",
+          "videosPaused": true
+        }
+      },
+      {
+        "test": "UA0021_modal_arrow_loaded",
+        "state": {
+          "counter": "Фото 3 / 37",
+          "dialog": true,
+          "focus": "Закрыть",
+          "loaded": true,
+          "src": "https://www.uaart.com.ua/video/foto/UA-0021/003.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0021.html",
+          "videosPaused": true
+        }
+      },
+      {
+        "test": "UA0018_close_settled",
+        "state": {
+          "counter": "Фото 3 / 59",
+          "dialog": false,
+          "focus": "Увеличить фото",
+          "loaded": true,
+          "src": "https://www.uaart.com.ua/video/foto/UA-0018/m/003.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0018.html",
+          "videosPaused": true
+        }
+      },
+      {
+        "test": "UA0021_close_settled",
+        "state": {
+          "counter": "Фото 3 / 37",
+          "dialog": false,
+          "focus": "Увеличить фото",
+          "loaded": true,
+          "src": "https://www.uaart.com.ua/video/foto/UA-0021/m/003.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0021.html",
+          "videosPaused": true
+        }
+      },
+      {
+        "test": "saved_link_initial",
+        "state": {
+          "counter": "Фото 1 / 37",
+          "dialog": false,
+          "focus": null,
+          "imageRect": {
+            "h": 655.171875,
+            "w": 873.578125,
+            "x": 0,
+            "y": 311
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1348,
+            "x": 0,
+            "y": 966.171875
+          },
+          "railScroll": 0,
+          "selected": "0",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/m/002.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023-956711ae.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "saved_link_next",
+        "state": {
+          "counter": "Фото 2 / 37",
+          "dialog": false,
+          "focus": "Вперёд",
+          "imageRect": {
+            "h": 655.171875,
+            "w": 873.578125,
+            "x": 0,
+            "y": 140
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1348,
+            "x": 0,
+            "y": 795.171875
+          },
+          "railScroll": 0,
+          "selected": "1",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/m/003.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023-956711ae.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      },
+      {
+        "test": "saved_link_enlarged_loaded",
+        "state": {
+          "counter": "Фото 2 / 37",
+          "dialog": true,
+          "focus": "Закрыть",
+          "imageRect": {
+            "h": 727.828125,
+            "w": 1200,
+            "x": 81.5,
+            "y": 80.078125
+          },
+          "loaded": true,
+          "railRect": {
+            "h": 100,
+            "w": 1200,
+            "x": 81.5,
+            "y": 807.90625
+          },
+          "railScroll": 0,
+          "selected": "1",
+          "src": "https://www.uaart.com.ua/video/foto/UA-0023/003.jpg",
+          "url": "https://www.uaart.com.ua/video/UA-0023-956711ae.html",
+          "viewport": {
+            "h": 936,
+            "w": 1363
+          }
+        }
+      }
+    ]
+  },
+  "screenshot": {
+    "name": "ua-art-desktop-gallery-after.jpg",
+    "sha256": "590f7b2a1501435eab77c2ce69bf547a2cb0c1b289be95d41220fb72fd0bd6ee",
+    "shows": "Saved UA-0023 URL, enlarged loaded photo 2/37, previous/next, thumbnails and close controls"
+  },
+  "official_references": [
+    "https://www.w3.org/WAI/ARIA/apg/patterns/carousel/",
+    "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog",
+    "https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events"
+  ]
+}
