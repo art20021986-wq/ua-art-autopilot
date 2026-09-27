@@ -1,5 +1,5 @@
 // Native controls, localized labels and field errors. No requests or submission here.
-import {changeMake} from './preferences-state.js?v=20260927.9';
+import {changeMake,normalizePhone} from './preferences-state.js?v=20260927.10';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n;};
 export class PreferenceForm {
   constructor(main,optional,directory,catalog,state,onChange) {
@@ -28,14 +28,36 @@ export class PreferenceForm {
     for(const [code,title] of entries)select.append(el('option',title,{value:code}));
     select.value=value??'';select.addEventListener('change',()=>onChange(select.value));return select;
   }
-  dynamicSelect(name,choices,value,onChange) {
-    const select=this.select(name,choices(),value,code=>{onChange(code);refresh();});
+  modelControls() {
+    const wrap=el('div'),list=el('div',undefined,{class:'model-choices'}),rows=[];
+    const models=this.directory.makes[this.v.make]?.models||[];
+    const add=el('button',this.t('add_model'),{type:'button',class:'secondary'});let serial=0;
     const refresh=()=>{
-      const selected=select.value,available=Object.entries(choices());
-      select.replaceChildren(el('option',this.t('choose'),{value:''}),...available.map(([code,title])=>el('option',title,{value:code})));
-      select.value=available.some(([code])=>code===selected)?selected:'';
+      for(const row of rows) {
+        const others=new Set(rows.filter(x=>x!==row).map(x=>x.value));
+        row.select.replaceChildren(el('option',this.t('choose'),{value:''}),...models.filter(x=>!others.has(x)).map(x=>el('option',x,{value:x})));
+        row.select.value=row.value;
+        row.remove.hidden=rows.length===1&&!row.value;
+        row.remove.setAttribute('aria-label',`${this.t('remove')}: ${row.value||this.t('models')}`);
+      }
+      add.hidden=rows.some(row=>!row.value)||rows.length>=models.length;
     };
-    return {element:select,refresh};
+    const save=()=>{this.update('models',rows.map(row=>row.value).filter(Boolean));refresh();};
+    const append=value=>{
+      const index=serial++,row={value,element:el('div',undefined,{class:'model-choice'})};
+      row.select=this.select(index?`models-${index}`:'models',{},'',value=>{row.value=value;save();});
+      row.select.setAttribute('aria-labelledby','legend-models');
+      row.remove=el('button','×',{type:'button',class:'secondary'});
+      row.remove.addEventListener('click',()=>{
+        const index=rows.indexOf(row);rows.splice(index,1);row.element.remove();
+        if(!rows.length)append('');save();
+        rows[Math.min(index,rows.length-1)].select.focus({preventScroll:true});
+      });
+      row.element.append(row.select,row.remove);rows.push(row);list.append(row.element);return row;
+    };
+    for(const value of this.v.models.length?this.v.models:[''])append(value);
+    add.addEventListener('click',()=>{const row=append('');refresh();row.select.focus({preventScroll:true});});
+    refresh();wrap.append(list,add);return wrap;
   }
   note(key){return el('p',this.t(key),{class:'field-help'});}
   check(name,title,checked,callback) {
@@ -82,19 +104,11 @@ export class PreferenceForm {
         const details=el('div');
         const renderModels=()=>{
           details.replaceChildren();
-          if(v.model_mode==='selected') {
-            const selected=el('ul',undefined,{class:'selected-models'});
-            const renderSelected=()=>selected.replaceChildren(...v.models.map(model=>{
-              const item=el('li'),button=el('button',`${model} ×`,{type:'button','aria-label':`${this.t('remove')}: ${model}`,class:'secondary'});
-              button.addEventListener('click',()=>{this.update(key,v.models.filter(x=>x!==model));renderSelected();picker.refresh();});item.append(button);return item;
-            }));
-            const picker=this.dynamicSelect('models',()=>Object.fromEntries((this.directory.makes[v.make]?.models||[]).filter(x=>!v.models.includes(x)).map(x=>[x,x])),'',value=>{if(value){this.update(key,[...v.models,value]);renderSelected();}});
-            renderSelected();details.append(selected,picker.element);
-          }
+          if(v.model_mode==='selected')details.append(this.modelControls());
           if(v.model_mode==='other')details.append(this.label('other_model',this.input('other_model',v.other_model,value=>{v.other_model=value;this.update(key,v.models);},{max:120})));
           for(const select of details.querySelectorAll('select'))select.setAttribute('aria-labelledby',legend.id);
         };
-        const mode=this.select('model_mode',modes,v.model_mode||'selected',value=>{v.model_mode=value;v.models=[];v.other_model='';this.update(key,[]);renderModels();},{placeholder:false});
+        const mode=this.select('model_mode',modes,v.model_mode||'selected',value=>{if(v.model_mode===value)return;v.model_mode=value;v.models=[];v.other_model='';this.update(key,[]);renderModels();},{placeholder:false});
         mode.options[0].disabled=!this.directory.makes[v.make];
         mode.disabled=!v.make;mode.setAttribute('aria-label',this.t('model_mode'));box.append(mode,details);renderModels();
       }
@@ -123,9 +137,13 @@ export class PreferenceForm {
     } else if(key==='customer_name') {
       const input=this.input(key,v[key],value=>this.update(key,value),{autocomplete:'name'});input.setAttribute('aria-labelledby',legend.id);box.append(input);
     } else if(key==='contact') {
-      box.append(this.label('contact_method',this.select('contact_method',local('contact_method'),v.contact.method,value=>{this.update(key,{...v.contact,method:value});input.autocomplete=value==='telegram'?'off':'tel';input.type=value==='telegram'?'text':'tel';note.textContent=this.t(value==='telegram'?'telegram_help':'phone_help');})));
+      box.append(this.label('contact_method',this.select('contact_method',local('contact_method'),v.contact.method,value=>{this.update(key,{...v.contact,method:value});input.autocomplete=value==='telegram'?'off':'tel';input.type=value==='telegram'?'text':'tel';input.inputMode=value==='telegram'?'text':'tel';input.placeholder=value==='telegram'?'':'+380…';note.textContent=this.t(value==='telegram'?'telegram_help':'phone_help');})));
       const input=this.input(key,v.contact.value,value=>this.update(key,{...v.contact,value}),{autocomplete:v.contact.method==='telegram'?'off':'tel'});
-      if(v.contact.method!=='telegram')input.type='tel';input.setAttribute('aria-labelledby',legend.id);input.setAttribute('aria-describedby','contact-help');
+      if(v.contact.method!=='telegram')input.type='tel';input.inputMode=v.contact.method==='telegram'?'text':'tel';input.placeholder=v.contact.method==='telegram'?'':'+380…';
+      const formatPhone=()=>{if(v.contact.method==='telegram')return;const value=normalizePhone(input.value);if(input.value!==value)input.value=value;if(v.contact.value!==value)this.update(key,{...v.contact,value});};
+      input.addEventListener('input',event=>{if(['insertReplacementText','insertFromPaste'].includes(event.inputType))formatPhone();});
+      input.addEventListener('change',formatPhone);input.addEventListener('blur',formatPhone);
+      input.setAttribute('aria-labelledby',legend.id);input.setAttribute('aria-describedby','contact-help');
       const note=this.note(v.contact.method==='telegram'?'telegram_help':'phone_help');note.id='contact-help';box.append(input,note);
     } else if(['fuel','drive','colours'].includes(key)) {
       box.append(this.note('multi_help'));const checks=el('div',undefined,{class:'choice-grid'});

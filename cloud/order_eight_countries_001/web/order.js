@@ -1,6 +1,6 @@
 import {languages, fromUrl} from './order-state.js';
-import {createPreferences,editableValues,applyCard,preferenceErrors,payload,summaryPairs} from './preferences-state.js?v=20260927.9';
-import {PreferenceForm} from './preferences-form.js?v=20260927.9';
+import {createPreferences,editableValues,applyCard,preferenceErrors,payload,summaryPairs} from './preferences-state.js?v=20260927.10';
+import {PreferenceForm} from './preferences-form.js?v=20260927.10';
 
 const root=document.querySelector('#ua-order');
 const assets=new URL('./',import.meta.url);
@@ -67,7 +67,7 @@ function selectModel(key) {
   preferenceForm.render(state.lang);form.hidden=false;renderSelection();persist();
   $('pref-notice').hidden=!key;
   form.scrollIntoView({behavior:'smooth',block:'start'});
-  form.querySelector('select')?.focus({preventScroll:true});
+  form.querySelector('[data-label="main"]')?.focus({preventScroll:true});
 }
 function models() {
   $('model-section').hidden=!state.country || Boolean(state.receipt);

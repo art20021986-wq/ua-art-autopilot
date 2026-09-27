@@ -36,9 +36,9 @@ const $=selector=>{const e=document.querySelector(selector);assert.ok(e,selector
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 // A selection keeps its native control and focus: no detach/replace/refocus that
 // can reopen the iOS picker. Exercise every select used by the real form below.
-let focusCalls=0;
+let focusCalls=0,selectFocusCalls=0;
 const nativeFocus=window.HTMLElement.prototype.focus;
-window.HTMLElement.prototype.focus=function(...args){focusCalls++;return nativeFocus.apply(this,args);};
+window.HTMLElement.prototype.focus=function(...args){focusCalls++;if(this.tagName==='SELECT')selectFocusCalls++;return nativeFocus.apply(this,args);};
 const change=(name,value)=>{
  const control=$(`[name="${name}"]`);control.focus();const before=focusCalls;
  let detached=false;
@@ -54,7 +54,27 @@ const change=(name,value)=>{
 const input=(name,value)=>{const control=$(`[name="${name}"]`);control.value=value;control.dispatchEvent(new window.Event('input',{bubbles:true}));};
 const check=(name,value)=>{const control=$(`[name="${name}"]`);control.checked=value;control.dispatchEvent(new window.Event('change',{bubbles:true}));};
 assert.equal(state.lang,'ka');assert.equal(document.querySelectorAll('#countries a').length,8);assert.equal(document.querySelectorAll('#models article').length,5);
+// Exercise the actual card buttons, including cards with two named models.
+let checkedCards=0;
+for(const [country,data] of Object.entries(catalog.countries)){
+ $(`#countries a[href*="strana=${country}&"]`).click();
+ for(const [index,card] of data.models.entries()){
+  const beforeSelectFocus=selectFocusCalls;
+  document.querySelectorAll('#models article button')[index].click();
+  assert.equal(selectFocusCalls,beforeSelectFocus,'card opening never focuses a native picker');
+  assert.equal(document.activeElement,$('[data-label="main"]'));
+  const preset=preferences.card_presets[card.key];
+  assert.equal($('[name="make"]').value,preset.make||'',card.key);
+  assert.deepEqual(Array.from(document.querySelectorAll('.model-choice select'),e=>e.value),preset.models||[],card.key);
+  checkedCards++;
+ }
+}
+assert.equal(checkedCards,40);
+$('#countries a[href*="strana=korea&"]').click();
 $('#models button').click();assert.equal($('#order-form').hidden,false);assert.equal(state.preferences.values.make,'kia');
+assert.equal($('[name="models"]').value,'K5');change('model_mode','selected');assert.equal($('[name="models"]').value,'K5');
+$('.model-choice button').click();assert.equal(state.preferences.values.models.length,0);
+$('#models button').click();assert.equal($('[name="models"]').value,'K5','same card refills an empty model');
 assert.equal($('[name="budget"]').value,'');assert.equal($('[name="mileage"]').value,'');assert.equal($('[name="vehicle_type"]').value,'');
 assert.ok(Array.from($('[name="make"]').options).some(x=>x.value==='toyota'));assert.equal(state.preferences.values.make,'kia');
 assert.equal($('[name="delivery_city"]').disabled,true);
@@ -65,14 +85,27 @@ input('other_model','Manual model');change('make','toyota');
 assert.equal($('[name="model_mode"]').value,'selected');assert.equal($('[name="model_mode"]').options[0].disabled,false);
 change('model_mode','other');input('other_model','Custom');change('model_mode','selected');
 change('models','Camry');assert.equal(state.preferences.values.models[0],'Camry');
-assert.equal($('[name="models"]').value,'');assert.ok(!Array.from($('[name="models"]').options).some(o=>o.value==='Camry'));
-change('models','Corolla');assert.equal(state.preferences.values.models.length,2);
-$('.selected-models li:last-child button').click();assert.equal(state.preferences.values.models.length,1);
+assert.equal($('[name="models"]').value,'Camry');
+change('models','Corolla');assert.equal(state.preferences.values.models.length,1);change('models','Camry');
+$('.model-choices + button').click();
+assert.ok(!Array.from($('[name="models-1"]').options).some(o=>o.value==='Camry'));
+change('models-1','Corolla');assert.equal(state.preferences.values.models.length,2);
+$('.model-choice:last-child button').click();assert.equal(state.preferences.values.models.length,1);
 assert.ok(Array.from($('[name="models"]').options).some(o=>o.value==='Corolla'));
 selectModel('kia-k5');assert.equal(state.preferences.values.make,'toyota');assert.equal(state.preferences.values.models[0],'Camry');
 change('budget','custom');input('budget-custom','17 500');
 change('vehicle_type','sedan');change('year-from','2016');change('year-to','2021');change('mileage','custom');input('mileage-custom','109.353');
-change('delivery_country','georgia');change('delivery_city','tbilisi');input('customer_name','Тестовый клиент');change('contact_method','telegram');input('contact','@test_user');
+change('delivery_country','georgia');change('delivery_city','tbilisi');input('customer_name','Тестовый клиент');
+change('contact_method','whatsapp');assert.equal($('[name="contact"]').autocomplete,'tel');assert.equal($('[name="contact"]').inputMode,'tel');
+input('contact','991112233');assert.equal($('[name="contact"]').value,'991112233','do not rewrite while typing');
+$('[name="contact"]').dispatchEvent(new window.Event('change',{bubbles:true}));assert.equal($('[name="contact"]').value,'+380991112233');
+assert.equal(state.preferences.values.contact.value,'+380991112233');
+$('[name="contact"]').value='0991112233';$('[name="contact"]').dispatchEvent(new window.InputEvent('input',{bubbles:true,inputType:'insertReplacementText'}));
+assert.equal($('[name="contact"]').value,'+380991112233','completed replacement/autofill restores the country code');
+$('[name="contact"]').value='0991112233';$('[name="contact"]').dispatchEvent(new window.Event('blur'));
+assert.equal(state.preferences.values.contact.value,'+380991112233','read autofill value even without an input event');
+input('contact','+995599123456');$('[name="contact"]').dispatchEvent(new window.Event('change'));assert.equal($('[name="contact"]').value,'+995599123456');
+change('contact_method','telegram');input('contact','@test_user');$('[name="contact"]').dispatchEvent(new window.Event('blur'));assert.equal($('[name="contact"]').value,'@test_user');
 change('delivery_city','other');input('delivery_city_other','Батуми');change('delivery_city','tbilisi');
 check('colours-white',true);check('colours-black',true);check('colours-any',true);assert.equal(state.preferences.values.colours.length,1);assert.equal(state.preferences.values.colours[0],'any');
 check('colours-white',true);assert.equal(state.preferences.values.colours.length,1);assert.equal(state.preferences.values.colours[0],'white');
@@ -100,6 +133,7 @@ for(const lang of ['ru','uk','ka']){
  assert.deepEqual(Array.from($('[name="model_mode"]').options,o=>[o.value,o.textContent]),[['selected',preferences.labels[lang].selected],['other',preferences.labels[lang].other_value]]);
  assert.equal($('[name="customer_name"]').value,'Тестовый клиент');assert.equal($('[name="contact"]').value,'@test_user');
  assert.equal($('[name="budget-custom"]').value,'17 500');assert.equal(state.preferences.values.models[0],'Camry');
+ assert.equal($('[name="models"]').value,'Camry');
  assert.equal($('#optional-preferences').open,true);assert.equal(new URL(window.location.href).searchParams.get('lang'),lang);
  // Numeric lists keep the intended order; years have no thousands separator.
  const years=Array.from($('[name="year-from"]').options).filter(o=>/^\d+$/.test(o.value));

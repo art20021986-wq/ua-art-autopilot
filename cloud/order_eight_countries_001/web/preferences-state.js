@@ -16,7 +16,14 @@ export function editableValues(values) {
 export function createPreferences() {return {values:emptyValues(),dirty:{},card:null};}
 export function applyCard(previous,country,key,preset={}) {
   const id=`${country}/${key}`;
-  if(previous.card===id) return structuredClone(previous);
+  if(previous.card===id) {
+    const next=structuredClone(previous),v=next.values;
+    if(preset.make&&(!v.make||v.make===preset.make)&&!v.models.length&&!v.other_model.trim()) {
+      Object.assign(v,{make:preset.make,make_other:'',models:structuredClone(preset.models||[]),model_mode:preset.model_mode||'',other_model:''});
+      delete next.dirty.models;
+    }
+    return next;
+  }
   const next=structuredClone(previous),empty=emptyValues();
   Object.assign(next.values,{purchase_country_code:country,purchase_country_other:'',make:preset.make||'',make_other:'',
     models:preset.models||[],model_mode:preset.model_mode||'',other_model:''});
@@ -45,6 +52,19 @@ export function parseLitres(value) {
   if(!/^[0-9]{1,2}(?:[.,][0-9]{1,2})?$/.test(String(value).trim())) return null;
   const result=Number(String(value).trim().replace(',','.'));return result>0&&result<=20?result:null;
 }
+// The form accepts Ukrainian national numbers; other countries use +country code.
+// Normalize only completed input, never each keystroke of an international number.
+export function normalizePhone(value) {
+  const text=value.trim();
+  if(!/^[+0-9 ()\u00a0\u202f-]+$/.test(text))return text;
+  const compact=text.replace(/[ ()\u00a0\u202f-]/g,'');
+  if(/^\+[1-9][0-9]{6,14}$/.test(compact))return compact;
+  if(/^00[1-9][0-9]{6,14}$/.test(compact))return '+'+compact.slice(2);
+  if(/^380[0-9]{9}$/.test(compact))return '+'+compact;
+  if(/^0[0-9]{9}$/.test(compact))return '+38'+compact;
+  if(/^[1-9][0-9]{8}$/.test(compact))return '+380'+compact;
+  return text;
+}
 export function preferenceErrors(v,directory) {
   const errors={};const fail=(field,key='required_error')=>{errors[field]=key;};
   if(!v.purchase_country_code||(v.purchase_country_code==='other'&&v.purchase_country_other.trim().length<2)) fail('purchase_country_code');
@@ -55,7 +75,7 @@ export function preferenceErrors(v,directory) {
   if(!v.delivery_country) fail('delivery_country');
   if(!v.delivery_city.code||(v.delivery_city.code==='other'&&v.delivery_city.other.trim().length<2)) fail('delivery_city');
   if(v.customer_name.trim().length<2) fail('customer_name');
-  const contact=v.contact.value.trim(), phone=contact.replace(/[ ()-]/g,'');
+  const contact=v.contact.method==='telegram'?v.contact.value.trim():normalizePhone(v.contact.value), phone=contact.replace(/[ ()-]/g,'');
   if(!v.contact.method||!(v.contact.method==='telegram'&&/^@[a-zA-Z][a-zA-Z0-9_]{4,31}$/.test(contact))&&!(/^\+[0-9 ()-]+$/.test(contact)&&/^\+[1-9][0-9]{6,14}$/.test(phone))) fail('contact','contact_error');
   for(const field of ['year','engine']) {
     const interval=v[field];if(!interval) continue;
@@ -73,6 +93,7 @@ export function preferenceErrors(v,directory) {
 }
 export function payload(values,catalog,directory,lang,requestId,consentVersion,accepted,sourcePath='/video/podbor.html') {
   const result=editableValues(values);
+  if(result.contact.method!=='telegram')result.contact.value=normalizePhone(result.contact.value);
   if(result.budget.mode==='limit') result.budget.max=parseInteger(result.budget.max,1,1000000000);
   if(!result.mileage.any) result.mileage.max=parseInteger(result.mileage.max);
   for(const bound of ['from','to']) if(result.year[bound]!==null) result.year[bound]=parseInteger(result.year[bound],1900,directory.current_year);

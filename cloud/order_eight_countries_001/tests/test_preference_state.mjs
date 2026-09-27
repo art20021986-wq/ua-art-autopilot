@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const source=await fs.readFile(new URL('../web/preferences-state.js',import.meta.url),'utf8');
-const {createPreferences,editableValues,applyCard,changeMake,parseInteger,preferenceErrors,payload,summaryPairs}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const {createPreferences,editableValues,applyCard,changeMake,parseInteger,normalizePhone,preferenceErrors,payload,summaryPairs}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const directory=JSON.parse(await fs.readFile(new URL('../ua_order/preferences.json',import.meta.url),'utf8'));
 directory.current_year=new Date().getUTCFullYear();
 const catalog=JSON.parse(await fs.readFile(new URL('../../ua_order_ge_8country_guard_016/country_models.json',import.meta.url),'utf8'));
@@ -10,10 +10,13 @@ for(const [country,data] of Object.entries(catalog.countries))for(const card of 
  assert.equal(state.values.purchase_country_code,country);
  assert.equal(state.values.budget.max,null);assert.equal(state.values.mileage.max,null);assert.equal(state.values.colours,null);
  assert.equal(state.values.customer_name,'');assert.equal(state.values.delivery_country,'');
- if(card.key!=='classics-1980-1990') assert.ok(state.values.models.every(m=>directory.makes[state.values.make].models.includes(m)));
+ if(card.key!=='classics-1980-1990') {assert.ok(state.values.models.length>0);assert.ok(state.values.models.every(m=>directory.makes[state.values.make].models.includes(m)));}
  else assert.deepEqual(state.values.year,{from:1980,to:1990,any:false});
 }
 let state=applyCard(createPreferences(),'korea','kia-k5',directory.card_presets['kia-k5']);
+const blank=structuredClone(state);blank.values.models=[];blank.dirty.models=true;
+const repaired=applyCard(blank,'korea','kia-k5',directory.card_presets['kia-k5']);
+assert.deepEqual(repaired.values.models,['K5']);assert.deepEqual(blank.values.models,[]);
 Object.assign(state.values,{customer_name:'Олег',contact:{method:'telegram',value:'@test_user'},delivery_country:'georgia',delivery_city:{code:'tbilisi',other:''},comment:'Сохранить пожелания'});
 state.values.budget={mode:'limit',max:17000,currency:'USD'};state.dirty.budget=true;
 state.values.colours=['white'];state.dirty.colours=true;
@@ -33,10 +36,17 @@ changeMake(state,'help',directory);assert.equal(state.values.model_mode,'help');
 changeMake(state,'other',directory);assert.equal(state.values.model_mode,'other');
 for(const value of ['109353','109 353','109.353','109,353',109353])assert.equal(parseInteger(value),109353);
 for(const value of ['109.3','109,35','1 09 353','1.000,000',-1,true,[],null])assert.equal(parseInteger(value),null);
+for(const value of ['991112233','0991112233','380991112233','00380991112233','+380 (99) 111-22-33'])assert.equal(normalizePhone(value),'+380991112233');
+for(const value of ['+995599123456','+84901234567','+12025550123'])assert.equal(normalizePhone(value),value);
+for(const value of ['123','@test_user','099abc112233','++380991112233','099111223'])assert.equal(normalizePhone(value),value);
 const empty=preferenceErrors(createPreferences().values,directory);for(const key of ['year','mileage','make','models','budget','contact','delivery_country'])assert.ok(empty[key]);
 const values=changed.values;
 Object.assign(values,{year:{from:2015,to:2022,any:false},mileage:{max:'109,353',any:false},vehicle_type:'sedan',fuel:['hybrid'],drive:['fwd'],engine:{from:'1,5',to:2},purchase_timing:'month'});
 assert.deepEqual(preferenceErrors(values,directory),{});
+const national={...values,contact:{method:'whatsapp',value:'991112233'}};
+assert.deepEqual(preferenceErrors(national,directory),{});
+assert.equal(payload(national,catalog,directory,'ru','uuid','consent-v1',true).contact.value,'+380991112233');
+assert.equal(national.contact.value,'991112233','phone normalization must not mutate an uncertain request');
 const oldDraft=structuredClone(values);oldDraft.priority={make:'required_for_search',year:'required_for_search'};oldDraft.year.any=true;
 const snapshot=structuredClone(oldDraft),editable=editableValues(oldDraft);
 assert.deepEqual(editable.priority,{});assert.deepEqual(editable.year,{from:2015,to:2022,any:false});
