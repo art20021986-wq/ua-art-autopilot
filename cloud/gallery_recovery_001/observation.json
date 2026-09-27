@@ -1,0 +1,151 @@
+{
+  "observed_at": "2026-09-27T21:47:51.159Z",
+  "workflow_run": {
+    "id": 36352273461,
+    "head_sha": "fea373b1d86baeb42879194d38ccf3e674cc7840",
+    "status": "completed",
+    "conclusion": "failure",
+    "html_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/36352273461"
+  },
+  "jobs": [
+    {
+      "id": 108713105649,
+      "run_id": 36352273461,
+      "name": "context",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108713120199,
+      "run_id": 36352273461,
+      "name": "intake",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108713155642,
+      "run_id": 36352273461,
+      "name": "persist",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108713183150,
+      "run_id": 36352273461,
+      "name": "execute / validate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108713301139,
+      "run_id": 36352273461,
+      "name": "execute / plan",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108713351801,
+      "run_id": 36352273461,
+      "name": "execute / critical / main_only",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108713351970,
+      "run_id": 36352273461,
+      "name": "execute / standard",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108713352199,
+      "run_id": 36352273461,
+      "name": "execute / fast",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108713366032,
+      "run_id": 36352273461,
+      "name": "execute / critical / validate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108713406257,
+      "run_id": 36352273461,
+      "name": "execute / critical / prepare",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108713407199,
+      "run_id": 36352273461,
+      "name": "execute / critical / controller_nonproduction",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108713544347,
+      "run_id": 36352273461,
+      "name": "execute / critical / backup",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 108714151690,
+      "run_id": 36352273461,
+      "name": "execute / critical / open",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108714151807,
+      "run_id": 36352273461,
+      "name": "execute / critical / controller_production",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108714151819,
+      "run_id": 36352273461,
+      "name": "execute / critical / rollback_mark",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108714152369,
+      "run_id": 36352273461,
+      "name": "execute / critical / finalize",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108714190804,
+      "run_id": 36352273461,
+      "name": "execute / critical / recover",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108714191406,
+      "run_id": 36352273461,
+      "name": "execute / critical / rollback_execute",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108714225280,
+      "run_id": 36352273461,
+      "name": "execute / critical / result",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "backup_error": "REMOTE_BACKUP:DeploymentError:LIVE_PLAN_DRIFT",
+  "backup_log_excerpt": [
+    "2026-09-27T21:41:29.4636496Z     accepted(value, 'backup', run_id)",
+    "2026-09-27T21:41:29.4638813Z RuntimeError: REMOTE_BACKUP:DeploymentError:LIVE_PLAN_DRIFT"
+  ],
+  "backup_log_source": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/jobs/108713544347/logs"
+}
