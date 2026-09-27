@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "5581338d06d0460b099327a1875cb0180a5e779803677785fe8b5ab8fc7534ac",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-27T21:41:52Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 36352273461",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "e3eb76a2f123d7a5"
+    }
+  ],
   "heartbeat_at": "2026-09-27T21:37:50Z",
   "heartbeat_sequence": 6,
   "identity": {
@@ -90,7 +101,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "738a249ae6607a91079134f073836761621657d3b8ca278433267bf49af8f327",
     "file_sha256": {
@@ -106,5 +117,5 @@
       "cloud/gallery_desktop_001/ua_gallery.py": "65f00eb159b1f1292c61b1760c0181e9879e5662bf4cde27e4f76fb175822b26"
     }
   },
-  "updated_at": "2026-09-27T21:37:50Z"
+  "updated_at": "2026-09-27T21:41:52Z"
 }
