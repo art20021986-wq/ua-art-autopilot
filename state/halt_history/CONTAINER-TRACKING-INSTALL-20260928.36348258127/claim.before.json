@@ -17,15 +17,6 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "0e1696e7032e3c7d"
-    },
-    {
-      "action": "MANUAL_RECONCILIATION",
-      "at": "2026-09-27T20:58:49.929689+00:00",
-      "class": "ABORTED_NO_APPLICATION_WRITE",
-      "evidence_path": "state/reconciliations/CONTAINER-TRACKING-INSTALL-20260928.36348258127.authenticated-evidence.json",
-      "message": "Both attempts stopped before application writes. Concurrent specification edits preserved. CRM pause/resume occurred and RUNNING was confirmed. No installation or rollback PASS asserted.",
-      "retries_remaining": 0,
-      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-09-27T20:34:37Z",
@@ -63,7 +54,7 @@
   "production_required": true,
   "production_transaction_id": "tx-36348258127-bf576ed8ba735c94",
   "production_transaction_path": "state/transactions/CONTAINER-TRACKING-INSTALL-20260928.bf576ed8ba735c94ccb1d5de704791e8c09deb007e661460f3ce03801447b438.36348258127.json",
-  "production_transaction_status": "ROLLED_BACK",
+  "production_transaction_status": "ROLLING_BACK",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/CONTAINER-TRACKING-INSTALL-20260928.json",
   "receipt_validation_status": "PENDING",
@@ -110,7 +101,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "FAILED",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "e9e07ee4e3abc90c2f0b8e2c1b9b392ef4332e21bf16b20f56ee392bb39c5316",
     "file_sha256": {
@@ -128,5 +119,5 @@
       "cloud/container_tracking_001/ua_tracking_widget.py": "a96b76b662f2cf496a1c672ff8804f0dc940bbb4d02bdfcf37205b9c956f7477"
     }
   },
-  "updated_at": "2026-09-27T20:58:49.929689+00:00"
+  "updated_at": "2026-09-27T20:54:06Z"
 }

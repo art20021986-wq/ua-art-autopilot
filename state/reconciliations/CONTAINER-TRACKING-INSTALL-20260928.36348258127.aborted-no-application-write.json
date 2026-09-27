@@ -1,0 +1,32 @@
+{
+  "after_sha256": {
+    "state/claims/CONTAINER-TRACKING-INSTALL-20260928.bf576ed8ba735c94ccb1d5de704791e8c09deb007e661460f3ce03801447b438.36348258127.json": "156bf4389a2b58bb7a0d482119c1023848343d285cf7a25697c753bd5843dd85",
+    "state/transactions/CONTAINER-TRACKING-INSTALL-20260928.bf576ed8ba735c94ccb1d5de704791e8c09deb007e661460f3ce03801447b438.36348258127.json": "0e0476b378c7d93ad64154484ed15c71c9f6d19b8cfd000ea57b9f9878e4f41b"
+  },
+  "application_writes_executed": false,
+  "base_main_commit": "8ed96bbfbba7c14fae6b77940a8959bae3487467",
+  "before_sha256": {
+    "state/AUTOPILOT_HALT.json": "935940b1ebc7ac432d930578489aa196474a008cc97b1f4b7faadcdbd35c044c",
+    "state/claims/CONTAINER-TRACKING-INSTALL-20260928.bf576ed8ba735c94ccb1d5de704791e8c09deb007e661460f3ce03801447b438.36348258127.json": "ce7ed089b9482f955e33c63c0d6ef1712f09aab889cbef8f17cb0b443fd343bf",
+    "state/transactions/CONTAINER-TRACKING-INSTALL-20260928.bf576ed8ba735c94ccb1d5de704791e8c09deb007e661460f3ce03801447b438.36348258127.json": "d3c9e1f77bcc3ec9bfed82b0e92d1ec8fabb48c31f5e0ef2d5d3e31aedacfb03"
+  },
+  "evidence_path": "state/reconciliations/CONTAINER-TRACKING-INSTALL-20260928.36348258127.authenticated-evidence.json",
+  "evidence_sha256": "9ee48d38ae5af19ac49d30e5bd5afef74b5bcfe7c123af854cda6c6750d2afa6",
+  "fresh_successor_request_and_gate_b_required": true,
+  "metadata_terminal_status": "ROLLED_BACK",
+  "metadata_terminal_status_meaning": "Existing watchdog-compatible terminal metadata for an aborted attempt; authoritative result is ABORTED_NO_APPLICATION_WRITE. Neither installation nor rollback PASS is asserted.",
+  "old_request_approval_ledger_nonce_marker_unchanged": true,
+  "original_failure_preserved": true,
+  "original_run_id": "36348258127",
+  "production_install_controller_executed": true,
+  "production_rollback_controller_executed": true,
+  "reconciled_at": "2026-09-27T20:58:49.929689+00:00",
+  "request_sha256": "bf576ed8ba735c94ccb1d5de704791e8c09deb007e661460f3ce03801447b438",
+  "runtime_workflows_gates_unchanged": true,
+  "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-1",
+  "semantic_outcome": "ABORTED_NO_APPLICATION_WRITE",
+  "service_pause_resume_executed": true,
+  "successor_installation_authorized_by_this_record": false,
+  "task_id": "CONTAINER-TRACKING-INSTALL-20260928",
+  "transaction_id": "tx-36348258127-bf576ed8ba735c94"
+}
