@@ -69,7 +69,7 @@ def load(settings_path=None):
     settings = json.loads(path.read_text(encoding='utf-8'))
     if settings.get('enabled') is not True:
         return None
-    if settings.get('storage') != 'local_sqlite':
+    if settings.get('storage') not in ('local_sqlite', 'mysql'):
         raise ValueError('Configure an audited storage backend before enabling orders')
     consent = settings.get('consent_text')
     if (not isinstance(consent, dict) or set(consent) != {'uk', 'ru', 'ka'}
@@ -81,18 +81,23 @@ def load(settings_path=None):
     origin = settings.get('origin', '')
     if not origin.startswith('https://') or origin.endswith('/'):
         raise ValueError('An exact HTTPS origin is required')
-    database = path.parent / 'order_requests.db'
-    require_local_storage(database)
-    repository = Repository(database)
-    # Explicit setup must precede startup; this cannot create a new empty DB.
-    with repository.connection() as db:
-        if (db.execute('PRAGMA application_id').fetchone()[0] != APPLICATION_ID
-                or db.execute('PRAGMA user_version').fetchone()[0] != 1):
-            raise ValueError('Initialize the isolated order database before enabling intake')
-        tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-        if not {'order_requests', 'order_events', 'order_outbox', 'order_drafts',
-                'order_notification_receipts'} <= tables:
-            raise ValueError('The order database setup is incomplete')
+    if settings['storage'] == 'mysql':
+        from .mysql_repository import MySQLRepository
+        repository = MySQLRepository(**settings['mysql'])
+        repository.check_ready()
+    else:
+        database = path.parent / 'order_requests.db'
+        require_local_storage(database)
+        repository = Repository(database)
+        # Explicit setup must precede startup; this cannot create a new empty DB.
+        with repository.connection() as db:
+            if (db.execute('PRAGMA application_id').fetchone()[0] != APPLICATION_ID
+                    or db.execute('PRAGMA user_version').fetchone()[0] != 1):
+                raise ValueError('Initialize the isolated order database before enabling intake')
+            tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            if not {'order_requests', 'order_events', 'order_outbox', 'order_drafts',
+                    'order_notification_receipts'} <= tables:
+                raise ValueError('The order database setup is incomplete')
     catalog = Catalog(settings['catalog_path'])
     media_root = Path(settings['media_root']).resolve()
     if not media_root.is_dir():

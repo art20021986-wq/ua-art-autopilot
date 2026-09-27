@@ -9,6 +9,7 @@ import sqlite3
 import time
 
 from .contract import Conflict, encoded
+from .storage import NotFound, detail, receipt
 
 APPLICATION_ID = 0x55414F52
 DDL = '''
@@ -32,10 +33,6 @@ CREATE TABLE IF NOT EXISTS order_notification_receipts (
  recipient INTEGER NOT NULL, sent_at INTEGER NOT NULL,
  PRIMARY KEY (request_id, recipient));
 '''
-
-
-class NotFound(LookupError):
-    pass
 
 
 class Repository:
@@ -87,10 +84,7 @@ class Repository:
         finally:
             db.close()
 
-    @staticmethod
-    def receipt(row):
-        return {'request_id': row['request_id'], 'number': f'OR-{row["id"]:06d}',
-                'status': 'saved'}
+    receipt = staticmethod(receipt)
 
     def save(self, data, payload_hash, owner, channel, event=None):
         with self.connection(write=True) as db:
@@ -130,11 +124,7 @@ class Repository:
             visible = rows[:limit]
             return [self._detail(r) for r in visible], visible[-1]['id'] if len(rows) > limit else None
 
-    @staticmethod
-    def _detail(row):
-        return dict(id=row['id'], number=f'OR-{row["id"]:06d}', created_at=row['created_at'],
-                    channel=row['channel'], data=json.loads(row['payload']),
-                    telegram_user_id=row['owner'].split(':',1)[1] if row['owner'].startswith('telegram:') else None)
+    _detail = staticmethod(detail)
 
     def detail(self, row_id):
         with self.connection() as db:

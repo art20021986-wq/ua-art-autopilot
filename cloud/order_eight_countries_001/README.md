@@ -227,3 +227,9 @@ python cloud/order_eight_countries_001/build.py --output /path/to/new/preview --
 Browser для создания учётных данных. После инициализации предстоят адаптер
 MySQL, транзакционные проверки, согласие и оставшаяся приёмка Gate B.
 Это не установка, не изменение тарифа и не миграция рабочей CRM.
+
+## MySQL preparation — 2026-09-27
+
+Owner completed credential initialization. Dedicated `Carix$orders` and `Carix$orders_test` databases were created through the hosting UI. Read-only connection to orders succeeded using the existing MySQLdb driver and server credential file; server version is 8.0.46, orders schema is empty. No credential value was read or copied. Main CRM and bot runtime files are unchanged.
+
+Native MySQL adapter is prepared with InnoDB transactions, parameterized SQL, bounded deadlock retries, explicit schema setup, request/event idempotency, draft owner binding, notification leases and durable recipient receipts. Runtime supports MySQL without SQLite on the shared filesystem. Local suite: 42 PASS; exact-host checks: PASS. Actual MySQL integration checks are pending; run `tests/check_mysql.py` only against the isolated orders_test database. No runtime deployment yet.

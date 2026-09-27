@@ -11,7 +11,7 @@ import sqlite3
 
 from . import bot_flow, crm, legacy
 from .contract import Conflict, Invalid, decode
-from .repository import NotFound
+from .storage import NotFound, StorageUnavailable
 from .service import Principal
 
 
@@ -140,7 +140,7 @@ class CustomerAdapter:
             else:
                 bot_flow.transition(state,parts[3],parts[4],self.service.catalog)
             await self.show(update,context)
-        except (Invalid,Conflict,sqlite3.Error):
+        except (Invalid,Conflict,sqlite3.Error,StorageUnavailable):
             await context.bot.send_message(update.effective_chat.id,self.strings[state['data']['lang']]['invalid'])
         raise ApplicationHandlerStop
 
@@ -173,7 +173,7 @@ class CustomerAdapter:
                 state['receipt']=await asyncio.to_thread(self.service.submit,payload,actor)
             context.user_data['order_flow']=state
             await self.show(update,context)
-        except (Invalid,Conflict,sqlite3.Error):
+        except (Invalid,Conflict,sqlite3.Error,StorageUnavailable):
             await update.effective_message.reply_text(self.strings['uk']['invalid'])
         raise ApplicationHandlerStop
 

@@ -6,7 +6,7 @@ from urllib.parse import parse_qs
 
 from .auth import Unauthorized, telegram_user
 from .contract import Conflict, Invalid, MAX_BYTES, decode
-from .repository import NotFound
+from .storage import NotFound, StorageUnavailable
 from .service import Principal
 
 
@@ -102,7 +102,7 @@ class WebAdapter:
             status, result = 404, {'error': 'not_found'}
         except Conflict:
             status, result = 409, {'error': 'conflict'}
-        except sqlite3.Error:
+        except (sqlite3.Error, StorageUnavailable):
             status, result = 503, {'error': 'temporarily_unavailable'}
         body = json.dumps(result, ensure_ascii=False, separators=(',', ':')).encode()
         names = {200:'OK', 400:'Bad Request', 403:'Forbidden', 404:'Not Found',

@@ -2,7 +2,7 @@
   "specification": "UA-ART-ORDER-8COUNTRIES-40-001 v1.1",
   "checked_at_utc": "2026-09-27T11:30:58.508227+00:00",
   "status": "LOCAL_CANDIDATE_ONLY",
-  "production_modified": false,
+  "production_modified": true,
   "gate_b": "NOT_PASSED",
   "python_runtime": "3.12.14",
   "checks": [
@@ -174,11 +174,15 @@
       "https://help.pythonanywhere.com/pages/MySiteIsSlow",
       "https://help.pythonanywhere.com/pages/KindsOfDatabases"
     ],
-    "database_ui": "AVAILABLE: MySQL uninitialized; PostgreSQL requires plan upgrade",
+    "database_ui": "MYSQL_INITIALIZED_BY_OWNER",
     "runtime_guard": "NETWORK_FILESYSTEM_REFUSED",
     "production_mount_measured": false,
     "new_service_or_library_added": false,
-    "database_ui_checked_at_utc": "2026-09-27T11:38:03.207565+00:00"
+    "database_ui_checked_at_utc": "2026-09-27T11:38:03.207565+00:00",
+    "driver": "MySQLdb import PASS on Python 3.10",
+    "mysql_server_version": "8.0.46",
+    "orders_connection": "PASS: empty schema",
+    "mysql_adapter": "PREPARED; actual integration pending"
   },
   "observed_publisher": {
     "r4": "ROLLED_BACK",
@@ -196,6 +200,11 @@
     "received_local": "2026-09-27T18:36:32+07:00",
     "text": "Подтверждаю ☑️ запускай",
     "production_deployed": false,
-    "remaining": "Database credential initialization requires user handoff; MySQL adapter and Gate B still required; approved consent missing"
-  }
+    "remaining": "MySQL integration and Gate B still required; approved consent missing"
+  },
+  "production_runtime_modified": false,
+  "server_changes": [
+    "Created isolated empty Carix$orders database",
+    "Created isolated empty Carix$orders_test database"
+  ]
 }
