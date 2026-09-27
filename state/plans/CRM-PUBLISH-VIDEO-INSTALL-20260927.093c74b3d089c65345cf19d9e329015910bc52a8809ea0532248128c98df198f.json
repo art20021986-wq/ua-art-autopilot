@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-PUBLISH-VIDEO-INSTALL-20260927.093c74b3d089c65345cf19d9e329015910bc52a8809ea0532248128c98df198f.json",
+  "autostart_ledger_sha256": "09dc6d600734354c168c1acfcad52b0b270db80584b24d8e918114c5fe2341cb",
+  "autostart_source_commit": "b778842c74f0a9e7d9d5117a3982bcc7e4bcde21",
+  "created_at": "2026-09-27T08:00:50Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "36304601891",
+    "task_id": "CRM-PUBLISH-VIDEO-INSTALL-20260927",
+    "task_sha256": "093c74b3d089c65345cf19d9e329015910bc52a8809ea0532248128c98df198f"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-124972f91b7dd9e4-16a460250a7392ce",
+  "request_path": "tasks/requests/CRM-PUBLISH-VIDEO-INSTALL-20260927.json",
+  "resource_locks": [
+    "PATH_SCOPE:124972f91b7dd9e4"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
