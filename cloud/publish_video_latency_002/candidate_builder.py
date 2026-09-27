@@ -1,0 +1,29 @@
+"""Remove only the obsolete, mutating video comparison from page writes."""
+import hashlib
+
+SOURCE_SHA256 = {"publikaciya.py": "4d1adb53cb659daa125c7480c289ad25e03a57e34d3d0c1f4e0989de1d7a8ac8"}
+DEPENDENCY_SHA256 = {'cars_schema.py': '16d53277834ecfad1eabc10f75e5cabb1060b35416b61b6f534ec024ce9dbc07', 'catalog_design_guard.py': '59502b73871968c7f90511fd28af2f839220db982908b0afe7b5b6f55c6e7fd7', 'db.py': 'af7624cbcf227b865ac98c68462ad6da8d18223881bba836f2f9a8669cf1dab7', 'konteyner.py': 'cb09e8cfac57f05a004f7dae73d57f76c422132a8e0d6a16f28f0a949647760e', 'lead_bot.py': '27270e38f1b7ed913140127231149b6d862876f3b3a02a58c4a852b40ce8a3f8', 'master_card.py': 'c99b6c0271586d4f8c56e4184528ab6f20541173be9a287d9d64661b4b7184b2', 'publication_fence.py': 'c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21', 'publish_transaction_guard.py': '9b41f15e8455ec7e579bea1e194e6c855cc50b7b0e060ee2a010301d28c981e8', 'run_all.py': 'cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9', 'start_safe.py': '21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb', 'stranica.py': '4d710266abb2a92754ff3e3fc7de86c628760bee3c455dfbb177dedec113b1a1', 'team_bot.py': 'aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af', 'ua_delivery_status.py': 'c544bc121b7b3b66d45519d5b63ed3687567af7e9d5f7011ae2fb53cc372bdd0', 'ua_public_freshness.py': '6c750d0ffcfd3959413120905e46b8765049a2a207b77741d7fc5721a225c134', 'ua_site_counters.py': '17f662420284da3e193d7a520b6302b27fce26aa8e38cfff60772299c221277f', 'ua_stage_catalog_sync.py': 'a8d2784e73d005b5a02328f63c9233d78da665547266276df69291383616a255', 'cars_ui.py': 'fed3ccd110e750947288bbe5892f1c62262b23d6818653f43c7d57b584bf92dd', 'ua_crm_public_sync.py': '8c65eeb598c15007f489e2eaa0453362c97b9c426a3f67cf02c6a09a0d37015f', 'ua_publish_requests.py': '746657dd1c6b23968582cbb19bb6bb819ed5ad28654c1f4a657b258cd14645a1'}
+START = '# ───────────────────────────── UA-MCF-DEDUP · ЗАЩИТА ОТ ДУБЛЕЙ ВИДЕО ─────────'
+END = '# ───────────────────────────── конец UA-MCF-DEDUP ────────────────────────────'
+
+
+def patch_publisher(source):
+    if source.count(START) != 1 or source.count(END) != 1:
+        raise ValueError("DEDUP_ANCHOR_COUNT")
+    first = source.index(START)
+    last = source.index(END, first) + len(END)
+    if source[last:last + 1] == "\n":
+        last += 1
+    return source[:first] + source[last:]
+
+
+def build(sources, dependencies):
+    if set(sources) != set(SOURCE_SHA256) or set(dependencies) != set(DEPENDENCY_SHA256):
+        raise ValueError("SOURCE_OR_DEPENDENCY_SET")
+    for values, expected in ((sources, SOURCE_SHA256), (dependencies, DEPENDENCY_SHA256)):
+        for name, digest in expected.items():
+            if hashlib.sha256(values[name]).hexdigest() != digest:
+                raise ValueError("SOURCE_OR_DEPENDENCY_CHANGED:" + name)
+    candidate = patch_publisher(sources["publikaciya.py"].decode()).encode()
+    compile(candidate, "publikaciya.py", "exec")
+    return {"publikaciya.py": candidate}

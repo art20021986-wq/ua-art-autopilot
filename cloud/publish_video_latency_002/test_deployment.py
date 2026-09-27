@@ -178,6 +178,20 @@ class RecoveryTests(unittest.TestCase):
 
 
 class TransportTests(unittest.TestCase):
+    def test_pause_waits_for_stopped_and_rejects_stopping(self):
+        api = API('test-token')
+        with patch.object(api, 'bot', side_effect=[
+            {'enabled': True, 'state': 'Running'},
+            {'enabled': False, 'state': 'Stopping'},
+            {'enabled': False, 'state': 'Stopped'},
+        ]) as observe, patch.object(api, 'json') as mutate, \
+             patch('deployment_transport.time.sleep') as wait:
+            result = api.set_bot(False)
+        self.assertEqual(result['state'], 'stopped')
+        self.assertEqual(observe.call_count, 3)
+        mutate.assert_called_once_with('PATCH', 'always_on/%d/' % BOT_ID, {'enabled': 'false'})
+        wait.assert_called_once_with(3)
+
     def test_resume_does_not_reset_an_already_starting_bot(self):
         api = API('test-token')
         with patch.object(api, 'bot', side_effect=[
