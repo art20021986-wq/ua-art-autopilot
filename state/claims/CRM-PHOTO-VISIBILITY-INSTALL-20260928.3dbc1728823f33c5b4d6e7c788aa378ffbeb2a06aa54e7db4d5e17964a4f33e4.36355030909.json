@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "951f9c53abd9b8384fcc895e981cfebb1655190bc019856578f175176f1fef80",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T22:25:09Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-09-27T22:27:46Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "36355030909",
     "task_id": "CRM-PHOTO-VISIBILITY-INSTALL-20260928",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-36355030909-3dbc1728823f33c5",
   "production_transaction_path": "state/transactions/CRM-PHOTO-VISIBILITY-INSTALL-20260928.3dbc1728823f33c5b4d6e7c788aa378ffbeb2a06aa54e7db4d5e17964a4f33e4.36355030909.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "card-ua-0017-337c83bd09045849",
   "receipt_path": "state/receipts/CRM-PHOTO-VISIBILITY-INSTALL-20260928.json",
   "receipt_validation_status": "PENDING",
@@ -92,5 +92,5 @@
       "cloud/crm_photo_visibility_002/test_visibility.py": "2224be55cbe84eec54cfa1b8f11cdf28034f0b9338abaaec71f8a435db05de21"
     }
   },
-  "updated_at": "2026-09-27T22:25:09Z"
+  "updated_at": "2026-09-27T22:27:46Z"
 }
