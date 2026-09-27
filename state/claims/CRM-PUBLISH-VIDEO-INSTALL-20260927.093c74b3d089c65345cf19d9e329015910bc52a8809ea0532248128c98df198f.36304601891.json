@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "2eda5f6b7ef84a23b9d797c1a30369305d93ac64776604b07f4ba1a69405e3b2",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "STOP_AFTER_VERIFIED_ROLLBACK",
+      "at": "2026-09-27T08:33:05Z",
+      "class": "UNKNOWN",
+      "message": "WORKER_BUSY before source replacement; remote rollback PASS. Persist downloaded original rollback artifact after restoring its immutable package. No rollback replay.",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "f8899355cfd062e7"
+    }
+  ],
   "heartbeat_at": "2026-09-27T08:06:37Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -43,7 +54,7 @@
   "production_required": true,
   "production_transaction_id": "tx-36304601891-093c74b3d089c653",
   "production_transaction_path": "state/transactions/CRM-PUBLISH-VIDEO-INSTALL-20260927.093c74b3d089c65345cf19d9e329015910bc52a8809ea0532248128c98df198f.36304601891.json",
-  "production_transaction_status": "ROLLING_BACK",
+  "production_transaction_status": "ROLLED_BACK",
   "queue_key": "path_scope-124972f91b7dd9e4-16a460250a7392ce",
   "receipt_path": "state/receipts/CRM-PUBLISH-VIDEO-INSTALL-20260927.json",
   "receipt_validation_status": "PENDING",
@@ -69,7 +80,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "ROLLED_BACK",
   "trusted_package": {
     "controller_sha256": "6030def400095cf2671bedcac10fae9bebc0031c731946d8b996a3dd1b0f87b1",
     "file_sha256": {
@@ -85,5 +96,5 @@
       "cloud/publish_video_latency_001/test_deployment.py": "ded239bba9eeaafb1592c8c597f87d17ba68e672ddb14995850cb5dfcd781ced"
     }
   },
-  "updated_at": "2026-09-27T08:16:24Z"
+  "updated_at": "2026-09-27T08:33:05Z"
 }

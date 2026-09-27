@@ -176,3 +176,10 @@ BOT: During unrelated publisher rollback 36304601891 the bot was paused; at 2026
 SCOPE: Read-only production verification only. No application, CRM, HTML, media, SQL, bot control or protected-state mutations by this recheck. Publication was completed by the already installed worker; no duplicate installation or publication was triggered.
 LIMITS: Manual Telegram button/repeat-button/receipt-delivery journey and normal-quota callback latency were not measured. Existing regression evidence is retained; this is publication acceptance, not full UX/performance acceptance.
 CONTINUATION: Automation 6ab80e71aa688191868f657b5631fcae disabled after confirming the requested autonomous UA-0021 publication, to avoid rerunning a completed installation. Pending media/photo/tracking work remains separate.
+
+
+## 2026-09-27 — Publisher latency recovery, R2 ready
+
+UA-0020 publication completed at 08:16:41 UTC after host CPU capacity was replenished; public card/catalog freshness verification passed at 08:24. Permanent publisher correction is NOT yet installed. First run 36304601891 stopped before file replacement with WORKER_BUSY because the inherited transport accepted Stopping. Remote rollback succeeded. This commit persists its downloaded Actions artifact 10926909337, SHA dd0a0602087272e08421a6b1dc644d5ee2ae79204e6b926ed352c87604ed8000, using unchanged receipt validation and control-plane rollback bookkeeping. No application write or rollback replay; original run is ROLLED_BACK.
+
+PR142 restores the first immutable package and isolates the tested retry in `cloud/publish_video_latency_002`. R2 requires explicit Stopped; 22 tests pass. Candidate publisher remains 3fbddc9f7a87619fd851839d1f76c60ba3ca1e266a84653898a4427fe5f53121. Preserve both deployment packages. Next: fresh exact R2 launch, installed hash and renewed live publication acceptance.

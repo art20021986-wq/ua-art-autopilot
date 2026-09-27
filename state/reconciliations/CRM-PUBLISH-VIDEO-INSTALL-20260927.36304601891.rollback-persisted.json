@@ -1,0 +1,31 @@
+{
+  "application_writes": false,
+  "bookkeeping": "unchanged control_plane.close_production_transaction and record_failure",
+  "claim_after": "ROLLED_BACK",
+  "existing_validator": "execution_contract.validate_rollback_receipt PASS",
+  "expected_parent": "294dcce7030f04dcf2c38dc13db891f7945fef01",
+  "github_artifact_id": 10926909337,
+  "github_recovery_job_id": 108583273150,
+  "github_rollback_job_id": 108581747310,
+  "halt_file_existed": false,
+  "next_step": "Fresh gated R2 using isolated publish_video_latency_002 package",
+  "original_state_sha256": {
+    "state/claims/CRM-PUBLISH-VIDEO-INSTALL-20260927.093c74b3d089c65345cf19d9e329015910bc52a8809ea0532248128c98df198f.36304601891.json": "01ba1a7749c95cd7993731ac1fcad971db9d93ee8ffacb175adb9f8ff2fbf45a",
+    "state/transactions/CRM-PUBLISH-VIDEO-INSTALL-20260927.093c74b3d089c65345cf19d9e329015910bc52a8809ea0532248128c98df198f.36304601891.json": "ba65c4e78930880350ea6816b13781bcec3336e3ba75125bd150234afc99bf0f"
+  },
+  "owner_command": "Исправь",
+  "persistence_failure": "TEST_SHA_MISMATCH after in-place retry package edit; original package restored by PR142",
+  "publication_repair_installed": false,
+  "receipt_path": "state/receipts/CRM-PUBLISH-VIDEO-INSTALL-20260927-ROLLBACK.json",
+  "receipt_sha256": "dd0a0602087272e08421a6b1dc644d5ee2ae79204e6b926ed352c87604ed8000",
+  "recorded_at": "2026-09-27T08:33:05.436281+00:00",
+  "remote_rollback": "PASS",
+  "request_sha256": "093c74b3d089c65345cf19d9e329015910bc52a8809ea0532248128c98df198f",
+  "rollback_replayed": false,
+  "run_id": "36304601891",
+  "runtime_or_gate_changes": false,
+  "schema_version": "UA-ART-MANUAL-ROLLBACK-PERSISTENCE-1",
+  "task_id": "CRM-PUBLISH-VIDEO-INSTALL-20260927",
+  "transaction_after": "ROLLED_BACK",
+  "transaction_id": "tx-36304601891-093c74b3d089c653"
+}
