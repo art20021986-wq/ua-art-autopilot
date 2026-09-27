@@ -1,0 +1,85 @@
+{
+  "schema_version": "UA-ART-ONECLICK-POST-INSTALL-EVIDENCE-1",
+  "run_id": "36301475826",
+  "installation_status": "SUCCESS",
+  "acceptance_scope": "INSTALLED_SOURCE_BOT_START_AND_CURRENT_PUBLIC_CATALOG",
+  "full_user_journey_acceptance": false,
+  "server_origin_checks": {
+    "catalog_counter_patch_noop": true,
+    "catalog_counts": {
+      "all": 20,
+      "georgia": 6,
+      "kiev": 5,
+      "korea": 4,
+      "sea": 5
+    },
+    "crm_active": 20,
+    "extra": [],
+    "home_counter_patch_noop": true,
+    "last_success": {
+      "at": 1790493337.2166572,
+      "code": "UA-0021"
+    },
+    "missing": [],
+    "observed_at": "2026-09-27T07:15:51.460659+00:00",
+    "public_checks": {
+      "UA-0021.html": {
+        "canonical": true,
+        "matches_server": true,
+        "status": 200
+      },
+      "index.html": {
+        "canonical": true,
+        "matches_server": true,
+        "status": 200
+      },
+      "katalog.html": {
+        "canonical": true,
+        "matches_server": true,
+        "status": 200
+      }
+    },
+    "stage_mismatch": [],
+    "target_in_catalog": "sea",
+    "target_retry": null,
+    "target_revision_synced": true
+  },
+  "worker": {
+    "observed_at": "2026-09-27T07:14:14.064189+00:00",
+    "target_revision": {
+      "code": "UA-0021",
+      "delivery_status": "ferry",
+      "sha256": "8756a9d2b2ddb9659c65225b665dfb26cb610b6d9ee4cebb6412216d8208733c"
+    },
+    "target_retry": null,
+    "catalog_retry": null,
+    "first_observed_success_at": "2026-09-27T07:13:25Z"
+  },
+  "bot": {
+    "id": 266084,
+    "state": "Running",
+    "temporary_release_tasks_remaining": 0,
+    "observed_with_public_verification": true
+  },
+  "browser": {
+    "surface": "cloud browser",
+    "url": "https://www.uaart.com.ua/video/katalog.html",
+    "result": "502 Connection refused",
+    "passed": false
+  },
+  "tests": {
+    "oneclick_and_composed_packages": 68,
+    "lifecycle_local_and_main_actions": 17,
+    "telegram_manual_action": "NOT_RUN",
+    "normal_quota_latency": "NOT_MEASURED"
+  },
+  "rollback": {
+    "readiness": "TESTED",
+    "production_rollback_executed": false
+  },
+  "image_attachment": {
+    "inline_image_used": true,
+    "old_local_path_recovered": false,
+    "codex_uploader_changed": false
+  }
+}
