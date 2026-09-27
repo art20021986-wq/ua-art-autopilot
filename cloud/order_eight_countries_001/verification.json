@@ -1,0 +1,85 @@
+{
+  "specification": "UA-ART-ORDER-8COUNTRIES-40-001 v1.1",
+  "checked_at_utc": "2026-09-27T10:36:15.199598+00:00",
+  "status": "LOCAL_CANDIDATE_ONLY",
+  "production_modified": false,
+  "gate_b": "NOT_PASSED",
+  "python_runtime": "3.12.14",
+  "checks": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "cloud/order_eight_countries_001/tests",
+        "-q"
+      ],
+      "pythonpath": "/workspace/scratch/69b74d13fd3d/qa_dependencies:cloud/order_eight_countries_001",
+      "exit_code": 0,
+      "output": "----------------------------------------------------------------------\nRan 31 tests in 0.226s\n\nOK"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "test_sandbox_executor.TestCountryModelsConfig",
+        "-q"
+      ],
+      "pythonpath": "cloud/ua_order_ge_8country_guard_016",
+      "exit_code": 0,
+      "output": "----------------------------------------------------------------------\nRan 5 tests in 0.002s\n\nOK"
+    },
+    {
+      "command": [
+        "node",
+        "cloud/order_eight_countries_001/tests/test_web_state.mjs"
+      ],
+      "pythonpath": null,
+      "exit_code": 0,
+      "output": "24 country/language routes + unknown-route, preserved-fields and payload scenarios passed"
+    },
+    {
+      "check": "order.js module syntax",
+      "exit_code": 0
+    },
+    {
+      "check": "Python 3.10 grammar only; not target-runtime execution",
+      "files": 16,
+      "status": "PASS"
+    },
+    {
+      "check": "catalog and local asset hashes",
+      "countries": 8,
+      "positions": 40,
+      "distinct_photos": 35,
+      "flags": 8,
+      "status": "PASS"
+    }
+  ],
+  "public_input_sha256": {
+    "index-live.html": "4592c30afab03754563b65568792e06753e110ac754254b4f61983debca2ac6c",
+    "podbor-live.html": "1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6"
+  },
+  "local_build": {
+    "status": "PASS",
+    "files": 52,
+    "manifest_sha256": "5e7a5eb79df15ce225a2eec1dcbe6e67a7e80a3b227b776e194fd802533b12b9"
+  },
+  "not_run": [
+    "exact current runtime integration",
+    "Python 3.10 runtime",
+    "browser and mobile visual acceptance",
+    "live Telegram client to CRM",
+    "production backup",
+    "production inventory acceptance",
+    "production deployment and rollback"
+  ],
+  "observed_rollback": {
+    "status": "ROLLED_BACK",
+    "main_ref": "d982d034eb425cb805468ed020e9764c387f7446",
+    "task": "CRM-PUBLISH-VIDEO-INSTALL-20260927-R4"
+  }
+}
