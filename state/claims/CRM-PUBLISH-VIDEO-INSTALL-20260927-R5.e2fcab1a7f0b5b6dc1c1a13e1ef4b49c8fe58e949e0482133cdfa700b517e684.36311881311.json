@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "b3408a65672d47e1268da3b612215e588c851ae12ac82be191c290f76ea0eb66",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T10:20:50Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-09-27T10:38:41Z",
+  "heartbeat_at": "2026-09-27T10:38:41Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "36311881311",
     "task_id": "CRM-PUBLISH-VIDEO-INSTALL-20260927-R5",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 771.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 319.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-36311881311-e2fcab1a7f0b5b6d",
   "production_transaction_path": "state/transactions/CRM-PUBLISH-VIDEO-INSTALL-20260927-R5.e2fcab1a7f0b5b6dc1c1a13e1ef4b49c8fe58e949e0482133cdfa700b517e684.36311881311.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-124972f91b7dd9e4-16a460250a7392ce",
   "receipt_path": "state/receipts/CRM-PUBLISH-VIDEO-INSTALL-20260927-R5.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "ca0bd18018b400761e37a769210abceb56e5f72ca9e437e2a7152a26507d67bd",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-PUBLISH-VIDEO-INSTALL-20260927-R5.json",
   "request_sha256": "e2fcab1a7f0b5b6dc1c1a13e1ef4b49c8fe58e949e0482133cdfa700b517e684",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "031c130c559da197bc06e624e34f218b718a4d33d4ee9ff5d018e07a7e98b1f5",
     "file_sha256": {
@@ -85,5 +108,5 @@
       "cloud/publish_video_latency_005/test_deployment.py": "b0cbc0b5edf919178b59efbe97c1c61b641d3ad2e3de4244f649ef3041b0ad85"
     }
   },
-  "updated_at": "2026-09-27T10:20:50Z"
+  "updated_at": "2026-09-27T10:38:41Z"
 }
