@@ -52,8 +52,8 @@ def run(sources):
 
     lead = next(n for n in ast.parse(patched['lead_bot.py']).body if getattr(n, 'name', None) == 'build_application')
     assert isinstance(lead.body[-1], ast.Return)
-    assert ast.unparse(lead.body[-2]) == '_register_orders(app)'
-    assert patched['lead_bot.py'].index('app.handlers.clear()') < patched['lead_bot.py'].index('_register_orders(app)')
+    assert ast.unparse(lead.body[-2]) == '_register_orders(app, owner_id=MANAGER_CHAT_ID)'
+    assert patched['lead_bot.py'].index('app.handlers.clear()') < patched['lead_bot.py'].index('_register_orders(app, owner_id=MANAGER_CHAT_ID)')
 
     # Execute the actual unchanged registration function with inert host screen
     # callbacks. No module-level host code, tokens, files or network are loaded.
@@ -73,31 +73,10 @@ def run(sources):
     assert any(isinstance(handler, CallbackQueryHandler) and handler.pattern.pattern == '^c_order$'
                for handler, _ in registrations)
 
-    # Compare the actual CRM menus for every role. Only one new flat folder is
-    # permitted; all existing button texts and callback values must match.
-    db = SimpleNamespace(ROLE_MANAGER='manager', ROLE_ADMIN='admin', ROLE_OWNER='owner',
-                         ST_NEW='new', ST_ASSIGNED='assigned', ST_RETURNED='returned', ST_ON_REVIEW='review',
-                         count_inbox=lambda _: 3, list_cards=lambda *_: [])
-    namespace = {'InlineKeyboardButton': InlineKeyboardButton, 'InlineKeyboardMarkup': InlineKeyboardMarkup,
-                 'db': db, 'ai': SimpleNamespace(enabled=lambda: False),
-                 'is_owner': lambda staff: staff['role']=='owner'}
-    old_menu = selected(originals['team_bot.py'], {'main_menu'}, dict(namespace))['main_menu']
-    new_menu = selected(patched['team_bot.py'], {'main_menu'}, dict(namespace))['main_menu']
-    with mock_patch.object(host, 'current', return_value=object()):
-        for role in ('manager','admin','owner'):
-            staff = {'role': role, 'active': 1}
-            old_rows = old_menu(staff).inline_keyboard
-            new_rows = new_menu(staff).inline_keyboard
-            added = [row for row in new_rows if any(b.callback_data=='orders:list' for b in row)]
-            assert len(added) == 1 and len(added[0]) == 1
-            assert tuple(row for row in new_rows if row not in added) == old_rows
-        assert not host.crm_folder({'role': 'manager', 'active': 0}, ('manager',))
-    with mock_patch.object(host, 'current', return_value=None):
-        staff = {'role':'owner', 'active':1}
-        assert new_menu(staff).inline_keyboard == old_menu(staff).inline_keyboard
+    assert ast.dump(ast.parse(originals['team_bot.py'])) == ast.dump(ast.parse(patched['team_bot.py']))
 
     return {'status': 'PASS', 'files': 4, 'unrelated_top_level_nodes_unchanged': protected,
-            'current_client_registration_group': -1, 'crm_roles_checked': ['manager','admin','owner'],
+            'current_client_registration_group': -1, 'crm_unchanged': True,
             'source_drift_rejected': True, 'private_sources_published': False,
             'live_module_imports': False, 'real_messages_sent': False}
 
