@@ -28,5 +28,12 @@
   "external_prefill_verified": [
     "https://track-trace.com/container#FBLU0045137"
   ],
-  "rollout_input_guards": "Source hashes, card set, reference values, page hashes, protected modules remain checked before writes"
+  "rollout_input_guards": "Source hashes, card set, reference values, page hashes, protected modules remain checked before writes",
+  "last_attempt": {
+    "run_id": "36348258127",
+    "outcome": "ABORTED_NO_APPLICATION_WRITE",
+    "cause": "Concurrent specification backfill; all new rows preserved"
+  },
+  "fresh_plan_sha256": "ed0dc6983dca11d7165ace7d40767f3f79b5839c5f1fdaa348d9ed0f4d08dc70",
+  "fresh_plan_check": "Authenticated server prepare() at 20:52 UTC matched all 49 local plan entries; 22 current public cards transform idempotently with all bytes outside delivery preserved"
 }
