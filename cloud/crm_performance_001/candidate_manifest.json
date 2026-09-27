@@ -1,0 +1,27 @@
+{
+  "task_id": "UA-ART-CRM-PERFORMANCE-20260927",
+  "production_installed": false,
+  "gate_b": "NOT_READY",
+  "files": {
+    "cars_ui.py": {
+      "before": "c17a45d64f17fbab2e2f032061f6037a48bb5fa038b3f02e20995b5e50fbca7b",
+      "after": "64ebc8435c642641bb809d2a27802e26d3565e1353f3feca815f51807508a2d4"
+    },
+    "ua_crm_public_sync.py": {
+      "before": "2b5f6a2473b263fddd6ab3266a3ba76cc9738da15178f865862098821cabcc41",
+      "after": "ded38c1e023bbb52cedcd50369884ff3d7e4d70016ad1d725f3f37bb1b4f29a0"
+    }
+  },
+  "live_source_hashes_observed": "2026-09-27T05:07Z",
+  "tests": {
+    "passed": 15,
+    "full_source_compile": "PASS",
+    "other_crm_functions_unchanged": "PASS"
+  },
+  "blockers": [
+    "PythonAnywhere CPU tarpit: 8612.62 / 5000 seconds; reset expected 2026-09-27T08:37:11Z",
+    "Existing EMERGENCY_HALT after run 36268504600; transaction ROLLING_BACK; registered recovery required",
+    "Full deployment and rollback rehearsal not performed"
+  ],
+  "production_writes": false
+}
