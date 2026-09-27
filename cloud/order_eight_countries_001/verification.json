@@ -1,7 +1,7 @@
 {
   "specification": "UA-ART-ORDER-8COUNTRIES-40-001 v1.1",
   "checked_at_utc": "2026-09-27T11:30:58.508227+00:00",
-  "status": "LOCAL_CANDIDATE_ONLY",
+  "status": "SERVER_ISOLATED_CANDIDATE_TESTED",
   "production_modified": true,
   "gate_b": "NOT_PASSED",
   "python_runtime": "3.12.14",
@@ -72,14 +72,13 @@
   },
   "not_run": [
     "live host integration (private current-source patch checks PASS)",
-    "Python 3.10 runtime",
     "browser and mobile visual acceptance",
     "live Telegram client to CRM",
     "production backup",
     "production inventory acceptance",
     "production deployment and rollback"
   ],
-  "continuation_checked_at_utc": "2026-09-27T11:30:58.508227+00:00",
+  "continuation_checked_at_utc": "2026-09-27T12:01:00+00:00",
   "adapter_chain_test": {
     "status": "PASS",
     "route": [
@@ -165,8 +164,7 @@
   },
   "release_blockers": [
     "Approved company consent text/version not located in checked sources",
-    "Shared production storage for WSGI and bot task not verified; SQLite WAL unsuitable on network filesystems",
-    "Gate B visual/mobile/live/runtime/inventory/backup checks incomplete"
+    "Gate B visual/mobile/live/inventory/backup/deployment and rollback checks incomplete"
   ],
   "storage_check": {
     "primary_docs": [
@@ -182,7 +180,10 @@
     "driver": "MySQLdb import PASS on Python 3.10",
     "mysql_server_version": "8.0.46",
     "orders_connection": "PASS: empty schema",
-    "mysql_adapter": "PREPARED; actual integration pending"
+    "mysql_adapter": "PASS: 9 real MySQL tests",
+    "orders_schema": "EMPTY; runtime not enabled",
+    "test_database": "Carix$orders_test",
+    "test_data": "Synthetic only; no messages"
   },
   "observed_publisher": {
     "r4": "ROLLED_BACK",
@@ -200,11 +201,40 @@
     "received_local": "2026-09-27T18:36:32+07:00",
     "text": "Подтверждаю ☑️ запускай",
     "production_deployed": false,
-    "remaining": "MySQL integration and Gate B still required; approved consent missing"
+    "remaining": "Approved consent and remaining Gate B checks; launch permission already received"
   },
   "production_runtime_modified": false,
   "server_changes": [
     "Created isolated empty Carix$orders database",
     "Created isolated empty Carix$orders_test database"
+  ],
+  "server_runtime_checks": {
+    "commit": "7b60d8ac1cb7e052ce92a4a7054278cce464ddb5",
+    "python": "3.10.12",
+    "ptb": "22.8",
+    "general_tests": {
+      "status": "PASS",
+      "count": 43,
+      "seconds": 0.497,
+      "TMPDIR": "/dev/shm"
+    },
+    "mysql_tests": {
+      "status": "PASS",
+      "count": 9,
+      "seconds": 1.797,
+      "mysql": "8.0.46",
+      "database": "Carix$orders_test"
+    },
+    "initial_runs": {
+      "mysql_trigger_fault_injection": "7 PASS, 1 setup ERROR; replaced test-only trigger with CHECK constraint",
+      "general_default_tempdir": "42 PASS, 1 configuration ERROR; network filesystem correctly rejected; repeated using local memory filesystem"
+    },
+    "production_source_hashes": "All four pinned SHA256 values matched at 12:01 UTC",
+    "real_messages_sent": false,
+    "runtime_files_changed": false
+  },
+  "review_fixes": [
+    "Production runtime refuses test database before connecting",
+    "Notification lease clock refreshed after lock acquisition"
   ]
 }

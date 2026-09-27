@@ -20,7 +20,7 @@
 - Страница подбора: 4×2 страны, пять карточек внутри страны, отдельный выбор
   «Другая модель», формы/проверка данных/подтверждение, uk/ru/ka. На узких
   экранах карточки предусмотрены по одной в строке, фото слева.
-- Независимый от интерфейса контракт `ua_order_request.v1`, SQLite-хранилище
+- Независимый от интерфейса контракт `ua_order_request.v1`, MySQL-хранилище (SQLite — только для локальной среды)
   `order_requests.db`, квитанция после commit, UNIQUE request_id, конфликт
   изменённого тела, серверные события, короткие транзакции и outbox.
 - Старые `z_country_bN_kN` и `{t,s,b,k,m,mo,txt}` превращаются в черновик.
@@ -104,7 +104,7 @@ python cloud/order_eight_countries_001/integrate.py --sources /path/to/current/p
 Хост читает `/home/Carix/order_requests/settings.json` либо явный `UA_ORDER_SETTINGS`.
 Пакет `ua_order` должен быть в существующем пути импорта `/home/Carix`; каталог и
 строки задаются точными приватными путями, ресурсы — `/home/Carix/video/order`.
-До включения отдельно инициализируется **только** `order_requests.db`, создаётся
+До включения явно инициализируется **только** `Carix$orders`, создаётся
 приватный `session.key` (не менее 32 случайных байт) и передаётся утверждённое
 согласие uk/ru/ka с версией. Runtime сам не создаёт базу, ключи или миграции.
 
@@ -135,7 +135,7 @@ PYTHONPATH=cloud/ua_order_ge_8country_guard_016 python -m unittest test_sandbox_
 отсутствии библиотеки интеграционные тесты должны завершиться ошибкой,
 а не пропускаться и называться PASS.
 
-Проверены 42 новых Python-теста и пять существующих проверок справочника.
+Проверены 43 новых Python-теста и пять существующих проверок справочника.
 JS-проверки покрывают 24 сочетания страны/языка и сценарии неизвестного
 маршрута, сохранения независимых полей и сборки контракта. В их числе:
 10 параллельных повторов → одна заявка/одна outbox-строка; повтор после
@@ -180,16 +180,10 @@ python cloud/order_eight_countries_001/build.py --output /path/to/new/preview --
 - Утверждённый текст согласия компании не найден в прочитанных клиентских
   обработчиках и публичной форме. Пустые или тестовые тексты не выдаются за
   утверждённые; production-конфигурация не включалась.
-- SQLite WAL требует общей памяти на одном хосте. PythonAnywhere документирует
-  сетевую файловую систему и проблемы SQLite при нескольких процессах. Кандидат
-  подходит для проверенного локального хранилища, **не признан пригодным для
-  общей БД WSGI и bot task на PythonAnywhere**. Runtime отклоняет NFS/CIFS и
-  другие распознанные сетевые ФС. Это блокер выпуска, не решённый сменой PRAGMA.
-  Проверка страницы существующих серверных БД 27.09 дважды вернула HTTP 502.
-  Альтернатива для согласования: существующий MySQL/PostgreSQL, если доступен;
-  миграция CRM и новый внешний сервис в эту задачу не добавлены.
-- Версия PTB на сервере и исполнение на Python 3.10 не проверены; локальные
-  адаптеры проверены на PTB 22.8/Python 3.12, синтаксис — для Python 3.10.
+- Хранилище проверено на серверном MySQL 8.0.46, 9 интеграционных тестов PASS.
+  SQLite оставлен для локальной среды; сетевые ФС по-прежнему запрещены.
+- Серверная совместимость подтверждена: Python 3.10.12 / PTB 22.8,
+  43 общих теста PASS с локальной временной файловой системой.
 - Браузер не разрешил локальный preview (EPERM) и file://. Мобильная/визуальная
   приёмка **NOT_RUN**. Эти ограничения не обходились; локальные фото просмотрены.
 - Production backup, актуальный baseline инвентаря, живой маршрут Telegram,
@@ -218,18 +212,41 @@ python cloud/order_eight_countries_001/build.py --output /path/to/new/preview --
 Аудит: `AUDIT.md`. Результаты проверки: `verification.json`.
 Фотографии: `web/MEDIA_CREDITS.md`. Флаги: `web/FLAGS_CREDITS.md`.
 
-## Уточнение после команды владельца 27.09, 18:36 (Вьетнам)
+## Проверка MySQL и серверного runtime — 27.09.2026, 12:01 UTC
 
-Повторная проверка страницы Databases успешна. В аккаунте MySQL ещё не
-инициализирован (форма Initialize MySQL с новым паролем); PostgreSQL требует
-изменения тарифа. Команда владельца на запуск получена и повторно не
-запрашивается. Настройка нового пароля требует участия владельца по правилу
-Browser для создания учётных данных. После инициализации предстоят адаптер
-MySQL, транзакционные проверки, согласие и оставшаяся приёмка Gate B.
-Это не установка, не изменение тарифа и не миграция рабочей CRM.
+Владелец завершил инициализацию MySQL. Созданы отдельные `Carix$orders` и
+`Carix$orders_test`. Подключение к orders проверено: MySQL 8.0.46, база пустая.
+Использован уже установленный MySQLdb и серверный файл учётных данных;
+пароль не выводился и не переносился в код. Рабочие файлы сайта и ботов не менялись.
 
-## MySQL preparation — 2026-09-27
+Проверенная версия кандидата: `7b60d8ac1cb7e052ce92a4a7054278cce464ddb5`.
+Изолированная копия: `/home/Carix/order_qa_33f3623`.
 
-Owner completed credential initialization. Dedicated `Carix$orders` and `Carix$orders_test` databases were created through the hosting UI. Read-only connection to orders succeeded using the existing MySQLdb driver and server credential file; server version is 8.0.46, orders schema is empty. No credential value was read or copied. Main CRM and bot runtime files are unchanged.
+- 9 реальных MySQL-тестов PASS за 1.797 с на `Carix$orders_test`: конкурентная
+  отправка, UUID/event-дедупликация, откат запроса при отказе outbox, аренда и
+  повтор уведомления, привязка черновика, срок действия, адресаты и пагинация.
+- 43 общих теста PASS за 0.497 с на Python 3.10.12 / PTB 22.8 с `TMPDIR=/dev/shm`.
+  Первый запуск с обычной временной папкой подтвердил штатный отказ SQLite WAL
+  на сетевой ФС (42 PASS, 1 отказ конфигурации); защита не отключалась.
+- Первоначальная имитация отказа через CREATE TRIGGER оказалась недоступна на
+  хостинге. Проверка заменена временным CHECK-ограничением только в тестовой БД;
+  ограничение удаляется после проверки. Запись заявки при ошибке outbox откатилась.
+- Аудит выявил и устранил два риска: runtime теперь запрещает `$orders_test`,
+  а срок аренды уведомления начинается после получения блокировки.
+- SHA256 всех четырёх рабочих исходников повторно совпали с ранее зафиксированными.
+- Реальные сообщения не отправлялись; рабочая CRM, WSGI и customer bot не перезапускались.
 
-Native MySQL adapter is prepared with InnoDB transactions, parameterized SQL, bounded deadlock retries, explicit schema setup, request/event idempotency, draft owner binding, notification leases and durable recipient receipts. Runtime supports MySQL without SQLite on the shared filesystem. Local suite: 42 PASS; exact-host checks: PASS. Actual MySQL integration checks are pending; run `tests/check_mysql.py` only against the isolated orders_test database. No runtime deployment yet.
+Репозиторий использует нативные параметризованные запросы, InnoDB, короткие
+транзакции, отдельное соединение на операцию и ограниченные повторы только
+1205/1213. Потерянное подтверждение commit разрешается повтором того же UUID.
+Schema initialization выполняется явно, только в выделенной БД, а не при импорте.
+Основная CRM не мигрируется. Дополнительные библиотеки и сервисы не установлены.
+
+Gate B остаётся NOT_PASSED: согласие компании, визуальная/мобильная и живая
+Telegram-приёмка, baseline инвентаря, backup и проверка установки/отката ещё нужны.
+Разрешение владельца на запуск уже получено и повторно не требуется.
+
+Источники: https://help.pythonanywhere.com/pages/UsingMySQL/,
+https://help.pythonanywhere.com/pages/MySQLBackupRestore,
+https://mysqlclient.readthedocs.io/user_guide.html,
+https://dev.mysql.com/doc/refman/8.0/en/innodb-deadlocks-handling.html.

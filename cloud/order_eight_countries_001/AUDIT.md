@@ -143,13 +143,11 @@ HTML. Дополнительно пройден маршрут HTTP handoff → 
 1. Утверждённое согласие компании с версией и текстами uk/ru/ka. В проверенных
    исходниках/публичной форме оно не найдено; новое юридическое содержание
    самостоятельно не подставлялось.
-2. Хранилище, пригодное для совместной работы WSGI и bot task. SQLite WAL
-   требует одного хоста; PythonAnywhere предупреждает о сетевой ФС и проблемах
-   SQLite при нескольких workers. Кандидат отвергает сетевые ФС и не объявлен
-   production-совместимым с этой топологией. Страница существующих серверных
-   баз 27.09 дважды вернула 502. Смена журнала не заявляется исправлением.
-3. Целевой Python 3.10/PTB, визуальная/мобильная приёмка, актуальный baseline
-   инвентаря, backup, живой Telegram и проверенный откат. Они не выполнены.
+2. Визуальная/мобильная приёмка, актуальный baseline инвентаря, backup,
+   живой Telegram и проверенный откат ещё не выполнены.
+
+Хранилище и целевой runtime проверены отдельно ниже: MySQL 8.0.46,
+Python 3.10.12 / PTB 22.8. 9 интеграционных и 43 общих теста PASS.
 
 Первичные источники сверены 27.09.2026:
 
@@ -164,22 +162,41 @@ HTML. Дополнительно пройден маршрут HTTP handoff → 
 R4 уже откатан, последующий R5 завершён. Старый незавершённый откат не используется
 как блокер. Производительность CRM и другие сторонние изменения не входят в работу.
 
-Возможная альтернатива для отдельного решения — существующий MySQL/PostgreSQL
-для изолированных таблиц заказов после проверки его доступности. Новые сервисы,
-библиотеки и миграция основной CRM самовольно не добавлялись.
+## Проверка MySQL и серверного runtime — 27.09.2026, 12:01 UTC
 
-## Уточнение после команды владельца 27.09, 18:36 (Вьетнам)
+Владелец завершил инициализацию MySQL. Созданы отдельные `Carix$orders` и
+`Carix$orders_test`. Подключение к orders проверено: MySQL 8.0.46, база пустая.
+Использован уже установленный MySQLdb и серверный файл учётных данных;
+пароль не выводился и не переносился в код. Рабочие файлы сайта и ботов не менялись.
 
-Повторная проверка страницы Databases успешна. В аккаунте MySQL ещё не
-инициализирован (форма Initialize MySQL с новым паролем); PostgreSQL требует
-изменения тарифа. Команда владельца на запуск получена и повторно не
-запрашивается. Настройка нового пароля требует участия владельца по правилу
-Browser для создания учётных данных. После инициализации предстоят адаптер
-MySQL, транзакционные проверки, согласие и оставшаяся приёмка Gate B.
-Это не установка, не изменение тарифа и не миграция рабочей CRM.
+Проверенная версия кандидата: `7b60d8ac1cb7e052ce92a4a7054278cce464ddb5`.
+Изолированная копия: `/home/Carix/order_qa_33f3623`.
 
-## MySQL preparation — 2026-09-27
+- 9 реальных MySQL-тестов PASS за 1.797 с на `Carix$orders_test`: конкурентная
+  отправка, UUID/event-дедупликация, откат запроса при отказе outbox, аренда и
+  повтор уведомления, привязка черновика, срок действия, адресаты и пагинация.
+- 43 общих теста PASS за 0.497 с на Python 3.10.12 / PTB 22.8 с `TMPDIR=/dev/shm`.
+  Первый запуск с обычной временной папкой подтвердил штатный отказ SQLite WAL
+  на сетевой ФС (42 PASS, 1 отказ конфигурации); защита не отключалась.
+- Первоначальная имитация отказа через CREATE TRIGGER оказалась недоступна на
+  хостинге. Проверка заменена временным CHECK-ограничением только в тестовой БД;
+  ограничение удаляется после проверки. Запись заявки при ошибке outbox откатилась.
+- Аудит выявил и устранил два риска: runtime теперь запрещает `$orders_test`,
+  а срок аренды уведомления начинается после получения блокировки.
+- SHA256 всех четырёх рабочих исходников повторно совпали с ранее зафиксированными.
+- Реальные сообщения не отправлялись; рабочая CRM, WSGI и customer bot не перезапускались.
 
-Owner completed credential initialization. Dedicated `Carix$orders` and `Carix$orders_test` databases were created through the hosting UI. Read-only connection to orders succeeded using the existing MySQLdb driver and server credential file; server version is 8.0.46, orders schema is empty. No credential value was read or copied. Main CRM and bot runtime files are unchanged.
+Репозиторий использует нативные параметризованные запросы, InnoDB, короткие
+транзакции, отдельное соединение на операцию и ограниченные повторы только
+1205/1213. Потерянное подтверждение commit разрешается повтором того же UUID.
+Schema initialization выполняется явно, только в выделенной БД, а не при импорте.
+Основная CRM не мигрируется. Дополнительные библиотеки и сервисы не установлены.
 
-Native MySQL adapter is prepared with InnoDB transactions, parameterized SQL, bounded deadlock retries, explicit schema setup, request/event idempotency, draft owner binding, notification leases and durable recipient receipts. Runtime supports MySQL without SQLite on the shared filesystem. Local suite: 42 PASS; exact-host checks: PASS. Actual MySQL integration checks are pending; run `tests/check_mysql.py` only against the isolated orders_test database. No runtime deployment yet.
+Gate B остаётся NOT_PASSED: согласие компании, визуальная/мобильная и живая
+Telegram-приёмка, baseline инвентаря, backup и проверка установки/отката ещё нужны.
+Разрешение владельца на запуск уже получено и повторно не требуется.
+
+Источники: https://help.pythonanywhere.com/pages/UsingMySQL/,
+https://help.pythonanywhere.com/pages/MySQLBackupRestore,
+https://mysqlclient.readthedocs.io/user_guide.html,
+https://dev.mysql.com/doc/refman/8.0/en/innodb-deadlocks-handling.html.
