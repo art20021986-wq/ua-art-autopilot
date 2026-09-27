@@ -37,7 +37,7 @@ def verify():
     first = runtime.service.repository.detail(1)
     assert first['id'] in {row['id'] for row in rows}
     jobs = []
-    app = SimpleNamespace(handlers={}, bot=object(),
+    app = SimpleNamespace(handlers={}, bot=object(), concurrent_updates=0,
         job_queue=SimpleNamespace(get_jobs_by_name=lambda _: [],
             run_repeating=lambda fn, **options: jobs.append(options)))
     app.add_handler = lambda handler, group: app.handlers.setdefault(group, []).append(handler)
