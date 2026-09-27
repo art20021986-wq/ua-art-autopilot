@@ -131,6 +131,11 @@ CRM_ONECLICK_INSTALLED_PUBLICATION: UA-0021 CRM sync PASS at 07:13:25. Fresh rea
 CRM_ONECLICK_INSTALLED_PUBLIC_CHECKS: Ordinary canonical /video/index.html, /video/katalog.html and /video/UA-0021.html each HTTP 200 and bytes equal current server HTML. Actions independently passed both canonical health URLs. Cloud browser still returns 502 Connection refused, so browser acceptance is not claimed. No manual Telegram tap, receipt delivery or normal-quota latency measurement claimed; CPU tarpit remains a limitation.
 CRM_ONECLICK_INSTALLED_EVIDENCE: cloud/crm_oneclick_release_001/post_install_acceptance.json; deployment_install.json; deployment_verify.json; tasks/UA-ART-CRM-ONECLICK-PUBLISH-001.md v1.1. Preserve later operator changes and all safety gates; future overlapping candidates require fresh source binding.
 
+
+## 2026-09-27 — UA-0020 publication stall
+
+Live investigation: publication began 07:18 UTC, diagnostics written but card/catalog unfinished at 07:36. Active FFmpeg extraction for UA-0020-03.mp4 matches the obsolete `UA-MCF-DEDUP` publisher wrapper, invoked for each card alias. Preparing exact one-file removal under `cloud/publish_video_latency_001`; 21 contract-compatible tests plus full private writer-chain regression PASS. Production is not yet changed by this repair; live publication acceptance remains pending.
+
 CONTAINER_TRACKING_TASK: UA-ART-CONTAINER-TRACKING-001
 CONTAINER_TRACKING_STATUS: CANDIDATE_TESTED_PENDING_MAIN_ACTIONS_PREFLIGHT
 CONTAINER_TRACKING_SCOPE: Multiple tracking sources in the delivery block of existing/future cards. Current ONE-only link misses physical container numbers such as the current UA-0021 reference. Two shared stdlib modules, narrow changes to three renderers, tracking-only HTML transform. No CRM/status/price/media changes.
