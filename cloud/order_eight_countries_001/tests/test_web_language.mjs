@@ -1,106 +1,167 @@
-// Native Node harness for the production module; no network or customer messages.
-// Run: node --experimental-vm-modules tests/test_web_language.mjs
+// Actual production modules in a DOM, with isolated storage and mocked transport.
+// Test-only dependency: npm install --prefix /tmp/order-test-tools jsdom@26.1.0
+// UA_ORDER_TEST_NODE_MODULES=/tmp/order-test-tools/node_modules node --experimental-vm-modules tests/test_web_language.mjs
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
-
+import {pathToFileURL} from 'node:url';
+const testModules=process.env.UA_ORDER_TEST_NODE_MODULES;
+if(!testModules)throw Error('Set UA_ORDER_TEST_NODE_MODULES to the isolated test-only jsdom installation');
+const {JSDOM}=await import(pathToFileURL(`${testModules}/jsdom/lib/api.js`));
 const read=path=>fs.readFile(new URL(path,import.meta.url),'utf8');
-const [source,stateSource,catalog,strings]=await Promise.all([
-  read('../web/order.js'),read('../web/order-state.js'),
-  read('../../ua_order_ge_8country_guard_016/country_models.json').then(JSON.parse),
-  read('../strings.json').then(JSON.parse)
-]);
-class Element extends EventTarget {
-  constructor(id='',tag='div') {super();this.id=id;this.tag=tag;this.children=[];this.value='';this.dataset={};this.hidden=false;}
-  append(...nodes) {this.children.push(...nodes);}
-  replaceChildren(...nodes) {this.children=nodes;}
-  setAttribute(key,value) {this[key]=value;}
-  scrollIntoView() {}
-  focus() {}
-  reportValidity() {return true;}
-}
-const elements=new Map();
-const get=id=>{if(!elements.has(id)) elements.set(id,new Element(id));return elements.get(id);};
-const root=get('ua-order'),form=get('order-form');
-form.elements=Object.fromEntries(['other_model','budget','vehicle_type','delivery_country','delivery_city',
-  'customer_name','contact_value','comment','consent'].map(name=>[name,new Element(name)]));
-root.querySelector=selector=>get(selector.slice(1));
-const descendants=element=>element.children.flatMap(child=>[child,...descendants(child)]);
-const buttons=['other-model','edit','confirm','handoff','new-request'].map(get);
-const title=get('title');title.dataset.label='title';
-root.querySelectorAll=selector=>selector==='button'
-  ?[...buttons,...descendants(get('models')).filter(node=>node.tag==='button')]:[title];
-const document=new EventTarget(),window=new EventTarget();
-document.readyState='loading';
-document.querySelector=()=>root;
-document.createElement=tag=>new Element('',tag);
-let observer,lang='ru',languageNotifications=0;
-document.documentElement={get lang(){return lang;},set lang(value){lang=value;queueMicrotask(()=>{languageNotifications++;observer?.();});}};
-let headerLanguage='ru';
-window.UAArtLocale={choose(value){headerLanguage=value;document.documentElement.lang=value;}};
-let currentUrl='https://example.test/video/podbor.html?strana=korea';
-const history={pushState(_state,_title,url){currentUrl=String(url);},replaceState(_state,_title,url){currentUrl=String(url);}};
-const location={get href(){return currentUrl;}};
-const stored=new Map();
-const context=vm.createContext({document,window,history,location,URL,crypto:{randomUUID},structuredClone,
-  MutationObserver:class {constructor(callback){observer=callback;}observe(){}},
-  FormData:class extends Map {constructor(){super(Object.entries(form.elements).map(([name,field])=>[name,field.value]));}},
-  sessionStorage:{getItem:key=>stored.get(key),setItem:(key,value)=>stored.set(key,value)},
-  fetch:async url=>({ok:true,json:async()=>String(url).includes('bootstrap')
-    ?{catalog,consent_text:{uk:'UK consent',ru:'RU consent',ka:'KA consent'}}:strings})});
-const stateModule=new vm.SourceTextModule(stateSource,{context});
-const app=new vm.SourceTextModule(source+'\nexport {state,setBusy};',{context,
-  initializeImportMeta(meta){meta.url='https://example.test/video/order/order.js';}});
-await app.link(()=>stateModule);
-const evaluating=app.evaluate();
-// Simulate the shared header applying a saved language after the fetch begins.
+const [html,catalog,preferences,strings]=await Promise.all([read('../web/podbor.html'),read('../../ua_order_ge_8country_guard_016/country_models.json').then(JSON.parse),read('../ua_order/preferences.json').then(JSON.parse),read('../strings.json').then(JSON.parse)]);
+preferences.current_year=new Date().getUTCFullYear();
+const dom=new JSDOM(html,{url:'https://example.test/video/podbor.html?strana=korea&lang=ru',runScripts:'outside-only',pretendToBeVisual:true});
+const {window}=dom,{document}=window;
+window.structuredClone=structuredClone;window.crypto.randomUUID=randomUUID;
+window.HTMLElement.prototype.scrollIntoView=function(){};
+window.UAArtLocale={choose(lang){document.documentElement.lang=lang;}};
 window.UAArtLocale.choose('ka');
-document.readyState='interactive';
-document.dispatchEvent(new Event('DOMContentLoaded'));
-await evaluating;
-const {state,setBusy}=app.namespace;
-assert.equal(state.lang,'ka');
-assert.equal(get('countries').children.length,8);
-assert.equal(get('models').children.length,5);
-const firstModel=get('models').children[0];
-assert.deepEqual(firstModel.children[1].children.map(el=>el.tag),['h3','span','button']);
-firstModel.children[1].children.at(-1).dispatchEvent(new Event('click'));
-const selectedModel=state.model;
-form.elements.customer_name.value='Test customer';
-form.elements.delivery_city.value='Kyiv';
-form.elements.budget.value='b2';
-const flush=()=>new Promise(resolve=>setImmediate(resolve));
-for(const language of ['ru','uk','ka']) {
-  window.UAArtLocale.choose(language);await flush();
-  assert.equal(state.lang,language);
-  assert.equal(title.textContent,strings[language].title);
-  assert.equal(get('models').children[0].children[1].children[0].textContent,catalog.countries.korea.models[0].labels[language]);
-  assert.equal(get('countries').children[0].children[0].textContent,catalog.countries.korea.name[language]);
-  assert.equal(new URL(currentUrl).searchParams.get('lang'),language);
-  assert.equal(state.country,'korea');assert.equal(state.model,selectedModel);
-  assert.equal(form.hidden,false);
-  assert.equal(form.elements.customer_name.value,'Test customer');
-  assert.equal(form.elements.delivery_city.value,'Kyiv');
-  assert.equal(form.elements.budget.value,'b2');
+const sent=[];let failOnce=true;
+window.fetch=async(url,options)=>{
+ if(String(url).includes('/bootstrap'))return {ok:true,json:async()=>({catalog,preferences,consent_version:'test-v1',consent_text:Object.fromEntries(['uk','ru','ka'].map(lang=>[lang,strings[lang].consent])),csrf:'test'})};
+ if(String(url).includes('order-strings.json'))return {ok:true,json:async()=>strings};
+ if(String(url).includes('/submit')){sent.push(JSON.parse(options.body));if(failOnce){failOnce=false;throw Error('lost response');}return {ok:true,json:async()=>({status:'saved',request_id:sent[0].request_id,number:'TEST-001'})};}
+ throw Error('Unexpected request: '+url);
+};
+const context=dom.getInternalVMContext(),modules=new Map();
+for(const name of ['order-state.js','preferences-state.js','preferences-form.js','order.js']) {
+ const source=await read('../web/'+name);
+ modules.set('./'+name,new vm.SourceTextModule(source+(name==='order.js'?'\nexport {state,setBusy,selectModel};':''),{context,initializeImportMeta(meta){meta.url='https://example.test/video/order/'+name;}}));
 }
-currentUrl='https://example.test/video/podbor.html?strana=korea&lang=uk';
-window.dispatchEvent(new Event('popstate'));await flush();
-assert.equal(headerLanguage,'uk');assert.equal(state.lang,'uk');
-setBusy(true);window.UAArtLocale.choose('ru');await flush();
-assert.ok(root.querySelectorAll('button').every(button=>button.disabled));
-setBusy(false);
-form.dispatchEvent(new Event('submit',{cancelable:true}));
-assert.equal(state.review.lang,'ru');
-window.UAArtLocale.choose('uk');await flush();
-assert.equal(state.review.lang,'uk');
-currentUrl='https://example.test/video/podbor.html?strana=korea&lang=ru';
-window.dispatchEvent(new Event('popstate'));await flush();
-assert.equal(headerLanguage,'ru');assert.equal(state.review.lang,'ru');
-state.pending=state.review;
-const pendingBefore=JSON.stringify(state.pending);
-window.UAArtLocale.choose('ka');await flush();
-assert.equal(JSON.stringify(state.pending),pendingBefore);
-assert.ok(root.querySelectorAll('button').every(button=>button.disabled===(button.id!=='confirm')));
-assert.ok(languageNotifications<20,'Language synchronization must not loop');
-console.log('PASS: saved language, all three header languages, preserved fields/model, browser history, busy controls and immutable retry payload');
+const app=modules.get('./order.js');await app.link(specifier=>modules.get(specifier.split('?')[0]));await app.evaluate();
+const {state,setBusy,selectModel}=app.namespace;
+const $=selector=>{const e=document.querySelector(selector);assert.ok(e,selector);return e;};
+const flush=()=>new Promise(resolve=>setImmediate(resolve));
+// A selection keeps its native control and focus: no detach/replace/refocus that
+// can reopen the iOS picker. Exercise every select used by the real form below.
+let focusCalls=0,selectFocusCalls=0;
+const nativeFocus=window.HTMLElement.prototype.focus;
+window.HTMLElement.prototype.focus=function(...args){focusCalls++;if(this.tagName==='SELECT')selectFocusCalls++;return nativeFocus.apply(this,args);};
+const change=(name,value)=>{
+ const control=$(`[name="${name}"]`);control.focus();const before=focusCalls;
+ let detached=false;
+ const observer=new window.MutationObserver(()=>{});observer.observe(document.body,{childList:true,subtree:true});
+ control.value=value;control.dispatchEvent(new window.Event('change',{bubbles:true}));
+ for(const record of observer.takeRecords())for(const node of record.removedNodes)if(node===control||node.contains(control))detached=true;
+ observer.disconnect();
+ assert.equal($(`[name="${name}"]`),control,`${name}: same control`);
+ assert.equal(document.activeElement,control,`${name}: keyboard focus retained`);
+ assert.equal(focusCalls,before,`${name}: no programmatic refocus`);
+ assert.equal(detached,false,`${name}: no detached active control`);
+};
+const input=(name,value)=>{const control=$(`[name="${name}"]`);control.value=value;control.dispatchEvent(new window.Event('input',{bubbles:true}));};
+const check=(name,value)=>{const control=$(`[name="${name}"]`);control.checked=value;control.dispatchEvent(new window.Event('change',{bubbles:true}));};
+assert.equal(state.lang,'ka');assert.equal(document.querySelectorAll('#countries a').length,8);assert.equal(document.querySelectorAll('#models article').length,5);
+// Exercise the actual card buttons, including cards with two named models.
+let checkedCards=0;
+for(const [country,data] of Object.entries(catalog.countries)){
+ $(`#countries a[href*="strana=${country}&"]`).click();
+ for(const [index,card] of data.models.entries()){
+  const beforeSelectFocus=selectFocusCalls;
+  document.querySelectorAll('#models article button')[index].click();
+  assert.equal(selectFocusCalls,beforeSelectFocus,'card opening never focuses a native picker');
+  assert.equal(document.activeElement,$('[data-label="main"]'));
+  const preset=preferences.card_presets[card.key];
+  assert.equal($('[name="make"]').value,preset.make||'',card.key);
+  assert.deepEqual(Array.from(document.querySelectorAll('.model-choice select'),e=>e.value),preset.models||[],card.key);
+  checkedCards++;
+ }
+}
+assert.equal(checkedCards,40);
+$('#countries a[href*="strana=korea&"]').click();
+$('#models button').click();assert.equal($('#order-form').hidden,false);assert.equal(state.preferences.values.make,'kia');
+assert.equal($('[name="models"]').value,'K5');change('model_mode','selected');assert.equal($('[name="models"]').value,'K5');
+$('.model-choice button').click();assert.equal(state.preferences.values.models.length,0);
+$('#models button').click();assert.equal($('[name="models"]').value,'K5','same card refills an empty model');
+assert.equal($('[name="budget"]').value,'');assert.equal($('[name="mileage"]').value,'');assert.equal($('[name="vehicle_type"]').value,'');
+assert.ok(Array.from($('[name="make"]').options).some(x=>x.value==='toyota'));assert.equal(state.preferences.values.make,'kia');
+assert.equal($('[name="delivery_city"]').disabled,true);
+change('purchase_country_code','other');input('purchase_country_other','Италия');change('purchase_country_code','korea');
+change('make','other');input('make_other','Custom');
+assert.equal($('[name="model_mode"]').value,'other');assert.equal($('[name="model_mode"]').options[0].disabled,true);
+input('other_model','Manual model');change('make','toyota');
+assert.equal($('[name="model_mode"]').value,'selected');assert.equal($('[name="model_mode"]').options[0].disabled,false);
+change('model_mode','other');input('other_model','Custom');change('model_mode','selected');
+change('models','Camry');assert.equal(state.preferences.values.models[0],'Camry');
+assert.equal($('[name="models"]').value,'Camry');
+change('models','Corolla');assert.equal(state.preferences.values.models.length,1);change('models','Camry');
+$('.model-choices + button').click();
+assert.ok(!Array.from($('[name="models-1"]').options).some(o=>o.value==='Camry'));
+change('models-1','Corolla');assert.equal(state.preferences.values.models.length,2);
+$('.model-choice:last-child button').click();assert.equal(state.preferences.values.models.length,1);
+assert.ok(Array.from($('[name="models"]').options).some(o=>o.value==='Corolla'));
+selectModel('kia-k5');assert.equal(state.preferences.values.make,'toyota');assert.equal(state.preferences.values.models[0],'Camry');
+change('budget','custom');input('budget-custom','17 500');
+change('vehicle_type','sedan');change('year-from','2016');change('year-to','2021');change('mileage','custom');input('mileage-custom','109.353');
+change('delivery_country','georgia');change('delivery_city','tbilisi');input('customer_name','Тестовый клиент');
+change('contact_method','whatsapp');assert.equal($('[name="contact"]').autocomplete,'tel');assert.equal($('[name="contact"]').inputMode,'tel');
+input('contact','991112233');assert.equal($('[name="contact"]').value,'991112233','do not rewrite while typing');
+$('[name="contact"]').dispatchEvent(new window.Event('change',{bubbles:true}));assert.equal($('[name="contact"]').value,'+380991112233');
+assert.equal(state.preferences.values.contact.value,'+380991112233');
+$('[name="contact"]').value='0991112233';$('[name="contact"]').dispatchEvent(new window.InputEvent('input',{bubbles:true,inputType:'insertReplacementText'}));
+assert.equal($('[name="contact"]').value,'+380991112233','completed replacement/autofill restores the country code');
+$('[name="contact"]').value='0991112233';$('[name="contact"]').dispatchEvent(new window.Event('blur'));
+assert.equal(state.preferences.values.contact.value,'+380991112233','read autofill value even without an input event');
+input('contact','+995599123456');$('[name="contact"]').dispatchEvent(new window.Event('change'));assert.equal($('[name="contact"]').value,'+995599123456');
+change('contact_method','telegram');input('contact','@test_user');$('[name="contact"]').dispatchEvent(new window.Event('blur'));assert.equal($('[name="contact"]').value,'@test_user');
+change('delivery_city','other');input('delivery_city_other','Батуми');change('delivery_city','tbilisi');
+check('colours-white',true);check('colours-black',true);check('colours-any',true);assert.equal(state.preferences.values.colours.length,1);assert.equal(state.preferences.values.colours[0],'any');
+check('colours-white',true);assert.equal(state.preferences.values.colours.length,1);assert.equal(state.preferences.values.colours[0],'white');
+input('comment','Белый кузов. https://example.test/car');check('consent',true);
+// Colour names and checkbox state remain accessible independently of the swatch.
+assert.equal(document.querySelectorAll('[data-field="colours"] .colour-swatch').length,13);
+assert.equal($('[name="colours-white"]').closest('label').querySelector('.colour-swatch').getAttribute('aria-hidden'),'true');
+assert.ok($('[name="colours-white"]').closest('label').textContent.includes(preferences.options.colours.white[state.lang]));
+// The limit counts Unicode code points and explains overflow without truncation.
+input('comment','🚗'.repeat(3000));assert.ok($('#comment-count').textContent.includes('3000'));
+$('#order-form').dispatchEvent(new window.Event('submit',{cancelable:true}));assert.ok(state.review);$('#edit').click();
+input('comment','🚗'.repeat(3001));$('#optional-preferences').open=false;
+$('#order-form').dispatchEvent(new window.Event('submit',{cancelable:true}));
+assert.equal(state.review,null);assert.equal($('#optional-preferences').open,true);assert.equal($('#error-comment').hidden,false);
+assert.equal($('[name="comment"]').value,'🚗'.repeat(3001));assert.equal(document.activeElement.id,'pref-comment');
+input('comment','Белый кузов. https://example.test/car');assert.equal($('#error-comment').hidden,true);
+assert.equal($('[name="comment"]').getAttribute('aria-describedby'),'comment-help comment-count');
+$('#optional-preferences').open=true;
+for(const lang of ['ru','uk','ka']){
+ window.UAArtLocale.choose(lang);await flush();
+ assert.equal(state.lang,lang);assert.equal($('[data-label="main"]').textContent,preferences.labels[lang].main);
+ assert.equal(document.querySelector('[name^="priority-"], [name="year-any"], [data-label="priority_help"]'),null);
+ assert.equal(document.querySelector('#order-form input[type="search"], #order-form [name$="-search"]'),null);
+ assert.equal($('[name="make"]').options.length,Object.keys(preferences.makes).length+3);
+ assert.deepEqual(Array.from($('[name="model_mode"]').options,o=>[o.value,o.textContent]),[['selected',preferences.labels[lang].selected],['other',preferences.labels[lang].other_value]]);
+ assert.equal($('[name="customer_name"]').value,'Тестовый клиент');assert.equal($('[name="contact"]').value,'@test_user');
+ assert.equal($('[name="budget-custom"]').value,'17 500');assert.equal(state.preferences.values.models[0],'Camry');
+ assert.equal($('[name="models"]').value,'Camry');
+ assert.equal($('#optional-preferences').open,true);assert.equal(new URL(window.location.href).searchParams.get('lang'),lang);
+ // Numeric lists keep the intended order; years have no thousands separator.
+ const years=Array.from($('[name="year-from"]').options).filter(o=>/^\d+$/.test(o.value));
+ assert.equal(years[0].textContent,String(preferences.current_year));
+ assert.equal(years.at(-1).textContent,'1990');
+ assert.ok(years.every((o,i)=>o.textContent===String(preferences.current_year-i)));
+ const engines=Array.from($('[name="engine-from"]').options).filter(o=>o.value&&o.value!=='custom').map(o=>Number(o.value));
+ assert.ok(engines.every((value,i)=>!i||value>engines[i-1]));
+ change('year-from','2017');change('year-from','2016');change('purchase_timing','month');
+}
+// Correct field errors, automatic reveal, preserved input, and range validation.
+change('engine-from','custom');input('engine-from-custom','0');$('#optional-preferences').open=false;
+$('#order-form').dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}));
+assert.equal(state.review,null);assert.equal($('#optional-preferences').open,true);assert.equal($('#error-engine').hidden,false);
+input('engine-from-custom','1,5');change('engine-to','2');
+change('year-from','2024');$('#order-form').dispatchEvent(new window.Event('submit',{cancelable:true}));assert.equal($('#error-year').hidden,false);
+change('year-from','2016');
+$('#order-form').dispatchEvent(new window.Event('submit',{cancelable:true}));
+assert.ok(state.review);assert.equal(state.review.make,'toyota');assert.equal(state.review.models[0],'Camry');assert.equal(state.review.budget.max,17500);assert.equal(state.review.mileage.max,109353);assert.equal(state.review.preferences.criteria.engine.from,1.5);
+assert.equal(state.review.preferences.schema_version,1);assert.equal(Object.keys(state.review.preferences.priority).length,0);assert.equal(state.review.year.any,false);assert.equal('engine' in state.review,false);
+assert.ok($('#summary').textContent.includes('Camry'));assert.ok($('#summary').textContent.includes('109'));
+$('#edit').click();assert.equal($('#order-form').hidden,false);selectModel('hyundai-sonata');
+assert.equal(state.preferences.values.make,'hyundai');assert.equal(state.preferences.values.colours[0],'white');assert.equal($('[name="budget-custom"]').value,'17 500');assert.equal($('[name="contact"]').value,'@test_user');
+$('#order-form').dispatchEvent(new window.Event('submit',{cancelable:true}));
+$('#confirm').click();await flush();assert.ok(state.pending);assert.equal(sent.length,1);const pending=JSON.stringify(state.pending);
+window.UAArtLocale.choose('ru');await flush();assert.equal(JSON.stringify(state.pending),pending);
+assert.ok(Array.from(document.querySelectorAll('#ua-order button')).every(b=>b.disabled===(b.id!=='confirm')));
+$('#confirm').click();await flush();assert.equal(JSON.stringify(sent[0]),JSON.stringify(sent[1]));assert.equal($('#receipt').hidden,false);assert.equal($('#number').textContent,'TEST-001');
+assert.equal(state.receipt.status,'saved');assert.equal(state.pending,null);
+console.log('PASS: native field construction, 3 languages, complete lists without search fields, editable autofill, multi-select, custom numeric inputs, errors/focus, optional reveal, review/edit, unchanged retry after lost response, commit receipt');
+dom.window.close();

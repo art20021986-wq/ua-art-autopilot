@@ -1,0 +1,248 @@
+{
+  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-v10",
+  "manifest_sha256": "51e5df664ffe778269882aac8ed2a854ce743035ec1b59d3ca7c880e53a57d9d",
+  "files": 16,
+  "production_write": true,
+  "tested_commit": "c53f133f5626eb17857d67ebacf1b818642f640f",
+  "server_verified_at_utc": "2026-09-27T18:10:55+00:00",
+  "tests": {
+    "python": 59,
+    "server_python": {
+      "version": "3.10",
+      "ptb_version": "22.8",
+      "passed": 59,
+      "tmpdir": "/dev/shm",
+      "filesystem": "tmpfs",
+      "note": "The full final suite passed on local tmpfs; the existing NFS storage guard remains enabled.",
+      "evidence": "evidence/server-tests.jpg"
+    },
+    "mysql": {
+      "database": "Carix$orders_test",
+      "result": "PASS",
+      "real_messages_sent": false,
+      "production_write": false,
+      "cleanup": "only this run's UUID and owner rows, completed before PASS",
+      "checks": [
+        "concurrent v2 submit: one row and outbox",
+        "all final preferences survive MySQL utf8mb4 roundtrip",
+        "3000 supplementary Unicode characters preserved",
+        "owned receipt after commit",
+        "full website-to-Telegram draft and review",
+        "complete split owner-inbox detail"
+      ]
+    },
+    "js": "pure state, legacy routes, full DOM flow",
+    "prepublication_rollback": "exact",
+    "postpublication_rollback": "frontend restored, compatible v2 readers retained",
+    "approved_spec_completion": [
+      "preferences.schema_version=1 with criteria and priority; no duplicate root criteria",
+      "required_for_search is the persisted strict-priority value",
+      "manual country/make/model/city accept 120 characters and reject 121",
+      "visible 3000-code-point counter with overflow error and preserved input",
+      "named colour swatches retain independent native checkbox state"
+    ]
+  },
+  "pending": [
+    "Physical Safari/iPhone, Chrome mobile and TikTok visual review at 320–430px; no pass claimed"
+  ],
+  "mobile_css_review": {
+    "date_utc": "2026-09-27",
+    "stylesheet_version": "20260927.5",
+    "changes": [
+      "Zero grid track minimums and bounded controls",
+      "Single-column ranges and checkbox lists below 600px",
+      "Long labels and selected model names wrap without hiding overflow"
+    ],
+    "checks": [
+      "5 release/rollback tests passed",
+      "full three-language DOM flow passed"
+    ],
+    "visual_browser_result": "NOT VERIFIED",
+    "notes": "CSS and DOM checks do not prove physical mobile rendering. Production desktop Chrome was inspected separately; no physical-device pass is claimed."
+  },
+  "development_stage": "complete",
+  "automated_acceptance": "PASS",
+  "visual_acceptance": "DESKTOP VERIFIED; PHYSICAL MOBILE NOT VERIFIED",
+  "release_status": "DEPLOYED",
+  "frontend_tested_commit": "dbe0a8883f985bfe817028ba3ccf7b20d989ad22",
+  "deployment": {
+    "authorized_by": "User: «Примени и внедри» (2026-09-27T18:41:44Z), then explicit audit-and-finish request",
+    "initial_release_utc": "2026-09-27T19:13Z",
+    "initial_backup": "/home/Carix/order_preferences_backup_20260927_1905",
+    "initial_manifest_sha256": "07d1571c34259892f2361304dbfc5422276a2262f882a9b338609e694d92338d",
+    "initial_manifest": "evidence/initial-release-manifest.json",
+    "audit_correction_utc": "2026-09-27T19:21Z",
+    "backup": "/home/Carix/order_preferences_backup_20260927_2054",
+    "frontend_version": "20260927.10",
+    "directory_version": "20260927.5",
+    "backend_at_audit_correction": "All 10 backend SHA before/after identical; runtime already reloaded and verified during initial release",
+    "live_files": "16/16 SHA-256 MATCH",
+    "public_https_assets": "6/6 SHA-256 MATCH",
+    "bootstrap": "HTTP 200, preferences 20260927.5, 68 makes",
+    "owner_inbox_worker_started_utc": "2026-09-27T19:11:48.891Z",
+    "client_bot_started_utc": "2026-09-27T19:11:48.974Z",
+    "database_schema_changed": false,
+    "production_test_submitted": false,
+    "verified_at_utc": "2026-09-27T20:56Z",
+    "previous_frontend_release": {
+      "backup": "/home/Carix/order_preferences_backup_20260927_2031",
+      "frontend_version": "20260927.9",
+      "verified_at_utc": "2026-09-27T20:33Z"
+    },
+    "frontend_correction_utc": "2026-09-27T20:55Z"
+  },
+  "live_browser": {
+    "browser": "Cloud Chrome",
+    "url": "https://www.uaart.com.ua/video/podbor.html?strana=korea&lang=ru",
+    "viewport_width": 1348,
+    "document_width": 1348,
+    "checks": [
+      "Kia K5 card autofills Kia and K5",
+      "Changing make to Hyundai clears incompatible model and allows Sonata",
+      "Repeat same card preserves Hyundai/Sonata and manual contact",
+      "Georgia delivery exposes Georgian cities",
+      "Main and optional criteria retained across RU/UA/GE",
+      "Two named colours plus a manually entered third colour appear in review",
+      "Years display 2026…1990, without grouping",
+      "Engine presets are in numeric order",
+      "Reload preserves the browser draft",
+      "Review/edit shows final years, engine, colours and wishes; confirmation was not sent"
+    ],
+    "evidence": [
+      "evidence/live-main.jpg",
+      "evidence/live-colours.jpg"
+    ]
+  },
+  "form_correction_v7": {
+    "authorized_by": "User removes priority and year-any controls and requests that selected lists do not reopen (2026-09-28 UTC+7)",
+    "specification": "PREFERENCES_V12.md: Уточнение ТЗ от 28.09.2026",
+    "changes": [
+      "Removed strict-priority controls and help text in all three languages",
+      "Removed year-any control; kept year bounds and manual input",
+      "Native select remains attached during selection; only dependent fields update",
+      "Editable legacy drafts discard removed flags; uncertain submissions retain exact payload"
+    ],
+    "automated_checks": [
+      "40-card state suite plus non-mutating legacy flag cleanup: PASS",
+      "Full RU/UA/GE DOM flow: PASS",
+      "Every select exercised retains identity and focus, is never detached and never receives a repeated programmatic focus: PASS",
+      "Model selection, deletion, filtering, manual country/make/model/city, numeric custom inputs: PASS",
+      "Review, errors and unchanged retry after lost response: PASS",
+      "3 build and 2 release-guard tests: PASS"
+    ],
+    "live_checks": [
+      "16/16 deployed file SHA-256 match",
+      "6/6 HTTPS file SHA-256 match",
+      "RU/UA/GE: zero retired controls; preserved years and make",
+      "Chrome native year picker: click, ArrowDown, Enter; closed with selected value and keyboard focus preserved",
+      "Search Toyota and Camry, choose via native picker: selected model chip shown; picker reset, search cleared and focus preserved"
+    ],
+    "backend_changed": false,
+    "dependencies_added": false,
+    "production_test_submitted": false,
+    "physical_iphone": "NOT VERIFIED; automated focus/DOM checks and live Chrome do not substitute for physical iOS",
+    "evidence": [
+      "evidence/v7-main.jpg"
+    ]
+  },
+  "form_correction_v8": {
+    "frontend_commit": "82bf24adba02c6668b275f6fead6dcc1950f52ac",
+    "deployed_at_utc": "2026-09-27T20:10Z",
+    "manifest_sha256": "5f624219e9e7cfc4a7e47548c92c1e50e08fe1d85f9f13dd83b9f4baa7c928d5",
+    "changes": [
+      "Removed make, model and city search fields and their handlers",
+      "Preserved complete native option lists and dependent fields"
+    ],
+    "live_checks": [
+      "16/16 installed file hashes match; 6/6 public HTTPS assets match",
+      "RU/UA/GE: no search inputs; make/model selection and country-dependent cities work"
+    ],
+    "previous_frontend_release": {
+      "backup": "/home/Carix/order_preferences_backup_20260927_1954",
+      "frontend_version": "20260927.7",
+      "verified_at_utc": "2026-09-27T19:59:21.378164+00:00"
+    }
+  },
+  "form_correction_v9": {
+    "authorized_by": "User 2026-09-28 UTC+7: two model modes, gold field headings and body type after purchase country",
+    "changes": [
+      "Exactly two model mode options: selected and manual, in all three languages",
+      "Manual make defaults to manual model; catalog option disabled when unavailable",
+      "Editable any-model drafts require model clarification; uncertain submitted payload unchanged",
+      "Body type directly after purchase country, before make",
+      "Fieldset legends use existing gold token #e8c87d against panel #13283d"
+    ],
+    "contrast": {
+      "ratio": 9.29,
+      "foreground": "#e8c87d",
+      "background": "#13283d",
+      "source": "https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum"
+    },
+    "automated_checks": [
+      "Pure state suite including all 40 cards and retired-mode draft migration: PASS",
+      "Three-language full DOM flow, two localized model-mode options, no search inputs, retained native controls/focus, review/edit/retry: PASS",
+      "3 build and 2 release-guard tests: PASS"
+    ],
+    "live_checks": [
+      "16/16 installed file hashes match; 6/6 public HTTPS assets match",
+      "RU/UA/GE: exactly two model-mode options; zero search fields; requested first four field positions",
+      "Native model-mode click/ArrowDown/Enter changes to manual without losing focus",
+      "Manual model input and returning to catalog work; K5 selection and sedan body preserved across languages",
+      "Computed heading and panel colours match intended palette; desktop screenshot visually reviewed"
+    ],
+    "backend_changed": false,
+    "dependencies_added": false,
+    "production_test_submitted": false,
+    "physical_iphone": "NOT VERIFIED",
+    "photo_23": "Excluded from this chat by explicit user request",
+    "evidence": [
+      "evidence/v9-main.jpg"
+    ]
+  },
+  "form_correction_v10": {
+    "authorized_by": "User 2026-09-28 UTC+7: preselect card model, preserve phone country code, prevent automatic purchase-country picker on opening form",
+    "frontend_commit": "dbe0a8883f985bfe817028ba3ccf7b20d989ad22",
+    "deployed_at_utc": "2026-09-27T20:55Z",
+    "manifest_sha256": "51e5df664ffe778269882aac8ed2a854ce743035ec1b59d3ca7c880e53a57d9d",
+    "changes": [
+      "Card models render as the selected values of native select controls; additional empty model row only on explicit Add model",
+      "Repeating a card restores its empty model if make matches or is empty; valid manual choices preserved",
+      "Opening a card focuses the form heading, not the purchase-country select",
+      "Phone input uses tel autocomplete; complete Ukrainian national numbers normalize to +380; explicit international codes preserved",
+      "Normalization on replacement/paste, change, blur, validation and new payload; ordinary keystrokes, Telegram names and uncertain submitted payload preserved"
+    ],
+    "automated_checks": [
+      "Pure state suite: 40 card placements, repeat after model clearing, Ukrainian/international phone cases: PASS",
+      "DOM clicks on all 40 cards: exact preset make/models and heading focus; generic classic category does not invent make/model: PASS",
+      "Model replace/add/remove, duplicate filtering, stable native select during changes, RU/UA/GE, exactly two modes, no search fields: PASS",
+      "Autofill replacement event, change, silent value plus blur, phone validation/payload, review/edit/unchanged retry: PASS",
+      "3 build and 2 release-guard tests: PASS"
+    ],
+    "live_checks": [
+      "16/16 installed file hashes match; 6/6 public HTTPS assets match",
+      "Kia K5 and Hyundai Sonata cards show exact make/model in native fields; opening focuses H2",
+      "K5 replacement, adding another model, removal and repeat card restore verified",
+      "RU/UA/GE preserve Kia/K5; exactly two model modes; zero search fields",
+      "Synthetic Ukrainian number 991112233 visibly becomes +380991112233 after leaving field",
+      "Synthetic international +995599123456 visibly retains its country code",
+      "Phone values are masked in browser DOM output; phone results verified by screenshots instead",
+      "Synthetic phone cleared after verification; no consent or submission"
+    ],
+    "live_browser_verified_at_utc": "2026-09-27T21:03Z",
+    "phone_policy": "Unprefixed national numbers are treated as Ukrainian; other countries require explicit international +code",
+    "backend_changed": false,
+    "dependencies_added": false,
+    "production_test_submitted": false,
+    "physical_iphone": "NOT VERIFIED; simulated autofill and live desktop Chrome are not physical iOS verification",
+    "photo_23": "Excluded from this chat by explicit user request",
+    "sources": [
+      "https://developer.mozilla.org/en-US/docs/Web/API/HTMLSelectElement/value",
+      "https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus",
+      "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/autocomplete"
+    ],
+    "evidence": [
+      "evidence/v10-main.jpg",
+      "evidence/v10-phone.jpg"
+    ]
+  }
+}

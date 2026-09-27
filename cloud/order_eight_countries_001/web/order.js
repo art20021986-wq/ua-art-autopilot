@@ -1,4 +1,6 @@
-import {languages, fromUrl, requestPayload} from './order-state.js';
+import {languages, fromUrl} from './order-state.js';
+import {createPreferences,editableValues,applyCard,preferenceErrors,payload,summaryPairs} from './preferences-state.js?v=20260927.10';
+import {PreferenceForm} from './preferences-form.js?v=20260927.10';
 
 const root=document.querySelector('#ua-order');
 const assets=new URL('./',import.meta.url);
@@ -6,8 +8,9 @@ const $=id=>root.querySelector(`#${id}`);
 const form=$('order-form');
 const fields=form.elements;
 const state={catalog:null,strings:null,lang:'uk',country:'',model:'',review:null,receipt:null,
-  requestId:crypto.randomUUID(),busy:false,bootstrap:null,pending:null};
-const t=key=>state.strings[state.lang][key];
+  requestId:crypto.randomUUID(),busy:false,bootstrap:null,pending:null,preferences:createPreferences()};
+let preferenceForm;
+const t=key=>state.bootstrap?.preferences?.labels[state.lang][key]??state.strings[state.lang][key];
 function node(tag,text,className) {
   const element=document.createElement(tag);
   if(text!==undefined) element.textContent=text;
@@ -35,13 +38,6 @@ function discardReview() {
   // Keep the request ID while a response is uncertain; edits after a successful
   // receipt require the explicit New request action below.
 }
-function options(select,choices) {
-  const previous=select.value;
-  select.replaceChildren(...Object.entries(choices).map(([code,labels])=>{
-    const option=node('option',labels[state.lang]);option.value=code;return option;
-  }));
-  if(previous in choices) select.value=previous;
-}
 function countries() {
   $('countries').replaceChildren(...Object.entries(state.catalog.countries).map(([code,country])=>{
     const a=node('a',undefined,'country');
@@ -62,11 +58,16 @@ function countries() {
 function selectModel(key) {
   if(state.busy||state.receipt||state.pending) return;
   state.model=key;discardReview();
-  if(key) fields.other_model.value='';
-  $('other-wrap').hidden=Boolean(key);fields.other_model.required=!key;
-  form.hidden=false;renderSelection();
+  const before=state.preferences.card;
+  state.preferences=applyCard(state.preferences,state.country,key,state.bootstrap.preferences.card_presets[key]||{});
+  preferenceForm.state=state.preferences;
+  if(before!==state.preferences.card) for(const name of Object.keys(preferenceForm.ui)) {
+    if(!state.preferences.dirty[name.split('-')[0]]) delete preferenceForm.ui[name];
+  }
+  preferenceForm.render(state.lang);form.hidden=false;renderSelection();persist();
+  $('pref-notice').hidden=!key;
   form.scrollIntoView({behavior:'smooth',block:'start'});
-  (key?fields.budget:fields.other_model).focus({preventScroll:true});
+  form.querySelector('[data-label="main"]')?.focus({preventScroll:true});
 }
 function models() {
   $('model-section').hidden=!state.country || Boolean(state.receipt);
@@ -93,7 +94,7 @@ function renderSelection() {
   const model=country.models.find(m=>m.key===state.model);
   $('selection').textContent=`${country.name[state.lang]} · ${model?model.labels[state.lang]:t('other')}`;
 }
-function renderSummary() {
+function renderLegacySummary() {
   if(!state.review) return;
   const data=state.review;
   const country=state.catalog.countries[data.purchase_country_code];
@@ -104,6 +105,12 @@ function renderSummary() {
     ['contact',Object.values(data.contact).join(', ')],['comment',data.comment]];
   $('summary').replaceChildren(...pairs.filter(([,value])=>value).flatMap(([key,value])=>[node('dt',t(key)),node('dd',value)]));
 }
+function renderSummary() {
+  if(!state.review) return;
+  if(state.review.schema_version==='ua_order_request.v1') return renderLegacySummary();
+  const pairs=summaryPairs(state.review,state.catalog,state.bootstrap.preferences,state.lang);
+  $('summary').replaceChildren(...pairs.flatMap(([key,value])=>[node('dt',key),node('dd',value)]));
+}
 function render() {
   if(document.documentElement.lang!==state.lang) {
     if(window.UAArtLocale) window.UAArtLocale.choose(state.lang);
@@ -111,7 +118,7 @@ function render() {
   }
   document.title=`${t('title')} — UA ART COMPANY`;
   for(const el of root.querySelectorAll('[data-label]')) el.textContent=t(el.dataset.label);
-  options(fields.budget,state.catalog.budgets);options(fields.vehicle_type,state.catalog.vehicle_types);
+  preferenceForm?.render(state.lang);
   $('consent-copy').textContent=state.bootstrap.consent_text[state.lang];
   countries();models();renderSelection();renderSummary();
   setBusy(state.busy);
@@ -126,7 +133,7 @@ async function api(path,payload) {
   const headers={...identityHeaders(),'Content-Type':'application/json','X-CSRF-Token':state.bootstrap.csrf};
   const response=await fetch(`/api/orders/${path}`,{method:'POST',credentials:'same-origin',headers,body:JSON.stringify(payload)});
   const data=await response.json();
-  if(!response.ok) {const error=new Error(data.error||'request_failed');error.status=response.status;throw error;}
+  if(!response.ok) {const error=new Error(data.error||'request_failed');error.status=response.status;error.field=data.field;throw error;}
   return data;
 }
 // The existing site header owns language selection. Observe only its language
@@ -141,9 +148,11 @@ new MutationObserver(()=>{
 }).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 $('other-model').addEventListener('click',()=>selectModel(''));
 form.addEventListener('submit',event=>{
-  event.preventDefault();if(state.busy||state.receipt||!form.reportValidity()) return;
-  const data=Object.fromEntries(new FormData(form));
-  state.review=requestPayload(data,state.catalog,{country:state.country,model:state.model},state.lang,state.requestId,state.bootstrap.consent_version);
+  event.preventDefault();if(state.busy||state.receipt||state.pending) return;
+  const errors=preferenceErrors(state.preferences.values,state.bootstrap.preferences);
+  preferenceForm.errors(errors);
+  if(Object.keys(errors).length||!form.reportValidity()) return;
+  state.review=payload(state.preferences.values,state.catalog,state.bootstrap.preferences,state.lang,state.requestId,state.bootstrap.consent_version,fields.consent.checked);
   $('review').hidden=false;form.hidden=true;renderSummary();message('');$('review').scrollIntoView({behavior:'smooth'});
 });
 $('edit').addEventListener('click',()=>{if(!state.busy) {form.hidden=false;discardReview();}});
@@ -161,7 +170,9 @@ $('confirm').addEventListener('click',async()=>{
     $('receipt').hidden=false;persist();
   } catch(error) {
     if([400,403,413,429].includes(error.status)) state.pending=null;
-    message(error.status===400?'invalid':'error');persist();
+    message(error.status===400?'invalid':'error');
+    if(error.status===400&&error.field){form.hidden=false;discardReview();const key={purchase_country_other:'purchase_country_code',make_other:'make',model_mode:'models',other_model:'models',colour_other:'colours',priority:'make'}[error.field]||error.field;preferenceForm.errors({[key]:'field_error'});}
+    persist();
   }
   finally {setBusy(false);}
 });
@@ -172,7 +183,7 @@ $('handoff').addEventListener('click',async()=>{
     const result=await api('handoff',state.review);
     const telegram=window.Telegram?.WebApp;
     if(telegram?.openTelegramLink) telegram.openTelegramLink(result.url);
-    else location.assign(result.url);
+    else {const link=node('a',t('handoff'));link.href=result.url;link.target='_blank';link.rel='noopener';$('handoff-link').replaceChildren(link);link.click();}
   }
   catch {message('error');}
   finally {setBusy(false);}
@@ -180,7 +191,7 @@ $('handoff').addEventListener('click',async()=>{
 $('new-request').addEventListener('click',()=>{
   if(state.busy) return;
   state.receipt=null;state.review=null;state.pending=null;state.model='';state.requestId=crypto.randomUUID();
-  form.reset();form.hidden=true;$('receipt').hidden=true;render();persist();
+  form.reset();state.preferences=createPreferences();preferenceForm.state=state.preferences;preferenceForm.ui={};form.hidden=true;$('receipt').hidden=true;render();persist();
 });
 window.addEventListener('popstate',()=>{
   if(!state.catalog||state.busy||state.receipt||state.pending) return;
@@ -197,11 +208,11 @@ function persist() {
     } else {
       sessionStorage.setItem('ua_order_draft',JSON.stringify({expires:Date.now()+1800000,
         config:state.catalog.version,requestId:state.requestId,country:state.country,model:state.model,
-        form:Object.fromEntries(new FormData(form)),pending:state.pending}));
+        formVersion:2,preferencesVersion:state.bootstrap.preferences.version,preferences:state.preferences,ui:preferenceForm.ui,consent:fields.consent.checked,pending:state.pending}));
     }
   } catch { /* Private-mode storage restrictions must not prevent intake. */ }
 }
-form.addEventListener('input',persist);
+form.addEventListener('change',persist);
 window.addEventListener('pagehide',()=>{if(state.catalog) persist();});
 try {
   const pageReady=document.readyState==='loading'
@@ -210,9 +221,11 @@ try {
   const [bootstrap,strings]=await Promise.all([fetch('/api/orders/bootstrap',{credentials:'same-origin'}),fetch(new URL('order-strings.json',assets)),pageReady]);
   if(!bootstrap.ok||!strings.ok) throw new Error('bootstrap_failed');
   state.bootstrap=await bootstrap.json();state.catalog=state.bootstrap.catalog;state.strings=await strings.json();
+  if(!state.bootstrap.preferences) throw new Error('preferences_unavailable');
+  preferenceForm=new PreferenceForm($('main-fields'),$('optional-fields'),state.bootstrap.preferences,state.catalog,state.preferences,persist);
   const initial=fromUrl(location.href,Object.keys(state.catalog.countries));Object.assign(state,initial);
   if(window.UAArtLocale&&languages.includes(document.documentElement.lang)) state.lang=document.documentElement.lang;
-  render();fields.budget.value='undecided';fields.vehicle_type.value='any';message('');
+  render();message('');
   try {
     const saved=JSON.parse(sessionStorage.getItem('ua_order_draft')||'null');
     if(saved && saved.expires>Date.now()) {
@@ -230,16 +243,23 @@ try {
         // drafts yield to an explicit incoming country link.
         if(saved.pending || !state.country || state.country===saved.country) {
           state.requestId=saved.requestId;state.country=saved.country;state.model=saved.model;
-          for(const [key,value] of Object.entries(saved.form||{})) {
-            if(!fields[key]) continue;
-            if(key==='consent') fields[key].checked=value==='on'; else fields[key].value=value;
+          if(saved.formVersion===2&&saved.preferencesVersion===state.bootstrap.preferences.version&&saved.preferences?.values) {
+            state.preferences=saved.preferences;
+            if(!saved.pending) state.preferences.values=editableValues(state.preferences.values);
+            preferenceForm.state=state.preferences;preferenceForm.ui=saved.ui||{};
+            fields.consent.checked=saved.consent===true;
           }
-          state.pending=saved.pending;state.review=saved.pending;
-          render();form.hidden=Boolean(saved.pending);$('review').hidden=!saved.pending;
-          $('other-wrap').hidden=Boolean(state.model);fields.other_model.required=!state.model;
+          state.pending=saved.pending||null;state.review=state.pending;
+          render();form.hidden=Boolean(saved.pending)||saved.formVersion!==2;$('review').hidden=!saved.pending;
+          $('pref-notice').hidden=!state.model;
           setBusy(false);
         }
       }
     }
-  } catch { /* Malformed or expired local state is not trusted as a receipt. */ }
-} catch {$('message').textContent='Форма тимчасово недоступна. Телефон: +380 99 222 20 02.';}
+  } catch {
+    // Recover from corrupted local drafts; an unverified receipt is never shown.
+    state.preferences=createPreferences();preferenceForm.state=state.preferences;preferenceForm.ui={};
+    state.pending=null;state.review=null;state.receipt=null;state.requestId=crypto.randomUUID();state.model='';
+    form.hidden=true;$('review').hidden=true;$('receipt').hidden=true;render();
+  }
+} catch {form.hidden=true;$('message').textContent='Форма тимчасово недоступна. Телефон: +380 99 222 20 02.';}

@@ -1,0 +1,2487 @@
+{
+  "version": "20260927.5",
+  "makes": {
+    "acura": {
+      "name": "Acura",
+      "models": [
+        "CL",
+        "CSX",
+        "ILX",
+        "Integra",
+        "Legend",
+        "MDX",
+        "NSX",
+        "RDX",
+        "RL",
+        "RLX",
+        "RSX",
+        "TL",
+        "TLX",
+        "TSX",
+        "ZDX"
+      ]
+    },
+    "alfa-romeo": {
+      "name": "Alfa Romeo",
+      "models": [
+        "145",
+        "146",
+        "147",
+        "156",
+        "159",
+        "164",
+        "166",
+        "4C",
+        "8C",
+        "Brera",
+        "Giulia",
+        "Giulietta",
+        "GT",
+        "GTV",
+        "Junior",
+        "MiTo",
+        "Spider",
+        "Stelvio",
+        "Tonale"
+      ]
+    },
+    "audi": {
+      "name": "Audi",
+      "models": [
+        "80",
+        "90",
+        "100",
+        "200",
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "A6",
+        "A7",
+        "A8",
+        "e-tron",
+        "e-tron GT",
+        "Q2",
+        "Q3",
+        "Q4 e-tron",
+        "Q5",
+        "Q6 e-tron",
+        "Q7",
+        "Q8",
+        "Q8 e-tron",
+        "R8",
+        "TT"
+      ]
+    },
+    "bentley": {
+      "name": "Bentley",
+      "models": [
+        "Arnage",
+        "Azure",
+        "Bentayga",
+        "Brooklands",
+        "Continental",
+        "Flying Spur",
+        "Mulsanne"
+      ]
+    },
+    "bmw": {
+      "name": "BMW",
+      "models": [
+        "1 Series",
+        "2 Series",
+        "3 Series",
+        "4 Series",
+        "5 Series",
+        "6 Series",
+        "7 Series",
+        "8 Series",
+        "i3",
+        "i4",
+        "i5",
+        "i7",
+        "i8",
+        "iX",
+        "iX1",
+        "iX2",
+        "iX3",
+        "M2",
+        "M3",
+        "M4",
+        "M5",
+        "M6",
+        "M8",
+        "X1",
+        "X2",
+        "X3",
+        "X4",
+        "X5",
+        "X6",
+        "X7",
+        "XM",
+        "Z3",
+        "Z4"
+      ]
+    },
+    "buick": {
+      "name": "Buick",
+      "models": [
+        "Century",
+        "Enclave",
+        "Encore",
+        "Encore GX",
+        "Envision",
+        "Envista",
+        "GL8",
+        "LaCrosse",
+        "LeSabre",
+        "Lucerne",
+        "Park Avenue",
+        "Regal",
+        "Rendezvous",
+        "Verano"
+      ]
+    },
+    "byd": {
+      "name": "BYD",
+      "models": [
+        "Atto 2",
+        "Atto 3",
+        "Dolphin",
+        "Dolphin Surf",
+        "e2",
+        "e5",
+        "e6",
+        "Han",
+        "King",
+        "Qin",
+        "Qin Plus",
+        "Qin L",
+        "Seal",
+        "Seal 5",
+        "Seal 6",
+        "Seal U",
+        "Sealion 5",
+        "Sealion 6",
+        "Sealion 7",
+        "Seagull",
+        "Shark",
+        "Song",
+        "Song Plus",
+        "Song Pro",
+        "Song L",
+        "Tang",
+        "Yuan",
+        "Yuan Plus",
+        "Yuan Up"
+      ]
+    },
+    "cadillac": {
+      "name": "Cadillac",
+      "models": [
+        "ATS",
+        "BLS",
+        "CT4",
+        "CT5",
+        "CT6",
+        "CTS",
+        "DTS",
+        "ELR",
+        "Escalade",
+        "Lyriq",
+        "Optiq",
+        "Seville",
+        "SRX",
+        "STS",
+        "XT4",
+        "XT5",
+        "XT6",
+        "XTS"
+      ]
+    },
+    "changan": {
+      "name": "Changan",
+      "models": [
+        "Alsvin",
+        "Benni",
+        "CS15",
+        "CS35",
+        "CS35 Plus",
+        "CS55",
+        "CS55 Plus",
+        "CS75",
+        "CS75 Plus",
+        "CS85",
+        "CS95",
+        "Eado",
+        "Hunter",
+        "Lamore",
+        "UNI-K",
+        "UNI-T",
+        "UNI-V"
+      ]
+    },
+    "chery": {
+      "name": "Chery",
+      "models": [
+        "Amulet",
+        "Arrizo 5",
+        "Arrizo 6",
+        "Arrizo 7",
+        "Arrizo 8",
+        "Bonus",
+        "Eastar",
+        "Elara",
+        "IndiS",
+        "Jaggi",
+        "Kimo",
+        "QQ",
+        "Tiggo",
+        "Tiggo 2",
+        "Tiggo 3",
+        "Tiggo 4",
+        "Tiggo 5",
+        "Tiggo 7",
+        "Tiggo 8",
+        "Tiggo 9"
+      ]
+    },
+    "chevrolet": {
+      "name": "Chevrolet",
+      "models": [
+        "Aveo",
+        "Bolt",
+        "Camaro",
+        "Captiva",
+        "Cobalt",
+        "Colorado",
+        "Corvette",
+        "Cruze",
+        "Equinox",
+        "Epica",
+        "Evanda",
+        "HHR",
+        "Impala",
+        "Lacetti",
+        "Malibu",
+        "Niva",
+        "Orlando",
+        "Silverado",
+        "Sonic",
+        "Spark",
+        "Suburban",
+        "Tahoe",
+        "Tracker",
+        "Trailblazer",
+        "Traverse",
+        "Trax",
+        "Volt"
+      ]
+    },
+    "chrysler": {
+      "name": "Chrysler",
+      "models": [
+        "200",
+        "300",
+        "300M",
+        "Aspen",
+        "Crossfire",
+        "Grand Voyager",
+        "Pacifica",
+        "PT Cruiser",
+        "Sebring",
+        "Town & Country",
+        "Voyager"
+      ]
+    },
+    "citroen": {
+      "name": "Citroën",
+      "models": [
+        "AX",
+        "Berlingo",
+        "C1",
+        "C2",
+        "C3",
+        "C3 Aircross",
+        "C3 Picasso",
+        "C4",
+        "C4 Aircross",
+        "C4 Cactus",
+        "C4 Picasso",
+        "C4 SpaceTourer",
+        "C4 X",
+        "C5",
+        "C5 Aircross",
+        "C5 X",
+        "C6",
+        "C8",
+        "DS3",
+        "DS4",
+        "DS5",
+        "Jumpy",
+        "Nemo",
+        "Saxo",
+        "SpaceTourer",
+        "Xantia",
+        "Xsara"
+      ]
+    },
+    "cupra": {
+      "name": "Cupra",
+      "models": [
+        "Ateca",
+        "Born",
+        "Formentor",
+        "Leon",
+        "Tavascan",
+        "Terramar"
+      ]
+    },
+    "dacia": {
+      "name": "Dacia",
+      "models": [
+        "Bigster",
+        "Dokker",
+        "Duster",
+        "Jogger",
+        "Lodgy",
+        "Logan",
+        "Sandero",
+        "Spring"
+      ]
+    },
+    "daewoo": {
+      "name": "Daewoo",
+      "models": [
+        "Espero",
+        "Gentra",
+        "Lacetti",
+        "Lanos",
+        "Leganza",
+        "Matiz",
+        "Nexia",
+        "Nubira",
+        "Tacuma"
+      ]
+    },
+    "daihatsu": {
+      "name": "Daihatsu",
+      "models": [
+        "Applause",
+        "Atrai",
+        "Boon",
+        "Cast",
+        "Charade",
+        "Copen",
+        "Cuore",
+        "Feroza",
+        "Gran Move",
+        "Hijet",
+        "Mira",
+        "Move",
+        "Rocky",
+        "Sirion",
+        "Taft",
+        "Tanto",
+        "Terios",
+        "Thor",
+        "Trevis",
+        "Wake",
+        "YRV"
+      ]
+    },
+    "dodge": {
+      "name": "Dodge",
+      "models": [
+        "Avenger",
+        "Caliber",
+        "Caravan",
+        "Challenger",
+        "Charger",
+        "Dakota",
+        "Dart",
+        "Durango",
+        "Grand Caravan",
+        "Hornet",
+        "Journey",
+        "Magnum",
+        "Nitro",
+        "Ram",
+        "Viper"
+      ]
+    },
+    "dongfeng": {
+      "name": "Dongfeng",
+      "models": [
+        "AX3",
+        "AX4",
+        "AX5",
+        "AX7",
+        "DF6",
+        "E70",
+        "H30 Cross",
+        "Huge",
+        "Mage",
+        "Shine",
+        "T5",
+        "T5 EVO",
+        "580",
+        "600"
+      ]
+    },
+    "exeed": {
+      "name": "Exeed",
+      "models": [
+        "LX",
+        "RX",
+        "TX",
+        "TXL",
+        "VX"
+      ]
+    },
+    "faw": {
+      "name": "FAW",
+      "models": [
+        "Bestune B30",
+        "Bestune B50",
+        "Bestune B70",
+        "Bestune T33",
+        "Bestune T55",
+        "Bestune T77",
+        "Bestune T99",
+        "Besturn X40",
+        "Besturn X80",
+        "V2",
+        "V5"
+      ]
+    },
+    "fiat": {
+      "name": "Fiat",
+      "models": [
+        "124 Spider",
+        "500",
+        "500L",
+        "500X",
+        "600",
+        "Albea",
+        "Bravo",
+        "Croma",
+        "Doblo",
+        "Fiorino",
+        "Freemont",
+        "Fullback",
+        "Grande Punto",
+        "Linea",
+        "Marea",
+        "Multipla",
+        "Panda",
+        "Punto",
+        "Qubo",
+        "Sedici",
+        "Stilo",
+        "Tipo",
+        "Ulysse"
+      ]
+    },
+    "ford": {
+      "name": "Ford",
+      "models": [
+        "B-Max",
+        "Bronco",
+        "Bronco Sport",
+        "C-Max",
+        "Contour",
+        "Cougar",
+        "Edge",
+        "Escape",
+        "Escort",
+        "Expedition",
+        "Explorer",
+        "F-150",
+        "F-250",
+        "Fiesta",
+        "Flex",
+        "Focus",
+        "Fusion",
+        "Fusion Hybrid",
+        "Galaxy",
+        "Ka",
+        "Kuga",
+        "Maverick",
+        "Mondeo",
+        "Mustang",
+        "Mustang Mach-E",
+        "Puma",
+        "Ranger",
+        "S-Max",
+        "Taurus",
+        "Thunderbird",
+        "Tourneo Connect",
+        "Tourneo Courier",
+        "Tourneo Custom",
+        "Transit Connect"
+      ]
+    },
+    "gac": {
+      "name": "GAC",
+      "models": [
+        "GS3",
+        "GS4",
+        "GS5",
+        "GS8",
+        "GN6",
+        "GN8",
+        "M6",
+        "M8",
+        "Empow",
+        "Emkoo",
+        "Aion S",
+        "Aion V",
+        "Aion Y",
+        "Aion LX"
+      ]
+    },
+    "geely": {
+      "name": "Geely",
+      "models": [
+        "Atlas",
+        "Atlas Pro",
+        "Binrui",
+        "Binyue",
+        "Boyue",
+        "Coolray",
+        "Emgrand",
+        "Emgrand 7",
+        "Emgrand X7",
+        "EX5",
+        "Galaxy E5",
+        "Galaxy E8",
+        "Galaxy L6",
+        "Galaxy L7",
+        "Geometry A",
+        "Geometry C",
+        "Icon",
+        "Monjaro",
+        "Okavango",
+        "Preface",
+        "Tugella",
+        "Xingrui",
+        "Xingyue"
+      ]
+    },
+    "genesis": {
+      "name": "Genesis",
+      "models": [
+        "G70",
+        "G80",
+        "G90",
+        "GV60",
+        "GV70",
+        "GV80"
+      ]
+    },
+    "gmc": {
+      "name": "GMC",
+      "models": [
+        "Acadia",
+        "Canyon",
+        "Envoy",
+        "Hummer EV",
+        "Savana",
+        "Sierra",
+        "Terrain",
+        "Yukon"
+      ]
+    },
+    "great-wall": {
+      "name": "Great Wall",
+      "models": [
+        "Deer",
+        "Hover",
+        "Hover H3",
+        "Hover H5",
+        "Hover H6",
+        "Poer",
+        "Safe",
+        "Steed",
+        "Voleex C30",
+        "Wingle 3",
+        "Wingle 5",
+        "Wingle 6",
+        "Wingle 7"
+      ]
+    },
+    "haval": {
+      "name": "Haval",
+      "models": [
+        "Dargo",
+        "F5",
+        "F7",
+        "F7x",
+        "H2",
+        "H3",
+        "H5",
+        "H6",
+        "H7",
+        "H8",
+        "H9",
+        "Jolion",
+        "M6",
+        "Raptor"
+      ]
+    },
+    "honda": {
+      "name": "Honda",
+      "models": [
+        "Accord",
+        "Airwave",
+        "Amaze",
+        "Avancier",
+        "City",
+        "Civic",
+        "Clarity",
+        "Crossroad",
+        "Crosstour",
+        "CR-V",
+        "CR-Z",
+        "Edix",
+        "Element",
+        "Elysion",
+        "Fit",
+        "Freed",
+        "FR-V",
+        "Grace",
+        "HR-V",
+        "Insight",
+        "Integra",
+        "Jade",
+        "Jazz",
+        "Legend",
+        "Logo",
+        "Mobilio",
+        "N-Box",
+        "N-One",
+        "N-WGN",
+        "Odyssey",
+        "Passport",
+        "Pilot",
+        "Prelude",
+        "Ridgeline",
+        "S2000",
+        "Shuttle",
+        "Stepwgn",
+        "Stream",
+        "Vezel",
+        "ZR-V"
+      ]
+    },
+    "hyundai": {
+      "name": "Hyundai",
+      "models": [
+        "Accent",
+        "Atos",
+        "Avante",
+        "Azera",
+        "Bayon",
+        "Casper",
+        "Creta",
+        "Elantra",
+        "Equus",
+        "Genesis",
+        "Getz",
+        "Grandeur",
+        "i10",
+        "i20",
+        "i30",
+        "i40",
+        "IONIQ",
+        "IONIQ 5",
+        "IONIQ 6",
+        "ix20",
+        "ix35",
+        "ix55",
+        "Kona",
+        "Matrix",
+        "Nexo",
+        "Palisade",
+        "Porter",
+        "Santa Cruz",
+        "Santa Fe",
+        "Sonata",
+        "Starex",
+        "Staria",
+        "Terracan",
+        "Trajet",
+        "Tucson",
+        "Veloster",
+        "Venue",
+        "Veracruz"
+      ]
+    },
+    "infiniti": {
+      "name": "Infiniti",
+      "models": [
+        "EX",
+        "FX",
+        "G",
+        "I",
+        "JX",
+        "M",
+        "Q30",
+        "Q40",
+        "Q50",
+        "Q60",
+        "Q70",
+        "QX4",
+        "QX30",
+        "QX50",
+        "QX55",
+        "QX56",
+        "QX60",
+        "QX70",
+        "QX80"
+      ]
+    },
+    "isuzu": {
+      "name": "Isuzu",
+      "models": [
+        "D-Max",
+        "MU-7",
+        "MU-X",
+        "Rodeo",
+        "Trooper",
+        "VehiCross"
+      ]
+    },
+    "jac": {
+      "name": "JAC",
+      "models": [
+        "J2",
+        "J3",
+        "J4",
+        "J5",
+        "J6",
+        "J7",
+        "JS2",
+        "JS3",
+        "JS4",
+        "JS6",
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S7",
+        "T6",
+        "T8",
+        "T9"
+      ]
+    },
+    "jaguar": {
+      "name": "Jaguar",
+      "models": [
+        "E-Pace",
+        "F-Pace",
+        "F-Type",
+        "I-Pace",
+        "S-Type",
+        "X-Type",
+        "XE",
+        "XF",
+        "XJ",
+        "XK"
+      ]
+    },
+    "jeep": {
+      "name": "Jeep",
+      "models": [
+        "Avenger",
+        "Cherokee",
+        "Commander",
+        "Compass",
+        "Gladiator",
+        "Grand Cherokee",
+        "Grand Wagoneer",
+        "Liberty",
+        "Patriot",
+        "Renegade",
+        "Wagoneer",
+        "Wrangler"
+      ]
+    },
+    "jetour": {
+      "name": "Jetour",
+      "models": [
+        "Dashing",
+        "T1",
+        "T2",
+        "X50",
+        "X70",
+        "X70 Plus",
+        "X90",
+        "X90 Plus"
+      ]
+    },
+    "kgm-ssangyong": {
+      "name": "KGM / SsangYong",
+      "models": [
+        "Actyon",
+        "Actyon Sports",
+        "Chairman",
+        "Korando",
+        "Kyron",
+        "Musso",
+        "Rexton",
+        "Rodius",
+        "Tivoli",
+        "Torres",
+        "XLV"
+      ]
+    },
+    "kia": {
+      "name": "Kia",
+      "models": [
+        "Besta",
+        "Bongo",
+        "Cadenza",
+        "Carens",
+        "Carnival",
+        "Ceed",
+        "Cerato",
+        "Clarus",
+        "EV3",
+        "EV4",
+        "EV5",
+        "EV6",
+        "EV9",
+        "Forte",
+        "K3",
+        "K4",
+        "K5",
+        "K7",
+        "K8",
+        "K9",
+        "Magentis",
+        "Mohave",
+        "Niro",
+        "Opirus",
+        "Optima",
+        "Picanto",
+        "Pride",
+        "ProCeed",
+        "Quoris",
+        "Ray",
+        "Rio",
+        "Rondo",
+        "Sedona",
+        "Seltos",
+        "Shuma",
+        "Sonet",
+        "Sorento",
+        "Soul",
+        "Spectra",
+        "Sportage",
+        "Stinger",
+        "Stonic",
+        "Telluride",
+        "Venga",
+        "XCeed"
+      ]
+    },
+    "land-rover": {
+      "name": "Land Rover",
+      "models": [
+        "Defender",
+        "Discovery",
+        "Discovery Sport",
+        "Freelander",
+        "Range Rover",
+        "Range Rover Evoque",
+        "Range Rover Sport",
+        "Range Rover Velar"
+      ]
+    },
+    "lexus": {
+      "name": "Lexus",
+      "models": [
+        "CT",
+        "ES",
+        "GS",
+        "GX",
+        "HS",
+        "IS",
+        "LC",
+        "LFA",
+        "LM",
+        "LS",
+        "LX",
+        "NX",
+        "RC",
+        "RX",
+        "RX 350",
+        "RX 500h",
+        "RZ",
+        "SC",
+        "TX",
+        "UX"
+      ]
+    },
+    "li-auto": {
+      "name": "Li Auto",
+      "models": [
+        "L6",
+        "L7",
+        "L8",
+        "L9",
+        "MEGA",
+        "ONE",
+        "i8"
+      ]
+    },
+    "lincoln": {
+      "name": "Lincoln",
+      "models": [
+        "Aviator",
+        "Continental",
+        "Corsair",
+        "LS",
+        "MKC",
+        "MKS",
+        "MKT",
+        "MKX",
+        "MKZ",
+        "Nautilus",
+        "Navigator",
+        "Town Car"
+      ]
+    },
+    "lynk-co": {
+      "name": "Lynk & Co",
+      "models": [
+        "01",
+        "02",
+        "03",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "900",
+        "Z10"
+      ]
+    },
+    "maserati": {
+      "name": "Maserati",
+      "models": [
+        "3200 GT",
+        "4200 GT",
+        "Ghibli",
+        "GranCabrio",
+        "GranTurismo",
+        "Grecale",
+        "Levante",
+        "MC20",
+        "Quattroporte"
+      ]
+    },
+    "mazda": {
+      "name": "Mazda",
+      "models": [
+        "2",
+        "3",
+        "5",
+        "6",
+        "323",
+        "626",
+        "929",
+        "Axela",
+        "Biante",
+        "BT-50",
+        "Capella",
+        "Carol",
+        "CX-3",
+        "CX-30",
+        "CX-4",
+        "CX-5",
+        "CX-50",
+        "CX-60",
+        "CX-7",
+        "CX-70",
+        "CX-8",
+        "CX-80",
+        "CX-9",
+        "CX-90",
+        "Demio",
+        "MPV",
+        "MX-5",
+        "MX-30",
+        "Premacy",
+        "RX-7",
+        "RX-8",
+        "Tribute",
+        "Verisa"
+      ]
+    },
+    "mercedes-benz": {
+      "name": "Mercedes-Benz",
+      "models": [
+        "A-Class",
+        "B-Class",
+        "C-Class",
+        "CL",
+        "CLA",
+        "CLC",
+        "CLK",
+        "CLS",
+        "E-Class",
+        "EQA",
+        "EQB",
+        "EQC",
+        "EQE",
+        "EQS",
+        "EQV",
+        "G-Class",
+        "GL",
+        "GLA",
+        "GLB",
+        "GLC",
+        "GLE",
+        "GLK",
+        "GLS",
+        "ML",
+        "R-Class",
+        "S-Class",
+        "SL",
+        "SLC",
+        "SLK",
+        "SLS AMG",
+        "AMG GT",
+        "T-Class",
+        "V-Class",
+        "Vaneo",
+        "Viano",
+        "Vito",
+        "X-Class"
+      ]
+    },
+    "mg": {
+      "name": "MG",
+      "models": [
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "Cyberster",
+        "HS",
+        "Marvel R",
+        "One",
+        "RX5",
+        "ZS"
+      ]
+    },
+    "mini": {
+      "name": "MINI",
+      "models": [
+        "Clubman",
+        "Cooper",
+        "Countryman",
+        "Paceman",
+        "Aceman",
+        "Coupe",
+        "Roadster"
+      ]
+    },
+    "mitsubishi": {
+      "name": "Mitsubishi",
+      "models": [
+        "ASX",
+        "Carisma",
+        "Colt",
+        "Delica",
+        "Eclipse",
+        "Eclipse Cross",
+        "Endeavor",
+        "Galant",
+        "Grandis",
+        "i-MiEV",
+        "L200",
+        "Lancer",
+        "Mirage",
+        "Montero",
+        "Outlander",
+        "Pajero",
+        "Pajero Pinin",
+        "Pajero Sport",
+        "Space Star",
+        "Space Wagon",
+        "Xpander"
+      ]
+    },
+    "nissan": {
+      "name": "Nissan",
+      "models": [
+        "370Z",
+        "Almera",
+        "Ariya",
+        "Armada",
+        "Bluebird",
+        "Caravan",
+        "Cube",
+        "Dualis",
+        "Elgrand",
+        "Frontier",
+        "Fuga",
+        "Juke",
+        "Kicks",
+        "Lafesta",
+        "Laurel",
+        "Leaf",
+        "March",
+        "Maxima",
+        "Micra",
+        "Murano",
+        "Navara",
+        "Note",
+        "NP300",
+        "NV200",
+        "Pathfinder",
+        "Patrol",
+        "Primera",
+        "Pulsar",
+        "Qashqai",
+        "Quest",
+        "Rogue",
+        "Sentra",
+        "Serena",
+        "Skyline",
+        "Sunny",
+        "Teana",
+        "Terrano",
+        "Tiida",
+        "Titan",
+        "Versa",
+        "Wingroad",
+        "X-Trail",
+        "Xterra",
+        "Z"
+      ]
+    },
+    "opel": {
+      "name": "Opel",
+      "models": [
+        "Adam",
+        "Agila",
+        "Ampera",
+        "Antara",
+        "Astra",
+        "Cascada",
+        "Combo",
+        "Corsa",
+        "Crossland",
+        "Frontera",
+        "Grandland",
+        "Insignia",
+        "Meriva",
+        "Mokka",
+        "Omega",
+        "Signum",
+        "Tigra",
+        "Vectra",
+        "Vivaro",
+        "Zafira"
+      ]
+    },
+    "peugeot": {
+      "name": "Peugeot",
+      "models": [
+        "1007",
+        "106",
+        "107",
+        "108",
+        "2008",
+        "205",
+        "206",
+        "207",
+        "208",
+        "3008",
+        "301",
+        "306",
+        "307",
+        "308",
+        "309",
+        "4007",
+        "4008",
+        "405",
+        "406",
+        "407",
+        "408",
+        "5008",
+        "508",
+        "605",
+        "607",
+        "806",
+        "807",
+        "Bipper",
+        "Expert",
+        "Partner",
+        "RCZ",
+        "Rifter",
+        "Traveller"
+      ]
+    },
+    "porsche": {
+      "name": "Porsche",
+      "models": [
+        "718",
+        "911",
+        "Boxster",
+        "Cayenne",
+        "Cayman",
+        "Macan",
+        "Panamera",
+        "Taycan"
+      ]
+    },
+    "ram": {
+      "name": "RAM",
+      "models": [
+        "1500",
+        "2500",
+        "3500",
+        "ProMaster",
+        "ProMaster City"
+      ]
+    },
+    "renault": {
+      "name": "Renault",
+      "models": [
+        "Arkana",
+        "Austral",
+        "Captur",
+        "Clio",
+        "Duster",
+        "Espace",
+        "Fluence",
+        "Grand Scenic",
+        "Kadjar",
+        "Kangoo",
+        "Koleos",
+        "Laguna",
+        "Latitude",
+        "Logan",
+        "Megane",
+        "Modus",
+        "Rafale",
+        "Sandero",
+        "Scenic",
+        "Symbol",
+        "Talisman",
+        "Trafic",
+        "Twingo",
+        "Vel Satis",
+        "Wind",
+        "Zoe"
+      ]
+    },
+    "seat": {
+      "name": "SEAT",
+      "models": [
+        "Alhambra",
+        "Altea",
+        "Arona",
+        "Arosa",
+        "Ateca",
+        "Cordoba",
+        "Exeo",
+        "Ibiza",
+        "Leon",
+        "Mii",
+        "Tarraco",
+        "Toledo"
+      ]
+    },
+    "skoda": {
+      "name": "Škoda",
+      "models": [
+        "Citigo",
+        "Elroq",
+        "Enyaq",
+        "Fabia",
+        "Felicia",
+        "Kamiq",
+        "Karoq",
+        "Kodiaq",
+        "Octavia",
+        "Rapid",
+        "Roomster",
+        "Scala",
+        "Superb",
+        "Yeti"
+      ]
+    },
+    "smart": {
+      "name": "Smart",
+      "models": [
+        "#1",
+        "#3",
+        "#5",
+        "Forfour",
+        "Fortwo",
+        "Roadster"
+      ]
+    },
+    "subaru": {
+      "name": "Subaru",
+      "models": [
+        "Ascent",
+        "BRZ",
+        "Crosstrek",
+        "Exiga",
+        "Forester",
+        "Impreza",
+        "Legacy",
+        "Levorg",
+        "Outback",
+        "Pleo",
+        "R2",
+        "Solterra",
+        "Stella",
+        "Tribeca",
+        "Vivio",
+        "WRX",
+        "XV"
+      ]
+    },
+    "suzuki": {
+      "name": "Suzuki",
+      "models": [
+        "Across",
+        "Alto",
+        "Baleno",
+        "Celerio",
+        "Ciaz",
+        "Every",
+        "Grand Vitara",
+        "Hustler",
+        "Ignis",
+        "Jimny",
+        "Kizashi",
+        "Landy",
+        "Liana",
+        "S-Cross",
+        "Splash",
+        "Swift",
+        "SX4",
+        "Vitara",
+        "Wagon R",
+        "XL7"
+      ]
+    },
+    "tank": {
+      "name": "Tank",
+      "models": [
+        "300",
+        "400",
+        "500",
+        "700"
+      ]
+    },
+    "tesla": {
+      "name": "Tesla",
+      "models": [
+        "Cybertruck",
+        "Model 3",
+        "Model S",
+        "Model X",
+        "Model Y",
+        "Roadster"
+      ]
+    },
+    "toyota": {
+      "name": "Toyota",
+      "models": [
+        "4Runner",
+        "Alphard",
+        "Aqua",
+        "Auris",
+        "Avalon",
+        "Avensis",
+        "Aygo",
+        "bB",
+        "bZ4X",
+        "C-HR",
+        "Caldina",
+        "Camry",
+        "Carina",
+        "Celica",
+        "Chaser",
+        "Corolla",
+        "Corolla Cross",
+        "Corolla Fielder",
+        "Corolla Rumion",
+        "Corolla Touring",
+        "Crown",
+        "Estima",
+        "FJ Cruiser",
+        "Fortuner",
+        "Grand Highlander",
+        "Harrier",
+        "Hiace",
+        "Highlander",
+        "Hilux",
+        "iQ",
+        "Ipsum",
+        "ist",
+        "Kluger",
+        "Land Cruiser",
+        "Land Cruiser Prado",
+        "Mark II",
+        "Mark X",
+        "Mirai",
+        "Noah",
+        "Passo",
+        "Picnic",
+        "Porte",
+        "Premio",
+        "Prius",
+        "Prius Alpha",
+        "Prius C",
+        "Prius Prime",
+        "Prius V",
+        "Proace",
+        "Probox",
+        "Ractis",
+        "Raize",
+        "Raum",
+        "RAV4",
+        "RAV4 Hybrid",
+        "Roomy",
+        "Rush",
+        "Sequoia",
+        "Sienna",
+        "Sienta",
+        "Soarer",
+        "Starlet",
+        "Stout",
+        "Supra",
+        "Tacoma",
+        "Tank",
+        "Tundra",
+        "Urban Cruiser",
+        "Vellfire",
+        "Venza",
+        "Verso",
+        "Vitz",
+        "Voxy",
+        "Wish",
+        "Yaris",
+        "Yaris Cross",
+        "86",
+        "GR86",
+        "GR Corolla",
+        "bZ",
+        "bZ Woodland"
+      ]
+    },
+    "volkswagen": {
+      "name": "Volkswagen",
+      "models": [
+        "Amarok",
+        "Arteon",
+        "Beetle",
+        "Bora",
+        "Caddy",
+        "Caravelle",
+        "CC",
+        "Crafter",
+        "Eos",
+        "Fox",
+        "Golf",
+        "Golf Plus",
+        "Golf Sportsvan",
+        "ID.3",
+        "ID.4",
+        "ID.5",
+        "ID.6",
+        "ID.7",
+        "ID. Buzz",
+        "Jetta",
+        "Lupo",
+        "Multivan",
+        "Passat",
+        "Phaeton",
+        "Polo",
+        "Scirocco",
+        "Sharan",
+        "T-Cross",
+        "T-Roc",
+        "Taigo",
+        "Taos",
+        "Tayron",
+        "Teramont",
+        "Tiguan",
+        "Touareg",
+        "Touran",
+        "Transporter",
+        "Up"
+      ]
+    },
+    "volvo": {
+      "name": "Volvo",
+      "models": [
+        "240",
+        "740",
+        "850",
+        "940",
+        "960",
+        "C30",
+        "C40",
+        "C70",
+        "EX30",
+        "EX40",
+        "EX90",
+        "S40",
+        "S60",
+        "S70",
+        "S80",
+        "S90",
+        "V40",
+        "V50",
+        "V60",
+        "V70",
+        "V90",
+        "XC40",
+        "XC60",
+        "XC70",
+        "XC90"
+      ]
+    },
+    "xpeng": {
+      "name": "XPeng",
+      "models": [
+        "G3",
+        "G6",
+        "G9",
+        "MONA M03",
+        "P5",
+        "P7",
+        "X9"
+      ]
+    },
+    "zeekr": {
+      "name": "Zeekr",
+      "models": [
+        "001",
+        "007",
+        "009",
+        "7X",
+        "MIX",
+        "X"
+      ]
+    }
+  },
+  "options": {
+    "vehicle_type": {
+      "sedan": {
+        "ru": "Седан",
+        "uk": "Седан",
+        "ka": "სედანი"
+      },
+      "hatchback": {
+        "ru": "Хэтчбек",
+        "uk": "Хетчбек",
+        "ka": "ჰეჩბეკი"
+      },
+      "liftback": {
+        "ru": "Лифтбек",
+        "uk": "Ліфтбек",
+        "ka": "ლიფტბეკი"
+      },
+      "wagon": {
+        "ru": "Универсал",
+        "uk": "Універсал",
+        "ka": "უნივერსალი"
+      },
+      "crossover": {
+        "ru": "Кроссовер",
+        "uk": "Кросовер",
+        "ka": "კროსოვერი"
+      },
+      "suv": {
+        "ru": "Внедорожник",
+        "uk": "Позашляховик",
+        "ka": "ჯიპი"
+      },
+      "minivan": {
+        "ru": "Минивэн",
+        "uk": "Мінівен",
+        "ka": "მინივენი"
+      },
+      "coupe": {
+        "ru": "Купе",
+        "uk": "Купе",
+        "ka": "კუპე"
+      },
+      "convertible": {
+        "ru": "Кабриолет",
+        "uk": "Кабріолет",
+        "ka": "კაბრიოლეტი"
+      },
+      "pickup": {
+        "ru": "Пикап",
+        "uk": "Пікап",
+        "ka": "პიკაპი"
+      },
+      "any": {
+        "ru": "Любой",
+        "uk": "Будь-який",
+        "ka": "ნებისმიერი"
+      }
+    },
+    "fuel": {
+      "petrol": {
+        "ru": "Бензин",
+        "uk": "Бензин",
+        "ka": "ბენზინი"
+      },
+      "diesel": {
+        "ru": "Дизель",
+        "uk": "Дизель",
+        "ka": "დიზელი"
+      },
+      "lpi": {
+        "ru": "Заводской газ (LPI)",
+        "uk": "Заводський газ (LPI)",
+        "ka": "ქარხნული გაზი (LPI)"
+      },
+      "lpg": {
+        "ru": "Бензин + ГБО",
+        "uk": "Бензин + ГБО",
+        "ka": "ბენზინი + გაზი"
+      },
+      "hybrid": {
+        "ru": "Гибрид",
+        "uk": "Гібрид",
+        "ka": "ჰიბრიდი"
+      },
+      "any": {
+        "ru": "Неважно",
+        "uk": "Неважливо",
+        "ka": "არ აქვს მნიშვნელობა"
+      }
+    },
+    "drive": {
+      "fwd": {
+        "ru": "Передний",
+        "uk": "Передній",
+        "ka": "წინა"
+      },
+      "rwd": {
+        "ru": "Задний",
+        "uk": "Задній",
+        "ka": "უკანა"
+      },
+      "awd": {
+        "ru": "Полный",
+        "uk": "Повний",
+        "ka": "სრული"
+      },
+      "any": {
+        "ru": "Неважно",
+        "uk": "Неважливо",
+        "ka": "არ აქვს მნიშვნელობა"
+      }
+    },
+    "colours": {
+      "white": {
+        "ru": "Белый",
+        "uk": "Білий",
+        "ka": "თეთრი",
+        "swatch": "#ffffff"
+      },
+      "black": {
+        "ru": "Чёрный",
+        "uk": "Чорний",
+        "ka": "შავი",
+        "swatch": "#171717"
+      },
+      "gray": {
+        "ru": "Серый",
+        "uk": "Сірий",
+        "ka": "ნაცრისფერი",
+        "swatch": "#808080"
+      },
+      "silver": {
+        "ru": "Серебристый",
+        "uk": "Сріблястий",
+        "ka": "ვერცხლისფერი",
+        "swatch": "#c0c0c0"
+      },
+      "beige": {
+        "ru": "Бежевый",
+        "uk": "Бежевий",
+        "ka": "ბეჟი",
+        "swatch": "#d6c6a6"
+      },
+      "brown": {
+        "ru": "Коричневый",
+        "uk": "Коричневий",
+        "ka": "ყავისფერი",
+        "swatch": "#805436"
+      },
+      "red": {
+        "ru": "Красный",
+        "uk": "Червоний",
+        "ka": "წითელი",
+        "swatch": "#c62828"
+      },
+      "orange": {
+        "ru": "Оранжевый",
+        "uk": "Помаранчевий",
+        "ka": "ნარინჯისფერი",
+        "swatch": "#ef8c22"
+      },
+      "yellow": {
+        "ru": "Жёлтый",
+        "uk": "Жовтий",
+        "ka": "ყვითელი",
+        "swatch": "#f4d13f"
+      },
+      "green": {
+        "ru": "Зелёный",
+        "uk": "Зелений",
+        "ka": "მწვანე",
+        "swatch": "#38834d"
+      },
+      "lightblue": {
+        "ru": "Голубой",
+        "uk": "Блакитний",
+        "ka": "ცისფერი",
+        "swatch": "#7ec8e3"
+      },
+      "blue": {
+        "ru": "Синий",
+        "uk": "Синій",
+        "ka": "ლურჯი",
+        "swatch": "#245bbc"
+      },
+      "purple": {
+        "ru": "Фиолетовый",
+        "uk": "Фіолетовий",
+        "ka": "იისფერი",
+        "swatch": "#8655a7"
+      },
+      "other": {
+        "ru": "Другой",
+        "uk": "Інший",
+        "ka": "სხვა"
+      },
+      "any": {
+        "ru": "Любой",
+        "uk": "Будь-який",
+        "ka": "ნებისმიერი"
+      }
+    },
+    "purchase_timing": {
+      "now": {
+        "ru": "Готов сейчас",
+        "uk": "Готовий зараз",
+        "ka": "ახლავე მზად ვარ"
+      },
+      "month": {
+        "ru": "В течение месяца",
+        "uk": "Протягом місяця",
+        "ka": "ერთი თვის განმავლობაში"
+      },
+      "quarter": {
+        "ru": "Через 1–3 месяца",
+        "uk": "За 1–3 місяці",
+        "ka": "1–3 თვეში"
+      },
+      "later": {
+        "ru": "Позже",
+        "uk": "Пізніше",
+        "ka": "მოგვიანებით"
+      },
+      "research": {
+        "ru": "Пока изучаю варианты",
+        "uk": "Поки вивчаю варіанти",
+        "ka": "ჯერ ვარიანტებს ვეცნობი"
+      }
+    },
+    "delivery_country": {
+      "ukraine": {
+        "ru": "Украина",
+        "uk": "Україна",
+        "ka": "უკრაინა"
+      },
+      "georgia": {
+        "ru": "Грузия",
+        "uk": "Грузія",
+        "ka": "საქართველო"
+      }
+    },
+    "contact_method": {
+      "telegram": {
+        "ru": "Telegram",
+        "uk": "Telegram",
+        "ka": "Telegram"
+      },
+      "whatsapp": {
+        "ru": "WhatsApp",
+        "uk": "WhatsApp",
+        "ka": "WhatsApp"
+      },
+      "phone": {
+        "ru": "Звонок",
+        "uk": "Дзвінок",
+        "ka": "ზარი"
+      }
+    }
+  },
+  "cities": {
+    "ukraine": {
+      "kyiv": {
+        "ru": "Киев",
+        "uk": "Київ",
+        "ka": "კიევი"
+      },
+      "lviv": {
+        "ru": "Львов",
+        "uk": "Львів",
+        "ka": "ლვივი"
+      },
+      "odesa": {
+        "ru": "Одесса",
+        "uk": "Одеса",
+        "ka": "ოდესა"
+      },
+      "dnipro": {
+        "ru": "Днепр",
+        "uk": "Дніпро",
+        "ka": "დნიპრო"
+      },
+      "kharkiv": {
+        "ru": "Харьков",
+        "uk": "Харків",
+        "ka": "ხარკივი"
+      },
+      "vinnytsia": {
+        "ru": "Винница",
+        "uk": "Вінниця",
+        "ka": "ვინიცა"
+      },
+      "zhytomyr": {
+        "ru": "Житомир",
+        "uk": "Житомир",
+        "ka": "ჟიტომირი"
+      },
+      "zaporizhzhia": {
+        "ru": "Запорожье",
+        "uk": "Запоріжжя",
+        "ka": "ზაპორიჟია"
+      },
+      "ivano-frankivsk": {
+        "ru": "Ивано-Франковск",
+        "uk": "Івано-Франківськ",
+        "ka": "ივანო-ფრანკივსკი"
+      },
+      "lutsk": {
+        "ru": "Луцк",
+        "uk": "Луцьк",
+        "ka": "ლუცკი"
+      },
+      "mykolaiv": {
+        "ru": "Николаев",
+        "uk": "Миколаїв",
+        "ka": "მიკოლაივი"
+      },
+      "poltava": {
+        "ru": "Полтава",
+        "uk": "Полтава",
+        "ka": "პოლტავა"
+      },
+      "rivne": {
+        "ru": "Ровно",
+        "uk": "Рівне",
+        "ka": "რივნე"
+      },
+      "sumy": {
+        "ru": "Сумы",
+        "uk": "Суми",
+        "ka": "სუმი"
+      },
+      "ternopil": {
+        "ru": "Тернополь",
+        "uk": "Тернопіль",
+        "ka": "ტერნოპილი"
+      },
+      "uzhhorod": {
+        "ru": "Ужгород",
+        "uk": "Ужгород",
+        "ka": "უჟჰოროდი"
+      },
+      "khmelnytskyi": {
+        "ru": "Хмельницкий",
+        "uk": "Хмельницький",
+        "ka": "ხმელნიცკი"
+      },
+      "cherkasy": {
+        "ru": "Черкассы",
+        "uk": "Черкаси",
+        "ka": "ჩერკასი"
+      },
+      "chernivtsi": {
+        "ru": "Черновцы",
+        "uk": "Чернівці",
+        "ka": "ჩერნივცი"
+      },
+      "chernihiv": {
+        "ru": "Чернигов",
+        "uk": "Чернігів",
+        "ka": "ჩერნიჰივი"
+      }
+    },
+    "georgia": {
+      "tbilisi": {
+        "ru": "Тбилиси",
+        "uk": "Тбілісі",
+        "ka": "თბილისი"
+      },
+      "rustavi": {
+        "ru": "Рустави",
+        "uk": "Руставі",
+        "ka": "რუსთავი"
+      },
+      "batumi": {
+        "ru": "Батуми",
+        "uk": "Батумі",
+        "ka": "ბათუმი"
+      },
+      "kutaisi": {
+        "ru": "Кутаиси",
+        "uk": "Кутаїсі",
+        "ka": "ქუთაისი"
+      },
+      "poti": {
+        "ru": "Поти",
+        "uk": "Поті",
+        "ka": "ფოთი"
+      },
+      "zugdidi": {
+        "ru": "Зугдиди",
+        "uk": "Зугдіді",
+        "ka": "ზუგდიდი"
+      },
+      "gori": {
+        "ru": "Гори",
+        "uk": "Горі",
+        "ka": "გორი"
+      },
+      "telavi": {
+        "ru": "Телави",
+        "uk": "Телаві",
+        "ka": "თელავი"
+      }
+    }
+  },
+  "card_presets": {
+    "kia-k5": {
+      "make": "kia",
+      "models": [
+        "K5"
+      ],
+      "model_mode": "selected"
+    },
+    "hyundai-sonata": {
+      "make": "hyundai",
+      "models": [
+        "Sonata"
+      ],
+      "model_mode": "selected"
+    },
+    "hyundai-tucson": {
+      "make": "hyundai",
+      "models": [
+        "Tucson"
+      ],
+      "model_mode": "selected"
+    },
+    "kia-sportage": {
+      "make": "kia",
+      "models": [
+        "Sportage"
+      ],
+      "model_mode": "selected"
+    },
+    "hyundai-santa-fe": {
+      "make": "hyundai",
+      "models": [
+        "Santa Fe"
+      ],
+      "model_mode": "selected"
+    },
+    "nissan-note": {
+      "make": "nissan",
+      "models": [
+        "Note"
+      ],
+      "model_mode": "selected"
+    },
+    "toyota-aqua": {
+      "make": "toyota",
+      "models": [
+        "Aqua"
+      ],
+      "model_mode": "selected"
+    },
+    "mercedes-benz-b-class": {
+      "make": "mercedes-benz",
+      "models": [
+        "B-Class"
+      ],
+      "model_mode": "selected"
+    },
+    "toyota-prius": {
+      "make": "toyota",
+      "models": [
+        "Prius"
+      ],
+      "model_mode": "selected"
+    },
+    "classics-1980-1990": {
+      "year": {
+        "from": 1980,
+        "to": 1990,
+        "any": false
+      }
+    },
+    "tesla-model-y": {
+      "make": "tesla",
+      "models": [
+        "Model Y"
+      ],
+      "model_mode": "selected"
+    },
+    "tesla-model-3": {
+      "make": "tesla",
+      "models": [
+        "Model 3"
+      ],
+      "model_mode": "selected"
+    },
+    "ford-escape": {
+      "make": "ford",
+      "models": [
+        "Escape"
+      ],
+      "model_mode": "selected"
+    },
+    "nissan-rogue": {
+      "make": "nissan",
+      "models": [
+        "Rogue"
+      ],
+      "model_mode": "selected"
+    },
+    "bmw-x3": {
+      "make": "bmw",
+      "models": [
+        "X3"
+      ],
+      "model_mode": "selected"
+    },
+    "volkswagen-golf": {
+      "make": "volkswagen",
+      "models": [
+        "Golf"
+      ],
+      "model_mode": "selected"
+    },
+    "volkswagen-tiguan": {
+      "make": "volkswagen",
+      "models": [
+        "Tiguan"
+      ],
+      "model_mode": "selected"
+    },
+    "audi-q5": {
+      "make": "audi",
+      "models": [
+        "Q5"
+      ],
+      "model_mode": "selected"
+    },
+    "skoda-octavia": {
+      "make": "skoda",
+      "models": [
+        "Octavia"
+      ],
+      "model_mode": "selected"
+    },
+    "renault-megane": {
+      "make": "renault",
+      "models": [
+        "Megane"
+      ],
+      "model_mode": "selected"
+    },
+    "byd-song-plus": {
+      "make": "byd",
+      "models": [
+        "Song Plus"
+      ],
+      "model_mode": "selected"
+    },
+    "volkswagen-id-4": {
+      "make": "volkswagen",
+      "models": [
+        "ID.4"
+      ],
+      "model_mode": "selected"
+    },
+    "byd-yuan-plus-atto-3": {
+      "make": "byd",
+      "models": [
+        "Yuan Plus",
+        "Atto 3"
+      ],
+      "model_mode": "selected"
+    },
+    "zeekr-001": {
+      "make": "zeekr",
+      "models": [
+        "001"
+      ],
+      "model_mode": "selected"
+    },
+    "byd-seal": {
+      "make": "byd",
+      "models": [
+        "Seal"
+      ],
+      "model_mode": "selected"
+    },
+    "lexus-rx-350": {
+      "make": "lexus",
+      "models": [
+        "RX 350"
+      ],
+      "model_mode": "selected"
+    },
+    "lexus-rx-500": {
+      "make": "lexus",
+      "models": [
+        "RX 500h"
+      ],
+      "model_mode": "selected"
+    },
+    "lexus-tx": {
+      "make": "lexus",
+      "models": [
+        "TX"
+      ],
+      "model_mode": "selected"
+    },
+    "toyota-tacoma-trd-pro": {
+      "make": "toyota",
+      "models": [
+        "Tacoma"
+      ],
+      "model_mode": "selected"
+    },
+    "toyota-tacoma-trailhunter": {
+      "make": "toyota",
+      "models": [
+        "Tacoma"
+      ],
+      "model_mode": "selected"
+    },
+    "ford-fusion-fusion-hybrid": {
+      "make": "ford",
+      "models": [
+        "Fusion",
+        "Fusion Hybrid"
+      ],
+      "model_mode": "selected"
+    },
+    "toyota-camry": {
+      "make": "toyota",
+      "models": [
+        "Camry"
+      ],
+      "model_mode": "selected"
+    },
+    "volkswagen-jetta": {
+      "make": "volkswagen",
+      "models": [
+        "Jetta"
+      ],
+      "model_mode": "selected"
+    },
+    "toyota-rav4-rav4-hybrid": {
+      "make": "toyota",
+      "models": [
+        "RAV4",
+        "RAV4 Hybrid"
+      ],
+      "model_mode": "selected"
+    },
+    "subaru-forester": {
+      "make": "subaru",
+      "models": [
+        "Forester"
+      ],
+      "model_mode": "selected"
+    }
+  },
+  "budgets": [
+    5000,
+    7500,
+    10000,
+    12500,
+    15000,
+    20000,
+    25000,
+    30000,
+    40000,
+    50000
+  ],
+  "mileages": [
+    50000,
+    100000,
+    150000,
+    200000,
+    250000,
+    300000
+  ],
+  "engines": [
+    1,
+    1.2,
+    1.4,
+    1.5,
+    1.6,
+    1.8,
+    2,
+    2.2,
+    2.4,
+    2.5,
+    3,
+    3.5,
+    4,
+    5,
+    6
+  ],
+  "labels": {
+    "ru": {
+      "main": "Основная информация",
+      "main_help": "Укажите основные критерии. Если ещё не определились, выберите подходящий вариант «Неважно» или «Нужна помощь».",
+      "optional": "Дополнительные пожелания",
+      "optional_help": "Заполните по необходимости — это поможет точнее подобрать автомобиль. Можно оставить пустым.",
+      "autofill": "Мы заполнили параметры по выбранному автомобилю. Вы можете изменить их или добавить свои пожелания.",
+      "purchase_country_code": "Страна подбора",
+      "purchase_country_other": "Другая страна",
+      "make": "Марка автомобиля",
+      "make_other": "Другая марка",
+      "models": "Модель или модели",
+      "other_model": "Другая модель",
+      "model_help": "Можно добавить несколько моделей одной марки.",
+      "model_mode": "Как выбрать модель",
+      "selected": "Выбрать из списка",
+      "any_model": "Любая модель этой марки",
+      "add_model": "Добавить модель",
+      "remove": "Удалить",
+      "budget": "Максимальный бюджет под ключ, $",
+      "vehicle_type": "Тип кузова",
+      "year": "Год выпуска",
+      "year_any": "Год неважен",
+      "mileage": "Максимальный пробег, км",
+      "mileage_help": "Укажите полный пробег в километрах, например 109 353.",
+      "delivery_country": "Страна доставки",
+      "delivery_city": "Город доставки",
+      "delivery_city_other": "Другой город",
+      "delivery_help": "Возможность и условия доставки в выбранный город уточним при расчёте.",
+      "customer_name": "Ваше имя",
+      "contact_method": "Как с вами связаться",
+      "contact": "Контакт для связи",
+      "phone_help": "Номер с кодом страны, например +380… или +995…",
+      "telegram_help": "@username или номер телефона с кодом страны",
+      "fuel": "Топливо",
+      "drive": "Привод",
+      "engine": "Объём двигателя, л",
+      "colours": "Желаемый цвет кузова",
+      "colour_other": "Другой цвет",
+      "purchase_timing": "Когда планируете покупку",
+      "comment": "Пожелания или ссылки",
+      "comment_help": "До 3 000 символов.",
+      "choose": "Выберите вариант",
+      "help": "Нужна помощь с выбором",
+      "consult": "Нужна консультация",
+      "other_value": "Другой вариант — указать вручную",
+      "custom": "Указать вручную",
+      "search": "Поиск по списку",
+      "no_matches": "Совпадений нет. Можно указать вручную.",
+      "any": "Неважно",
+      "from": "От",
+      "to": "До",
+      "required": "Обязательно для подбора",
+      "preferred": "Желательно",
+      "priority_help": "По умолчанию пожелание учитывается как желательное. Отметьте, если это обязательное условие.",
+      "multi_help": "Можно выбрать несколько вариантов.",
+      "clarify": "Уточнить",
+      "field_error": "Проверьте значение этого поля.",
+      "range_error": "Начало диапазона должно быть не больше конца.",
+      "contact_error": "Укажите корректный контакт и код страны для номера телефона.",
+      "required_error": "Выберите вариант или заполните поле.",
+      "edit_web": "Изменить на сайте",
+      "edit_web_help": "Для изменения параметров вернитесь к форме в той же вкладке браузера. Введённые данные сохраняются на 30 минут.",
+      "km_unit": "км",
+      "character_count": "Символов: {count} из 3 000",
+      "comment_limit_error": "Сократите текст до 3 000 символов.",
+      "text_limit_error": "Введите не более 120 символов."
+    },
+    "uk": {
+      "main": "Основна інформація",
+      "main_help": "Укажіть основні критерії. Якщо ще не визначилися, оберіть «Неважливо» або «Потрібна допомога».",
+      "optional": "Додаткові побажання",
+      "optional_help": "Заповніть за потреби — це допоможе точніше підібрати автомобіль. Можна залишити порожнім.",
+      "autofill": "Ми заповнили параметри за обраним автомобілем. Ви можете змінити їх або додати свої побажання.",
+      "purchase_country_code": "Країна підбору",
+      "purchase_country_other": "Інша країна",
+      "make": "Марка автомобіля",
+      "make_other": "Інша марка",
+      "models": "Модель або моделі",
+      "other_model": "Інша модель",
+      "model_help": "Можна додати кілька моделей однієї марки.",
+      "model_mode": "Як обрати модель",
+      "selected": "Обрати зі списку",
+      "any_model": "Будь-яка модель цієї марки",
+      "add_model": "Додати модель",
+      "remove": "Видалити",
+      "budget": "Максимальний бюджет під ключ, $",
+      "vehicle_type": "Тип кузова",
+      "year": "Рік випуску",
+      "year_any": "Рік неважливий",
+      "mileage": "Максимальний пробіг, км",
+      "mileage_help": "Укажіть повний пробіг у кілометрах, наприклад 109 353.",
+      "delivery_country": "Країна доставки",
+      "delivery_city": "Місто доставки",
+      "delivery_city_other": "Інше місто",
+      "delivery_help": "Можливість та умови доставки до обраного міста уточнимо під час розрахунку.",
+      "customer_name": "Ваше ім’я",
+      "contact_method": "Як із вами зв’язатися",
+      "contact": "Контакт для зв’язку",
+      "phone_help": "Номер із кодом країни, наприклад +380… або +995…",
+      "telegram_help": "@username або номер телефону з кодом країни",
+      "fuel": "Пальне",
+      "drive": "Привід",
+      "engine": "Об’єм двигуна, л",
+      "colours": "Бажаний колір кузова",
+      "colour_other": "Інший колір",
+      "purchase_timing": "Коли плануєте купівлю",
+      "comment": "Побажання або посилання",
+      "comment_help": "До 3 000 символів.",
+      "choose": "Оберіть варіант",
+      "help": "Потрібна допомога з вибором",
+      "consult": "Потрібна консультація",
+      "other_value": "Інший варіант — указати вручну",
+      "custom": "Указати вручну",
+      "search": "Пошук у списку",
+      "no_matches": "Збігів немає. Можна вказати вручну.",
+      "any": "Неважливо",
+      "from": "Від",
+      "to": "До",
+      "required": "Обов’язково для підбору",
+      "preferred": "Бажано",
+      "priority_help": "За замовчуванням побажання враховується як бажане. Позначте, якщо це обов’язкова умова.",
+      "multi_help": "Можна обрати кілька варіантів.",
+      "clarify": "Уточнити",
+      "field_error": "Перевірте значення цього поля.",
+      "range_error": "Початок діапазону має бути не більшим за кінець.",
+      "contact_error": "Укажіть коректний контакт і код країни для номера телефону.",
+      "required_error": "Оберіть варіант або заповніть поле.",
+      "edit_web": "Змінити на сайті",
+      "edit_web_help": "Щоб змінити параметри, поверніться до форми в тій самій вкладці браузера. Уведені дані зберігаються на 30 хвилин.",
+      "km_unit": "км",
+      "character_count": "Символів: {count} із 3 000",
+      "comment_limit_error": "Скоротіть текст до 3 000 символів.",
+      "text_limit_error": "Введіть не більше 120 символів."
+    },
+    "ka": {
+      "main": "ძირითადი ინფორმაცია",
+      "main_help": "მიუთითეთ ძირითადი კრიტერიუმები. თუ ჯერ არ გადაგიწყვეტიათ, აირჩიეთ „არ აქვს მნიშვნელობა“ ან „დახმარება მჭირდება“.",
+      "optional": "დამატებითი სურვილები",
+      "optional_help": "შეავსეთ საჭიროებისამებრ — ეს ავტომობილის უფრო ზუსტად შერჩევაში დაგვეხმარება. შეგიძლიათ ცარიელი დატოვოთ.",
+      "autofill": "შერჩეული ავტომობილის პარამეტრები უკვე შევავსეთ. შეგიძლიათ შეცვალოთ ან საკუთარი სურვილები დაამატოთ.",
+      "purchase_country_code": "შერჩევის ქვეყანა",
+      "purchase_country_other": "სხვა ქვეყანა",
+      "make": "ავტომობილის მარკა",
+      "make_other": "სხვა მარკა",
+      "models": "მოდელი ან მოდელები",
+      "other_model": "სხვა მოდელი",
+      "model_help": "შეგიძლიათ ერთი მარკის რამდენიმე მოდელი დაამატოთ.",
+      "model_mode": "მოდელის არჩევა",
+      "selected": "სიიდან არჩევა",
+      "any_model": "ამ მარკის ნებისმიერი მოდელი",
+      "add_model": "მოდელის დამატება",
+      "remove": "წაშლა",
+      "budget": "მაქსიმალური სრული ბიუჯეტი, $",
+      "vehicle_type": "ძარის ტიპი",
+      "year": "გამოშვების წელი",
+      "year_any": "წელს მნიშვნელობა არ აქვს",
+      "mileage": "მაქსიმალური გარბენი, კმ",
+      "mileage_help": "მიუთითეთ სრული გარბენი კილომეტრებში, მაგალითად 109 353.",
+      "delivery_country": "მიწოდების ქვეყანა",
+      "delivery_city": "მიწოდების ქალაქი",
+      "delivery_city_other": "სხვა ქალაქი",
+      "delivery_help": "არჩეულ ქალაქში მიწოდების შესაძლებლობასა და პირობებს გაანგარიშებისას დავაზუსტებთ.",
+      "customer_name": "თქვენი სახელი",
+      "contact_method": "როგორ დაგიკავშირდეთ",
+      "contact": "საკონტაქტო მონაცემები",
+      "phone_help": "ნომერი ქვეყნის კოდით, მაგალითად +380… ან +995…",
+      "telegram_help": "@username ან ტელეფონის ნომერი ქვეყნის კოდით",
+      "fuel": "საწვავი",
+      "drive": "წამყვანი თვლები",
+      "engine": "ძრავის მოცულობა, ლ",
+      "colours": "ძარის სასურველი ფერი",
+      "colour_other": "სხვა ფერი",
+      "purchase_timing": "როდის გეგმავთ შეძენას",
+      "comment": "სურვილები ან ბმულები",
+      "comment_help": "მაქსიმუმ 3 000 სიმბოლო.",
+      "choose": "აირჩიეთ ვარიანტი",
+      "help": "არჩევაში დახმარება მჭირდება",
+      "consult": "კონსულტაცია მჭირდება",
+      "other_value": "სხვა ვარიანტი — ხელით შეყვანა",
+      "custom": "ხელით შეყვანა",
+      "search": "სიაში ძიება",
+      "no_matches": "დამთხვევა არ არის. შეგიძლიათ ხელით მიუთითოთ.",
+      "any": "არ აქვს მნიშვნელობა",
+      "from": "დან",
+      "to": "მდე",
+      "required": "შერჩევისთვის აუცილებელია",
+      "preferred": "სასურველია",
+      "priority_help": "სურვილი ნაგულისხმევად სასურველია. მონიშნეთ, თუ ეს აუცილებელი პირობაა.",
+      "multi_help": "შეგიძლიათ რამდენიმე ვარიანტი აირჩიოთ.",
+      "clarify": "დასაზუსტებელია",
+      "field_error": "შეამოწმეთ ამ ველის მნიშვნელობა.",
+      "range_error": "დიაპაზონის დასაწყისი ბოლოზე მეტი არ უნდა იყოს.",
+      "contact_error": "მიუთითეთ სწორი კონტაქტი და ტელეფონის ნომრის ქვეყნის კოდი.",
+      "required_error": "აირჩიეთ ვარიანტი ან შეავსეთ ველი.",
+      "edit_web": "საიტზე შეცვლა",
+      "edit_web_help": "პარამეტრების შესაცვლელად დაბრუნდით ფორმაში ბრაუზერის იმავე ჩანართში. შეყვანილი მონაცემები 30 წუთით ინახება.",
+      "km_unit": "კმ",
+      "character_count": "სიმბოლოები: {count} / 3 000",
+      "comment_limit_error": "შეამცირეთ ტექსტი 3 000 სიმბოლომდე.",
+      "text_limit_error": "შეიყვანეთ მაქსიმუმ 120 სიმბოლო."
+    }
+  },
+  "preference_fields": [
+    "fuel",
+    "drive",
+    "engine",
+    "colours",
+    "colour_other",
+    "purchase_timing"
+  ]
+}

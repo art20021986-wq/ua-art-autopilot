@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Авто під замовлення — UA ART COMPANY</title>
-  <link rel="stylesheet" href="order.css?v=20260927.2">
-  <script type="module" src="order.js?v=20260927.2"></script>
+  <link rel="stylesheet" href="order.css?v=20260927.10">
+  <script type="module" src="order.js?v=20260927.10"></script>
 </head>
 <body>
   <main class="ua-order" id="ua-order" data-site-no-translate>
@@ -22,18 +22,16 @@
     </section>
     <form id="order-form" hidden>
       <p id="selection" class="selection"></p>
-      <label id="other-wrap" hidden><span data-label="other">Інша модель</span><input name="other_model" minlength="2" maxlength="120"></label>
-      <div class="form-grid">
-        <label><span data-label="budget">Бюджет під ключ</span><select name="budget" required></select></label>
-        <label><span data-label="vehicle_type">Тип автомобіля</span><select name="vehicle_type" required></select></label>
-        <label><span data-label="delivery_country">Країна доставки</span><input name="delivery_country" autocomplete="country-name" minlength="2" maxlength="80" required></label>
-        <label><span data-label="delivery_city">Місто доставки</span><input name="delivery_city" autocomplete="address-level2" minlength="2" maxlength="80" required></label>
-        <label><span data-label="customer_name">Ваше ім’я</span><input name="customer_name" autocomplete="name" minlength="2" maxlength="80" required></label>
-        <label><span data-label="contact">Телефон, WhatsApp або @Telegram</span><input name="contact_value" autocomplete="tel" maxlength="80" required></label>
-      </div>
-      <label><span data-label="comment">Побажання або посилання</span><textarea name="comment" rows="3" maxlength="2000"></textarea></label>
-      <p id="consent-copy"></p>
-      <label class="consent"><input type="checkbox" name="consent" required><span data-label="consent"></span></label>
+      <p id="pref-notice" class="field-help" data-label="autofill" hidden></p>
+      <h2 data-label="main" tabindex="-1"></h2>
+      <p data-label="main_help"></p>
+      <div class="form-grid" id="main-fields"></div>
+      <details id="optional-preferences">
+        <summary data-label="optional"></summary>
+        <p data-label="optional_help"></p>
+        <div class="form-grid" id="optional-fields"></div>
+      </details>
+      <label class="consent"><input type="checkbox" name="consent" required><span id="consent-copy"></span></label>
       <button type="submit" data-label="review">Перевірте заявку</button>
     </form>
     <section id="review" hidden aria-labelledby="review-heading">
@@ -44,6 +42,7 @@
         <button type="button" id="edit" class="secondary" data-label="edit">Змінити дані</button>
         <button type="button" id="handoff" class="secondary" data-label="handoff">Продовжити в Telegram</button>
       </div>
+      <p id="handoff-link"></p>
     </section>
     <section id="receipt" hidden>
       <h2 data-label="saved">Заявку збережено</h2>

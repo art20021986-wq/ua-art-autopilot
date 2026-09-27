@@ -1,5 +1,8 @@
 """Pure customer conversation: reusable with the existing Telegram library."""
 from uuid import uuid4
+from copy import deepcopy
+from . import preference_summary
+from .preferences import directory
 
 from .catalog import COUNTRIES, LANGUAGES
 from .contract import Invalid, SCHEMA, text
@@ -13,7 +16,10 @@ def create(catalog, *, data=None):
                    budget={'code':'undecided','currency':'USD'}, vehicle_type='any',
                    delivery_country='', delivery_city='', customer_name='', contact={},
                    comment='', lang='uk', source_path='/telegram')
-    initial.update(data or {})
+    if data and data.get('schema_version') == 'ua_order_request.v2':
+        initial = deepcopy(data)
+    else:
+        initial.update(data or {})
     # The request UUID lets the server recover an already committed receipt
     # after a bot restart. It is never used as authorization on its own.
     return dict(nonce=initial['request_id'], revision=0, step='country', data=initial, receipt=None)
@@ -26,6 +32,13 @@ def callback(state, action, value=''):
 def transition(state, action, value, catalog):
     data, step = state['data'], state['step']
     if state['receipt']:
+        return
+    if data.get('schema_version') == 'ua_order_request.v2':
+        if action == 'lang' and value in LANGUAGES: data['lang'] = value
+        elif action == 'edit' and step == 'review': state['step'] = 'edit_web'
+        elif action == 'back' and step == 'edit_web': state['step'] = 'review'
+        else: raise Invalid('callback')
+        state['revision'] += 1
         return
     if action == 'lang' and value in LANGUAGES:
         data['lang'] = value
@@ -80,6 +93,16 @@ def view(state, catalog, strings, consent_text):
         return (label, callback(state,action,value))
     if state['receipt']:
         return dict(text=f'{t["saved"]}: {state["receipt"]["number"]}', buttons=[], photo=None)
+    if data.get('schema_version') == 'ua_order_request.v2':
+        labels = directory()['labels'][lang]
+        if step == 'edit_web':
+            title = labels['edit_web_help']
+            rows = [[(labels['edit_web'], f'https://www.uaart.com.ua/video/podbor.html?lang={lang}')], [button(t['back'],'back')]]
+        else:
+            title = t['review']+'\n'+'\n'.join(f'{k}: {v}' for k,v in preference_summary.pairs(data,catalog,lang))+'\n\n'+consent_text[lang]
+            rows = [[button(t['confirm'],'submit')],[button(t['edit'],'edit')]]
+        rows.append([button(label,'lang',code) for label,code in (('UA','uk'),('RU','ru'),('GE','ka'))])
+        return dict(text=title,parts=preference_summary.split_text(title),buttons=rows,photo=None)
     if step == 'country':
         title = t['choose_country']
         buttons=[button(catalog.country(c)['name'][lang],'country',c) for c in COUNTRIES]

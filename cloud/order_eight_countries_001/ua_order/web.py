@@ -5,6 +5,7 @@ import sqlite3
 from urllib.parse import parse_qs
 
 from .auth import Unauthorized, telegram_user
+from .preferences import export as preference_catalog
 from .contract import Conflict, Invalid, MAX_BYTES, decode
 from .storage import NotFound, StorageUnavailable
 from .service import Principal
@@ -56,7 +57,7 @@ class WebAdapter:
                 except Unauthorized:
                     cookie = self.sessions.create()
                     headers.append(('Set-Cookie', f'ua_order_session={cookie}; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=86400'))
-                result = dict(catalog=self.service.catalog.export(), csrf=self.sessions.csrf(cookie),
+                result = dict(catalog=self.service.catalog.export(), preferences=preference_catalog(), csrf=self.sessions.csrf(cookie),
                               consent_version=self.service.consent_version, consent_text=self.consent_text)
             elif path == '/api/orders/receipt' and method == 'GET':
                 principal = self._principal(env)
