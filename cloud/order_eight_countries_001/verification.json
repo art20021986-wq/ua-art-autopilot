@@ -18,7 +18,8 @@
       ],
       "pythonpath": "/workspace/scratch/69b74d13fd3d/qa_dependencies:cloud/order_eight_countries_001",
       "exit_code": 0,
-      "output": "----------------------------------------------------------------------\nRan 31 tests in 0.226s\n\nOK"
+      "output": "----------------------------------------------------------------------\nRan 32 tests in 0.166s\n\nOK",
+      "checked_at_utc": "2026-09-27T10:54:10.660957+00:00"
     },
     {
       "command": [
@@ -47,7 +48,7 @@
     },
     {
       "check": "Python 3.10 grammar only; not target-runtime execution",
-      "files": 16,
+      "files": 17,
       "status": "PASS"
     },
     {
@@ -81,5 +82,34 @@
     "status": "ROLLED_BACK",
     "main_ref": "d982d034eb425cb805468ed020e9764c387f7446",
     "task": "CRM-PUBLISH-VIDEO-INSTALL-20260927-R4"
+  },
+  "continuation_checked_at_utc": "2026-09-27T10:54:10.660957+00:00",
+  "current_source_read": {
+    "file": "lead_bot.py",
+    "read_at_utc": "2026-09-27T10:46:28.529Z",
+    "utf8_bytes": 100314,
+    "sha256": "27270e38f1b7ed913140127231149b6d862876f3b3a02a58c4a852b40ce8a3f8",
+    "matches_preflight_20260927T0831Z": true,
+    "private_source_published": false,
+    "registration_boundary": "after app.handlers.clear and client_ui.register, before return app",
+    "missing_current_sources": [
+      "client_ui.py",
+      "team_bot.py",
+      "www_uaart_com_ua_wsgi.py"
+    ]
+  },
+  "adapter_chain_test": {
+    "status": "PASS",
+    "route": [
+      "WSGI handoff",
+      "customer Telegram adapter review",
+      "confirm and duplicate confirm",
+      "flat CRM list",
+      "CRM detail",
+      "outbox deliver",
+      "no second outbox delivery"
+    ],
+    "real_messages_sent": false,
+    "production_write": false
   }
 }
