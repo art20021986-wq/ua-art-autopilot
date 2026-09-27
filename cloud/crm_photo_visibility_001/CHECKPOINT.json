@@ -1,0 +1,25 @@
+{
+  "task": "CRM-HIDDEN-PHOTO-UA0023-20260927",
+  "status": "CANDIDATE_TESTED_NOT_INSTALLED_EMERGENCY_HALT",
+  "target": "UA-0023",
+  "crm_id": 33,
+  "source_photos": 38,
+  "hidden_identities": 1,
+  "hidden_ledger_filename": "001.jpg",
+  "cause": "Both public photo selectors ignore existing CRM hidden_photos",
+  "local_tests": 12,
+  "local_tests_status": "PASS",
+  "production_sources_changed": false,
+  "crm_changed": false,
+  "public_photo_removed": false,
+  "publication_acceptance": "NOT_RUN",
+  "deployment_blocker": {
+    "task_id": "CRM-PUBLISH-VIDEO-INSTALL-20260927-R4",
+    "run_id": "36308311986",
+    "state": "EMERGENCY_HALT",
+    "halted_at": "2026-09-27T09:32:39Z",
+    "rollback": "NOT_PERFORMED",
+    "error": "REMOTE_ROLLBACK:TransportError:BOT_STATE_TIMEOUT"
+  },
+  "continuation": "README.md"
+}
