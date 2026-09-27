@@ -118,6 +118,7 @@ def run(operation=None):
         accepted(value, 'rollback', run_id, backup_sha)
         if value.get('restored') is not True or value.get('crm_unchanged') is not True or value.get('crm_resume', {}).get('enabled') is not True:
             raise RuntimeError('ROLLBACK_INCOMPLETE')
+        public_verify(api, bundle, backup_sha, {'site_write':False})
         receipt = {**bindings, 'schema_version': 'UA-ART-PRODUCTION-ROLLBACK-RECEIPT-1',
                    'operation': 'rollback', 'status': 'ROLLED_BACK', 'rollback': 'PASS',
                    'restored': True, 'unexpected_changes': 0, 'protected_files_unchanged': True,

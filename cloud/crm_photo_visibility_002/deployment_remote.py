@@ -113,8 +113,8 @@ def prepare(directory):
                        'after':sha(value), 'mode':'preserve' if name in PUBLIC_SHA256 else mode}
         if before is not None: atomic(directory/'before'/name,before,mode)
         atomic(directory/'after'/name,value,mode)
-    # A source-only plan stays valid across legitimate operator edits. Actual
-    # CRM/page snapshots are captured again under locks at the write boundary.
+    # Source and affected page bytes are pinned to the reviewed preview.
+    # Protected CRM/page snapshots are captured under locks at the write boundary.
     plan = {'schema_version':'CRM-PHOTO-VISIBILITY-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':bool(PUBLIC_SHA256),
             'pending_requests_preserved':True}
@@ -262,12 +262,25 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
     observed=api.bot()
     install_journal=directory/'journal-install.json'
     owner=json.loads(read(install_journal)) if install_journal.exists() else {}
+    if (mode=='rollback' and owner.get('backup_sha256')==backup_sha
+            and owner.get('stage')=='FINISHED' and owner.get('writes_started') is False
+            and owner.get('result',{}).get('status')=='FAIL'):
+        # Exact journal proof: validation failed before the first source/page
+        # write. Restoring stale backup bytes would erase someone else's edit.
+        resumed=api.set_bot(True)
+        result={'status':'PASS','restored':True,'crm_unchanged':True,
+                'protected_files_unchanged':True,'crm_resume':resumed,
+                'rollback_scope':'NO_FILE_WRITES_STARTED_JOURNAL_PROOF',
+                'backup_manifest_sha256':backup_sha,'plan_sha256':expected_plan}
+        atomic(journal,canonical({'stage':'FINISHED','mode':mode,
+                                 'backup_sha256':backup_sha,'result':result}))
+        return result
     owned_pause=(mode=='rollback' and owner.get('backup_sha256')==backup_sha
                  and owner.get('stage') in ('PAUSE_INTENT','APPLYING','RESUME','FINISHED'))
     if not previous and not owned_pause and (observed.get('enabled') is not True
             or str(observed.get('state')).lower()!='running'):
         raise DeploymentError('BOT_NOT_RUNNING_BEFORE_PAUSE')
-    state=previous or {'stage':'PAUSE_INTENT','mode':mode,'backup_sha256':backup_sha}
+    state=previous or {'stage':'PAUSE_INTENT','mode':mode,'backup_sha256':backup_sha,'writes_started':False}
     atomic(journal,canonical(state));result=state.get('result')
     if state['stage'] not in ('RESUME','FINISHED'):
         applied=bool(previous and previous.get('stage')=='APPLYING')
@@ -281,7 +294,7 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
                             'restored':True,'interrupted_install':applied}
                 else:
                     verify_files(plan,False)
-                    state.update(stage='APPLYING',data_before=before)
+                    state.update(stage='APPLYING',data_before=before,writes_started=True)
                     atomic(journal,canonical(state));applied=True
                     try:
                         ordered=sorted(plan['files'])
