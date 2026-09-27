@@ -1,6 +1,6 @@
 {
-  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-audited",
-  "manifest_sha256": "33f97c1ddac03ddab539ec30ab2fec62e5fbd21d94e9dcb4319821a4911f279b",
+  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-v7",
+  "manifest_sha256": "069d6a2dccb63dc121ff47518a7a69602567466bcaec5bb1d04a40c8071fea74",
   "files": 16,
   "production_write": true,
   "tested_commit": "c53f133f5626eb17857d67ebacf1b818642f640f",
@@ -64,7 +64,7 @@
   "automated_acceptance": "PASS",
   "visual_acceptance": "DESKTOP VERIFIED; PHYSICAL MOBILE NOT VERIFIED",
   "release_status": "DEPLOYED",
-  "frontend_tested_commit": "2cf4efd49f30be0a08f6d5d3d7469c3f6c9b2070",
+  "frontend_tested_commit": "c2d30686e9d92533e271a9d11237a0705434c4e1",
   "deployment": {
     "authorized_by": "User: «Примени и внедри» (2026-09-27T18:41:44Z), then explicit audit-and-finish request",
     "initial_release_utc": "2026-09-27T19:13Z",
@@ -72,8 +72,8 @@
     "initial_manifest_sha256": "07d1571c34259892f2361304dbfc5422276a2262f882a9b338609e694d92338d",
     "initial_manifest": "evidence/initial-release-manifest.json",
     "audit_correction_utc": "2026-09-27T19:21Z",
-    "backup": "/home/Carix/order_preferences_backup_20260927_1919",
-    "frontend_version": "20260927.6",
+    "backup": "/home/Carix/order_preferences_backup_20260927_1954",
+    "frontend_version": "20260927.7",
     "directory_version": "20260927.5",
     "backend_at_audit_correction": "All 10 backend SHA before/after identical; runtime already reloaded and verified during initial release",
     "live_files": "16/16 SHA-256 MATCH",
@@ -83,7 +83,13 @@
     "client_bot_started_utc": "2026-09-27T19:11:48.974Z",
     "database_schema_changed": false,
     "production_test_submitted": false,
-    "verified_at_utc": "2026-09-27T19:27:19.031329+00:00"
+    "verified_at_utc": "2026-09-27T19:59:21.378164+00:00",
+    "previous_frontend_release": {
+      "backup": "/home/Carix/order_preferences_backup_20260927_1919",
+      "frontend_version": "20260927.6",
+      "verified_at_utc": "2026-09-27T19:27:19.031329+00:00"
+    },
+    "frontend_correction_utc": "2026-09-27T19:54Z"
   },
   "live_browser": {
     "browser": "Cloud Chrome",
@@ -105,6 +111,38 @@
     "evidence": [
       "evidence/live-main.jpg",
       "evidence/live-colours.jpg"
+    ]
+  },
+  "form_correction_v7": {
+    "authorized_by": "User removes priority and year-any controls and requests that selected lists do not reopen (2026-09-28 UTC+7)",
+    "specification": "PREFERENCES_V12.md: Уточнение ТЗ от 28.09.2026",
+    "changes": [
+      "Removed strict-priority controls and help text in all three languages",
+      "Removed year-any control; kept year bounds and manual input",
+      "Native select remains attached during selection; only dependent fields update",
+      "Editable legacy drafts discard removed flags; uncertain submissions retain exact payload"
+    ],
+    "automated_checks": [
+      "40-card state suite plus non-mutating legacy flag cleanup: PASS",
+      "Full RU/UA/GE DOM flow: PASS",
+      "Every select exercised retains identity and focus, is never detached and never receives a repeated programmatic focus: PASS",
+      "Model selection, deletion, filtering, manual country/make/model/city, numeric custom inputs: PASS",
+      "Review, errors and unchanged retry after lost response: PASS",
+      "3 build and 2 release-guard tests: PASS"
+    ],
+    "live_checks": [
+      "16/16 deployed file SHA-256 match",
+      "6/6 HTTPS file SHA-256 match",
+      "RU/UA/GE: zero retired controls; preserved years and make",
+      "Chrome native year picker: click, ArrowDown, Enter; closed with selected value and keyboard focus preserved",
+      "Search Toyota and Camry, choose via native picker: selected model chip shown; picker reset, search cleared and focus preserved"
+    ],
+    "backend_changed": false,
+    "dependencies_added": false,
+    "production_test_submitted": false,
+    "physical_iphone": "NOT VERIFIED; automated focus/DOM checks and live Chrome do not substitute for physical iOS",
+    "evidence": [
+      "evidence/v7-main.jpg"
     ]
   }
 }
