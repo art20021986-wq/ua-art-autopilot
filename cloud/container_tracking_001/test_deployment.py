@@ -29,8 +29,8 @@ class RecoveryTests(unittest.TestCase):
         self.root_patch.start()
         self.addCleanup(self.root_patch.stop)
         with sqlite3.connect(self.root/'crm.db') as connection:
-            connection.execute('CREATE TABLE cars(id INTEGER PRIMARY KEY, status TEXT, vin TEXT, price INTEGER)')
-            connection.execute("INSERT INTO cars VALUES(1,'archive','VIN-PRESERVED',12345)")
+            connection.execute('CREATE TABLE cars(id INTEGER PRIMARY KEY, status TEXT, vin TEXT, price INTEGER, auto_number TEXT, sea_container TEXT)')
+            connection.execute("INSERT INTO cars VALUES(1,'archive','VIN-PRESERVED',12345,'UA-0001','FBLU0045137')")
         (self.root/'protected.html').write_bytes(b'original photos and VIN')
         self.plan = {'files': {}, 'protected': {'protected.html': sha(b'original photos and VIN')},
                      'crm_sha256': remote.row_digest(remote.crm_rows()), 'counts': {'all': 0}}
@@ -46,6 +46,7 @@ class RecoveryTests(unittest.TestCase):
         remote.atomic(self.saved/'before/video/UA-0001.html', b'original photo VIN')
         remote.atomic(self.saved/'after/video/UA-0001.html', b'original photo VIN tracking')
         self.plan['files']['video/UA-0001.html'] = {'before': sha(b'original photo VIN'), 'after': sha(b'original photo VIN tracking'), 'mode': 0o644}
+        self.plan['tracking_inputs_sha256'] = sha(canonical(remote.tracking_inputs(remote.card_references())))
         self.plan_sha = sha(canonical(self.plan))
         self.manifest = {'plan': self.plan, 'plan_sha256': self.plan_sha, 'run_id':'123'}
         self.events = []
@@ -112,14 +113,36 @@ class RecoveryTests(unittest.TestCase):
             remote.restore(self.saved, self.plan)
         self.assertEqual((self.root/'ua_tracking_links.py').read_bytes(), b'policy')
 
+    def test_new_reference_after_backup_requires_fresh_plan(self):
+        with sqlite3.connect(self.root/'crm.db') as connection:
+            connection.execute("UPDATE cars SET sea_container='CSQU3054383' WHERE id=1")
+        result = self.lifecycle('install')
+        self.assertEqual(result['status'], 'FAIL')
+        self.assertIn('TRACKING_INPUTS_CHANGED', result['error'])
+        self.assertFalse((self.root/'ua_tracking_links.py').exists())
+        self.assertTrue(result['crm_resume']['enabled'])
+        self.assertEqual(remote.crm_rows()[0]['sea_container'], 'CSQU3054383')
+
+    def test_new_existing_card_after_backup_requires_fresh_plan(self):
+        with sqlite3.connect(self.root/'crm.db') as connection:
+            connection.execute("INSERT INTO cars VALUES(2,'korea','NEW-VIN',20000,'UA-0002',NULL)")
+        remote.atomic(self.root/'video/UA-0002.html', b'new owner card')
+        result = self.lifecycle('install')
+        self.assertEqual(result['status'], 'FAIL')
+        self.assertIn('TRACKING_INPUTS_CHANGED', result['error'])
+        self.assertFalse((self.root/'ua_tracking_links.py').exists())
+        self.assertTrue(result['crm_resume']['enabled'])
+        self.assertEqual((self.root/'video/UA-0002.html').read_bytes(), b'new owner card')
+
     def test_rollback_preserves_concurrent_crm_edit(self):
         self.lifecycle('install')
         with sqlite3.connect(self.root/'crm.db') as connection:
-            connection.execute('UPDATE cars SET price=99999 WHERE id=1')
+            connection.execute("UPDATE cars SET price=99999, sea_container='CSQU3054383' WHERE id=1")
         result=self.lifecycle('rollback')
         self.assertTrue(result['restored'])
         self.assertTrue(result['crm_unchanged'])
         self.assertEqual(remote.crm_rows()[0]['price'], 99999)
+        self.assertEqual(remote.crm_rows()[0]['sea_container'], 'CSQU3054383')
         self.assertEqual((self.root/'stranica.py').read_bytes(), b'original')
 
     def test_existing_card_rollback_and_drift(self):

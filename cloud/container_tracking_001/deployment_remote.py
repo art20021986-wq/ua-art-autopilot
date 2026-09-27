@@ -88,6 +88,28 @@ def row_digest(value):
     return sha(canonical(value))
 
 
+def card_references():
+    references = {}
+    for row in crm_rows():
+        code = str(row.get('auto_number') or '')
+        if not re.fullmatch(r'UA-[0-9]{4,}', code):
+            raise DeploymentError('CARD_IDENTITY')
+        if code in references:
+            raise DeploymentError('DUPLICATE_CARD_IDENTITY')
+        references[code] = row.get('sea_container')
+    return references
+
+
+def tracking_inputs(references):
+    return {folder+'/'+code+'.html':reference for code,reference in references.items()
+            for folder in ('video','site') if (ROOT/folder/(code+'.html')).exists()}
+
+
+def verify_tracking_inputs(plan):
+    if sha(canonical(tracking_inputs(card_references()))) != plan['tracking_inputs_sha256']:
+        raise DeploymentError('TRACKING_INPUTS_CHANGED')
+
+
 def prepare(directory):
     directory.mkdir(parents=True, exist_ok=False, mode=0o700)
     source = {name: read(ROOT/name) for name in SOURCE_SHA256}
@@ -104,14 +126,8 @@ def prepare(directory):
         'konteyner.py','cars_ui.py','publikaciya.py','ua_crm_public_sync.py','ua_publish_requests.py',
     }
     protected = {name:sha(read(ROOT/name)) for name in sorted(protected_names)}
-    references = {}
-    for row in crm_rows():
-        code = str(row.get('auto_number') or '')
-        if not re.fullmatch(r'UA-[0-9]{4,}', code):
-            raise DeploymentError('CARD_IDENTITY')
-        if code in references:
-            raise DeploymentError('DUPLICATE_CARD_IDENTITY')
-        references[code] = row.get('sea_container')
+    references = card_references()
+    inputs = tracking_inputs(references)
     card_codes = []
     for code, reference in sorted(references.items()):
         for folder in ('video', 'site'):
@@ -135,6 +151,7 @@ def prepare(directory):
     # Any source/card drift causes a new plan to be required before writing.
     plan = {'schema_version':'CONTAINER-TRACKING-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,'card_codes':card_codes,
+            'tracking_inputs_sha256':sha(canonical(inputs)),
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -187,6 +204,7 @@ def backup(run_id, expected_plan):
             if target.execute('PRAGMA quick_check').fetchall() != [('ok',)]:
                 raise DeploymentError('BACKUP_DATABASE_VERIFY')
             crm_snapshot = row_digest(rows(target))
+    verify_tracking_inputs(plan)
     verify_files(plan,False)
     manifest = {'plan':plan,'plan_sha256':expected_plan,'run_id':run_id,
                 'crm_rows_sha256':crm_snapshot,'database_backup_sha256':sha(read(database))}
@@ -289,6 +307,7 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
                     result={'status':'PASS' if mode=='rollback' else 'FAIL',
                             'restored':True,'interrupted_install':applied}
                 else:
+                    verify_tracking_inputs(plan)
                     verify_files(plan,False)
                     state.update(stage='APPLYING',data_before=before)
                     atomic(journal,canonical(state));applied=True
