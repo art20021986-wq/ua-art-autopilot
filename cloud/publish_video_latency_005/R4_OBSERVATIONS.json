@@ -1,0 +1,71 @@
+{
+  "task_id": "CRM-PUBLISH-VIDEO-INSTALL-20260927-R4",
+  "run_id": "36308311986",
+  "request_sha256": "4ddae39cc7597018293b3d64b9c3f5d843662932be144a7b0b3ae45fd0c2b964",
+  "observed_main": "56f0e191ccbbf2cf11c2a5b2fdc866be460bb201",
+  "installation_status": "NOT_INSTALLED",
+  "recovery_status": "FAILED_STOP_TIMEOUT_BOT_RESUMED",
+  "protected_control_state": "EMERGENCY_HALT_AND_ROLLING_BACK_PRESERVED",
+  "failure_jobs": {
+    "controller": 108590152345,
+    "rollback": 108591218757,
+    "recover": 108593142838
+  },
+  "controller_error": "HTTP_500 during GET receipt polling after provider API retries",
+  "install_remote_error": "TransportError:HTTP_502 during api.set_bot(False), before source replacement",
+  "rollback_remote_error": "TransportError:BOT_STATE_TIMEOUT before writer locks and restore",
+  "remote_terminal_receipts": {
+    "install": {
+      "status": "FAIL",
+      "safe_to_stop": true,
+      "crm_resume": {
+        "enabled": true,
+        "id": 266084,
+        "state": "running"
+      },
+      "cpu_seconds": 0.843
+    },
+    "rollback": {
+      "status": "FAIL",
+      "safe_to_stop": true,
+      "crm_resume": {
+        "enabled": true,
+        "id": 266084,
+        "state": "running"
+      },
+      "cpu_seconds": 0.691
+    }
+  },
+  "backup_manifest_sha256": "402585a2a17d3fd7ee6bd75c1d22cea23ef0ba071723611481b093daa7837fc3",
+  "bundle_sha256": "0373bad4031ccb8be9eba4a70622c52ba0c7a4f9f94717206cd3c339cce384e9",
+  "source_readonly": {
+    "observed_at_utc_minute": "2026-09-27T09:33Z",
+    "publisher_sha256": "4d1adb53cb659daa125c7480c289ad25e03a57e34d3d0c1f4e0989de1d7a8ac8",
+    "matches_original": true
+  },
+  "public_readonly": {
+    "observed_at_utc_minute": "2026-09-27T09:34Z",
+    "target": "UA-0020",
+    "canonical_card": "https://www.uaart.com.ua/video/UA-0020.html",
+    "catalog": "https://www.uaart.com.ua/video/katalog.html",
+    "server_verify_public": "PASS",
+    "browser_card_render": "PASS",
+    "photos": 55,
+    "videos": 3,
+    "manual_telegram_tap_test": "NOT_RUN"
+  },
+  "pending_temporary_installer": {
+    "task_id": 273966,
+    "mode": "install",
+    "status": "TERMINAL_FAIL_SAFE_TO_STOP_BUT_RETAINED_AFTER_CONTROLLER_DISCONNECTION",
+    "cleanup": "Exact incident receipts, command and current bot state must be verified before Actions cleanup. Do not delete an unfinished recovery owner."
+  },
+  "next": "Resolve this exact R4 failed recovery through a registered evidence-bound recovery; do not claim rollback success or clear HALT merely because source still matches. Then refresh target measurements, review the prepared R5 transport, bind a fresh request and execute all mandatory gates.",
+  "r5": {
+    "status": "PREPARED_ONLY_NOT_LAUNCHED",
+    "tests_passed": 34,
+    "bot_state_deadline_seconds": 480,
+    "remote_receipt_deadline_seconds": 1800,
+    "candidate_publisher_sha256": "3fbddc9f7a87619fd851839d1f76c60ba3ca1e266a84653898a4427fe5f53121"
+  }
+}
