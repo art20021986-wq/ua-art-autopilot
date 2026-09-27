@@ -69,6 +69,10 @@ export function preferenceErrors(v,directory) {
     else if(bounds.every(x=>x!==null)&&bounds[0]>bounds[1]) fail(field,'range_error');
   }
   if(!v.mileage.any&&parseInteger(v.mileage.max)===null) fail('mileage','field_error');
+  for(const [field,value] of [['purchase_country_code',v.purchase_country_other],['make',v.make_other],['models',v.other_model],['delivery_city',v.delivery_city.other],['colours',v.colour_other]]) {
+    if(Array.from(value).length>120) fail(field,'text_limit_error');
+  }
+  if(Array.from(v.comment).length>3000) fail('comment','comment_limit_error');
   return errors;
 }
 export function payload(values,catalog,directory,lang,requestId,consentVersion,accepted,sourcePath='/video/podbor.html') {
@@ -78,10 +82,14 @@ export function payload(values,catalog,directory,lang,requestId,consentVersion,a
   if(!result.mileage.any) result.mileage.max=parseInteger(result.mileage.max);
   if(!result.year.any) for(const bound of ['from','to']) if(result.year[bound]!==null) result.year[bound]=parseInteger(result.year[bound],1900,directory.current_year);
   if(result.engine) for(const bound of ['from','to']) if(result.engine[bound]!==null) result.engine[bound]=parseLitres(result.engine[bound]);
-  return {...result,schema_version:schema,request_id:requestId,config_version:catalog.version,preferences_version:directory.version,
+  const criteria=Object.fromEntries(directory.preference_fields.map(key=>[key,result[key]]));
+  const preferences={schema_version:1,criteria,priority:result.priority};
+  for(const key of [...directory.preference_fields,'priority']) delete result[key];
+  return {...result,preferences,schema_version:schema,request_id:requestId,config_version:catalog.version,preferences_version:directory.version,
     lang,source_path:sourcePath,consent:{accepted,version:consentVersion}};
 }
-export function summaryPairs(v,catalog,directory,lang) {
+export function summaryPairs(data,catalog,directory,lang) {
+  const v={...data,...data.preferences.criteria,priority:data.preferences.priority};
   const t=key=>directory.labels[lang][key],option=(field,key)=>directory.options[field]?.[key]?.[lang]||key;
   const num=value=>Number(value).toLocaleString(lang==='ka'?'ka-GE':lang==='uk'?'uk-UA':'ru-RU');
   const range=value=>['from','to'].filter(k=>value[k]!==null).map(k=>`${t(k)} ${value[k]}`).join(' ');
@@ -97,5 +105,5 @@ export function summaryPairs(v,catalog,directory,lang) {
   if(v.colours?.length) pairs.push(['colours',v.colours.map(x=>x==='other'?`${option('colours',x)}: ${v.colour_other||t('clarify')}`:option('colours',x)).join(', ')]);
   if(v.purchase_timing) pairs.push(['purchase_timing',option('purchase_timing',v.purchase_timing)]);
   if(v.comment) pairs.push(['comment',v.comment]);
-  return pairs.map(([key,value])=>[t(key),`${value}${v.priority[key]==='required'?` (${t('required')})`:''}`]);
+  return pairs.map(([key,value])=>[t(key),`${value}${v.priority[key]==='required_for_search'?` (${t('required')})`:''}`]);
 }

@@ -27,9 +27,10 @@ def sample(catalog):
         budget=dict(mode='limit',max=20000,currency='USD'),vehicle_type='sedan',
         delivery_country='ukraine',delivery_city=dict(code='kyiv',other=''),customer_name='Тестовый клиент',
         contact=dict(method='telegram',value='@test_user'),year={'from':2015,'to':2022,'any':False},
-        mileage=dict(max='109 353',any=False),fuel=['petrol','hybrid'],drive=['fwd'],engine={'from':1.5,'to':2.5},
-        colours=['white','other'],colour_other='',purchase_timing='quarter',comment='Нужен белый автомобиль. https://example.test/car',
-        priority={'year':'required','colours':'preferred'},lang='ru',source_path='/video/podbor.html',
+        mileage=dict(max='109 353',any=False),comment='Нужен белый автомобиль. https://example.test/car',
+        preferences={'schema_version':1,'criteria':{'fuel':['petrol','hybrid'],'drive':['fwd'],'engine':{'from':1.5,'to':2.5},
+            'colours':['white','other'],'colour_other':'','purchase_timing':'quarter'},
+            'priority':{'year':'required_for_search','colours':'preferred'}},lang='ru',source_path='/video/podbor.html',
         consent=dict(accepted=True,version='company-existing-v1'))
 
 
@@ -59,18 +60,21 @@ class PreferencesTest(OrderFixture,unittest.TestCase):
         self.assertEqual(first,second)
         stored=self.repo.detail(1)['data']
         self.assertEqual(stored['make'],'toyota');self.assertEqual(stored['mileage']['max'],109353)
-        self.assertEqual(stored['colours'],['white','other'])
-        self.assertEqual(stored['priority']['year'],'required')
+        self.assertEqual(stored['preferences']['schema_version'],1)
+        self.assertEqual(stored['preferences']['criteria']['colours'],['white','other'])
+        self.assertEqual(stored['preferences']['priority']['year'],'required_for_search')
+        self.assertNotIn('colours',stored);self.assertNotIn('priority',stored)
         self.assertEqual(self.count('order_requests'),1);self.assertEqual(self.count('order_outbox'),1)
 
     def test_required_explicit_any_and_optional_empty(self):
         self.data.update(purchase_country_code='help',make='help',models=[],model_mode='help',
             budget=dict(mode='help',max=None,currency='USD'),vehicle_type='any',
             year={'from':None,'to':None,'any':True},mileage=dict(max=None,any=True),
-            fuel=None,drive=None,engine=None,colours=None,purchase_timing=None,comment='')
+            comment='')
+        self.data['preferences']['criteria'].update(fuel=None,drive=None,engine=None,colours=None,purchase_timing=None)
         clean=self.service.normalize(self.data,Principal('web:test','site'))
-        self.assertEqual(clean['priority'],{})
-        for field in ('fuel','drive','engine','colours','purchase_timing'):self.assertIsNone(clean[field])
+        self.assertEqual(clean['preferences']['priority'],{})
+        for field in ('fuel','drive','engine','colours','purchase_timing'):self.assertIsNone(clean['preferences']['criteria'][field])
         for field,value in [('purchase_country_code',''),('make',''),('vehicle_type',''),('customer_name',''),('delivery_country','')]:
             bad=copy.deepcopy(self.data);bad[field]=value
             with self.subTest(field=field),self.assertRaises(Invalid):self.service.normalize(bad,Principal('web:test','site'))
@@ -93,13 +97,40 @@ class PreferencesTest(OrderFixture,unittest.TestCase):
             ('fuel',['petrol','any']),('fuel',['electric']),('drive',['4WD']),
             ('delivery_country','usa'),('delivery_city',{'code':'tbilisi','other':''}),
             ('contact',{'method':'phone','value':'0991234567'}),('contact',{'method':'telegram','value':'@a'}),
-            ('priority',{'condition':'required'}),('comment','x'*3001),('consent',{'accepted':1,'version':self.service.consent_version})]
+            ('priority',{'condition':'required_for_search'}),('comment','x'*3001),('consent',{'accepted':1,'version':self.service.consent_version})]
         for field,value in mutations:
-            bad=copy.deepcopy(self.data);bad[field]=value
+            bad=copy.deepcopy(self.data)
+            if field in preferences.directory()['preference_fields']:bad['preferences']['criteria'][field]=value
+            elif field=='priority':bad['preferences']['priority']=value
+            else:bad[field]=value
             with self.subTest(field=field,value=value),self.assertRaises(Invalid):normalize(bad,self.catalog,self.service.consent_version)
         bad=dict(self.data,condition='new')
         with self.assertRaises(Invalid):normalize(bad,self.catalog,self.service.consent_version)
         self.assertEqual(self.count('order_requests'),0)
+
+    def test_canonical_preferences_are_strict_and_not_duplicated(self):
+        for mutate in (
+            lambda d:d['preferences'].update(schema_version=True),
+            lambda d:d['preferences'].update(schema_version=2),
+            lambda d:d['preferences']['criteria'].update(condition='new'),
+            lambda d:d['preferences']['priority'].update(year='required'),
+            lambda d:d.update(colours=['black']),
+        ):
+            bad=copy.deepcopy(self.data);mutate(bad)
+            with self.assertRaises(Invalid):self.service.normalize(bad,Principal('web:test','site'))
+        self.assertEqual(self.count('order_requests'),0)
+
+    def test_manual_values_allow_120_characters_and_reject_121(self):
+        self.data.update(purchase_country_code='other',purchase_country_other='К'*120,make='other',make_other='М'*120,
+            model_mode='other',models=[],other_model='А'*120,delivery_city={'code':'other','other':'Г'*120})
+        receipt=self.service.submit(self.data,Principal('web:test','site'))
+        self.assertEqual(self.repo.detail(1)['data']['delivery_city']['other'],'Г'*120)
+        self.assertIn(receipt['number'],crm.detail_view(self.repo.detail(1),self.catalog)['text'])
+        for field in ('purchase_country_other','make_other','other_model','delivery_city'):
+            bad=copy.deepcopy(self.data)
+            if field=='delivery_city':bad[field]['other']='Г'*121
+            else:bad[field]='А'*121
+            with self.subTest(field=field),self.assertRaises(Invalid):self.service.normalize(bad,Principal('web:test','site'))
 
     def test_mileage_exact_units_and_grouping(self):
         for value in ['109353','109 353','109.353','109,353','109\u00a0353','109\u202f353',109353]:self.assertEqual(preferences.integer(value,'mileage'),109353)

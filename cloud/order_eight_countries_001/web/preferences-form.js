@@ -1,5 +1,5 @@
 // Native controls, localized labels and field errors. No requests or submission here.
-import {criterionKeys,criterionActive,changeMake} from './preferences-state.js?v=20260927.3';
+import {criterionKeys,criterionActive,changeMake} from './preferences-state.js?v=20260927.5';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n;};
 export class PreferenceForm {
   constructor(main,optional,directory,catalog,state,onChange) {
@@ -10,6 +10,7 @@ export class PreferenceForm {
   update(key,value){this.v[key]=value;this.state.dirty[key]=true;this.clearError(key);const priority=this.groups[key]?.querySelector('.priority-control');if(priority)priority.hidden=!criterionActive(this.v,key);this.onChange();}
   refresh(...keys){const focused=document.activeElement?.id;for(const key of keys){const next=this.group(key);this.groups[key]?.replaceWith(next);this.groups[key]=next;}if(focused)document.getElementById(focused)?.focus({preventScroll:true});}
   render(lang) {
+    clearTimeout(this.countTimer);
     this.lang=lang;this.groups={};
     const main=['purchase_country_code','make','models','budget','vehicle_type','year','mileage','delivery_country','delivery_city','customer_name','contact'];
     const optional=['fuel','drive','engine','colours','purchase_timing','comment'];
@@ -65,10 +66,10 @@ export class PreferenceForm {
     if(key==='purchase_country_code') {
       const countries=Object.fromEntries(Object.entries(this.catalog.countries).map(([k,c])=>[k,c.name[this.lang]]));
       box.append(this.select(key,{...countries,other:this.t('other_value'),help:this.t('help')},v[key],value=>{v.purchase_country_other='';this.update(key,value);this.refresh(key);}));
-      if(v[key]==='other')addInput('purchase_country_other',v.purchase_country_other,value=>{v.purchase_country_other=value;this.update(key,v[key]);});
+      if(v[key]==='other')addInput('purchase_country_other',v.purchase_country_other,value=>{v.purchase_country_other=value;this.update(key,v[key]);},{max:120});
     } else if(key==='make') {
       box.append(this.searchable(key,{...Object.fromEntries(Object.entries(this.directory.makes).map(([k,m])=>[k,m.name])),other:this.t('other_value'),help:this.t('help')},v.make,value=>{changeMake(this.state,value,this.directory);this.clearError(key);this.refresh('make','models');this.onChange();}));
-      if(v.make==='other')addInput('make_other',v.make_other,value=>{v.make_other=value;this.update(key,v.make);});
+      if(v.make==='other')addInput('make_other',v.make_other,value=>{v.make_other=value;this.update(key,v.make);},{max:120});
     } else if(key==='models') {
       box.append(this.note('model_help'));
       if(v.make==='help')box.append(el('p',this.t('help')));
@@ -104,7 +105,7 @@ export class PreferenceForm {
       const cities=Object.fromEntries(Object.entries(this.directory.cities[v.delivery_country]||{}).map(([k,val])=>[k,val[this.lang]]));
       const control=this.searchable(key,{...cities,other:this.t('other_value')},v[key].code,value=>{this.update(key,{code:value,other:''});this.refresh(key);});
       for(const input of control.querySelectorAll('input,select'))input.disabled=!v.delivery_country;
-      box.append(control);if(v[key].code==='other')addInput('delivery_city_other',v[key].other,value=>this.update(key,{code:'other',other:value}));
+      box.append(control);if(v[key].code==='other')addInput('delivery_city_other',v[key].other,value=>this.update(key,{code:'other',other:value}),{max:120});
     } else if(key==='customer_name') {
       const input=this.input(key,v[key],value=>this.update(key,value),{autocomplete:'name'});input.setAttribute('aria-labelledby',legend.id);box.append(input);
     } else if(key==='contact') {
@@ -114,27 +115,41 @@ export class PreferenceForm {
       const note=this.note(v.contact.method==='telegram'?'telegram_help':'phone_help');note.id='contact-help';box.append(input,note);
     } else if(['fuel','drive','colours'].includes(key)) {
       box.append(this.note('multi_help'));const checks=el('div',undefined,{class:'choice-grid'});
-      for(const [code,label] of Object.entries(local(key)))checks.append(this.check(`${key}-${code}`,label,(v[key]||[]).includes(code),checked=>{
+      for(const [code,label] of Object.entries(local(key))){const choice=this.check(`${key}-${code}`,label,(v[key]||[]).includes(code),checked=>{
         let values=(v[key]||[]).filter(x=>x!==code&&(!checked||x!=='any'));
         if(checked)values=code==='any'?['any']:[...values,code];
         if(key==='colours'&&!values.includes('other'))v.colour_other='';this.update(key,values.length?values:null);this.refresh(key);
-      }));box.append(checks);
+      });
+        if(key==='colours'&&options.colours[code].swatch){const swatch=el('span',undefined,{class:'colour-swatch','aria-hidden':'true'});swatch.style.backgroundColor=options.colours[code].swatch;choice.insertBefore(swatch,choice.lastChild);}
+        checks.append(choice);
+      }box.append(checks);
       if(key==='colours'&&v.colours?.includes('other'))addInput('colour_other',v.colour_other,value=>{v.colour_other=value;this.update(key,v.colours);},{max:120});
     } else if(key==='comment') {
-      const input=el('textarea',undefined,{id:'pref-comment',name:'comment',rows:4,maxlength:3000,'aria-labelledby':legend.id});input.value=v.comment;input.addEventListener('input',()=>this.update(key,input.value));box.append(input,this.note('comment_help'));
+      const input=el('textarea',undefined,{id:'pref-comment',name:'comment',rows:4,'aria-labelledby':legend.id,'aria-describedby':'comment-help comment-count'});input.value=v.comment;
+      const help=this.note('comment_help');help.id='comment-help';
+      const count=el('p','',{id:'comment-count',class:'field-help'}),announcement=el('span','',{class:'visually-hidden','aria-live':'polite','aria-atomic':'true'});
+      const updateCount=announce=>{
+        const length=Array.from(input.value).length;
+        count.textContent=this.t('character_count').replace('{count}',String(length))+(length>3000?' · '+this.t('comment_limit_error'):'');
+        count.classList.toggle('field-error',length>3000);
+        clearTimeout(this.countTimer);
+        if(announce)this.countTimer=setTimeout(()=>{if(announcement.isConnected)announcement.textContent=count.textContent;},750);
+      };
+      input.addEventListener('input',()=>{this.update(key,input.value);updateCount(true);});
+      updateCount(false);box.append(input,help,count,announcement);
     }
     // A checkbox is an explicit strict requirement; unchecked means preferred.
-    if(criterionKeys.includes(key)){const priority=this.check(`priority-${key}`,this.t('required'),v.priority[key]==='required',checked=>{v.priority[key]=checked?'required':'preferred';this.onChange();});priority.classList.add('priority-control');priority.hidden=!criterionActive(v,key);box.append(priority);}
+    if(criterionKeys.includes(key)){const priority=this.check(`priority-${key}`,this.t('required'),v.priority[key]==='required_for_search',checked=>{v.priority[key]=checked?'required_for_search':'preferred';this.onChange();});priority.classList.add('priority-control');priority.hidden=!criterionActive(v,key);box.append(priority);}
     const error=el('p','',{id:`error-${key}`,class:'field-error',role:'alert'});error.hidden=true;box.append(error);
     for(const control of box.querySelectorAll('select'))if(!control.hasAttribute('aria-label'))control.setAttribute('aria-labelledby',legend.id);
     return box;
   }
-  clearError(key){const box=this.groups[key];if(!box)return;box.querySelector('.field-error').hidden=true;for(const control of box.querySelectorAll('[aria-invalid]'))control.removeAttribute('aria-invalid');}
+  clearError(key){const box=this.groups[key];if(!box)return;box.querySelector(`#error-${key}`).hidden=true;for(const control of box.querySelectorAll('[aria-invalid]')){control.removeAttribute('aria-invalid');const ids=(control.getAttribute('aria-describedby')||'').split(' ').filter(id=>id&&id!==`error-${key}`);if(ids.length)control.setAttribute('aria-describedby',ids.join(' '));else control.removeAttribute('aria-describedby');}}
   errors(errors) {
     for(const key of Object.keys(this.groups))this.clearError(key);
     for(const [key,message] of Object.entries(errors)) {
-      const box=this.groups[key];if(!box)continue;const error=box.querySelector('.field-error');error.textContent=this.t(message);error.hidden=false;
-      const control=box.querySelector('select,input,textarea');if(control){control.setAttribute('aria-invalid','true');control.setAttribute('aria-describedby',error.id);}
+      const box=this.groups[key];if(!box)continue;const error=box.querySelector(`#error-${key}`);error.textContent=this.t(message);error.hidden=false;
+      const control=box.querySelector('select,input,textarea');if(control){control.setAttribute('aria-invalid','true');control.setAttribute('aria-describedby',[control.getAttribute('aria-describedby'),error.id].filter(Boolean).join(' '));}
     }
     const first=this.groups[Object.keys(errors)[0]];if(first){const details=first.closest('details');if(details)details.open=true;first.querySelector('select,input,textarea')?.focus();first.scrollIntoView({block:'center',behavior:'smooth'});}
   }

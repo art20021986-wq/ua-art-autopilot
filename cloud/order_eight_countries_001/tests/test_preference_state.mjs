@@ -38,7 +38,8 @@ Object.assign(values,{year:{from:2015,to:2022,any:false},mileage:{max:'109,353',
 assert.deepEqual(preferenceErrors(values,directory),{});
 for(const lang of ['ru','uk','ka']){
  const result=payload(values,catalog,directory,lang,'uuid','consent-v1',true);
- assert.equal(result.make,'hyundai');assert.deepEqual(result.models,['Sonata']);assert.equal(result.mileage.max,109353);assert.equal(result.engine.from,1.5);
+ assert.equal(result.make,'hyundai');assert.deepEqual(result.models,['Sonata']);assert.equal(result.mileage.max,109353);assert.equal(result.preferences.criteria.engine.from,1.5);
+ assert.equal(result.preferences.schema_version,1);assert.equal('engine' in result,false);assert.equal('priority' in result,false);
  assert.ok(summaryPairs(result,catalog,directory,lang).some(([k,v])=>v.includes('Sonata')));
  assert.ok(summaryPairs(result,catalog,directory,lang).some(([k,v])=>v===directory.options.colours.white[lang]));
 }

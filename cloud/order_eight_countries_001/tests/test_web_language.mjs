@@ -49,6 +49,19 @@ change('delivery_country','georgia');change('delivery_city','tbilisi');input('cu
 check('colours-white',true);check('colours-black',true);check('colours-any',true);assert.equal(state.preferences.values.colours.length,1);assert.equal(state.preferences.values.colours[0],'any');
 check('colours-white',true);assert.equal(state.preferences.values.colours.length,1);assert.equal(state.preferences.values.colours[0],'white');
 input('comment','Белый кузов. https://example.test/car');check('priority-year',true);check('consent',true);
+// Colour names and checkbox state remain accessible independently of the swatch.
+assert.equal(document.querySelectorAll('[data-field="colours"] .colour-swatch').length,13);
+assert.equal($('[name="colours-white"]').closest('label').querySelector('.colour-swatch').getAttribute('aria-hidden'),'true');
+assert.ok($('[name="colours-white"]').closest('label').textContent.includes(preferences.options.colours.white[state.lang]));
+// The limit counts Unicode code points and explains overflow without truncation.
+input('comment','🚗'.repeat(3000));assert.ok($('#comment-count').textContent.includes('3000'));
+$('#order-form').dispatchEvent(new window.Event('submit',{cancelable:true}));assert.ok(state.review);$('#edit').click();
+input('comment','🚗'.repeat(3001));$('#optional-preferences').open=false;
+$('#order-form').dispatchEvent(new window.Event('submit',{cancelable:true}));
+assert.equal(state.review,null);assert.equal($('#optional-preferences').open,true);assert.equal($('#error-comment').hidden,false);
+assert.equal($('[name="comment"]').value,'🚗'.repeat(3001));assert.equal(document.activeElement.id,'pref-comment');
+input('comment','Белый кузов. https://example.test/car');assert.equal($('#error-comment').hidden,true);
+assert.equal($('[name="comment"]').getAttribute('aria-describedby'),'comment-help comment-count');
 $('#optional-preferences').open=true;
 for(const lang of ['ru','uk','ka']){
  window.UAArtLocale.choose(lang);await flush();
@@ -65,7 +78,8 @@ input('engine-from-custom','1,5');change('engine-to','2');
 change('year-from','2024');$('#order-form').dispatchEvent(new window.Event('submit',{cancelable:true}));assert.equal($('#error-year').hidden,false);
 change('year-from','2016');
 $('#order-form').dispatchEvent(new window.Event('submit',{cancelable:true}));
-assert.ok(state.review);assert.equal(state.review.make,'toyota');assert.equal(state.review.models[0],'Camry');assert.equal(state.review.budget.max,17500);assert.equal(state.review.mileage.max,109353);assert.equal(state.review.engine.from,1.5);
+assert.ok(state.review);assert.equal(state.review.make,'toyota');assert.equal(state.review.models[0],'Camry');assert.equal(state.review.budget.max,17500);assert.equal(state.review.mileage.max,109353);assert.equal(state.review.preferences.criteria.engine.from,1.5);
+assert.equal(state.review.preferences.schema_version,1);assert.equal(state.review.preferences.priority.year,'required_for_search');assert.equal('engine' in state.review,false);
 assert.ok($('#summary').textContent.includes('Camry'));assert.ok($('#summary').textContent.includes('109'));
 $('#edit').click();assert.equal($('#order-form').hidden,false);selectModel('hyundai-sonata');
 assert.equal(state.preferences.values.make,'hyundai');assert.equal(state.preferences.values.colours[0],'white');assert.equal($('[name="budget-custom"]').value,'17 500');assert.equal($('[name="contact"]').value,'@test_user');

@@ -16,8 +16,7 @@ CRITERIA = ('purchase_country_code', 'make', 'models', 'budget', 'vehicle_type',
 FIELDS = frozenset(('schema_version', 'request_id', 'config_version', 'preferences_version',
     'purchase_country_code', 'purchase_country_other', 'make', 'make_other', 'model_mode',
     'models', 'other_model', 'budget', 'vehicle_type', 'delivery_country', 'delivery_city',
-    'customer_name', 'contact', 'year', 'mileage', 'fuel', 'drive', 'engine', 'colours',
-    'colour_other', 'purchase_timing', 'comment', 'priority', 'lang', 'source_path', 'consent'))
+    'customer_name', 'contact', 'year', 'mileage', 'comment', 'preferences', 'lang', 'source_path', 'consent'))
 
 
 @lru_cache(maxsize=1)
@@ -27,6 +26,21 @@ def directory():
 
 def export():
     return dict(directory(), current_year=datetime.now(timezone.utc).year)
+
+
+def pack(values):
+    """Store new criteria once; keep the pre-existing comment field in place."""
+    fields = directory()['preference_fields']
+    return {**{k:v for k,v in values.items() if k not in (*fields, 'priority')},
+            'preferences': {'schema_version': 1,
+                'criteria': {key:values[key] for key in fields}, 'priority': values['priority']}}
+
+
+def form_values(data):
+    """Read-only projection for shared validation and human-readable summaries."""
+    preferences = data['preferences']
+    return {**{k:v for k,v in data.items() if k != 'preferences'},
+            **preferences['criteria'], 'priority': preferences['priority']}
 
 
 def choice(value, values, field):
@@ -97,6 +111,11 @@ def normalize(data, catalog, consent_version):
     if not isinstance(data, dict) or set(data) != FIELDS or data.get('schema_version') != SCHEMA:
         raise Invalid('fields')
     config = directory()
+    preferences = record(data['preferences'], ('schema_version', 'criteria', 'priority'), 'preferences')
+    if type(preferences['schema_version']) is not int or preferences['schema_version'] != 1:
+        raise Invalid('preferences')
+    record(preferences['criteria'], config['preference_fields'], 'preferences')
+    data = form_values(data)
     if data['config_version'] != catalog.version or data['preferences_version'] != config['version']:
         raise Invalid('config_version')
     try:
@@ -109,11 +128,11 @@ def normalize(data, catalog, consent_version):
     if not consent_version or type(data['consent']) is not dict or data['consent'] != {'accepted': True, 'version': consent_version} or data['consent']['accepted'] is not True:
         raise Invalid('consent')
     country = choice(data['purchase_country_code'], (*COUNTRIES, 'other', 'help'), 'purchase_country_code')
-    result['purchase_country_other'] = text(data['purchase_country_other'], 'purchase_country_other', 2 if country == 'other' else 0, 80)
+    result['purchase_country_other'] = text(data['purchase_country_other'], 'purchase_country_other', 2 if country == 'other' else 0, 120)
     if country != 'other' and result['purchase_country_other']:
         raise Invalid('purchase_country_other')
     make = choice(data['make'], (*config['makes'], 'other', 'help'), 'make')
-    result['make_other'] = text(data['make_other'], 'make_other', 2 if make == 'other' else 0, 80)
+    result['make_other'] = text(data['make_other'], 'make_other', 2 if make == 'other' else 0, 120)
     if make != 'other' and result['make_other']:
         raise Invalid('make_other')
     mode = choice(data['model_mode'], ('selected', 'any', 'other', 'help'), 'models')
@@ -143,7 +162,7 @@ def normalize(data, catalog, consent_version):
     destination = choice(data['delivery_country'], config['options']['delivery_country'], 'delivery_country')
     city = record(data['delivery_city'], ('code','other'), 'delivery_city')
     choice(city['code'], (*config['cities'][destination], 'other'), 'delivery_city')
-    result['delivery_city'] = dict(code=city['code'], other=text(city['other'], 'delivery_city', 2 if city['code']=='other' else 0))
+    result['delivery_city'] = dict(code=city['code'], other=text(city['other'], 'delivery_city', 2 if city['code']=='other' else 0, 120))
     if city['code'] != 'other' and city['other']:
         raise Invalid('delivery_city')
     result['customer_name'] = text(data['customer_name'], 'customer_name', 2, 80)
@@ -177,7 +196,7 @@ def normalize(data, catalog, consent_version):
     priority = data['priority']
     if not isinstance(priority, dict) or set(priority) - set(CRITERIA):
         raise Invalid('priority')
-    result['priority'] = {k:choice(v, ('preferred','required'), 'priority') for k,v in priority.items()}
+    result['priority'] = {k:choice(v, ('preferred','required_for_search'), 'priority') for k,v in priority.items()}
     for field in CRITERIA:
         if result[field] is None or result[field] in ('help','any') or result[field] == ['any']:
             result['priority'].pop(field, None)
@@ -189,4 +208,4 @@ def normalize(data, catalog, consent_version):
             result['priority'].pop(field, None)
         else:
             result['priority'].setdefault(field, 'preferred')
-    return result
+    return pack(result)

@@ -1,6 +1,6 @@
 """Complete readable v2 summaries for the existing inbox and Telegram review."""
 from html import escape
-from .preferences import directory
+from .preferences import directory, form_values
 
 
 def country_label(data, catalog, lang='ru'):
@@ -11,6 +11,7 @@ def country_label(data, catalog, lang='ru'):
 
 
 def pairs(data, catalog, lang='ru'):
+    data = form_values(data)
     config = directory(); t = config['labels'][lang]
     def option(field, key): return config['options'][field][key][lang]
     def number(value): return f'{value:,}'.replace(',', ' ')
@@ -33,7 +34,7 @@ def pairs(data, catalog, lang='ru'):
         fields.append(('colours',', '.join(f'{option("colours",x)}: {data["colour_other"] or t["clarify"]}' if x=='other' else option('colours',x) for x in data['colours'])))
     if data['purchase_timing']: fields.append(('purchase_timing',option('purchase_timing',data['purchase_timing'])))
     if data['comment']: fields.append(('comment',data['comment']))
-    return [(t[key],value+(f' ({t["required"]})' if data['priority'].get(key)=='required' else '')) for key,value in fields]
+    return [(t[key],value+(f' ({t["required"]})' if data['priority'].get(key)=='required_for_search' else '')) for key,value in fields]
 
 
 def split_text(value, *, limit=3500):
