@@ -1,7 +1,7 @@
 {
   "specification": "UA-ART-ORDER-8COUNTRIES-40-001 v1.1",
-  "checked_at_utc": "2026-09-27T11:30:58.508227+00:00",
-  "status": "SERVER_ISOLATED_CANDIDATE_TESTED",
+  "checked_at_utc": "2026-09-27T12:42:00+00:00",
+  "status": "PRODUCTION_DEPLOYED_ENABLED_RUNTIME_VERIFIED",
   "production_modified": true,
   "gate_b": "NOT_PASSED",
   "python_runtime": "3.12.14",
@@ -71,11 +71,9 @@
     "manifest_sha256": "5e7a5eb79df15ce225a2eec1dcbe6e67a7e80a3b227b776e194fd802533b12b9"
   },
   "not_run": [
-    "live host integration (private current-source patch checks PASS)",
     "browser and mobile visual acceptance",
-    "live Telegram client to CRM",
-    "production inventory acceptance",
-    "production deployment and rollback"
+    "live Telegram customer submission to CRM notification",
+    "live production rollback"
   ],
   "continuation_checked_at_utc": "2026-09-27T12:01:00+00:00",
   "adapter_chain_test": {
@@ -139,7 +137,7 @@
   },
   "host_integration": {
     "specification": "UA-ART-ORDER-8COUNTRIES-40-001 v1.1",
-    "production_write": false,
+    "production_write": true,
     "gate_b": "NOT_PASSED",
     "files": {
       "lead_bot.py": {
@@ -159,12 +157,10 @@
         "after_sha256": "cb1e8b15223c429f2caa21c02be2bd8d23d2367560626ed5fba5e6a3e3417bcd"
       }
     },
-    "status": "PRIVATE_CANDIDATE_BUILT_AND_CHECKED"
+    "status": "INSTALLED",
+    "source_hashes_scope": "Fresh pre-install pins and installed file hashes verified by deploy.py"
   },
-  "release_blockers": [
-    "Approved company consent text/version not located in checked sources",
-    "Gate B visual/mobile/live/deployment and rollback checks incomplete; refresh inventory baseline at release"
-  ],
+  "release_blockers": [],
   "storage_check": {
     "primary_docs": [
       "https://www.sqlite.org/wal.html",
@@ -178,9 +174,9 @@
     "database_ui_checked_at_utc": "2026-09-27T11:38:03.207565+00:00",
     "driver": "MySQLdb import PASS on Python 3.10",
     "mysql_server_version": "8.0.46",
-    "orders_connection": "PASS: empty schema",
+    "orders_connection": "PASS: deployment runtime preflight",
     "mysql_adapter": "PASS: 9 real MySQL tests",
-    "orders_schema": "EMPTY; runtime not enabled",
+    "orders_schema": "INITIALIZED; runtime enabled",
     "test_database": "Carix$orders_test",
     "test_data": "Synthetic only; no messages"
   },
@@ -199,14 +195,19 @@
   "owner_launch_authorization": {
     "received_local": "2026-09-27T18:36:32+07:00",
     "text": "Подтверждаю ☑️ запускай",
-    "production_deployed": false,
-    "remaining": "Approved consent and remaining Gate B checks; launch permission already received"
+    "production_deployed": true,
+    "remaining": "Launch completed; remaining acceptance limitations documented separately",
+    "latest_received_local": "2026-09-27T19:16:25+07:00",
+    "latest_text": "Включай и закачивай !"
   },
-  "production_runtime_modified": false,
+  "production_runtime_modified": true,
   "server_changes": [
     "Created isolated empty Carix$orders database",
     "Created isolated empty Carix$orders_test database",
-    "Private six-file backup, CRM SQLite backup and isolated file rollback rehearsal"
+    "Private six-file backup, CRM SQLite backup and isolated file rollback rehearsal",
+    "Installed ua_order package, private configuration and static resources",
+    "Replaced six pinned host/HTML files; enabled production settings",
+    "Reloaded existing web app and restarted the existing start_safe task once"
   ],
   "server_runtime_checks": {
     "commit": "7b60d8ac1cb7e052ce92a4a7054278cce464ddb5",
@@ -231,11 +232,13 @@
     },
     "production_source_hashes": "All four pinned SHA256 values matched at 12:01 UTC",
     "real_messages_sent": false,
-    "runtime_files_changed": false
+    "runtime_files_changed": false,
+    "scope": "Isolated test run before deployment; file change status here is historical"
   },
   "review_fixes": [
     "Production runtime refuses test database before connecting",
-    "Notification lease clock refreshed after lock acquisition"
+    "Notification lease clock refreshed after lock acquisition",
+    "Deployment rollback covers new directory publication and final manifest write failures"
   ],
   "backup_rehearsal": {
     "status": "PASS",
@@ -256,5 +259,97 @@
   "local_general_tests_after_backup_guards": {
     "status": "PASS",
     "count": 45
+  },
+  "remaining_acceptance": [
+    "browser and mobile visual acceptance",
+    "live Telegram customer submission to CRM notification",
+    "live production rollback",
+    "External browser access could not be confirmed: cloud browser received 502 connection refused while server HTTPS checks returned 200"
+  ],
+  "deployment": {
+    "code_commit": "3da4acdafc41fee877cfa9c90c351cfb9ce41911",
+    "installed_at_utc": "2026-09-27T12:26:00+00:00",
+    "backup": "/home/Carix/order_release_check_20260927T1226_install",
+    "installer_status": "INSTALLED_RELOAD_REQUIRED",
+    "observed_status": "RELOADED_RUNNING",
+    "enabled": true,
+    "database": "Carix$orders",
+    "countries": 8,
+    "positions": 40,
+    "web_reload": true,
+    "existing_task_restart_count": 1,
+    "task_state": "Running",
+    "client_started_at_utc": "2026-09-27T12:33:14+00:00",
+    "team_started_at_utc": "2026-09-27T12:33:15+00:00",
+    "running_bots": 2,
+    "outbox_job_registered": "ua_order_outbox",
+    "startup_errors_in_checked_window": false,
+    "telegram_get_me": {
+      "UA_artcompany_LLC_bot": true,
+      "UA_artcompany_team_bot": true
+    },
+    "new_production_dependencies": false,
+    "real_test_messages_sent": false,
+    "consent": {
+      "source": "Previously prepared localized strings.json consent labels",
+      "version": "ua-order-contact-20260927-v1",
+      "separate_approved_company_privacy_policy_found": false
+    },
+    "http_checks": {
+      "origin": "HTTPS requests to public URLs executed on PythonAnywhere server",
+      "bootstrap": {
+        "status": 200,
+        "countries": 8,
+        "positions": 40
+      },
+      "index.html": {
+        "status": 200,
+        "bytes": 45466
+      },
+      "podbor.html": {
+        "status": 200,
+        "bytes": 26427
+      },
+      "order.js": {
+        "status": 200,
+        "bytes": 12648
+      },
+      "order.css": {
+        "status": 200,
+        "bytes": 4732
+      },
+      "kia-k5.jpg": {
+        "status": 200,
+        "bytes": 277182
+      }
+    },
+    "inventory_check": {
+      "checked_at_utc": "2026-09-27T12:42:00+00:00",
+      "comparison": "Row hashes against fresh install backup after bot restart",
+      "unchanged_tables": {
+        "cars": true,
+        "media": true,
+        "additional_specification": true,
+        "price_denylist": true
+      },
+      "row_values_exposed": false
+    },
+    "browser_visual": "NOT_RUN: 502 connection refused",
+    "live_submission_to_crm": "NOT_RUN",
+    "live_rollback": "NOT_RUN"
+  },
+  "deployment_failure_checks": {
+    "status": "PASS",
+    "count": 6,
+    "filesystem": "Real file writes in isolated temporary paths",
+    "database_and_runtime": "Test doubles only; real MySQL separately checked",
+    "cases": [
+      "normal install and rollback",
+      "last target replacement failure",
+      "module publication failure",
+      "private state publication failure",
+      "media publication failure",
+      "final manifest write failure"
+    ]
   }
 }
