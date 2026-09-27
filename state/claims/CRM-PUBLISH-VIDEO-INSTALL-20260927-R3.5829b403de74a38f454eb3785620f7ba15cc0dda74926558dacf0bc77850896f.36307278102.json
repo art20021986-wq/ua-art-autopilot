@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "dafca9783c109d8b9c2837c71237da2df8eb5463f42cffd399b01d1dca195d8d",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "STOP_AFTER_VERIFIED_ROLLBACK",
+      "at": "2026-09-27T09:03:29Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 36307278102",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "5ed61a5522acd0e1"
+    }
+  ],
   "heartbeat_at": "2026-09-27T08:55:13Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -43,7 +54,7 @@
   "production_required": true,
   "production_transaction_id": "tx-36307278102-5829b403de74a38f",
   "production_transaction_path": "state/transactions/CRM-PUBLISH-VIDEO-INSTALL-20260927-R3.5829b403de74a38f454eb3785620f7ba15cc0dda74926558dacf0bc77850896f.36307278102.json",
-  "production_transaction_status": "ROLLING_BACK",
+  "production_transaction_status": "ROLLED_BACK",
   "queue_key": "path_scope-124972f91b7dd9e4-16a460250a7392ce",
   "receipt_path": "state/receipts/CRM-PUBLISH-VIDEO-INSTALL-20260927-R3.json",
   "receipt_validation_status": "PENDING",
@@ -69,7 +80,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "ROLLED_BACK",
   "trusted_package": {
     "controller_sha256": "b91bbf65293162043490396acbb0a870a5327550ca7786b17f1416ac482ce2e2",
     "file_sha256": {
@@ -85,5 +96,5 @@
       "cloud/publish_video_latency_003/test_deployment.py": "1233f2376ce3f94c2de81ac0e28ff5d38deeaf7ea71c36d9b5429462584d8c0b"
     }
   },
-  "updated_at": "2026-09-27T08:55:47Z"
+  "updated_at": "2026-09-27T09:03:29Z"
 }
