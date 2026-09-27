@@ -13,6 +13,37 @@ from deployment_transport import API, HERE, INBOX, canonical, sha, upload_packag
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, EXPECTED_CANDIDATE
 
+R4_RUN = '36308311986'
+R4_BUNDLE = '0373bad4031ccb8be9eba4a70622c52ba0c7a4f9f94717206cd3c339cce384e9'
+R4_PLAN = 'a2c446d49dcc145a3d0e9e13790291fc0ba9dc8f39c070c9448b848890c7472f'
+R4_BACKUP = '402585a2a17d3fd7ee6bd75c1d22cea23ef0ba071723611481b093daa7837fc3'
+R4_TRIGGER = 273966
+R4_COMMAND = ('python3.10 '+INBOX+'/pubvideo_bootstrap.py --bundle '+R4_BUNDLE+
+              ' --run '+R4_RUN+' --mode install --plan '+R4_PLAN+' --backup '+R4_BACKUP)
+
+
+def retire_terminal_r4(api):
+    """Retire only the abandoned exact installer, never a live operation."""
+    status, raw = api.request('GET', 'always_on/%d/' % R4_TRIGGER, allowed=(200, 404))
+    if status == 404:
+        return
+    task = json.loads(raw)
+    if task.get('id') != R4_TRIGGER or task.get('command') != R4_COMMAND:
+        raise RuntimeError('R4_TRIGGER_IDENTITY')
+    for mode, error in [('install', 'TransportError:HTTP_502'),
+                        ('rollback', 'TransportError:BOT_STATE_TIMEOUT')]:
+        receipt = json.loads(api.file(INBOX+'/pubvideo-'+R4_BUNDLE+'/runs/'+R4_RUN+'/receipt-'+mode+'.json'))
+        expected = dict(run_id=R4_RUN, mode=mode, status='FAIL', error=error,
+                        safe_to_stop=True, crm_write=False, plan_sha256=R4_PLAN,
+                        backup_manifest_sha256=R4_BACKUP,
+                        crm_resume={'id':266084, 'enabled':True, 'state':'running'})
+        if any(receipt.get(k) != value for k, value in expected.items()):
+            raise RuntimeError('R4_RECEIPT_NOT_TERMINAL')
+    bot = api.bot()
+    if bot.get('enabled') is not True or str(bot.get('state')).lower() != 'running':
+        raise RuntimeError('R4_BOT_NOT_RUNNING')
+    api.request('DELETE', 'always_on/%d/' % R4_TRIGGER, allowed=(200, 202, 204, 404))
+
 
 def context():
     environment = os.environ
@@ -67,6 +98,8 @@ def run(operation=None):
     env, request = context()
     api = API(env['PYTHONANYWHERE_API_TOKEN'])
     run_id, task = env['UAART_RUN_ID'], env['UAART_TASK_ID']
+    if task == INSTALL_TASK and operation == 'backup':
+        retire_terminal_r4(api)
     bundle = upload_package(api)
     if task == PREVIEW_TASK:
         value = api.run('preview', run_id, bundle)

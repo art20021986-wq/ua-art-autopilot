@@ -347,5 +347,59 @@ class PublicVerificationTests(unittest.TestCase):
                 controller.public_verify(None,'a'*64,'b'*64,{})
 
 
+class RetireR4Tests(unittest.TestCase):
+    def api(self):
+        api = API('unused-test-token')
+        task = {'id': controller.R4_TRIGGER, 'command': controller.R4_COMMAND}
+        receipts = []
+        for mode, error in [('install', 'TransportError:HTTP_502'),
+                            ('rollback', 'TransportError:BOT_STATE_TIMEOUT')]:
+            receipts.append(dict(run_id=controller.R4_RUN, mode=mode, status='FAIL', error=error,
+                safe_to_stop=True, crm_write=False, plan_sha256=controller.R4_PLAN,
+                backup_manifest_sha256=controller.R4_BACKUP,
+                crm_resume={'id':266084, 'enabled':True, 'state':'running'}))
+        return api, task, receipts
+
+    def run_cleanup(self, api, task, receipts, bot=None):
+        with patch.object(api, 'request', return_value=(200, canonical(task))) as calls, \
+             patch.object(api, 'file', side_effect=[canonical(x) for x in receipts]), \
+             patch.object(api, 'bot', return_value=bot or {'enabled':True,'state':'Running'}):
+            try:
+                controller.retire_terminal_r4(api)
+            finally:
+                self.deletes = [x for x in calls.call_args_list if x.args[0]=='DELETE']
+
+    def test_exact_failed_terminal_attempt_is_retired(self):
+        self.run_cleanup(*self.api())
+        self.assertEqual(len(self.deletes), 1)
+        self.assertEqual(self.deletes[0].args[:2], ('DELETE', 'always_on/273966/'))
+
+    def test_already_absent_does_not_mutate_any_task(self):
+        api, _, _ = self.api()
+        with patch.object(api,'request',return_value=(404,b'')) as calls:
+            controller.retire_terminal_r4(api)
+        self.assertEqual(calls.call_count,1)
+        self.assertEqual(calls.call_args.args[0],'GET')
+
+    def test_identity_and_both_terminal_receipts_are_required(self):
+        for field, value in [('id',266084),('command','other command')]:
+            api,task,receipts=self.api();task[field]=value
+            with self.assertRaises(RuntimeError):self.run_cleanup(api,task,receipts)
+            self.assertEqual(self.deletes,[])
+        for index in (0,1):
+            for field,value in [('run_id','other'),('mode','other'),('status','PASS'),
+                ('error','other'),('safe_to_stop',False),('crm_write',True),
+                ('plan_sha256','0'*64),('backup_manifest_sha256','0'*64),('crm_resume',{})]:
+                with self.subTest(index=index,field=field):
+                    api,task,receipts=self.api();receipts[index][field]=value
+                    with self.assertRaises(RuntimeError):self.run_cleanup(api,task,receipts)
+                    self.assertEqual(self.deletes,[])
+
+    def test_running_bot_is_required(self):
+        for bot in ({'enabled':False,'state':'Running'},{'enabled':True,'state':'Starting'}):
+            with self.assertRaises(RuntimeError):self.run_cleanup(*self.api(),bot=bot)
+            self.assertEqual(self.deletes,[])
+
+
 if __name__ == '__main__':
     unittest.main()
