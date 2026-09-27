@@ -26,8 +26,8 @@
     "Reconcile the failed run 36268504600 against the authenticated evidence. The installation is present and the bot is Running; do not replay the original installer or mark a rollback that did not run.",
     "Prepare an explicitly registered, evidence-bound recovery for the current ROLLING_BACK transaction. The existing TASK120-only route does not cover it. Retain the consumed one-shot marker, original request, approval, nonce, ledger, failure history and backup.",
     "Correct the pinned rollback workspace omission of its ledger-bound nonce through the approved runtime update process and rehearse it. Do not alter runtime pins or weaken validations to unblock a deployment.",
-    "After recovery, create a fresh bounded installation plan for the current installed sources; deploy the group -100 callback router correction through main Actions. The original plan cannot be reused.",
-    "Verify four CRM buttons, rejected legacy callbacks without delivery-date writes, correct public catalog address, 19 active cars, preserved data, bot health, and a durable final receipt. SQL remains supplied and tested but unexecuted."
+    "After registered recovery, read cloud/stage_edit_recovery_001/README.md and CHECKPOINT.json. Create a fresh bounded two-file plan from current installed sources for the catalog row-set fix and stage-handler/worker corrections, coordinated with the pending CRM/media candidate. Deploy through main Actions; neither the original delivery plan nor the earlier router-only correction is sufficient.",
+    "Verify four current and four legacy active CRM callbacks, reactivated and future cards, drafts remaining unpublished, exact fresh CRM/public catalog inventory and stages, preserved data, public freshness/counters and bot health. The 2026-09-27 observation has 20 active CRM rows and 19 server catalog rows; do not retain yesterday's fixed 19-car acceptance target. Record a durable final receipt; no SQL migration is required for this candidate."
   ],
   "not_full_acceptance": true,
   "checkpoint_at": "2026-09-26T21:17:53.267Z",
@@ -130,5 +130,9 @@
   "installation_run_conclusion": "failure",
   "transaction_status": "ROLLING_BACK",
   "halt_active": true,
-  "automatic_retry_allowed": false
+  "automatic_retry_allowed": false,
+  "current_stage_edit_recovery": "cloud/stage_edit_recovery_001/CHECKPOINT.json",
+  "stage_edit_recovery_status": "CANDIDATE_TESTED_BLOCKED_RECOVERY_AND_CPU",
+  "stage_edit_recovery_observation_at": "2026-09-27T05:07:18Z"
 }
+

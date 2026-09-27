@@ -34,3 +34,16 @@ DELIVERY_STATUS_SQL: Supplied and tested; not executed on live CRM. Two archived
 DELIVERY_STATUS_NEXT: Read cloud/delivery_status_001/CONTINUATION.json and reconciliation_evidence_20260926.json. Resolve current transaction through registered manual recovery, correct and rehearse nonce copying in the rollback runtime, then create a fresh plan and install the router fix through main Actions. Do not replay the old installer, clear HALT without reconciliation, or repurpose TASK120-only recovery.
 DELIVERY_STATUS_CONTINUATION: Existing automation 6ab80e71aa688191868f657b5631fcae remains enabled. It must inspect current recovery state before doing any installation.
 DELIVERY_STATUS_FULL_ACCEPTANCE: NO
+
+STAGE_EDIT_RECOVERY_TASK: UA-ART-STAGE-EDIT-RECOVERY-001
+STAGE_EDIT_RECOVERY_CHECKPOINT: 2026-09-27T05:07:18Z
+STAGE_EDIT_RECOVERY_STATUS: CANDIDATE_TESTED_BLOCKED_RECOVERY_AND_CPU
+STAGE_EDIT_RECOVERY_LIVE: Read-only observation: UA-0021 is published=1, status=sea_loaded in CRM but absent from server catalog. CRM has 20 active rows; server catalog has 19. These supersede yesterday's fixed acceptance count; use fresh CRM inventory for verification.
+STAGE_EDIT_RECOVERY_CAUSE: publikaciya._ua9_sobrat_katalog returns archived rows although renderer and transaction validator use active rows, causing CATALOG_ROW_SET_MISMATCH and rollback (UA-0021 log 2026-09-27 04:51:50 UTC). Stage-only patch also rejects missing reactivated cars with CATALOG_PUBLISHED_SET_MISMATCH.
+STAGE_EDIT_RECOVERY_FIX: Source-pinned two-file candidate uses one active publication inventory, routes stage changes through the existing durable publisher and accepts old valid active-stage callbacks before legacy handlers. Drafts remain unpublished; removed/unknown status policy remains hidden.
+STAGE_EDIT_RECOVERY_TESTS: 18 regression tests and 7 existing policy tests PASS. Exact installed source reconstruction and candidate compile PASS. Full live rehearsal and public acceptance NOT_RUN.
+STAGE_EDIT_RECOVERY_BLOCKERS: Existing EMERGENCY_HALT / ROLLING_BACK transaction requires registered recovery and nonce-complete rollback rehearsal. CPU approximately 8576.84/5000 seconds at 04:54 UTC; next reset 08:37:11 UTC. Quota reset alone is insufficient.
+STAGE_EDIT_RECOVERY_PRODUCTION_TOUCHED: NO live source, HTML, CRM records or bot restart by this task.
+STAGE_EDIT_RECOVERY_NEXT: cloud/stage_edit_recovery_001/README.md and CHECKPOINT.json. After registered recovery, use a fresh bounded two-file plan through main Actions. Do not replay the original installer, reset sync state or clear HALT without reconciliation. Coordinate overlapping source changes with the pending CRM/media repair.
+STAGE_EDIT_RECOVERY_FULL_ACCEPTANCE: NO
+
