@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "33cd8a2883b017901ba47c9cc390fc447514be1218a712a0ca597785b2130036",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T06:56:13Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-09-27T07:01:24Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "36301475826",
     "task_id": "CRM-ONECLICK-INSTALL-20260927",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-36301475826-573f3b9d563be7f8",
   "production_transaction_path": "state/transactions/CRM-ONECLICK-INSTALL-20260927.573f3b9d563be7f8af7e5b20f9ccc91672094bdef207e0202779fef716caa347.36301475826.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-ONECLICK-INSTALL-20260927.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/crm_oneclick_release_001/ui_handlers.py": "9f5fa8e0a3da0a3a07db6042b3103d899972fdec781f28824ec810bd69cb61f4"
     }
   },
-  "updated_at": "2026-09-27T06:56:13Z"
+  "updated_at": "2026-09-27T07:01:24Z"
 }
