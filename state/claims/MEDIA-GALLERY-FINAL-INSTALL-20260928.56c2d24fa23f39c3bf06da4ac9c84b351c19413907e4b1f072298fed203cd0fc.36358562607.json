@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "9be56d3dbf58f20b21aa9e3a3265ef6926dc658e81187620a91c978e823cbf88",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T23:30:37Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-09-27T23:42:25Z",
+  "heartbeat_at": "2026-09-27T23:42:25Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "36358562607",
     "task_id": "MEDIA-GALLERY-FINAL-INSTALL-20260928",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 1912.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 76.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-36358562607-56c2d24fa23f39c3",
   "production_transaction_path": "state/transactions/MEDIA-GALLERY-FINAL-INSTALL-20260928.56c2d24fa23f39c3bf06da4ac9c84b351c19413907e4b1f072298fed203cd0fc.36358562607.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/MEDIA-GALLERY-FINAL-INSTALL-20260928.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "8792b2138f74b4b2554f611fc73858526b5741585a025800af2b193b2b564a6d",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MEDIA-GALLERY-FINAL-INSTALL-20260928.json",
   "request_sha256": "56c2d24fa23f39c3bf06da4ac9c84b351c19413907e4b1f072298fed203cd0fc",
   "resource_locks": [
@@ -90,7 +113,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "3d1a41b03e4db10a953869ab4eaec7a8f33892d0898902bb92311c398b6ec539",
     "file_sha256": {
@@ -110,5 +133,5 @@
       "cloud/media_gallery_final_001/ua_media_styles.py": "2c365fb7863dfe3e920320c71f315e167fc8534198f0d9a7699816d9d96e6195"
     }
   },
-  "updated_at": "2026-09-27T23:30:37Z"
+  "updated_at": "2026-09-27T23:42:25Z"
 }
