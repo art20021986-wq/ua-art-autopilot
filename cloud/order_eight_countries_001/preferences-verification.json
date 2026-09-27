@@ -3,15 +3,40 @@
   "manifest_sha256": "f6ec4c5af577f63b1a65479575a4a4da4f936ddd8cb11385e77b34779f1989af",
   "files": 16,
   "production_write": false,
+  "tested_commit": "a78e4835adb3a16e479a9629a359b0b63b88fe94",
+  "server_verified_at_utc": "2026-09-27T17:44:00Z",
   "tests": {
     "python": 57,
+    "server_python": {
+      "version": "3.10",
+      "ptb_version": "22.8",
+      "passed": 57,
+      "tmpdir": "/dev/shm",
+      "filesystem": "tmpfs",
+      "note": "The initial run had 56 passes and one SQLite runtime guard error because /tmp is NFS. The full rerun on local tmpfs passed; production safeguards were unchanged.",
+      "evidence": "evidence/server-tests.jpg"
+    },
+    "mysql": {
+      "database": "Carix$orders_test",
+      "result": "PASS",
+      "real_messages_sent": false,
+      "production_write": false,
+      "cleanup": "only this run's UUID and owner rows, completed before PASS",
+      "checks": [
+        "concurrent v2 submit: one row and outbox",
+        "all final preferences survive MySQL utf8mb4 roundtrip",
+        "3000 supplementary Unicode characters preserved",
+        "owned receipt after commit",
+        "full website-to-Telegram draft and review",
+        "complete split owner-inbox detail"
+      ]
+    },
     "js": "pure state, legacy routes, full DOM flow",
     "prepublication_rollback": "exact",
     "postpublication_rollback": "frontend restored, compatible v2 readers retained"
   },
   "pending": [
-    "Safari/iPhone and mobile browser visual review",
-    "isolated server runtime / MySQL integration",
+    "Safari/iPhone, Chrome mobile and TikTok visual review at 320–430px",
     "owner publication command after Gate B"
   ]
 }
