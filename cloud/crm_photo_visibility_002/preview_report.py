@@ -17,11 +17,13 @@ def inspect_target(root, preview):
     if len(names) != 38 or len(visible) != 37 or set(names)-set(visible) != {'001.jpg'}:
         raise ValueError('TARGET_PHOTO_DRIFT')
     patches = {}
-    for path in sorted((preview/'before').iterdir()):
+    for path in sorted((preview/'before').rglob('*')):
+        if not path.is_file(): continue
+        relative = path.relative_to(preview/'before')
         before = path.read_text()
-        after = (preview/'after'/path.name).read_text()
-        patches[path.name] = ''.join(difflib.unified_diff(before.splitlines(True), after.splitlines(True),
-                                                        fromfile=path.name, tofile=path.name))
+        after = (preview/'after'/relative).read_text()
+        patches[str(relative)] = ''.join(difflib.unified_diff(before.splitlines(True), after.splitlines(True),
+                                                        fromfile=str(relative), tofile=str(relative)))
     public = {}
     for name in ('video', 'site'):
         directory = root/name

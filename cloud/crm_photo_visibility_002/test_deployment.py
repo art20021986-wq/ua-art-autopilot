@@ -152,6 +152,20 @@ class RecoveryTests(unittest.TestCase):
         self.lifecycle('install');self.lifecycle('rollback')
         self.assertEqual(ledger.read_bytes(),b'pending publication must survive')
 
+    def test_reviewed_page_content_preserves_its_existing_permissions(self):
+        name='video/UA-0023.html'
+        before=b'38 photos';after=b'37 photos'
+        self.plan['files'][name]={'before':sha(before),'after':sha(after),'mode':'preserve'}
+        for path,value in ((self.root/name,before),(self.saved/'before'/name,before),(self.saved/'after'/name,after)):
+            remote.atomic(path,value,0o664)
+        self.plan_sha=sha(canonical(self.plan));self.manifest['plan_sha256']=self.plan_sha
+        self.assertTrue(self.lifecycle('install')['installed'])
+        self.assertEqual((self.root/name).read_bytes(),after)
+        self.assertEqual((self.root/name).stat().st_mode&0o777,0o664)
+        self.assertTrue(self.lifecycle('rollback')['restored'])
+        self.assertEqual((self.root/name).read_bytes(),before)
+        self.assertEqual((self.root/name).stat().st_mode&0o777,0o664)
+
     def test_wrong_backup_run_is_rejected_before_pause(self):
         self.manifest['run_id']='456'
         with self.assertRaisesRegex(remote.DeploymentError,'INSTALL_PLAN_IDENTITY'):
@@ -345,6 +359,17 @@ class PublicVerificationTests(unittest.TestCase):
         with patch.object(controller.urllib.request,'urlopen',side_effect=urllib.error.URLError('offline')):
             with self.assertRaises(urllib.error.URLError):
                 controller.public_verify(None,'a'*64,'b'*64,{})
+
+    def test_published_pages_must_match_reviewed_candidate_bytes(self):
+        content=b'<html>'+b'x'*300+b'</html>'
+        plan={'site_write':True,'files':{name:{'after':sha(content)} for name in
+              ('video/UA-0023.html','video/katalog.html','video/index.html')}}
+        with patch.object(controller.urllib.request,'urlopen',side_effect=self.response):
+            self.assertEqual(controller.public_verify(None,'a'*64,'b'*64,plan)['/video/UA-0023.html'],
+                             'EXACT_PUBLISHED_BYTES_PASS')
+            plan['files']['video/UA-0023.html']['after']='c'*64
+            with self.assertRaisesRegex(RuntimeError,'PUBLIC_TARGET_HASH'):
+                controller.public_verify(None,'a'*64,'b'*64,plan)
 
 
 

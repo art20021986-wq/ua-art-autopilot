@@ -110,7 +110,7 @@ def prepare(directory):
         before = source.get(name)
         mode = stat.S_IMODE((ROOT/name).stat().st_mode) if before is not None else 0o644
         files[name] = {'before':sha(before) if before is not None else None,
-                       'after':sha(value), 'mode':mode}
+                       'after':sha(value), 'mode':'preserve' if name in PUBLIC_SHA256 else mode}
         if before is not None: atomic(directory/'before'/name,before,mode)
         atomic(directory/'after'/name,value,mode)
     # A source-only plan stays valid across legitimate operator edits. Actual
@@ -150,6 +150,9 @@ def load_backup(digest):
         for prefix, key in (('before', 'before'), ('after', 'after')):
             if item[key] is not None and sha(read(directory/prefix/relative)) != item[key]:
                 raise DeploymentError('BACKUP_FILE_CHANGED')
+            if item[key] is not None and item['mode']=='preserve':
+                if stat.S_IMODE((directory/prefix/relative).stat().st_mode)!=manifest['preserved_modes'][relative]:
+                    raise DeploymentError('BACKUP_MODE_CHANGED')
     return directory, manifest
 
 
@@ -171,7 +174,9 @@ def backup(run_id, expected_plan):
             crm_snapshot = row_digest(rows(target))
     verify_files(plan,False)
     manifest = {'plan':plan,'plan_sha256':expected_plan,'run_id':run_id,
-                'crm_rows_sha256':crm_snapshot,'database_backup_sha256':sha(read(database))}
+                'crm_rows_sha256':crm_snapshot,'database_backup_sha256':sha(read(database)),
+                'preserved_modes':{name:stat.S_IMODE((workspace/'before'/name).stat().st_mode)
+                                   for name,item in plan['files'].items() if item['mode']=='preserve'}}
     digest = sha(canonical(manifest))
     atomic(workspace/'manifest.json',canonical(manifest))
     target = HERE/'backups'/digest
@@ -239,7 +244,11 @@ def restore(directory, plan):
     for relative,item in reversed(list(plan['files'].items())):
         path=ROOT/relative
         if item['before'] is None: path.unlink(missing_ok=True)
-        else: atomic(path,read(directory/'before'/relative),item['mode'])
+        else: atomic(path,read(directory/'before'/relative),stored_mode(directory,'before',relative,item))
+
+
+def stored_mode(directory, prefix, relative, item):
+    return stat.S_IMODE((directory/prefix/relative).stat().st_mode) if item['mode']=='preserve' else item['mode']
     verify_files(plan,False)
 
 
@@ -277,7 +286,8 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
                     try:
                         ordered=sorted(plan['files'])
                         for relative in ordered:
-                            atomic(ROOT/relative,read(directory/'after'/relative),plan['files'][relative]['mode'])
+                            atomic(ROOT/relative,read(directory/'after'/relative),
+                                   stored_mode(directory,'after',relative,plan['files'][relative]))
                         verify_files(plan,True)
                         if protected_data(plan['files'])!=before: raise DeploymentError('PROTECTED_DATA_CHANGED_DURING_INSTALL')
                         result={'status':'PASS','installed':True}
