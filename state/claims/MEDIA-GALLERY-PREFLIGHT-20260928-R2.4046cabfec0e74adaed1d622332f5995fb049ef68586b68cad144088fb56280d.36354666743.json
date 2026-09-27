@@ -7,21 +7,23 @@
   "created_at": "2026-09-27T22:20:33Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T22:20:33Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-09-27T22:23:33Z",
+  "heartbeat_at": "2026-09-27T22:23:33Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "36354666743",
     "task_id": "MEDIA-GALLERY-PREFLIGHT-20260928-R2",
     "task_sha256": "4046cabfec0e74adaed1d622332f5995fb049ef68586b68cad144088fb56280d"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-217f4eec134ecf02-06f55275c5751e16",
   "receipt_path": "state/receipts/MEDIA-GALLERY-PREFLIGHT-20260928-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "2f3cba741dcff626788d7c5f3db0867c26c2c333dbbec028739fd6118bd2559b",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MEDIA-GALLERY-PREFLIGHT-20260928-R2.json",
   "request_sha256": "4046cabfec0e74adaed1d622332f5995fb049ef68586b68cad144088fb56280d",
   "resource_locks": [
@@ -29,8 +31,38 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "8d013612304da07e6a043006af65698a1d77a1ec",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92115775488,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.519
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-27T22:20:33Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "1e8c0f3544019beefb8334b388f32b7bee2e780ee9a3539dd787996e65c0df00",
+    "file_sha256": {
+      "cloud/media_gallery_001/build_candidate.py": "90a9e0dfb66427162bbbf29ff354a5e24b584f1f72d8c0d887022e549e5a0ffb",
+      "cloud/media_gallery_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/media_gallery_001/deployment_bootstrap.py": "4c8a42e5628ab868f032a10f63ca7a59b6e1c15da0811e4428eb7c2be5e626e8",
+      "cloud/media_gallery_001/deployment_remote.py": "f5227b1ded05bd3bbf23b42e19829b9fa348f6e173be0f605cfb221f14ad8370",
+      "cloud/media_gallery_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/media_gallery_001/deployment_transport.py": "5b8854f9b166c1b7102b853fe4310ef81478f83ceff230b4f76f6236bd95fcc3",
+      "cloud/media_gallery_001/desktop_fixture.py": "65f00eb159b1f1292c61b1760c0181e9879e5662bf4cde27e4f76fb175822b26",
+      "cloud/media_gallery_001/media_migration.py": "a954fa4d191712f362a899165b5a168520ced22f7b93fff14dacc12d7a70cac5",
+      "cloud/media_gallery_001/release_constants.py": "010c2d5ce873adc94d9e974c05b50d0ecf487b111eeab67e710f4611bd3c1e3a",
+      "cloud/media_gallery_001/renderer_expected.py": "1d80e370db7069e02b9a38764a56a4a6a008db365fb984f41b1c9d08ac73f5d7",
+      "cloud/media_gallery_001/renderer_fixture.py": "7bc42f1bdebe02b7be5b7f17b52f207122697191166e7a412f8113c52e49d5f2",
+      "cloud/media_gallery_001/test_deployment.py": "68e2c0a7d896e672c855aeec88bbfeaa805e3a50f022b53e5f6379c690f54666",
+      "cloud/media_gallery_001/test_gallery.py": "4cdeb94d9eab91e532ca02cc98d3da201edbd926f8291521f9a69e51216b5bff",
+      "cloud/media_gallery_001/ua_media_gallery.py": "79875b42c5f1311197986a62add36978bf5933130cf5a9d5a770cf698269f369",
+      "cloud/media_gallery_001/ua_media_script.py": "071ac43b5aa759f9308c6e8ab067763ffcc66f297044c75c1940be32f3ae1f7e",
+      "cloud/media_gallery_001/ua_media_styles.py": "aba50c2dfbdeb3e734f8282e8f9795377e374b296a5cef80e946867f49681b2c"
+    }
+  },
+  "updated_at": "2026-09-27T22:23:33Z"
 }
