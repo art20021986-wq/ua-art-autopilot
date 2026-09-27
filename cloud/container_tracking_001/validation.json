@@ -1,5 +1,5 @@
 {
-  "tests": 32,
+  "tests": 34,
   "status": "PASS",
   "source_inputs": {
     "stranica.py": "4d710266abb2a92754ff3e3fc7de86c628760bee3c455dfbb177dedec113b1a1",
@@ -20,5 +20,7 @@
     "https://track-trace.com/container#CSQU3054383",
     "https://track-trace.com/bol#ONEYTEST123456"
   ],
-  "browser_local_preview": "NOT_RUN_FILE_PROTOCOL_RESTRICTED"
+  "browser_local_preview": "NOT_RUN_FILE_PROTOCOL_RESTRICTED",
+  "future_renderer_scenarios": 48,
+  "rollout_input_guards": "New cards and late reference changes rejected before application writes; rollback preserves newer CRM references"
 }
