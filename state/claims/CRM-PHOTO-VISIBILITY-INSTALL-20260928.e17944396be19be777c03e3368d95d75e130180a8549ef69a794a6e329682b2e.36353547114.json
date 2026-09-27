@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "1156511002231234ba1eb2254b67904604f5ef2eb2d0a845ebc52b35cadbcb61",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-09-27T22:06:22Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 36353547114",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "89c77d5dd7cf09c1"
+    }
+  ],
   "heartbeat_at": "2026-09-27T22:01:40Z",
   "heartbeat_sequence": 6,
   "identity": {
@@ -71,7 +82,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "62c05f64177188d10892b06487dd9a609a77de2ed7ff96055a72436e9e90d407",
     "file_sha256": {
@@ -92,5 +103,5 @@
       "cloud/crm_photo_visibility_002/test_visibility.py": "2224be55cbe84eec54cfa1b8f11cdf28034f0b9338abaaec71f8a435db05de21"
     }
   },
-  "updated_at": "2026-09-27T22:01:40Z"
+  "updated_at": "2026-09-27T22:06:22Z"
 }
