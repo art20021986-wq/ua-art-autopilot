@@ -1,0 +1,148 @@
+{
+  "expected_parent": "0ce2c64f92e64872217e8078cfd2fdd71206b3df",
+  "original_state_sha256": {
+    "state/AUTOPILOT_HALT.json": "4bb5e6df7313babcb05b6c3e07ca1a265c9155edf85076126a2bc9d02dddbcde",
+    "state/claims/CRM-PUBLISH-VIDEO-INSTALL-20260927-R4.4ddae39cc7597018293b3d64b9c3f5d843662932be144a7b0b3ae45fd0c2b964.36308311986.json": "fc5d104b867893ed4b36d5f2eed202b394827e94d92125d2d8780c3214dc4770",
+    "state/transactions/CRM-PUBLISH-VIDEO-INSTALL-20260927-R4.4ddae39cc7597018293b3d64b9c3f5d843662932be144a7b0b3ae45fd0c2b964.36308311986.json": "64a8ee72dc4a15ff646897e04966f0fb35821c3e66212487e72868808dfc2bfa"
+  },
+  "public": {
+    "canonical_bodies_match_server": true,
+    "observed_at": "2026-09-27T10:02:07.975570+00:00",
+    "status_codes": [
+      200,
+      200
+    ],
+    "urls": [
+      "https://www.uaart.com.ua/video/index.html",
+      "https://www.uaart.com.ua/video/katalog.html"
+    ]
+  },
+  "queue": {
+    "active_runs": [],
+    "complete": true,
+    "extra_statuses_checked": [
+      "requested"
+    ],
+    "observed_at": "2026-09-27T10:02:15.195Z",
+    "statuses_checked": [
+      "action_required",
+      "in_progress",
+      "pending",
+      "queued",
+      "waiting"
+    ]
+  },
+  "server": {
+    "backup_and_before_files_verified": true,
+    "backup_sha256": "402585a2a17d3fd7ee6bd75c1d22cea23ef0ba071723611481b093daa7837fc3",
+    "journals": {
+      "install": {
+        "backup_sha256": "402585a2a17d3fd7ee6bd75c1d22cea23ef0ba071723611481b093daa7837fc3",
+        "mode": "install",
+        "result": {
+          "crm_resume": {
+            "enabled": true,
+            "id": 266084,
+            "state": "running"
+          },
+          "error": "TransportError:HTTP_502",
+          "status": "FAIL"
+        },
+        "stage": "FINISHED"
+      },
+      "rollback": {
+        "backup_sha256": "402585a2a17d3fd7ee6bd75c1d22cea23ef0ba071723611481b093daa7837fc3",
+        "mode": "rollback",
+        "result": {
+          "crm_resume": {
+            "enabled": true,
+            "id": 266084,
+            "state": "running"
+          },
+          "error": "TransportError:BOT_STATE_TIMEOUT",
+          "status": "FAIL"
+        },
+        "stage": "FINISHED"
+      }
+    },
+    "observed_at": "2026-09-27T10:02:04.598162+00:00",
+    "plan_sha256": "a2c446d49dcc145a3d0e9e13790291fc0ba9dc8f39c070c9448b848890c7472f",
+    "protected_file_count": 19,
+    "publisher_sha256": "4d1adb53cb659daa125c7480c289ad25e03a57e34d3d0c1f4e0989de1d7a8ac8",
+    "receipt_sha256": {
+      "backup": "d4918c5bd7a22f74a4906e0dc7a3d40ca3affee5f8c203ed4035101e662b0599",
+      "install": "98c2a383ac06727b883ef10c07db03480ce91c9814ee2a73a0124d3b770a86f3",
+      "rollback": "2027b1ffe17689e72649778b4a5b19f89fca8e546b4206d06a91989411f94aad"
+    },
+    "receipts": {
+      "install": {
+        "backup_manifest_sha256": "402585a2a17d3fd7ee6bd75c1d22cea23ef0ba071723611481b093daa7837fc3",
+        "cpu_seconds": 0.843,
+        "crm_resume": {
+          "enabled": true,
+          "id": 266084,
+          "state": "running"
+        },
+        "crm_write": false,
+        "error": "TransportError:HTTP_502",
+        "mode": "install",
+        "plan_sha256": "a2c446d49dcc145a3d0e9e13790291fc0ba9dc8f39c070c9448b848890c7472f",
+        "run_id": "36308311986",
+        "safe_to_stop": true,
+        "status": "FAIL"
+      },
+      "rollback": {
+        "backup_manifest_sha256": "402585a2a17d3fd7ee6bd75c1d22cea23ef0ba071723611481b093daa7837fc3",
+        "cpu_seconds": 0.691,
+        "crm_resume": {
+          "enabled": true,
+          "id": 266084,
+          "state": "running"
+        },
+        "crm_write": false,
+        "error": "TransportError:BOT_STATE_TIMEOUT",
+        "mode": "rollback",
+        "plan_sha256": "a2c446d49dcc145a3d0e9e13790291fc0ba9dc8f39c070c9448b848890c7472f",
+        "run_id": "36308311986",
+        "safe_to_stop": true,
+        "status": "FAIL"
+      }
+    },
+    "verifier_sha256": "a4c3852479ea36d560e2bd2aeebcef3bfcb6dc2f5bcb21cf8a4f075850c3cc2b"
+  },
+  "supervisor": {
+    "active_processes": [
+      "monitor",
+      "start_safe"
+    ],
+    "bot_id": 266084,
+    "enabled": true,
+    "observed_at": "2026-09-27T10:02:07.975553+00:00",
+    "observed_process_rows": [
+      "    - row \"python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json 2026-09-22 at 08:35:15 1107.51 Kill\":",
+      "    - row \"python3.10 /home/Carix/start_safe.py 2026-09-27 at 09:32:02 64.92 Kill\":"
+    ],
+    "process_observed_at": "2026-09-27T10:02:56.354Z",
+    "state": "Running",
+    "tasks": [
+      {
+        "command": "python3.10 /home/Carix/start_safe.py",
+        "enabled": true,
+        "id": 266084,
+        "state": "Running"
+      },
+      {
+        "command": "python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json",
+        "enabled": true,
+        "id": 270984,
+        "state": "Running"
+      },
+      {
+        "command": "python3.10 /home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/pubvideo_bootstrap.py --bundle 0373bad4031ccb8be9eba4a70622c52ba0c7a4f9f94717206cd3c339cce384e9 --run 36308311986 --mode install --plan a2c446d49dcc145a3d0e9e13790291fc0ba9dc8f39c070c9448b848890c7472f --backup 402585a2a17d3fd7ee6bd75c1d22cea23ef0ba071723611481b093daa7837fc3",
+        "enabled": true,
+        "id": 273966,
+        "state": "Starting"
+      }
+    ]
+  }
+}
