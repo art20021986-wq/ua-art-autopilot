@@ -7,21 +7,23 @@
   "created_at": "2026-09-27T07:48:32Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T07:48:32Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-09-27T07:54:30Z",
+  "heartbeat_at": "2026-09-27T07:54:30Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "36304196709",
     "task_id": "CRM-PUBLISH-VIDEO-PREFLIGHT-20260927",
     "task_sha256": "30ea30d53b6c4edd02e5cd3a039c3d49bbfac377903bba9d67c33a2119eb0b6e"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-1954d6bc54305933-8dc9bf11bba6fe0e",
   "receipt_path": "state/receipts/CRM-PUBLISH-VIDEO-PREFLIGHT-20260927.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "8dcf23570976601c3a1eae69e38974de8b3f1f327b2568e1c083cc048a2629a0",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-PUBLISH-VIDEO-PREFLIGHT-20260927.json",
   "request_sha256": "30ea30d53b6c4edd02e5cd3a039c3d49bbfac377903bba9d67c33a2119eb0b6e",
   "resource_locks": [
@@ -29,8 +31,32 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "111a571364af433bcda62ad5a81e990de1c4169c",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92133490688,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.508
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-27T07:48:32Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "6030def400095cf2671bedcac10fae9bebc0031c731946d8b996a3dd1b0f87b1",
+    "file_sha256": {
+      "cloud/publish_video_latency_001/candidate_builder.py": "6a295323af12753382a01569383f4f718f98315dacc59eec55526288a2fe9f91",
+      "cloud/publish_video_latency_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/publish_video_latency_001/deployment_bootstrap.py": "c785aff97d337029258703a8cfd7687192a697012c9c6d9b11a4153b4ebb586f",
+      "cloud/publish_video_latency_001/deployment_remote.py": "a4c3852479ea36d560e2bd2aeebcef3bfcb6dc2f5bcb21cf8a4f075850c3cc2b",
+      "cloud/publish_video_latency_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/publish_video_latency_001/deployment_transport.py": "584612c0a4706a2f7d9d00d17c55cda3bc5733eb3cde870bddcd3f5cf3e46e4e",
+      "cloud/publish_video_latency_001/legacy_hook.py": "7888067a35ee734a3fb2c3bdfc03143ce676e5e5f7ad3795b8a9c0ebb9e66ece",
+      "cloud/publish_video_latency_001/release_constants.py": "4df426e9e56fd36d6865329ab9f43a6ec4fd1284a16da91e83b5a9b564b08fb5",
+      "cloud/publish_video_latency_001/test_candidate.py": "5ec65fa3a0f2d59f2c9c8d683b0bdf518a21a37940ecff28ec8d8dee047b2c3d",
+      "cloud/publish_video_latency_001/test_deployment.py": "ded239bba9eeaafb1592c8c597f87d17ba68e672ddb14995850cb5dfcd781ced"
+    }
+  },
+  "updated_at": "2026-09-27T07:54:30Z"
 }
