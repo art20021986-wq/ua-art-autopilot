@@ -7,21 +7,23 @@
   "created_at": "2026-09-27T08:27:29Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T08:27:29Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-09-27T08:32:23Z",
+  "heartbeat_at": "2026-09-27T08:32:23Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "36305025481",
     "task_id": "CRM-PHOTO-INTAKE-PREFLIGHT-20260927",
     "task_sha256": "70b7d73d075733398861fb135ebbc5f4e9e8696ec3896a78d12aa9a25b98ba2a"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-PHOTO-INTAKE-PREFLIGHT-20260927.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "4651f2e0a58559090a1d34643d9d4d8bcda961ee52ec55d157a6862f4e5e6343",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-PHOTO-INTAKE-PREFLIGHT-20260927.json",
   "request_sha256": "70b7d73d075733398861fb135ebbc5f4e9e8696ec3896a78d12aa9a25b98ba2a",
   "resource_locks": [
@@ -29,8 +31,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "0f6e34bc68e05949e8d71ca5cf3d80a3dd8a31bc",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92132421632,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.508
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-27T08:27:29Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "3c421ea82fd1b6cb67be93f359602c7becaaaf6a29839a0ec3076dbf83212023",
+    "file_sha256": {
+      "cloud/crm_photo_intake_001/build_candidate.py": "741ceea11b80ab6e209a075a2e9ed0d0566a45191a44095a17e15c0cd0b495ff",
+      "cloud/crm_photo_intake_001/crm_explicit_fields.py": "0aefa2168c286baf5ab993a4371b08a25c9ff37b6fb7ef79bf2462f12505cd02",
+      "cloud/crm_photo_intake_001/crm_intake_store.py": "dc3a08b4dd6d633bb033c2f8202a980a7cc14f3440596cf62f5b4652b28594ed",
+      "cloud/crm_photo_intake_001/crm_photo_intake.py": "79504e2fee8c22e79122b88fd83fb9981d75c4e2e040144531be11e1e1a46d88",
+      "cloud/crm_photo_intake_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_photo_intake_001/deployment_bootstrap.py": "c998a89eeb6d7df4b2f4e66872b31f318943be61907115c99a01cf2ea0984d10",
+      "cloud/crm_photo_intake_001/deployment_remote.py": "2a58c89f527522383b0ae1d728d71184e83ed7e349e35acbc9f44b7e28a7cfa6",
+      "cloud/crm_photo_intake_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_photo_intake_001/deployment_transport.py": "84250bfeefd30cded47496f23a4641a7e06713603cc870639379a372b56b5642",
+      "cloud/crm_photo_intake_001/release_constants.py": "235eef4f2629965920f98b6de04fdbd5aaca44b963f20dc443f6f95980dfa61e",
+      "cloud/crm_photo_intake_001/runtime_probe.py": "d5af30065bc98a7b3bcbbc65662069df327a7b0c9b4a0bb479b961c2fd8b0aac",
+      "cloud/crm_photo_intake_001/test_deployment.py": "6e75ffdba55ac2c2e32582eb9e263100f86bd8aa80e042f283d788501e5a064e",
+      "cloud/crm_photo_intake_001/test_intake.py": "7fde0bfd4cdae3e4b41b8c5cad9878afbc3644ab7a838ed2a433f7656b739663",
+      "cloud/crm_photo_intake_001/test_routing.py": "a885a306437af09de61595903ee921de610d0286620fb242a07b948c43c05a1d"
+    }
+  },
+  "updated_at": "2026-09-27T08:32:23Z"
 }
