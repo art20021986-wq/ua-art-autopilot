@@ -62,6 +62,7 @@ def public_verify(api, bundle, backup_sha, plan):
         results[path]='PASS'
     if plan.get('site_write'):
         for path in ('/video/UA-0023.html','/video/katalog.html','/video/index.html'):
+            if path.lstrip('/') not in plan['files']: continue
             request=urllib.request.Request('https://www.uaart.com.ua'+path+'?photo_visibility='+backup_sha[:16],
                 headers={'Cache-Control':'no-cache','User-Agent':'UAART-PhotoVisibility-Verify/1'})
             with urllib.request.urlopen(request,timeout=30) as response:
