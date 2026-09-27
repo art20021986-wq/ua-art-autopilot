@@ -28,19 +28,14 @@ export class PreferenceForm {
     for(const [code,title] of entries)select.append(el('option',title,{value:code}));
     select.value=value??'';select.addEventListener('change',()=>onChange(select.value));return select;
   }
-  searchable(name,choices,value,onChange) {
-    const wrap=el('div',undefined,{class:'search-select'}),search=this.input(`${name}-search`,'',()=>{});
-    search.type='search';search.setAttribute('aria-label',`${this.t('search')}: ${this.t(name)}`);search.placeholder=this.t('search');
-    const available=()=>typeof choices==='function'?choices():choices;
-    const select=this.select(name,available(),value,code=>{onChange(code);search.value='';refresh();});search.setAttribute('aria-controls',select.id);
+  dynamicSelect(name,choices,value,onChange) {
+    const select=this.select(name,choices(),value,code=>{onChange(code);refresh();});
     const refresh=()=>{
-      const term=search.value.toLocaleLowerCase(this.lang).trim(),selected=select.value;
-      const filtered=Object.entries(available()).filter(([code,title])=>code===selected||code==='other'||code==='help'||title.toLocaleLowerCase(this.lang).includes(term));
-      select.replaceChildren(el('option',this.t('choose'),{value:''}),...filtered.map(([code,title])=>el('option',title,{value:code})));
-      select.value=filtered.some(([code])=>code===selected)?selected:'';
+      const selected=select.value,available=Object.entries(choices());
+      select.replaceChildren(el('option',this.t('choose'),{value:''}),...available.map(([code,title])=>el('option',title,{value:code})));
+      select.value=available.some(([code])=>code===selected)?selected:'';
     };
-    search.addEventListener('input',refresh);
-    wrap.append(search,select);return {element:wrap,refresh};
+    return {element:select,refresh};
   }
   note(key){return el('p',this.t(key),{class:'field-help'});}
   check(name,title,checked,callback) {
@@ -78,7 +73,7 @@ export class PreferenceForm {
       box.append(this.select(key,{...countries,other:this.t('other_value'),help:this.t('help')},v[key],value=>{v.purchase_country_other='';this.update(key,value);renderManual();}),manual);renderManual();
     } else if(key==='make') {
       const renderManual=()=>showManual(v.make==='other','make_other',v.make_other,value=>{v.make_other=value;this.update(key,v.make);});
-      box.append(this.searchable(key,{...Object.fromEntries(Object.entries(this.directory.makes).map(([k,m])=>[k,m.name])),other:this.t('other_value'),help:this.t('help')},v.make,value=>{changeMake(this.state,value,this.directory);this.clearError(key);renderManual();this.refresh('models');this.onChange();}).element,manual);renderManual();
+      box.append(this.select(key,{...Object.fromEntries(Object.entries(this.directory.makes).map(([k,m])=>[k,m.name])),other:this.t('other_value'),help:this.t('help')},v.make,value=>{changeMake(this.state,value,this.directory);this.clearError(key);renderManual();this.refresh('models');this.onChange();}),manual);renderManual();
     } else if(key==='models') {
       box.append(this.note('model_help'));
       if(v.make==='help')box.append(el('p',this.t('help')));
@@ -93,7 +88,7 @@ export class PreferenceForm {
               const item=el('li'),button=el('button',`${model} ×`,{type:'button','aria-label':`${this.t('remove')}: ${model}`,class:'secondary'});
               button.addEventListener('click',()=>{this.update(key,v.models.filter(x=>x!==model));renderSelected();picker.refresh();});item.append(button);return item;
             }));
-            const picker=this.searchable('models',()=>Object.fromEntries((this.directory.makes[v.make]?.models||[]).filter(x=>!v.models.includes(x)).map(x=>[x,x])),'',value=>{if(value){this.update(key,[...v.models,value]);renderSelected();}});
+            const picker=this.dynamicSelect('models',()=>Object.fromEntries((this.directory.makes[v.make]?.models||[]).filter(x=>!v.models.includes(x)).map(x=>[x,x])),'',value=>{if(value){this.update(key,[...v.models,value]);renderSelected();}});
             renderSelected();details.append(selected,picker.element);
           }
           if(v.model_mode==='other')details.append(this.label('other_model',this.input('other_model',v.other_model,value=>{v.other_model=value;this.update(key,v.models);},{max:120})));
@@ -121,8 +116,8 @@ export class PreferenceForm {
     } else if(key==='delivery_city') {
       const cities=Object.fromEntries(Object.entries(this.directory.cities[v.delivery_country]||{}).map(([k,val])=>[k,val[this.lang]]));
       const renderManual=()=>showManual(v[key].code==='other','delivery_city_other',v[key].other,value=>this.update(key,{code:'other',other:value}));
-      const control=this.searchable(key,{...cities,other:this.t('other_value')},v[key].code,value=>{this.update(key,{code:value,other:''});renderManual();}).element;
-      for(const input of control.querySelectorAll('input,select'))input.disabled=!v.delivery_country;
+      const control=this.select(key,{...cities,other:this.t('other_value')},v[key].code,value=>{this.update(key,{code:value,other:''});renderManual();});
+      control.disabled=!v.delivery_country;
       box.append(control,manual);renderManual();
     } else if(key==='customer_name') {
       const input=this.input(key,v[key],value=>this.update(key,value),{autocomplete:'name'});input.setAttribute('aria-labelledby',legend.id);box.append(input);

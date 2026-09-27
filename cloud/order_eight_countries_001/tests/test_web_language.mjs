@@ -56,7 +56,8 @@ const check=(name,value)=>{const control=$(`[name="${name}"]`);control.checked=v
 assert.equal(state.lang,'ka');assert.equal(document.querySelectorAll('#countries a').length,8);assert.equal(document.querySelectorAll('#models article').length,5);
 $('#models button').click();assert.equal($('#order-form').hidden,false);assert.equal(state.preferences.values.make,'kia');
 assert.equal($('[name="budget"]').value,'');assert.equal($('[name="mileage"]').value,'');assert.equal($('[name="vehicle_type"]').value,'');
-input('make-search','Toyota');assert.ok(Array.from($('[name="make"]').options).some(x=>x.value==='toyota'));assert.equal(state.preferences.values.make,'kia');
+assert.ok(Array.from($('[name="make"]').options).some(x=>x.value==='toyota'));assert.equal(state.preferences.values.make,'kia');
+assert.equal($('[name="delivery_city"]').disabled,true);
 change('purchase_country_code','other');input('purchase_country_other','Италия');change('purchase_country_code','korea');
 change('make','other');input('make_other','Custom');change('make','toyota');
 change('model_mode','other');input('other_model','Custom');change('model_mode','selected');
@@ -91,6 +92,8 @@ for(const lang of ['ru','uk','ka']){
  window.UAArtLocale.choose(lang);await flush();
  assert.equal(state.lang,lang);assert.equal($('[data-label="main"]').textContent,preferences.labels[lang].main);
  assert.equal(document.querySelector('[name^="priority-"], [name="year-any"], [data-label="priority_help"]'),null);
+ assert.equal(document.querySelector('#order-form input[type="search"], #order-form [name$="-search"]'),null);
+ assert.equal($('[name="make"]').options.length,Object.keys(preferences.makes).length+3);
  assert.equal($('[name="customer_name"]').value,'Тестовый клиент');assert.equal($('[name="contact"]').value,'@test_user');
  assert.equal($('[name="budget-custom"]').value,'17 500');assert.equal(state.preferences.values.models[0],'Camry');
  assert.equal($('#optional-preferences').open,true);assert.equal(new URL(window.location.href).searchParams.get('lang'),lang);
@@ -122,5 +125,5 @@ window.UAArtLocale.choose('ru');await flush();assert.equal(JSON.stringify(state.
 assert.ok(Array.from(document.querySelectorAll('#ua-order button')).every(b=>b.disabled===(b.id!=='confirm')));
 $('#confirm').click();await flush();assert.equal(JSON.stringify(sent[0]),JSON.stringify(sent[1]));assert.equal($('#receipt').hidden,false);assert.equal($('#number').textContent,'TEST-001');
 assert.equal(state.receipt.status,'saved');assert.equal(state.pending,null);
-console.log('PASS: native field construction, 3 languages, search, editable autofill, multi-select, custom numeric inputs, errors/focus, optional reveal, review/edit, unchanged retry after lost response, commit receipt');
+console.log('PASS: native field construction, 3 languages, complete lists without search fields, editable autofill, multi-select, custom numeric inputs, errors/focus, optional reveal, review/edit, unchanged retry after lost response, commit receipt');
 dom.window.close();
