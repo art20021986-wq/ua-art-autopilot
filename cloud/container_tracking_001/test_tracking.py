@@ -2,11 +2,11 @@ import ast
 from html.parser import HTMLParser
 from pathlib import Path
 import unittest
-from urllib.parse import urlsplit, parse_qs, unquote
+from urllib.parse import urlsplit, parse_qs
 
 from ua_tracking_links import normalize, reference_kind, tracking_links
 from ua_tracking_widget import START, END, render_tracking
-from card_tracking import STAGE_START, STAGE_END, upgrade_card
+from card_tracking import STAGE_START, STAGE_END, Elements, upgrade_card
 from build_candidate import replace_metadata, BEGIN, AFTER
 
 
@@ -18,24 +18,26 @@ def card(meta=''):
 
 class TrackingTests(unittest.TestCase):
     def test_container_keeps_all_four_prefix_letters(self):
-        for number in ('CSQU3054383', 'MSCU6639870', 'TCLU1234567', 'ONEU1234567'):
+        for number in ('FBLU0045137', 'CSQU3054383', 'MSCU6639870', 'TCLU1234567', 'ONEU1234567'):
             self.assertEqual(reference_kind(number), 'container')
             urls = tracking_links(number)
-            self.assertFalse(any(name == 'ONE' for name, _, _ in urls))
-            self.assertEqual(unquote(urlsplit(urls[0][1]).fragment), number)
-            self.assertEqual(urlsplit(urls[0][1]).path, '/container')
+            self.assertEqual(len(urls), 1)
+            self.assertEqual(urls[0][0], 'SeaRates')
+            self.assertEqual(parse_qs(urlsplit(urls[0][1]).query), {'number': [number], 'sealine': ['AUTO']})
+            self.assertEqual(urlsplit(urls[0][1]).netloc, 'www.searates.com')
+            self.assertEqual(urlsplit(urls[0][1]).path, '/container/tracking/')
 
-    def test_one_bill_preserves_document_and_legacy_carrier_link(self):
+    def test_one_bill_preserves_full_reference_for_searates(self):
         number = 'ONEYTEST123456'
         urls = tracking_links(number)
-        self.assertEqual(parse_qs(urlsplit(urls[0][1]).query)['trakNoParam'], ['TEST123456'])
-        self.assertEqual(urlsplit(urls[1][1]).fragment, number)
-        self.assertEqual(urlsplit(urls[1][1]).path, '/bol')
+        self.assertEqual(len(urls), 1)
+        self.assertEqual(parse_qs(urlsplit(urls[0][1]).query)['number'], [number])
 
     def test_unknown_reference_does_not_claim_carrier(self):
         links = tracking_links('BOOK/2026-12345')
         self.assertNotIn('ONE', [x[0] for x in links])
-        self.assertEqual(unquote(urlsplit(links[0][1]).fragment), 'BOOK/2026-12345')
+        self.assertEqual(parse_qs(urlsplit(links[0][1]).query)['number'], ['BOOK/2026-12345'])
+        self.assertEqual(parse_qs(urlsplit(links[0][1]).query)['sealine'], ['AUTO'])
 
     def test_spacing_and_case(self):
         self.assertEqual(normalize(' csqu 305 438 3\n'), 'CSQU3054383')
@@ -53,8 +55,16 @@ class TrackingTests(unittest.TestCase):
         self.assertNotIn('<iframe', value)
         self.assertNotIn('fetch(', value)
         self.assertNotIn('setInterval', value)
-        self.assertIn('<details>', value)
-        self.assertEqual(value.count('rel="noopener noreferrer"'), 3)
+        self.assertNotIn('<script', value)
+        self.assertNotIn('<details>', value)
+        self.assertNotIn('data-copy-tracking', value)
+        self.assertEqual(value.count('rel="noopener noreferrer"'), 1)
+        self.assertIn('Отследить контейнер', value)
+        self.assertLess(value.index('ua-stage-v1-badge">'), value.index('<a '))
+        parsed = Elements(value)
+        link = parsed.with_class('ua-stage-v1-track-link')[0]
+        self.assertNotIn('https://', link['text'])
+        self.assertNotIn('SeaRates', link['text'])
         for lang in ('ru', 'uk', 'ka'):
             self.assertIn('data-' + lang + '=', value)
 
@@ -84,8 +94,9 @@ class TrackingTests(unittest.TestCase):
     def test_non_one_badge_is_upgraded(self):
         original = card('<div class="ua-stage-v1-meta"><span class="ua-stage-v1-badge">Контейнер: <b>CSQU3054383</b></span></div>')
         updated = upgrade_card(original, 'CSQU3054383')
-        self.assertEqual(updated.count('<details>'), 1)
-        self.assertNotIn('class="ua-stage-v1-badge"', updated)
+        self.assertEqual(updated.count('<a '), 1)
+        self.assertEqual(updated.count('class="ua-stage-v1-badge"'), 1)
+        self.assertEqual(upgrade_card(updated, 'CSQU3054383'), updated)
 
     def test_ambiguous_card_rejected(self):
         for original in ('', card()+card(), card().replace(STAGE_START, STAGE_END)):
