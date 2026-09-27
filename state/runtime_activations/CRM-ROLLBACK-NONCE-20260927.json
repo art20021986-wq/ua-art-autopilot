@@ -1,0 +1,26 @@
+{
+  "application_write_allowed": false,
+  "changed_runtime_paths": [
+    ".github/workflows/uaart_critical.yml",
+    ".github/workflows/uaart_transaction_watchdog.yml",
+    "automation/control_plane.py"
+  ],
+  "halt_removed": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "owner_actor_id": "321059821",
+  "owner_command": "Убери блоки и установи",
+  "previous_manifest_path": "state/runtime_activations/CRM-ROLLBACK-NONCE-20260927.previous-manifest.json",
+  "previous_manifest_sha256": "2b3b75c686a41f4f6a48b2f9e2d57da12574c2b498505150899b66645d7cd2c5",
+  "previous_mode_path": "state/runtime_activations/CRM-ROLLBACK-NONCE-20260927.previous-mode.json",
+  "previous_mode_sha256": "11af7c738faa902412d35f0755a0a829df49ec939d32960abf343203f93bb715",
+  "registered_at": "2026-09-27T06:00:49.756144+00:00",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "rollback_replay_allowed": false,
+  "runtime_manifest_path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+  "runtime_manifest_sha256": "04bed14bb530b1c42d56fe37e6a0661dbc57a5d94adf54257a5e4e69fd660a58",
+  "schema_version": "UA-ART-NONCE-COPY-REGISTRATION-1",
+  "scope": "REPAIR_LEDGER_BOUND_NONCE_COPY_ONLY",
+  "source_commit": "58fc60267bf41c4c78c6aa2c60847c04e320660e",
+  "task_id": "CRM-ROLLBACK-NONCE-20260927",
+  "transaction_outcome_changed": false
+}

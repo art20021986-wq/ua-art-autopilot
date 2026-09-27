@@ -1776,7 +1776,7 @@ jobs:
           test "$(git -C "$PINNED_ROOT" rev-parse HEAD)" = "$SOURCE_COMMIT"
 
           python3 -I - <<'PY'
-          import json, os, pathlib, re, shutil
+          import hashlib, json, os, pathlib, re, shutil
 
           source_root = pathlib.Path.cwd().resolve()
           pinned_root = pathlib.Path(os.environ['PINNED_ROOT']).resolve()
@@ -1806,7 +1806,16 @@ jobs:
           claim_rel, claim_data, claim = load(os.environ['CLAIM_PATH'], 'PINNED_CLAIM')
           tx_rel, tx_data, transaction = load(os.environ['TRANSACTION_PATH'], 'PINNED_TRANSACTION')
           request_rel, request_data, _ = load(os.environ['REQUEST_PATH'], 'PINNED_REQUEST')
-          ledger_rel, ledger_data, _ = load(claim.get('autostart_ledger_path'), 'PINNED_LEDGER')
+          ledger_rel, ledger_data, ledger = load(claim.get('autostart_ledger_path'), 'PINNED_LEDGER')
+          nonce = ledger.get('nonce')
+          if not isinstance(nonce, str) or not re.fullmatch(r'[A-Za-z0-9._-]{16,128}', nonce):
+              raise SystemExit('PINNED_NONCE_IDENTITY')
+          nonce_path = 'state/autostart_nonces/' + nonce + '.json'
+          if ledger.get('nonce_reservation_path') != nonce_path:
+              raise SystemExit('PINNED_NONCE_PATH_BINDING')
+          nonce_rel, nonce_data, _ = load(nonce_path, 'PINNED_NONCE')
+          if hashlib.sha256(nonce_data).hexdigest() != ledger.get('nonce_reservation_sha256'):
+              raise SystemExit('PINNED_NONCE_SHA_BINDING')
           backup_rel, backup_data, _ = load(transaction.get('backup_receipt_path'), 'PINNED_BACKUP')
           if claim.get('autostart_source_commit') != os.environ['SOURCE_COMMIT']:
               raise SystemExit('PINNED_SOURCE_COMMIT_BINDING')
@@ -1817,10 +1826,15 @@ jobs:
               tx_rel: tx_data,
               request_rel: request_data,
               ledger_rel: ledger_data,
+              nonce_rel: nonce_data,
               backup_rel: backup_data,
           }
-          if len(items) != 5:
+          if len(items) != 6:
               raise SystemExit('PINNED_DURABLE_PATH_ALIAS')
+          for relative in items:
+              target = pinned_root / relative
+              if target.is_symlink() or any(parent.is_symlink() for parent in target.parents if parent != pinned_root):
+                  raise SystemExit('PINNED_DESTINATION_SYMLINK')
           for relative, data in items.items():
               target = pinned_root / relative
               target.parent.mkdir(parents=True, exist_ok=True)

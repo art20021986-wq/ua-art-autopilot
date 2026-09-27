@@ -9,6 +9,7 @@ from __future__ import annotations
 import difflib
 import hashlib
 from pathlib import Path
+import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -18,6 +19,19 @@ SOURCES = {
     '.github/workflows/uaart_transaction_watchdog.yml':
         '817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe',
 }
+
+
+def original(relative: str, root: Path = ROOT) -> bytes:
+    """Read the immutable incident source after the repair has been registered."""
+    if relative not in SOURCES:
+        raise ValueError('WORKFLOW_SCOPE')
+    payload = (root / relative).read_bytes()
+    if hashlib.sha256(payload).hexdigest() != SOURCES[relative]:
+        payload = subprocess.check_output([
+            'git', 'show', '9fd580ca61c67dfb944bc4826fd1f18459ffba0b:' + relative], cwd=root)
+    if hashlib.sha256(payload).hexdigest() != SOURCES[relative]:
+        raise ValueError('WORKFLOW_SOURCE_DRIFT')
+    return payload
 
 NONCE_LOAD = '''          nonce = ledger.get('nonce')
           if not isinstance(nonce, str) or not re.fullmatch(r'[A-Za-z0-9._-]{16,128}', nonce):

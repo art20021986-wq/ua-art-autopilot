@@ -1,0 +1,82 @@
+{
+  "application_written": false,
+  "halt_removed": false,
+  "historical_rehearsal": {
+    "active_workflows_changed": false,
+    "failed_run_id": "36268504600",
+    "failed_source_commit": "9fd580ca61c67dfb944bc4826fd1f18459ffba0b",
+    "halt_cleared": false,
+    "production_install_ready": false,
+    "production_written": false,
+    "recorded_at": "2026-09-27T06:04:01.712330+00:00",
+    "repository_source_commit": "52662af62f3b1bdea194b50e69def49a64e977b8",
+    "results": [
+      {
+        "baseline_error": "AUTOSTART_NONCE_RESERVATION_MISSING",
+        "candidate_ledger_verification": "PASS",
+        "candidate_workflow_sha256": "e878ee2dc8dc5022db095eb5a88d34acd7c262228ee592671ed4e691e3cac198",
+        "ledger_binding": {
+          "ledger_path": "state/autostart_consumed/DELIVERY-STATUS-INSTALL-20260927.54c3be3cfc4dd0dab6f508524499715a6844011f4aa9520cc6e09f51f8c132ff.json",
+          "ledger_sha256": "f57d2ff4a8307f5f8468e585c561068cee8ef2579d54daa56767ac7da67b1114",
+          "source_commit": "9fd580ca61c67dfb944bc4826fd1f18459ffba0b"
+        },
+        "original_workflow_sha256": "6f13c864a5d7b400474f3c9a1fe15e0d2d4dfca5d25dd195a628a3225d33e65a",
+        "transaction_status_preserved": "ROLLING_BACK",
+        "workflow": ".github/workflows/uaart_critical.yml"
+      },
+      {
+        "baseline_error": "AUTOSTART_NONCE_RESERVATION_MISSING",
+        "candidate_ledger_verification": "PASS",
+        "candidate_workflow_sha256": "ad183ff63e4bf779591e2cc773aa1074c8005af399fedce810212e75b3dd7726",
+        "ledger_binding": {
+          "ledger_path": "state/autostart_consumed/DELIVERY-STATUS-INSTALL-20260927.54c3be3cfc4dd0dab6f508524499715a6844011f4aa9520cc6e09f51f8c132ff.json",
+          "ledger_sha256": "f57d2ff4a8307f5f8468e585c561068cee8ef2579d54daa56767ac7da67b1114",
+          "source_commit": "9fd580ca61c67dfb944bc4826fd1f18459ffba0b"
+        },
+        "original_workflow_sha256": "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe",
+        "transaction_status_preserved": "ROLLING_BACK",
+        "workflow": ".github/workflows/uaart_transaction_watchdog.yml"
+      }
+    ],
+    "rollback_invoked": false,
+    "runtime_manifest_changed": false,
+    "schema_version": "CRM-ROLLBACK-WORKSPACE-REHEARSAL-1",
+    "scope": "LOCAL_WORKSPACE_ASSEMBLY_ONLY",
+    "status": "PASS",
+    "transaction_closed": false
+  },
+  "normal_launch": "AUTOMATIC_MODE_HALTED",
+  "owner_command": "Убери блоки и установи",
+  "pending_transaction": "tx-36268504600-54c3be3cfc4dd0da",
+  "production_installed": false,
+  "registered_mode_with_halt": "PASS",
+  "runtime_sha256": {
+    ".github/workflows/uaart_critical.yml": "e878ee2dc8dc5022db095eb5a88d34acd7c262228ee592671ed4e691e3cac198",
+    ".github/workflows/uaart_transaction_watchdog.yml": "ad183ff63e4bf779591e2cc773aa1074c8005af399fedce810212e75b3dd7726",
+    "automation/control_plane.py": "cea8ffa190d77eaf9255840046f6404378a1f487755599700027ec7f6400b5b6",
+    "state/AUTOPILOT_RUNTIME_MANIFEST.json": "04bed14bb530b1c42d56fe37e6a0661dbc57a5d94adf54257a5e4e69fd660a58",
+    "state/EXECUTION_MODE.json": "019c89b78bfcd0e1d14949a9ba8a332ce8076b8c0f0c71fc1d86ea3a110f2160"
+  },
+  "schema_version": "CRM-NONCE-REGISTRATION-VALIDATION-1",
+  "server_observation": {
+    "active_published_cars": 20,
+    "archived_published_cars": 1,
+    "backup_database_hash_matches": true,
+    "code_files_matching_previous_install": 11,
+    "external_writers_verified": false,
+    "install_journal": "FINISHED/PASS",
+    "kind": "authenticated PythonAnywhere browser console; read-only command",
+    "new_crm_package_installed": false,
+    "time": "2026-09-27T06:04:14.606741+00:00"
+  },
+  "source_commit": "58fc60267bf41c4c78c6aa2c60847c04e320660e",
+  "tests": {
+    "control_plane": 79,
+    "nonce_copy": 10,
+    "registration": 13,
+    "status": "PASS",
+    "total": 117,
+    "transaction_watchdog": 15
+  },
+  "transaction_status": "ROLLING_BACK"
+}

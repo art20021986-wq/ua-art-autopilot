@@ -59,7 +59,7 @@ class DurableCopyTests(unittest.TestCase):
         path.write_text(json.dumps(value) + '\n')
 
     def execute(self, relative, *, old=False):
-        data = (fix.ROOT / relative).read_bytes()
+        data = fix.original(relative)
         if not old:
             data = fix.candidate(relative, data)
         script = fix.copied_state_script(data.decode())
