@@ -1,0 +1,62 @@
+{
+  "task_id": "CONTAINER-TRACKING-INSTALL-20260928-R2",
+  "run_id": "36350363261",
+  "observed_at": "2026-09-27T21:19:45.185779+00:00",
+  "cards": 22,
+  "with_tracking_links": 9,
+  "all_pass": true,
+  "ui_checks": {
+    "card": "UA-0021",
+    "details_opens": true,
+    "copy_success_status_visible": true,
+    "clipboard_bridge_readback": "NOT_CONFIRMED_SHARED_BROWSER",
+    "track_trace_link_followed": true,
+    "track_trace_input": "FBLU0045137",
+    "visual_layout": "PASS",
+    "existing_spec_parameters": 8
+  },
+  "scope": "Independent public HTTP and browser checks; final server acceptance is recorded separately in receipt",
+  "production_receipt": "state/receipts/CONTAINER-TRACKING-INSTALL-20260928-R2.json",
+  "cards_verified": [
+    "UA-0001",
+    "UA-0003",
+    "UA-0004",
+    "UA-0005",
+    "UA-0006",
+    "UA-0007",
+    "UA-0008",
+    "UA-0009",
+    "UA-0010",
+    "UA-0011",
+    "UA-0012",
+    "UA-0013",
+    "UA-0014",
+    "UA-0015",
+    "UA-0016",
+    "UA-0017",
+    "UA-0018",
+    "UA-0019",
+    "UA-0020",
+    "UA-0021",
+    "UA-0022",
+    "UA-0023"
+  ],
+  "cards_with_links": [
+    "UA-0005",
+    "UA-0006",
+    "UA-0009",
+    "UA-0010",
+    "UA-0011",
+    "UA-0012",
+    "UA-0013",
+    "UA-0014",
+    "UA-0021"
+  ],
+  "checks": {
+    "http_200": true,
+    "canonical_urls": true,
+    "matches_reviewed_bytes": true,
+    "one_widget_per_card": true,
+    "external_link_rel": true
+  }
+}
