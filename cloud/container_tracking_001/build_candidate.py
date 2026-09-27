@@ -1,14 +1,14 @@
-"""Exact-source integration: replace only the tracking metadata in each renderer."""
+"""Upgrade the two installed tracking modules; verify existing renderer hooks."""
 import ast
 from hashlib import sha256
 from pathlib import Path
 
 SOURCE_SHA256 = {
-    'stranica.py': 'afa5c9b4d86b35153557adc1be2b1f089698ad7e03cbbf2b9df870e3479a8cda',
-    'yadro.py': '4a47063c85f60b8a9fe4c4a42256075a7345a3805f5037de7141998bc891e661',
-    'master_card.py': '51b736a5913ba6ebf6e784ead9dbfa1d1e9f61597724eefb943ee6f9a8d9d12e',
+    'ua_tracking_links.py': '9a4712ff4b7f97b94ae5931a326e64986c5a0d22297006a3bf91ecf97900f7b9',
+    'ua_tracking_widget.py': 'a96b76b662f2cf496a1c672ff8804f0dc940bbb4d02bdfcf37205b9c956f7477',
 }
 MODULES = ('ua_tracking_links.py', 'ua_tracking_widget.py')
+RENDERERS = ('stranica.py', 'yadro.py', 'master_card.py')
 BEGIN = '    container = str(m.get("sea_container") or "").strip()\n'
 AFTER = '    kind, days, target = _ua_stage_eta(m, stage)\n'
 REPLACEMENT = '''    from ua_tracking_widget import render_tracking
@@ -51,7 +51,6 @@ def build(sources):
         raw = sources[name]
         if sha256(raw).hexdigest() != expected:
             raise ValueError('SOURCE_CHANGED:' + name)
-        result[name] = replace_metadata(raw.decode('utf-8')).encode('utf-8')
     for name in MODULES:
         result[name] = (Path(__file__).parent/name).read_bytes()
         compile(result[name], name, 'exec')

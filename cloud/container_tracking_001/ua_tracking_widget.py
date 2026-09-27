@@ -11,7 +11,9 @@ CSS = '''<style>
 .ua-multi-track *{box-sizing:border-box}
 .ua-multi-track .ua-stage-v1-container-row{display:flex;width:100%;justify-content:space-between;gap:8px;white-space:normal}
 .ua-multi-track .ua-stage-v1-badge{min-width:0;flex:0 1 auto;white-space:normal;overflow-wrap:anywhere}
-.ua-multi-track .ua-stage-v1-track-link{min-width:0;flex:0 1 auto;min-height:44px;white-space:normal;line-height:1.3;text-align:right}
+.ua-multi-track .ua-stage-v1-track-link{min-width:0;flex:0 1 auto;min-height:44px;padding:10px 12px;border:1px solid #ffc66b;border-radius:10px;background:#f2b45d;color:#14263c;font-size:12px;font-weight:850;white-space:normal;line-height:1.3;text-align:center;justify-content:center;text-decoration:none;cursor:pointer}
+.ua-multi-track .ua-stage-v1-track-link:hover{background:#ffd18c;color:#14263c}
+.ua-multi-track .ua-stage-v1-track-link:focus-visible{outline:2px solid #ffd18c;outline-offset:3px}
 .ua-multi-track p{margin:6px 0}
 </style>'''
 

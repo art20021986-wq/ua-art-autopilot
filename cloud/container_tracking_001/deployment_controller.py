@@ -1,4 +1,4 @@
-"""Actions controller for tracking controls and the three future-card renderers."""
+"""Actions controller for direct tracking controls and existing renderer hooks."""
 import json
 import os
 from pathlib import Path
@@ -136,7 +136,8 @@ def run(operation=None):
                'protected_files_unchanged': True, 'crm_unchanged': True,
                'public_checks':public,'restart':value['crm_resume'],
                'code_sha256':verified['code_sha256'],
-               'acceptance_scope':'TRACKING_CONTROLS_ALL_EXISTING_CARDS_AND_THREE_RENDERERS',
+               'acceptance_scope':'DIRECT_SEARATES_LINK_ALL_EXISTING_CARDS_AND_EXISTING_RENDERER_HOOKS',
+               'external_result_acceptance':'NOT_CONFIRMED_SEARATES_GUEST_LIMIT',
                'full_publication_acceptance':False,'database_migration_executed':False,
                'data_preservation_scope':value['preservation_scope']}
     save(env['UAART_RECEIPT_PATH'], receipt)

@@ -1,0 +1,110 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/GALLERY-DESKTOP-INSTALL-20260928.0e863dd329ae5d2fb6c79aec2e1f029493c20fccadb16fd6d042af0b86693356.json",
+  "autostart_ledger_sha256": "d93a6983e5adab50eea123f2cdcc62f8f2d8a17fe570c71c519ce8a0cec37852",
+  "autostart_source_commit": "fea373b1d86baeb42879194d38ccf3e674cc7840",
+  "created_at": "2026-09-27T21:36:37Z",
+  "critical_gate_evidence_sha256": "5581338d06d0460b099327a1875cb0180a5e779803677785fe8b5ab8fc7534ac",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-09-27T21:37:50Z",
+  "heartbeat_sequence": 6,
+  "identity": {
+    "run_id": "36352273461",
+    "task_id": "GALLERY-DESKTOP-INSTALL-20260928",
+    "task_sha256": "0e863dd329ae5d2fb6c79aec2e1f029493c20fccadb16fd6d042af0b86693356"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 228.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 228.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-36352273461-0e863dd329ae5d2f",
+  "production_transaction_path": "state/transactions/GALLERY-DESKTOP-INSTALL-20260928.0e863dd329ae5d2fb6c79aec2e1f029493c20fccadb16fd6d042af0b86693356.36352273461.json",
+  "production_transaction_status": "PREPARING",
+  "queue_key": "card-ua-0001-0b6ded74667e170d",
+  "receipt_path": "state/receipts/GALLERY-DESKTOP-INSTALL-20260928.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/GALLERY-DESKTOP-INSTALL-20260928.json",
+  "request_sha256": "0e863dd329ae5d2fb6c79aec2e1f029493c20fccadb16fd6d042af0b86693356",
+  "resource_locks": [
+    "CARD:UA-0001",
+    "CARD:UA-0003",
+    "CARD:UA-0004",
+    "CARD:UA-0005",
+    "CARD:UA-0006",
+    "CARD:UA-0007",
+    "CARD:UA-0008",
+    "CARD:UA-0009",
+    "CARD:UA-0010",
+    "CARD:UA-0011",
+    "CARD:UA-0012",
+    "CARD:UA-0013",
+    "CARD:UA-0014",
+    "CARD:UA-0015",
+    "CARD:UA-0016",
+    "CARD:UA-0017",
+    "CARD:UA-0018",
+    "CARD:UA-0019",
+    "CARD:UA-0020",
+    "CARD:UA-0021",
+    "CARD:UA-0022",
+    "CARD:UA-0023"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "62859e6ec60cd41b2fa29928fc4ecc112c317600",
+  "storage_preflight": {
+    "age_seconds": 367.525,
+    "allowed": true,
+    "evidence_path": "state/storage/GALLERY-DESKTOP-INSTALL-20260928.json",
+    "evidence_sha256": "929238aa29fbf071a94b60239834b4136450e3fc81a62a9b2df78314b9384b8e",
+    "free_bytes": 1238381887488,
+    "heavy": true,
+    "measured_at": "2026-09-27T21:31:39.532152+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "WARN_70",
+    "usage_percent": 79.56787835945536
+  },
+  "storage_preflight_status": "WARN_70",
+  "task_class": "CRITICAL",
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "738a249ae6607a91079134f073836761621657d3b8ca278433267bf49af8f327",
+    "file_sha256": {
+      "cloud/gallery_desktop_001/build_candidate.py": "f6e43cdfcbad063cdb8e60cd4eb294914c493987af6d86b1deff8bbd84b85238",
+      "cloud/gallery_desktop_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/gallery_desktop_001/deployment_bootstrap.py": "cb243e082b1e4a00063d0ee6ce7061791d4e7ded2de2068d8a4c37e645cd156d",
+      "cloud/gallery_desktop_001/deployment_remote.py": "c564d2b48fcc215523297d7d970cd35fa21078d755bd7af6661ce0be17774452",
+      "cloud/gallery_desktop_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/gallery_desktop_001/deployment_transport.py": "1623dc4b2d5e383264bf8db8223ac399a6684c4fadbb5d786fdaa9affcec083b",
+      "cloud/gallery_desktop_001/release_constants.py": "da43e4031f6a7cb1bbaac2f401b38b24dc58a3aebd3c20b91c6ccd46dd16a776",
+      "cloud/gallery_desktop_001/test_deployment.py": "68c1f27f5b30e295d26af8e08da05efc8d9f680a12fbbda6a935fc384d858888",
+      "cloud/gallery_desktop_001/test_gallery.py": "0482f73d0444911cf3df5dd4abf7516cc822790fd8086ab7fb1bb319d27aea7d",
+      "cloud/gallery_desktop_001/ua_gallery.py": "65f00eb159b1f1292c61b1760c0181e9879e5662bf4cde27e4f76fb175822b26"
+    }
+  },
+  "updated_at": "2026-09-27T21:37:50Z"
+}

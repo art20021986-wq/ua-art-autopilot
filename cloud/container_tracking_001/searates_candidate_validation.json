@@ -1,6 +1,6 @@
 {
-  "status": "CANDIDATE_ONLY_EXTERNAL_RESULT_BLOCKED",
-  "tests": 34,
+  "status": "READY_FOR_SERVER_PREFLIGHT_EXTERNAL_RESULT_UNCONFIRMED",
+  "tests": 35,
   "saved_card_checks": [
     {
       "card": "UA-0001",
@@ -123,5 +123,6 @@
     "visible_instruction": "Please register or login to continue using our Container Tracking",
     "observed_date_utc": "2026-09-27"
   },
-  "production_installed": false
+  "production_installed": false,
+  "owner_repeated_deployment_request_after_limit_disclosure": true
 }
