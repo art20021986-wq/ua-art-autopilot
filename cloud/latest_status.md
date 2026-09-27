@@ -183,3 +183,17 @@ CONTINUATION: Automation 6ab80e71aa688191868f657b5631fcae disabled after confirm
 UA-0020 publication completed at 08:16:41 UTC after host CPU capacity was replenished; public card/catalog freshness verification passed at 08:24. Permanent publisher correction is NOT yet installed. First run 36304601891 stopped before file replacement with WORKER_BUSY because the inherited transport accepted Stopping. Remote rollback succeeded. This commit persists its downloaded Actions artifact 10926909337, SHA dd0a0602087272e08421a6b1dc644d5ee2ae79204e6b926ed352c87604ed8000, using unchanged receipt validation and control-plane rollback bookkeeping. No application write or rollback replay; original run is ROLLED_BACK.
 
 PR142 restores the first immutable package and isolates the tested retry in `cloud/publish_video_latency_002`. R2 requires explicit Stopped; 22 tests pass. Candidate publisher remains 3fbddc9f7a87619fd851839d1f76c60ba3ca1e266a84653898a4427fe5f53121. Preserve both deployment packages. Next: fresh exact R2 launch, installed hash and renewed live publication acceptance.
+
+## 2026-09-27 — UA-0020 publication accepted; source correction still halted
+
+Independent read-only verification in this continuation:
+- Transactional publisher logged TASK083 PASS UA-0020 at 08:16:41 UTC. At 08:21 the original request was `verified`, `delivered=1`.
+- `ua_public_freshness.verify_public('UA-0020')` passed at 08:20 and again at 08:41. The canonical card and catalog bytes match the server output and CRM VIN/year. URL: https://www.uaart.com.ua/video/UA-0020.html.
+- The page contains three video elements and all three source MP4 files remain present.
+- Publisher SHA256 at 08:42 remains `4d1adb53cb659daa125c7480c289ad25e03a57e34d3d0c1f4e0989de1d7a8ac8`. Do not claim the permanent removal of the UA-MCF-DEDUP wrapper is installed.
+
+R2 run 36306658337 stopped in prepare/storage preflight with `STORAGE_PROBE_STALE_OR_FUTURE`; backup, application replacement and rollback were not run. It persisted `state/AUTOPILOT_HALT.json` at 08:37:04 UTC. The tested immutable correction remains in `cloud/publish_video_latency_002` (22 regression/lifecycle checks). Its publisher output is `3fbddc9f7a87619fd851839d1f76c60ba3ca1e266a84653898a4427fe5f53121`.
+
+A new authenticated read-only disk measurement at 08:39:08 UTC reported total 6340085809152, used 4822494347264, and user-available free 1238461579264 bytes; it is a filesystem measurement, not an account-quota measurement. Refresh and bind actual storage evidence immediately before any newly authorized launch; never alter a timestamp to make old evidence appear fresh.
+
+Continuation: resolve only this recorded pre-write HALT through the owner's approved recovery procedure, preserve consumed launch identities and both immutable packages, then launch the same one-file correction with fresh evidence through main Actions. Keep backup, rollback, publication locks, health checks and watchdog enabled. Recheck installed SHA, running bot and UA-0020 public freshness before claiming the systemic correction complete. No production or protected-control mutations were made by this independent verification continuation.
