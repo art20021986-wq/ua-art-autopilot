@@ -1,0 +1,29 @@
+{
+  "application_writes": false,
+  "automatic_rollback_retried": false,
+  "decision": "ACCEPT_VERIFIED_DELIVERY_INSTALLATION_ONLY",
+  "evidence_path": "state/reconciliations/DELIVERY-STATUS-INSTALL-20260927.36268504600.forward.evidence.json",
+  "evidence_sha256": "828db2802ddb1c4b6eebd3d45b7695e7b47677f6642d457a8d616b8dc90b6637",
+  "expected_parent": "db08ef9c00d04e815e99e148ba3ab546475013f3",
+  "full_crm_acceptance": false,
+  "next_step": "Fresh gated corrective release; original launch remains consumed.",
+  "original_state_sha256": {
+    "state/AUTOPILOT_HALT.json": "bf2b01545ce36c650f0afb70bf67251eeebda58960c5d86ff2d4e7098d5c20aa",
+    "state/claims/DELIVERY-STATUS-INSTALL-20260927.54c3be3cfc4dd0dab6f508524499715a6844011f4aa9520cc6e09f51f8c132ff.36268504600.json": "e98b71cb7d90768cf99cd231fb7bbee098691d5b903822e7a21c6a1fc67f69e7",
+    "state/transactions/DELIVERY-STATUS-INSTALL-20260927.54c3be3cfc4dd0dab6f508524499715a6844011f4aa9520cc6e09f51f8c132ff.36268504600.json": "e7502480bedc0f1565f7499949cd074d17665247237c8358c2cf40e8e7d024f2",
+    "tasks/requests/DELIVERY-STATUS-INSTALL-20260927.json": "54c3be3cfc4dd0dab6f508524499715a6844011f4aa9520cc6e09f51f8c132ff"
+  },
+  "owner_command": "Убери блоки и установи",
+  "receipt_path": "state/receipts/DELIVERY-STATUS-INSTALL-20260927.json",
+  "receipt_sha256": "533abedce1659b1cd5999ac07a78d587dc45e4c84ef8c8eab5f4a37b57b9952f",
+  "reconciled_at": "2026-09-27T06:33:38.889338+00:00",
+  "request_sha256": "54c3be3cfc4dd0dab6f508524499715a6844011f4aa9520cc6e09f51f8c132ff",
+  "rollback_performed": false,
+  "run_id": "36268504600",
+  "runtime_manifest_sha256": "04bed14bb530b1c42d56fe37e6a0661dbc57a5d94adf54257a5e4e69fd660a58",
+  "schema_version": "UA-ART-MANUAL-FORWARD-RECONCILIATION-1",
+  "task_id": "DELIVERY-STATUS-INSTALL-20260927",
+  "transaction_after": "FINISHED",
+  "transaction_before": "ROLLING_BACK",
+  "transaction_id": "tx-36268504600-54c3be3cfc4dd0da"
+}

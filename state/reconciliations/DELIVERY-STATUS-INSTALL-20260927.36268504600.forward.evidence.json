@@ -1,0 +1,147 @@
+{
+  "expected_main": "db08ef9c00d04e815e99e148ba3ab546475013f3",
+  "full_crm_acceptance": false,
+  "github_queue": {
+    "complete": true,
+    "observed_at": "2026-09-27T06:32:43.852Z",
+    "runs": [],
+    "statuses": [
+      "in_progress",
+      "pending",
+      "queued",
+      "requested",
+      "waiting"
+    ]
+  },
+  "owner_actor_id": "321059821",
+  "processes": {
+    "bot_running": true,
+    "commands": [
+      "python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json",
+      "python3.10 /home/Carix/start_safe.py"
+    ],
+    "enabled_always_on_commands": [
+      "python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json",
+      "python3.10 /home/Carix/start_safe.py"
+    ],
+    "observed_at": "2026-09-27T06:32:44.832Z",
+    "scope": "PythonAnywhere Tasks running process and always-on inventory"
+  },
+  "public_health": {
+    "checks": [
+      {
+        "status": 200,
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "status": 200,
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "observed_at": "2026-09-27T06:32:45.176841+00:00"
+  },
+  "publication_repair_installed": false,
+  "remote": {
+    "backup_database_matches": true,
+    "backup_manifest_sha256": "7debcda6ef2ab08f87abeed07123c8c6c4e81b8dd6b96d4b043ad114a0564ac7",
+    "backup_mismatches": [],
+    "code_sha256": {
+      "cars_schema.py": "16d53277834ecfad1eabc10f75e5cabb1060b35416b61b6f534ec024ce9dbc07",
+      "cars_ui.py": "c17a45d64f17fbab2e2f032061f6037a48bb5fa038b3f02e20995b5e50fbca7b",
+      "catalog_design_guard.py": "59502b73871968c7f90511fd28af2f839220db982908b0afe7b5b6f55c6e7fd7",
+      "db.py": "af7624cbcf227b865ac98c68462ad6da8d18223881bba836f2f9a8669cf1dab7",
+      "konteyner.py": "cb09e8cfac57f05a004f7dae73d57f76c422132a8e0d6a16f28f0a949647760e",
+      "master_card.py": "c99b6c0271586d4f8c56e4184528ab6f20541173be9a287d9d64661b4b7184b2",
+      "publish_transaction_guard.py": "9b41f15e8455ec7e579bea1e194e6c855cc50b7b0e060ee2a010301d28c981e8",
+      "stranica.py": "4d710266abb2a92754ff3e3fc7de86c628760bee3c455dfbb177dedec113b1a1",
+      "ua_crm_public_sync.py": "2b5f6a2473b263fddd6ab3266a3ba76cc9738da15178f865862098821cabcc41",
+      "ua_delivery_status.py": "c544bc121b7b3b66d45519d5b63ed3687567af7e9d5f7011ae2fb53cc372bdd0",
+      "ua_stage_catalog_sync.py": "a8d2784e73d005b5a02328f63c9233d78da665547266276df69291383616a255"
+    },
+    "install_journal": {
+      "backup_sha256": "7debcda6ef2ab08f87abeed07123c8c6c4e81b8dd6b96d4b043ad114a0564ac7",
+      "mode": "install",
+      "result": {
+        "crm_resume": {
+          "enabled": true,
+          "id": 266084,
+          "state": "running"
+        },
+        "installed": true,
+        "status": "PASS"
+      },
+      "stage": "FINISHED"
+    },
+    "observed_at": "2026-09-27T06:32:45.176841+00:00",
+    "protected_mismatches": [],
+    "public_health": {
+      "checks": [
+        {
+          "status": 200,
+          "url": "https://www.uaart.com.ua/video/index.html"
+        },
+        {
+          "status": 200,
+          "url": "https://www.uaart.com.ua/video/katalog.html"
+        }
+      ],
+      "observed_at": "2026-09-27T06:32:45.176841+00:00"
+    },
+    "publikaciya_sha256": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+    "receipts": {
+      "backup": {
+        "backup": "/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/delivery-5a3b1c816a5be255a0aafed57f32d2577ed62de3d8b7cc31db31432c9738204f/backups/7debcda6ef2ab08f87abeed07123c8c6c4e81b8dd6b96d4b043ad114a0564ac7",
+        "backup_manifest_sha256": "7debcda6ef2ab08f87abeed07123c8c6c4e81b8dd6b96d4b043ad114a0564ac7",
+        "cpu_seconds": 1.812,
+        "crm_write": false,
+        "mode": "backup",
+        "plan_sha256": "67279c4ec97fd9652db7af262562c3d0dd54e38b35d8f6651b539980a0cf4a66",
+        "run_id": "36268504600",
+        "safe_to_stop": true,
+        "status": "PASS"
+      },
+      "install": {
+        "backup_manifest_sha256": "7debcda6ef2ab08f87abeed07123c8c6c4e81b8dd6b96d4b043ad114a0564ac7",
+        "counts": {
+          "all": 19,
+          "georgia": 6,
+          "kiev": 5,
+          "korea": 4,
+          "sea": 4
+        },
+        "cpu_seconds": 0.914,
+        "crm_resume": {
+          "enabled": true,
+          "id": 266084,
+          "state": "running"
+        },
+        "crm_unchanged": true,
+        "crm_write": false,
+        "installed": true,
+        "mode": "install",
+        "plan_sha256": "67279c4ec97fd9652db7af262562c3d0dd54e38b35d8f6651b539980a0cf4a66",
+        "run_id": "36268504600",
+        "safe_to_stop": true,
+        "status": "PASS"
+      },
+      "verify": {
+        "backup_manifest_sha256": "7debcda6ef2ab08f87abeed07123c8c6c4e81b8dd6b96d4b043ad114a0564ac7",
+        "counts": {
+          "all": 19,
+          "georgia": 6,
+          "kiev": 5,
+          "korea": 4,
+          "sea": 4
+        },
+        "cpu_seconds": 0.123,
+        "crm_unchanged": true,
+        "crm_write": false,
+        "mode": "verify",
+        "run_id": "36268504600",
+        "safe_to_stop": true,
+        "status": "PASS"
+      }
+    },
+    "rollback_receipt_exists": false
+  }
+}
