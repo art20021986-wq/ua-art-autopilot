@@ -1,0 +1,274 @@
+{
+  "schema_version": "UA-ART-PUBLISHER-VERIFIED-ROLLBACK-RECONCILIATION-1",
+  "task_id": "CRM-PUBLISH-VIDEO-INSTALL-20260927-R3",
+  "run_id": "36307278102",
+  "request_sha256": "5829b403de74a38f454eb3785620f7ba15cc0dda74926558dacf0bc77850896f",
+  "expected_parent": "601550cb87e2d68bea056a68c6a2d6b67dc0e090",
+  "owner_instruction": "Немедленно исправь публикацию объявления; authorization for this repair persists",
+  "failure": "HTTP_500 during redundant immutable bundle upload, before api.run(install)",
+  "controller_failure_job": 108587505022,
+  "rollback_job": 108587589795,
+  "recover_job": 108588711424,
+  "jobs": [
+    {
+      "id": 108586275166,
+      "name": "context",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108586284419,
+      "name": "intake",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108586307318,
+      "name": "persist",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108586335830,
+      "name": "execute / validate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108586364195,
+      "name": "execute / plan",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108586406431,
+      "name": "execute / critical / main_only",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108586406459,
+      "name": "execute / standard",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108586406728,
+      "name": "execute / fast",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108586418893,
+      "name": "execute / critical / validate",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108586446961,
+      "name": "execute / critical / prepare",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108586447715,
+      "name": "execute / critical / controller_nonproduction",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108586549342,
+      "name": "execute / critical / backup",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108587212531,
+      "name": "execute / critical / open",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108587505022,
+      "name": "execute / critical / controller_production",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 108587563950,
+      "name": "execute / critical / rollback_mark",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108587564563,
+      "name": "execute / critical / finalize",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108587589795,
+      "name": "execute / critical / rollback_execute",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108588711424,
+      "name": "execute / critical / recover",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108588737281,
+      "name": "execute / critical / result",
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "transactions": [
+    {
+      "path": "state/transactions/CRM-ONECLICK-INSTALL-20260927.573f3b9d563be7f8af7e5b20f9ccc91672094bdef207e0202779fef716caa347.36301475826.json",
+      "git_blob": "6675f2d37c76b3f7ae4bd31ea9e6a623e6e82cd3",
+      "status": "FINISHED",
+      "transaction_id": "tx-36301475826-573f3b9d563be7f8"
+    },
+    {
+      "path": "state/transactions/CRM-PUBLISH-VIDEO-INSTALL-20260927.093c74b3d089c65345cf19d9e329015910bc52a8809ea0532248128c98df198f.36304601891.json",
+      "git_blob": "19a45542b2f25a346b759ded96c185d484263fc6",
+      "status": "ROLLED_BACK",
+      "transaction_id": "tx-36304601891-093c74b3d089c653"
+    },
+    {
+      "path": "state/transactions/DELIVERY-STATUS-INSTALL-20260927.54c3be3cfc4dd0dab6f508524499715a6844011f4aa9520cc6e09f51f8c132ff.36268504600.json",
+      "git_blob": "62352d055ad5bf61ed1840245077866c87065d6a",
+      "status": "FINISHED",
+      "transaction_id": "tx-36268504600-54c3be3cfc4dd0da"
+    },
+    {
+      "path": "state/transactions/GE-PUBLIC-PRICES-20260922.4460e6b6c11221640292e81a53f93182bb767298559f861feb4d774f5f3e687a.35695189695.json",
+      "git_blob": "252562f2ddbc25f36d5a5fece353d4eee9c9eb0a",
+      "status": "FINISHED",
+      "transaction_id": "tx-35695189695-4460e6b6c1122164"
+    },
+    {
+      "path": "state/transactions/SEO-DAILY-PODBOR-CANONICAL-20260921.d89fd9b950e5c72a01828a153c9fe57d460750aba9ed7db82f6c3b97819520d4.35552076762.json",
+      "git_blob": "e92a3924463a69ee9a6ea920fa9d580c5dafa321",
+      "status": "ROLLED_BACK",
+      "transaction_id": "tx-35552076762-d89fd9b950e5c72a"
+    },
+    {
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.062ad76555efb682b5c5835c74193bfed5783db2f2749312aefa425be8b8581a.34608152298.json",
+      "git_blob": "3669e62e69b33e4cb528026fae74ecec9e4925fb",
+      "status": "ROLLED_BACK",
+      "transaction_id": "tx-34608152298-062ad76555efb682"
+    },
+    {
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-PREFLIGHT.fbbc58b7033e56eee9f89d0025402c6a2d7dc73518b069832e65f13118e40ab2.34625768264.json",
+      "git_blob": "6e57b1e7deb33e97c5fc67186d6e32480e06fd76",
+      "status": "FINISHED",
+      "transaction_id": "tx-34625768264-fbbc58b7033e56ee"
+    },
+    {
+      "path": "state/transactions/TASK088-GE-PRICE-CRM-STAGE2-INSTALL.f9cf3ff6cfaba7e1f785c1520a668590cc8f7577a798237c83fd8fc35858b29e.34734575941.json",
+      "git_blob": "fedb02442400a87ba009117f66ef035b4de3730d",
+      "status": "FINISHED",
+      "transaction_id": "tx-34734575941-f9cf3ff6cfaba7e1"
+    },
+    {
+      "path": "state/transactions/TASK115-REMOVE-VIN-ADS.22411bf9f56d42ee302ffc2c51b29c9b9461a60c382adc83e0eec4c2992e30b0.33942536609.json",
+      "git_blob": "773f24003e84d0f73b45549d9c372c8dd2fa090f",
+      "status": "ROLLED_BACK",
+      "transaction_id": "tx-33942536609-22411bf9f56d42ee"
+    },
+    {
+      "path": "state/transactions/TASK115-REMOVE-VIN-ADS.aa2c7cecc1f0c8986bf59f8506a95c4242d3b531544334e48c5413627bcf6bd7.33945882409.json",
+      "git_blob": "2da59f669a85cabdc2f31b13b8d22504a33fb407",
+      "status": "FINISHED",
+      "transaction_id": "tx-33945882409-aa2c7cecc1f0c898"
+    },
+    {
+      "path": "state/transactions/TASK117-REMOVE-CRM-STAGE-BUTTONS.bb03fb76a6bad0018c8381bb117040b31ed0abcd1d0ceeff0e915682ac63c185.34107568301.json",
+      "git_blob": "922a7d8a5b2b49b2a2992f03733652517ea78755",
+      "status": "FINISHED",
+      "transaction_id": "tx-34107568301-bb03fb76a6bad001"
+    },
+    {
+      "path": "state/transactions/TASK118-EMERGENCY-SITE-RECOVERY.4a0872c57eb691582f3f0bbb7dae63d37d5f085d9f361b5df7d9f101e549b2e3.34117903252.json",
+      "git_blob": "927d1059e48836d08691c19c1510c1be17d088e9",
+      "status": "FINISHED",
+      "transaction_id": "tx-34117903252-4a0872c57eb69158"
+    },
+    {
+      "path": "state/transactions/TASK119-EMERGENCY-SITE-RECOVERY-R2.0e4284a6792c645f243c22b2ad7edcb1e0b68613c9c8b37b371a8ed646837aa7.34119998399.json",
+      "git_blob": "295b395ed49e885c30a63aea70e32c5ccbf4da36",
+      "status": "FINISHED",
+      "transaction_id": "tx-34119998399-0e4284a6792c645f"
+    },
+    {
+      "path": "state/transactions/TASK120-PUBLISH-UA-0017-UA-0018.a4662a876b037595742a31e34394b27d3e40bcbb75e2915df1ecdc0cb01b4442.34134692609.json",
+      "git_blob": "47237c2abaf7ad1a186b7264938b675d86a44a92",
+      "status": "ROLLED_BACK",
+      "transaction_id": "tx-34134692609-a4662a876b037595"
+    },
+    {
+      "path": "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-002.b4abcd039f34d09fda2ef0c06709bffbe9baf908450b56c948b6ec1df2b794c5.35489521032.json",
+      "git_blob": "19cb2cff102b5ec960e8e86dd7025f827c91197d",
+      "status": "ROLLED_BACK",
+      "transaction_id": "tx-35489521032-b4abcd039f34d09f"
+    },
+    {
+      "path": "state/transactions/UA-ART-UA0022-PUBLISH-REPAIR-003.334c361c22ebee11fd3d1fb8f8e1cd34178976966bb3011297e05ad51b4902ba.35490449348.json",
+      "git_blob": "1d3e10325599c7b789601d721888607895b5a461",
+      "status": "FINISHED",
+      "transaction_id": "tx-35490449348-334c361c22ebee11"
+    },
+    {
+      "path": "state/transactions/CRM-PUBLISH-VIDEO-INSTALL-20260927-R3.5829b403de74a38f454eb3785620f7ba15cc0dda74926558dacf0bc77850896f.36307278102.json",
+      "git_blob": "34d81b00cd91b8eb739c555036b95100a276a754",
+      "status": "ROLLED_BACK",
+      "transaction_id": "tx-36307278102-5829b403de74a38f"
+    }
+  ],
+  "verified_rollback_receipt": {
+    "path": "state/receipts/CRM-PUBLISH-VIDEO-INSTALL-20260927-R3-ROLLBACK.json",
+    "git_blob": "379231f76670e8fc197c4676aec8e79ffa5c5144",
+    "contents": {
+      "backup_manifest_sha256": "f4017d16a346fb21610ddc82d15dab6da86ebe4e6616decca86bc9d0e78ca131",
+      "crm_unchanged": true,
+      "live_verify": "PASS",
+      "manifest_sha256": "184ec82cc0523610155b7c547c426464135d4c80afa7e7eb4efcbc2867b927f5",
+      "operation": "rollback",
+      "protected_files_unchanged": true,
+      "request_sha256": "5829b403de74a38f454eb3785620f7ba15cc0dda74926558dacf0bc77850896f",
+      "restored": true,
+      "rollback": "PASS",
+      "run_id": "36307278102",
+      "schema_version": "UA-ART-PRODUCTION-ROLLBACK-RECEIPT-1",
+      "status": "ROLLED_BACK",
+      "task_id": "CRM-PUBLISH-VIDEO-INSTALL-20260927-R3",
+      "transaction_id": "tx-36307278102-5829b403de74a38f",
+      "unexpected_changes": 0
+    }
+  },
+  "candidate_installed": false,
+  "application_rollback_executed": true,
+  "bot_observation": {
+    "state": "Running",
+    "task_id": 266084,
+    "observed_at": "2026-09-27T09:03:00Z",
+    "timestamp_precision": "minute"
+  },
+  "read_only_source_and_disk": {
+    "measured_at": "2026-09-27T09:01:39.579739+00:00",
+    "total_bytes": 6340085809152,
+    "used_bytes": 4822841425920,
+    "free_bytes": 1238114500608,
+    "source_sha256": "4d1adb53cb659daa125c7480c289ad25e03a57e34d3d0c1f4e0989de1d7a8ac8",
+    "target_environment": "production",
+    "read_only": true,
+    "path": "/home/Carix",
+    "measurement_method": "shutil.disk_usage through authenticated PythonAnywhere console"
+  },
+  "correction": "Isolated R4 reads exact existing upload bytes first and uses bounded identical-path identical-byte retries only for transient file upload failures. Six injected upload faults pass; 28 total tests. No retries of task creation or authorization failures. Unchanged guard/runtime/backup/rollback/health/watchdog.",
+  "control_action": "Archive this exact reconciled R3 halt. Preserve already terminal ROLLED_BACK claim and transaction, consumed launch and nonce, all R1/R2/R3 source packages and all prior history. R4 still needs a fresh exact launch and all production gates."
+}
