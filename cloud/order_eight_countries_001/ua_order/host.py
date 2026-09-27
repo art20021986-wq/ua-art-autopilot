@@ -1,4 +1,4 @@
-"""Small composition root called by the four explicitly patched host files."""
+"""Explicit composition for customer intake, the owner inbox and the website."""
 from functools import lru_cache
 import logging
 
@@ -25,26 +25,15 @@ def customer_label():
     return 'Подобрать авто под заказ' if current() else 'Подобрать под заказ из Кореи'
 
 
-def register_customer(app):
+def register_customer(app, *, owner_id):
     loaded = current()
     if loaded is UNAVAILABLE:
         return _unavailable_customer(app)
-    return bindings.customer(app, loaded) if loaded else None
-
-
-def crm_folder(staff, allowed_roles):
-    loaded = current()
-    return bindings.folder_button(staff, allowed_roles) if loaded is not None and loaded is not UNAVAILABLE else []
-
-
-def register_team(app, *, who, db):
-    loaded = current()
-    if loaded is None or loaded is UNAVAILABLE:
+    if loaded is None:
         return None
-    return bindings.team(
-        app, loaded, who=who, allowed_roles=(db.ROLE_OWNER, db.ROLE_ADMIN, db.ROLE_MANAGER),
-        recipients=lambda: bindings.manager_recipients(db),
-    )
+    adapter = bindings.customer(app, loaded)
+    bindings.owner_inbox(app, loaded, owner_id=owner_id)
+    return adapter
 
 
 def mount_application(application):
