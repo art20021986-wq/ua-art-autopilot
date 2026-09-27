@@ -1,5 +1,6 @@
 """Isolated actual-module integration checks; no live files or HTTP requests."""
 import hashlib
+import contextlib
 import importlib.util
 import json
 import os
@@ -63,7 +64,7 @@ class IntegrationTests(unittest.TestCase):
         self.root = pathlib.Path(self.tmp.name)
         self.main = self.root / "crm.db"
         self.spec = self.root / "spec.db"
-        with sqlite3.connect(self.main) as db:
+        with contextlib.closing(sqlite3.connect(self.main)) as db, db:
             db.execute("CREATE TABLE cars(id INTEGER PRIMARY KEY,auto_number TEXT,vin TEXT,published INTEGER,brand TEXT,model TEXT,year TEXT,engine TEXT)")
             db.execute("INSERT INTO cars VALUES(1,'UA-0017',?,1,'Audi','A6','2015','3.0 diesel')", (VIN,))
         for lock in runtime.WRITER_LOCKS:
@@ -81,7 +82,7 @@ class IntegrationTests(unittest.TestCase):
             self.addCleanup(patch.stop)
         runtime._stop.clear()
         legacy.ensure_schema()
-        with legacy.connect_spec(False) as db:
+        with contextlib.closing(legacy.connect_spec(False)) as db, db:
             db.execute("""INSERT INTO vin_spec_jobs(car_uid,vin,policy_version,status,requested_at)
                 VALUES('UA-0017',?,'legacy','READY','2026-09-10T00:00:00Z')""", (VIN,))
             db.commit()
@@ -96,7 +97,7 @@ class IntegrationTests(unittest.TestCase):
         return worker
 
     def fact_count(self):
-        with legacy.connect_spec(True) as db:
+        with contextlib.closing(legacy.connect_spec(True)) as db, db:
             return db.execute("SELECT count(*) FROM additional_specification").fetchone()[0]
 
     def test_success_atomic_fact_slot_receipt_and_two_narrow_pages(self):
@@ -138,7 +139,7 @@ class IntegrationTests(unittest.TestCase):
         worker = self.worker()
         job = worker.queue.claim()
         def mutate(*args, **kwargs):
-            with sqlite3.connect(self.main) as db:
+            with contextlib.closing(sqlite3.connect(self.main)) as db, db:
                 db.execute("UPDATE cars SET vin='WAUZZZ4G3GN081841' WHERE id=1")
             return collected([FACT])
         with mock.patch.object(runtime, "collect_bounded", side_effect=mutate):
@@ -188,7 +189,7 @@ class IntegrationTests(unittest.TestCase):
 
     def test_binding_and_queue_generation_roll_back_together(self):
         runtime.retry_card("UA-0017")
-        with sqlite3.connect(self.main) as db:
+        with contextlib.closing(sqlite3.connect(self.main)) as db, db:
             db.execute("UPDATE cars SET vin='WAUZZZ4G3GN081841'")
         original = collector.ensure_binding
         def interrupted_binding(*args, **kwargs):
@@ -197,10 +198,10 @@ class IntegrationTests(unittest.TestCase):
         with mock.patch.object(collector, "ensure_binding", side_effect=interrupted_binding):
             with self.assertRaises(RuntimeError):
                 runtime.retry_card("UA-0017")
-        with legacy.connect_spec(True) as db:
+        with contextlib.closing(legacy.connect_spec(True)) as db, db:
             self.assertEqual(tuple(db.execute("SELECT vin,generation FROM spec84_fact_bindings").fetchone()), (VIN, 1))
         self.assertEqual(runtime._queue.card_state("UA-0017")["cycle"]["vin"], VIN)
-        with sqlite3.connect(self.main) as db:
+        with contextlib.closing(sqlite3.connect(self.main)) as db, db:
             db.execute("UPDATE cars SET vin='WAUZZZ4G3GN081842'")
         self.assertTrue(runtime.retry_card("UA-0017"))
         self.assertEqual(runtime._queue.card_state("UA-0017")["cycle"]["generation"], 2)

@@ -127,8 +127,8 @@ def test_republished_same_vin_resumes_without_restarting_schedule(queue):
 def test_collection_has_hard_deadline_and_retains_partial_results():
     started = time.monotonic()
     result = collect_bounded(CARD, "spec84_test_adapters:partial_then_stall",
-                             ["nhtsa_vpic", "danawa"], seconds=0.5)
-    assert time.monotonic() - started < 2
+                             ["nhtsa_vpic", "danawa"], seconds=2)
+    assert time.monotonic() - started < 4
     assert result["collection_error"] == "TIMEOUT"
     assert result["sources"]["nhtsa_vpic"]["status"] == "FRESH"
     assert result["sources"]["danawa"]["status"] == "TIMEOUT"

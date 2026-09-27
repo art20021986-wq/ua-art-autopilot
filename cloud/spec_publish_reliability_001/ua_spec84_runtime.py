@@ -45,7 +45,7 @@ def _legacy():
 def _cards():
     service = _legacy()
     result = []
-    with service.connect_main() as db:
+    with contextlib.closing(service.connect_main()) as db:
         rows = [dict(row) for row in db.execute("SELECT rowid AS __rowid__,* FROM cars ORDER BY rowid")]
     for row in rows:
         card = service._card_from_row(row)
@@ -128,8 +128,11 @@ def _heartbeat(status, **detail):
                    (json.dumps(detail), time.time()))
 
 
+@contextlib.contextmanager
 def _spec_transaction():
-    return _legacy().connect_spec(False)
+    with contextlib.closing(_legacy().connect_spec(False)) as db:
+        with db:
+            yield db
 
 
 def _attached(db):
@@ -184,7 +187,7 @@ def fact_binding_matches(uid):
     card = _card(uid)
     if identity(card) is None:
         return False
-    with _legacy().connect_spec(True) as db:
+    with contextlib.closing(_legacy().connect_spec(True)) as db:
         table = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='spec84_fact_bindings'").fetchone()
         if not table:
             return _legacy_vin(db, uid) == card["vin"]
