@@ -20,4 +20,4 @@ writer locks, pauses/resumes the bot and verifies exact public bytes. Rollback i
 rehearsed, including interrupted writes and a failure before any file writes.
 A failed pre-write check never restores stale bytes over someone else's edit.
 
-Status: authenticated R6 preview PASS for UA-0017/0019/0023. R7 refreshes exact sources and public snapshots after the overlapping desktop-gallery installation, retaining its controls. 54 tests PASS; source hashes pin the reviewed desktop release. No photo correction installed yet.
+Status: R6 authenticated preview run 36351997333 PASS; source plan and 11 reviewed public page edits pinned. 54 tests, execution/storage preflight and Gate B validation PASS. The overlapping desktop-gallery install failed during backup before any production writes; R7 was stopped at the resulting global HALT. The production correction therefore pins the actually observed post-tracking source from R6 and supports both legacy and modern viewer arrays. Installation is prepared but not complete.
