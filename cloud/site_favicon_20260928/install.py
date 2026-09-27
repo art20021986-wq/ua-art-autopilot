@@ -1,16 +1,20 @@
 """Install static site icons and HTML links, with a hash-bound plan and rollback."""
 import argparse
+import ast
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
 import re
 import stat
 import tempfile
+import tokenize
 import zipfile
 
 HERE = Path(__file__).resolve().parent
 ROOT = Path('/home/Carix/video')
+BASE = ROOT.parent
 NAMES = ('favicon.ico', 'favicon-96.png', 'apple-touch-icon.png')
 BEGIN = '<!-- UA-ART-FAVICON-20260928 -->'
 END = '<!-- /UA-ART-FAVICON-20260928 -->'
@@ -45,20 +49,60 @@ def icon_html(raw):
     return result
 
 
+def icon_template(raw, filename):
+    """Insert native metadata into the existing static HTML head literals."""
+    text = raw.decode('utf-8')
+    original = ast.parse(text, filename)
+    offsets = [0]
+    for line in text.splitlines(keepends=True):
+        offsets.append(offsets[-1] + len(line))
+    edits = []
+    prefix = re.compile(r'<!doctype html><html\b[^>]*><head><meta charset=[^>]*>', re.I)
+    for token in tokenize.generate_tokens(io.StringIO(text).readline):
+        if token.type != tokenize.STRING:
+            continue
+        try:
+            value = ast.literal_eval(token.string)
+        except (ValueError, SyntaxError):
+            continue
+        if not isinstance(value, str) or not prefix.match(value) or BEGIN in value:
+            continue
+        quote = re.match(r"([\"'])", token.string)
+        if not quote or token.string.startswith(quote[1] * 3):
+            raise ValueError('UNEXPECTED_TEMPLATE_LITERAL:' + filename)
+        encoded = BLOCK.replace('\\', '\\\\').replace(quote[1], '\\' + quote[1]).replace('\n', '\\n')
+        marker = re.search(r'<meta charset=[^>]*>', token.string)
+        if not marker:
+            raise ValueError('TEMPLATE_CHARSET_NOT_FOUND:' + filename)
+        pos = marker.end()
+        replacement = token.string[:pos] + encoded + token.string[pos:]
+        if ast.literal_eval(replacement).replace(BLOCK, '', 1) != value:
+            raise ValueError('UNRELATED_TEMPLATE_CHANGED:' + filename)
+        start = offsets[token.start[0] - 1] + token.start[1]
+        end = offsets[token.end[0] - 1] + token.end[1]
+        edits.append((start, end, replacement))
+    for start, end, replacement in reversed(edits):
+        text = text[:start] + replacement + text[end:]
+    compile(text, filename, 'exec')
+    updated = ast.parse(text, filename)
+    for tree in (original, updated):
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                node.value = node.value.replace(BLOCK, '')
+    if ast.dump(original) != ast.dump(updated):
+        raise ValueError('UNRELATED_CODE_CHANGED:' + filename)
+    if not edits and BEGIN not in text:
+        raise ValueError('TEMPLATE_HEAD_NOT_FOUND:' + filename)
+    return text.encode('utf-8')
+
+
 def candidates():
     if ROOT.is_symlink() or not (ROOT / 'index.html').is_file():
         raise ValueError('SITE_ROOT_UNVERIFIED')
     pages = sorted(p for p in ROOT.glob('*.html') if
-        p.name in {'index.html', 'katalog.html', 'podbor.html', 'info.html', 'izmeritel.html', 'proverka.html'}
+        p.name in {'index.html', 'katalog.html', 'podbor.html', 'info.html', 'izmeritel.html'}
         or re.fullmatch(r'UA-\d{4}(?:-[a-z0-9]+)?\.html', p.name))
     result = {}
-    for path in pages:
-        if path.is_symlink():
-            raise ValueError('SYMLINK:' + path.name)
-        raw = path.read_bytes()
-        updated = icon_html(raw)
-        if updated != raw:
-            result[path] = (raw, updated)
     for name in NAMES:
         payload = (HERE / 'assets' / name).read_bytes()
         if name.endswith('.png') and payload[:8] != b'\x89PNG\r\n\x1a\n':
@@ -71,11 +115,29 @@ def candidates():
         raw = target.read_bytes() if target.exists() else None
         if raw != payload:
             result[target] = (raw, payload)
+    for name in ('stranica.py', 'yadro.py', 'master_card.py'):
+        path = BASE / name
+        if path.is_symlink():
+            raise ValueError('TEMPLATE_SYMLINK:' + name)
+        raw = path.read_bytes()
+        updated = icon_template(raw, name)
+        if updated != raw:
+            result[path] = (raw, updated)
+    for path in pages:
+        if path.is_symlink():
+            raise ValueError('SYMLINK:' + path.name)
+        raw = path.read_bytes()
+        try:
+            updated = icon_html(raw)
+        except ValueError as exc:
+            raise ValueError(path.name + ':' + str(exc)) from exc
+        if updated != raw:
+            result[path] = (raw, updated)
     return result, len(pages)
 
 
 def description(changes):
-    return {str(p.relative_to(ROOT)): {'before': digest(a) if a is not None else None,
+    return {str(p.relative_to(BASE)): {'before': digest(a) if a is not None else None,
                                      'after': digest(b)} for p, (a, b) in changes.items()}
 
 
@@ -116,10 +178,10 @@ def main():
         archive.writestr('manifest.json', json.dumps(plan))
         for path, (before, _) in changes.items():
             if before is not None:
-                archive.writestr(str(path.relative_to(ROOT)), before)
+                archive.writestr(str(path.relative_to(BASE)), before)
     with zipfile.ZipFile(backup) as archive:
         for path, (before, _) in changes.items():
-            if before is not None and archive.read(str(path.relative_to(ROOT))) != before:
+            if before is not None and archive.read(str(path.relative_to(BASE))) != before:
                 raise ValueError('BACKUP_VERIFICATION_FAILED')
     written = []
     try:
