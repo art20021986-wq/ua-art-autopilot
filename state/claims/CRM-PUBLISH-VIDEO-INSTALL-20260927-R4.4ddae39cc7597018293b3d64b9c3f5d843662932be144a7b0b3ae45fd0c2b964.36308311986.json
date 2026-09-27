@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "5798f25b27a731ca3dff1d3ac05dd6ca302a0136cbb88d072425aa931e9744d6",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T09:08:10Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-09-27T09:12:49Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "36308311986",
     "task_id": "CRM-PUBLISH-VIDEO-INSTALL-20260927-R4",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-36308311986-4ddae39cc7597018",
   "production_transaction_path": "state/transactions/CRM-PUBLISH-VIDEO-INSTALL-20260927-R4.4ddae39cc7597018293b3d64b9c3f5d843662932be144a7b0b3ae45fd0c2b964.36308311986.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-124972f91b7dd9e4-16a460250a7392ce",
   "receipt_path": "state/receipts/CRM-PUBLISH-VIDEO-INSTALL-20260927-R4.json",
   "receipt_validation_status": "PENDING",
@@ -85,5 +85,5 @@
       "cloud/publish_video_latency_004/test_deployment.py": "290d410b239b6640503c9ddb3e213903210276af956aad75ce124f2f41f6fe6a"
     }
   },
-  "updated_at": "2026-09-27T09:08:10Z"
+  "updated_at": "2026-09-27T09:12:49Z"
 }
