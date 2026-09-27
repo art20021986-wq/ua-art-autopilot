@@ -1,6 +1,6 @@
 {
-  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-final",
-  "manifest_sha256": "f6ec4c5af577f63b1a65479575a4a4da4f936ddd8cb11385e77b34779f1989af",
+  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-mobile",
+  "manifest_sha256": "657e31e7d961043f7ca58752133774b1821ad2ccbbfbb0bc5255a400f31217ec",
   "files": 16,
   "production_write": false,
   "tested_commit": "a78e4835adb3a16e479a9629a359b0b63b88fe94",
@@ -38,5 +38,20 @@
   "pending": [
     "Safari/iPhone, Chrome mobile and TikTok visual review at 320–430px",
     "owner publication command after Gate B"
-  ]
+  ],
+  "mobile_css_review": {
+    "date_utc": "2026-09-27",
+    "stylesheet_version": "20260927.4",
+    "changes": [
+      "Zero grid track minimums and bounded controls",
+      "Single-column ranges and checkbox lists below 600px",
+      "Long labels and selected model names wrap without hiding overflow"
+    ],
+    "checks": [
+      "5 release/rollback tests passed",
+      "full three-language DOM flow passed"
+    ],
+    "visual_browser_result": "NOT VERIFIED",
+    "notes": "Static CSS review and DOM tests do not prove rendered mobile layout. Existing backend tested at tested_commit is unchanged."
+  }
 }

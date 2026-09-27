@@ -67,7 +67,8 @@ def patch_form(source):
         start,end=installed[0]
         result=source[:start]+fragment+source[end:]
         for name in ('css','js'):
-            result,count=re.subn(r'(order/order\.'+name+r'\?v=)[^"\s]+',r'\g<1>20260927.3',result)
+            version='20260927.4' if name=='css' else '20260927.3'
+            result,count=re.subn(r'(order/order\.'+name+r'\?v=)[^"\s]+',r'\g<1>'+version,result)
             if count!=1: raise ValueError('Unexpected order asset includes')
         return result
     start,_=one_span(source,lambda tag,a:tag=='div' and a.get('id')=='p_zag')
@@ -77,7 +78,7 @@ def patch_form(source):
     if "id='p_forma'" not in block or "id='p_send'" not in block or "t:'podbor'" not in block:
         raise ValueError('Unknown order form implementation; inspect before patching')
     result=source[:start]+fragment+source[end:]
-    includes='<link rel="stylesheet" href="order/order.css?v=20260927.3"><script type="module" src="order/order.js?v=20260927.3"></script>'
+    includes='<link rel="stylesheet" href="order/order.css?v=20260927.4"><script type="module" src="order/order.js?v=20260927.3"></script>'
     return result.replace('</head>',includes+'</head>',1)
 
 

@@ -22,10 +22,10 @@
 .ua-order .model h3 { font-size:18px; line-height:1.35; margin:0; }
 .ua-order .model .tag { font-size:13px; color:#d0dbe3; }
 .ua-order .model button { margin-top:auto; width:100%; }
-.ua-order form, .ua-order #review, .ua-order #receipt { margin-top:28px; padding:24px; background:var(--panel); border:1px solid #3c5367; border-radius:12px; }
-.ua-order .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.ua-order form, .ua-order #review, .ua-order #receipt { margin-top:28px; padding:24px; background:var(--panel); border:1px solid #3c5367; border-radius:12px; overflow-wrap:anywhere; }
+.ua-order .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
 .ua-order label { display:flex; flex-direction:column; gap:7px; margin-bottom:16px; }
-.ua-order input, .ua-order select, .ua-order textarea { font:inherit; width:100%; padding:12px; background:#0b1c2d; color:#fff; border:1px solid #728292; border-radius:8px; min-height:44px; }
+.ua-order input, .ua-order select, .ua-order textarea { font:inherit; width:100%; min-width:0; max-width:100%; padding:12px; background:#0b1c2d; color:#fff; border:1px solid #728292; border-radius:8px; min-height:44px; }
 .ua-order .consent { flex-direction:row; align-items:flex-start; }
 .ua-order .consent input { width:22px; min-height:22px; height:22px; flex-shrink:0; }
 .ua-order #consent-copy { font-size:14px; color:#c6d2dc; }
@@ -51,21 +51,23 @@
 }
 /* Preference controls stay scoped to this form; native selects keep mobile UX. */
 .ua-order fieldset{margin:0;padding:16px;border:1px solid #516678;border-radius:12px;min-width:0}
-.ua-order legend{padding:0 6px;font-weight:650;color:#f2eee6}
+.ua-order legend{padding:0 6px;max-width:100%;font-weight:650;color:#f2eee6}
 .ua-order .field-help{font-size:14px;line-height:1.5;color:#c2ced8;margin:8px 0 12px}
 .ua-order .field-error{font-size:15px;color:#ffb4ab;margin:8px 0 0}
 .ua-order [aria-invalid=true]{border-color:#ffb4ab;outline:2px solid #ffb4ab}
 .ua-order .control{margin-top:12px}
 .ua-order .control label{margin:0 0 6px}
-.ua-order .search-select,.ua-order .number-choice{display:grid;gap:8px}
-.ua-order .range-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ua-order .search-select,.ua-order .number-choice{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.ua-order .range-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ua-order .range-controls>div{min-width:0}
 .ua-order .range-controls>div>span{display:block;margin:0 0 6px;color:#c2ced8}
 .ua-order .check-option{display:flex;flex-direction:row;align-items:center;gap:10px;min-height:44px;margin:4px 0;font-size:15px;cursor:pointer}
 .ua-order .check-option input{width:22px;height:22px;min-height:22px;flex:0 0 22px;accent-color:#e8c87d;padding:0}
 .ua-order fieldset>.check-option:last-of-type{margin-top:12px;color:#d5dce4}
 .ua-order .choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px}
 .ua-order .selected-models{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:8px 0}
-.ua-order .selected-models button{font-size:14px;min-height:44px;padding:8px 12px}
+.ua-order .selected-models li{min-width:0;max-width:100%}
+.ua-order .selected-models button{font-size:14px;min-height:44px;max-width:100%;padding:8px 12px}
 .ua-order details{margin:22px 0;padding:16px;border:1px solid #516678;border-radius:12px}
 .ua-order summary{cursor:pointer;min-height:44px;align-content:center;font-size:20px;font-weight:600}
 .ua-order details[open] summary{margin-bottom:12px}
@@ -73,4 +75,8 @@
 .ua-order #optional-fields>fieldset:last-child{grid-column:1/-1}
 .ua-order #main-fields{align-items:start;gap:16px}
 .ua-order #optional-fields{gap:16px}
-@media(max-width:600px){.ua-order fieldset{padding:12px}.ua-order details{padding:12px}.ua-order .choice-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){
+ .ua-order fieldset{padding:12px}
+ .ua-order details{padding:12px}
+ .ua-order .range-controls,.ua-order .choice-grid{grid-template-columns:minmax(0,1fr)}
+}
