@@ -1,7 +1,7 @@
 {
   "specification": "UA-ART-ORDER-8COUNTRIES-40-001 v1.1",
-  "checked_at_utc": "2026-09-27T12:42:00+00:00",
-  "status": "PRODUCTION_DEPLOYED_ENABLED_RUNTIME_VERIFIED",
+  "checked_at_utc": "2026-09-27T12:55:00+00:00",
+  "status": "PRODUCTION_ENABLED_ADDITIONAL_BOT_RESTART_UNCONFIRMED",
   "production_modified": true,
   "gate_b": "NOT_PASSED",
   "python_runtime": "3.12.14",
@@ -351,5 +351,30 @@
       "media publication failure",
       "final manifest write failure"
     ]
+  },
+  "additional_process_refresh": {
+    "owner_request": "Обнови процессы",
+    "owner_request_local": "2026-09-27T19:47:23+07:00",
+    "checked_at_utc": "2026-09-27T12:55:00+00:00",
+    "web_reload_clicked": true,
+    "public_api_after_reload": {
+      "status": 200,
+      "countries": 8,
+      "models": 40,
+      "request_origin": "PythonAnywhere server"
+    },
+    "existing_task_restart_clicks": 1,
+    "task_restart_accepted": "UNKNOWN",
+    "task_restart_completed": "UNCONFIRMED",
+    "hosting_task_panel": "Error connecting to server; then 502 connection refused",
+    "last_confirmed_bot_start_utc": [
+      "2026-09-27T12:33:14+00:00",
+      "2026-09-27T12:33:15+00:00"
+    ],
+    "last_confirmed_outbox_job_utc": "2026-09-27T12:33:15+00:00",
+    "manual_worker_spawned": false,
+    "force_kill_used": false,
+    "production_files_changed": false,
+    "remaining": "Confirm task state and fresh start log after hosting panel becomes available; authorization already received"
   }
 }
