@@ -5,7 +5,7 @@ No writes, downloads, deletion, ordinal guessing, or directory-based fallback.
 import json
 import re
 from pathlib import Path
-from public_media import visible_photo_ids, _list
+from public_media import visible_photo_ids
 
 
 def select_names(card, ledger):
@@ -30,13 +30,12 @@ def select_names(card, ledger):
     names = [reverse[fid] for fid in ids]
     cover = card.get('cover_photo')
     if cover:
-        if cover not in mapping:
-            raise RuntimeError('CRM cover is not in download ledger')
+        if not isinstance(cover, str) or not re.fullmatch(r'\d+\.jpg', cover):
+            raise RuntimeError('Invalid CRM cover filename')
         if cover in names:
             names = [cover] + [x for x in names if x != cover]
-        elif mapping[cover] not in set(_list(card.get('hidden_photos'))):
-            raise RuntimeError('CRM cover is not a current photo')
-        # A deliberately hidden cover must not be exposed. Use first visible.
+        # Hidden/deleted covers are stale references, not publication blockers.
+        # Fall back to the first current visible photo, never to a disk scan.
     return names
 
 

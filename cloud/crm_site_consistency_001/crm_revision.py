@@ -29,7 +29,8 @@ def snapshot(root='/home/Carix'):
                 raise RuntimeError('Missing or duplicate published auto_number')
             codes.add(code)
             related = {
-                'schema': 3, 'car': row, 'photos': ledger.get('foto:' + code),
+                'schema': 4, 'car': row, 'photos': ledger.get('foto:' + code),
+                'videos': ledger.get(code),
                 'media': [dict(r) for r in conn.execute('SELECT * FROM media WHERE car_id=? ORDER BY id', (row['id'],))],
                 'specification': [dict(r) for r in conn.execute('SELECT * FROM public_specs.additional_specification WHERE car_uid=? ORDER BY id', (code,))],
                 'spec_meta': [dict(r) for r in conn.execute('SELECT * FROM public_specs.additional_specification_meta WHERE car_uid=? ORDER BY field_key', (code,))],

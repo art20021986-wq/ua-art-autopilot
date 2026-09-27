@@ -34,3 +34,15 @@ DELIVERY_STATUS_SQL: Supplied and tested; not executed on live CRM. Two archived
 DELIVERY_STATUS_NEXT: Read cloud/delivery_status_001/CONTINUATION.json and reconciliation_evidence_20260926.json. Resolve current transaction through registered manual recovery, correct and rehearse nonce copying in the rollback runtime, then create a fresh plan and install the router fix through main Actions. Do not replay the old installer, clear HALT without reconciliation, or repurpose TASK120-only recovery.
 DELIVERY_STATUS_CONTINUATION: Existing automation 6ab80e71aa688191868f657b5631fcae remains enabled. It must inspect current recovery state before doing any installation.
 DELIVERY_STATUS_FULL_ACCEPTANCE: NO
+
+MEDIA_TASK: UA-ART-CRM-MEDIA-SYNC-001
+MEDIA_STATUS: DRAFT_CANDIDATE_BLOCKED_CPU_HALT_AND_SOURCE_REBASE
+MEDIA_OWNER_AUTHORIZATION: 2026-09-27 owner requested media reconciliation, specification and repair; no repeated general approval needed.
+MEDIA_PRODUCTION_WRITTEN: NO
+MEDIA_READONLY: CRM snapshot 2026-09-27T04:36:41Z; 19 active public cards, 2 archived rows separately observed. All 19 public HTML hashes equal server files. Expected visible photos 604; displayed 606.
+MEDIA_MISMATCHES: UA-0017 hidden 040.jpg; UA-0019 hidden 001.jpg; UA-0012/UA-0016 reordered first photo. UA-0001 first video has no verified downloader binding. No original-byte or playback acceptance.
+MEDIA_CAUSE: Installed photo generator scans JPG directory and promotes horizontal image; video discovery recursively scans filename prefixes instead of CRM membership. Downloader atomically replaces mutable filenames; a complete content manifest/versioned media pipeline is still needed.
+MEDIA_CANDIDATE: Deleted-cover fallback, video-ledger revision, strict CRM video selection and player validation. Video helper not yet integrated into generators/downloader. 74 local tests PASS. Execution-contract validation is BLOCKED: ROUTE_CLASS_MISMATCH:STANDARD:CRITICAL; no launch is allowed.
+MEDIA_RUNTIME_DRIFT: stranica.py, master_card.py and ua_crm_public_sync.py differ from previous gallery patch pins after delivery-status installation. Original runtime pins retained; do not launch the preview until rebased and recovery is complete.
+MEDIA_NEXT: cloud/crm_media_sync_001/README.md and docs/UA-ART-CRM-MEDIA-SYNC-001.md. Resolve existing transaction through registered recovery, measure CPU, rebase exact source patches preserving delivery work, resolve UA-0001 provenance, finish media manifests/integration, rehearse rollback and Gate B, then install through main Actions and verify.
+MEDIA_FULL_ACCEPTANCE: NO

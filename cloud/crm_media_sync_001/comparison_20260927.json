@@ -1,0 +1,374 @@
+{
+  "crm_observed_at": "2026-09-27T04:36:41.911507+00:00",
+  "public_observed_at": "2026-09-27T04:26:34.100734+00:00",
+  "cards_checked": 19,
+  "expected_photos": 604,
+  "public_photos": 606,
+  "public_video_urls": 18,
+  "photo_mismatch_codes": [
+    "UA-0012",
+    "UA-0016",
+    "UA-0017",
+    "UA-0019"
+  ],
+  "source_drift": {
+    "stranica.py": {
+      "candidate_expected": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+      "observed": "4d710266abb2a92754ff3e3fc7de86c628760bee3c455dfbb177dedec113b1a1"
+    },
+    "master_card.py": {
+      "candidate_expected": "27e32420bbec9f1e0a25621e1c20dda20944537daa40c1ccac574689cd6c3f6e",
+      "observed": "c99b6c0271586d4f8c56e4184528ab6f20541173be9a287d9d64661b4b7184b2"
+    },
+    "ua_crm_public_sync.py": {
+      "candidate_expected": "31e47106dc65ac1a2e013708bd58112fc1fffae06445351ea5f08246cf984e5c",
+      "observed": "2b5f6a2473b263fddd6ab3266a3ba76cc9738da15178f865862098821cabcc41"
+    }
+  },
+  "production_written": false,
+  "full_acceptance": false,
+  "cards": [
+    {
+      "code": "UA-0001",
+      "crm_visible_photos": 30,
+      "public_photos": 30,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "status": "UNVERIFIED_MAPPING",
+        "unmapped": 1
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0003",
+      "crm_visible_photos": 26,
+      "public_photos": 26,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 0,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0004",
+      "crm_visible_photos": 28,
+      "public_photos": 28,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 1,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0005",
+      "crm_visible_photos": 11,
+      "public_photos": 11,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 4,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0006",
+      "crm_visible_photos": 40,
+      "public_photos": 40,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 0,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0007",
+      "crm_visible_photos": 30,
+      "public_photos": 30,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 1,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0008",
+      "crm_visible_photos": 33,
+      "public_photos": 33,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 2,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0009",
+      "crm_visible_photos": 20,
+      "public_photos": 20,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 0,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0010",
+      "crm_visible_photos": 28,
+      "public_photos": 28,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 0,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0011",
+      "crm_visible_photos": 35,
+      "public_photos": 35,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 0,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0012",
+      "crm_visible_photos": 11,
+      "public_photos": 11,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": false,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 0,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0013",
+      "crm_visible_photos": 46,
+      "public_photos": 46,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 0,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0014",
+      "crm_visible_photos": 46,
+      "public_photos": 46,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 0,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0015",
+      "crm_visible_photos": 37,
+      "public_photos": 37,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 3,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0016",
+      "crm_visible_photos": 31,
+      "public_photos": 31,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": false,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 1,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0017",
+      "crm_visible_photos": 39,
+      "public_photos": 40,
+      "extra_photos": [
+        "040.jpg"
+      ],
+      "missing_photos": [],
+      "photo_order_matches": false,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 0,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0018",
+      "crm_visible_photos": 59,
+      "public_photos": 59,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 1,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0019",
+      "crm_visible_photos": 31,
+      "public_photos": 32,
+      "extra_photos": [
+        "001.jpg"
+      ],
+      "missing_photos": [],
+      "photo_order_matches": false,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 0,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    },
+    {
+      "code": "UA-0022",
+      "crm_visible_photos": 23,
+      "public_photos": 23,
+      "extra_photos": [],
+      "missing_photos": [],
+      "photo_order_matches": true,
+      "public_equals_server_html": true,
+      "video": {
+        "video_count": 2,
+        "structure_verified": true,
+        "content_identity_verified": false,
+        "playback_verified": false,
+        "full_consistency_accepted": false,
+        "status": "STRUCTURE_MATCH"
+      },
+      "original_byte_identity": "NOT_VERIFIED"
+    }
+  ]
+}

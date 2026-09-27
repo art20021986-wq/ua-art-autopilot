@@ -1,0 +1,550 @@
+{
+  "sources": {
+    "video_sinhron.py": {
+      "sha256": "7a49a09546267751b4a8a4bc70d6970e599c702968542c72ba7205537ad09a4e",
+      "functions": [
+        "log",
+        "tokeny",
+        "pamyat_chitat",
+        "pamyat_pisat",
+        "imya_rolika",
+        "svoi_fayly",
+        "vnutri_mp4",
+        "put_v_telegram",
+        "vnutri_jpeg",
+        "foto_papka",
+        "imya_foto",
+        "svoi_foto",
+        "chistit_kesh",
+        "skachat",
+        "zastavka",
+        "ubrat",
+        "_spisok_fid",
+        "mashiny",
+        "peresobrat",
+        "prohod",
+        "_cikl",
+        "start"
+      ]
+    },
+    "stranica.py": {
+      "sha256": "4d710266abb2a92754ff3e3fc7de86c628760bee3c455dfbb177dedec113b1a1",
+      "functions": [
+        "zastavka",
+        "chitat",
+        "fajl",
+        "ekran",
+        "sajt",
+        "karta_url",
+        "imya_bota",
+        "v_bota",
+        "mashiny",
+        "nomer",
+        "cena",
+        "etap_dlinno",
+        "etap_korotko",
+        "nomer_etapa",
+        "sklonenie",
+        "ostatok_dney",
+        "data_vydachi",
+        "blok_pribytiya",
+        "srok",
+        "razmer_jpeg",
+        "variant",
+        "umenshit",
+        "legkie",
+        "ves",
+        "dostat_iz_stranic",
+        "kadry_mashiny",
+        "svyaz_blok",
+        "shapka_ishodnaya",
+        "podval_ishodnyy",
+        "kadry_diagnostiki",
+        "est_diagnostika",
+        "sobrat_diagnostiku",
+        "_ua_stage_escape",
+        "_ua_stage_number",
+        "_ua_stage_date",
+        "_ua_stage_today",
+        "_ua_stage_pretty",
+        "_ua_stage_plural",
+        "_ua_stage_saved_release",
+        "_ua_stage_eta",
+        "_ua_delivery_stage_anchor",
+        "sobrat_kartochku",
+        "sobrat_katalog",
+        "sobrat_glavnuyu",
+        "nachalo",
+        "p_shapka",
+        "sobrat_podbor",
+        "sobrat_info",
+        "zapisat",
+        "otklyuchit_staroe",
+        "obnovit_etalon",
+        "main",
+        "shapka",
+        "podval",
+        "_v135_snimok",
+        "_v135_proverka",
+        "main",
+        "_v157_net_fajlov",
+        "main",
+        "est_diagnostika",
+        "_v167_zapasnaya",
+        "sobrat_diagnostiku",
+        "_v168_est_diagnostika",
+        "_v169_razobrat",
+        "_v169_krasivo",
+        "_v169_dney_do",
+        "blok_pribytiya",
+        "_v170_ekran",
+        "_v170_cena",
+        "_v170_kartinka",
+        "_v170_meta",
+        "_v171_ekran",
+        "_v171_js",
+        "_v171_adres",
+        "_v171_knopka",
+        "_v172_zapis_v_zhurnal",
+        "_v173_segodnya",
+        "_v173_pamyat_chitat",
+        "_v173_pamyat_pisat",
+        "_v173_data_vyezda",
+        "_v173_razobrat",
+        "_v173_krasivo",
+        "_v173_dney_do",
+        "_v173_bolshoy_schet",
+        "_v173_stroka",
+        "blok_pribytiya",
+        "_v174_opisanie",
+        "_v174_zapis",
+        "_v174_proverit",
+        "_ua_seo068_attr",
+        "_ua_seo068_strip",
+        "_ua_seo068_head",
+        "_ua_seo068_diag_anchor",
+        "_ua_seo068_cta",
+        "_ua_seo068_normalize",
+        "_ua_seo068_identifier",
+        "_ua_seo068_core_path",
+        "sobrat_kartochku",
+        "sobrat_katalog",
+        "_ua068_e",
+        "_ua068_terms",
+        "_ua068_forbidden_count",
+        "_ua068_date",
+        "_ua068_pretty",
+        "_ua068_stage",
+        "_ua068_primary_action",
+        "_ua068_primary_action_errors",
+        "_ua068_eta",
+        "_ua068_vin_result",
+        "_ua068_engine",
+        "_ua068_video_count_from_html",
+        "_ua068_video_count",
+        "_ua068_video_word",
+        "_ua068_cache_meta",
+        "_ua068_replace_marked",
+        "_ua068_diag_anchor",
+        "_ua068_diag_placeholder",
+        "_ua068_ensure_diag_files",
+        "_ua068_balanced_div_end",
+        "_ua068_strip_legacy_blocks",
+        "_ua068_native_stage_span",
+        "_ua068_reposition_stage",
+        "_ua068_ensure_stage_diag",
+        "_ua068_vin_block",
+        "_ua068_ensure_engine",
+        "_ua068_strip_vin_actions",
+        "_ua068_ensure_card",
+        "_ua068_catalog_block",
+        "_ua068_catalog_fallback",
+        "_ua068_catalog_item",
+        "_ua083_visible",
+        "_ua083_dedup_block",
+        "_ua083_dedup_catalog",
+        "_ua068_ensure_catalog_base",
+        "_ua068_ensure_catalog",
+        "_ua068_card_errors",
+        "sobrat_kartochku",
+        "sobrat_katalog",
+        "_ua84_require_uid",
+        "_ua84_model_uid",
+        "sobrat_kartochku",
+        "zapisat",
+        "_ua0022_wrap_main"
+      ]
+    },
+    "master_card.py": {
+      "sha256": "c99b6c0271586d4f8c56e4184528ab6f20541173be9a287d9d64661b4b7184b2",
+      "functions": [
+        "stage_po_statusu",
+        "vse_kody",
+        "kody_na_sayte",
+        "dannye",
+        "_json_fajl",
+        "_zapisat_json",
+        "tracking",
+        "_razmer",
+        "fokus_fajla",
+        "kandidat_fasada",
+        "pervoe_foto",
+        "front_podtverzhden",
+        "vybrat_glavnoe",
+        "zakrepit_pervoe_foto_v_crm",
+        "zapisat_fasad_v_crm",
+        "bbox_obekta",
+        "_cvet_kraya",
+        "sdelat_vitrinnoe",
+        "podgotovit_vitrinu",
+        "stil_fokusa",
+        "_pravka_tega_foto",
+        "_dhash",
+        "_dlitelnost",
+        "_put_iz_src",
+        "_rasstoyanie",
+        "otpechatki_kadrov",
+        "otpechatok_video",
+        "sodejatelno_odno",
+        "ubrat_dubli_video",
+        "video_uzhe_est",
+        "oblegchit",
+        "kanonicheskiy_put",
+        "versiya_kartochki",
+        "video_fajly_mashiny",
+        "svedeniya_video",
+        "ubrat_dubli_v_istochnike",
+        "unikalnye_video",
+        "svesti_k_unikalnym",
+        "nayti_poteryannoe_video",
+        "_granica_vlevo",
+        "_granica_vpravo",
+        "fragment",
+        "ochistit_staroe",
+        "_skolko_chatov",
+        "obespechit_chat",
+        "pochinit_chat",
+        "est_materialy",
+        "cta_diagnostiki",
+        "obrabotat_diagnostiku",
+        "proverit",
+        "zamechaniya",
+        "_vstavit_pered_diagnostikoy",
+        "obrabotat_kartochku",
+        "obrabotat_obshuyu",
+        "zastavka_rolika",
+        "rasstavit_zastavki",
+        "video_bez_dublej",
+        "proverit",
+        "obrabotat_kartochku",
+        "_fokus_procenty",
+        "zapolnit_foto",
+        "obrabotat_obshuyu",
+        "_ua_stage_escape",
+        "_ua_stage_number",
+        "_ua_stage_date",
+        "_ua_stage_today",
+        "_ua_stage_pretty",
+        "_ua_stage_plural",
+        "_ua_stage_saved_release",
+        "_ua_stage_eta",
+        "_ua_delivery_stage_anchor",
+        "_ua_master_balanced_div_end",
+        "_ua_master_remove_class_divs",
+        "_ua_master_stage_span",
+        "_ua_master_stage_errors",
+        "_ua_master_ensure_stage",
+        "_ua_master_diag_anchor",
+        "_ua_master_diag_errors",
+        "_ua_master_ensure_diag",
+        "cta_diagnostiki",
+        "obrabotat_kartochku",
+        "proverit",
+        "_ua_seo068_attr",
+        "_ua_seo068_strip",
+        "_ua_seo068_head",
+        "_ua_seo068_diag_anchor",
+        "_ua_seo068_cta",
+        "_ua_seo068_normalize",
+        "_ua_seo068_identifier",
+        "_ua_seo068_core_path",
+        "obrabotat_kartochku",
+        "obrabotat_obshuyu",
+        "proverit",
+        "_ua068_e",
+        "_ua068_terms",
+        "_ua068_forbidden_count",
+        "_ua068_date",
+        "_ua068_pretty",
+        "_ua068_stage",
+        "_ua068_primary_action",
+        "_ua068_primary_action_errors",
+        "_ua068_eta",
+        "_ua068_vin_result",
+        "_ua068_engine",
+        "_ua068_video_count_from_html",
+        "_ua068_video_count",
+        "_ua068_video_word",
+        "_ua068_cache_meta",
+        "_ua068_replace_marked",
+        "_ua068_diag_anchor",
+        "_ua068_diag_placeholder",
+        "_ua068_ensure_diag_files",
+        "_ua068_balanced_div_end",
+        "_ua068_strip_legacy_blocks",
+        "_ua068_native_stage_span",
+        "_ua068_reposition_stage",
+        "_ua068_ensure_stage_diag",
+        "_ua068_vin_block",
+        "_ua068_ensure_engine",
+        "_ua068_strip_vin_actions",
+        "_ua068_ensure_card",
+        "_ua068_catalog_block",
+        "_ua068_catalog_fallback",
+        "_ua068_catalog_item",
+        "_ua083_visible",
+        "_ua083_dedup_block",
+        "_ua083_dedup_catalog",
+        "_ua068_ensure_catalog_base",
+        "_ua068_ensure_catalog",
+        "_ua068_card_errors",
+        "_ua068_master_row",
+        "obrabotat_kartochku",
+        "proverit",
+        "obrabotat_obshuyu",
+        "obrabotat_obshuyu",
+        "obrabotat_kartochku",
+        "obrabotat_diagnostiku",
+        "proverit",
+        "_ua84_require_uid",
+        "_ua84_model_uid",
+        "obrabotat_kartochku"
+      ]
+    },
+    "ua_crm_public_sync.py": {
+      "sha256": "2b5f6a2473b263fddd6ab3266a3ba76cc9738da15178f865862098821cabcc41",
+      "functions": [
+        "snapshot",
+        "save_state",
+        "initialize",
+        "notify",
+        "reconcile_once",
+        "_run",
+        "start"
+      ]
+    },
+    "publikaciya.py": {
+      "sha256": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+      "functions": [
+        "_sha",
+        "_sha_teksta",
+        "_chitat",
+        "_zhurnal",
+        "_kartochki",
+        "proverit",
+        "_master",
+        "_zapisat_atomarno",
+        "opublikovat",
+        "_otkat",
+        "_ua9_waiting_text",
+        "_master",
+        "proverit",
+        "_ua9_sobrat_katalog",
+        "ua0009_urgent_probe",
+        "ua0009_urgent_publish",
+        "_master",
+        "opublikovat",
+        "obnovit_katalog",
+        "_zapisat_atomarno",
+        "proverit",
+        "_master",
+        "_ua84_require_uid",
+        "_ua84_model_uid",
+        "_zapisat_atomarno"
+      ]
+    }
+  },
+  "videos": [
+    {
+      "code": "UA-0001",
+      "crm_count": 3,
+      "expected": [
+        "UNMAPPED",
+        "UA-0001-02.mp4",
+        "UA-0001-03.mp4"
+      ],
+      "ledger_value_types": [
+        "str"
+      ]
+    },
+    {
+      "code": "UA-0003",
+      "crm_count": 0,
+      "expected": [],
+      "ledger_value_types": []
+    },
+    {
+      "code": "UA-0004",
+      "crm_count": 1,
+      "expected": [
+        "UA-0004.mp4"
+      ],
+      "ledger_value_types": [
+        "str"
+      ]
+    },
+    {
+      "code": "UA-0005",
+      "crm_count": 4,
+      "expected": [
+        "UA-0005.mp4",
+        "UA-0005-02.mp4",
+        "UA-0005-03.mp4",
+        "UA-0005-04.mp4"
+      ],
+      "ledger_value_types": [
+        "str"
+      ]
+    },
+    {
+      "code": "UA-0006",
+      "crm_count": 0,
+      "expected": [],
+      "ledger_value_types": []
+    },
+    {
+      "code": "UA-0007",
+      "crm_count": 1,
+      "expected": [
+        "UA-0007.mp4"
+      ],
+      "ledger_value_types": [
+        "str"
+      ]
+    },
+    {
+      "code": "UA-0008",
+      "crm_count": 2,
+      "expected": [
+        "UA-0008.mp4",
+        "UA-0008-02.mp4"
+      ],
+      "ledger_value_types": [
+        "str"
+      ]
+    },
+    {
+      "code": "UA-0009",
+      "crm_count": 0,
+      "expected": [],
+      "ledger_value_types": []
+    },
+    {
+      "code": "UA-0010",
+      "crm_count": 0,
+      "expected": [],
+      "ledger_value_types": []
+    },
+    {
+      "code": "UA-0011",
+      "crm_count": 0,
+      "expected": [],
+      "ledger_value_types": []
+    },
+    {
+      "code": "UA-0012",
+      "crm_count": 0,
+      "expected": [],
+      "ledger_value_types": []
+    },
+    {
+      "code": "UA-0013",
+      "crm_count": 0,
+      "expected": [],
+      "ledger_value_types": []
+    },
+    {
+      "code": "UA-0014",
+      "crm_count": 0,
+      "expected": [],
+      "ledger_value_types": []
+    },
+    {
+      "code": "UA-0015",
+      "crm_count": 3,
+      "expected": [
+        "UA-0015.mp4",
+        "UA-0015-02.mp4",
+        "UA-0015-03.mp4"
+      ],
+      "ledger_value_types": [
+        "str"
+      ]
+    },
+    {
+      "code": "UA-0016",
+      "crm_count": 1,
+      "expected": [
+        "UA-0016.mp4"
+      ],
+      "ledger_value_types": [
+        "str"
+      ]
+    },
+    {
+      "code": "UA-0017",
+      "crm_count": 0,
+      "expected": [],
+      "ledger_value_types": []
+    },
+    {
+      "code": "UA-0018",
+      "crm_count": 1,
+      "expected": [
+        "UA-0018.mp4"
+      ],
+      "ledger_value_types": [
+        "str"
+      ]
+    },
+    {
+      "code": "UA-0019",
+      "crm_count": 0,
+      "expected": [],
+      "ledger_value_types": []
+    },
+    {
+      "code": "UA-0020",
+      "crm_count": 3,
+      "expected": [
+        "UA-0020.mp4",
+        "UA-0020-02.mp4",
+        "UA-0020-03.mp4"
+      ],
+      "ledger_value_types": [
+        "str"
+      ]
+    },
+    {
+      "code": "UA-0021",
+      "crm_count": 1,
+      "expected": [
+        "UA-0021.mp4"
+      ],
+      "ledger_value_types": [
+        "str"
+      ]
+    },
+    {
+      "code": "UA-0022",
+      "crm_count": 2,
+      "expected": [
+        "UA-0022.mp4",
+        "UA-0022-02.mp4"
+      ],
+      "ledger_value_types": [
+        "str"
+      ]
+    }
+  ]
+}

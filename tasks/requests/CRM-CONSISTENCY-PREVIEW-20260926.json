@@ -1,7 +1,7 @@
 {
   "task_id": "CRM-CONSISTENCY-PREVIEW-20260926",
   "title": "Isolated full renderer validation before critical consistency installation",
-  "description": "Owner 2026-09-26 22:35 Asia/Ho_Chi_Minh requests critical production repair. First run the candidate renderer in a private disposable shadow directory on PythonAnywhere. The controller uploads only a preview script and receipt under uploads, creates and removes a private shadow copy, temporarily schedules only that preview, forbids production writes during rendering and compares protected hashes. No production source, website HTML, CRM rows, or original media are modified. This is not production installation or full acceptance. Clean-package tests pass; the prior missing-private-fixture failure is terminally recorded. Actual private adapter regression now runs inside the isolated host rehearsal. Preserve redacted failure receipt and print structured failure evidence because STANDARD only exports successful execution evidence. Copy actual sidecar specification database, track its visible facts/metadata revisions, and validate final card before publication.",
+  "description": "Owner 2026-09-26 22:35 Asia/Ho_Chi_Minh requests critical production repair. First run the candidate renderer in a private disposable shadow directory on PythonAnywhere. The controller uploads only a preview script and receipt under uploads, creates and removes a private shadow copy, temporarily schedules only that preview, forbids production writes during rendering and compares protected hashes. No production source, website HTML, CRM rows, or original media are modified. This is not production installation or full acceptance. Clean-package tests pass; the prior missing-private-fixture failure is terminally recorded. Actual private adapter regression now runs inside the isolated host rehearsal. Preserve redacted failure receipt and print structured failure evidence because STANDARD only exports successful execution evidence. Copy actual sidecar specification database, track its visible facts/metadata revisions, and validate final card before publication. Media follow-up 2026-09-27: deleted-cover fallback and video-ledger revisions, isolated video selector/HTML tests. Draft only: production source pins are stale after the delivery-status installation, video rendering/downloader integration is pending, UA-0001 has an unmapped video. Do not launch until runtime reconciliation, source rebase and fresh resource checks pass. No launch authorization is added by this change.",
   "control_plane_version": "TASK107-R2",
   "requested_min_class": "STANDARD",
   "ai_requested": false,
@@ -14,7 +14,7 @@
   "storage_required_bytes": 16777216,
   "execution": {
     "controller_path": "cloud/crm_site_consistency_001/preview_controller.py",
-    "controller_sha256": "22dc42bc73e6f601464c9e737738b298c23ed995b2e433d6e924c5709157b311",
+    "controller_sha256": "444963362b6fa1e9d3215a4c8fcf671cb8827553b10582a8c19baf61042cea24",
     "dependency_paths": [
       "cloud/crm_site_consistency_001/public_fields.py",
       "cloud/crm_site_consistency_001/public_media.py",
@@ -24,7 +24,8 @@
       "cloud/crm_site_consistency_001/build_candidate.py",
       "cloud/crm_site_consistency_001/build_gallery_patch.py",
       "cloud/crm_site_consistency_001/shadow_validate.py",
-      "cloud/crm_site_consistency_001/preview_transport.py"
+      "cloud/crm_site_consistency_001/preview_transport.py",
+      "cloud/crm_site_consistency_001/crm_videos.py"
     ],
     "evidence_paths": [
       "cloud/crm_site_consistency_001/shadow_evidence.json",
@@ -33,8 +34,8 @@
     "file_sha256": {
       "cloud/crm_site_consistency_001/public_fields.py": "9ac441ce1548fcd66c23ad313a00e0f22a7af38b9e393d9c0a21d83976bc8be3",
       "cloud/crm_site_consistency_001/public_media.py": "5f73de75a6c43af1828d462b4ac85e7365fbd780aae1a92de08f684bb27cd440",
-      "cloud/crm_site_consistency_001/crm_gallery.py": "3c2e9992cd60ea5393712d42b8532b1d0d13e951011f0e7046fc246fade91ba5",
-      "cloud/crm_site_consistency_001/crm_revision.py": "93997d71450625a96fb963e0e9342fdde108b030bd57fe7a922047ea559659a2",
+      "cloud/crm_site_consistency_001/crm_gallery.py": "c7a85fb275924b4cb50f8d7d90f8e77d516541b47a7b7d9dc6ced541d594af46",
+      "cloud/crm_site_consistency_001/crm_revision.py": "d15b85b99047807bc27450bfa007c2c1b01d2336f83857603b234e19753fdefd",
       "cloud/crm_site_consistency_001/crm_assets.py": "7aac84de7acc7f609e97ef292161ad1e6d61ee1b4549aa0218e67e25bc52e9fc",
       "cloud/crm_site_consistency_001/build_candidate.py": "5b1c9687ed7770d52a354e4b843de0a8097aa48dd8f5f4ae2b2f51fa1cccc749",
       "cloud/crm_site_consistency_001/build_gallery_patch.py": "2c633bd265657289c4588271175754e00fc4db07417796c3f856f72be4dfb3cb",
@@ -42,11 +43,13 @@
       "cloud/crm_site_consistency_001/preview_transport.py": "0f7a426fcf63a4adb391e89099b01b2e2742bf2808d61eaf20e420cdb211d46f",
       "cloud/crm_site_consistency_001/test_public_fields.py": "5eea60b939c01987c8584d34dae6c262d93ae8737fda6d72f90077b49a4b4bef",
       "cloud/crm_site_consistency_001/test_public_media.py": "48d61ac886fc701b110f02f4b82407b0d6630946dd27cf621e65cc23902cbf5b",
-      "cloud/crm_site_consistency_001/test_crm_gallery.py": "a92eaa92c0b574efd0bb29570f55840ecaf0aa9147687400290429ddb15a0ec7",
-      "cloud/crm_site_consistency_001/test_crm_revision.py": "150587a1af6af50dfc2b41bfe6ad1b5fc2e518847363e25bc896517e186b3970",
+      "cloud/crm_site_consistency_001/test_crm_gallery.py": "740b66bbdbaa2ad68d77fa68f6f0ed71ce8102fe47c36124636746d01294882c",
+      "cloud/crm_site_consistency_001/test_crm_revision.py": "2ec0ea06a3886e60f939e17d6885f7cf52eb24fd44209030902050a6a705366b",
       "cloud/crm_site_consistency_001/test_crm_assets.py": "f7b8e90f93e31a0fe393735cef4c82d16505ccaf05584d22eb827a508844588d",
       "cloud/crm_site_consistency_001/test_preview.py": "9d88200aeeecf2d91f46be1c4738ce5a3c8cbeed202369b5e32e58a81f61438d",
-      "cloud/crm_site_consistency_001/test_publication_gate.py": "09741a14f8eba2450f5566a665fe7630ca61bca82414fa30bd19b68777bd3a09"
+      "cloud/crm_site_consistency_001/test_publication_gate.py": "09741a14f8eba2450f5566a665fe7630ca61bca82414fa30bd19b68777bd3a09",
+      "cloud/crm_site_consistency_001/crm_videos.py": "7be608b48e02822eba13be23243729aa8fdfbc38c7360a84266685725ca9eb1c",
+      "cloud/crm_site_consistency_001/test_crm_videos.py": "59bed1033afbd3a404c16a33229bfc824a4e7f0a3736fd74eae283e1b510bf7e"
     },
     "production_required": false,
     "receipt_path": "state/receipts/CRM-CONSISTENCY-PREVIEW-20260926.json",
@@ -57,7 +60,8 @@
       "cloud/crm_site_consistency_001/test_crm_revision.py",
       "cloud/crm_site_consistency_001/test_crm_assets.py",
       "cloud/crm_site_consistency_001/test_preview.py",
-      "cloud/crm_site_consistency_001/test_publication_gate.py"
+      "cloud/crm_site_consistency_001/test_publication_gate.py",
+      "cloud/crm_site_consistency_001/test_crm_videos.py"
     ],
     "timeout_seconds": 900
   }

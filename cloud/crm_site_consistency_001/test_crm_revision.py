@@ -29,6 +29,15 @@ class RevisionTests(unittest.TestCase):
  def test_ledger_only_edit(self):
   before=snapshot(self.root);(self.root/'.video_sinhron.json').write_text(json.dumps({'foto:UA-0001':{'001.jpg':'a'}}));after=snapshot(self.root)
   self.assertNotEqual(before['1'],after['1']);self.assertEqual(before['2'],after['2'])
+ def test_video_download_completion_without_car_edit(self):
+  before=snapshot(self.root)
+  (self.root/'.video_sinhron.json').write_text(json.dumps({'UA-0001':{'UA-0001.mp4':'video-a'}}))
+  after=snapshot(self.root)
+  self.assertNotEqual(before['1'],after['1']);self.assertEqual(before['2'],after['2'])
+ def test_unrelated_downloader_retry_does_not_republish_cars(self):
+  before=snapshot(self.root)
+  (self.root/'.video_sinhron.json').write_text(json.dumps({'_ne_kachaetsya':{'synthetic-id':{'attempts':2}}}))
+  self.assertEqual(before,snapshot(self.root))
  def test_stable_and_unpublished_excluded(self):
   self.assertEqual(snapshot(self.root),snapshot(self.root));self.assertNotIn('3',snapshot(self.root))
  def test_duplicate_code_rejected(self):

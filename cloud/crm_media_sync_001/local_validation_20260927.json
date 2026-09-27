@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-09-27T04:53:49.817520+00:00",
+  "status": "LOCAL_TESTS_PASS_DEPLOYMENT_BLOCKED",
+  "clean_package_tests": {
+    "status": "PASS",
+    "tests": 74
+  },
+  "declared_file_hashes": {
+    "status": "PASS",
+    "files": 19
+  },
+  "python_ast": {
+    "status": "PASS",
+    "files": 19
+  },
+  "execution_contract": {
+    "status": "FAIL",
+    "expected_class": "STANDARD",
+    "detected_class": "CRITICAL",
+    "reason": "ROUTE_CLASS_MISMATCH:STANDARD:CRITICAL"
+  },
+  "production_written": false,
+  "full_acceptance": false,
+  "limitations": [
+    "Video helper not integrated into final rendering/downloader",
+    "Runtime source pins require rebase preserving delivery-status changes",
+    "Existing EMERGENCY_HALT and ROLLING_BACK transaction",
+    "CPU quota exhausted at last observation",
+    "Original byte identity and playback not verified",
+    "UA-0001 first-video mapping unresolved"
+  ]
+}

@@ -24,9 +24,18 @@ class GalleryTests(unittest.TestCase):
  def test_traversal_rejected(self):
   self.ledger['foto:UA-0019']['../005.jpg']='d'
   with self.assertRaisesRegex(RuntimeError,'filename'):select_names(self.card,self.ledger)
- def test_removed_cover_rejected(self):
+ def test_removed_cover_falls_back_to_first_visible_photo(self):
   self.card['cover_photo']='009.jpg';self.card['photos']=self.card['photos'][:2]
-  with self.assertRaisesRegex(RuntimeError,'current'):select_names(self.card,self.ledger)
+  self.assertEqual(select_names(self.card,self.ledger),['004.jpg'])
+ def test_deleted_cover_ledger_entry_does_not_block_remaining_photos(self):
+  self.card['cover_photo']='099.jpg'
+  self.assertEqual(select_names(self.card,self.ledger),['004.jpg','009.jpg'])
+ def test_malformed_cover_still_rejected(self):
+  self.card['cover_photo']='../099.jpg'
+  with self.assertRaisesRegex(RuntimeError,'filename'):select_names(self.card,self.ledger)
+ def test_delete_all_photos_does_not_resurrect_old_cover(self):
+  self.card['photos']=[];self.card['cover_photo']='009.jpg'
+  self.assertEqual(select_names(self.card,self.ledger),[])
  def test_extra_disk_ledger_photo_not_included(self):
   self.ledger['foto:UA-0019']['050.jpg']='extra'
   self.assertEqual(select_names(self.card,self.ledger),['004.jpg','009.jpg'])
