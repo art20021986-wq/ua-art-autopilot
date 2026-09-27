@@ -1,19 +1,19 @@
 {
-  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-mobile",
-  "manifest_sha256": "657e31e7d961043f7ca58752133774b1821ad2ccbbfbb0bc5255a400f31217ec",
+  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-finalized",
+  "manifest_sha256": "1861ca4a1ddc2566c7ff933224b6f2dc6a144b8db515c9cb95a562b2a0910d21",
   "files": 16,
   "production_write": false,
-  "tested_commit": "a78e4835adb3a16e479a9629a359b0b63b88fe94",
-  "server_verified_at_utc": "2026-09-27T17:44:00Z",
+  "tested_commit": "c53f133f5626eb17857d67ebacf1b818642f640f",
+  "server_verified_at_utc": "2026-09-27T18:10:55+00:00",
   "tests": {
-    "python": 57,
+    "python": 59,
     "server_python": {
       "version": "3.10",
       "ptb_version": "22.8",
-      "passed": 57,
+      "passed": 59,
       "tmpdir": "/dev/shm",
       "filesystem": "tmpfs",
-      "note": "The initial run had 56 passes and one SQLite runtime guard error because /tmp is NFS. The full rerun on local tmpfs passed; production safeguards were unchanged.",
+      "note": "The full final suite passed on local tmpfs; the existing NFS storage guard remains enabled.",
       "evidence": "evidence/server-tests.jpg"
     },
     "mysql": {
@@ -33,7 +33,14 @@
     },
     "js": "pure state, legacy routes, full DOM flow",
     "prepublication_rollback": "exact",
-    "postpublication_rollback": "frontend restored, compatible v2 readers retained"
+    "postpublication_rollback": "frontend restored, compatible v2 readers retained",
+    "approved_spec_completion": [
+      "preferences.schema_version=1 with criteria and priority; no duplicate root criteria",
+      "required_for_search is the persisted strict-priority value",
+      "manual country/make/model/city accept 120 characters and reject 121",
+      "visible 3000-code-point counter with overflow error and preserved input",
+      "named colour swatches retain independent native checkbox state"
+    ]
   },
   "pending": [
     "Safari/iPhone, Chrome mobile and TikTok visual review at 320–430px",
@@ -41,7 +48,7 @@
   ],
   "mobile_css_review": {
     "date_utc": "2026-09-27",
-    "stylesheet_version": "20260927.4",
+    "stylesheet_version": "20260927.5",
     "changes": [
       "Zero grid track minimums and bounded controls",
       "Single-column ranges and checkbox lists below 600px",
@@ -52,6 +59,10 @@
       "full three-language DOM flow passed"
     ],
     "visual_browser_result": "NOT VERIFIED",
-    "notes": "Static CSS review and DOM tests do not prove rendered mobile layout. Existing backend tested at tested_commit is unchanged."
-  }
+    "notes": "Static CSS review and DOM tests do not prove rendered mobile layout. The final backend was verified separately at tested_commit."
+  },
+  "development_stage": "complete",
+  "automated_acceptance": "PASS",
+  "visual_acceptance": "NOT VERIFIED",
+  "release_status": "NOT DEPLOYED"
 }
