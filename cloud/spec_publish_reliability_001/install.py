@@ -78,11 +78,14 @@ def main():
             previous[name] = path.read_bytes() if path.exists() else None
             if path.exists():
                 shutil.copy2(path, backup / name)
-        for name in ('vin_specs.db', 'vin_specs_issue84_queue.db'):
-            with sqlite3.connect('file:' + str(ROOT / name) + '?mode=ro', uri=True) as db:
-                with sqlite3.connect(backup / name) as copy:
+        databases = (runtime._legacy().SPEC_DB, runtime.QUEUE_DB)
+        for path in databases:
+            if path.parent != ROOT or not path.is_file():
+                raise RuntimeError('UNEXPECTED_SPEC_DATABASE')
+            with sqlite3.connect('file:' + str(path) + '?mode=ro', uri=True) as db:
+                with sqlite3.connect(backup / path.name) as copy:
                     db.backup(copy)
-            os.chmod(backup / name, 0o600)
+            os.chmod(backup / path.name, 0o600)
         installed = []
         try:
             for name in NAMES:
