@@ -12,7 +12,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import Mock, patch
 
-from build_candidate import SOURCE_SHA256, build, patch_callbacks, patch_worker
+from build_candidate import SOURCE_SHA256, STAGE, build, patch_worker
 
 FIXTURES = Path(__file__).with_name('fixtures')
 
@@ -169,14 +169,15 @@ class CallbackTest(unittest.IsolatedAsyncioTestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         path = Path(self.temp.name)/'callbacks.py'
-        path.write_text(patch_callbacks((FIXTURES/'callbacks_before.py').read_text()))
+        path.write_text(STAGE.SYNC_HANDLER + '\n' + STAGE.SYNC_JOB)
         self.module = load(path)
         self.module.log = logging.getLogger('test-callback')
         self.module.log.disabled = True
         self.notify = Mock()
+        self.start = Mock()
         self.reconcile = Mock(side_effect=AssertionError('UI must not publish'))
         self.modules = patch.dict(sys.modules, {
-            'ua_crm_public_sync': SimpleNamespace(notify=self.notify),
+            'ua_crm_public_sync': SimpleNamespace(start=self.start, notify=self.notify),
             'ua_stage_catalog_sync': SimpleNamespace(reconcile=self.reconcile),
         })
         self.modules.start()
@@ -184,13 +185,14 @@ class CallbackTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_saved_stage_returns_without_publication_or_lock(self):
         result = await asyncio.wait_for(self.module._ua004_sync_current_stage({'published': 1}), 0.5)
-        self.assertIn('в фоне', result)
+        self.assertIn('поставлено в очередь', result)
         self.assertNotIn('✅', result)
         self.notify.assert_called_once()
         self.reconcile.assert_not_called()
 
     async def test_unpublished_card_does_not_request_publication(self):
-        self.assertEqual(await self.module._ua004_sync_current_stage({'published': 0}), '')
+        self.assertIn('не опубликована', await self.module._ua004_sync_current_stage({'published': 0}))
+        self.start.assert_not_called()
         self.notify.assert_not_called()
 
     async def test_periodic_job_only_wakes_existing_worker(self):
@@ -202,13 +204,13 @@ class CallbackTest(unittest.IsolatedAsyncioTestCase):
     async def test_notification_error_does_not_claim_site_success(self):
         self.notify.side_effect = RuntimeError('worker unavailable')
         text = await self.module._ua004_sync_current_stage({'published': 1})
-        self.assertIn('пока не подтверждено', text)
+        self.assertIn('ошибка очереди', text)
 
 
 class SourcePinTest(unittest.TestCase):
     def test_rejects_changed_source_before_building(self):
         with self.assertRaisesRegex(ValueError, 'SOURCE_CHANGED:cars_ui.py'):
-            build({'cars_ui.py': b'changed', 'ua_crm_public_sync.py': b'changed'})
+            build({name: b'changed' for name in SOURCE_SHA256}, {})
 
 
 if __name__ == '__main__':

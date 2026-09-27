@@ -1,45 +1,31 @@
 """Build a source-pinned CRM performance candidate without writing production."""
-import ast
 import hashlib
+import importlib.util
+from pathlib import Path
+
+
+def stage_builder():
+    path = Path(__file__).resolve().parents[1]/'stage_edit_recovery_001/build_candidate.py'
+    spec = importlib.util.spec_from_file_location('stage_recovery_candidate', path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+STAGE = stage_builder()
 
 SOURCE_SHA256 = {
-    "cars_ui.py": "c17a45d64f17fbab2e2f032061f6037a48bb5fa038b3f02e20995b5e50fbca7b",
+    **STAGE.SOURCE_SHA256,
     "ua_crm_public_sync.py": "2b5f6a2473b263fddd6ab3266a3ba76cc9738da15178f865862098821cabcc41",
 }
+DEPENDENCY_SHA256 = {name: digest for name, digest in STAGE.DEPENDENCY_SHA256.items()
+                     if name != 'ua_crm_public_sync.py'}
 
 
 def once(source, before, after):
     if source.count(before) != 1:
         raise ValueError("SOURCE_ANCHOR_COUNT")
     return source.replace(before, after, 1)
-
-
-def replace_function(source, name, replacement):
-    nodes = [node for node in ast.parse(source).body
-             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name]
-    if len(nodes) != 1:
-        raise ValueError("FUNCTION_COUNT:" + name)
-    return once(source, ast.get_source_segment(source, nodes[0]), replacement.rstrip())
-
-
-def patch_callbacks(source):
-    source = replace_function(source, "_ua004_sync_current_stage", '''async def _ua004_sync_current_stage(card):
-    if not card.get('published'):
-        return ''
-    try:
-        from ua_crm_public_sync import notify
-        notify()
-        return 'Этап сохранён в CRM. Обновление сайта выполняется в фоне.'
-    except Exception:
-        log.exception('UA004: unable to notify the publication worker')
-        return 'Этап сохранён в CRM. Обновление сайта пока не подтверждено.'
-''')
-    return replace_function(source, "_ua004_stage_reconcile_job", '''async def _ua004_stage_reconcile_job(context):
-    # The durable worker owns publication, locking, validation and retry timing.
-    # Do not reset a second retry budget when generated HTML timestamps change.
-    from ua_crm_public_sync import notify
-    notify()
-''')
 
 
 def patch_worker(source):
@@ -79,16 +65,19 @@ def patch_worker(source):
                 "in ('published', 'hidden', 'changed_during_publish'):")
 
 
-def build(sources):
+def build(sources, dependencies):
     if set(sources) != set(SOURCE_SHA256):
         raise ValueError("SOURCE_SET")
-    result = {}
-    for name, transform in (("cars_ui.py", patch_callbacks),
-                            ("ua_crm_public_sync.py", patch_worker)):
-        raw = sources[name]
+    for name, raw in sources.items():
         if hashlib.sha256(raw).hexdigest() != SOURCE_SHA256[name]:
             raise ValueError("SOURCE_CHANGED:" + name)
-        candidate = transform(raw.decode('utf-8'))
-        compile(candidate, name, 'exec')
-        result[name] = candidate.encode('utf-8')
+    if set(dependencies) != set(DEPENDENCY_SHA256):
+        raise ValueError('DEPENDENCY_SET')
+    # Reuse the current stage repair. Never overwrite its router/inventory fixes
+    # with an independently built cars_ui.py.
+    result = STAGE.build({name: sources[name] for name in STAGE.SOURCE_SHA256},
+                         {**dependencies, 'ua_crm_public_sync.py': sources['ua_crm_public_sync.py']})
+    candidate = patch_worker(sources['ua_crm_public_sync.py'].decode('utf-8'))
+    compile(candidate, 'ua_crm_public_sync.py', 'exec')
+    result['ua_crm_public_sync.py'] = candidate.encode('utf-8')
     return result
