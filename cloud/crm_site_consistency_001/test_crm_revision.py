@@ -3,7 +3,10 @@ from pathlib import Path
 import sqlite3
 import tempfile
 import unittest
-from crm_revision import snapshot
+from crm_revision import snapshot as revision_snapshot
+
+def snapshot(root):
+ return revision_snapshot(root, status_resolver=lambda status: 'hidden' if status == 'archive' else 'korea')
 
 class RevisionTests(unittest.TestCase):
  def setUp(self):
@@ -43,5 +46,11 @@ class RevisionTests(unittest.TestCase):
  def test_duplicate_code_rejected(self):
   self.db.execute('UPDATE cars SET auto_number="UA-0001" WHERE id=2');self.db.commit()
   with self.assertRaisesRegex(RuntimeError,'duplicate'):snapshot(self.root)
+ def test_delivery_projection_preserved_for_worker(self):
+  self.db.execute('ALTER TABLE cars ADD COLUMN status TEXT')
+  self.db.execute('UPDATE cars SET status="archive" WHERE id=2');self.db.commit()
+  value=snapshot(self.root)
+  self.assertEqual(value['1']['delivery_status'],'korea')
+  self.assertEqual(value['2']['delivery_status'],'hidden')
 
 if __name__=='__main__':unittest.main()

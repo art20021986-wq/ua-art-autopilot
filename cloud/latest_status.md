@@ -35,14 +35,66 @@ DELIVERY_STATUS_NEXT: Read cloud/delivery_status_001/CONTINUATION.json and recon
 DELIVERY_STATUS_CONTINUATION: Existing automation 6ab80e71aa688191868f657b5631fcae remains enabled. It must inspect current recovery state before doing any installation.
 DELIVERY_STATUS_FULL_ACCEPTANCE: NO
 
+STAGE_EDIT_RECOVERY_TASK: UA-ART-STAGE-EDIT-RECOVERY-001
+STAGE_EDIT_RECOVERY_CHECKPOINT: 2026-09-27T05:07:18Z
+STAGE_EDIT_RECOVERY_STATUS: CANDIDATE_TESTED_BLOCKED_RECOVERY_AND_CPU
+STAGE_EDIT_RECOVERY_LIVE: Read-only observation: UA-0021 is published=1, status=sea_loaded in CRM but absent from server catalog. CRM has 20 active rows; server catalog has 19. These supersede yesterday's fixed acceptance count; use fresh CRM inventory for verification.
+STAGE_EDIT_RECOVERY_CAUSE: publikaciya._ua9_sobrat_katalog returns archived rows although renderer and transaction validator use active rows, causing CATALOG_ROW_SET_MISMATCH and rollback (UA-0021 log 2026-09-27 04:51:50 UTC). Stage-only patch also rejects missing reactivated cars with CATALOG_PUBLISHED_SET_MISMATCH.
+STAGE_EDIT_RECOVERY_FIX: Source-pinned two-file candidate uses one active publication inventory, routes stage changes through the existing durable publisher and accepts old valid active-stage callbacks before legacy handlers. Drafts remain unpublished; removed/unknown status policy remains hidden.
+STAGE_EDIT_RECOVERY_TESTS: 18 regression tests and 7 existing policy tests PASS. Exact installed source reconstruction and candidate compile PASS. Full live rehearsal and public acceptance NOT_RUN.
+STAGE_EDIT_RECOVERY_BLOCKERS: Existing EMERGENCY_HALT / ROLLING_BACK transaction requires registered recovery and nonce-complete rollback rehearsal. CPU approximately 8576.84/5000 seconds at 04:54 UTC; next reset 08:37:11 UTC. Quota reset alone is insufficient.
+STAGE_EDIT_RECOVERY_PRODUCTION_TOUCHED: NO live source, HTML, CRM records or bot restart by this task.
+STAGE_EDIT_RECOVERY_NEXT: cloud/stage_edit_recovery_001/README.md and CHECKPOINT.json. After registered recovery, use a fresh bounded two-file plan through main Actions. Do not replay the original installer, reset sync state or clear HALT without reconciliation. Coordinate overlapping source changes with the pending CRM/media repair.
+STAGE_EDIT_RECOVERY_FULL_ACCEPTANCE: NO
+
+CRM_PERFORMANCE_TASK: UA-ART-CRM-PERFORMANCE-20260927
+CRM_PERFORMANCE_STATUS: CANDIDATE_TESTED_NOT_INSTALLED
+CRM_PERFORMANCE_OBSERVED: 2026-09-27 around 05:03-05:07 UTC. PythonAnywhere tarpit confirmed, CPU 8612.62 / 5000 seconds. Read-only cars GROUP BY 14.72 ms; not Telegram latency. Production source hashes match candidate inputs. Publication fence timeout and repeated catalog mismatches observed.
+CRM_PERFORMANCE_CHANGE: Stage callback and periodic stage job notify the existing durable worker instead of competing for publication locks. Persisted catalog-error cooldown survives restarts and HTML timestamp changes; new CRM revision permits retry. Other transient failures retain per-card retries and do not starve other cars.
+CRM_PERFORMANCE_PACKAGE: cloud/crm_performance_001/README.md and candidate_manifest.json. Combined builder reuses stage_edit_recovery_001 and outputs three files (cars_ui.py, publikaciya.py, ua_crm_public_sync.py); do not install separate overlapping candidates.
+CRM_PERFORMANCE_TESTS: 40 PASS (15 performance, 18 stage recovery, 7 status policy); full-source combined candidate compile PASS; existing stage candidate outputs preserved byte-for-byte.
+CRM_PERFORMANCE_PRODUCTION_WRITTEN: NO
+CRM_PERFORMANCE_BLOCKER: Existing delivery EMERGENCY_HALT / ROLLING_BACK must be reconciled through the registered recovery route. CPU tarpit prevents meaningful speed acceptance and heavy rehearsal. No safety control was disabled; no new automatic installation was scheduled.
+CRM_PERFORMANCE_NEXT: Reconcile delivery incident, resolve catalog-set mismatch, check CPU after reset, combine with current source/router corrections, complete exact backup/rollback/Gate B and main Actions installation, confirm loaded bot code and measure live opening/edit/save latency. Owner authorization already covers this repair; no duplicate general approval needed.
+
+CRM_INSTALL_CONTINUATION_TASK: CRM-RELEASE-RECOVERY-20260927
+CRM_INSTALL_OWNER_COMMAND: «Устанавливай на рабочую CRM немедленно.» Installation is already authorized; no repeated general permission requested.
+CRM_INSTALL_STATUS: NOT_INSTALLED_BLOCKED_BY_PENDING_TRANSACTION
+CRM_INSTALL_OBSERVED: 2026-09-27 around 05:32 UTC; PythonAnywhere bot 266084 and monitor 270984 Running; CPU 8716.57 / 5000 seconds, tarpit active. Expected quota reset 08:37:11 UTC / 15:37:11 Asia/Ho_Chi_Minh; not a deployment appointment or proof of readiness.
+CRM_INSTALL_GATES: Unchanged pinned verify-mode rejects AUTOMATIC_MODE_HALTED. Unchanged watchdog discover validates exactly one pending transaction, tx-36268504600-54c3be3cfc4dd0da, ROLLING_BACK. Existing TASK120-only recovery cannot close this incident.
+CRM_INSTALL_RECOVERY_PREPARATION: cloud/crm_release_recovery_20260927/README.md. Inert nonce-workspace.patch adds the missing ledger-bound nonce to both existing rollback worktree copy steps. It is not applied to active workflows and is not a runtime activation.
+CRM_INSTALL_RECOVERY_TESTS: 10 tests PASS executing both actual embedded copy blocks. Two incident rehearsals using source commit 9fd580ca61c67dfb944bc4826fd1f18459ffba0b and unchanged pinned validators reproduce AUTOSTART_NONCE_RESERVATION_MISSING before the candidate and pass ledger verification after it. ROLLING_BACK remains unchanged. Evidence: cloud/crm_release_recovery_20260927/rehearsal.json.
+CRM_INSTALL_PUBLIC_MONITOR: main run 36296990449 SUCCESS at 05:22 UTC, both canonical pages HTTP 200. This does not establish CRM speed or complete catalog correctness.
+CRM_INSTALL_PRODUCTION_WRITTEN: NO. No bot restart, active workflow/runtime/approval/nonce/claim/transaction/HALT modification, rollback invocation or launch marker created.
+CRM_INSTALL_NEXT: Register and verify the nonce-complete runtime update and evidence-bound manual recovery for the delivery incident, preserving subsequent CRM edits. After recovery use the combined three-file PR130 builder, fresh backup/rollback/Gate B and main Actions. Never replay the original install or mark an unexecuted rollback successful. Read this checkpoint before the existing 15:40 Vietnam continuation; its schedule/prompt were not changed.
+
+CRM_ONECLICK_TASK: UA-ART-CRM-ONECLICK-PUBLISH-001
+CRM_ONECLICK_STATUS: CANDIDATE_TESTED_NOT_INSTALLED; GATE_B_NOT_READY
+CRM_ONECLICK_SCOPE: Remove already-in-catalog/hide ad section and buyer preview; publish from one tap for drafts and stale published flags; no toggle on repeated publish; durable retry and verified completion receipt.
+CRM_ONECLICK_CAUSE: ad_screen bypassed publication when published=1; archive-inclusive catalog inventory caused strict transaction rollback. The publication flag is intent, not proof of a public page.
+CRM_ONECLICK_PACKAGE: cloud/crm_oneclick_publish_001/README.md and candidate_manifest.json; tasks/UA-ART-CRM-ONECLICK-PUBLISH-001.md. Builder composes current stage and performance candidates; preserves their fixes.
+CRM_ONECLICK_TESTS: 68 local tests PASS (28 oneclick, 15 performance, 18 stage recovery, 7 status); exact-source four-file candidate compiles. Production rehearsal/browser acceptance NOT_RUN.
+CRM_ONECLICK_BLOCKED: Delivery transaction tx-36268504600-54c3be3cfc4dd0da remains ROLLING_BACK / EMERGENCY_HALT. Fresh dashboard CPU 8716.57/5000, tarpit. Existing resource and recovery gates preserved.
+CRM_ONECLICK_PRODUCTION_WRITTEN: NO; no runtime source, HTML, CRM rows or bot restart by this task; UA-0021 publication not confirmed. No new delayed deployment scheduled.
+CRM_ONECLICK_NEXT: Registered delivery recovery, fresh CPU/source checks, combine PR128 media changes, exact backup/install/rollback including private request ledger, Gate B and main Actions release, verify one-click publication and completion in Telegram and public site. Owner authorization already covers this repair.
+
+CRM_ONECLICK_IMMEDIATE_INSTALL_OWNER_COMMAND: «Установи немедленно» (2026-09-27); installation authorization remains valid, no duplicate general confirmation required.
+CRM_ONECLICK_IMMEDIATE_INSTALL_CHECK: Main 792ac863659d29ead23b20fac87455f7fff4206b observed. Fresh PythonAnywhere dashboard CPU 8754.46/5000 seconds, tarpit active, reset displayed in 2 hours 52 minutes. Existing main HALT and transaction still EMERGENCY_HALT / ROLLING_BACK; no new production run exists after the earlier monitor.
+CRM_ONECLICK_IMMEDIATE_INSTALL_VALIDATION: Local unchanged control_plane.py verify-mode --require AUTOMATIC rejects AUTOMATIC_MODE_HALTED; unchanged transaction_watchdog.py discover validates exactly one pending delivery transaction tx-36268504600-54c3be3cfc4dd0da. Git blob hashes of both validators, HALT and transaction were compared with freshly fetched main tree and match. The local snapshot HEAD is a22a0b3, so this is a pinned-state local check, not a live GitHub deployment attempt.
+CRM_ONECLICK_IMMEDIATE_INSTALL_RESULT: NOT_INSTALLED. No live source, CRM data, runtime registration, HALT, transaction, one-shot nonce or launch marker modified. Existing recovery route covers TASK120 only and cannot reconcile the delivery incident. No rollback replay, protection bypass or new deployment schedule performed.
+CRM_ONECLICK_IMMEDIATE_INSTALL_REQUIRED: Complete a delivery-specific registered reconciliation preserving subsequent CRM edits and original evidence, plus nonce-complete runtime registration. Then fresh source/resource preflight and exact four-file oneclick package backup/install/rollback/Gate B via main Actions. The three-file performance package alone does not include the owner's new one-click UI/request changes.
+
 MEDIA_TASK: UA-ART-CRM-MEDIA-SYNC-001
-MEDIA_STATUS: DRAFT_CANDIDATE_BLOCKED_CPU_HALT_AND_SOURCE_REBASE
-MEDIA_OWNER_AUTHORIZATION: 2026-09-27 owner requested media reconciliation, specification and repair; no repeated general approval needed.
-MEDIA_PRODUCTION_WRITTEN: NO
-MEDIA_READONLY: CRM snapshot 2026-09-27T04:36:41Z; 19 active public cards, 2 archived rows separately observed. All 19 public HTML hashes equal server files. Expected visible photos 604; displayed 606.
-MEDIA_MISMATCHES: UA-0017 hidden 040.jpg; UA-0019 hidden 001.jpg; UA-0012/UA-0016 reordered first photo. UA-0001 first video has no verified downloader binding. No original-byte or playback acceptance.
-MEDIA_CAUSE: Installed photo generator scans JPG directory and promotes horizontal image; video discovery recursively scans filename prefixes instead of CRM membership. Downloader atomically replaces mutable filenames; a complete content manifest/versioned media pipeline is still needed.
-MEDIA_CANDIDATE: Deleted-cover fallback, video-ledger revision, strict CRM video selection and player validation. Video helper not yet integrated into generators/downloader. 74 local tests PASS. Execution-contract validation is BLOCKED: ROUTE_CLASS_MISMATCH:STANDARD:CRITICAL; no launch is allowed.
-MEDIA_RUNTIME_DRIFT: stranica.py, master_card.py and ua_crm_public_sync.py differ from previous gallery patch pins after delivery-status installation. Original runtime pins retained; do not launch the preview until rebased and recovery is complete.
-MEDIA_NEXT: cloud/crm_media_sync_001/README.md and docs/UA-ART-CRM-MEDIA-SYNC-001.md. Resolve existing transaction through registered recovery, measure CPU, rebase exact source patches preserving delivery work, resolve UA-0001 provenance, finish media manifests/integration, rehearse rollback and Gate B, then install through main Actions and verify.
+MEDIA_STATUS: COMPOSED_DRAFT_TESTED_NOT_INSTALLED
+MEDIA_OWNER_AUTHORIZATION: 2026-09-27 owner requested critical media reconciliation, specification and repair; no repeated general approval needed. Gates remain mandatory.
+MEDIA_PRODUCTION_WRITTEN: NO; no source/HTML/CRM/media/bot-task/protection writes or production launch by this task.
+MEDIA_READONLY: 04:36:41 UTC inventory had 19 active cards, 604 expected visible photos / 606 displayed; all 19 public HTML hashes matched server files. Later stage-recovery inventory has 20 active rows, including reactivated UA-0021; final acceptance must use fresh CRM counts.
+MEDIA_MISMATCHES: UA-0017 hidden 040.jpg; UA-0019 hidden 001.jpg; UA-0012/UA-0016 first-photo order. UA-0001 first video lacks a verified downloader binding. Original byte identity and playback NOT_ACCEPTED.
+MEDIA_CAUSES: Directory/prefix/archive media selection ignored CRM membership and visibility; ordinal file reuse changed bytes under cached URLs; old revisions omitted video ledger; fixed-order bounded download queue could delay other cards.
+MEDIA_CANDIDATE: CRM-only photo/video selectors and final HTML checks; stable file bindings; immutable content-addressed media/posters; empty-gallery handling; complete-download check; source/target integrity and space guard; persisted rotating bounded queue; per-card failure isolation; revision schema 5 preserves delivery_status and delegates publication to durable worker.
+MEDIA_COMPOSITION: Exact-source compose_release.py integrates current stage/performance/oneclick builder output, bound to reviewed intermediate SHAs. Frozen builder copies preserve main 792ac863659d29ead23b20fac87455f7fff4206b within the request closure; no external unpinned imports. Do not overwrite overlapping fixes with independent installers.
+MEDIA_TESTS: 99 tests PASS from clean 31-file pinned closure; 68 related publication/stage/performance/status regressions PASS. Five actual source transformations compile; active-catalog and oneclick retry functions preserved. Fresh CRITICAL draft execution-contract compile PASS; no production launch authorization created.
+MEDIA_LIMITATIONS: Full seven-file source build not repeated locally without private full cars_ui.py; full shadow/install/rollback NOT_RUN. Legacy binding does not prove Telegram original bytes. UA-0001 provenance, storage/retention sizing, real browsers and latency remain outstanding.
+MEDIA_BLOCKERS: Existing delivery HALT / ROLLING_BACK and exhausted CPU quota. Last shared observation 8754.46/5000; reset alone does not close the incident. No new background installation scheduled.
+MEDIA_NEXT: cloud/crm_media_sync_001/README.md and docs/UA-ART-CRM-MEDIA-SYNC-001.md. Registered delivery recovery, fresh resource/source checks, original verification, combined rehearsal, exact manifest/backup/Gate B, main Actions install and public/browser acceptance. Do not reset protections or pending CRM work.
 MEDIA_FULL_ACCEPTANCE: NO

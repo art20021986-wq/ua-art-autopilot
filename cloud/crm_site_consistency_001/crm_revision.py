@@ -7,7 +7,10 @@ import sqlite3
 from pathlib import Path
 
 
-def snapshot(root='/home/Carix'):
+def snapshot(root='/home/Carix', status_resolver=None):
+    if status_resolver is None:
+        from ua_delivery_status import public_status
+        status_resolver = public_status
     root = Path(root)
     journal = root / '.video_sinhron.json'
     raw = journal.read_bytes()
@@ -29,7 +32,7 @@ def snapshot(root='/home/Carix'):
                 raise RuntimeError('Missing or duplicate published auto_number')
             codes.add(code)
             related = {
-                'schema': 4, 'car': row, 'photos': ledger.get('foto:' + code),
+                'schema': 5, 'car': row, 'photos': ledger.get('foto:' + code),
                 'videos': ledger.get(code),
                 'media': [dict(r) for r in conn.execute('SELECT * FROM media WHERE car_id=? ORDER BY id', (row['id'],))],
                 'specification': [dict(r) for r in conn.execute('SELECT * FROM public_specs.additional_specification WHERE car_uid=? ORDER BY id', (code,))],
@@ -37,7 +40,8 @@ def snapshot(root='/home/Carix'):
                 'spec_binding': [dict(r) for r in conn.execute('SELECT * FROM public_specs.spec84_fact_bindings WHERE car_uid=? ORDER BY vin,generation', (code,))],
             }
             digest = hashlib.sha256(json.dumps(related, sort_keys=True, ensure_ascii=False, default=str).encode()).hexdigest()
-            result[str(row['id'])] = {'code': code, 'sha256': digest}
+            result[str(row['id'])] = {'code': code, 'sha256': digest,
+                                      'delivery_status': status_resolver(row.get('status'))}
     finally:
         conn.close()
     if journal.read_bytes() != raw:

@@ -92,7 +92,7 @@ class VideoTests(unittest.TestCase):
             with self.subTest(html=bad), self.assertRaises(RuntimeError):
                 verify_video_structure(bad, self.card, self.expected)
 
-    def test_paths_require_available_local_file_without_writes(self):
+    def test_paths_require_available_file_and_preserve_originals(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root/'video').mkdir()
@@ -103,7 +103,11 @@ class VideoTests(unittest.TestCase):
                 video_paths(self.card, root)
             for name in self.expected:
                 (root/'video'/name).write_bytes(b'fixture-not-a-decoded-mp4')
-            self.assertEqual(video_paths(self.card, root), self.expected)
+            result = video_paths(self.card, root)
+            self.assertEqual(len(result), len(self.expected))
+            for actual, old in zip(result, self.expected):
+                self.assertTrue(actual.startswith(Path(old).stem + '-'))
+                self.assertEqual((root / 'video' / actual).read_bytes(), (root / 'video' / old).read_bytes())
             self.assertEqual(journal.read_bytes(), before)
             (root/'video'/self.expected[0]).unlink()
             (root/'video'/self.expected[0]).symlink_to(root/'video'/self.expected[1])

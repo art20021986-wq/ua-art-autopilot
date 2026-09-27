@@ -1,4 +1,4 @@
-"""Read-only video selection and HTML checks for the observed CRM schema.
+"""CRM video selection, immutable public copies and HTML checks.
 
 The existing downloader ledger maps car code -> {MP4 filename: Telegram ID}.
 This proves a recorded association, not identity of downloaded video bytes.
@@ -10,6 +10,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 from public_media import _list
+from crm_media_identity import valid_name, immutable_copy
 
 
 def _code(card):
@@ -43,8 +44,7 @@ def select_video_names(card, ledger):
         raise RuntimeError('Video download ledger missing')
     reverse = {}
     for name, fid in mapping.items():
-        if not isinstance(name, str) or not re.fullmatch(
-                re.escape(code) + r'(?:-\d{2,})?\.mp4', name):
+        if not valid_name(code, 'video', name):
             raise RuntimeError('Invalid or foreign video filename')
         if not isinstance(fid, str) or not fid.strip() or fid in reverse:
             raise RuntimeError('Ambiguous ledger video identity')
@@ -60,15 +60,18 @@ def video_paths(card, root='/home/Carix'):
     raw = journal.read_bytes()
     names = select_video_names(card, json.loads(raw))
     folder = root / 'video'
+    paths = []
     for name in names:
         path = folder / name
         if path.is_symlink() or path.resolve().parent != folder.resolve():
             raise RuntimeError('Video path escapes media folder')
         if not path.is_file() or path.stat().st_size == 0:
             raise RuntimeError('Video file unavailable')
+        canonical = immutable_copy(path, root)
+        paths.append(canonical.name)
     if journal.read_bytes() != raw:
         raise RuntimeError('Video ledger changed during rendering')
-    return names
+    return paths
 
 
 class VideoHTML(HTMLParser):
@@ -108,7 +111,7 @@ def verify_video_structure(html, card, expected_paths):
     if not isinstance(expected_paths, list) or len(expected_paths) != len(ids):
         raise RuntimeError('CRM video count differs from expected paths')
     if any(not isinstance(p, str) or not re.fullmatch(
-            re.escape(code) + r'(?:-\d{2,})?\.mp4', p) for p in expected_paths):
+            re.escape(code) + r'(?:-\d{2,}|-m-[0-9a-f]{64})?(?:-[0-9a-f]{64})?\.mp4', p) for p in expected_paths):
         raise RuntimeError('Unsupported or foreign video path')
     if len(set(expected_paths)) != len(expected_paths):
         raise RuntimeError('Duplicate expected video path')

@@ -1,75 +1,104 @@
 # UA-ART-CRM-MEDIA-SYNC-001 — checkpoint 27.09.2026
 
-Status: DRAFT_CANDIDATE; production_written=false; full_acceptance=false.
+Status: COMPOSED_DRAFT_CANDIDATE; production_written=false; full_acceptance=false.
 Owner authorized media reconciliation and repair in this conversation.
 Specification: `docs/UA-ART-CRM-MEDIA-SYNC-001.md`.
 
-## Evidence
+## Observed evidence (timestamps are not interchangeable)
 
-- `crm_readonly_20260927.json`: read-only SQLite transaction, stable downloader
-  ledger during the photo comparison, safe filenames/counts only. 21 published
-  rows, 2 archived, 19 active public cards. Not a database backup.
-- `public_readonly_20260927.json`: ordinary public URLs, 19 HTTP 200 responses,
-  parsed photo lists, video references and cache headers. All HTML hashes
-  equal server files observed in the CRM probe.
-- `video_source_readonly_20260927.json`: current source hashes/function names
-  and safe video mapping results. The first UA-0001 video has no ledger binding.
-- `comparison_20260927.json`: 4 photo mismatches; 604 expected / 606 displayed
-  photos; 18 public video URLs, 17 ledger-bound; 18/19 video player structures
-  checked, UA-0001 mapping unresolved. No original-byte or playback PASS.
+- `crm_readonly_20260927.json`, 04:36:41 UTC: read-only SQLite transaction,
+  stable downloader ledger, safe filenames/counts only. 21 published rows,
+  2 archived, 19 active public cards. Not a database backup.
+- `public_readonly_20260927.json`: 19 ordinary public HTTP 200 responses.
+  All observed public HTML hashes equal the corresponding server files.
+- `comparison_20260927.json`: 604 expected visible photos / 606 displayed;
+  hidden photos UA-0017/040.jpg and UA-0019/001.jpg are shown, and first-photo
+  order differs on UA-0012/UA-0016. 18 video URLs, 17 ledger-bound; the first
+  UA-0001 video has no binding. No Telegram byte-identity or playback PASS.
+- Later stage-recovery observation at 05:07:18 UTC: CRM now has 20 active rows,
+  server catalog 19; UA-0021 was reactivated. Final acceptance must use a fresh
+  inventory, not the historic 19-card or 604-photo count.
+- UA-0018 has 59 and UA-0022 23 photos in the media audit. Do not restore older
+  values. CRM changes made after a snapshot must survive release/rollback.
 
-The server has changed since yesterday: UA-0018 now has 59 photos and UA-0022
-23, which match their present CRM lists. Do not restore yesterday's values.
+## Confirmed causes and implemented candidate
 
-## Confirmed causes and candidate changes
+Photo rendering scanned JPG directories, ignored CRM hiding, and promoted a
+horizontal photo. Video rendering scanned filename prefixes and old archives.
+The downloader reused ordinal filenames when the list changed. Its existing
+`.part` + `os.replace` was atomic but still changed bytes at cached public URLs.
+Its bounded fixed-order queue could delay later cars behind a large album.
 
-Actual `stranica.kadry_mashiny` scans all JPG files without hidden-photo
-filtering and promotes a horizontal image. This explains UA-0017/0019 hidden
-photos and UA-0012/0016 order differences. Actual
-`master_card.video_fajly_mashiny` recursively scans filename prefixes; this
-cannot enforce CRM membership/order. Downloader `skachat` already stages
-`.part` and uses `os.replace`, but reuses mutable filenames and regenerates
-posters. Atomic rename alone does not provide content-versioned assets.
+The candidate in `cloud/crm_site_consistency_001` now:
 
-Changes in existing candidate package:
+- Selects photos/videos by CRM IDs, order, visibility and downloader bindings.
+  Deleted or hidden covers use the first current visible photo. An empty
+  gallery renders a neutral background, never a retained car photo.
+- Keeps each file ID's binding stable through reorder/removal/addition. New
+  IDs receive separate filenames; old assets remain available for rollback.
+- Publishes content-hashed immutable originals and posters; checks local
+  source/target signatures and digests, avoids repeated large-file hashing,
+  rejects incomplete HTTP responses and low-space immutable copies.
+- Includes actual specification sidecars, photos, videos and ledger state in
+  revision schema 5, preserving the delivery_status contract of the worker.
+- Validates final photo/video membership and order before HTML is written.
+  Download completion queues the durable transactional publisher; it never
+  reports that the public site is verified merely because downloading ended.
+- Persists retry state, rotates the bounded download queue across cards,
+  avoids a silent 100-photo truncation and isolates a bad card from others.
+- Preserves existing diagnostics rendering, active-catalog filtering, stage
+  updates, catalog-error cooldown and one-click request completion logic.
 
-- Deleted/hidden cover falls back to the first currently visible CRM photo;
-  malformed cover names still fail, removed files are never reintroduced.
-- Snapshot schema 4 includes the car's video ledger. Retry-only metadata
-  does not change car revisions in the new tests.
-- `crm_videos.py` selects only CRM video IDs in CRM order and validates
-  player source/fallback/order. Unknown mapping is an explicit error.
-- Preview dependency/test hashes updated for this draft; video module is
-  included in the payload. It is not yet wired into final rendering.
+`compose_release.py` composes the reviewed one-click publication candidate
+(which already includes stage/performance fixes). It validates exact live
+source hashes and all four intermediate publication output hashes. UI and
+request-store outputs are retained unchanged; overlapping publisher/worker
+outputs receive the media changes. The frozen `release_builders/` copies are
+byte-identical to main 792ac863659d29ead23b20fac87455f7fff4206b; PROVENANCE.json
+records their origin. They are inside the pinned execution-contract closure,
+with no import of unpinned external builders. Do not install overlapping
+independent packages over one another.
 
-74 tests PASS. This count is unit/isolated validation, not production acceptance.
+## Validation and limitations
 
-## Blocking conditions / safe continuation
+- 99 media tests PASS from a clean 31-file pinned Python closure.
+- 68 current publication/stage/performance/status regressions PASS separately.
+- Fresh CRITICAL preview execution-contract compile PASS. The old historical
+  request was restored unchanged; no launcher/approval/nonce was created.
+- Five actual private runtime source transformations compile. The active
+  catalog function and one-click retry function survive composition unchanged.
+  See `composition_validation_20260927.json` and
+  `local_validation_20260927_followup.json`.
+- The complete seven-file source build was not repeated locally because this
+  workspace does not contain the private full cars_ui.py source. The full
+  isolated renderer, installation and rollback rehearsal have NOT run.
+- Existing legacy ledger bindings are NOT proof of Telegram byte identity.
+  The immutable index explicitly records telegram_original_verified=false.
+  First-download provenance migration, UA-0001 recovery and original-byte
+  comparison are outstanding acceptance work. Do not label them verified.
+- Storage sizing/retention, real browser playback/cache and <=60s healthy-path
+  latency after media readiness remain unverified. Old originals are retained;
+  there is no automatic garbage collection in this candidate.
 
-1. CPU dashboard: 8476.27 / 5000 seconds, tarpit, reset indicated around
-   08:37 UTC / 15:37 Vietnam. Measure fresh usage; no heavy work at >=85%.
-2. `state/AUTOPILOT_HALT.json` remains active; delivery transaction
-   tx-36268504600-54c3be3cfc4dd0da is ROLLING_BACK. Respect registered recovery;
-   do not clear markers, replay the installer, or weaken guards.
-3. `stranica.py`, `master_card.py`, `ua_crm_public_sync.py` hashes drifted from
-   `build_gallery_patch.SOURCES` due to the delivery-status release. The
-   original pins are intentionally retained; do not launch this request yet.
-   Re-read actual sources and preserve the installed delivery changes while
-   rebasing the exact candidate. No new launcher/approval/nonce is created here.
-4. Resolve UA-0001 first-video provenance; do not guess from its filename.
-5. Wire strict video selection/validation into generators, implement complete
-   immutable media/downloader manifests, empty-gallery rendering, durable
-   event propagation and revision fencing. Run full shadow and rollback
-   rehearsal, backup and Gate B before installation via main Actions.
-6. Verify original hashes, derived-file provenance, public URLs, real mobile
-   playback/cache, <=60s healthy-path updates, failure recovery and 24h observation.
-7. The updated draft request is classified CRITICAL (`CRITICAL_TEXT:authorization`),
-   while its existing preview controller expects STANDARD. Execution-contract
-   validation fails with `ROUTE_CLASS_MISMATCH:STANDARD:CRITICAL`. This is a
-   separate draft integration issue, not a passing deployment gate. Prepare a
-   consistent fresh request/controller under the detected route after integration;
-   do not weaken classification or reuse the old launch request.
+## Release blockers and safe continuation
 
-No production source, database, media file, server HTML, task or protection was
-modified by this media task. Read-only console used Python standard-library
-parsing and a read-only SQLite connection. No live imports of site modules.
+1. Existing HALT / ROLLING_BACK delivery transaction
+   tx-36268504600-54c3be3cfc4dd0da must be reconciled through its registered
+   recovery. Follow cloud/crm_release_recovery_20260927/README.md. Do not clear
+   markers, weaken pins, replay the old installer or repurpose TASK120 recovery.
+2. Last shared CPU dashboard observation: 8754.46 / 5000 seconds, tarpit.
+   Recheck after 08:37:11 UTC; quota reset alone is not permission to deploy.
+   CLAUDE.md requires heavy work deferred at >=85%.
+3. Re-read current runtime sources and inventory; resolve UA-0001 provenance;
+   run the composed exact-source shadow and bounded backup/install/rollback
+   rehearsal, including the private request ledger and media index.
+4. Complete Gate B and use main Actions for installation. Preserve pending
+   operator edits and confirmed original assets. Confirm the bot loaded the
+   installed code; do not merely check that its task says Running.
+5. Verify ordinary public URLs, originals/derivatives, all CRM media operations,
+   browser playback/cache, update latency, recovery and 24-hour observation.
+
+No production source, database, media file, server HTML, bot task or protection
+was modified by this media task. No new delayed deployment was configured.
+The existing delivery continuation belongs to the shared recovery workflow;
+this checkpoint does not promise background installation.

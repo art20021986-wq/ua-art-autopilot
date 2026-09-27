@@ -1,0 +1,40 @@
+{
+  "task_id": "UA-ART-CRM-PERFORMANCE-20260927",
+  "production_installed": false,
+  "gate_b": "NOT_READY",
+  "files": {
+    "cars_ui.py": {
+      "before": "c17a45d64f17fbab2e2f032061f6037a48bb5fa038b3f02e20995b5e50fbca7b",
+      "after": "23c88c62bf8422f03d7546a9bc0dd8e40f91af5ad58d5d9fe12538aad79cee18"
+    },
+    "publikaciya.py": {
+      "before": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+      "after": "4d1adb53cb659daa125c7480c289ad25e03a57e34d3d0c1f4e0989de1d7a8ac8"
+    },
+    "ua_crm_public_sync.py": {
+      "before": "2b5f6a2473b263fddd6ab3266a3ba76cc9738da15178f865862098821cabcc41",
+      "after": "ded38c1e023bbb52cedcd50369884ff3d7e4d70016ad1d725f3f37bb1b4f29a0"
+    }
+  },
+  "live_source_hashes_observed": "2026-09-27T05:07Z",
+  "tests": {
+    "performance": 15,
+    "stage_recovery": 18,
+    "existing_status_policy": 7,
+    "total_passed": 40,
+    "full_source_compile": "PASS",
+    "stage_recovery_outputs_preserved_byte_for_byte": "PASS"
+  },
+  "blockers": [
+    "PythonAnywhere CPU tarpit: 8612.62 / 5000 seconds; reset expected 2026-09-27T08:37:11Z",
+    "Existing EMERGENCY_HALT after run 36268504600; transaction ROLLING_BACK; registered recovery required",
+    "Full deployment and rollback rehearsal not performed"
+  ],
+  "production_writes": false,
+  "dependencies": {
+    "ua_delivery_status.py": "c544bc121b7b3b66d45519d5b63ed3687567af7e9d5f7011ae2fb53cc372bdd0",
+    "ua_stage_catalog_sync.py": "a8d2784e73d005b5a02328f63c9233d78da665547266276df69291383616a255",
+    "publish_transaction_guard.py": "9b41f15e8455ec7e579bea1e194e6c855cc50b7b0e060ee2a010301d28c981e8"
+  },
+  "composition": "Reuses cloud/stage_edit_recovery_001/build_candidate.py from main 52662af62f3b1bdea194b50e69def49a64e977b8, then patches only ua_crm_public_sync.py"
+}

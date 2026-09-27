@@ -50,10 +50,12 @@ def validate(payload, production=Path('/home/Carix'), receipt_path=None):
         for folder in ('foto','diag'):
             source = production/'video'/folder
             if source.is_dir():
-                (sandbox/'video'/folder).symlink_to(source, target_is_directory=True)
-        # Existing input videos remain read-only links. Covers get an isolated dir.
-        for p in (production/'video').glob('*.mp4'):
-            (sandbox/'video'/p.name).symlink_to(p)
+                size = sum(p.stat().st_size for p in source.rglob('*') if p.is_file())
+                if size > 512*1024*1024 or shutil.disk_usage(sandbox).free < size*2 + 1024*1024*1024:
+                    raise RuntimeError('SHADOW_MEDIA_COPY_BUDGET_EXCEEDED')
+                # Immutable assets must be created inside private folders. Never
+                # write through directory symlinks or hardlink production inputs.
+                shutil.copytree(source, sandbox/'video'/folder)
         (sandbox/'video'/'stage').mkdir()
         if (production/'video'/'stage').is_dir():
             for p in (production/'video'/'stage').iterdir():
@@ -66,17 +68,26 @@ def validate(payload, production=Path('/home/Carix'), receipt_path=None):
             os.chmod(sandbox/name,0o600)
         os.environ['UA_ART_SPEC_DB']=str(sandbox/'vin_specs_task111_v3.db')
         for name,encoded in payload.items():
-            if not name.endswith('.py') or Path(name).name != name:
+            relative = Path(name)
+            if (not name.endswith('.py') or relative.is_absolute()
+                    or '..' in relative.parts or not relative.parts
+                    or (len(relative.parts) > 1 and (len(relative.parts) != 3 or relative.parts[0] != 'release_builders'))):
                 raise ValueError('Invalid payload path')
+            (sandbox/name).parent.mkdir(parents=True, exist_ok=True)
             (sandbox/name).write_bytes(base64.b64decode(encoded))
         sys.path.insert(0,str(sandbox))
         import build_gallery_patch
-        for name in build_gallery_patch.SOURCES:
-            original=(production/name).read_bytes()
-            (sandbox/name).write_bytes(build_gallery_patch.build(name,original))
+        import compose_release
+        publication = compose_release.publication_builder()
+        sources = {name: (production/name).read_bytes()
+                   for name in set(build_gallery_patch.SOURCES) | set(publication.SOURCE_SHA256)}
+        dependencies = {name: (production/name).read_bytes() for name in publication.DEPENDENCY_SHA256}
+        combined = compose_release.build(sources, dependencies)
+        for name, candidate in combined.items():
+            (sandbox/name).write_bytes(candidate)
         import build_candidate
         build_candidate.build(production/'ua_public_freshness.py',sandbox/'ua_public_freshness.py')
-        result['candidate_sha256']={name:sha((sandbox/name).read_bytes()) for name in list(build_gallery_patch.SOURCES)+['ua_public_freshness.py']}
+        result['candidate_sha256']={name:sha((sandbox/name).read_bytes()) for name in list(combined)+['ua_public_freshness.py']}
         # Rewrite filesystem roots only in private source copies.
         for p in sandbox.glob('*.py'):
             source=p.read_text()
@@ -136,20 +147,38 @@ def validate(payload, production=Path('/home/Carix'), receipt_path=None):
         from public_fields import verify_core_fields
         from public_media import verify_photo_structure
         from crm_gallery import gallery_paths
+        from crm_videos import select_video_names, video_paths, verify_video_structure
+        from ua_delivery_status import public_status
         conn=sqlite3.connect(sandbox/'crm.db');conn.row_factory=sqlite3.Row
         rows=[dict(r) for r in conn.execute('SELECT * FROM cars WHERE published=1 ORDER BY id')]
+        result['archived_rows_excluded'] = sum(public_status(r.get('status')) == 'hidden' for r in rows)
+        rows=[r for r in rows if public_status(r.get('status')) != 'hidden']
         conn.close()
         checks=[]
         result['cards']=checks
         for row in rows:
             code=row['auto_number']
             result['checking_code']=code
+            names = select_video_names(row, json.loads((sandbox/'.video_sinhron.json').read_bytes()))
+            inputs = [production/'video'/n for n in names]
+            size = sum(p.stat().st_size for p in inputs)
+            if size > 512*1024*1024 or shutil.disk_usage(sandbox).free < size*2 + 128*1024*1024:
+                raise RuntimeError('SHADOW_VIDEO_COPY_BUDGET_EXCEEDED')
+            # Keep at most one car's videos and immutable copies in the preview.
+            for original in inputs:
+                shutil.copy2(original, sandbox/'video'/original.name)
+                for poster in (Path(str(original)+'.poster.jpg'), original.with_suffix('.poster.jpg')):
+                    if poster.is_file():shutil.copy2(poster, sandbox/'video'/poster.name)
             html,diag,model=publikaciya._master(code)
             verify_core_fields(html,row)
             verify_photo_structure(html,row,gallery_paths(row,root=sandbox))
+            verify_video_structure(html,row,video_paths(row,root=sandbox))
             errors=publikaciya.proverit(html,code)
             if errors:raise RuntimeError('EXISTING_RENDER_VALIDATOR_FAILED')
-            checks.append({'code':code,'html_sha256':sha(html.encode()),'photos':len(gallery_paths(row,root=sandbox))})
+            checks.append({'code':code,'html_sha256':sha(html.encode()),'photos':len(gallery_paths(row,root=sandbox)),
+                           'videos':len(names), 'telegram_original_verified':False})
+            for copied in (sandbox/'video').glob(code+'*.mp4*'):
+                if copied.is_file():copied.unlink()
         import publish_transaction_guard as guard
         result['checking_code']='catalog'
         catalog, catalog_rows=guard._build_catalog()

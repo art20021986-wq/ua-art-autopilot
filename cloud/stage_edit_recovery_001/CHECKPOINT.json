@@ -1,0 +1,51 @@
+{
+  "task_id": "UA-ART-STAGE-EDIT-RECOVERY-001",
+  "checkpoint_at": "2026-09-27T05:07:18Z",
+  "status": "CANDIDATE_TESTED_BLOCKED_RECOVERY_AND_CPU",
+  "owner_authorized": true,
+  "production_installed": false,
+  "production_source_html_crm_written_by_this_task": false,
+  "full_acceptance": false,
+  "observations": {
+    "method": "Authenticated read-only server console and GitHub reads",
+    "ua0021_crm_status": "sea_loaded",
+    "ua0021_published": 1,
+    "ua0021_in_server_catalog": false,
+    "published_rows": 21,
+    "active_rows": 20,
+    "server_catalog_rows": 19,
+    "hidden_rows": ["UA-0020"],
+    "stage_patch_error": "CATALOG_PUBLISHED_SET_MISMATCH",
+    "publication_log_time_utc": "2026-09-27T04:51:50Z",
+    "ua0021_publication_error": "CATALOG_ROW_SET_MISMATCH",
+    "public_http_acceptance_checked_by_this_task": false
+  },
+  "root_cause": "Catalog builder returned archived published rows while renderer and transaction validator used active rows; stage-only patch cannot insert missing cards.",
+  "candidate_files": ["cars_ui.py", "publikaciya.py"],
+  "candidate_sha256": {
+    "cars_ui.py": "23c88c62bf8422f03d7546a9bc0dd8e40f91af5ad58d5d9fe12538aad79cee18",
+    "publikaciya.py": "4d1adb53cb659daa125c7480c289ad25e03a57e34d3d0c1f4e0989de1d7a8ac8"
+  },
+  "validation": {
+    "recovery_regressions_passed": 18,
+    "existing_policy_tests_passed": 7,
+    "exact_source_build": "PASS",
+    "candidate_compile": "PASS",
+    "full_live_rehearsal": "NOT_RUN",
+    "public_acceptance": "NOT_RUN"
+  },
+  "blockers": {
+    "halt_status": "EMERGENCY_HALT",
+    "transaction_id": "tx-36268504600-54c3be3cfc4dd0da",
+    "transaction_status": "ROLLING_BACK",
+    "rollback_invoked": false,
+    "recovery_error": "AUTOSTART_NONCE_RESERVATION_MISSING -> TRANSACTION_LEDGER_INVALID",
+    "registered_recovery_covers_this_transaction": false,
+    "cpu_observed_usage_seconds": 8576.84,
+    "cpu_daily_limit_seconds": 5000,
+    "cpu_reset_at": "2026-09-27T08:37:11Z"
+  },
+  "automatic_retry_allowed": false,
+  "next": "Registered recovery and nonce-complete rollback rehearsal, fresh runtime/CPU check, fresh bounded installation plan through main Actions, then exact CRM/public verification. See README.md.",
+  "related_continuation": "cloud/delivery_status_001/CONTINUATION.json"
+}
