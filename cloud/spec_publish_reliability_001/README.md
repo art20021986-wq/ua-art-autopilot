@@ -27,7 +27,10 @@ Telegram receipt, or full-catalog publisher changes. No new dependencies.
 - Supported model families no longer require enumerating every full VIN. New
   audited families cover K5 DL3 2.0 LPi, Sonata DN8 2.0 LPi and common Audi C7
   3.0 TDI engine facts. Other catalogue discoveries require a sufficiently
-  specified, matching variant or a strict successful VIN decode. Unconfirmed
+  specified, matching variant or a strict successful VIN decode. For an unseen
+  model without a specific trim, only engine fundamentals with matching model,
+  production interval, displacement and fuel may be collected, and they need
+  matching evidence from two independent approved domains before merging. Unconfirmed
   specifications stay absent; this does not guarantee data for every vehicle.
 - Purchase fields cannot enter through arbitrary keys, labels or values. Only
   known technical field keys and approved provenance can be merged. Existing

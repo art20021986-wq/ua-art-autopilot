@@ -4,6 +4,7 @@ import json
 import pathlib
 import tempfile
 import unittest
+from unittest import mock
 
 import spec84_collector as collector
 import spec_catalog_pages as pages
@@ -16,6 +17,34 @@ K5 = dict(car_uid="UA-0099", vin="KNAG541BBNA123456", brand="Kia", model="К5",
 
 
 class ModelTests(unittest.TestCase):
+    def test_unseen_engine_needs_two_sources_before_any_emitted_fact(self):
+        card = dict(K5, vin="WVWZZZ1KZBW123456", brand="Volkswagen", model="Golf", year="2011", fuel="diesel", engine_cc=1968)
+        body = b'<h1>Volkswagen Golf</h1><p>Start of production</p><p>2010 year</p><p>End of production</p><p>2012 year</p><p>Engine displacement</p><p>1968 cm3</p><p>Fuel Type</p><p>Diesel</p><p>Number of cylinders</p><p>4</p><p>Power</p><p>140 hp</p>'
+        class Response(io.BytesIO):
+            status = 200
+            def __init__(self, url):
+                super().__init__(body)
+                self.url = url
+            def geturl(self):
+                return self.url
+        def opener(request, timeout):
+            if 'vpic.' in request.full_url:
+                raise OSError('fixture no decoder')
+            return Response(request.full_url)
+        def discover_one(card, domain, read):
+            return ['https://' + domain + '/en/spec'] if domain == 'auto-data.net' else []
+        def discover_two(card, domain, read):
+            return ['https://' + domain + '/en/spec'] if domain in ('auto-data.net', 'cars-data.com') else []
+        emitted = []
+        with mock.patch.object(pages, 'discover', side_effect=discover_one):
+            result = collector.collect(card, opener=opener, emit_source=lambda sid, outcome, facts: emitted.extend(facts))
+        self.assertEqual(result['facts'], [])
+        self.assertEqual(emitted, [])
+        with mock.patch.object(pages, 'discover', side_effect=discover_two):
+            result = collector.collect(card, opener=opener)
+        self.assertEqual([f['field_key'] for f in result['facts']], ['cylinders'])
+        self.assertEqual(len(result['facts'][0]['source_domains']), 2)
+
     def test_future_vin_gets_model_facts_without_vin_allowlist(self):
         self.assertEqual(models.resolve(K5)["id"], "kia-dl3-k5-20-lpi")
         for vin in ("KNAG541BBNA987654", "KNAG741BBLA456789"):

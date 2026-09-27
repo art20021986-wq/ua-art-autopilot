@@ -175,7 +175,7 @@ def collect(card: dict[str, Any], *, deadline_seconds: float = 18.0,
     current_opener = _bounded_opener(deadline, opener, max(.1, float(request_timeout)))
     profile = models.resolve(card)
     curated = [f for f in policy.profile_facts(profile) if f.source_domain in APPROVED_DOMAINS]
-    facts, sources = list(curated), {}
+    facts, sources, corroboration = list(curated), {}, []
 
     def read(url):
         request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; UAART-Spec/2.0)",
@@ -228,10 +228,14 @@ def collect(card: dict[str, Any], *, deadline_seconds: float = 18.0,
                     body = read(url)
                     candidates, state = pages.extract(card, url, body, profile)
                     found.extend(candidates)
+                    if state == "ENGINE_CANDIDATES":
+                        outcome["requires_corroboration"] = True
                     attempts.append(dict(url=url, status=state, facts=len(candidates)))
                 outcome.update(attempts=attempts, network_status=attempts[-1]["status"] if attempts else "NO_MATCHING_URL")
             outcome.update(status="FRESH" if found else "CURATED" if outcome["curated_facts"] else "NO_CONFIDENT_MATCH",
                            fresh_facts=len(found))
+            if outcome.get("requires_corroboration"):
+                outcome.update(status="UNCONFIRMED", candidate_facts=len(found), fresh_facts=0)
         except Exception as exc:
             outcome.update(status="CURATED" if outcome["curated_facts"] else "ERROR",
                            network_status="ERROR", error=type(exc).__name__)
@@ -246,8 +250,11 @@ def collect(card: dict[str, Any], *, deadline_seconds: float = 18.0,
             for future in done:
                 pending.pop(future)
                 sid, outcome, found = future.result()
-                facts.extend(found)
                 sources[sid] = outcome
+                if outcome.get("requires_corroboration"):
+                    corroboration.extend(found)
+                else:
+                    facts.extend(found)
                 emit(sid)
         for future, sid in pending.items():
             future.cancel()
@@ -255,6 +262,20 @@ def collect(card: dict[str, Any], *, deadline_seconds: float = 18.0,
             emit(sid)
     finally:
         pool.shutdown(wait=False, cancel_futures=True)
+    by_key = {}
+    for fact in corroboration:
+        by_key.setdefault(fact.field_key, []).append(fact)
+    confirmed = []
+    for group in by_key.values():
+        if (len({models.normalize(f.display_value) for f in group}) == 1
+                and len({f.source_domain for f in group}) >= 2):
+            confirmed.extend(group)
+    facts.extend(confirmed)
+    for source_id, source in sources.items():
+        if source.get("requires_corroboration"):
+            count = len({f.field_key for f in confirmed if f.source_domain == source["domain"]})
+            source.update(status="FRESH" if count else "UNCONFIRMED", fresh_facts=count)
+            emit(source_id)
     selected = policy.deduplicate(facts)
     return dict(policy_version=POLICY_VERSION, car_uid=uid, vin=vin,
                 profile_id=str((profile or {}).get("id") or ""),

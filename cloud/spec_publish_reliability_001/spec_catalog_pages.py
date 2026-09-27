@@ -12,6 +12,8 @@ from spec_model_profiles import normalize, fuel_type
 DISCOVERY_HOST = "html.duckduckgo.com"
 NUMERIC_KEYS = frozenset(("length", "width", "height", "wheelbase", "cylinders",
     "doors", "seats", "cylinder_bore", "piston_stroke", "valves_per_cylinder"))
+ENGINE_COMMON = frozenset(("cylinders", "engine_configuration", "cylinder_bore",
+                          "piston_stroke", "valves_per_cylinder"))
 
 
 def discover(card, domain, read):
@@ -70,6 +72,31 @@ def _single_variant(card, body, lines):
     return score >= .99
 
 
+def _engine_match(card, body, lines):
+    """An engine-family candidate still needs corroboration by another source."""
+    heading = re.search(r"<h1\b[^>]*>(.*?)</h1>", body.decode("utf-8", "replace"), re.I | re.S)
+    if not heading:
+        return False
+    title = normalize(re.sub(r"<[^>]+>", " ", html.unescape(heading[1])))
+    tokens = policy._car_tokens(dict(card, model=normalize(card.get("model"))))
+    if not all(any(re.search(r"(?<!\w)" + re.escape(t) + r"(?!\w)", title)
+                       for t in tokens[key]) for key in ("brand", "model")):
+        return False
+    adjacent = {normalize(label): value for label, value in zip(lines, lines[1:])}
+    displacement = next((adjacent[k] for k in ("engine displacement", "cylinder capacity", "배기량") if k in adjacent), "")
+    fuel = next((adjacent[k] for k in ("fuel type", "연료") if k in adjacent), "")
+    accepted_fuels = {"diesel", "дизель", "디젤", "lpg", "lpi", "엘피지", "petrol", "gasoline", "бензин", "가솔린", "petrol gasoline"}
+    try:
+        source_cc = float(re.match(r"[\d,.]+", displacement)[0].replace(",", ""))
+        car_cc, year = float(card.get("engine_cc") or 0), int(card.get("year") or 0)
+        first = int(re.search(r"\d{4}", adjacent.get("start of production", ""))[0])
+        last = int(re.search(r"\d{4}", adjacent.get("end of production", ""))[0])
+    except (ValueError, TypeError):
+        return False
+    return (car_cc > 0 and abs(source_cc - car_cc) <= 10 and first <= year <= last
+            and normalize(fuel) in accepted_fuels and fuel_type(fuel) == fuel_type(card.get("fuel")))
+
+
 def extract(card, url, body, profile):
     """Return only whitelisted facts, with source-specific evidence.
 
@@ -82,7 +109,9 @@ def extract(card, url, body, profile):
     domain = (urllib.parse.urlsplit(url).hostname or "").removeprefix("www.")
     lines, pairs = _pairs(body)
     seeded = url in ((profile or {}).get("urls") or {}).get(domain, ())
-    if not seeded and not _single_variant(card, body, lines):
+    exact = _single_variant(card, body, lines) if not seeded else True
+    common = not seeded and not exact and _engine_match(card, body, lines)
+    if not seeded and not exact and not common:
         return [], "NO_CONFIDENT_VARIANT"
     expected = (profile or {}).get("facts") or {}
     by_key = {}
@@ -91,6 +120,8 @@ def extract(card, url, body, profile):
         if not mapping or policy.PRICE_RE.search(value):
             continue
         key = mapping[0]
+        if common and key not in ENGINE_COMMON:
+            continue
         if key not in profile_library.FIELD_DEFS or len(value) > 250:
             continue
         by_key.setdefault(key, set()).add(value)
@@ -116,8 +147,13 @@ def extract(card, url, body, profile):
             value = wanted
         elif len(values) == 1:
             value = next(iter(values))
+            if common and key in NUMERIC_KEYS:
+                match = re.match(r"^\s*(\d+(?:\.\d+)?)\s*(?:mm|мм|$)", value)
+                if not match:
+                    continue
+                value = match[1] + (" мм" if key in ("cylinder_bore", "piston_stroke") else "")
         else:
             continue
         label, category, unit = profile_library.FIELD_DEFS[key]
         result.append(policy.Fact(key, label, category, value, unit, .94, domain, url))
-    return result, "HTTP_OK"
+    return result, "ENGINE_CANDIDATES" if common else "HTTP_OK"
