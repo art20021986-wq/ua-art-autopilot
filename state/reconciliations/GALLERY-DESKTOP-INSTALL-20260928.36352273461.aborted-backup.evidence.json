@@ -1,0 +1,157 @@
+{
+  "backup_error": "REMOTE_BACKUP:DeploymentError:LIVE_PLAN_DRIFT",
+  "backup_log_excerpt": [
+    "2026-09-27T21:41:29.4636496Z     accepted(value, 'backup', run_id)",
+    "2026-09-27T21:41:29.4638813Z RuntimeError: REMOTE_BACKUP:DeploymentError:LIVE_PLAN_DRIFT"
+  ],
+  "backup_log_source": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/jobs/108713544347/logs",
+  "expected_parent": "de108b4e54a780f17fcc1640a1c03a4e0d3025d2",
+  "jobs": [
+    {
+      "conclusion": "success",
+      "id": 108713105649,
+      "name": "context",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 108713120199,
+      "name": "intake",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 108713155642,
+      "name": "persist",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 108713183150,
+      "name": "execute / validate",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 108713301139,
+      "name": "execute / plan",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 108713351801,
+      "name": "execute / critical / main_only",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 108713351970,
+      "name": "execute / standard",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 108713352199,
+      "name": "execute / fast",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 108713366032,
+      "name": "execute / critical / validate",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 108713406257,
+      "name": "execute / critical / prepare",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 108713407199,
+      "name": "execute / critical / controller_nonproduction",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "id": 108713544347,
+      "name": "execute / critical / backup",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 108714151690,
+      "name": "execute / critical / open",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 108714151807,
+      "name": "execute / critical / controller_production",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 108714151819,
+      "name": "execute / critical / rollback_mark",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 108714152369,
+      "name": "execute / critical / finalize",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "id": 108714190804,
+      "name": "execute / critical / recover",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "skipped",
+      "id": 108714191406,
+      "name": "execute / critical / rollback_execute",
+      "run_id": 36352273461,
+      "status": "completed"
+    },
+    {
+      "conclusion": "failure",
+      "id": 108714225280,
+      "name": "execute / critical / result",
+      "run_id": 36352273461,
+      "status": "completed"
+    }
+  ],
+  "observed_at": "2026-09-27T21:47:51.159Z",
+  "original_state_sha256": {
+    "state/AUTOPILOT_HALT.json": "df5f3513eba5073ad3afabb72beb4b7fddcb1fd903d9e2f9eb8194f6f2e7e22d",
+    "state/claims/GALLERY-DESKTOP-INSTALL-20260928.0e863dd329ae5d2fb6c79aec2e1f029493c20fccadb16fd6d042af0b86693356.36352273461.json": "0d0fa9c74c80c99ef7c8e6ccf1a079af755df189e15f56374d078db4ae6ffb80",
+    "state/transactions/GALLERY-DESKTOP-INSTALL-20260928.0e863dd329ae5d2fb6c79aec2e1f029493c20fccadb16fd6d042af0b86693356.36352273461.json": "8757041d0c1f8f7500bff36733d0b766b1c76a7377502c4f72689b523f8eee2d"
+  },
+  "workflow_run": {
+    "conclusion": "failure",
+    "head_sha": "fea373b1d86baeb42879194d38ccf3e674cc7840",
+    "html_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/36352273461",
+    "id": 36352273461,
+    "status": "completed"
+  }
+}
