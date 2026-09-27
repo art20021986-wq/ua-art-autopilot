@@ -101,6 +101,16 @@ class RecoveryTests(unittest.TestCase):
         self.assertFalse((self.root/'ua_publish_requests.py').exists())
         self.assertTrue(result['crm_resume']['enabled'])
 
+    def test_rollback_after_prewrite_drift_preserves_the_other_edit(self):
+        (self.root/'db.py').write_bytes(b'other editor')
+        self.assertEqual(self.lifecycle('install')['status'],'FAIL')
+        result=self.lifecycle('rollback')
+        self.assertTrue(result['restored'])
+        self.assertEqual(result['rollback_scope'],'NO_FILE_WRITES_STARTED_JOURNAL_PROOF')
+        self.assertEqual((self.root/'db.py').read_bytes(),b'other editor')
+        self.assertFalse((self.root/'ua_publish_requests.py').exists())
+        self.assertTrue(result['crm_resume']['enabled'])
+
     def test_rollback_refuses_concurrent_file_edit(self):
         self.lifecycle('install')
         (self.root/'db.py').write_bytes(b'other editor')
