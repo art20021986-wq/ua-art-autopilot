@@ -1,4 +1,4 @@
-"""Exact one-time cleanup of the already-published UA-0023 gallery."""
+"""Exact cleanup of already-published photos marked hidden in CRM."""
 from html.parser import HTMLParser
 import json
 import re
@@ -44,52 +44,94 @@ def class_spans(source, name):
                   if name in (attrs.get('class') or '').split())
 
 
-def cleanup_primary(source):
+def gallery_match(source):
+    patterns = [r'var kadry=(\[[^;]+\]);']
+    if '<!--ua-gallery-desktop-v1-->' in source:
+        patterns.append(r'\}\)\((\[[^;]+\])\);\s*</script>')
+    matches = [match for pattern in patterns for match in re.finditer(pattern, source)]
+    if len(matches) != 1: raise ValueError('PRIMARY_GALLERY_ARRAY')
+    return matches[0]
+
+
+def cleanup_primary(source, code=CODE, hidden=('001.jpg',), before_count=38):
+    match = gallery_match(source)
+    values = json.loads(match.group(1))
+    prefix = 'foto/'+code+'/'
+    if (len(values) != before_count or len(set(values)) != len(values)
+            or any(not re.fullmatch(re.escape(prefix)+r'[^/]+\.(?:jpg|jpeg|png|webp)', v) for v in values)):
+        raise ValueError('PRIMARY_GALLERY_IDENTITIES')
+    excluded = {prefix+name for name in hidden}
+    if not excluded <= set(values): raise ValueError('PRIMARY_HIDDEN_IDENTITY_MISSING')
+    visible = [value for value in values if value not in excluded]
+    if not visible: raise ValueError('PRIMARY_NO_VISIBLE_PHOTO')
     frames = class_spans(source, 'kadr')
-    if len(frames) != 38: raise ValueError('PRIMARY_FRAME_COUNT')
+    if len(frames) != before_count: raise ValueError('PRIMARY_FRAME_COUNT')
     changes = []
+    visible_index = 0
     for index, (start,end) in enumerate(frames, 1):
         frame = source[start:end]
-        if 'foto/UA-0023/m/%03d.jpg' % index not in frame:
+        value = values[index-1]
+        if prefix+'m/'+value[len(prefix):] not in frame:
             raise ValueError('PRIMARY_PHOTO_ORDER')
-        if index == 1:
+        if value in excluded:
             frame = ''
         else:
-            frame = re.sub(r'фото '+str(index)+r'\b', 'фото '+str(index-1), frame)
-            if index == 2: frame = frame.replace("loading='lazy'", "loading='eager'")
+            visible_index += 1
+            frame = re.sub(r'фото '+str(index)+r'\b', 'фото '+str(visible_index), frame)
+            if visible_index == 1: frame = frame.replace("loading='lazy'", "loading='eager'")
         changes.append((start,end,frame))
     result = source
     for start,end,value in reversed(changes): result = result[:start]+value+result[end:]
-    match = re.search(r'var kadry=(\[[^;]+\]);', result)
-    if not match: raise ValueError('PRIMARY_GALLERY_ARRAY')
-    values = json.loads(match.group(1))
-    if values != ['foto/UA-0023/%03d.jpg' % n for n in range(1,39)]:
-        raise ValueError('PRIMARY_GALLERY_IDENTITIES')
-    result = result[:match.start(1)]+json.dumps(values[1:],ensure_ascii=False)+result[match.end(1):]
-    count = "<div class='schet'>38 фото"
+    match = gallery_match(result)
+    result = result[:match.start(1)]+json.dumps(visible,ensure_ascii=False)+result[match.end(1):]
+    count = "<div class='schet'>%d фото" % before_count
     if result.count(count) != 1: raise ValueError('PRIMARY_DISPLAY_COUNT')
-    result = result.replace(count, "<div class='schet'>37 фото")
-    result = result.replace('foto/UA-0023/001.jpg', 'foto/UA-0023/002.jpg')
-    if re.search(r'foto/UA-0023/(?:m/)?001\.jpg', result):
-        raise ValueError('PRIMARY_TECHNICAL_REFERENCE_REMAINS')
-    if len(class_spans(result, 'kadr')) != 37: raise ValueError('PRIMARY_FINAL_COUNT')
+    result = result.replace(count, "<div class='schet'>%d фото" % len(visible))
+    for name in hidden:
+        result = re.sub('('+re.escape(prefix)+r'(?:m/)?)'+re.escape(name),
+                        lambda m:m.group(1)+visible[0][len(prefix):], result)
+    if len(class_spans(result, 'kadr')) != len(visible): raise ValueError('PRIMARY_FINAL_COUNT')
     return result
 
 
-def cleanup_catalog(source):
+def cleanup_catalog(source, code=CODE, vin=VIN, hidden=('001.jpg',), before_count=38, cover='002.jpg'):
     candidates = []
     for _,_,start,end in Spans(source).nodes:
         block = source[start:end]
-        if VIN in block and 'foto/UA-0023/' in block:
-            if set(re.findall(r'UA-\d{4}', block)) == {CODE}:
+        if vin in block and 'foto/'+code+'/' in block:
+            if set(re.findall(r'UA-\d{4}', block)) == {code}:
                 candidates.append((start,end))
     if not candidates: raise ValueError('CATALOG_CARD_BOUNDARY')
     start,end = min(candidates, key=lambda pair:pair[1]-pair[0])
     block = source[start:end]
-    updated = re.sub(r'(foto/UA-0023/(?:m/)?)001\.jpg', r'\g<1>002.jpg', block)
-    updated, total = re.subn(r'(?<!\d)38(?= фото\b)|(?<=Фото: )38\b', '37', updated)
+    updated = block
+    for name in hidden:
+        updated = re.sub('('+re.escape('foto/'+code+'/')+r'(?:m/)?)'+re.escape(name),
+                         lambda m:m.group(1)+cover, updated)
+    after_count = before_count-len(hidden)
+    updated, total = re.subn(r'(?<!\d)'+str(before_count)+r'(?= фото\b)|(?<=Фото: )'+str(before_count)+r'\b', str(after_count), updated)
     if updated == block or total < 1: raise ValueError('CATALOG_PHOTO_ANCHOR')
     result = source[:start]+updated+source[end:]
-    if re.search(r'foto/UA-0023/(?:m/)?001\.jpg', result):
-        raise ValueError('CATALOG_TECHNICAL_REFERENCE_REMAINS')
+    for name in hidden:
+        if re.search(re.escape('foto/'+code+'/')+r'(?:m/)?'+re.escape(name), result):
+            raise ValueError('CATALOG_TECHNICAL_REFERENCE_REMAINS')
     return result
+
+
+def cleanup_page(source, path, cards):
+    if path.endswith(('/katalog.html','/index.html')):
+        result = source
+        for code, card in sorted(cards.items()):
+            if 'foto/'+code+'/' in result:
+                result = cleanup_catalog(result, code, card['vin'], card['hidden'], card['before_count'], card['cover'])
+        return result
+    match = re.search(r'/(UA-\d{4})(?:-|\.)', path)
+    if not match or match.group(1) not in cards: raise ValueError('PUBLIC_CARD_IDENTITY')
+    code = match.group(1)
+    card = cards[code]
+    if not class_spans(source, 'kadr'):
+        for name in card['hidden']:
+            if re.search(re.escape('foto/'+code+'/')+r'(?:m/)?'+re.escape(name), source):
+                raise ValueError('HIDDEN_REFERENCE_OUTSIDE_GALLERY')
+        return source
+    return cleanup_primary(source, code, card['hidden'], card['before_count'])

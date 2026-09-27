@@ -19,8 +19,8 @@ import time
 
 from deployment_transport import API, canonical, sha
 from candidate_builder import SOURCE_SHA256, DEPENDENCY_SHA256, build
-from public_cleanup import cleanup_primary, cleanup_catalog
-from public_baseline import PUBLIC_SHA256, PUBLIC_AFTER_SHA256
+from public_cleanup import cleanup_page
+from public_baseline import PUBLIC_SHA256, PUBLIC_AFTER_SHA256, PUBLIC_CARDS
 
 ROOT = Path('/home/Carix')
 HERE = Path(__file__).resolve().parent
@@ -93,8 +93,7 @@ def prepare(directory):
     for name, expected in PUBLIC_SHA256.items():
         if sha(source[name]) != expected:
             raise DeploymentError('PUBLIC_SOURCE_DRIFT:'+name)
-        cleaner = cleanup_catalog if name.endswith(('/katalog.html','/index.html')) else cleanup_primary
-        candidate[name] = cleaner(source[name].decode('utf-8')).encode('utf-8')
+        candidate[name] = cleanup_page(source[name].decode('utf-8'), name, PUBLIC_CARDS).encode('utf-8')
         if sha(candidate[name]) != PUBLIC_AFTER_SHA256[name]:
             raise DeploymentError('PUBLIC_CANDIDATE_DRIFT:'+name)
     protected_names = set(DEPENDENCY_SHA256) | {

@@ -61,8 +61,9 @@ def public_verify(api, bundle, backup_sha, plan):
             if len(response.read(4096))<100: raise RuntimeError('EMPTY_PUBLIC_PAGE')
         results[path]='PASS'
     if plan.get('site_write'):
-        for path in ('/video/UA-0023.html','/video/katalog.html','/video/index.html'):
-            if path.lstrip('/') not in plan['files']: continue
+        for relative in sorted(plan['files']):
+            if not re.fullmatch(r'video/(?:UA-\d{4}|katalog|index)\.html', relative): continue
+            path = '/'+relative
             request=urllib.request.Request('https://www.uaart.com.ua'+path+'?photo_visibility='+backup_sha[:16],
                 headers={'Cache-Control':'no-cache','User-Agent':'UAART-PhotoVisibility-Verify/1'})
             with urllib.request.urlopen(request,timeout=30) as response:
@@ -144,7 +145,7 @@ def run(operation=None):
                'protected_files_unchanged': True, 'crm_unchanged': True,
                'public_checks':public,'restart':value['crm_resume'],
                'code_sha256':verified['code_sha256'],
-               'acceptance_scope':'TECHNICAL_PHOTO_EXCLUSION_SOURCES_AND_PUBLIC_UA0023',
+               'acceptance_scope':'TECHNICAL_PHOTO_EXCLUSION_SOURCES_AND_EXISTING_HIDDEN_GALLERIES',
                'full_publication_acceptance':bool(plan.get('site_write')),'database_migration_executed':False,
                'data_preservation_scope':value['preservation_scope']}
     save(env['UAART_RECEIPT_PATH'], receipt)
