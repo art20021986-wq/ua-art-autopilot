@@ -7,21 +7,23 @@
   "created_at": "2026-09-27T21:55:16Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T21:55:16Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-09-27T22:00:05Z",
+  "heartbeat_at": "2026-09-27T22:00:05Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "36353405499",
     "task_id": "SEARATES-DIRECT-PREFLIGHT-20260928",
     "task_sha256": "7b27c16db38b5c7eeaa3c9be214d70a500afd6aade5e6c1405640b7f5be5327a"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-582565dea86318fe-1921ff4394bf1dbe",
   "receipt_path": "state/receipts/SEARATES-DIRECT-PREFLIGHT-20260928.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "55f7928c39ca6d06a315b1cd028932be15a2286cb02c06ad2c7cf8b134480e4c",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SEARATES-DIRECT-PREFLIGHT-20260928.json",
   "request_sha256": "7b27c16db38b5c7eeaa3c9be214d70a500afd6aade5e6c1405640b7f5be5327a",
   "resource_locks": [
@@ -29,8 +31,34 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "9b705e5a4fa33c139a7a4bfe12954b6d2fd758e1",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92117913600,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.518
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-27T21:55:16Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "832fec48dfa7ddcba76e7149901787736176b62ad58c650994e94a14a783c956",
+    "file_sha256": {
+      "cloud/container_tracking_001/build_candidate.py": "79ba84b31e69fb09c867339c0944515475b0597ddc90bef37a88286a9534b395",
+      "cloud/container_tracking_001/card_tracking.py": "2609bb38916699bc171ec5da835773aff065ada3578355eab51090aacf4304f4",
+      "cloud/container_tracking_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/container_tracking_001/deployment_bootstrap.py": "3f4459298d50e11c735a4badc9ab0d30cdd89133cead619413216a61da4e255d",
+      "cloud/container_tracking_001/deployment_remote.py": "6a86150727936825ef4dfdbbf03503250a98dddb4e6c57551c3e1760671e8c60",
+      "cloud/container_tracking_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/container_tracking_001/deployment_transport.py": "cf670b52137abe6ad4747f4b68c747ae111c96965f1fea4165ee62216f5f2f6a",
+      "cloud/container_tracking_001/release_constants.py": "5a9501fe98918973127820b025c0992a5ab2242f1573337ee24b927a1a8ab0ba",
+      "cloud/container_tracking_001/test_deployment.py": "b271781567fb8f3648b0cf47b1281041fea97fdb3e477611f4812c240b53eefd",
+      "cloud/container_tracking_001/test_tracking.py": "4dcaab1e3f7e3395478d11c91759c1a81beefa7a115583838fcbb773c6503357",
+      "cloud/container_tracking_001/ua_tracking_links.py": "e00a626d18a47945f26278617cea567a5f3e741aae99c2ea65410bd7a07dffc5",
+      "cloud/container_tracking_001/ua_tracking_widget.py": "b5363b55ec9038add3735da45028640e8cb666712b73d442dee6b2da1fd9a42b"
+    }
+  },
+  "updated_at": "2026-09-27T22:00:05Z"
 }
