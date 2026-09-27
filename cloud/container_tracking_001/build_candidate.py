@@ -4,9 +4,9 @@ from hashlib import sha256
 from pathlib import Path
 
 SOURCE_SHA256 = {
-    'stranica.py': '4d710266abb2a92754ff3e3fc7de86c628760bee3c455dfbb177dedec113b1a1',
-    'yadro.py': '1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793',
-    'master_card.py': 'c99b6c0271586d4f8c56e4184528ab6f20541173be9a287d9d64661b4b7184b2',
+    'stranica.py': 'afa5c9b4d86b35153557adc1be2b1f089698ad7e03cbbf2b9df870e3479a8cda',
+    'yadro.py': '4a47063c85f60b8a9fe4c4a42256075a7345a3805f5037de7141998bc891e661',
+    'master_card.py': '51b736a5913ba6ebf6e784ead9dbfa1d1e9f61597724eefb943ee6f9a8d9d12e',
 }
 MODULES = ('ua_tracking_links.py', 'ua_tracking_widget.py')
 BEGIN = '    container = str(m.get("sea_container") or "").strip()\n'
