@@ -74,7 +74,6 @@
     "live host integration (private current-source patch checks PASS)",
     "browser and mobile visual acceptance",
     "live Telegram client to CRM",
-    "production backup",
     "production inventory acceptance",
     "production deployment and rollback"
   ],
@@ -164,7 +163,7 @@
   },
   "release_blockers": [
     "Approved company consent text/version not located in checked sources",
-    "Gate B visual/mobile/live/inventory/backup/deployment and rollback checks incomplete"
+    "Gate B visual/mobile/live/deployment and rollback checks incomplete; refresh inventory baseline at release"
   ],
   "storage_check": {
     "primary_docs": [
@@ -206,7 +205,8 @@
   "production_runtime_modified": false,
   "server_changes": [
     "Created isolated empty Carix$orders database",
-    "Created isolated empty Carix$orders_test database"
+    "Created isolated empty Carix$orders_test database",
+    "Private six-file backup, CRM SQLite backup and isolated file rollback rehearsal"
   ],
   "server_runtime_checks": {
     "commit": "7b60d8ac1cb7e052ce92a4a7054278cce464ddb5",
@@ -236,5 +236,25 @@
   "review_fixes": [
     "Production runtime refuses test database before connecting",
     "Notification lease clock refreshed after lock acquisition"
-  ]
+  ],
+  "backup_rehearsal": {
+    "status": "PASS",
+    "checked_at_utc": "2026-09-27T12:08:46.910227+00:00",
+    "private_directory": "/home/Carix/order_release_check_20260927T1209",
+    "source_files": 6,
+    "crm_bytes": 6787072,
+    "crm_integrity": "ok",
+    "cars": 22,
+    "media_rows": 981,
+    "crm_snapshot_sha256": "209056347bb49aefd33613c631cc2fcd43056ec54488a78394c083d5587ef2a4",
+    "live_sources_changed": false,
+    "feature_paths_preexisting": false,
+    "file_install_and_restore": "PASS in /dev/shm",
+    "live_install_reload_rollback": "NOT_RUN",
+    "baseline_refresh_before_release": true
+  },
+  "local_general_tests_after_backup_guards": {
+    "status": "PASS",
+    "count": 45
+  }
 }

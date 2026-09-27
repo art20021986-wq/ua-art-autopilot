@@ -60,9 +60,15 @@ def snapshot(destination):
 
 def run(output):
     output = Path(output).resolve()
-    if output.exists() or not output.name.startswith('order_release_check_'):
-        raise ValueError('Use a fresh private order_release_check_ directory')
+    if (output.parent != Path('/home/Carix') or output.exists()
+            or not output.name.startswith('order_release_check_')):
+        raise ValueError('Use a fresh private order_release_check_ directory directly in /home/Carix')
     os.umask(0o077)
+    feature_paths = {str(path): path.exists() for path in (
+        Path('/home/Carix/ua_order'), Path('/home/Carix/order_requests'),
+        Path('/home/Carix/video/order'))}
+    if any(feature_paths.values()):
+        raise ValueError('Existing feature paths require a separately audited upgrade backup')
     # Check all source pins before making any backup or output.
     originals = {name: path.read_bytes() for name, path in LIVE.items()}
     for name in integrate.PINS:
@@ -77,9 +83,7 @@ def run(output):
         'production_runtime_modified': False, 'real_messages_sent': False,
         'source_sha256': {name: sha(sources/name) for name in originals},
         'private_output': str(output),
-        'existing_feature_paths': {str(path): path.exists() for path in (
-            Path('/home/Carix/ua_order'), Path('/home/Carix/order_requests'),
-            Path('/home/Carix/video/order'))},
+        'existing_feature_paths': feature_paths,
     }
     backup = output / 'crm.snapshot.db'
     manifest['crm_tables'] = snapshot(backup)
