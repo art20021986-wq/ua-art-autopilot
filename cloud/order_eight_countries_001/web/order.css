@@ -51,7 +51,7 @@
 }
 /* Preference controls stay scoped to this form; native selects keep mobile UX. */
 .ua-order fieldset{margin:0;padding:16px;border:1px solid #516678;border-radius:12px;min-width:0}
-.ua-order legend{padding:0 6px;max-width:100%;font-weight:650;color:#f2eee6}
+.ua-order legend{padding:0 6px;max-width:100%;font-weight:650;color:var(--gold)}
 .ua-order .field-help{font-size:14px;line-height:1.5;color:#c2ced8;margin:8px 0 12px}
 .ua-order .field-error{font-size:15px;color:#ffb4ab;margin:8px 0 0}
 .ua-order [aria-invalid=true]{border-color:#ffb4ab;outline:2px solid #ffb4ab}

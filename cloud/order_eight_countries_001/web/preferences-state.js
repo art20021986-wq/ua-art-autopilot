@@ -10,6 +10,7 @@ export function emptyValues() {
 export function editableValues(values) {
   const result=structuredClone(values);
   result.priority={};result.year.any=false;
+  if(result.model_mode==='any'||(result.make==='other'&&!result.model_mode))result.model_mode=result.make==='other'?'other':'selected';
   return result;
 }
 export function createPreferences() {return {values:emptyValues(),dirty:{},card:null};}
@@ -32,7 +33,7 @@ export function changeMake(state,make,directory) {
   const allowed=directory.makes[make]?.models||[];
   state.values.models=state.values.models.filter(model=>allowed.includes(model));
   state.values.other_model='';
-  state.values.model_mode=make==='help'?'help':(directory.makes[make]?'selected':'');
+  state.values.model_mode=make==='help'?'help':(directory.makes[make]?'selected':(make==='other'?'other':''));
   state.dirty.models=true;
 }
 export function parseInteger(value,min=0,max=5000000) {
@@ -48,7 +49,7 @@ export function preferenceErrors(v,directory) {
   const errors={};const fail=(field,key='required_error')=>{errors[field]=key;};
   if(!v.purchase_country_code||(v.purchase_country_code==='other'&&v.purchase_country_other.trim().length<2)) fail('purchase_country_code');
   if(!v.make||(v.make==='other'&&v.make_other.trim().length<2)) fail('make');
-  if(!v.model_mode||(v.model_mode==='selected'&&!v.models.length)||(v.model_mode==='other'&&v.other_model.trim().length<2)) fail('models');
+  if(!['selected','other','help'].includes(v.model_mode)||(v.model_mode==='selected'&&!v.models.length)||(v.model_mode==='other'&&v.other_model.trim().length<2)) fail('models');
   if(v.budget.mode!=='help'&&parseInteger(v.budget.max,1,1000000000)===null) fail('budget','field_error');
   if(!v.vehicle_type) fail('vehicle_type');
   if(!v.delivery_country) fail('delivery_country');

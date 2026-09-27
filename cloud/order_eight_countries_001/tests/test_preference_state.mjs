@@ -30,6 +30,7 @@ assert.deepEqual(state.values.year,{from:null,to:null,any:false},'missing new da
 changeMake(state,'kia',directory);assert.deepEqual(state.values.models,['K5']);
 changeMake(state,'toyota',directory);assert.deepEqual(state.values.models,[]);assert.equal(state.values.model_mode,'selected');
 changeMake(state,'help',directory);assert.equal(state.values.model_mode,'help');
+changeMake(state,'other',directory);assert.equal(state.values.model_mode,'other');
 for(const value of ['109353','109 353','109.353','109,353',109353])assert.equal(parseInteger(value),109353);
 for(const value of ['109.3','109,35','1 09 353','1.000,000',-1,true,[],null])assert.equal(parseInteger(value),null);
 const empty=preferenceErrors(createPreferences().values,directory);for(const key of ['year','mileage','make','models','budget','contact','delivery_country'])assert.ok(empty[key]);
@@ -41,6 +42,13 @@ const snapshot=structuredClone(oldDraft),editable=editableValues(oldDraft);
 assert.deepEqual(editable.priority,{});assert.deepEqual(editable.year,{from:2015,to:2022,any:false});
 assert.deepEqual(editable.colours,values.colours);assert.equal(editable.comment,values.comment);
 assert.deepEqual(oldDraft,snapshot,'an uncertain legacy request must not be mutated');
+const anyDraft={...oldDraft,model_mode:'any',models:[]};
+assert.equal(editableValues(anyDraft).model_mode,'selected');
+assert.equal(anyDraft.model_mode,'any','legacy requests remain unchanged');
+assert.ok(preferenceErrors(editableValues(anyDraft),directory).models,'a retired any-model draft must require a model');
+assert.ok(preferenceErrors(anyDraft,directory).models);
+assert.equal(editableValues({...anyDraft,make:'other'}).model_mode,'other');
+assert.equal(editableValues({...anyDraft,make:'other',model_mode:''}).model_mode,'other');
 assert.ok(preferenceErrors({...oldDraft,year:{from:null,to:null,any:true}},directory).year);
 for(const lang of ['ru','uk','ka']){
  const result=payload(oldDraft,catalog,directory,lang,'uuid','consent-v1',true);

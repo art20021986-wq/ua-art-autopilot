@@ -1,5 +1,5 @@
 // Native controls, localized labels and field errors. No requests or submission here.
-import {changeMake} from './preferences-state.js?v=20260927.7';
+import {changeMake} from './preferences-state.js?v=20260927.9';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n;};
 export class PreferenceForm {
   constructor(main,optional,directory,catalog,state,onChange) {
@@ -12,7 +12,7 @@ export class PreferenceForm {
   render(lang) {
     clearTimeout(this.countTimer);
     this.lang=lang;this.groups={};
-    const main=['purchase_country_code','make','models','budget','vehicle_type','year','mileage','delivery_country','delivery_city','customer_name','contact'];
+    const main=['purchase_country_code','vehicle_type','make','models','budget','year','mileage','delivery_country','delivery_city','customer_name','contact'];
     const optional=['fuel','drive','engine','colours','purchase_timing','comment'];
     for(const [container,keys] of [[this.main,main],[this.optional,optional]]) container.replaceChildren(...keys.map(key=>(this.groups[key]=this.group(key))));
   }
@@ -78,7 +78,7 @@ export class PreferenceForm {
       box.append(this.note('model_help'));
       if(v.make==='help')box.append(el('p',this.t('help')));
       else {
-        const modes={...(this.directory.makes[v.make]?{selected:this.t('selected')} :{}),any:this.t('any_model'),other:this.t('other_value')};
+        const modes={selected:this.t('selected'),other:this.t('other_value')};
         const details=el('div');
         const renderModels=()=>{
           details.replaceChildren();
@@ -94,7 +94,8 @@ export class PreferenceForm {
           if(v.model_mode==='other')details.append(this.label('other_model',this.input('other_model',v.other_model,value=>{v.other_model=value;this.update(key,v.models);},{max:120})));
           for(const select of details.querySelectorAll('select'))select.setAttribute('aria-labelledby',legend.id);
         };
-        const mode=this.select('model_mode',modes,v.model_mode,value=>{v.model_mode=value;v.models=[];v.other_model='';this.update(key,[]);renderModels();});
+        const mode=this.select('model_mode',modes,v.model_mode||'selected',value=>{v.model_mode=value;v.models=[];v.other_model='';this.update(key,[]);renderModels();},{placeholder:false});
+        mode.options[0].disabled=!this.directory.makes[v.make];
         mode.disabled=!v.make;mode.setAttribute('aria-label',this.t('model_mode'));box.append(mode,details);renderModels();
       }
     } else if(key==='budget') {

@@ -1,6 +1,6 @@
 import {languages, fromUrl} from './order-state.js';
-import {createPreferences,editableValues,applyCard,preferenceErrors,payload,summaryPairs} from './preferences-state.js?v=20260927.7';
-import {PreferenceForm} from './preferences-form.js?v=20260927.8';
+import {createPreferences,editableValues,applyCard,preferenceErrors,payload,summaryPairs} from './preferences-state.js?v=20260927.9';
+import {PreferenceForm} from './preferences-form.js?v=20260927.9';
 
 const root=document.querySelector('#ua-order');
 const assets=new URL('./',import.meta.url);

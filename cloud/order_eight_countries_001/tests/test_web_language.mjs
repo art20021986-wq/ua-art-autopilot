@@ -59,7 +59,10 @@ assert.equal($('[name="budget"]').value,'');assert.equal($('[name="mileage"]').v
 assert.ok(Array.from($('[name="make"]').options).some(x=>x.value==='toyota'));assert.equal(state.preferences.values.make,'kia');
 assert.equal($('[name="delivery_city"]').disabled,true);
 change('purchase_country_code','other');input('purchase_country_other','Италия');change('purchase_country_code','korea');
-change('make','other');input('make_other','Custom');change('make','toyota');
+change('make','other');input('make_other','Custom');
+assert.equal($('[name="model_mode"]').value,'other');assert.equal($('[name="model_mode"]').options[0].disabled,true);
+input('other_model','Manual model');change('make','toyota');
+assert.equal($('[name="model_mode"]').value,'selected');assert.equal($('[name="model_mode"]').options[0].disabled,false);
 change('model_mode','other');input('other_model','Custom');change('model_mode','selected');
 change('models','Camry');assert.equal(state.preferences.values.models[0],'Camry');
 assert.equal($('[name="models"]').value,'');assert.ok(!Array.from($('[name="models"]').options).some(o=>o.value==='Camry'));
@@ -94,6 +97,7 @@ for(const lang of ['ru','uk','ka']){
  assert.equal(document.querySelector('[name^="priority-"], [name="year-any"], [data-label="priority_help"]'),null);
  assert.equal(document.querySelector('#order-form input[type="search"], #order-form [name$="-search"]'),null);
  assert.equal($('[name="make"]').options.length,Object.keys(preferences.makes).length+3);
+ assert.deepEqual(Array.from($('[name="model_mode"]').options,o=>[o.value,o.textContent]),[['selected',preferences.labels[lang].selected],['other',preferences.labels[lang].other_value]]);
  assert.equal($('[name="customer_name"]').value,'Тестовый клиент');assert.equal($('[name="contact"]').value,'@test_user');
  assert.equal($('[name="budget-custom"]').value,'17 500');assert.equal(state.preferences.values.models[0],'Camry');
  assert.equal($('#optional-preferences').open,true);assert.equal(new URL(window.location.href).searchParams.get('lang'),lang);
