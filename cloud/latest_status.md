@@ -141,3 +141,11 @@ CONTAINER_TRACKING_STATUS: CANDIDATE_TESTED_PENDING_MAIN_ACTIONS_PREFLIGHT
 CONTAINER_TRACKING_SCOPE: Multiple tracking sources in the delivery block of existing/future cards. Current ONE-only link misses physical container numbers such as the current UA-0021 reference. Two shared stdlib modules, narrow changes to three renderers, tracking-only HTML transform. No CRM/status/price/media changes.
 CONTAINER_TRACKING_TESTS: 32 tests PASS; exact current private source build PASS; 19 saved real cards preserve all content outside delivery block and transform idempotently. Not production acceptance.
 CONTAINER_TRACKING_PACKAGE: cloud/container_tracking_001/README.md. Use fresh preflight, exact plan, backup/Gate B and main Actions. Preserve ongoing media/OCR/performance work; require fresh source hashes on drift.
+
+CRM_PHOTO_INTAKE_TASK: CRM-PHOTO-INTAKE-20260927
+CRM_PHOTO_INTAKE_STATUS: SOURCE_MERGED_PENDING_REMOTE_PREFLIGHT
+CRM_PHOTO_INTAKE_SCOPE: Owner photo/labelled-text intake creates saved unpublished drafts from explicit allowed facts only. No inferred manufacturer/model/year, auction/price fields or automatic publication. Existing populated/published/archived records are preserved; normalized VIN and Telegram message checks prevent duplicate creation.
+CRM_PHOTO_INTAKE_TESTS: 43 local tests PASS; attached image yields the six explicit fields including 109353 km and 1999 cc; exact private candidate build and execution-contract compile/test PASS. No new libraries/services. No Telegram end-to-end claim.
+CRM_PHOTO_INTAKE_CODE: PR #139 merged; cloud/crm_photo_intake_001. Three runtime modules plus one team_bot registration call. Existing publisher/delivery changes remain protected.
+CRM_PHOTO_INTAKE_PREFLIGHT: main Actions run 36305025481 is queued behind the current publisher deployment. Prior merge-triggered run 36304968319 correctly rejected the non-marker-only commit before execution; a fresh marker-only commit launched the exact preview. No application source, bot restart, CRM record or public page changed by this task yet.
+CRM_PHOTO_INTAKE_NEXT: Await remote preview; bind its fresh plan and protected hashes, create owner-authorized source-only production request, run mandatory backup/rollback/health gates, install via main Actions and verify restart. Do not bypass queue or overwrite concurrent renderer changes.
