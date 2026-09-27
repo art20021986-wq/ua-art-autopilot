@@ -7,21 +7,23 @@
   "created_at": "2026-09-27T21:28:46Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T21:28:46Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-09-27T21:32:49Z",
+  "heartbeat_at": "2026-09-27T21:32:49Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "36351819910",
     "task_id": "GALLERY-DESKTOP-PREFLIGHT-20260928",
     "task_sha256": "d6316cc07a34fb0285c043eb1f818376baebb305aa0c47e548cd9b6ae151aed2"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-744729577d76a86d-cbebf0d7e7279a1b",
   "receipt_path": "state/receipts/GALLERY-DESKTOP-PREFLIGHT-20260928.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "3d7c0c9f6005e2f6adcb8ff2572feffdc34fb8ad4fa51ecd9bbbf1d6791a6ce7",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/GALLERY-DESKTOP-PREFLIGHT-20260928.json",
   "request_sha256": "d6316cc07a34fb0285c043eb1f818376baebb305aa0c47e548cd9b6ae151aed2",
   "resource_locks": [
@@ -29,8 +31,32 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "7f38f6f82e2ed7df5e558cc99f563660fc2493f4",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92121387008,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.515
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-27T21:28:46Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "738a249ae6607a91079134f073836761621657d3b8ca278433267bf49af8f327",
+    "file_sha256": {
+      "cloud/gallery_desktop_001/build_candidate.py": "f6e43cdfcbad063cdb8e60cd4eb294914c493987af6d86b1deff8bbd84b85238",
+      "cloud/gallery_desktop_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/gallery_desktop_001/deployment_bootstrap.py": "cb243e082b1e4a00063d0ee6ce7061791d4e7ded2de2068d8a4c37e645cd156d",
+      "cloud/gallery_desktop_001/deployment_remote.py": "c564d2b48fcc215523297d7d970cd35fa21078d755bd7af6661ce0be17774452",
+      "cloud/gallery_desktop_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/gallery_desktop_001/deployment_transport.py": "1623dc4b2d5e383264bf8db8223ac399a6684c4fadbb5d786fdaa9affcec083b",
+      "cloud/gallery_desktop_001/release_constants.py": "da43e4031f6a7cb1bbaac2f401b38b24dc58a3aebd3c20b91c6ccd46dd16a776",
+      "cloud/gallery_desktop_001/test_deployment.py": "68c1f27f5b30e295d26af8e08da05efc8d9f680a12fbbda6a935fc384d858888",
+      "cloud/gallery_desktop_001/test_gallery.py": "0482f73d0444911cf3df5dd4abf7516cc822790fd8086ab7fb1bb319d27aea7d",
+      "cloud/gallery_desktop_001/ua_gallery.py": "65f00eb159b1f1292c61b1760c0181e9879e5662bf4cde27e4f76fb175822b26"
+    }
+  },
+  "updated_at": "2026-09-27T21:32:49Z"
 }
