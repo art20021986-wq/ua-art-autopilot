@@ -80,6 +80,18 @@ class RecoveryTests(unittest.TestCase):
         remote.verify_files(self.plan, False)
         self.assertEqual(self.events, [False, True, False, True])
 
+    def test_existing_tracking_module_upgrade_restores_original_on_rollback(self):
+        original = b'previous working tracking module'
+        self.plan['files']['ua_tracking_links.py']['before'] = sha(original)
+        remote.atomic(self.root/'ua_tracking_links.py', original)
+        remote.atomic(self.saved/'before/ua_tracking_links.py', original)
+        self.plan_sha = sha(canonical(self.plan))
+        self.manifest['plan_sha256'] = self.plan_sha
+        self.assertTrue(self.lifecycle('install')['installed'])
+        self.assertEqual((self.root/'ua_tracking_links.py').read_bytes(), b'policy')
+        self.assertTrue(self.lifecycle('rollback')['restored'])
+        self.assertEqual((self.root/'ua_tracking_links.py').read_bytes(), original)
+
     def test_interrupted_install_restores_and_resumes(self):
         remote.atomic(self.root/'ua_tracking_links.py', b'policy')
         remote.atomic(self.saved/'journal-install.json', canonical({

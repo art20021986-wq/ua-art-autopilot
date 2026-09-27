@@ -1,6 +1,6 @@
 """Shipment identifiers and public tracking destinations; no network or storage."""
 import re
-from urllib.parse import quote, urlencode
+from urllib.parse import urlencode
 
 
 def normalize(value):
@@ -21,21 +21,9 @@ def reference_kind(number):
 
 
 def tracking_links(value):
+    """Start SeaRates search with the complete reference; results remain external."""
     number = normalize(value)
     if not number:
         return []
-    kind = reference_kind(number)
-    fragment = quote(number, safe='')
-    links = []
-    if kind == 'one_bl':
-        links.append(('ONE', 'https://ecomm.one-line.com/one-ecom/manage-shipment/cargo-tracking?'
-                      + urlencode({'trakNoParam': number[4:]}), 'direct'))
-    if kind == 'container':
-        links.append(('Track-Trace', 'https://track-trace.com/container#' + fragment, 'prefilled'))
-    else:
-        links.append(('Track-Trace · B/L', 'https://track-trace.com/bol#' + fragment, 'prefilled'))
-        if kind == 'reference':
-            links.append(('Track-Trace · Container', 'https://track-trace.com/container#' + fragment, 'prefilled'))
-    links.extend((('SeaRates', 'https://www.searates.com/container/tracking/', 'manual'),
-                  ('ShipsGo', 'https://shipsgo.com/ocean', 'manual')))
-    return links
+    return [('SeaRates', 'https://www.searates.com/container/tracking/?'
+             + urlencode({'number': number, 'sealine': 'AUTO'}), 'direct')]

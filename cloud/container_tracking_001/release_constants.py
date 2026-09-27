@@ -1,4 +1,4 @@
-"""Exact tracking release identity and expected application modules."""
-EXPECTED_CANDIDATE = {'stranica.py': 'f4be056353256f88dbdb948227866a23d1ff37c5c09bb33595da8b54206cd81f', 'yadro.py': 'c58fcf8b739985400d22eeb59e9c51727bb35e331a66691896e2f03de67c1333', 'master_card.py': '5199f9f796b617c604fa01b8f4145cf7d869dcf95a28314dd0305926954348d9', 'ua_tracking_links.py': '9a4712ff4b7f97b94ae5931a326e64986c5a0d22297006a3bf91ecf97900f7b9', 'ua_tracking_widget.py': 'a96b76b662f2cf496a1c672ff8804f0dc940bbb4d02bdfcf37205b9c956f7477'}
-PREVIEW_TASK = "CONTAINER-TRACKING-PREFLIGHT-20260928-R2"
-INSTALL_TASK = "CONTAINER-TRACKING-INSTALL-20260928-R2"
+"""Exact SeaRates candidate and unique task identities."""
+EXPECTED_CANDIDATE = {'ua_tracking_links.py': 'e00a626d18a47945f26278617cea567a5f3e741aae99c2ea65410bd7a07dffc5', 'ua_tracking_widget.py': 'b5363b55ec9038add3735da45028640e8cb666712b73d442dee6b2da1fd9a42b'}
+PREVIEW_TASK = "SEARATES-DIRECT-PREFLIGHT-20260928"
+INSTALL_TASK = "SEARATES-DIRECT-INSTALL-20260928"

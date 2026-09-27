@@ -21,7 +21,7 @@ import tempfile
 import time
 
 from deployment_transport import API, canonical, sha
-from build_candidate import SOURCE_SHA256, MODULES, build
+from build_candidate import SOURCE_SHA256, MODULES, RENDERERS, build, replace_metadata
 from card_tracking import upgrade_card
 from release_constants import EXPECTED_CANDIDATE
 
@@ -116,16 +116,17 @@ def prepare(directory):
     candidate = build(source)
     if {name: sha(value) for name,value in candidate.items()} != EXPECTED_CANDIDATE:
         raise DeploymentError('CANDIDATE_HASH')
-    for name in MODULES:
-        if (ROOT/name).exists() or (ROOT/name).is_symlink():
-            raise DeploymentError('NEW_MODULE_ALREADY_EXISTS:'+name)
+    for name in RENDERERS:
+        renderer = read(ROOT/name).decode('utf-8')
+        if replace_metadata(renderer) != renderer:
+            raise DeploymentError('TRACKING_HOOK_MISSING:'+name)
     protected_names = {
         'start_safe.py','run_all.py','team_bot.py','lead_bot.py','db.py',
         'publication_fence.py','ua_public_freshness.py',
         'ua_site_counters.py','catalog_design_guard.py','cars_schema.py',
         'konteyner.py','cars_ui.py','publikaciya.py','ua_crm_public_sync.py','ua_publish_requests.py',
     }
-    protected = {name:sha(read(ROOT/name)) for name in sorted(protected_names)}
+    protected = {name:sha(read(ROOT/name)) for name in sorted(protected_names | set(RENDERERS))}
     references = card_references()
     inputs = tracking_inputs(references)
     card_codes = []
