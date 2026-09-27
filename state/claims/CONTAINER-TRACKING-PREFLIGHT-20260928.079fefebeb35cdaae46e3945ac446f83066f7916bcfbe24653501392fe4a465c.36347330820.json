@@ -7,21 +7,23 @@
   "created_at": "2026-09-27T20:19:22Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T20:19:22Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-09-27T20:24:45Z",
+  "heartbeat_at": "2026-09-27T20:24:45Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "36347330820",
     "task_id": "CONTAINER-TRACKING-PREFLIGHT-20260928",
     "task_sha256": "079fefebeb35cdaae46e3945ac446f83066f7916bcfbe24653501392fe4a465c"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-582565dea86318fe-1921ff4394bf1dbe",
   "receipt_path": "state/receipts/CONTAINER-TRACKING-PREFLIGHT-20260928.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "5f035d4812b810e493b9dffbb3febdcde1cc9b2e4458b22b509ce35edfa759f3",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CONTAINER-TRACKING-PREFLIGHT-20260928.json",
   "request_sha256": "079fefebeb35cdaae46e3945ac446f83066f7916bcfbe24653501392fe4a465c",
   "resource_locks": [
@@ -29,8 +31,34 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "ebd8d6fb751bdc0c51929ebb7e1e803f6621c2b1",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92123627520,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.514
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-27T20:19:22Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "e9e07ee4e3abc90c2f0b8e2c1b9b392ef4332e21bf16b20f56ee392bb39c5316",
+    "file_sha256": {
+      "cloud/container_tracking_001/build_candidate.py": "3f0f87a1698a8c96d3961046de3d7dccf6cf677b397331fbbff599c9e74d394d",
+      "cloud/container_tracking_001/card_tracking.py": "2609bb38916699bc171ec5da835773aff065ada3578355eab51090aacf4304f4",
+      "cloud/container_tracking_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/container_tracking_001/deployment_bootstrap.py": "3f4459298d50e11c735a4badc9ab0d30cdd89133cead619413216a61da4e255d",
+      "cloud/container_tracking_001/deployment_remote.py": "40772d127027c16aa1951a51ffc00d0ff92eb70068787e7a8e451103ceb62a78",
+      "cloud/container_tracking_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/container_tracking_001/deployment_transport.py": "cf670b52137abe6ad4747f4b68c747ae111c96965f1fea4165ee62216f5f2f6a",
+      "cloud/container_tracking_001/release_constants.py": "69d05441eec5ddb867c1a0789c9eea350da4defb555259bc080dfb01d6ee8374",
+      "cloud/container_tracking_001/test_deployment.py": "e123af647580e913238b6aa913f62e74378cbd2cf6dcb474adf64d7d3ec97722",
+      "cloud/container_tracking_001/test_tracking.py": "9d3a309c4a742067a6bbc93db474110ac1a2eade760a564537a0f609977e0d85",
+      "cloud/container_tracking_001/ua_tracking_links.py": "9a4712ff4b7f97b94ae5931a326e64986c5a0d22297006a3bf91ecf97900f7b9",
+      "cloud/container_tracking_001/ua_tracking_widget.py": "a96b76b662f2cf496a1c672ff8804f0dc940bbb4d02bdfcf37205b9c956f7477"
+    }
+  },
+  "updated_at": "2026-09-27T20:24:45Z"
 }
