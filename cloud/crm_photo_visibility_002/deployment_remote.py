@@ -19,6 +19,8 @@ import time
 
 from deployment_transport import API, canonical, sha
 from candidate_builder import SOURCE_SHA256, DEPENDENCY_SHA256, build
+from public_cleanup import cleanup_primary, cleanup_catalog
+from public_baseline import PUBLIC_SHA256, PUBLIC_AFTER_SHA256
 
 ROOT = Path('/home/Carix')
 HERE = Path(__file__).resolve().parent
@@ -85,9 +87,16 @@ def row_digest(value):
 
 def prepare(directory):
     directory.mkdir(parents=True, exist_ok=False, mode=0o700)
-    source = {name: read(ROOT/name) for name in SOURCE_SHA256}
+    source = {name: read(ROOT/name) for name in {**SOURCE_SHA256, **PUBLIC_SHA256}}
     dependencies = {name: read(ROOT/name) for name in DEPENDENCY_SHA256}
     candidate = build(source, dependencies)
+    for name, expected in PUBLIC_SHA256.items():
+        if sha(source[name]) != expected:
+            raise DeploymentError('PUBLIC_SOURCE_DRIFT:'+name)
+        cleaner = cleanup_catalog if name.endswith(('/katalog.html','/index.html')) else cleanup_primary
+        candidate[name] = cleaner(source[name].decode('utf-8')).encode('utf-8')
+        if sha(candidate[name]) != PUBLIC_AFTER_SHA256[name]:
+            raise DeploymentError('PUBLIC_CANDIDATE_DRIFT:'+name)
     protected_names = set(DEPENDENCY_SHA256) | {
         'start_safe.py','run_all.py','team_bot.py','lead_bot.py','db.py',
         'publication_fence.py','ua_public_freshness.py',
@@ -107,7 +116,7 @@ def prepare(directory):
     # A source-only plan stays valid across legitimate operator edits. Actual
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'CRM-PHOTO-VISIBILITY-INSTALL-1','files':files,
-            'protected':protected,'crm_write':False,'site_write':False,
+            'protected':protected,'crm_write':False,'site_write':bool(PUBLIC_SHA256),
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -256,7 +265,7 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
         try:
             api.set_bot(False); no_bot_processes()
             with writer_exclusion():
-                before=protected_data()
+                before=protected_data(plan['files'])
                 if mode=='rollback' or applied:
                     restore(directory,plan)
                     result={'status':'PASS' if mode=='rollback' else 'FAIL',
@@ -270,12 +279,12 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
                         for relative in ordered:
                             atomic(ROOT/relative,read(directory/'after'/relative),plan['files'][relative]['mode'])
                         verify_files(plan,True)
-                        if protected_data()!=before: raise DeploymentError('PROTECTED_DATA_CHANGED_DURING_INSTALL')
+                        if protected_data(plan['files'])!=before: raise DeploymentError('PROTECTED_DATA_CHANGED_DURING_INSTALL')
                         result={'status':'PASS','installed':True}
                     except BaseException:
                         restore(directory,plan);applied=False
                         raise
-                if protected_data()!=before:
+                if protected_data(plan['files'])!=before:
                     raise DeploymentError('PROTECTED_DATA_CHANGED_DURING_OPERATION')
                 result.update(crm_unchanged=True,protected_files_unchanged=True,
                               preservation_scope='WHILE_BOT_PAUSED_UNDER_WRITER_LOCKS',
@@ -298,12 +307,13 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
 
 
 
-def protected_data():
+def protected_data(exclude=()):
     # Only read while the existing publication and database locks are held.
     pages={}
     for folder in ('video','site'):
         for path in sorted((ROOT/folder).glob('*.html')):
-            pages[str(path.relative_to(ROOT))]=sha(read(path))
+            name = str(path.relative_to(ROOT))
+            if name not in exclude: pages[name]=sha(read(path))
     ledger=ROOT/'.crm_publish_requests/requests.sqlite3'
     if ledger.exists() or ledger.is_symlink():
         pages['.crm_publish_requests/requests.sqlite3']=sha(read(ledger))
