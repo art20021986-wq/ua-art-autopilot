@@ -70,6 +70,7 @@ def run(operation=None):
     bundle = upload_package(api)
     if task == PREVIEW_TASK:
         value = api.run('preview', run_id, bundle)
+        save('cloud/crm_photo_visibility_002/deployment_preview.json', value)
         accepted(value, 'preview', run_id)
         save('cloud/crm_photo_visibility_002/deployment_plan.json', value['plan'])
         save('cloud/crm_photo_visibility_002/deployment_preview.json', value)
