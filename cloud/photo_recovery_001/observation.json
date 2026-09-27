@@ -1,0 +1,150 @@
+{
+  "observed_at": "2026-09-27T22:12:14.986Z",
+  "workflow_run": {
+    "id": 36353547114,
+    "head_sha": "062ae29b7f18739aea482bed35f0f623fbf93206",
+    "html_url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/36353547114",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "jobs": [
+    {
+      "id": 108716704099,
+      "name": "context",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108716721417,
+      "name": "intake",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108716749021,
+      "name": "persist",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108716785858,
+      "name": "execute / validate",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108717244601,
+      "name": "execute / plan",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108717297030,
+      "name": "execute / critical / main_only",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108717297399,
+      "name": "execute / fast",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108717297431,
+      "name": "execute / standard",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108717314123,
+      "name": "execute / critical / validate",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108717373877,
+      "name": "execute / critical / prepare",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108717374654,
+      "name": "execute / critical / controller_nonproduction",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108717489264,
+      "name": "execute / critical / backup",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 108718250367,
+      "name": "execute / critical / open",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108718250706,
+      "name": "execute / critical / controller_production",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108718250938,
+      "name": "execute / critical / rollback_mark",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108718251366,
+      "name": "execute / critical / finalize",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108718277204,
+      "name": "execute / critical / recover",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 108718277781,
+      "name": "execute / critical / rollback_execute",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 108718308487,
+      "name": "execute / critical / result",
+      "run_id": 36353547114,
+      "status": "completed",
+      "conclusion": "failure"
+    }
+  ],
+  "backup_error": "REMOTE_BACKUP:ValueError:SOURCE_DRIFT:stranica.py",
+  "backup_log_source": "https://api.github.com/repos/art20021986-wq/ua-art-autopilot/actions/jobs/108717489264/logs",
+  "backup_log_excerpt": [
+    "2026-09-27T22:06:02.7366753Z RuntimeError: REMOTE_BACKUP:ValueError:SOURCE_DRIFT:stranica.py"
+  ]
+}
