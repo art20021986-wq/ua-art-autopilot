@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "f564d7a97bfa2d93"
+    },
+    {
+      "action": "STOP_FAIL_CLOSED_TERMINAL",
+      "at": "2026-09-27T21:26:44Z",
+      "class": "LOGICAL",
+      "message": "Read-only preview completed FAILED with ValueError:TARGET_IDENTITY due to the reviewed VIN typo. GitHub run 36347943992 is completed/failure; no production writes occurred. Original request is terminal, not replayed. New R6 binds corrected VIN and existing hidden-card snapshots.",
+      "retries_remaining": 0,
+      "retry_allowed": false,
+      "signature": "36f2db330222fd5d"
     }
   ],
   "heartbeat_at": "2026-09-27T20:26:29Z",
@@ -42,6 +51,6 @@
   "source_commit": "3c0cc8a531508dfdb876884063f8938e301b1fdf",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-09-27T20:29:19Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-09-27T21:26:44Z"
 }

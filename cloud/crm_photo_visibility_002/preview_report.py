@@ -9,6 +9,7 @@ def inspect_target(root, preview):
     with closing(sqlite3.connect((root/'crm.db').as_uri()+'?mode=ro', uri=True)) as con:
         con.row_factory = sqlite3.Row
         row = dict(con.execute('SELECT * FROM cars WHERE auto_number=?', ('UA-0023',)).fetchone())
+        hidden_rows = [dict(item) for item in con.execute("SELECT * FROM cars WHERE hidden_photos IS NOT NULL AND hidden_photos NOT IN ('','[]')")]
     if row['id'] != 33 or row['vin'] != 'KNAG541BBNA169806':
         raise ValueError('TARGET_IDENTITY')
     folder = root/'video/foto/UA-0023'
@@ -25,12 +26,21 @@ def inspect_target(root, preview):
         patches[str(relative)] = ''.join(difflib.unified_diff(before.splitlines(True), after.splitlines(True),
                                                         fromfile=str(relative), tofile=str(relative)))
     public = {}
+    hidden_cards = {}
+    for card in hidden_rows:
+        code = card['auto_number']
+        files = sorted(p.name for p in (root/'video/foto'/code).iterdir()
+                       if p.suffix.lower() in {'.jpg','.jpeg','.png','.webp'})
+        allowed = visible_names(card, files, root)
+        hidden_cards[code] = {'vin':card['vin'], 'source_photos':len(files),
+                              'visible_photos':len(allowed), 'excluded_filenames':sorted(set(files)-set(allowed))}
     for name in ('video', 'site'):
         directory = root/name
-        paths = list(directory.glob('UA-0023*.html')) + [directory/'katalog.html', directory/'index.html']
+        paths = [path for code in hidden_cards for path in directory.glob(code+'*.html')]
+        paths += [directory/'katalog.html', directory/'index.html']
         for path in paths:
             if path.is_file():
                 public[str(path.relative_to(root))] = path.read_text()
-    return {'public_html':public, 'code':'UA-0023', 'source_photos':len(names), 'visible_photos':len(visible),
+    return {'public_html':public, 'hidden_cards':hidden_cards, 'code':'UA-0023', 'source_photos':len(names), 'visible_photos':len(visible),
             'excluded_filenames':['001.jpg'], 'cover_before':row.get('cover_photo'),
             'diff':patches, 'crm_changed':False, 'production_changed':False}
