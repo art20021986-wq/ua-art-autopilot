@@ -1,6 +1,9 @@
 # One-click publication candidate
 
-**Not installed. Gate B is not ready.** Owner authorized the repair on 2026-09-27.
+**Installed through main Actions 36301475826 (SUCCESS), 2026-09-27 07:13 UTC.**
+Owner authorized the repair on 2026-09-27. The source-only deployment and subsequent
+UA-0021 publication are recorded in `cloud/crm_oneclick_release_001/post_install_acceptance.json`.
+Full manual Telegram journey and normal-quota latency acceptance remain separate.
 See `tasks/UA-ART-CRM-ONECLICK-PUBLISH-001.md` for the critical specification,
 confirmed causes, acceptance conditions and current deployment blockers.
 
@@ -48,13 +51,25 @@ limitations documented by PR128; this task does not claim to fix those.
 production source snapshots; do not commit whole private runtime files. The
 included fixtures are safe source excerpts and the credential-free old worker.
 
-## Release remains blocked
+## Release and current verification
 
-The existing delivery incident is EMERGENCY_HALT / ROLLING_BACK. Use its registered
-recovery with the ledger-bound nonce; do not clear markers, weaken checks, replay
-the old installer or repurpose TASK120-only recovery. PythonAnywhere CPU quota is
-exhausted (latest dashboard 8716.57/5000). CLAUDE.md defers heavy work at >=85%.
-After recovery and a fresh resource check: reconcile current sources and PR128,
-rehearse exact backup/install/rollback, pass Gate B, deploy through main Actions,
-confirm bot code loading and verify UA-0021, catalog, counters and actual browsers.
-No production launch or new delayed deployment is included in this candidate.
+The prior delivery incident was reconciled through its registered route at
+2026-09-27 06:33 UTC. The composed four-file release passed Gate B, backup,
+installation, restart and verification in main Actions 36301475826. Its transaction
+is FINISHED. Do not replay the original delivery or oneclick launch.
+
+Read-only verification at 2026-09-27 08:21 UTC found UA-0021 (cars.id=31) in the
+public catalog at the ferry stage, with its retry cleared. Both ordinary public
+URLs matched the current server HTML. All 21 active published CRM cars matched
+the catalog, with counts korea=4, ferry=5, georgia=6, kyiv=6. The external browser
+also rendered the catalog and UA-0021 normally. The four installed source hashes
+still match the release receipt.
+
+The CPU allowance is now 10000 seconds; the 08:21 UTC read-only observation was
+129.829948 seconds used. This supersedes the old exhausted 5000-second allowance;
+it is not proof of a measured Telegram response time.
+
+An unrelated video-publisher transaction 36304601891 was performing its own
+rollback and bot resume during this verification. Do not interfere with that
+operation, launch another installer, clear its transaction, or discard pending
+requests. Follow current `cloud/latest_status.md` and the release evidence.
