@@ -200,3 +200,11 @@ Continuation: resolve only this recorded pre-write HALT through the owner's appr
 
 
 PUBLISH_VIDEO_R3_CHECKPOINT: R2 run 36306658337 failed STORAGE_PROBE_STALE_OR_FUTURE before backup/open/application writes. All such jobs were skipped; no R2 transaction exists; original publisher hash reverified 08:42:06 UTC. Exact R2 halt archived with job/source evidence, claim terminal FAILED through unchanged control_plane.record_failure. No rollback replay, runtime/gate changes or application writes. R3 uses fresh real storage evidence and isolated package cloud/publish_video_latency_003, 22 tests PASS. Target patch not installed yet. UA-0020 already published and verified at 08:24. Next: exact new R3 launch, mandatory backup/install/verify and final live acceptance.
+
+
+UA0022_STAGE_COMPLAINT_20260927_READONLY:
+OWNER_REPORT: At 15:54 UTC+7 the CRM acknowledged ferry; a 15:55 screenshot still showed Kyiv in the catalog.
+CURRENT_PUBLIC_RESULT: Ordinary https://www.uaart.com.ua/video/katalog.html renders UA-0022 as «На поромі · маршрут — Київ» with data-stage=sea and data-ua-stage=2. Ordinary https://www.uaart.com.ua/video/UA-0022.html renders «На поромі · Корея → Грузія», active delivery stage 2/4, and «Завдаток 500 $». Verified in the authenticated session browser during this inspection; no cache-busting URL was used.
+QUEUE_EVIDENCE: Fresh server editor read of .crm_public_sync_state.json has UA-0022/id32 delivery_status=ferry, revision f351def4b355a7b0a56b5fa67f034214df7d921fccfe51125b95c9bf4b71063a, empty retry map, and last_success UA-0022 at 1790499335.8557072 (2026-09-27 08:55:35.855 UTC / 15:55:35.855 UTC+7).
+CONCLUSION: The existing worker completed the queued stage publication after the owner's screenshot. Current card and catalog stage agree. No production source/CRM/HTML mutation, reinstall, queue reset, rollback intervention or bot restart by this inspection. Do not describe this as a newly deployed fix.
+LIMITS: Instant future stage changes and repeated Telegram stage edits were not measured; the precise duration and cause of the background publication delay were not established from the server log. Existing publisher recovery run 36307278102 is separate and was not modified.
