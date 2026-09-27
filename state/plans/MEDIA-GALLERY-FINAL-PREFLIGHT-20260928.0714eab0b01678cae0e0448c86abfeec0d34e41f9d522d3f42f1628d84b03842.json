@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/MEDIA-GALLERY-FINAL-PREFLIGHT-20260928.0714eab0b01678cae0e0448c86abfeec0d34e41f9d522d3f42f1628d84b03842.json",
+  "autostart_ledger_sha256": "4ca61b21aa404a04944f12484148967d61a204a6ad0b36bcb229e793e998eb7f",
+  "autostart_source_commit": "89cca293daeef83094d09104cf901bc4c4f51042",
+  "created_at": "2026-09-27T23:14:52Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "36357991578",
+    "task_id": "MEDIA-GALLERY-FINAL-PREFLIGHT-20260928",
+    "task_sha256": "0714eab0b01678cae0e0448c86abfeec0d34e41f9d522d3f42f1628d84b03842"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-53561451ecc2fae8-8c60d4f45e7eb34c",
+  "request_path": "tasks/requests/MEDIA-GALLERY-FINAL-PREFLIGHT-20260928.json",
+  "resource_locks": [
+    "PATH_SCOPE:53561451ecc2fae8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
