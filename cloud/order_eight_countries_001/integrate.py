@@ -42,7 +42,7 @@ def patch(name, raw):
         source = before_return(source, 'build_application',
             f'    {MARKER}\n'
             '    from ua_order.host import register_customer as _register_orders\n'
-            '    _register_orders(app)\n')
+            '    _register_orders(app, owner_id=MANAGER_CHAT_ID)\n')
     elif name == 'client_ui.py':
         node = function(source, 'glavnoe_menu')
         lines = source.splitlines(keepends=True)
@@ -55,16 +55,7 @@ def patch(name, raw):
             raise ValueError('Customer order label changed')
         source = source.replace(old, 'InlineKeyboardButton(_order_label(), callback_data="c_order")')
     elif name == 'team_bot.py':
-        source = before_return(source, 'main_menu',
-            f'    {MARKER}\n'
-            '    from ua_order.host import crm_folder as _order_folder\n'
-            '    _order_row = _order_folder(staff, (db.ROLE_OWNER, db.ROLE_ADMIN, db.ROLE_MANAGER))\n'
-            '    if _order_row:\n'
-            '        rows.insert(1, _order_row)\n')
-        source = before_return(source, 'build_application',
-            f'    {MARKER}\n'
-            '    from ua_order.host import register_team as _register_orders\n'
-            '    _register_orders(app, who=who, db=db)\n')
+        pass  # The order inbox belongs to the client bot.
     else:
         # Must remain outside analytics, bridge, SEO and public-price wrappers.
         source += (f'\n{MARKER}\n'
