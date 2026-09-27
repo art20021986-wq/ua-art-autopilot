@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "f45b996d5b9b5371ee86aab938b644b38a20a9d08aa2dd8bdbae1ca12f971140",
   "autostart_source_commit": "36a097435508e7578aecda22f94a09fbd7548654",
   "created_at": "2026-09-27T08:47:43Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "dafca9783c109d8b9c2837c71237da2df8eb5463f42cffd399b01d1dca195d8d",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T08:47:43Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-09-27T08:48:46Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "36307278102",
     "task_id": "CRM-PUBLISH-VIDEO-INSTALL-20260927-R3",
     "task_sha256": "5829b403de74a38f454eb3785620f7ba15cc0dda74926558dacf0bc77850896f"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 84.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 55.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-36307278102-5829b403de74a38f",
+  "production_transaction_path": "state/transactions/CRM-PUBLISH-VIDEO-INSTALL-20260927-R3.5829b403de74a38f454eb3785620f7ba15cc0dda74926558dacf0bc77850896f.36307278102.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-124972f91b7dd9e4-16a460250a7392ce",
   "receipt_path": "state/receipts/CRM-PUBLISH-VIDEO-INSTALL-20260927-R3.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "8158767863a6751ecd3e26fddbf6dac657d233ba",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 396.492,
+    "allowed": true,
+    "evidence_path": "state/storage/CRM-PUBLISH-VIDEO-INSTALL-20260927-R3.json",
+    "evidence_sha256": "3df7c8d2d6b511c069e4baffa0f8676d6d1085048a354984308e354c70da07d6",
+    "free_bytes": 1238438510592,
+    "heavy": true,
+    "measured_at": "2026-09-27T08:42:06.869575+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "WARN_70",
+    "usage_percent": 79.56694413217032
+  },
+  "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-09-27T08:47:43Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "b91bbf65293162043490396acbb0a870a5327550ca7786b17f1416ac482ce2e2",
+    "file_sha256": {
+      "cloud/publish_video_latency_003/candidate_builder.py": "6a295323af12753382a01569383f4f718f98315dacc59eec55526288a2fe9f91",
+      "cloud/publish_video_latency_003/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/publish_video_latency_003/deployment_bootstrap.py": "c785aff97d337029258703a8cfd7687192a697012c9c6d9b11a4153b4ebb586f",
+      "cloud/publish_video_latency_003/deployment_remote.py": "a4c3852479ea36d560e2bd2aeebcef3bfcb6dc2f5bcb21cf8a4f075850c3cc2b",
+      "cloud/publish_video_latency_003/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/publish_video_latency_003/deployment_transport.py": "2ac184e3ba915aeb44aec162fb26f4f4c32d21f83f54a000da8f434938d4c141",
+      "cloud/publish_video_latency_003/legacy_hook.py": "7888067a35ee734a3fb2c3bdfc03143ce676e5e5f7ad3795b8a9c0ebb9e66ece",
+      "cloud/publish_video_latency_003/release_constants.py": "95db05cae66490b63b40a7dd1a0e3a2df3b1431a54378afb67239cf7abd752ae",
+      "cloud/publish_video_latency_003/test_candidate.py": "5ec65fa3a0f2d59f2c9c8d683b0bdf518a21a37940ecff28ec8d8dee047b2c3d",
+      "cloud/publish_video_latency_003/test_deployment.py": "1233f2376ce3f94c2de81ac0e28ff5d38deeaf7ea71c36d9b5429462584d8c0b"
+    }
+  },
+  "updated_at": "2026-09-27T08:48:46Z"
 }
