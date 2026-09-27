@@ -35,7 +35,9 @@ class MySQLTests(unittest.TestCase):
             cursor.execute('SELECT DATABASE() AS name')
             if cursor.fetchone()['name'] != 'Carix$orders_test':
                 raise RuntimeError('Refusing non-test database')
-            cursor.execute('DROP TRIGGER IF EXISTS abort_order_test')
+            cursor.execute("SELECT COUNT(*) AS count FROM information_schema.TABLE_CONSTRAINTS WHERE CONSTRAINT_SCHEMA=DATABASE() AND TABLE_NAME='order_outbox' AND CONSTRAINT_NAME='order_test_reject'")
+            if cursor.fetchone()['count']:
+                cursor.execute('ALTER TABLE order_outbox DROP CHECK order_test_reject')
             for table in ('order_notification_receipts', 'order_outbox', 'order_events', 'order_drafts', 'order_requests'):
                 cursor.execute('DELETE FROM ' + table)
         self.repo._run(clean, write=True)
@@ -92,14 +94,13 @@ class MySQLTests(unittest.TestCase):
         self.assertEqual(self.count('order_outbox'), 1)
 
     def test_failed_outbox_insert_rolls_back(self):
-        self.repo._run(lambda c: c.execute('''CREATE TRIGGER abort_order_test BEFORE INSERT
-            ON order_outbox FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic failure' '''), write=True)
+        self.repo._run(lambda c: c.execute('ALTER TABLE order_outbox ADD CONSTRAINT order_test_reject CHECK (available_at < 0)'), write=True)
         try:
             with self.assertRaises(StorageUnavailable):
                 self.service.submit(self.data, self.user)
             self.assertEqual(self.count('order_requests'), 0)
         finally:
-            self.repo._run(lambda c: c.execute('DROP TRIGGER abort_order_test'), write=True)
+            self.repo._run(lambda c: c.execute('ALTER TABLE order_outbox DROP CHECK order_test_reject'), write=True)
 
     def test_concurrent_lease_expiry_and_retry(self):
         self.service.submit(self.data, self.user)
@@ -118,6 +119,15 @@ class MySQLTests(unittest.TestCase):
         self.assertIsNone(self.repo.claim_notification())
         self.service.submit(self.data, self.user)
         self.assertIsNone(self.repo.claim_notification())
+
+    def test_lease_starts_after_lock_acquisition(self):
+        self.service.submit(self.data, self.user)
+        self.repo.clock = iter((10000, 10020)).__next__
+        claim = self.repo.claim_notification()
+        def lease(cursor):
+            cursor.execute('SELECT lease_until FROM order_outbox WHERE id=%s', (claim['id'],))
+            return cursor.fetchone()['lease_until']
+        self.assertEqual(self.repo._run(lease), 10080)
 
     def test_handoff_first_user_binding_and_expiry(self):
         token = self.service.handoff(self.data, self.user)

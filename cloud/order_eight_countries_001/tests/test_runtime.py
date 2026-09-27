@@ -32,6 +32,19 @@ class RuntimeTest(unittest.TestCase):
             self.assertFalse(loaded.allow_request({}, SimpleNamespace(owner='web:test')))
             self.assertTrue(loaded.allow_request({'REMOTE_ADDR':'127.0.0.1'}, SimpleNamespace(owner='web:test')))
 
+    def test_runtime_refuses_test_database_before_connecting(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)/'settings.json'
+            path.write_text(json.dumps({
+                'enabled': True, 'storage': 'mysql', 'origin': 'https://example.test',
+                'consent_text': CONSENT, 'consent_version': 'offline-test',
+                'mysql': {'user': 'Carix', 'database': 'Carix$orders_test'},
+            }))
+            with patch('ua_order.mysql_repository.MySQLRepository.check_ready') as check:
+                with self.assertRaisesRegex(ValueError, 'production orders database'):
+                    runtime.load(path)
+                check.assert_not_called()
+
     def test_missing_or_disabled_settings_do_not_create_database_or_change_host(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder)/'settings.json'

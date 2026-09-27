@@ -83,7 +83,10 @@ def load(settings_path=None):
         raise ValueError('An exact HTTPS origin is required')
     if settings['storage'] == 'mysql':
         from .mysql_repository import MySQLRepository
-        repository = MySQLRepository(**settings['mysql'])
+        mysql = settings['mysql']
+        if mysql.get('database') != mysql.get('user', '') + '$orders':
+            raise ValueError('Runtime must use the dedicated production orders database')
+        repository = MySQLRepository(**mysql)
         repository.check_ready()
     else:
         database = path.parent / 'order_requests.db'

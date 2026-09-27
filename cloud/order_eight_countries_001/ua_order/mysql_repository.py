@@ -175,8 +175,8 @@ class MySQLRepository:
         return self._run(redeem, write=True)
 
     def claim_notification(self):
-        now = int(self.clock())
         def claim(cursor):
+            now = int(self.clock())
             cursor.execute('''SELECT * FROM order_outbox WHERE
                 (state='pending' AND available_at<=%s) OR (state='sending' AND lease_until<=%s)
                 ORDER BY id LIMIT 1 FOR UPDATE''', (now, now))
@@ -185,7 +185,7 @@ class MySQLRepository:
                 return None
             lease = secrets.token_hex(16)
             cursor.execute("UPDATE order_outbox SET state='sending',lease=%s,lease_until=%s,attempts=attempts+1 WHERE id=%s",
-                           (lease, now + 60, row['id']))
+                           (lease, int(self.clock()) + 60, row['id']))
             return dict(id=row['id'], request_id=row['request_id'], lease=lease)
         return self._run(claim, write=True)
 
