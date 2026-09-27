@@ -56,3 +56,14 @@ CRM_PERFORMANCE_TESTS: 40 PASS (15 performance, 18 stage recovery, 7 status poli
 CRM_PERFORMANCE_PRODUCTION_WRITTEN: NO
 CRM_PERFORMANCE_BLOCKER: Existing delivery EMERGENCY_HALT / ROLLING_BACK must be reconciled through the registered recovery route. CPU tarpit prevents meaningful speed acceptance and heavy rehearsal. No safety control was disabled; no new automatic installation was scheduled.
 CRM_PERFORMANCE_NEXT: Reconcile delivery incident, resolve catalog-set mismatch, check CPU after reset, combine with current source/router corrections, complete exact backup/rollback/Gate B and main Actions installation, confirm loaded bot code and measure live opening/edit/save latency. Owner authorization already covers this repair; no duplicate general approval needed.
+
+CRM_ONECLICK_TASK: UA-ART-CRM-ONECLICK-PUBLISH-001
+CRM_ONECLICK_STATUS: CANDIDATE_TESTED_NOT_INSTALLED; GATE_B_NOT_READY
+CRM_ONECLICK_SCOPE: Remove already-in-catalog/hide ad section and buyer preview; publish from one tap for drafts and stale published flags; no toggle on repeated publish; durable retry and verified completion receipt.
+CRM_ONECLICK_CAUSE: ad_screen bypassed publication when published=1; archive-inclusive catalog inventory caused strict transaction rollback. The publication flag is intent, not proof of a public page.
+CRM_ONECLICK_PACKAGE: cloud/crm_oneclick_publish_001/README.md and candidate_manifest.json; tasks/UA-ART-CRM-ONECLICK-PUBLISH-001.md. Builder composes current stage and performance candidates; preserves their fixes.
+CRM_ONECLICK_TESTS: 68 local tests PASS (28 oneclick, 15 performance, 18 stage recovery, 7 status); exact-source four-file candidate compiles. Production rehearsal/browser acceptance NOT_RUN.
+CRM_ONECLICK_BLOCKED: Delivery transaction tx-36268504600-54c3be3cfc4dd0da remains ROLLING_BACK / EMERGENCY_HALT. Fresh dashboard CPU 8716.57/5000, tarpit. Existing resource and recovery gates preserved.
+CRM_ONECLICK_PRODUCTION_WRITTEN: NO; no runtime source, HTML, CRM rows or bot restart by this task; UA-0021 publication not confirmed. No new delayed deployment scheduled.
+CRM_ONECLICK_NEXT: Registered delivery recovery, fresh CPU/source checks, combine PR128 media changes, exact backup/install/rollback including private request ledger, Gate B and main Actions release, verify one-click publication and completion in Telegram and public site. Owner authorization already covers this repair.
+
