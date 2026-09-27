@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-36348258127-bf576ed8ba735c94",
   "production_transaction_path": "state/transactions/CONTAINER-TRACKING-INSTALL-20260928.bf576ed8ba735c94ccb1d5de704791e8c09deb007e661460f3ce03801447b438.36348258127.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "ROLLING_BACK",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/CONTAINER-TRACKING-INSTALL-20260928.json",
   "receipt_validation_status": "PENDING",
@@ -108,5 +108,5 @@
       "cloud/container_tracking_001/ua_tracking_widget.py": "a96b76b662f2cf496a1c672ff8804f0dc940bbb4d02bdfcf37205b9c956f7477"
     }
   },
-  "updated_at": "2026-09-27T20:34:37Z"
+  "updated_at": "2026-09-27T20:45:30Z"
 }
