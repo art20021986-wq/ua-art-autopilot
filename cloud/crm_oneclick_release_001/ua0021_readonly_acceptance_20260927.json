@@ -1,6 +1,6 @@
 {
   "schema_version": "UA-ART-UA0021-READONLY-PUBLIC-ACCEPTANCE-1",
-  "checked_at": "2026-09-27T08:25:54.821Z",
+  "checked_at": "2026-09-27T08:26:52.434Z",
   "task_id": "UA-ART-CRM-ONECLICK-PUBLISH-001",
   "target": "UA-0021",
   "result": "PUBLICATION_CONFIRMED",
@@ -84,17 +84,22 @@
     "supersedes_previous_cloud_browser_502": true
   },
   "latest_bot_observation": {
-    "at": "2026-09-27T08:24:20.459870+00:00",
+    "at": "2026-09-27T08:26:07.310654+00:00",
     "bot": {
       "id": 266084,
       "enabled": true,
-      "state": "Starting"
+      "state": "Running"
     },
     "journals": [
       {
         "backup_sha256": "229bed73918cd12e14dc13211ed185e9926c29bb66377ed2346b570686d57e0e",
         "mode": "rollback",
         "result": {
+          "crm_resume": {
+            "enabled": true,
+            "id": 266084,
+            "state": "running"
+          },
           "crm_unchanged": true,
           "interrupted_install": false,
           "preservation_scope": "WHILE_BOT_PAUSED_UNDER_WRITER_LOCKS",
@@ -103,20 +108,21 @@
           "restored": true,
           "status": "PASS"
         },
-        "stage": "RESUME"
+        "stage": "FINISHED"
       }
     ]
   },
   "other_transaction": {
     "run_id": "36304601891",
     "operation": "VIDEO_PUBLISHER_ROLLBACK",
-    "observed_phase": "RESUME",
-    "interfered": false
+    "observed_phase": "FINISHED",
+    "interfered": false,
+    "rollback_result": "PASS"
   },
   "limitations": [
     "Live Telegram tap and repeat-tap acceptance were not performed in this read-only check.",
-    "Normal-quota callback latency was not measured.",
-    "The unrelated publisher rollback temporarily paused the bot; its own controller is resuming it."
+    "Normal-quota callback latency was not measured."
   ],
-  "full_user_journey_acceptance": false
+  "full_user_journey_acceptance": false,
+  "autonomous_publication_goal": "SATISFIED"
 }
