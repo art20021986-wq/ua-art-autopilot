@@ -1,6 +1,6 @@
 {
-  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-v7",
-  "manifest_sha256": "069d6a2dccb63dc121ff47518a7a69602567466bcaec5bb1d04a40c8071fea74",
+  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-v9",
+  "manifest_sha256": "236b0cb3167e78b1240a8b4ca0b32a5f2154fd292e7ffbf9431e0b0f60e001e7",
   "files": 16,
   "production_write": true,
   "tested_commit": "c53f133f5626eb17857d67ebacf1b818642f640f",
@@ -64,7 +64,7 @@
   "automated_acceptance": "PASS",
   "visual_acceptance": "DESKTOP VERIFIED; PHYSICAL MOBILE NOT VERIFIED",
   "release_status": "DEPLOYED",
-  "frontend_tested_commit": "c2d30686e9d92533e271a9d11237a0705434c4e1",
+  "frontend_tested_commit": "393cb73b55e608e0a6e962da83e9caa49857175d",
   "deployment": {
     "authorized_by": "User: «Примени и внедри» (2026-09-27T18:41:44Z), then explicit audit-and-finish request",
     "initial_release_utc": "2026-09-27T19:13Z",
@@ -72,8 +72,8 @@
     "initial_manifest_sha256": "07d1571c34259892f2361304dbfc5422276a2262f882a9b338609e694d92338d",
     "initial_manifest": "evidence/initial-release-manifest.json",
     "audit_correction_utc": "2026-09-27T19:21Z",
-    "backup": "/home/Carix/order_preferences_backup_20260927_1954",
-    "frontend_version": "20260927.7",
+    "backup": "/home/Carix/order_preferences_backup_20260927_2031",
+    "frontend_version": "20260927.9",
     "directory_version": "20260927.5",
     "backend_at_audit_correction": "All 10 backend SHA before/after identical; runtime already reloaded and verified during initial release",
     "live_files": "16/16 SHA-256 MATCH",
@@ -83,13 +83,13 @@
     "client_bot_started_utc": "2026-09-27T19:11:48.974Z",
     "database_schema_changed": false,
     "production_test_submitted": false,
-    "verified_at_utc": "2026-09-27T19:59:21.378164+00:00",
+    "verified_at_utc": "2026-09-27T20:33Z",
     "previous_frontend_release": {
-      "backup": "/home/Carix/order_preferences_backup_20260927_1919",
-      "frontend_version": "20260927.6",
-      "verified_at_utc": "2026-09-27T19:27:19.031329+00:00"
+      "backup": "/home/Carix/order_preferences_backup_20260927_2010",
+      "frontend_version": "20260927.8",
+      "verified_at_utc": "2026-09-27T20:14Z"
     },
-    "frontend_correction_utc": "2026-09-27T19:54Z"
+    "frontend_correction_utc": "2026-09-27T20:32Z"
   },
   "live_browser": {
     "browser": "Cloud Chrome",
@@ -143,6 +143,60 @@
     "physical_iphone": "NOT VERIFIED; automated focus/DOM checks and live Chrome do not substitute for physical iOS",
     "evidence": [
       "evidence/v7-main.jpg"
+    ]
+  },
+  "form_correction_v8": {
+    "frontend_commit": "82bf24adba02c6668b275f6fead6dcc1950f52ac",
+    "deployed_at_utc": "2026-09-27T20:10Z",
+    "manifest_sha256": "5f624219e9e7cfc4a7e47548c92c1e50e08fe1d85f9f13dd83b9f4baa7c928d5",
+    "changes": [
+      "Removed make, model and city search fields and their handlers",
+      "Preserved complete native option lists and dependent fields"
+    ],
+    "live_checks": [
+      "16/16 installed file hashes match; 6/6 public HTTPS assets match",
+      "RU/UA/GE: no search inputs; make/model selection and country-dependent cities work"
+    ],
+    "previous_frontend_release": {
+      "backup": "/home/Carix/order_preferences_backup_20260927_1954",
+      "frontend_version": "20260927.7",
+      "verified_at_utc": "2026-09-27T19:59:21.378164+00:00"
+    }
+  },
+  "form_correction_v9": {
+    "authorized_by": "User 2026-09-28 UTC+7: two model modes, gold field headings and body type after purchase country",
+    "changes": [
+      "Exactly two model mode options: selected and manual, in all three languages",
+      "Manual make defaults to manual model; catalog option disabled when unavailable",
+      "Editable any-model drafts require model clarification; uncertain submitted payload unchanged",
+      "Body type directly after purchase country, before make",
+      "Fieldset legends use existing gold token #e8c87d against panel #13283d"
+    ],
+    "contrast": {
+      "ratio": 9.29,
+      "foreground": "#e8c87d",
+      "background": "#13283d",
+      "source": "https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum"
+    },
+    "automated_checks": [
+      "Pure state suite including all 40 cards and retired-mode draft migration: PASS",
+      "Three-language full DOM flow, two localized model-mode options, no search inputs, retained native controls/focus, review/edit/retry: PASS",
+      "3 build and 2 release-guard tests: PASS"
+    ],
+    "live_checks": [
+      "16/16 installed file hashes match; 6/6 public HTTPS assets match",
+      "RU/UA/GE: exactly two model-mode options; zero search fields; requested first four field positions",
+      "Native model-mode click/ArrowDown/Enter changes to manual without losing focus",
+      "Manual model input and returning to catalog work; K5 selection and sedan body preserved across languages",
+      "Computed heading and panel colours match intended palette; desktop screenshot visually reviewed"
+    ],
+    "backend_changed": false,
+    "dependencies_added": false,
+    "production_test_submitted": false,
+    "physical_iphone": "NOT VERIFIED",
+    "photo_23": "Excluded from this chat by explicit user request",
+    "evidence": [
+      "evidence/v9-main.jpg"
     ]
   }
 }
