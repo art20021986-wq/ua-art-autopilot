@@ -60,6 +60,18 @@ def public_verify(api, bundle, backup_sha, plan):
                 raise RuntimeError('PUBLIC_CANONICAL_HEALTH:'+path)
             if len(response.read(4096))<100: raise RuntimeError('EMPTY_PUBLIC_PAGE')
         results[path]='PASS'
+    if plan.get('site_write'):
+        for path in ('/video/UA-0023.html','/video/katalog.html','/video/index.html'):
+            request=urllib.request.Request('https://www.uaart.com.ua'+path+'?photo_visibility='+backup_sha[:16],
+                headers={'Cache-Control':'no-cache','User-Agent':'UAART-PhotoVisibility-Verify/1'})
+            with urllib.request.urlopen(request,timeout=30) as response:
+                final=urllib.parse.urlsplit(response.url)
+                content=response.read(4*1024*1024)
+                if response.status!=200 or (final.scheme,final.netloc,final.path)!=('https','www.uaart.com.ua',path):
+                    raise RuntimeError('PUBLIC_TARGET_HEALTH:'+path)
+            if sha(content)!=plan['files'][path.lstrip('/')]['after']:
+                raise RuntimeError('PUBLIC_TARGET_HASH:'+path)
+            results[path]='EXACT_PUBLISHED_BYTES_PASS'
     return results
 
 
@@ -130,8 +142,8 @@ def run(operation=None):
                'protected_files_unchanged': True, 'crm_unchanged': True,
                'public_checks':public,'restart':value['crm_resume'],
                'code_sha256':verified['code_sha256'],
-               'acceptance_scope':'PHOTO_VISIBILITY_SOURCE_INSTALLATION_AND_BOT_RESUME',
-               'full_publication_acceptance':False,'database_migration_executed':False,
+               'acceptance_scope':'TECHNICAL_PHOTO_EXCLUSION_SOURCES_AND_PUBLIC_UA0023',
+               'full_publication_acceptance':bool(plan.get('site_write')),'database_migration_executed':False,
                'data_preservation_scope':value['preservation_scope']}
     save(env['UAART_RECEIPT_PATH'], receipt)
     save('cloud/crm_photo_visibility_002/deployment_verify.json', verified)
@@ -141,4 +153,3 @@ def run(operation=None):
 
 if __name__ == '__main__':
     raise SystemExit(run())
-
