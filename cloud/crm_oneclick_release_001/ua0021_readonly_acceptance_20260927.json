@@ -1,0 +1,122 @@
+{
+  "schema_version": "UA-ART-UA0021-READONLY-PUBLIC-ACCEPTANCE-1",
+  "checked_at": "2026-09-27T08:25:54.821Z",
+  "task_id": "UA-ART-CRM-ONECLICK-PUBLISH-001",
+  "target": "UA-0021",
+  "result": "PUBLICATION_CONFIRMED",
+  "acceptance_scope": "CURRENT_TARGET_PUBLIC_CARD_CATALOG_AND_CRM_INVENTORY",
+  "production_mutations_this_check": false,
+  "installation_run_id": "36301475826",
+  "installation_run_conclusion": "success",
+  "installation_receipt": "state/receipts/CRM-ONECLICK-INSTALL-20260927.json",
+  "server_observation": {
+    "active": 21,
+    "bot": {
+      "enabled": false,
+      "id": 266084,
+      "state": "Stopped"
+    },
+    "catalog": 21,
+    "catalog_matches_crm": true,
+    "code_sha256": {
+      "cars_ui.py": "fed3ccd110e750947288bbe5892f1c62262b23d6818653f43c7d57b584bf92dd",
+      "publikaciya.py": "4d1adb53cb659daa125c7480c289ad25e03a57e34d3d0c1f4e0989de1d7a8ac8",
+      "ua_crm_public_sync.py": "8c65eeb598c15007f489e2eaa0453362c97b9c426a3f67cf02c6a09a0d37015f",
+      "ua_publish_requests.py": "746657dd1c6b23968582cbb19bb6bb819ed5ad28654c1f4a657b258cd14645a1"
+    },
+    "counts": {
+      "georgia": 6,
+      "kiev": 6,
+      "korea": 4,
+      "sea": 5
+    },
+    "cpu": {
+      "daily_cpu_limit_seconds": 10000,
+      "daily_cpu_total_usage_seconds": 129.829948,
+      "next_reset_time": "2026-09-28T08:09:11+00:00"
+    },
+    "observed_at": "2026-09-27T08:21:04.496629+00:00",
+    "public_checks": {
+      "UA-0021.html": {
+        "matches_disk": true,
+        "sha256": "7bd7b75c855c00433f50dedf44261ecd62ce315f194fc1593e39a73794c2c255",
+        "status": 200,
+        "url": "https://www.uaart.com.ua/video/UA-0021.html"
+      },
+      "katalog.html": {
+        "matches_disk": true,
+        "sha256": "fda5a0f9c47d60f43eaa74337de93d5f79995998c20388b33fc275028a148e25",
+        "status": 200,
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    },
+    "target": {
+      "auto_number": "UA-0021",
+      "id": 31,
+      "published": 1,
+      "status": "sea_loaded"
+    },
+    "target_catalog_stage": "sea",
+    "target_retry": null,
+    "target_revision": {
+      "code": "UA-0021",
+      "delivery_status": "ferry",
+      "sha256": "8756a9d2b2ddb9659c65225b665dfb26cb610b6d9ee4cebb6412216d8208733c"
+    },
+    "vin_present": true
+  },
+  "browser_observation": {
+    "catalog_url": "https://www.uaart.com.ua/video/katalog.html",
+    "target_url": "https://www.uaart.com.ua/video/UA-0021.html",
+    "ordinary_urls": true,
+    "rendered": true,
+    "target_in_catalog": true,
+    "target_stage": "На поромі",
+    "counts": {
+      "all": 21,
+      "korea": 4,
+      "ferry": 5,
+      "georgia": 6,
+      "kyiv": 6
+    },
+    "target_photos": 37,
+    "target_videos": 1,
+    "supersedes_previous_cloud_browser_502": true
+  },
+  "latest_bot_observation": {
+    "at": "2026-09-27T08:24:20.459870+00:00",
+    "bot": {
+      "id": 266084,
+      "enabled": true,
+      "state": "Starting"
+    },
+    "journals": [
+      {
+        "backup_sha256": "229bed73918cd12e14dc13211ed185e9926c29bb66377ed2346b570686d57e0e",
+        "mode": "rollback",
+        "result": {
+          "crm_unchanged": true,
+          "interrupted_install": false,
+          "preservation_scope": "WHILE_BOT_PAUSED_UNDER_WRITER_LOCKS",
+          "protected_data_sha256": "87903dc64455b3310cdf00716ab57b0a4535687266d7acde9f8447dcebe785d3",
+          "protected_files_unchanged": true,
+          "restored": true,
+          "status": "PASS"
+        },
+        "stage": "RESUME"
+      }
+    ]
+  },
+  "other_transaction": {
+    "run_id": "36304601891",
+    "operation": "VIDEO_PUBLISHER_ROLLBACK",
+    "observed_phase": "RESUME",
+    "interfered": false
+  },
+  "limitations": [
+    "Live Telegram tap and repeat-tap acceptance were not performed in this read-only check.",
+    "Normal-quota callback latency was not measured.",
+    "The unrelated publisher rollback temporarily paused the bot; its own controller is resuming it."
+  ],
+  "full_user_journey_acceptance": false
+}
