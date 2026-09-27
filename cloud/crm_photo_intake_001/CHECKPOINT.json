@@ -1,0 +1,45 @@
+{
+  "task_id": "CRM-PHOTO-INTAKE-20260927",
+  "status": "CODE_TESTED_INSTALL_BLOCKED_BY_EXISTING_PRODUCTION_ROLLBACK",
+  "updated_at": "2026-09-27T08:21:16.543Z",
+  "pr": "https://github.com/art20021986-wq/ua-art-autopilot/pull/139",
+  "code_merged": true,
+  "production_installed": false,
+  "production_touched_by_this_task": false,
+  "crm_rows_written_by_this_task": 0,
+  "local_tests": 43,
+  "private_runtime_database_rehearsal": {
+    "status": "PASS",
+    "scope": "exact private live db.py and cars_schema.py against temporary empty database",
+    "parallel_submissions": 16,
+    "car_count": 1,
+    "inbox_count": 17,
+    "blank_year_status_preserved": true,
+    "publication_false": true,
+    "followup_fills_empty": true,
+    "production_touched": false
+  },
+  "photo_rehearsal": "photo_rehearsal.json",
+  "preview_run_id": 36305025481,
+  "preview_run_status": "pending",
+  "preview_production_write": false,
+  "production_install_scheduled": false,
+  "blocking_existing_run_id": 36304601891,
+  "blocking_existing_error": "REMOTE_INSTALL:DeploymentError:WORKER_BUSY",
+  "blocking_existing_phase": "rollback_execute",
+  "runtime_files": [
+    "team_bot.py",
+    "crm_explicit_fields.py",
+    "crm_intake_store.py",
+    "crm_photo_intake.py"
+  ],
+  "owner_scope_authorized": "Current owner request explicitly authorizes implementing this source-code behavior. No repeated approval is required for this scope; all exact-plan, backup, rollback, health and transaction gates remain required.",
+  "next": [
+    "Let the existing production rollback/reconciliation finish without changing its locks, source or transaction state.",
+    "Inspect actual status/receipt for the queued read-only preview 36305025481; never claim it completed from local tests.",
+    "If preview passes, bind its actual protected hashes/plan and exact source-only manifest, fresh scoped authorization and separate marker-only launch through main Actions.",
+    "If source or dependency hashes drift, reconstruct current sources and review a fresh exact candidate before creating another plan.",
+    "Verify installed hashes and running bot; explicitly distinguish source installation from a real end-to-end Telegram submission."
+  ],
+  "implementation": "README.md"
+}
