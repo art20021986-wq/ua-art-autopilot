@@ -82,7 +82,7 @@ class API:
         while time.monotonic() < deadline:
             value = self.bot()
             state = str(value.get('state', '')).lower()
-            if value.get('enabled') is enabled and (state == 'running' if enabled else state != 'running'):
+            if value.get('enabled') is enabled and (state == ('running' if enabled else 'stopped')):
                 return {'id': BOT_ID, 'enabled': enabled, 'state': state}
             time.sleep(3)
         raise TransportError('BOT_STATE_TIMEOUT')
