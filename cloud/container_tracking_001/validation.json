@@ -2,25 +2,31 @@
   "tests": 34,
   "status": "PASS",
   "source_inputs": {
-    "stranica.py": "4d710266abb2a92754ff3e3fc7de86c628760bee3c455dfbb177dedec113b1a1",
-    "yadro.py": "1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793",
-    "master_card.py": "c99b6c0271586d4f8c56e4184528ab6f20541173be9a287d9d64661b4b7184b2"
+    "stranica.py": "afa5c9b4d86b35153557adc1be2b1f089698ad7e03cbbf2b9df870e3479a8cda",
+    "yadro.py": "4a47063c85f60b8a9fe4c4a42256075a7345a3805f5037de7141998bc891e661",
+    "master_card.py": "51b736a5913ba6ebf6e784ead9dbfa1d1e9f61597724eefb943ee6f9a8d9d12e"
   },
   "candidate_outputs": {
-    "stranica.py": "a75c1e3534564d6339247f384475495221fb07c05e11145233ce382de1efb9da",
-    "yadro.py": "50fe173067150b37e40677264baec0b02619884231a8503775ab8f07a59660c6",
-    "master_card.py": "171d06a6bc3003ff2119cf6acace198b7354ff8b7c47ce4ef1bea76ba49fe94f",
+    "stranica.py": "f4be056353256f88dbdb948227866a23d1ff37c5c09bb33595da8b54206cd81f",
+    "yadro.py": "c58fcf8b739985400d22eeb59e9c51727bb35e331a66691896e2f03de67c1333",
+    "master_card.py": "5199f9f796b617c604fa01b8f4145cf7d869dcf95a28314dd0305926954348d9",
     "ua_tracking_links.py": "9a4712ff4b7f97b94ae5931a326e64986c5a0d22297006a3bf91ecf97900f7b9",
     "ua_tracking_widget.py": "a96b76b662f2cf496a1c672ff8804f0dc940bbb4d02bdfcf37205b9c956f7477"
   },
-  "saved_real_cards": 19,
-  "cpu_seconds_full_source_build_and_saved_cards": 0.117,
+  "source_check": "2026-09-27T20:13:00Z live PythonAnywhere read-only in-memory compile and hash",
+  "delivery_function_unchanged_from_previous_review": {
+    "stranica.py": true,
+    "yadro.py": true,
+    "master_card.py": true
+  },
+  "saved_real_cards": 22,
+  "tracking_references_present": 9,
+  "target_card": "UA-0021",
+  "target_container": "FBLU0045137",
+  "real_card_transform": "22/22 idempotent, outside delivery byte-identical",
   "production_installed": false,
   "external_prefill_verified": [
-    "https://track-trace.com/container#CSQU3054383",
-    "https://track-trace.com/bol#ONEYTEST123456"
+    "https://track-trace.com/container#FBLU0045137"
   ],
-  "browser_local_preview": "NOT_RUN_FILE_PROTOCOL_RESTRICTED",
-  "future_renderer_scenarios": 48,
-  "rollout_input_guards": "New cards and late reference changes rejected before application writes; rollback preserves newer CRM references"
+  "rollout_input_guards": "Source hashes, card set, reference values, page hashes, protected modules remain checked before writes"
 }
