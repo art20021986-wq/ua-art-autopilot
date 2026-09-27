@@ -16,15 +16,6 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "b20de5b4e0ba1987"
-    },
-    {
-      "action": "STOP_FAIL_CLOSED_TERMINAL",
-      "at": "2026-09-27T08:44:40Z",
-      "class": "UNKNOWN",
-      "message": "STORAGE_PROBE_STALE_OR_FUTURE: run stopped before backup, transaction and application writes; target remeasured, retry requires fresh identity and full gates.",
-      "retries_remaining": 0,
-      "retry_allowed": false,
-      "signature": "21276ded3b84637f"
     }
   ],
   "heartbeat_at": "2026-09-27T08:36:02Z",
@@ -51,6 +42,6 @@
   "source_commit": "ce541acc00cee3422f189beaf9940bdddb21525c",
   "storage_preflight_status": "PENDING",
   "task_class": "CRITICAL",
-  "task_execution_status": "FAILED",
-  "updated_at": "2026-09-27T08:44:40Z"
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "updated_at": "2026-09-27T08:37:04Z"
 }
