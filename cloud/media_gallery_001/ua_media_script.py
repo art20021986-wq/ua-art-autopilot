@@ -96,7 +96,10 @@ JS = r'''
     }
     function select(index) {
       index = bounded(index);
-      if (active === index) {reveal(tabs[active]); return;}
+      if (active === index) {
+        tabs.forEach((tab,i) => {tab.tabIndex = i===active ? 0 : -1;});
+        reveal(tabs[active]); return;
+      }
       saveVideo(); active = index;
       tabs.forEach((tab,i) => {tab.setAttribute('aria-selected',String(i===active)); tab.tabIndex = i===active ? 0 : -1;});
       panel.setAttribute('aria-labelledby',tabs[active].id);
@@ -196,7 +199,10 @@ JS = r'''
       img.addEventListener('error',()=>{if(button.firstElementChild===img)stateOf('error');});
       if(img.complete && !img.naturalWidth) stateOf('error');
     } else bindVideo(player, 0);
-    root.querySelectorAll('.um-thumb img').forEach(img => img.addEventListener('error', () => {img.hidden=true;}));
+    root.querySelectorAll('.um-thumb img').forEach(img => {
+      img.addEventListener('error', () => {img.hidden=true;});
+      if (img.complete && !img.naturalWidth) img.hidden=true;
+    });
     if (!dialog.showModal) {
       expand.hidden=true;full.hidden=true;
       const button=q('.um-image-button');

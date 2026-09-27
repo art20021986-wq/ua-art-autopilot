@@ -56,7 +56,7 @@ def public_verify(api, bundle, backup_sha, plan):
     paths.extend('/video/'+code+'.html' for code in plan.get('card_codes', []))
     for path in paths:
         url='https://www.uaart.com.ua'+path
-        request=urllib.request.Request(url,headers={'Cache-Control':'no-cache','User-Agent':'UAART-GalleryDesktop-Verify/1'})
+        request=urllib.request.Request(url,headers={'Cache-Control':'no-cache','User-Agent':'UAART-MediaGallery-Verify/1'})
         with urllib.request.urlopen(request,timeout=30) as response:
             final=urllib.parse.urlsplit(response.url)
             if response.status!=200 or (final.scheme,final.netloc,final.path)!=('https','www.uaart.com.ua',path):
@@ -137,7 +137,7 @@ def run(operation=None):
                'protected_files_unchanged': True, 'crm_unchanged': True,
                'public_checks':public,'restart':value['crm_resume'],
                'code_sha256':verified['code_sha256'],
-               'acceptance_scope':'DESKTOP_GALLERY_CONTROLS_AND_FUTURE_CARD_RENDERER',
+               'acceptance_scope':'MEDIA_GALLERY_FILES_AND_FUTURE_CARD_RENDERER',
                'full_publication_acceptance':False,'database_migration_executed':False,
                'data_preservation_scope':value['preservation_scope']}
     save(env['UAART_RECEIPT_PATH'], receipt)
