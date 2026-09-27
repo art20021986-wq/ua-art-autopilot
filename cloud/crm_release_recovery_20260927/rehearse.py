@@ -36,7 +36,7 @@ def run():
             pinned = Path(directory)
             with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
                 tar.extractall(pinned, filter='data')
-            original = (fix.ROOT / relative).read_bytes()
+            original = fix.original(relative)
             env = {**os.environ, 'PINNED_ROOT': str(pinned), 'SOURCE_COMMIT': SOURCE_COMMIT,
                    'CLAIM_PATH': CLAIM, 'TRANSACTION_PATH': TRANSACTION,
                    'EXPECTED_TRANSACTION_PATH': TRANSACTION, 'REQUEST_PATH': REQUEST,

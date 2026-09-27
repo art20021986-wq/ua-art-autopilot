@@ -154,10 +154,10 @@ ORCHESTRATOR_WORKFLOW_SHA256 = (
     "0bab939f235f3e03fd5c847814ae654e1ee585712b5d5c3b572f31a4779fd236"
 )
 CRITICAL_WORKFLOW_SHA256 = (
-    "6f13c864a5d7b400474f3c9a1fe15e0d2d4dfca5d25dd195a628a3225d33e65a"
+    "e878ee2dc8dc5022db095eb5a88d34acd7c262228ee592671ed4e691e3cac198"
 )
 WATCHDOG_WORKFLOW_SHA256 = (
-    "817fd29309b0854ffbfbe7d360a07ba0b37348e646655850b1ed99897229dffe"
+    "ad183ff63e4bf779591e2cc773aa1074c8005af399fedce810212e75b3dd7726"
 )
 PYTHON_INTERPRETER_RE = re.compile(
     r"(?<![A-Za-z0-9_./-])(?:/usr/bin/)?python(?:3(?:\.\d+)?)?"
@@ -2021,6 +2021,70 @@ def _verify_task088_runtime_activation(
     return registered_at
 
 
+def _verify_nonce_copy_runtime_activation(
+    *, root: pathlib.Path, mode: Mapping[str, Any], approval: Mapping[str, Any],
+    runtime: Mapping[str, Any], runtime_sha: str,
+) -> dt.datetime:
+    """Validate the separately authorized nonce transport fix; HALT stays independent."""
+    prefix = "state/runtime_activations/CRM-ROLLBACK-NONCE-20260927"
+    path = _runtime_activation_file(root, prefix + ".json")
+    if sha256_file(path) != require_sha(mode.get("runtime_activation_sha256"), "nonce_activation"):
+        raise ControlPlaneError("NONCE_ACTIVATION_SHA")
+    activation = _runtime_activation_json(path)
+    expected = {
+        "schema_version": "UA-ART-NONCE-COPY-REGISTRATION-1",
+        "task_id": "CRM-ROLLBACK-NONCE-20260927",
+        "scope": "REPAIR_LEDGER_BOUND_NONCE_COPY_ONLY",
+        "owner_command": "Убери блоки и установи",
+        "owner_actor_id": "321059821",
+        "repository": "art20021986-wq/ua-art-autopilot",
+        "mode_epoch": mode.get("mode_epoch"),
+        "halt_removed": False,
+        "transaction_outcome_changed": False,
+        "rollback_replay_allowed": False,
+        "application_write_allowed": False,
+        "previous_manifest_path": prefix + ".previous-manifest.json",
+        "previous_manifest_sha256": "2b3b75c686a41f4f6a48b2f9e2d57da12574c2b498505150899b66645d7cd2c5",
+        "previous_mode_path": prefix + ".previous-mode.json",
+        "previous_mode_sha256": "11af7c738faa902412d35f0755a0a829df49ec939d32960abf343203f93bb715",
+        "runtime_manifest_path": RUNTIME_MANIFEST_PATH,
+        "runtime_manifest_sha256": runtime_sha,
+        "changed_runtime_paths": sorted([
+            "automation/control_plane.py", ".github/workflows/uaart_critical.yml",
+            ".github/workflows/uaart_transaction_watchdog.yml"]),
+    }
+    if set(activation) != set(expected) | {"registered_at", "source_commit"}:
+        raise ControlPlaneError("NONCE_ACTIVATION_KEYS")
+    if any(activation.get(key) != value for key, value in expected.items()):
+        raise ControlPlaneError("NONCE_ACTIVATION_SCOPE")
+    if not re.fullmatch(r"[0-9a-f]{40}", str(activation.get("source_commit", ""))):
+        raise ControlPlaneError("NONCE_ACTIVATION_SOURCE_COMMIT")
+    previous = {}
+    for kind in ("mode", "manifest"):
+        snapshot = _runtime_activation_file(root, activation["previous_" + kind + "_path"])
+        if sha256_file(snapshot) != activation["previous_" + kind + "_sha256"]:
+            raise ControlPlaneError("NONCE_ACTIVATION_PREVIOUS_" + kind.upper())
+        previous[kind] = _runtime_activation_json(snapshot)
+    old_mode, old_runtime = previous["mode"], previous["manifest"]
+    preserved = dict(mode)
+    for key in ("runtime_manifest_sha256", "runtime_activation_path", "runtime_activation_sha256"):
+        preserved[key] = old_mode[key]
+    if preserved != old_mode:
+        raise ControlPlaneError("NONCE_ACTIVATION_MODE_POLICY_DRIFT")
+    old_time = _verify_runtime_activation(
+        root=root, mode=old_mode, approval=approval, runtime=old_runtime,
+        runtime_sha=activation["previous_manifest_sha256"])
+    files = runtime.get("files")
+    if (not isinstance(files, dict) or set(files) != set(RUNTIME_PINNED_PATHS)
+            or {name for name in files if files[name] != old_runtime["files"][name]}
+            != set(expected["changed_runtime_paths"])):
+        raise ControlPlaneError("NONCE_ACTIVATION_RUNTIME_SCOPE")
+    registered = parse_utc(str(activation["registered_at"]))
+    if registered < old_time:
+        raise ControlPlaneError("NONCE_ACTIVATION_TIME_ORDER")
+    return registered
+
+
 def _verify_runtime_activation(
     *, root: pathlib.Path, mode: Mapping[str, Any], approval: Mapping[str, Any],
     runtime: Mapping[str, Any], runtime_sha: str,
@@ -2032,6 +2096,9 @@ def _verify_runtime_activation(
     The dependency order is code -> manifest -> registration -> mode, with no
     hash of a file embedded into itself.
     """
+    if mode.get("runtime_activation_path") == "state/runtime_activations/CRM-ROLLBACK-NONCE-20260927.json":
+        return _verify_nonce_copy_runtime_activation(
+            root=root, mode=mode, approval=approval, runtime=runtime, runtime_sha=runtime_sha)
     if mode.get("runtime_activation_path") == TASK088_ACTIVATION_PATH:
         return _verify_task088_runtime_activation(
             root=root, mode=mode, approval=approval, runtime=runtime, runtime_sha=runtime_sha,
@@ -3167,6 +3234,12 @@ def _task088_owner_storage_override(
     if not mode_path.is_file():
         return None
     mode = read_json(mode_path)
+    if mode.get("runtime_activation_path") == "state/runtime_activations/CRM-ROLLBACK-NONCE-20260927.json":
+        verify_execution_mode(root=root, required_mode="AUTOMATIC", allow_halt_for_recovery=True)
+        previous = _runtime_activation_file(root, "state/runtime_activations/CRM-ROLLBACK-NONCE-20260927.previous-mode.json")
+        if sha256_file(previous) != "11af7c738faa902412d35f0755a0a829df49ec939d32960abf343203f93bb715":
+            raise ControlPlaneError("NONCE_ACTIVATION_PREVIOUS_MODE")
+        mode = read_json(previous)
     if mode.get("runtime_activation_path") != TASK088_ACTIVATION_PATH:
         return None
     activation_path = _runtime_activation_file(root, TASK088_ACTIVATION_PATH)
