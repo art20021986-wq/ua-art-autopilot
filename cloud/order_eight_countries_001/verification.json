@@ -378,7 +378,7 @@
     "remaining": "Confirm task state and fresh start log after hosting panel becomes available; authorization already received"
   },
   "ui_cleanup_20260927": {
-    "status": "PREPARED_NOT_DEPLOYED",
+    "status": "INSTALLED_STATIC_UI",
     "owner_authorized": true,
     "removed": [
       "visible photo artist/license labels",
@@ -391,7 +391,7 @@
       "ka"
     ],
     "new_dependencies": false,
-    "production_files_changed": false,
+    "production_files_changed": true,
     "processes_restarted": false,
     "checks": {
       "javascript_syntax": "PASS",
@@ -400,9 +400,25 @@
       "native_vm_language_integration": "PASS",
       "isolated_static_install_rollback": "PASS",
       "original_page_shell_preserved": "PASS",
-      "live_browser_visual": "NOT_RUN"
+      "live_browser_visual": "PASS: desktop viewport, one header, 3 language buttons, 5 model photos loaded, no credit links",
+      "live_language_switch": "PASS: RU -> UA -> GE -> RU"
     },
-    "deployment_blocker": "PythonAnywhere consoles page: 502 Bad Gateway / Connection refused in available browser",
-    "report": "UI_CLEANUP.md"
+    "report": "UI_CLEANUP.md",
+    "installed_code_commit": "78cebeeb55a7ba8ca1c18127c3b55e77e61ecdf6",
+    "installed_at_utc_minute": "2026-09-27T14:58",
+    "checked_at_utc": "2026-09-27T15:04:07.424726+00:00",
+    "backup": "/home/Carix/order_ui_cleanup_20260927_78cebee",
+    "hosting_access": "Recovered in a fresh browser tab; separate Bash console 48330073",
+    "live_url": "https://www.uaart.com.ua/video/podbor.html?lang=ru&strana=usa",
+    "installed_sha256": {
+      "video/podbor.html": "b77e91b2945415e5f0a75acab22cd22ca39240f33429a96b60c39724bbb688a1",
+      "video/order/order.js": "cba09512cac5fa634db8e34ea6c254a90fd99400c2112a87628e617cc5b6074d",
+      "video/order/order.css": "c37d2aaa4a59e1f05d089a1fd675be243445b06f9b08b69f1ee12cc5f3b80345",
+      "video/order/podbor.html": "b5c7624c4d86296061d9d029fe672f5d933b02ce1d51954fd264ea79e408f784"
+    },
+    "remaining_checks": [
+      "dedicated mobile browser viewport",
+      "real customer submission not sent for this UI-only update"
+    ]
   }
 }
