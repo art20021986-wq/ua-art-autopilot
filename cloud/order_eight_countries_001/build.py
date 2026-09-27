@@ -68,7 +68,7 @@ def patch_form(source):
     fragment=template[a:b]
     # Keep the existing navigation/footer/analytics outside the order region.
     result=source[:start]+fragment+source[end:]
-    includes='<link rel="stylesheet" href="order/order.css?v=20260927.1"><script type="module" src="order/order.js?v=20260927.1"></script>'
+    includes='<link rel="stylesheet" href="order/order.css?v=20260927.2"><script type="module" src="order/order.js?v=20260927.2"></script>'
     return result.replace('</head>',includes+'</head>',1)
 
 

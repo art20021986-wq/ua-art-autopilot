@@ -1,4 +1,4 @@
-import {fromUrl, requestPayload} from './order-state.js';
+import {languages, fromUrl, requestPayload} from './order-state.js';
 
 const root=document.querySelector('#ua-order');
 const assets=new URL('./',import.meta.url);
@@ -83,10 +83,6 @@ function models() {
     } else media.append(node('span',t('media_pending')));
     const info=node('div',undefined,'model-info');
     info.append(node('h3',model.labels[state.lang]),node('span',t('under_order'),'tag'));
-    if(model.media.source) {
-      const credit=node('a',`${model.media.artist} · ${model.media.license}`,'photo-credit');
-      credit.href=model.media.source;credit.target='_blank';credit.rel='noopener';info.append(credit);
-    }
     const button=node('button',t('calculate'));button.type='button';button.addEventListener('click',()=>selectModel(model.key));
     info.append(button);article.append(media,info);return article;
   }));
@@ -109,13 +105,16 @@ function renderSummary() {
   $('summary').replaceChildren(...pairs.filter(([,value])=>value).flatMap(([key,value])=>[node('dt',t(key)),node('dd',value)]));
 }
 function render() {
-  document.documentElement.lang=state.lang;
+  if(document.documentElement.lang!==state.lang) {
+    if(window.UAArtLocale) window.UAArtLocale.choose(state.lang);
+    else document.documentElement.lang=state.lang;
+  }
   document.title=`${t('title')} — UA ART COMPANY`;
   for(const el of root.querySelectorAll('[data-label]')) el.textContent=t(el.dataset.label);
-  for(const el of $('languages').querySelectorAll('button')) el.setAttribute('aria-pressed',String(el.dataset.lang===state.lang));
   options(fields.budget,state.catalog.budgets);options(fields.vehicle_type,state.catalog.vehicle_types);
   $('consent-copy').textContent=state.bootstrap.consent_text[state.lang];
   countries();models();renderSelection();renderSummary();
+  setBusy(state.busy);
 }
 function identityHeaders() {
   const headers={};
@@ -130,12 +129,16 @@ async function api(path,payload) {
   if(!response.ok) {const error=new Error(data.error||'request_failed');error.status=response.status;throw error;}
   return data;
 }
-for(const button of $('languages').querySelectorAll('button')) button.addEventListener('click',()=>{
-  if(state.busy||state.pending) return;
-  state.lang=button.dataset.lang;
-  if(state.review) state.review.lang=state.lang;
-  setUrl();render();
-});
+// The existing site header owns language selection. Observe only its language
+// attribute; this form keeps its own dictionary and never rewrites input values.
+new MutationObserver(()=>{
+  const lang=document.documentElement.lang;
+  if(!state.strings||!languages.includes(lang)||lang===state.lang) return;
+  state.lang=lang;
+  // An uncertain submission must retain the exact payload for an idempotent retry.
+  if(state.review&&!state.pending) state.review.lang=lang;
+  setUrl(false);render();
+}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 $('other-model').addEventListener('click',()=>selectModel(''));
 form.addEventListener('submit',event=>{
   event.preventDefault();if(state.busy||state.receipt||!form.reportValidity()) return;
@@ -183,7 +186,9 @@ window.addEventListener('popstate',()=>{
   if(!state.catalog||state.busy||state.receipt||state.pending) return;
   const next=fromUrl(location.href,Object.keys(state.catalog.countries));
   if(next.country!==state.country) {state.model='';form.hidden=true;discardReview();}
-  state.lang=next.lang;state.country=next.country;render();
+  state.lang=next.lang;state.country=next.country;
+  if(state.review) state.review.lang=state.lang;
+  render();
 });
 function persist() {
   try {
@@ -199,10 +204,14 @@ function persist() {
 form.addEventListener('input',persist);
 window.addEventListener('pagehide',()=>{if(state.catalog) persist();});
 try {
-  const [bootstrap,strings]=await Promise.all([fetch('/api/orders/bootstrap',{credentials:'same-origin'}),fetch(new URL('order-strings.json',assets))]);
+  const pageReady=document.readyState==='loading'
+    ?new Promise(resolve=>document.addEventListener('DOMContentLoaded',resolve,{once:true}))
+    :Promise.resolve();
+  const [bootstrap,strings]=await Promise.all([fetch('/api/orders/bootstrap',{credentials:'same-origin'}),fetch(new URL('order-strings.json',assets)),pageReady]);
   if(!bootstrap.ok||!strings.ok) throw new Error('bootstrap_failed');
   state.bootstrap=await bootstrap.json();state.catalog=state.bootstrap.catalog;state.strings=await strings.json();
   const initial=fromUrl(location.href,Object.keys(state.catalog.countries));Object.assign(state,initial);
+  if(window.UAArtLocale&&languages.includes(document.documentElement.lang)) state.lang=document.documentElement.lang;
   render();fields.budget.value='undecided';fields.vehicle_type.value='any';message('');
   try {
     const saved=JSON.parse(sessionStorage.getItem('ua_order_draft')||'null');

@@ -376,5 +376,33 @@
     "force_kill_used": false,
     "production_files_changed": false,
     "remaining": "Confirm task state and fresh start log after hosting panel becomes available; authorization already received"
+  },
+  "ui_cleanup_20260927": {
+    "status": "PREPARED_NOT_DEPLOYED",
+    "owner_authorized": true,
+    "removed": [
+      "visible photo artist/license labels",
+      "duplicate form logo",
+      "duplicate form language selector"
+    ],
+    "shared_header_languages": [
+      "uk",
+      "ru",
+      "ka"
+    ],
+    "new_dependencies": false,
+    "production_files_changed": false,
+    "processes_restarted": false,
+    "checks": {
+      "javascript_syntax": "PASS",
+      "existing_web_state_scenarios": "PASS",
+      "html_build_tests": 3,
+      "native_vm_language_integration": "PASS",
+      "isolated_static_install_rollback": "PASS",
+      "original_page_shell_preserved": "PASS",
+      "live_browser_visual": "NOT_RUN"
+    },
+    "deployment_blocker": "PythonAnywhere consoles page: 502 Bad Gateway / Connection refused in available browser",
+    "report": "UI_CLEANUP.md"
   }
 }
