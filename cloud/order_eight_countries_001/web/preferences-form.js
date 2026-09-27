@@ -24,7 +24,7 @@ export class PreferenceForm {
   label(key,control,text){const label=el('label',text??this.t(key),{for:control.id});const wrap=el('div',undefined,{class:'control'});wrap.append(label,control);return wrap;}
   select(name,choices,value,onChange,{placeholder=true}={}) {
     const select=el('select',undefined,{id:`pref-${name}`,name});
-    const entries=Object.entries(choices);if(placeholder)entries.unshift(['',this.t('choose')]);
+    const entries=Array.isArray(choices)?choices.slice():Object.entries(choices);if(placeholder)entries.unshift(['',this.t('choose')]);
     for(const [code,title] of entries)select.append(el('option',title,{value:code}));
     select.value=value??'';select.addEventListener('change',()=>onChange(select.value));return select;
   }
@@ -45,10 +45,10 @@ export class PreferenceForm {
     const label=el('label',undefined,{class:'check-option'}),input=el('input',undefined,{type:'checkbox',name,id:`pref-${name}`});input.checked=checked;
     input.addEventListener('change',()=>callback(input.checked));label.append(input,el('span',title));return label;
   }
-  presetNumber(name,value,presets,callback,{extra={},max=16}={}) {
+  presetNumber(name,value,presets,callback,{extra={},max=16,useGrouping=true}={}) {
     const wrap=el('div',undefined,{class:'number-choice'});
-    const choices=Object.fromEntries(presets.map(x=>[String(x),Number(x).toLocaleString(this.lang)]));Object.assign(choices,{custom:this.t('custom')},extra);
-    const mode=this.ui[name]??(value===null?'':(String(value) in choices?String(value):'custom'));
+    const choices=[...presets.map(x=>[String(x),Number(x).toLocaleString(this.lang,{useGrouping})]),['custom',this.t('custom')],...Object.entries(extra)];
+    const mode=this.ui[name]??(value===null?'':(choices.some(([code])=>code===String(value))?String(value):'custom'));
     const select=this.select(name,choices,mode,code=>{
       this.ui[name]=code;callback(code==='custom'||code===''?null:(code in extra?code:Number(code)));this.refresh(name.split('-')[0]);
     });select.setAttribute('aria-label',`${this.t(name.split('-')[0])}${name.includes('-')?' · '+this.t(name.split('-')[1]):''}`);
@@ -95,7 +95,7 @@ export class PreferenceForm {
         const values=key==='year'?Array.from({length:this.directory.current_year-1989},(_,i)=>this.directory.current_year-i):this.directory.engines;
         const control=this.presetNumber(`${key}-${bound}`,v[key]?.[bound]??null,values,value=>{
           const interval={...(v[key]||{from:null,to:null}),[bound]:value};this.update(key,key==='engine'&&interval.from===null&&interval.to===null?null:interval);
-        },{max:key==='year'?4:5});const wrap=el('div');wrap.append(el('span',this.t(bound)),control);row.append(wrap);
+        },{max:key==='year'?4:5,useGrouping:key!=='year'});const wrap=el('div');wrap.append(el('span',this.t(bound)),control);row.append(wrap);
       }box.append(row);}
     } else if(key==='mileage') {
       box.append(this.presetNumber(key,v.mileage.any?'any':v.mileage.max,this.directory.mileages,x=>this.update(key,{max:x==='any'?null:x,any:x==='any'}),{extra:{any:this.t('any')}}),this.note('mileage_help'));

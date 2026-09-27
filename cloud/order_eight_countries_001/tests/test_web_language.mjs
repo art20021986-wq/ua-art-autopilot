@@ -69,6 +69,13 @@ for(const lang of ['ru','uk','ka']){
  assert.equal($('[name="customer_name"]').value,'Тестовый клиент');assert.equal($('[name="contact"]').value,'@test_user');
  assert.equal($('[name="budget-custom"]').value,'17 500');assert.equal(state.preferences.values.models[0],'Camry');
  assert.equal($('#optional-preferences').open,true);assert.equal(new URL(window.location.href).searchParams.get('lang'),lang);
+ // Numeric lists keep the intended order; years have no thousands separator.
+ const years=Array.from($('[name="year-from"]').options).filter(o=>/^\d+$/.test(o.value));
+ assert.equal(years[0].textContent,String(preferences.current_year));
+ assert.equal(years.at(-1).textContent,'1990');
+ assert.ok(years.every((o,i)=>o.textContent===String(preferences.current_year-i)));
+ const engines=Array.from($('[name="engine-from"]').options).filter(o=>o.value&&o.value!=='custom').map(o=>Number(o.value));
+ assert.ok(engines.every((value,i)=>!i||value>engines[i-1]));
 }
 // Correct field errors, automatic reveal, preserved input, and range validation.
 change('engine-from','custom');input('engine-from-custom','0');$('#optional-preferences').open=false;
