@@ -1,8 +1,8 @@
 {
-  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-finalized",
-  "manifest_sha256": "1861ca4a1ddc2566c7ff933224b6f2dc6a144b8db515c9cb95a562b2a0910d21",
+  "bundle": "/workspace/scratch/f4ec975e3ed9/work/preferences-release-audited",
+  "manifest_sha256": "33f97c1ddac03ddab539ec30ab2fec62e5fbd21d94e9dcb4319821a4911f279b",
   "files": 16,
-  "production_write": false,
+  "production_write": true,
   "tested_commit": "c53f133f5626eb17857d67ebacf1b818642f640f",
   "server_verified_at_utc": "2026-09-27T18:10:55+00:00",
   "tests": {
@@ -43,8 +43,7 @@
     ]
   },
   "pending": [
-    "Safari/iPhone, Chrome mobile and TikTok visual review at 320–430px",
-    "owner publication command after Gate B"
+    "Physical Safari/iPhone, Chrome mobile and TikTok visual review at 320–430px; no pass claimed"
   ],
   "mobile_css_review": {
     "date_utc": "2026-09-27",
@@ -59,10 +58,53 @@
       "full three-language DOM flow passed"
     ],
     "visual_browser_result": "NOT VERIFIED",
-    "notes": "Static CSS review and DOM tests do not prove rendered mobile layout. The final backend was verified separately at tested_commit."
+    "notes": "CSS and DOM checks do not prove physical mobile rendering. Production desktop Chrome was inspected separately; no physical-device pass is claimed."
   },
   "development_stage": "complete",
   "automated_acceptance": "PASS",
-  "visual_acceptance": "NOT VERIFIED",
-  "release_status": "NOT DEPLOYED"
+  "visual_acceptance": "DESKTOP VERIFIED; PHYSICAL MOBILE NOT VERIFIED",
+  "release_status": "DEPLOYED",
+  "frontend_tested_commit": "2cf4efd49f30be0a08f6d5d3d7469c3f6c9b2070",
+  "deployment": {
+    "authorized_by": "User: «Примени и внедри» (2026-09-27T18:41:44Z), then explicit audit-and-finish request",
+    "initial_release_utc": "2026-09-27T19:13Z",
+    "initial_backup": "/home/Carix/order_preferences_backup_20260927_1905",
+    "initial_manifest_sha256": "07d1571c34259892f2361304dbfc5422276a2262f882a9b338609e694d92338d",
+    "initial_manifest": "evidence/initial-release-manifest.json",
+    "audit_correction_utc": "2026-09-27T19:21Z",
+    "backup": "/home/Carix/order_preferences_backup_20260927_1919",
+    "frontend_version": "20260927.6",
+    "directory_version": "20260927.5",
+    "backend_at_audit_correction": "All 10 backend SHA before/after identical; runtime already reloaded and verified during initial release",
+    "live_files": "16/16 SHA-256 MATCH",
+    "public_https_assets": "6/6 SHA-256 MATCH",
+    "bootstrap": "HTTP 200, preferences 20260927.5, 68 makes",
+    "owner_inbox_worker_started_utc": "2026-09-27T19:11:48.891Z",
+    "client_bot_started_utc": "2026-09-27T19:11:48.974Z",
+    "database_schema_changed": false,
+    "production_test_submitted": false,
+    "verified_at_utc": "2026-09-27T19:27:19.031329+00:00"
+  },
+  "live_browser": {
+    "browser": "Cloud Chrome",
+    "url": "https://www.uaart.com.ua/video/podbor.html?strana=korea&lang=ru",
+    "viewport_width": 1348,
+    "document_width": 1348,
+    "checks": [
+      "Kia K5 card autofills Kia and K5",
+      "Changing make to Hyundai clears incompatible model and allows Sonata",
+      "Repeat same card preserves Hyundai/Sonata and manual contact",
+      "Georgia delivery exposes Georgian cities",
+      "Main and optional criteria retained across RU/UA/GE",
+      "Two named colours plus a manually entered third colour appear in review",
+      "Years display 2026…1990, without grouping",
+      "Engine presets are in numeric order",
+      "Reload preserves the browser draft",
+      "Review/edit shows final years, engine, colours and wishes; confirmation was not sent"
+    ],
+    "evidence": [
+      "evidence/live-main.jpg",
+      "evidence/live-colours.jpg"
+    ]
+  }
 }
