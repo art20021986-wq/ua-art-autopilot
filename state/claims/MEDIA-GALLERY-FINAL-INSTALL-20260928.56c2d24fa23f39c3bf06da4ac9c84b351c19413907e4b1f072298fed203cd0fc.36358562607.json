@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "9be56d3dbf58f20b21aa9e3a3265ef6926dc658e81187620a91c978e823cbf88",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T23:26:02Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-09-27T23:30:37Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "36358562607",
     "task_id": "MEDIA-GALLERY-FINAL-INSTALL-20260928",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-36358562607-56c2d24fa23f39c3",
   "production_transaction_path": "state/transactions/MEDIA-GALLERY-FINAL-INSTALL-20260928.56c2d24fa23f39c3bf06da4ac9c84b351c19413907e4b1f072298fed203cd0fc.36358562607.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/MEDIA-GALLERY-FINAL-INSTALL-20260928.json",
   "receipt_validation_status": "PENDING",
@@ -110,5 +110,5 @@
       "cloud/media_gallery_final_001/ua_media_styles.py": "2c365fb7863dfe3e920320c71f315e167fc8534198f0d9a7699816d9d96e6195"
     }
   },
-  "updated_at": "2026-09-27T23:26:02Z"
+  "updated_at": "2026-09-27T23:30:37Z"
 }
