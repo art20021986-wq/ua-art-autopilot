@@ -1,0 +1,38 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-PHOTO-VISIBILITY-INSTALL-20260928.3dbc1728823f33c5b4d6e7c788aa378ffbeb2a06aa54e7db4d5e17964a4f33e4.json",
+  "autostart_ledger_sha256": "d9bf2959b1cba9ea3383b2e0929771fc67960a847dc3e647580b9043dd2eadd1",
+  "autostart_source_commit": "e56414c7651ec135e7a781be7c2c73ccf3106ce1",
+  "created_at": "2026-09-27T22:23:59Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-09-27T22:23:59Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "36355030909",
+    "task_id": "CRM-PHOTO-VISIBILITY-INSTALL-20260928",
+    "task_sha256": "3dbc1728823f33c5b4d6e7c788aa378ffbeb2a06aa54e7db4d5e17964a4f33e4"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "card-ua-0017-337c83bd09045849",
+  "receipt_path": "state/receipts/CRM-PHOTO-VISIBILITY-INSTALL-20260928.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CRM-PHOTO-VISIBILITY-INSTALL-20260928.json",
+  "request_sha256": "3dbc1728823f33c5b4d6e7c788aa378ffbeb2a06aa54e7db4d5e17964a4f33e4",
+  "resource_locks": [
+    "CARD:UA-0017",
+    "CARD:UA-0019",
+    "CARD:UA-0023"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "a22146ccac469486c7b397387bac4f6d06d6e558",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-27T22:23:59Z"
+}
