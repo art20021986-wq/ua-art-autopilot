@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "39012c41e0ec3413b32ce949c936fd97d40435da386bd1b0a8635eba3f744a18",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-27T21:10:32Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-09-27T21:24:22Z",
+  "heartbeat_at": "2026-09-27T21:24:22Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "36350363261",
     "task_id": "CONTAINER-TRACKING-INSTALL-20260928-R2",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 2759.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 225.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-36350363261-11742db900dedaa3",
   "production_transaction_path": "state/transactions/CONTAINER-TRACKING-INSTALL-20260928-R2.11742db900dedaa3decbef7f6fb25aa47047032b073eef3dbe5d2c480d9b7bc6.36350363261.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/CONTAINER-TRACKING-INSTALL-20260928-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "2171b8407834715b9ab5927decee63ec64b26d6d9bd5bb8d5b9747dfcedcd5d2",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CONTAINER-TRACKING-INSTALL-20260928-R2.json",
   "request_sha256": "11742db900dedaa3decbef7f6fb25aa47047032b073eef3dbe5d2c480d9b7bc6",
   "resource_locks": [
@@ -90,7 +113,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "e9e07ee4e3abc90c2f0b8e2c1b9b392ef4332e21bf16b20f56ee392bb39c5316",
     "file_sha256": {
@@ -108,5 +131,5 @@
       "cloud/container_tracking_001/ua_tracking_widget.py": "a96b76b662f2cf496a1c672ff8804f0dc940bbb4d02bdfcf37205b9c956f7477"
     }
   },
-  "updated_at": "2026-09-27T21:10:32Z"
+  "updated_at": "2026-09-27T21:24:22Z"
 }
