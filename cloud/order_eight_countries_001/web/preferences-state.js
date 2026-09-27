@@ -1,21 +1,16 @@
 // Pure preference state. Card metadata never becomes submitted customer data.
 export const schema='ua_order_request.v2';
-export const criterionKeys=['purchase_country_code','make','models','budget','vehicle_type','year','mileage','fuel','drive','engine','colours','purchase_timing'];
 export function emptyValues() {
   return {purchase_country_code:'',purchase_country_other:'',make:'',make_other:'',model_mode:'',models:[],other_model:'',
     budget:{mode:'',max:null,currency:'USD'},vehicle_type:'',delivery_country:'',delivery_city:{code:'',other:''},
     customer_name:'',contact:{method:'',value:''},year:{from:null,to:null,any:false},mileage:{max:null,any:false},
     fuel:null,drive:null,engine:null,colours:null,colour_other:'',purchase_timing:null,comment:'',priority:{}};
 }
-export function criterionActive(v,key) {
-  const value=v[key];
-  if(value===null||value===''||value==='any'||value==='help') return false;
-  if(key==='models') return v.model_mode==='other'?Boolean(v.other_model.trim()):v.model_mode==='selected'&&value.length>0;
-  if(key==='budget') return value.mode==='limit'&&value.max!==null;
-  if(key==='year'||key==='engine') return !value.any&&(value.from!==null||value.to!==null);
-  if(key==='mileage') return !value.any&&value.max!==null;
-  if(Array.isArray(value)) return value.length>0&&!value.includes('any');
-  return true;
+// Retire removed controls in editable drafts without changing uncertain requests.
+export function editableValues(values) {
+  const result=structuredClone(values);
+  result.priority={};result.year.any=false;
+  return result;
 }
 export function createPreferences() {return {values:emptyValues(),dirty:{},card:null};}
 export function applyCard(previous,country,key,preset={}) {
@@ -62,7 +57,7 @@ export function preferenceErrors(v,directory) {
   const contact=v.contact.value.trim(), phone=contact.replace(/[ ()-]/g,'');
   if(!v.contact.method||!(v.contact.method==='telegram'&&/^@[a-zA-Z][a-zA-Z0-9_]{4,31}$/.test(contact))&&!(/^\+[0-9 ()-]+$/.test(contact)&&/^\+[1-9][0-9]{6,14}$/.test(phone))) fail('contact','contact_error');
   for(const field of ['year','engine']) {
-    const interval=v[field];if(!interval||(field==='year'&&interval.any)) continue;
+    const interval=v[field];if(!interval) continue;
     const convert=field==='year'?x=>parseInteger(x,1900,directory.current_year):parseLitres;
     const bounds=['from','to'].map(key=>interval[key]===null?null:convert(interval[key]));
     if(bounds.every(x=>x===null)||['from','to'].some((key,i)=>interval[key]!==null&&bounds[i]===null)) fail(field,'field_error');
@@ -76,11 +71,10 @@ export function preferenceErrors(v,directory) {
   return errors;
 }
 export function payload(values,catalog,directory,lang,requestId,consentVersion,accepted,sourcePath='/video/podbor.html') {
-  const result=structuredClone(values);
-  result.priority=Object.fromEntries(Object.entries(result.priority).filter(([key])=>criterionActive(result,key)));
+  const result=editableValues(values);
   if(result.budget.mode==='limit') result.budget.max=parseInteger(result.budget.max,1,1000000000);
   if(!result.mileage.any) result.mileage.max=parseInteger(result.mileage.max);
-  if(!result.year.any) for(const bound of ['from','to']) if(result.year[bound]!==null) result.year[bound]=parseInteger(result.year[bound],1900,directory.current_year);
+  for(const bound of ['from','to']) if(result.year[bound]!==null) result.year[bound]=parseInteger(result.year[bound],1900,directory.current_year);
   if(result.engine) for(const bound of ['from','to']) if(result.engine[bound]!==null) result.engine[bound]=parseLitres(result.engine[bound]);
   const criteria=Object.fromEntries(directory.preference_fields.map(key=>[key,result[key]]));
   const preferences={schema_version:1,criteria,priority:result.priority};

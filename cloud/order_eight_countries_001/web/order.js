@@ -1,6 +1,6 @@
 import {languages, fromUrl} from './order-state.js';
-import {createPreferences,applyCard,preferenceErrors,payload,summaryPairs} from './preferences-state.js?v=20260927.5';
-import {PreferenceForm} from './preferences-form.js?v=20260927.6';
+import {createPreferences,editableValues,applyCard,preferenceErrors,payload,summaryPairs} from './preferences-state.js?v=20260927.7';
+import {PreferenceForm} from './preferences-form.js?v=20260927.7';
 
 const root=document.querySelector('#ua-order');
 const assets=new URL('./',import.meta.url);
@@ -244,7 +244,9 @@ try {
         if(saved.pending || !state.country || state.country===saved.country) {
           state.requestId=saved.requestId;state.country=saved.country;state.model=saved.model;
           if(saved.formVersion===2&&saved.preferencesVersion===state.bootstrap.preferences.version&&saved.preferences?.values) {
-            state.preferences=saved.preferences;preferenceForm.state=state.preferences;preferenceForm.ui=saved.ui||{};
+            state.preferences=saved.preferences;
+            if(!saved.pending) state.preferences.values=editableValues(state.preferences.values);
+            preferenceForm.state=state.preferences;preferenceForm.ui=saved.ui||{};
             fields.consent.checked=saved.consent===true;
           }
           state.pending=saved.pending||null;state.review=state.pending;

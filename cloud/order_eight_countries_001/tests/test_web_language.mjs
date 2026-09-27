@@ -34,21 +34,45 @@ const app=modules.get('./order.js');await app.link(specifier=>modules.get(specif
 const {state,setBusy,selectModel}=app.namespace;
 const $=selector=>{const e=document.querySelector(selector);assert.ok(e,selector);return e;};
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
-const change=(name,value)=>{const control=$(`[name="${name}"]`);control.value=value;control.dispatchEvent(new window.Event('change',{bubbles:true}));};
+// A selection keeps its native control and focus: no detach/replace/refocus that
+// can reopen the iOS picker. Exercise every select used by the real form below.
+let focusCalls=0;
+const nativeFocus=window.HTMLElement.prototype.focus;
+window.HTMLElement.prototype.focus=function(...args){focusCalls++;return nativeFocus.apply(this,args);};
+const change=(name,value)=>{
+ const control=$(`[name="${name}"]`);control.focus();const before=focusCalls;
+ let detached=false;
+ const observer=new window.MutationObserver(()=>{});observer.observe(document.body,{childList:true,subtree:true});
+ control.value=value;control.dispatchEvent(new window.Event('change',{bubbles:true}));
+ for(const record of observer.takeRecords())for(const node of record.removedNodes)if(node===control||node.contains(control))detached=true;
+ observer.disconnect();
+ assert.equal($(`[name="${name}"]`),control,`${name}: same control`);
+ assert.equal(document.activeElement,control,`${name}: keyboard focus retained`);
+ assert.equal(focusCalls,before,`${name}: no programmatic refocus`);
+ assert.equal(detached,false,`${name}: no detached active control`);
+};
 const input=(name,value)=>{const control=$(`[name="${name}"]`);control.value=value;control.dispatchEvent(new window.Event('input',{bubbles:true}));};
 const check=(name,value)=>{const control=$(`[name="${name}"]`);control.checked=value;control.dispatchEvent(new window.Event('change',{bubbles:true}));};
 assert.equal(state.lang,'ka');assert.equal(document.querySelectorAll('#countries a').length,8);assert.equal(document.querySelectorAll('#models article').length,5);
 $('#models button').click();assert.equal($('#order-form').hidden,false);assert.equal(state.preferences.values.make,'kia');
 assert.equal($('[name="budget"]').value,'');assert.equal($('[name="mileage"]').value,'');assert.equal($('[name="vehicle_type"]').value,'');
 input('make-search','Toyota');assert.ok(Array.from($('[name="make"]').options).some(x=>x.value==='toyota'));assert.equal(state.preferences.values.make,'kia');
-change('make','toyota');change('models','Camry');assert.equal(state.preferences.values.models[0],'Camry');
+change('purchase_country_code','other');input('purchase_country_other','Италия');change('purchase_country_code','korea');
+change('make','other');input('make_other','Custom');change('make','toyota');
+change('model_mode','other');input('other_model','Custom');change('model_mode','selected');
+change('models','Camry');assert.equal(state.preferences.values.models[0],'Camry');
+assert.equal($('[name="models"]').value,'');assert.ok(!Array.from($('[name="models"]').options).some(o=>o.value==='Camry'));
+change('models','Corolla');assert.equal(state.preferences.values.models.length,2);
+$('.selected-models li:last-child button').click();assert.equal(state.preferences.values.models.length,1);
+assert.ok(Array.from($('[name="models"]').options).some(o=>o.value==='Corolla'));
 selectModel('kia-k5');assert.equal(state.preferences.values.make,'toyota');assert.equal(state.preferences.values.models[0],'Camry');
 change('budget','custom');input('budget-custom','17 500');
 change('vehicle_type','sedan');change('year-from','2016');change('year-to','2021');change('mileage','custom');input('mileage-custom','109.353');
 change('delivery_country','georgia');change('delivery_city','tbilisi');input('customer_name','Тестовый клиент');change('contact_method','telegram');input('contact','@test_user');
+change('delivery_city','other');input('delivery_city_other','Батуми');change('delivery_city','tbilisi');
 check('colours-white',true);check('colours-black',true);check('colours-any',true);assert.equal(state.preferences.values.colours.length,1);assert.equal(state.preferences.values.colours[0],'any');
 check('colours-white',true);assert.equal(state.preferences.values.colours.length,1);assert.equal(state.preferences.values.colours[0],'white');
-input('comment','Белый кузов. https://example.test/car');check('priority-year',true);check('consent',true);
+input('comment','Белый кузов. https://example.test/car');check('consent',true);
 // Colour names and checkbox state remain accessible independently of the swatch.
 assert.equal(document.querySelectorAll('[data-field="colours"] .colour-swatch').length,13);
 assert.equal($('[name="colours-white"]').closest('label').querySelector('.colour-swatch').getAttribute('aria-hidden'),'true');
@@ -66,6 +90,7 @@ $('#optional-preferences').open=true;
 for(const lang of ['ru','uk','ka']){
  window.UAArtLocale.choose(lang);await flush();
  assert.equal(state.lang,lang);assert.equal($('[data-label="main"]').textContent,preferences.labels[lang].main);
+ assert.equal(document.querySelector('[name^="priority-"], [name="year-any"], [data-label="priority_help"]'),null);
  assert.equal($('[name="customer_name"]').value,'Тестовый клиент');assert.equal($('[name="contact"]').value,'@test_user');
  assert.equal($('[name="budget-custom"]').value,'17 500');assert.equal(state.preferences.values.models[0],'Camry');
  assert.equal($('#optional-preferences').open,true);assert.equal(new URL(window.location.href).searchParams.get('lang'),lang);
@@ -76,6 +101,7 @@ for(const lang of ['ru','uk','ka']){
  assert.ok(years.every((o,i)=>o.textContent===String(preferences.current_year-i)));
  const engines=Array.from($('[name="engine-from"]').options).filter(o=>o.value&&o.value!=='custom').map(o=>Number(o.value));
  assert.ok(engines.every((value,i)=>!i||value>engines[i-1]));
+ change('year-from','2017');change('year-from','2016');change('purchase_timing','month');
 }
 // Correct field errors, automatic reveal, preserved input, and range validation.
 change('engine-from','custom');input('engine-from-custom','0');$('#optional-preferences').open=false;
@@ -86,7 +112,7 @@ change('year-from','2024');$('#order-form').dispatchEvent(new window.Event('subm
 change('year-from','2016');
 $('#order-form').dispatchEvent(new window.Event('submit',{cancelable:true}));
 assert.ok(state.review);assert.equal(state.review.make,'toyota');assert.equal(state.review.models[0],'Camry');assert.equal(state.review.budget.max,17500);assert.equal(state.review.mileage.max,109353);assert.equal(state.review.preferences.criteria.engine.from,1.5);
-assert.equal(state.review.preferences.schema_version,1);assert.equal(state.review.preferences.priority.year,'required_for_search');assert.equal('engine' in state.review,false);
+assert.equal(state.review.preferences.schema_version,1);assert.equal(Object.keys(state.review.preferences.priority).length,0);assert.equal(state.review.year.any,false);assert.equal('engine' in state.review,false);
 assert.ok($('#summary').textContent.includes('Camry'));assert.ok($('#summary').textContent.includes('109'));
 $('#edit').click();assert.equal($('#order-form').hidden,false);selectModel('hyundai-sonata');
 assert.equal(state.preferences.values.make,'hyundai');assert.equal(state.preferences.values.colours[0],'white');assert.equal($('[name="budget-custom"]').value,'17 500');assert.equal($('[name="contact"]').value,'@test_user');

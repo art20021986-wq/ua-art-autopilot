@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const source=await fs.readFile(new URL('../web/preferences-state.js',import.meta.url),'utf8');
-const {createPreferences,applyCard,changeMake,parseInteger,preferenceErrors,payload,summaryPairs}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+const {createPreferences,editableValues,applyCard,changeMake,parseInteger,preferenceErrors,payload,summaryPairs}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const directory=JSON.parse(await fs.readFile(new URL('../ua_order/preferences.json',import.meta.url),'utf8'));
 directory.current_year=new Date().getUTCFullYear();
 const catalog=JSON.parse(await fs.readFile(new URL('../../ua_order_ge_8country_guard_016/country_models.json',import.meta.url),'utf8'));
@@ -36,10 +36,17 @@ const empty=preferenceErrors(createPreferences().values,directory);for(const key
 const values=changed.values;
 Object.assign(values,{year:{from:2015,to:2022,any:false},mileage:{max:'109,353',any:false},vehicle_type:'sedan',fuel:['hybrid'],drive:['fwd'],engine:{from:'1,5',to:2},purchase_timing:'month'});
 assert.deepEqual(preferenceErrors(values,directory),{});
+const oldDraft=structuredClone(values);oldDraft.priority={make:'required_for_search',year:'required_for_search'};oldDraft.year.any=true;
+const snapshot=structuredClone(oldDraft),editable=editableValues(oldDraft);
+assert.deepEqual(editable.priority,{});assert.deepEqual(editable.year,{from:2015,to:2022,any:false});
+assert.deepEqual(editable.colours,values.colours);assert.equal(editable.comment,values.comment);
+assert.deepEqual(oldDraft,snapshot,'an uncertain legacy request must not be mutated');
+assert.ok(preferenceErrors({...oldDraft,year:{from:null,to:null,any:true}},directory).year);
 for(const lang of ['ru','uk','ka']){
- const result=payload(values,catalog,directory,lang,'uuid','consent-v1',true);
+ const result=payload(oldDraft,catalog,directory,lang,'uuid','consent-v1',true);
  assert.equal(result.make,'hyundai');assert.deepEqual(result.models,['Sonata']);assert.equal(result.mileage.max,109353);assert.equal(result.preferences.criteria.engine.from,1.5);
  assert.equal(result.preferences.schema_version,1);assert.equal('engine' in result,false);assert.equal('priority' in result,false);
+ assert.deepEqual(result.preferences.priority,{});assert.equal(result.year.any,false);
  assert.ok(summaryPairs(result,catalog,directory,lang).some(([k,v])=>v.includes('Sonata')));
  assert.ok(summaryPairs(result,catalog,directory,lang).some(([k,v])=>v===directory.options.colours.white[lang]));
 }

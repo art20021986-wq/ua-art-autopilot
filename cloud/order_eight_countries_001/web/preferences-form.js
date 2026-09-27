@@ -1,5 +1,5 @@
 // Native controls, localized labels and field errors. No requests or submission here.
-import {criterionKeys,criterionActive,changeMake} from './preferences-state.js?v=20260927.5';
+import {changeMake} from './preferences-state.js?v=20260927.7';
 const el=(tag,text,attrs={})=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n;};
 export class PreferenceForm {
   constructor(main,optional,directory,catalog,state,onChange) {
@@ -7,8 +7,8 @@ export class PreferenceForm {
   }
   t(key){return this.directory.labels[this.lang][key];}
   get v(){return this.state.values;}
-  update(key,value){this.v[key]=value;this.state.dirty[key]=true;this.clearError(key);const priority=this.groups[key]?.querySelector('.priority-control');if(priority)priority.hidden=!criterionActive(this.v,key);this.onChange();}
-  refresh(...keys){const focused=document.activeElement?.id;for(const key of keys){const next=this.group(key);this.groups[key]?.replaceWith(next);this.groups[key]=next;}if(focused)document.getElementById(focused)?.focus({preventScroll:true});}
+  update(key,value){this.v[key]=value;this.state.dirty[key]=true;this.clearError(key);this.onChange();}
+  refresh(...keys){const focused=document.activeElement;for(const key of keys){const next=this.group(key);this.groups[key]?.replaceWith(next);this.groups[key]=next;}if(focused?.id&&!focused.isConnected)document.getElementById(focused.id)?.focus({preventScroll:true});}
   render(lang) {
     clearTimeout(this.countTimer);
     this.lang=lang;this.groups={};
@@ -31,14 +31,16 @@ export class PreferenceForm {
   searchable(name,choices,value,onChange) {
     const wrap=el('div',undefined,{class:'search-select'}),search=this.input(`${name}-search`,'',()=>{});
     search.type='search';search.setAttribute('aria-label',`${this.t('search')}: ${this.t(name)}`);search.placeholder=this.t('search');
-    const select=this.select(name,choices,value,onChange);search.setAttribute('aria-controls',select.id);
-    search.addEventListener('input',()=>{
+    const available=()=>typeof choices==='function'?choices():choices;
+    const select=this.select(name,available(),value,code=>{onChange(code);search.value='';refresh();});search.setAttribute('aria-controls',select.id);
+    const refresh=()=>{
       const term=search.value.toLocaleLowerCase(this.lang).trim(),selected=select.value;
-      const filtered=Object.entries(choices).filter(([code,title])=>code===selected||code==='other'||code==='help'||title.toLocaleLowerCase(this.lang).includes(term));
+      const filtered=Object.entries(available()).filter(([code,title])=>code===selected||code==='other'||code==='help'||title.toLocaleLowerCase(this.lang).includes(term));
       select.replaceChildren(el('option',this.t('choose'),{value:''}),...filtered.map(([code,title])=>el('option',title,{value:code})));
-      select.value=selected;
-    });
-    wrap.append(search,select);return wrap;
+      select.value=filtered.some(([code])=>code===selected)?selected:'';
+    };
+    search.addEventListener('input',refresh);
+    wrap.append(search,select);return {element:wrap,refresh};
   }
   note(key){return el('p',this.t(key),{class:'field-help'});}
   check(name,title,checked,callback) {
@@ -49,40 +51,56 @@ export class PreferenceForm {
     const wrap=el('div',undefined,{class:'number-choice'});
     const choices=[...presets.map(x=>[String(x),Number(x).toLocaleString(this.lang,{useGrouping})]),['custom',this.t('custom')],...Object.entries(extra)];
     const mode=this.ui[name]??(value===null?'':(choices.some(([code])=>code===String(value))?String(value):'custom'));
+    // Keep the native select attached: replacing and refocusing it can reopen
+    // the mobile picker. Only its dependent manual input changes.
+    const manual=el('div');
+    const renderManual=(code,current)=>{
+      manual.replaceChildren();manual.hidden=code!=='custom';
+      if(code!=='custom')return;
+      const custom=this.input(`${name}-custom`,current,text=>callback(text.trim()===''?null:text),{numeric:true,max});
+      custom.setAttribute('aria-label',`${this.t('custom')}: ${select.getAttribute('aria-label')}`);manual.append(custom);
+    };
     const select=this.select(name,choices,mode,code=>{
-      this.ui[name]=code;callback(code==='custom'||code===''?null:(code in extra?code:Number(code)));this.refresh(name.split('-')[0]);
+      this.ui[name]=code;callback(code==='custom'||code===''?null:(code in extra?code:Number(code)));renderManual(code,null);
     });select.setAttribute('aria-label',`${this.t(name.split('-')[0])}${name.includes('-')?' · '+this.t(name.split('-')[1]):''}`);
-    wrap.append(select);
-    if(mode==='custom') {
-      const custom=this.input(`${name}-custom`,value,text=>callback(text.trim()===''?null:text),{numeric:true,max});
-      custom.setAttribute('aria-label',`${this.t('custom')}: ${select.getAttribute('aria-label')}`);wrap.append(custom);
-    }
+    renderManual(mode,value);wrap.append(select,manual);
     return wrap;
   }
   group(key) {
     const box=el('fieldset',undefined,{'data-field':key}),legend=el('legend',this.t(key),{id:`legend-${key}`});box.append(legend);
     const v=this.v,options=this.directory.options,local=field=>Object.fromEntries(Object.entries(options[field]).map(([k,val])=>[k,val[this.lang]]));
     const addInput=(name,value,callback,settings)=>box.append(this.label(name,this.input(name,value,callback,settings)));
+    const manual=el('div');
+    const showManual=(show,name,value,callback)=>manual.replaceChildren(...(show?[this.label(name,this.input(name,value,callback,{max:120}))]:[]));
     if(key==='purchase_country_code') {
       const countries=Object.fromEntries(Object.entries(this.catalog.countries).map(([k,c])=>[k,c.name[this.lang]]));
-      box.append(this.select(key,{...countries,other:this.t('other_value'),help:this.t('help')},v[key],value=>{v.purchase_country_other='';this.update(key,value);this.refresh(key);}));
-      if(v[key]==='other')addInput('purchase_country_other',v.purchase_country_other,value=>{v.purchase_country_other=value;this.update(key,v[key]);},{max:120});
+      const renderManual=()=>showManual(v[key]==='other','purchase_country_other',v.purchase_country_other,value=>{v.purchase_country_other=value;this.update(key,v[key]);});
+      box.append(this.select(key,{...countries,other:this.t('other_value'),help:this.t('help')},v[key],value=>{v.purchase_country_other='';this.update(key,value);renderManual();}),manual);renderManual();
     } else if(key==='make') {
-      box.append(this.searchable(key,{...Object.fromEntries(Object.entries(this.directory.makes).map(([k,m])=>[k,m.name])),other:this.t('other_value'),help:this.t('help')},v.make,value=>{changeMake(this.state,value,this.directory);this.clearError(key);this.refresh('make','models');this.onChange();}));
-      if(v.make==='other')addInput('make_other',v.make_other,value=>{v.make_other=value;this.update(key,v.make);},{max:120});
+      const renderManual=()=>showManual(v.make==='other','make_other',v.make_other,value=>{v.make_other=value;this.update(key,v.make);});
+      box.append(this.searchable(key,{...Object.fromEntries(Object.entries(this.directory.makes).map(([k,m])=>[k,m.name])),other:this.t('other_value'),help:this.t('help')},v.make,value=>{changeMake(this.state,value,this.directory);this.clearError(key);renderManual();this.refresh('models');this.onChange();}).element,manual);renderManual();
     } else if(key==='models') {
       box.append(this.note('model_help'));
       if(v.make==='help')box.append(el('p',this.t('help')));
       else {
         const modes={...(this.directory.makes[v.make]?{selected:this.t('selected')} :{}),any:this.t('any_model'),other:this.t('other_value')};
-        const mode=this.select('model_mode',modes,v.model_mode,value=>{v.model_mode=value;v.models=[];v.other_model='';this.update(key,[]);this.refresh(key);});
-        mode.disabled=!v.make;mode.setAttribute('aria-label',this.t('model_mode'));box.append(mode);
-        if(v.model_mode==='selected') {
-          const selected=el('ul',undefined,{class:'selected-models'});
-          for(const model of v.models){const item=el('li'),button=el('button',`${model} ×`,{type:'button','aria-label':`${this.t('remove')}: ${model}`,class:'secondary'});button.addEventListener('click',()=>{this.update(key,v.models.filter(x=>x!==model));this.refresh(key);});item.append(button);selected.append(item);}
-          box.append(selected,this.searchable('models',Object.fromEntries((this.directory.makes[v.make]?.models||[]).filter(x=>!v.models.includes(x)).map(x=>[x,x])),'',value=>{if(value){this.update(key,[...v.models,value]);this.refresh(key);}}));
-        }
-        if(v.model_mode==='other')addInput('other_model',v.other_model,value=>{v.other_model=value;this.update(key,v.models);},{max:120});
+        const details=el('div');
+        const renderModels=()=>{
+          details.replaceChildren();
+          if(v.model_mode==='selected') {
+            const selected=el('ul',undefined,{class:'selected-models'});
+            const renderSelected=()=>selected.replaceChildren(...v.models.map(model=>{
+              const item=el('li'),button=el('button',`${model} ×`,{type:'button','aria-label':`${this.t('remove')}: ${model}`,class:'secondary'});
+              button.addEventListener('click',()=>{this.update(key,v.models.filter(x=>x!==model));renderSelected();picker.refresh();});item.append(button);return item;
+            }));
+            const picker=this.searchable('models',()=>Object.fromEntries((this.directory.makes[v.make]?.models||[]).filter(x=>!v.models.includes(x)).map(x=>[x,x])),'',value=>{if(value){this.update(key,[...v.models,value]);renderSelected();}});
+            renderSelected();details.append(selected,picker.element);
+          }
+          if(v.model_mode==='other')details.append(this.label('other_model',this.input('other_model',v.other_model,value=>{v.other_model=value;this.update(key,v.models);},{max:120})));
+          for(const select of details.querySelectorAll('select'))select.setAttribute('aria-labelledby',legend.id);
+        };
+        const mode=this.select('model_mode',modes,v.model_mode,value=>{v.model_mode=value;v.models=[];v.other_model='';this.update(key,[]);renderModels();});
+        mode.disabled=!v.make;mode.setAttribute('aria-label',this.t('model_mode'));box.append(mode,details);renderModels();
       }
     } else if(key==='budget') {
       const value=v.budget.mode==='help'?'help':v.budget.max;
@@ -90,26 +108,26 @@ export class PreferenceForm {
     } else if(key==='vehicle_type'||key==='purchase_timing') {
       box.append(this.select(key,local(key),v[key],value=>this.update(key,value||null)));
     } else if(key==='year'||key==='engine') {
-      if(key==='year')box.append(this.check('year-any',this.t('year_any'),v.year.any,checked=>{this.update(key,{from:null,to:null,any:checked});delete this.ui['year-from'];delete this.ui['year-to'];this.refresh(key);}));
-      if(!v[key]?.any){const row=el('div',undefined,{class:'range-controls'});for(const bound of ['from','to']) {
+      const row=el('div',undefined,{class:'range-controls'});for(const bound of ['from','to']) {
         const values=key==='year'?Array.from({length:this.directory.current_year-1989},(_,i)=>this.directory.current_year-i):this.directory.engines;
         const control=this.presetNumber(`${key}-${bound}`,v[key]?.[bound]??null,values,value=>{
           const interval={...(v[key]||{from:null,to:null}),[bound]:value};this.update(key,key==='engine'&&interval.from===null&&interval.to===null?null:interval);
         },{max:key==='year'?4:5,useGrouping:key!=='year'});const wrap=el('div');wrap.append(el('span',this.t(bound)),control);row.append(wrap);
-      }box.append(row);}
+      }box.append(row);
     } else if(key==='mileage') {
       box.append(this.presetNumber(key,v.mileage.any?'any':v.mileage.max,this.directory.mileages,x=>this.update(key,{max:x==='any'?null:x,any:x==='any'}),{extra:{any:this.t('any')}}),this.note('mileage_help'));
     } else if(key==='delivery_country') {
       box.append(this.select(key,local(key),v[key],value=>{this.update(key,value);this.update('delivery_city',{code:'',other:''});this.refresh('delivery_city');}),this.note('delivery_help'));
     } else if(key==='delivery_city') {
       const cities=Object.fromEntries(Object.entries(this.directory.cities[v.delivery_country]||{}).map(([k,val])=>[k,val[this.lang]]));
-      const control=this.searchable(key,{...cities,other:this.t('other_value')},v[key].code,value=>{this.update(key,{code:value,other:''});this.refresh(key);});
+      const renderManual=()=>showManual(v[key].code==='other','delivery_city_other',v[key].other,value=>this.update(key,{code:'other',other:value}));
+      const control=this.searchable(key,{...cities,other:this.t('other_value')},v[key].code,value=>{this.update(key,{code:value,other:''});renderManual();}).element;
       for(const input of control.querySelectorAll('input,select'))input.disabled=!v.delivery_country;
-      box.append(control);if(v[key].code==='other')addInput('delivery_city_other',v[key].other,value=>this.update(key,{code:'other',other:value}),{max:120});
+      box.append(control,manual);renderManual();
     } else if(key==='customer_name') {
       const input=this.input(key,v[key],value=>this.update(key,value),{autocomplete:'name'});input.setAttribute('aria-labelledby',legend.id);box.append(input);
     } else if(key==='contact') {
-      box.append(this.label('contact_method',this.select('contact_method',local('contact_method'),v.contact.method,value=>{this.update(key,{...v.contact,method:value});this.refresh(key);})));
+      box.append(this.label('contact_method',this.select('contact_method',local('contact_method'),v.contact.method,value=>{this.update(key,{...v.contact,method:value});input.autocomplete=value==='telegram'?'off':'tel';input.type=value==='telegram'?'text':'tel';note.textContent=this.t(value==='telegram'?'telegram_help':'phone_help');})));
       const input=this.input(key,v.contact.value,value=>this.update(key,{...v.contact,value}),{autocomplete:v.contact.method==='telegram'?'off':'tel'});
       if(v.contact.method!=='telegram')input.type='tel';input.setAttribute('aria-labelledby',legend.id);input.setAttribute('aria-describedby','contact-help');
       const note=this.note(v.contact.method==='telegram'?'telegram_help':'phone_help');note.id='contact-help';box.append(input,note);
@@ -138,8 +156,6 @@ export class PreferenceForm {
       input.addEventListener('input',()=>{this.update(key,input.value);updateCount(true);});
       updateCount(false);box.append(input,help,count,announcement);
     }
-    // A checkbox is an explicit strict requirement; unchecked means preferred.
-    if(criterionKeys.includes(key)){const priority=this.check(`priority-${key}`,this.t('required'),v.priority[key]==='required_for_search',checked=>{v.priority[key]=checked?'required_for_search':'preferred';this.onChange();});priority.classList.add('priority-control');priority.hidden=!criterionActive(v,key);box.append(priority);}
     const error=el('p','',{id:`error-${key}`,class:'field-error',role:'alert'});error.hidden=true;box.append(error);
     for(const control of box.querySelectorAll('select'))if(!control.hasAttribute('aria-label'))control.setAttribute('aria-labelledby',legend.id);
     return box;
