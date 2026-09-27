@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-27T10:40:43.234Z",
+  "task_id": "CRM-PUBLISH-VIDEO-INSTALL-20260927-R5",
+  "owner_instruction": "Снова очень плохо работает бот CRM. Устрани!",
+  "status": "INSTALLED_AND_VERIFIED",
+  "workflow": {
+    "id": 36311881311,
+    "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/36311881311",
+    "conclusion": "success"
+  },
+  "source_change": "Remove the obsolete 19-line UA-MCF-DEDUP publisher wrapper that repeatedly compares video frames for page aliases.",
+  "local_tests": {
+    "status": "PASS",
+    "total": 38,
+    "candidate": 4,
+    "lifecycle_transport_health_cleanup": 34
+  },
+  "receipt": {
+    "acceptance_scope": "ONE_FILE_INSTALLATION_BOT_RESUME_AND_PUBLIC_AVAILABILITY",
+    "backup": "PASS",
+    "backup_manifest_sha256": "bd34795a17c39b87fca65ad8826103c41af02c8f12ff30fe5cdb98a5cda915c6",
+    "code_sha256": {
+      "publikaciya.py": "3fbddc9f7a87619fd851839d1f76c60ba3ca1e266a84653898a4427fe5f53121"
+    },
+    "contract_id": "UA-ART-CRITICAL-ADAPTER-V1.0",
+    "crm_unchanged": true,
+    "data_preservation_scope": "WHILE_BOT_PAUSED_UNDER_WRITER_LOCKS",
+    "database_migration_executed": false,
+    "full_publication_acceptance": false,
+    "live_verify": "PASS",
+    "manifest_sha256": "bd03f757baf649d315be461a69595117556fa494c833041a86e38f4ad94e4f43",
+    "production": "PASS",
+    "production_required": true,
+    "protected_files_unchanged": true,
+    "public_checks": {
+      "/video/index.html": "PASS",
+      "/video/katalog.html": "PASS"
+    },
+    "request_sha256": "e2fcab1a7f0b5b6dc1c1a13e1ef4b49c8fe58e949e0482133cdfa700b517e684",
+    "restart": {
+      "enabled": true,
+      "id": 266084,
+      "state": "running"
+    },
+    "rollback": "PASS",
+    "rollback_ready": true,
+    "run_id": "36311881311",
+    "status": "FINISHED",
+    "target_environment": "production",
+    "task_class": "CRITICAL",
+    "task_id": "CRM-PUBLISH-VIDEO-INSTALL-20260927-R5",
+    "tests": "PASS",
+    "transaction_id": "tx-36311881311-e2fcab1a7f0b5b6d",
+    "unexpected_changes": 0
+  },
+  "transaction_closed_at": "2026-09-27T10:38:41Z",
+  "install": {
+    "backup_manifest_sha256": "bd34795a17c39b87fca65ad8826103c41af02c8f12ff30fe5cdb98a5cda915c6",
+    "cpu_seconds": 1.999,
+    "crm_resume": {
+      "enabled": true,
+      "id": 266084,
+      "state": "running"
+    },
+    "crm_unchanged": true,
+    "crm_write": false,
+    "installed": true,
+    "mode": "install",
+    "plan_sha256": "a2c446d49dcc145a3d0e9e13790291fc0ba9dc8f39c070c9448b848890c7472f",
+    "preservation_scope": "WHILE_BOT_PAUSED_UNDER_WRITER_LOCKS",
+    "protected_data_sha256": "433beb2d0c64c77cfd82dfc2dd81492c3b4f44503f0aad5d34b9bf57a694622d",
+    "protected_files_unchanged": true,
+    "run_id": "36311881311",
+    "safe_to_stop": true,
+    "status": "PASS"
+  },
+  "verify": {
+    "backup_manifest_sha256": "bd34795a17c39b87fca65ad8826103c41af02c8f12ff30fe5cdb98a5cda915c6",
+    "code_sha256": {
+      "publikaciya.py": "3fbddc9f7a87619fd851839d1f76c60ba3ca1e266a84653898a4427fe5f53121"
+    },
+    "cpu_seconds": 0.041,
+    "crm_unchanged": true,
+    "crm_write": false,
+    "mode": "verify",
+    "plan_sha256": "a2c446d49dcc145a3d0e9e13790291fc0ba9dc8f39c070c9448b848890c7472f",
+    "preservation_scope": "WHILE_BOT_PAUSED_UNDER_WRITER_LOCKS",
+    "protected_files_unchanged": true,
+    "run_id": "36311881311",
+    "safe_to_stop": true,
+    "status": "PASS"
+  },
+  "live_observation": {
+    "observed_at": "2026-09-27T10:33:28Z",
+    "bot_supervisor": {
+      "id": 266084,
+      "state": "Running",
+      "process_started_at": "2026-09-27T10:31:01Z"
+    },
+    "source_sha256": "3fbddc9f7a87619fd851839d1f76c60ba3ca1e266a84653898a4427fe5f53121",
+    "bots": {
+      "client": {
+        "ok": true,
+        "latency_seconds": 0.248
+      },
+      "crm": {
+        "ok": true,
+        "latency_seconds": 0.248
+      }
+    },
+    "database": {
+      "quick_check": "ok",
+      "latency_seconds": 0.503
+    },
+    "heartbeat_age_seconds": {
+      "client_bot": 0.969,
+      "crm_bot": 3.825,
+      "guard": 0.001
+    },
+    "spool": {
+      "queued": 0,
+      "invalid_lines": 0,
+      "oldest_age_seconds": 0
+    },
+    "active": {},
+    "manual_telegram_end_to_end_test": "NOT_PERFORMED"
+  },
+  "log_check": {
+    "observed_at": "2026-09-27T10:34:44Z",
+    "client_started_at": "2026-09-27T10:31:05.201Z",
+    "crm_started_at": "2026-09-27T10:31:05.572Z",
+    "backup_logged_at": "2026-09-27T10:33:04.867Z",
+    "errors_after_restart_observed": false
+  },
+  "r4_reconciliation": {
+    "commit": "528c0ffc60db0f60338434a3a51f5220af74d47e",
+    "outcome": "ABORTED_BEFORE_APPLICATION_WRITE",
+    "both_original_remote_receipts": "FAIL",
+    "successful_rollback_claimed": false
+  },
+  "limits": [
+    "No new user publication was triggered for testing.",
+    "Full Telegram button/menu and media-delivery latency was not measured.",
+    "Historical pre-restart Telegram media batch timeouts were observed; their independent recurrence was not established after restart."
+  ],
+  "backup_and_rollback_guards_preserved": true
+}
