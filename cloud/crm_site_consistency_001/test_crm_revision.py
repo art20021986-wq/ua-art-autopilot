@@ -3,7 +3,10 @@ from pathlib import Path
 import sqlite3
 import tempfile
 import unittest
-from crm_revision import snapshot
+from crm_revision import snapshot as revision_snapshot
+
+def snapshot(root):
+ return revision_snapshot(root, status_resolver=lambda status: 'hidden' if status == 'archive' else 'korea')
 
 class RevisionTests(unittest.TestCase):
  def setUp(self):
@@ -29,10 +32,25 @@ class RevisionTests(unittest.TestCase):
  def test_ledger_only_edit(self):
   before=snapshot(self.root);(self.root/'.video_sinhron.json').write_text(json.dumps({'foto:UA-0001':{'001.jpg':'a'}}));after=snapshot(self.root)
   self.assertNotEqual(before['1'],after['1']);self.assertEqual(before['2'],after['2'])
+ def test_video_download_completion_without_car_edit(self):
+  before=snapshot(self.root)
+  (self.root/'.video_sinhron.json').write_text(json.dumps({'UA-0001':{'UA-0001.mp4':'video-a'}}))
+  after=snapshot(self.root)
+  self.assertNotEqual(before['1'],after['1']);self.assertEqual(before['2'],after['2'])
+ def test_unrelated_downloader_retry_does_not_republish_cars(self):
+  before=snapshot(self.root)
+  (self.root/'.video_sinhron.json').write_text(json.dumps({'_ne_kachaetsya':{'synthetic-id':{'attempts':2}}}))
+  self.assertEqual(before,snapshot(self.root))
  def test_stable_and_unpublished_excluded(self):
   self.assertEqual(snapshot(self.root),snapshot(self.root));self.assertNotIn('3',snapshot(self.root))
  def test_duplicate_code_rejected(self):
   self.db.execute('UPDATE cars SET auto_number="UA-0001" WHERE id=2');self.db.commit()
   with self.assertRaisesRegex(RuntimeError,'duplicate'):snapshot(self.root)
+ def test_delivery_projection_preserved_for_worker(self):
+  self.db.execute('ALTER TABLE cars ADD COLUMN status TEXT')
+  self.db.execute('UPDATE cars SET status="archive" WHERE id=2');self.db.commit()
+  value=snapshot(self.root)
+  self.assertEqual(value['1']['delivery_status'],'korea')
+  self.assertEqual(value['2']['delivery_status'],'hidden')
 
 if __name__=='__main__':unittest.main()

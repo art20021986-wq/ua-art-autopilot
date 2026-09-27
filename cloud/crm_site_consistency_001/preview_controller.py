@@ -9,11 +9,18 @@ from preview_transport import API, TASK_ID, REMOTE_SCRIPT, REMOTE_RECEIPT
 
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
-NAMES=('public_fields.py','public_media.py','crm_gallery.py','crm_revision.py','crm_assets.py','build_candidate.py','build_gallery_patch.py','test_public_fields.py')
+NAMES=('public_fields.py','public_media.py','crm_gallery.py','crm_videos.py','crm_revision.py','crm_assets.py','crm_media_identity.py','build_candidate.py','build_gallery_patch.py','build_media_patch.py','compose_release.py','test_public_fields.py')
+RELEASE_FILES = ('stage_edit_recovery_001/build_candidate.py',
+                 'crm_performance_001/build_candidate.py',
+                 'crm_oneclick_publish_001/build_candidate.py',
+                 'crm_oneclick_publish_001/ui_handlers.py',
+                 'crm_oneclick_publish_001/ua_publish_requests.py')
 
 
 def package():
     payload={name:base64.b64encode((HERE/name).read_bytes()).decode() for name in NAMES}
+    payload.update({'release_builders/' + name: base64.b64encode((HERE/'release_builders'/name).read_bytes()).decode()
+                    for name in RELEASE_FILES})
     validator=(HERE/'shadow_validate.py').read_text()
     script='''import base64,json,pathlib,re,signal,sys,traceback
 if len(sys.argv)!=3 or sys.argv[1]!='preview' or not re.fullmatch(r'[0-9]+',sys.argv[2]):raise SystemExit(2)
@@ -37,7 +44,7 @@ finally:
 
 
 def main():
-    if os.environ.get('UAART_TASK_ID')!=TASK_ID or os.environ.get('UAART_TASK_CLASS')!='STANDARD':
+    if os.environ.get('UAART_TASK_ID')!=TASK_ID or os.environ.get('UAART_TASK_CLASS')!='CRITICAL':
         raise RuntimeError('TASK_IDENTITY')
     run=os.environ.get('UAART_RUN_ID','')
     if not re.fullmatch(r'[0-9]+',run):raise RuntimeError('RUN_IDENTITY')
@@ -53,7 +60,7 @@ def main():
         print('SHADOW_RESULT='+json.dumps(result,sort_keys=True),flush=True)
         (HERE/'shadow_evidence.json').write_text(json.dumps(result,indent=2)+'\n')
         success=result.get('status')=='PASS' and result.get('protected_files_unchanged') is True and result.get('production_written') is False
-        receipt={'task_id':TASK_ID,'task_class':'STANDARD','status':'FINISHED' if success else 'FAILED',
+        receipt={'task_id':TASK_ID,'task_class':'CRITICAL','status':'FINISHED' if success else 'FAILED',
                  'target_environment':'shadow','tests':'PASS' if success else 'FAIL','unexpected_changes':0,
                  'production_required':False,'production_touched':False,'rollback_ready':True,
                  'rollback_reason':'Isolated disposable shadow; original source/HTML protected by write guard and hashes',

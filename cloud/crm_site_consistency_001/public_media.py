@@ -60,6 +60,8 @@ def verify_photo_structure(html, card, expected_paths=None):
     groups = []
     for script in doc.scripts:
         groups.extend(re.findall(r'\bvar\s+kadry\s*=\s*(\[.*?\])\s*;', script, re.S))
+    if not groups and not expected_ids:
+        groups = ['[]']
     if len(groups) != 1:
         raise RuntimeError('Missing or ambiguous gallery')
     gallery = json.loads(groups[0])

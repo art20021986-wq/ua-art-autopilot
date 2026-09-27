@@ -40,3 +40,11 @@ def save_immutable(image, folder, code, extension, **options):
     finally:
         temporary.unlink(missing_ok=True)
     return str(target)
+
+
+def empty_cover(root, code):
+    """Neutral UI background for zero CRM photos; never a substitute car photo."""
+    from PIL import Image
+    image = Image.new('RGB', (620, 468), (25, 32, 43))
+    path = save_immutable(image, Path(root) / 'video' / 'stage', code, 'jpg', quality=85)
+    return '/video/stage/' + Path(path).name

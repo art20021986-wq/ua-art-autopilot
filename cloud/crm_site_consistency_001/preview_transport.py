@@ -1,7 +1,7 @@
 import datetime as dt,json,os,pathlib,time,urllib.error,urllib.parse,urllib.request,uuid
-TASK_ID='CRM-CONSISTENCY-PREVIEW-20260926'
-REMOTE_SCRIPT='/home/Carix/uploads/crm_consistency_preview_20260926.py'
-REMOTE_RECEIPT='/home/Carix/uploads/crm_consistency_preview_20260926.json'
+TASK_ID='CRM-MEDIA-PREVIEW-20260927'
+REMOTE_SCRIPT='/home/Carix/uploads/crm_media_preview_20260927.py'
+REMOTE_RECEIPT='/home/Carix/uploads/crm_media_preview_20260927.json'
 BASE='https://www.pythonanywhere.com/api/v0/user/Carix/'
 MAX=4*1024*1024
 class E(RuntimeError):pass

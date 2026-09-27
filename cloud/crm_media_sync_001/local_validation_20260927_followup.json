@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-09-27T05:51:32.651706+00:00",
+  "status": "LOCAL_TESTS_PASS_DEPLOYMENT_BLOCKED",
+  "clean_package_tests": {
+    "status": "PASS",
+    "tests": 99
+  },
+  "parallel_release_regressions": {
+    "oneclick": 28,
+    "performance": 15,
+    "stage_recovery": 18,
+    "status_policy": 7,
+    "total": 68,
+    "status": "PASS"
+  },
+  "declared_file_hashes": {
+    "status": "PASS",
+    "files": 31
+  },
+  "python_ast": {
+    "status": "PASS",
+    "files": 31
+  },
+  "execution_contract": {
+    "status": "PASS",
+    "expected_class": "CRITICAL",
+    "production_launch_authorized": false
+  },
+  "production_written": false,
+  "full_acceptance": false,
+  "limitations": [
+    "Existing EMERGENCY_HALT and ROLLING_BACK transaction",
+    "CPU quota exhausted at last observation",
+    "Combined full renderer/install/rollback rehearsal not run",
+    "Original Telegram byte identity and real-browser playback not verified",
+    "UA-0001 first-video mapping unresolved",
+    "Storage/retention capacity and healthy-path update latency require production acceptance"
+  ]
+}

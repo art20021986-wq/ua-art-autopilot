@@ -1,11 +1,12 @@
 """Resolve public gallery from CRM order and the downloader's file-id ledger.
 
-No writes, downloads, deletion, ordinal guessing, or directory-based fallback.
+Creates immutable copies; no downloads, deletion, ordinal guessing, or disk fallback.
 """
 import json
 import re
 from pathlib import Path
-from public_media import visible_photo_ids, _list
+from public_media import visible_photo_ids
+from crm_media_identity import valid_name, immutable_copy
 
 
 def select_names(card, ledger):
@@ -20,7 +21,7 @@ def select_names(card, ledger):
         raise RuntimeError('Photo download ledger missing')
     reverse = {}
     for name, fid in mapping.items():
-        if not isinstance(name, str) or not re.fullmatch(r'\d+\.jpg', name):
+        if not valid_name(code, 'photo', name):
             raise RuntimeError('Invalid ledger photo filename')
         if not isinstance(fid, str) or not fid or fid in reverse:
             raise RuntimeError('Ambiguous ledger photo identity')
@@ -30,13 +31,12 @@ def select_names(card, ledger):
     names = [reverse[fid] for fid in ids]
     cover = card.get('cover_photo')
     if cover:
-        if cover not in mapping:
-            raise RuntimeError('CRM cover is not in download ledger')
+        if not valid_name(code, 'photo', cover):
+            raise RuntimeError('Invalid CRM cover filename')
         if cover in names:
             names = [cover] + [x for x in names if x != cover]
-        elif mapping[cover] not in set(_list(card.get('hidden_photos'))):
-            raise RuntimeError('CRM cover is not a current photo')
-        # A deliberately hidden cover must not be exposed. Use first visible.
+        # Hidden/deleted covers are stale references, not publication blockers.
+        # Fall back to the first current visible photo, never to a disk scan.
     return names
 
 
@@ -46,6 +46,7 @@ def gallery_paths(card, root='/home/Carix'):
     raw = journal.read_bytes()
     names = select_names(card, json.loads(raw))
     folder = root / 'video' / 'foto' / card['auto_number']
+    paths = []
     for name in names:
         path = folder / name
         if path.is_symlink() or path.resolve().parent != folder.resolve():
@@ -53,6 +54,7 @@ def gallery_paths(card, root='/home/Carix'):
         with path.open('rb') as f:
             if f.read(2) != b'\xff\xd8' or path.stat().st_size <= 1000:
                 raise RuntimeError('Photo missing or invalid')
+        paths.append(str(immutable_copy(path, root).relative_to(root / 'video')))
     if journal.read_bytes() != raw:
         raise RuntimeError('Photo ledger changed during rendering')
-    return ['foto/' + card['auto_number'] + '/' + name for name in names]
+    return paths
