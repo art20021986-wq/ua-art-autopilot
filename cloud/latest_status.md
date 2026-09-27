@@ -135,3 +135,9 @@ CRM_ONECLICK_INSTALLED_EVIDENCE: cloud/crm_oneclick_release_001/post_install_acc
 ## 2026-09-27 — UA-0020 publication stall
 
 Live investigation: publication began 07:18 UTC, diagnostics written but card/catalog unfinished at 07:36. Active FFmpeg extraction for UA-0020-03.mp4 matches the obsolete `UA-MCF-DEDUP` publisher wrapper, invoked for each card alias. Preparing exact one-file removal under `cloud/publish_video_latency_001`; 21 contract-compatible tests plus full private writer-chain regression PASS. Production is not yet changed by this repair; live publication acceptance remains pending.
+
+CONTAINER_TRACKING_TASK: UA-ART-CONTAINER-TRACKING-001
+CONTAINER_TRACKING_STATUS: CANDIDATE_TESTED_PENDING_MAIN_ACTIONS_PREFLIGHT
+CONTAINER_TRACKING_SCOPE: Multiple tracking sources in the delivery block of existing/future cards. Current ONE-only link misses physical container numbers such as the current UA-0021 reference. Two shared stdlib modules, narrow changes to three renderers, tracking-only HTML transform. No CRM/status/price/media changes.
+CONTAINER_TRACKING_TESTS: 32 tests PASS; exact current private source build PASS; 19 saved real cards preserve all content outside delivery block and transform idempotently. Not production acceptance.
+CONTAINER_TRACKING_PACKAGE: cloud/container_tracking_001/README.md. Use fresh preflight, exact plan, backup/Gate B and main Actions. Preserve ongoing media/OCR/performance work; require fresh source hashes on drift.
