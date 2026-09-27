@@ -1,0 +1,11 @@
+# CRM interruption recovery — 27 September 2026
+
+Owner requests immediate repair of recurrent poor CRM response. CPU is now below 5% of the upgraded 10,000-second allowance. R4 installation run 36308311986 encountered HTTP 502 before application replacement; its rollback timed out before restore. Both remote lifecycle journals finished after resuming the original bot. Both actual receipts remain FAIL. Original source and all 19 protected source hashes, immutable backup database and before/after payload hashes were verified through the authenticated server console at 09:44:27 UTC. This is not a successful installation or rollback claim.
+
+`reconcile_r4.py` is a separate data-only manual route for this exact abandoned pre-write attempt, following the repository's existing aborted-transaction convention. It grants no credentials, calls no network, does not alter a validator, and never writes application files or CRM data. Its registration must precede use on main. The resulting proposal archives exact original HALT/transaction/claim bytes and binds fresh server, queue, supervisor and public-health evidence. The old request, consumed nonce, ledger and failure history are preserved. Both real remote failure receipts stay failures.
+
+Apply only one exact-parent atomic commit, followed by a non-force ref update and remote readback. Any drift requires a new observation and proposal. The existing watchdog and mode validators must pass unchanged after the transition. No installation PASS receipt is produced. ROLLED_BACK is the existing terminal metadata convention for an aborted attempt; the decision explicitly records that no successful rollback occurred.
+
+After reconciliation, the temporary installer may be retired only after checking its exact command/run/bundle/backup and both terminal safe-to-stop receipts. A fresh R5 installation still requires the unchanged owner authorization, source binding, actual storage observation, backup, locks, strict Stopped/Running, rollback and public health gates through main Actions. No old installer, old launch or automatic rollback may be replayed.
+
+Current diagnostic limitation: callback acknowledgement timing is not end-to-end Telegram menu opening latency. Heartbeat and an empty media queue confirm liveness only.
