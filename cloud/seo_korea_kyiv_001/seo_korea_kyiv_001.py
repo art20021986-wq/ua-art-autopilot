@@ -717,11 +717,19 @@ def gate_d_live(landing_urls):
         if resp['status'] != 200:
             result['pass'] = False
     # Prove that the public root sitemap actually reflects the written video sitemap.
-    sm = http_get(PUBLIC_BASE + '/sitemap.xml')
-    sm_text = sm.get('body', b'').decode('utf-8', errors='ignore')
-    result['checks'][PUBLIC_BASE + '/sitemap.xml'] = sm.get('status')
+    sm = None
+    sm_text = ''
+    # Public sitemap can briefly be unavailable during/recently after a web-app reload.
+    # Retry boundedly; never convert a missing/incorrect sitemap into PASS.
+    for _ in range(6):
+        sm = http_get(PUBLIC_BASE + '/sitemap.xml?gate_d=%s' % int(time.time()), timeout=20)
+        sm_text = sm.get('body', b'').decode('utf-8', errors='ignore')
+        if sm.get('status') == 200 and all(u in sm_text for u in landing_urls):
+            break
+        time.sleep(5)
+    result['checks'][PUBLIC_BASE + '/sitemap.xml'] = sm.get('status') if sm else 0
     result['checks']['sitemap_contains_all_landings'] = all(u in sm_text for u in landing_urls)
-    if sm.get('status') != 200 or not result['checks']['sitemap_contains_all_landings']:
+    if not sm or sm.get('status') != 200 or not result['checks']['sitemap_contains_all_landings']:
         result['pass'] = False
     return result
 
