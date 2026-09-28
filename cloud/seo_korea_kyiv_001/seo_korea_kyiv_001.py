@@ -1053,3 +1053,5 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
+# SEO-TOP-KYIV-FINAL-HARDENING-20260928
