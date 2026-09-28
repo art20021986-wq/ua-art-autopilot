@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "19966353babba5b8df3a887988daf0863a9a6fb8db018f3ebe418c8ce84dcec4",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-28T06:02:42Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-09-28T06:06:22Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "36384396069",
     "task_id": "CARRIER-TRACKING-INSTALL-20260928",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-36384396069-bc8c4784c628b6a9",
   "production_transaction_path": "state/transactions/CARRIER-TRACKING-INSTALL-20260928.bc8c4784c628b6a954c6232999e11ee3e5337433b10ffb7e5d4fe7e12df4a1e5.36384396069.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/CARRIER-TRACKING-INSTALL-20260928.json",
   "receipt_validation_status": "PENDING",
@@ -108,5 +108,5 @@
       "cloud/container_tracking_001/ua_tracking_widget.py": "b5363b55ec9038add3735da45028640e8cb666712b73d442dee6b2da1fd9a42b"
     }
   },
-  "updated_at": "2026-09-28T06:02:42Z"
+  "updated_at": "2026-09-28T06:06:22Z"
 }
