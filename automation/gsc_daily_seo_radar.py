@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# daily read-only radar enabled after SEO Structured 004 PASS
 import datetime as dt, json, os, urllib.parse, urllib.request, urllib.error
 SITE="https://www.uaart.com.ua/"
 URLS=[
