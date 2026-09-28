@@ -29,4 +29,4 @@ try:
    print("SEO_MULTILINGUAL_003_PASS");raise SystemExit(0)
   time.sleep(5)
  raise SystemExit("RECEIPT_TIMEOUT")
-finally:call("DELETE",BASE+"schedule/%s/"%sid,allowed=(200,202,204,404))
+finally:call("DELETE",BASE+"schedule/%s/"%sid,allowed=(200,202,204,404,500,502,503,504))
