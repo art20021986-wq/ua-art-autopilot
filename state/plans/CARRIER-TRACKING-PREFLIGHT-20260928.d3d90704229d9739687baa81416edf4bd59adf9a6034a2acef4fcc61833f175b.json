@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARRIER-TRACKING-PREFLIGHT-20260928.d3d90704229d9739687baa81416edf4bd59adf9a6034a2acef4fcc61833f175b.json",
+  "autostart_ledger_sha256": "6838f2a417e08e7487ea1de8abf42448d638918dcb650474f679cec24bd84ca4",
+  "autostart_source_commit": "79428bb3cb270d2c77352c52c1e843490ad7a50f",
+  "created_at": "2026-09-28T05:55:42Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "36383956326",
+    "task_id": "CARRIER-TRACKING-PREFLIGHT-20260928",
+    "task_sha256": "d3d90704229d9739687baa81416edf4bd59adf9a6034a2acef4fcc61833f175b"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-582565dea86318fe-1921ff4394bf1dbe",
+  "request_path": "tasks/requests/CARRIER-TRACKING-PREFLIGHT-20260928.json",
+  "resource_locks": [
+    "PATH_SCOPE:582565dea86318fe"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

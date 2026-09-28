@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARRIER-TRACKING-PREFLIGHT-20260928.d3d90704229d9739687baa81416edf4bd59adf9a6034a2acef4fcc61833f175b.json",
+  "autostart_ledger_sha256": "6838f2a417e08e7487ea1de8abf42448d638918dcb650474f679cec24bd84ca4",
+  "autostart_source_commit": "79428bb3cb270d2c77352c52c1e843490ad7a50f",
+  "created_at": "2026-09-28T05:55:42Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-09-28T05:55:42Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "36383956326",
+    "task_id": "CARRIER-TRACKING-PREFLIGHT-20260928",
+    "task_sha256": "d3d90704229d9739687baa81416edf4bd59adf9a6034a2acef4fcc61833f175b"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-582565dea86318fe-1921ff4394bf1dbe",
+  "receipt_path": "state/receipts/CARRIER-TRACKING-PREFLIGHT-20260928.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CARRIER-TRACKING-PREFLIGHT-20260928.json",
+  "request_sha256": "d3d90704229d9739687baa81416edf4bd59adf9a6034a2acef4fcc61833f175b",
+  "resource_locks": [
+    "PATH_SCOPE:582565dea86318fe"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "ed23ba1775e90d94e9005d61b4eb864bd01746bb",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-09-28T05:55:42Z"
+}
