@@ -1,0 +1,25 @@
+name: SEO TOP KYIV Gate B - Korea Kyiv
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/seo_top_kyiv_gate_b.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile bounded production package
+        run: python3 -m py_compile cloud/seo_korea_kyiv_001/seo_korea_kyiv_001.py
+      - name: Execute owner-approved SEO-KOREA-KYIV-001
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+          PYTHONANYWHERE_USERNAME: Carix
+        run: python3 cloud/seo_korea_kyiv_001/seo_korea_kyiv_001.py
