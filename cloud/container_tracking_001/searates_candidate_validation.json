@@ -1,6 +1,6 @@
 {
-  "status": "READY_FOR_SERVER_PREFLIGHT_EXTERNAL_RESULT_UNCONFIRMED",
-  "tests": 35,
+  "status": "INSTALLED_ONE_OR_SEARATES_ROUTING_SEARATES_RESULT_UNCONFIRMED",
+  "tests": 38,
   "saved_card_checks": [
     {
       "card": "UA-0001",
@@ -121,8 +121,325 @@
     "shipment_result_observed": false,
     "visible_message": "Daily request limit reached",
     "visible_instruction": "Please register or login to continue using our Container Tracking",
-    "observed_date_utc": "2026-09-27"
+    "observed_date_utc": "2026-09-28",
+    "triggered_from_live_card": true
   },
-  "production_installed": false,
-  "owner_repeated_deployment_request_after_limit_disclosure": true
+  "production_installed": true,
+  "owner_repeated_deployment_request_after_limit_disclosure": true,
+  "production_run_id": "36384396069",
+  "routing_policy": {
+    "explicit_ONEY_bill": "ONE",
+    "other_valid_reference": "SeaRates AUTO"
+  },
+  "saved_url_checks": [
+    {
+      "card": "UA-0001-00cf71c0",
+      "number": "",
+      "provider": null,
+      "before_sha256": "cca50f0cec9a021c47dca648f95959347cacaaa23f3ecc12e1fc40612a6c49c7",
+      "after_sha256": "cca50f0cec9a021c47dca648f95959347cacaaa23f3ecc12e1fc40612a6c49c7"
+    },
+    {
+      "card": "UA-0001",
+      "number": "",
+      "provider": null,
+      "before_sha256": "cca50f0cec9a021c47dca648f95959347cacaaa23f3ecc12e1fc40612a6c49c7",
+      "after_sha256": "cca50f0cec9a021c47dca648f95959347cacaaa23f3ecc12e1fc40612a6c49c7"
+    },
+    {
+      "card": "UA-0003-a7bfb532",
+      "number": "",
+      "provider": null,
+      "before_sha256": "18f867562fcdac5ba1a03b3668b254ded8eae70d2c851512501d40ec7aea1764",
+      "after_sha256": "18f867562fcdac5ba1a03b3668b254ded8eae70d2c851512501d40ec7aea1764"
+    },
+    {
+      "card": "UA-0003",
+      "number": "",
+      "provider": null,
+      "before_sha256": "18f867562fcdac5ba1a03b3668b254ded8eae70d2c851512501d40ec7aea1764",
+      "after_sha256": "18f867562fcdac5ba1a03b3668b254ded8eae70d2c851512501d40ec7aea1764"
+    },
+    {
+      "card": "UA-0004-0edda61a",
+      "number": "",
+      "provider": null,
+      "before_sha256": "161a93b134dd6a4839a5d8e4cfe9a6168da267c264524dfd8ef9270d7eb90484",
+      "after_sha256": "161a93b134dd6a4839a5d8e4cfe9a6168da267c264524dfd8ef9270d7eb90484"
+    },
+    {
+      "card": "UA-0004",
+      "number": "",
+      "provider": null,
+      "before_sha256": "161a93b134dd6a4839a5d8e4cfe9a6168da267c264524dfd8ef9270d7eb90484",
+      "after_sha256": "161a93b134dd6a4839a5d8e4cfe9a6168da267c264524dfd8ef9270d7eb90484"
+    },
+    {
+      "card": "UA-0005-9e3432b2",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "868b18b7a8a23ef0c8b9bd1c3c607e20c3652d5b26099ffd4a9457b6cfc2fb0d",
+      "after_sha256": "643b120ebae38c06937148f6929b8222a90a4a68d364e7622356a076db8f9607"
+    },
+    {
+      "card": "UA-0005",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "868b18b7a8a23ef0c8b9bd1c3c607e20c3652d5b26099ffd4a9457b6cfc2fb0d",
+      "after_sha256": "643b120ebae38c06937148f6929b8222a90a4a68d364e7622356a076db8f9607"
+    },
+    {
+      "card": "UA-0006-ed784b7f",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "9ae373f81e74c7e1ed6cd4e1179dbfb386541e48aefab74314a0f5be2defb598",
+      "after_sha256": "283afccda4ad196bc1f82bfc92cb0af89d3dc8890b2be2e650288af18183d641"
+    },
+    {
+      "card": "UA-0006",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "9ae373f81e74c7e1ed6cd4e1179dbfb386541e48aefab74314a0f5be2defb598",
+      "after_sha256": "283afccda4ad196bc1f82bfc92cb0af89d3dc8890b2be2e650288af18183d641"
+    },
+    {
+      "card": "UA-0007-de6e3ebe",
+      "number": "",
+      "provider": null,
+      "before_sha256": "88773cbb3e8a2c55c1a099f2da8d9f869d4d35ef732340d7fa8b45c6966f28b5",
+      "after_sha256": "88773cbb3e8a2c55c1a099f2da8d9f869d4d35ef732340d7fa8b45c6966f28b5"
+    },
+    {
+      "card": "UA-0007",
+      "number": "",
+      "provider": null,
+      "before_sha256": "88773cbb3e8a2c55c1a099f2da8d9f869d4d35ef732340d7fa8b45c6966f28b5",
+      "after_sha256": "88773cbb3e8a2c55c1a099f2da8d9f869d4d35ef732340d7fa8b45c6966f28b5"
+    },
+    {
+      "card": "UA-0008-87693e0e",
+      "number": "",
+      "provider": null,
+      "before_sha256": "e734ab221a57127f235e64d4817741f535f6f89990723279166003ec90b43dba",
+      "after_sha256": "e734ab221a57127f235e64d4817741f535f6f89990723279166003ec90b43dba"
+    },
+    {
+      "card": "UA-0008",
+      "number": "",
+      "provider": null,
+      "before_sha256": "e734ab221a57127f235e64d4817741f535f6f89990723279166003ec90b43dba",
+      "after_sha256": "e734ab221a57127f235e64d4817741f535f6f89990723279166003ec90b43dba"
+    },
+    {
+      "card": "UA-0009-372ada15",
+      "number": "ONEYSELGB4471700",
+      "provider": "ONE",
+      "before_sha256": "e9c2afc5368103cbb15eeb3615df5ae654b5317d8b3144ca43410e9bc32d490b",
+      "after_sha256": "3aa5f71a853042fc84b722fae907b0c1920d856fa9ca60c30ee03d15a8400e91"
+    },
+    {
+      "card": "UA-0009",
+      "number": "ONEYSELGB4471700",
+      "provider": "ONE",
+      "before_sha256": "e9c2afc5368103cbb15eeb3615df5ae654b5317d8b3144ca43410e9bc32d490b",
+      "after_sha256": "3aa5f71a853042fc84b722fae907b0c1920d856fa9ca60c30ee03d15a8400e91"
+    },
+    {
+      "card": "UA-0010-614505f4",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "98e8b364725889c7d213f85bef4f0af16af743d9206bc7a7b88fde5519c2dfe4",
+      "after_sha256": "457b357775e8794e8ba7b58f5a19b2753b788e3fa9405d1eb0ee3faf98b97e7d"
+    },
+    {
+      "card": "UA-0010",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "98e8b364725889c7d213f85bef4f0af16af743d9206bc7a7b88fde5519c2dfe4",
+      "after_sha256": "457b357775e8794e8ba7b58f5a19b2753b788e3fa9405d1eb0ee3faf98b97e7d"
+    },
+    {
+      "card": "UA-0011-9842913c",
+      "number": "ONEYSELGB4471700",
+      "provider": "ONE",
+      "before_sha256": "050112c89eab5c98794c395a196139aa9a51e814ea9e6dbd4d9e4af405cceb2e",
+      "after_sha256": "70558a070d00766b8a452315b72f26f4b8e25df84f42573ad842ec410c3083e4"
+    },
+    {
+      "card": "UA-0011",
+      "number": "ONEYSELGB4471700",
+      "provider": "ONE",
+      "before_sha256": "050112c89eab5c98794c395a196139aa9a51e814ea9e6dbd4d9e4af405cceb2e",
+      "after_sha256": "70558a070d00766b8a452315b72f26f4b8e25df84f42573ad842ec410c3083e4"
+    },
+    {
+      "card": "UA-0012-453f3da4",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "40bf3b05a526d97c9f9b5b9926b3e4bcfe7e92d148cb34bbde3b8a2c7eb6cba5",
+      "after_sha256": "03ff0ece47f302ccd408726a452466f90710fc66d9512a9383d232f39c8b5dac"
+    },
+    {
+      "card": "UA-0012",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "40bf3b05a526d97c9f9b5b9926b3e4bcfe7e92d148cb34bbde3b8a2c7eb6cba5",
+      "after_sha256": "03ff0ece47f302ccd408726a452466f90710fc66d9512a9383d232f39c8b5dac"
+    },
+    {
+      "card": "UA-0013-d593cad2",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "75da5242170ec58963d73b803f20acd9483ec7733c972ae72595c672fbfbcf91",
+      "after_sha256": "c67fa23e5b24443686ca0d549ae797f3903b7e0349556b8f40872e18ee299e34"
+    },
+    {
+      "card": "UA-0013",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "75da5242170ec58963d73b803f20acd9483ec7733c972ae72595c672fbfbcf91",
+      "after_sha256": "c67fa23e5b24443686ca0d549ae797f3903b7e0349556b8f40872e18ee299e34"
+    },
+    {
+      "card": "UA-0014-568b2491",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "1d1cb4453fc2dc9c7fe65a0a3adbeaa57d353df589674db534cd65388285c3f1",
+      "after_sha256": "fb6cd56507efe5d55374b5c4ffb49dd81fba30117a4b75cc58a9a445ec04956e"
+    },
+    {
+      "card": "UA-0014",
+      "number": "ONEYSELGF1046602",
+      "provider": "ONE",
+      "before_sha256": "1d1cb4453fc2dc9c7fe65a0a3adbeaa57d353df589674db534cd65388285c3f1",
+      "after_sha256": "fb6cd56507efe5d55374b5c4ffb49dd81fba30117a4b75cc58a9a445ec04956e"
+    },
+    {
+      "card": "UA-0015-8d6c4f80",
+      "number": "",
+      "provider": null,
+      "before_sha256": "9808672343b9f3c59f8e36b7a9a58dfbb18adfbace9c4009117574508316a374",
+      "after_sha256": "9808672343b9f3c59f8e36b7a9a58dfbb18adfbace9c4009117574508316a374"
+    },
+    {
+      "card": "UA-0015",
+      "number": "",
+      "provider": null,
+      "before_sha256": "9808672343b9f3c59f8e36b7a9a58dfbb18adfbace9c4009117574508316a374",
+      "after_sha256": "9808672343b9f3c59f8e36b7a9a58dfbb18adfbace9c4009117574508316a374"
+    },
+    {
+      "card": "UA-0016-d9c506f8",
+      "number": "",
+      "provider": null,
+      "before_sha256": "4173281f94eb90814cabf639bf6ccce2f0f5ad6ec9bc103906022ce39b254220",
+      "after_sha256": "4173281f94eb90814cabf639bf6ccce2f0f5ad6ec9bc103906022ce39b254220"
+    },
+    {
+      "card": "UA-0016",
+      "number": "",
+      "provider": null,
+      "before_sha256": "4173281f94eb90814cabf639bf6ccce2f0f5ad6ec9bc103906022ce39b254220",
+      "after_sha256": "4173281f94eb90814cabf639bf6ccce2f0f5ad6ec9bc103906022ce39b254220"
+    },
+    {
+      "card": "UA-0017-bf0a6669",
+      "number": "",
+      "provider": null,
+      "before_sha256": "82e0249e19f8d022582128343709f24ff101a82ead72ffc7857178f98b84132c",
+      "after_sha256": "82e0249e19f8d022582128343709f24ff101a82ead72ffc7857178f98b84132c"
+    },
+    {
+      "card": "UA-0017",
+      "number": "",
+      "provider": null,
+      "before_sha256": "82e0249e19f8d022582128343709f24ff101a82ead72ffc7857178f98b84132c",
+      "after_sha256": "82e0249e19f8d022582128343709f24ff101a82ead72ffc7857178f98b84132c"
+    },
+    {
+      "card": "UA-0018-bfcd1711",
+      "number": "",
+      "provider": null,
+      "before_sha256": "2651ae1f59f9f2243bfec90dfbf6ba356495e8d4f0ba7bf11413855a03d19e4f",
+      "after_sha256": "2651ae1f59f9f2243bfec90dfbf6ba356495e8d4f0ba7bf11413855a03d19e4f"
+    },
+    {
+      "card": "UA-0018",
+      "number": "",
+      "provider": null,
+      "before_sha256": "2651ae1f59f9f2243bfec90dfbf6ba356495e8d4f0ba7bf11413855a03d19e4f",
+      "after_sha256": "2651ae1f59f9f2243bfec90dfbf6ba356495e8d4f0ba7bf11413855a03d19e4f"
+    },
+    {
+      "card": "UA-0019-906958ad",
+      "number": "",
+      "provider": null,
+      "before_sha256": "c18ce9b39b991918c252a34e4587663d558a2e3b1a8c2e4610cf9b3c9019749b",
+      "after_sha256": "c18ce9b39b991918c252a34e4587663d558a2e3b1a8c2e4610cf9b3c9019749b"
+    },
+    {
+      "card": "UA-0019",
+      "number": "",
+      "provider": null,
+      "before_sha256": "c18ce9b39b991918c252a34e4587663d558a2e3b1a8c2e4610cf9b3c9019749b",
+      "after_sha256": "c18ce9b39b991918c252a34e4587663d558a2e3b1a8c2e4610cf9b3c9019749b"
+    },
+    {
+      "card": "UA-0020-bf284c6a",
+      "number": "",
+      "provider": null,
+      "before_sha256": "0e9a321e7876ff7c1e552481730b3f9857318c0901dc980e3361e4331e5113c2",
+      "after_sha256": "0e9a321e7876ff7c1e552481730b3f9857318c0901dc980e3361e4331e5113c2"
+    },
+    {
+      "card": "UA-0020",
+      "number": "",
+      "provider": null,
+      "before_sha256": "0e9a321e7876ff7c1e552481730b3f9857318c0901dc980e3361e4331e5113c2",
+      "after_sha256": "0e9a321e7876ff7c1e552481730b3f9857318c0901dc980e3361e4331e5113c2"
+    },
+    {
+      "card": "UA-0021-10acf230",
+      "number": "FBLU0045137",
+      "provider": "SeaRates",
+      "before_sha256": "fe7d2995385ace4ddad8ca2df4b38dd1e4bb2d83d444cfe17629f1591fccbe4e",
+      "after_sha256": "fe7d2995385ace4ddad8ca2df4b38dd1e4bb2d83d444cfe17629f1591fccbe4e"
+    },
+    {
+      "card": "UA-0021",
+      "number": "FBLU0045137",
+      "provider": "SeaRates",
+      "before_sha256": "fe7d2995385ace4ddad8ca2df4b38dd1e4bb2d83d444cfe17629f1591fccbe4e",
+      "after_sha256": "fe7d2995385ace4ddad8ca2df4b38dd1e4bb2d83d444cfe17629f1591fccbe4e"
+    },
+    {
+      "card": "UA-0022-fa461c2d",
+      "number": "",
+      "provider": null,
+      "before_sha256": "603bd5b30569b911ba627e300c0f165278bedc61ec8e7a2b4009068ebedadefb",
+      "after_sha256": "603bd5b30569b911ba627e300c0f165278bedc61ec8e7a2b4009068ebedadefb"
+    },
+    {
+      "card": "UA-0022",
+      "number": "",
+      "provider": null,
+      "before_sha256": "603bd5b30569b911ba627e300c0f165278bedc61ec8e7a2b4009068ebedadefb",
+      "after_sha256": "603bd5b30569b911ba627e300c0f165278bedc61ec8e7a2b4009068ebedadefb"
+    },
+    {
+      "card": "UA-0023-956711ae",
+      "number": "",
+      "provider": null,
+      "before_sha256": "9ea1f983a0e46bca50be98e3663e30e199bce401a7b6f1fa0a3d7959a5da3b0b",
+      "after_sha256": "9ea1f983a0e46bca50be98e3663e30e199bce401a7b6f1fa0a3d7959a5da3b0b"
+    },
+    {
+      "card": "UA-0023",
+      "number": "",
+      "provider": null,
+      "before_sha256": "9ea1f983a0e46bca50be98e3663e30e199bce401a7b6f1fa0a3d7959a5da3b0b",
+      "after_sha256": "9ea1f983a0e46bca50be98e3663e30e199bce401a7b6f1fa0a3d7959a5da3b0b"
+    }
+  ],
+  "live_verification_path": "cloud/container_tracking_001/carrier_routing_live_verification.json"
 }
