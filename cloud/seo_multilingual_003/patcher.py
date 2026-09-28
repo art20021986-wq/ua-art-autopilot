@@ -68,7 +68,8 @@ try:
  urls=[ORIGIN+"/video/"+p.name for p in core if p.exists()]+[ORIGIN+"/video/"+p.name for p in cards]+[url(k,l) for k in ("hub","k5","sonata") for l in ("uk","ru","ka")]
  urls=list(dict.fromkeys(urls));xml="<?xml version='1.0' encoding='UTF-8'?>\n<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>\n"+"\n".join("<url><loc>%s</loc></url>"%u for u in urls)+"\n</urlset>\n";atomic(sitemap,xml.encode())
  bad=[]
- for u in urls:
+ verify_urls=[url(k,l) for k in ("hub","k5","sonata") for l in ("uk","ru","ka")]+[ORIGIN+"/sitemap.xml"]
+ for u in verify_urls:
   try:
    with urllib.request.urlopen(urllib.request.Request(u,headers={"User-Agent":"UA-ART-SEO-003/1"}),timeout=20) as r:
     if r.status!=200:bad.append([u,r.status])
