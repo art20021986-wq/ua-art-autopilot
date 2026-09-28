@@ -1,11 +1,6 @@
 name: SEO TOP KYIV Gate B - Korea Kyiv
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/seo_top_kyiv_gate_b.yml'
-      - 'cloud/seo_korea_kyiv_001/seo_korea_kyiv_001.py'
 permissions:
   contents: read
 concurrency:
