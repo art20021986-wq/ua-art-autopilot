@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "80a3078341f49626de4f45eb8a946480843fceca17dd1f8951d4e89c2addbfd6",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-28T05:40:27Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-09-28T05:52:23Z",
+  "heartbeat_at": "2026-09-28T05:52:23Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "36382604271",
     "task_id": "SEARATES-DIRECT-INSTALL-20260928-R2",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 701.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 280.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-36382604271-13fd44d68fbf9303",
   "production_transaction_path": "state/transactions/SEARATES-DIRECT-INSTALL-20260928-R2.13fd44d68fbf930313fefaad81ee18ca9b81b7ddbb1ee009d90e27d261b3c26a.36382604271.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/SEARATES-DIRECT-INSTALL-20260928-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "7dcfc76c292a118e7c5fc16ae92cf2216dd29c76029f945135f974a23bac629a",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SEARATES-DIRECT-INSTALL-20260928-R2.json",
   "request_sha256": "13fd44d68fbf930313fefaad81ee18ca9b81b7ddbb1ee009d90e27d261b3c26a",
   "resource_locks": [
@@ -90,7 +113,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "832fec48dfa7ddcba76e7149901787736176b62ad58c650994e94a14a783c956",
     "file_sha256": {
@@ -108,5 +131,5 @@
       "cloud/container_tracking_001/ua_tracking_widget.py": "b5363b55ec9038add3735da45028640e8cb666712b73d442dee6b2da1fd9a42b"
     }
   },
-  "updated_at": "2026-09-28T05:40:27Z"
+  "updated_at": "2026-09-28T05:52:23Z"
 }
