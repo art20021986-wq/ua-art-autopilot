@@ -20,6 +20,8 @@ for lang,d in LANG.items():
   rows.add((lang,"model_fuel",clean(f"{model} {fuel} {geo}")))
  for model,year,geo in itertools.product(MODELS,YEARS,d["geo"]):
   rows.add((lang,"model_year",clean(f"{model} {year} {geo}")))
+ for model,year,fuel,geo in itertools.product(MODELS,YEARS,FUELS[lang],d["geo"]):
+  rows.add((lang,"model_year_fuel",clean(f"{model} {year} {fuel} {geo}")))
  for model in MODELS:
   for other in MODELS:
    if model<other: rows.add((lang,"comparison",clean(f"{model} vs {other}")))
