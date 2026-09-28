@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 '''
 SEO-KOREA-KYIV-001 -- single self-contained executable.
+Root sitemap mapping verified before this production attempt.
 
 OWNER_DIRECTIVE binding constraints (from canonical shared memory) apply:
 - Production-write access remains behind an explicit owner-approved gate.
