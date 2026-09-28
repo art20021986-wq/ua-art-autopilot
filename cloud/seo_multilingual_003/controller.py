@@ -15,12 +15,12 @@ raw=open(LOCAL,"rb").read();bd="----seo"+uuid.uuid4().hex
 body=(("--"+bd+"\r\nContent-Disposition: form-data; name=\"content\"; filename=\"patcher.py\"\r\nContent-Type: text/x-python\r\n\r\n").encode()+raw+("\r\n--"+bd+"--\r\n").encode())
 call("POST",furl(REMOTE),body,{"Content-Type":"multipart/form-data; boundary="+bd},(200,201))
 call("DELETE",furl(RECEIPT),allowed=(200,204,404))
-run=time.gmtime(time.time()+60)
+run=time.gmtime(time.time()+120)
 form=urllib.parse.urlencode({"command":"python3.10 "+REMOTE,"description":"seo-multilingual-003-once","enabled":"true","interval":"daily","hour":run.tm_hour,"minute":run.tm_min}).encode()
 _,b=call("POST",BASE+"schedule/",form,{"Content-Type":"application/x-www-form-urlencoded"},(200,201,202));sid=json.loads(b.decode()).get("id")
 if not sid:raise SystemExit("NO_TRIGGER")
 try:
- deadline=time.time()+420
+ deadline=time.time()+600
  while time.time()<deadline:
   st,b=call("GET",furl(RECEIPT),allowed=(200,404))
   if st==200:
