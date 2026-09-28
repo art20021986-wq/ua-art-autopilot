@@ -28,3 +28,5 @@ Highest-priority intent families:
 7. Model-vs-model comparisons and year/fuel long tails.
 
 Do not use the atlas as hidden text, meta-keyword stuffing, doorway generation, or mass AI pages.
+
+Gate A threshold: at least 100,000 unique candidate queries across RU, UA and KA; this is a research vocabulary, not a page count.
