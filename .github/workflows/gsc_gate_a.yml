@@ -1,0 +1,21 @@
+name: GSC Gate A (read-only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gsc-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GSC_CLIENT_ID: ${{ secrets.GSC_CLIENT_ID }}
+      GSC_CLIENT_SECRET: ${{ secrets.GSC_CLIENT_SECRET }}
+      GSC_REFRESH_TOKEN: ${{ secrets.GSC_REFRESH_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Verify Search Console read-only access
+        run: python3 automation/gsc_gate_a.py
