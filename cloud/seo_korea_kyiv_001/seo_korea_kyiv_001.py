@@ -919,10 +919,17 @@ def runner_mode_main():
 
     log('Uploading self (%d bytes) to /home/Carix/uploads/seo_korea_kyiv_001.py' % len(self_bytes))
     upload_path = '/files/path/home/%s/uploads/seo_korea_kyiv_001.py' % PA_USERNAME
-    status, body = pa_api_request('POST', upload_path, token,
-                                   is_multipart_file=('content', 'seo_korea_kyiv_001.py', self_bytes))
+    status, body = 0, b''
+    for attempt in range(1, 6):
+        status, body = pa_api_request('POST', upload_path, token,
+                                       is_multipart_file=('content', 'seo_korea_kyiv_001.py', self_bytes))
+        if status in (200, 201):
+            break
+        log('Upload attempt %s failed: status=%s' % (attempt, status))
+        if attempt < 5:
+            time.sleep(min(attempt * 3, 12))
     if status not in (200, 201):
-        log('Upload failed: status=%s body=%s' % (status, body[:200]))
+        log('Upload failed after bounded retries: status=%s body=%s' % (status, body[:200]))
         print('SEO-KOREA-KYIV-001 RELEASE BLOCKED -- upload to PythonAnywhere failed (status %s)' % status)
         return 1
 
