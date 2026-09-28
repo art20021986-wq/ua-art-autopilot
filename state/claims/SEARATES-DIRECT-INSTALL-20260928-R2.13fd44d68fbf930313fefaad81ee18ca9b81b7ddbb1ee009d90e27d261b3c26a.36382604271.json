@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "80a3078341f49626de4f45eb8a946480843fceca17dd1f8951d4e89c2addbfd6",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-09-28T05:37:49Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-09-28T05:40:27Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "36382604271",
     "task_id": "SEARATES-DIRECT-INSTALL-20260928-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-36382604271-13fd44d68fbf9303",
   "production_transaction_path": "state/transactions/SEARATES-DIRECT-INSTALL-20260928-R2.13fd44d68fbf930313fefaad81ee18ca9b81b7ddbb1ee009d90e27d261b3c26a.36382604271.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/SEARATES-DIRECT-INSTALL-20260928-R2.json",
   "receipt_validation_status": "PENDING",
@@ -108,5 +108,5 @@
       "cloud/container_tracking_001/ua_tracking_widget.py": "b5363b55ec9038add3735da45028640e8cb666712b73d442dee6b2da1fd9a42b"
     }
   },
-  "updated_at": "2026-09-28T05:37:49Z"
+  "updated_at": "2026-09-28T05:40:27Z"
 }
