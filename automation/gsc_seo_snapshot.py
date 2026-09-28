@@ -61,7 +61,18 @@ def main():
         raise RuntimeError("no Search Console properties are visible to this OAuth account")
 
     preferred = os.environ.get("GSC_SITE_URL", "").strip()
-    site = preferred or next((x.get("siteUrl") for x in entries if "uaart.com.ua" in x.get("siteUrl", "")), entries[0].get("siteUrl"))
+    visible = [x.get("siteUrl") for x in entries if x.get("siteUrl")]
+    if preferred:
+        if preferred not in visible:
+            raise RuntimeError(f"configured Search Console property is not visible: {preferred}")
+        site = preferred
+    else:
+        # Prefer the URL-prefix property that the owner verified for this OAuth account.
+        exact = "https://www.uaart.com.ua/"
+        site = exact if exact in visible else next(
+            (u for u in visible if u.startswith("https://www.uaart.com.ua/")),
+            next((u for u in visible if "uaart.com.ua" in u), visible[0] if visible else None),
+        )
     if not site:
         raise RuntimeError("could not select a Search Console property")
 
