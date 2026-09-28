@@ -146,6 +146,27 @@ class RecoveryTests(unittest.TestCase):
         self.assertTrue(result['crm_resume']['enabled'])
         self.assertEqual((self.root/'video/UA-0002.html').read_bytes(), b'new owner card')
 
+    def test_saved_card_urls_use_the_current_crm_reference(self):
+        for folder in ('video', 'site'):
+            remote.atomic(self.root/folder/'UA-0001-deadbeef.html', b'saved card')
+        inputs = remote.tracking_inputs(remote.card_references())
+        for folder in ('video', 'site'):
+            self.assertEqual(inputs[folder+'/UA-0001-deadbeef.html'], 'FBLU0045137')
+        self.assertEqual(len(inputs), 3)
+
+    def test_saved_card_url_added_after_backup_requires_fresh_plan(self):
+        remote.atomic(self.root/'video/UA-0001-deadbeef.html', b'saved card')
+        result = self.lifecycle('install')
+        self.assertEqual(result['status'], 'FAIL')
+        self.assertIn('TRACKING_INPUTS_CHANGED', result['error'])
+        self.assertFalse((self.root/'ua_tracking_links.py').exists())
+        self.assertTrue(result['crm_resume']['enabled'])
+
+    def test_unknown_saved_card_is_not_assigned_another_vehicles_reference(self):
+        remote.atomic(self.root/'video/UA-0099-deadbeef.html', b'unknown card')
+        with self.assertRaisesRegex(remote.DeploymentError, 'CARD_REFERENCE_MISSING'):
+            remote.tracking_inputs(remote.card_references())
+
     def test_rollback_preserves_concurrent_crm_edit(self):
         self.lifecycle('install')
         with sqlite3.connect(self.root/'crm.db') as connection:
