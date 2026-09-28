@@ -381,7 +381,7 @@ nav a{margin-right:10px}
 <body>
 <nav>
 <a href='/video/index.html'>%s</a>
-<a href='/video/catalog.html'>%s</a>
+<a href='/video/katalog.html'>%s</a>
 <a href='/video/podbor.html'>%s</a>
 </nav>
 <h1>%s</h1>
@@ -597,16 +597,17 @@ def build_landing_pages():
 def build_sitemap(baseline, landing_urls):
     urls = [
         PUBLIC_BASE + '/video/index.html',
-        PUBLIC_BASE + '/video/catalog.html',
+        PUBLIC_BASE + '/video/katalog.html',
         PUBLIC_BASE + '/video/podbor.html',
         PUBLIC_BASE + '/video/info.html',
     ]
     urls.extend(landing_urls)
-    # NOTE: individual vehicle-card canonical URLs are appended dynamically
-    # from discover_baseline() file paths at execution time inside main().
-    entries = []
-    for u in urls:
-        entries.append('<url><loc>%s</loc></url>' % u)
+    for path in sorted(baseline.get('file_hashes', {})):
+        name = os.path.basename(path)
+        if re.fullmatch(r'UA-[0-9]{4,}\\.html', name, re.I):
+            urls.append(PUBLIC_BASE + '/video/' + name)
+    urls = list(dict.fromkeys(urls))
+    entries = ['<url><loc>%s</loc></url>' % u for u in urls]
     xml = ("<?xml version='1.0' encoding='UTF-8'?>\n"
            "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>\n" +
            '\n'.join(entries) + '\n</urlset>\n')
@@ -721,7 +722,7 @@ def gate_d_live(landing_urls):
     sm_text = ''
     # Public sitemap can briefly be unavailable during/recently after a web-app reload.
     # Retry boundedly; never convert a missing/incorrect sitemap into PASS.
-    for _ in range(6):
+    for _ in range(12):
         sm = http_get(PUBLIC_BASE + '/sitemap.xml?gate_d=%s' % int(time.time()), timeout=20)
         sm_text = sm.get('body', b'').decode('utf-8', errors='ignore')
         if sm.get('status') == 200 and all(u in sm_text for u in landing_urls):
@@ -1008,6 +1009,20 @@ def runner_mode_main():
         return 1
 
     log('Receipt observed: %s' % receipt_found)
+    status, receipt_raw = pa_api_request('GET', '/files/path/home/%s/archive/reports/%s' % (PA_USERNAME, receipt_found), token)
+    if status != 200:
+        print('SEO-KOREA-KYIV-001 RELEASE BLOCKED -- receipt readback failed')
+        return 1
+    try:
+        receipt_value = json.loads(receipt_raw.decode('utf-8'))
+    except Exception:
+        print('SEO-KOREA-KYIV-001 RELEASE BLOCKED -- receipt JSON invalid')
+        return 1
+    final_status = str(receipt_value.get('final_status', ''))
+    log('Production receipt final_status: %s' % final_status)
+    if not final_status.startswith('SEO-KOREA-KYIV-001 PRODUCTION PASS'):
+        print('SEO-KOREA-KYIV-001 RELEASE BLOCKED -- production receipt is not PASS')
+        return 1
     log('Independently verifying public URLs')
     for url in [PUBLIC_BASE + '/video/index.html', PUBLIC_BASE + '/robots.txt', PUBLIC_BASE + '/sitemap.xml']:
         resp = http_get(url)
