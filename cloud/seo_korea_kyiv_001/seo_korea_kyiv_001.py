@@ -925,15 +925,36 @@ def runner_mode_main():
         print('SEO-KOREA-KYIV-001 RELEASE BLOCKED -- upload to PythonAnywhere failed (status %s)' % status)
         return 1
 
-    # Snapshot existing receipts so a stale receipt can never satisfy this run.
-    existing_receipts = set()
-    status, body = pa_api_request('GET', '/files/path/home/%s/archive/reports/' % PA_USERNAME, token)
+    # Remove only stale triggers for this exact bounded command. A prior runner
+    # timeout must never leave a daily task behind.
+    exact_command = 'python3.10 /home/%s/uploads/seo_korea_kyiv_001.py' % PA_USERNAME
+    status, body = pa_api_request('GET', '/schedule/', token)
     if status == 200:
         try:
-            listing = json.loads(body.decode('utf-8'))
-            existing_receipts = {name for name in listing if isinstance(name, str) and name.startswith('SEO_KOREA_KYIV_001_receipt_')}
+            schedules = json.loads(body.decode('utf-8'))
+            for item in schedules if isinstance(schedules, list) else []:
+                if isinstance(item, dict) and item.get('command') == exact_command and item.get('id') is not None:
+                    pa_api_request('DELETE', '/schedule/%s/' % item['id'], token)
+                    log('Deleted stale execution trigger %s' % item['id'])
         except Exception:
-            existing_receipts = set()
+            pass
+
+    # Snapshot existing receipts. If the snapshot cannot be proven, fail before
+    # creating a trigger rather than risk accepting a stale receipt.
+    existing_receipts = None
+    for _ in range(6):
+        status, body = pa_api_request('GET', '/files/path/home/%s/archive/reports/' % PA_USERNAME, token)
+        if status == 200:
+            try:
+                listing = json.loads(body.decode('utf-8'))
+                existing_receipts = {name for name in listing if isinstance(name, str) and name.startswith('SEO_KOREA_KYIV_001_receipt_')}
+                break
+            except Exception:
+                pass
+        time.sleep(3)
+    if existing_receipts is None:
+        print('SEO-KOREA-KYIV-001 RELEASE BLOCKED -- could not establish pre-trigger receipt baseline')
+        return 1
 
     log('Creating bounded one-shot scheduled-task trigger')
     now = datetime.now(timezone.utc)
