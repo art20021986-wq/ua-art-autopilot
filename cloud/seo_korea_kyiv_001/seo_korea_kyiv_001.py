@@ -644,27 +644,22 @@ def gate_a_technical():
         '/video/index.html' in root_resp.get('url', '') or root_resp['status'] in (301, 302)
     )
 
-    root_robots_writable_path = os.path.join(SITE_ROOT, 'robots.txt')
-    video_robots_path = os.path.join(VIDEO_ROOT, 'robots.txt')
-    candidate_exists_at_root = os.path.isfile(root_robots_writable_path)
-
+    # This release does not write robots.txt or routing. Therefore a proven public
+    # 200 robots endpoint is sufficient; requiring a local root robots file would
+    # incorrectly block a release that never touches that file.
     if robots_resp['status'] != 200:
         result['blocker'] = (
             'Public https://www.uaart.com.ua/robots.txt is not reachable (status=%s). '
-            'Cannot safely determine whether writing a local robots.txt file will be '
-            'exposed at the public root without unproven WSGI/routing changes.'
+            'Release does not modify robots/routing, so it is blocked rather than guessing.'
         ) % robots_resp['status']
         return result
-
-    if not candidate_exists_at_root:
-        result['blocker'] = (
-            'No existing writable file was found at /home/Carix/robots.txt that would '
-            'correspond to the live public root /robots.txt. Writing /home/Carix/video/robots.txt '
-            'is not proven to expose root /robots.txt given the current /video/ redirect. '
-            'Refusing to guess at routing; recording exact blocker per task instructions.'
-        )
+    if sitemap_resp['status'] != 200:
+        result['blocker'] = 'Public root sitemap is not reachable (status=%s).' % sitemap_resp['status']
         return result
-
+    if root_resp['status'] != 200:
+        result['blocker'] = 'Public homepage is not reachable (status=%s).' % root_resp['status']
+        return result
+    result['checks']['robots_write_planned'] = False
     result['pass'] = True
     return result
 
@@ -720,6 +715,13 @@ def gate_d_live(landing_urls):
         result['checks'][url] = resp['status']
         if resp['status'] != 200:
             result['pass'] = False
+    # Prove that the public root sitemap actually reflects the written video sitemap.
+    sm = http_get(PUBLIC_BASE + '/sitemap.xml')
+    sm_text = sm.get('body', b'').decode('utf-8', errors='ignore')
+    result['checks'][PUBLIC_BASE + '/sitemap.xml'] = sm.get('status')
+    result['checks']['sitemap_contains_all_landings'] = all(u in sm_text for u in landing_urls)
+    if sm.get('status') != 200 or not result['checks']['sitemap_contains_all_landings']:
+        result['pass'] = False
     return result
 
 
