@@ -1,0 +1,25 @@
+name: SEO Multilingual 003 production
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cloud/seo_multilingual_003/**'
+      - '.github/workflows/seo_multilingual_003.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile bounded multilingual release
+        run: python3 -m py_compile cloud/seo_multilingual_003/patcher.py cloud/seo_multilingual_003/controller.py
+      - name: Run bounded multilingual release
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/seo_multilingual_003/controller.py
