@@ -722,7 +722,7 @@ def gate_d_live(landing_urls):
     sm_text = ''
     # Public sitemap can briefly be unavailable during/recently after a web-app reload.
     # Retry boundedly; never convert a missing/incorrect sitemap into PASS.
-    for _ in range(6):
+    for _ in range(12):
         sm = http_get(PUBLIC_BASE + '/sitemap.xml?gate_d=%s' % int(time.time()), timeout=20)
         sm_text = sm.get('body', b'').decode('utf-8', errors='ignore')
         if sm.get('status') == 200 and all(u in sm_text for u in landing_urls):
