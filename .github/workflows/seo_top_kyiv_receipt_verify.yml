@@ -18,7 +18,7 @@ jobs:
         run: |
           python3 - <<'PY'
           import json, os, urllib.request
-          name="SEO_KOREA_KYIV_001_receipt_21012526a859.json"
+          name="SEO_KOREA_KYIV_001_receipt_05a27a125422.json"
           url="https://www.pythonanywhere.com/api/v0/user/Carix/files/path/home/Carix/archive/reports/"+name
           req=urllib.request.Request(url,headers={"Authorization":"Token "+os.environ["PA_TOKEN"]})
           with urllib.request.urlopen(req,timeout=30) as r:
