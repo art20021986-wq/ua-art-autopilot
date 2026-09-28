@@ -22,11 +22,18 @@ body=(("--"+bd+"\r\nContent-Disposition: form-data; name=\"content\"; filename=\
 st,_=call("POST",furl(REMOTE),body,{"Content-Type":"multipart/form-data; boundary="+bd},(200,201))
 if st not in (200,201):raise SystemExit("UPLOAD_FAILED_"+str(st))
 call("DELETE",furl(RECEIPT),allowed=(200,204,404))
-run=time.gmtime(time.time()+60)
-form=urllib.parse.urlencode({"command":"python3.10 "+REMOTE,"description":"seo-multilingual-003-once","enabled":"true","interval":"daily","hour":run.tm_hour,"minute":run.tm_min}).encode()
-st,b=call("POST",BASE+"schedule/",form,{"Content-Type":"application/x-www-form-urlencoded"},(200,201,202))
-if st not in (200,201,202):raise SystemExit("TRIGGER_FAILED_"+str(st))
-sid=json.loads(b.decode()).get("id")
+form=urllib.parse.urlencode({"command":"python3.10 "+REMOTE,"description":"seo-multilingual-003-once","enabled":"true"}).encode()
+st,b=call("POST",BASE+"always_on/",form,{"Content-Type":"application/x-www-form-urlencoded"},(200,201,202,400,403,404,409))
+kind="always_on"
+try: sid=json.loads(b.decode()).get("id") if st in (200,201,202) else None
+except: sid=None
+if not sid:
+ run=time.gmtime(time.time()+120)
+ form=urllib.parse.urlencode({"command":"python3.10 "+REMOTE,"description":"seo-multilingual-003-once","enabled":"true","interval":"daily","hour":run.tm_hour,"minute":run.tm_min}).encode()
+ st,b=call("POST",BASE+"schedule/",form,{"Content-Type":"application/x-www-form-urlencoded"},(200,201,202))
+ kind="schedule"
+ if st not in (200,201,202):raise SystemExit("TRIGGER_FAILED_"+str(st))
+ sid=json.loads(b.decode()).get("id")
 if not sid:raise SystemExit("NO_TRIGGER")
 try:
  deadline=time.time()+420
@@ -39,4 +46,4 @@ try:
   time.sleep(5)
  raise SystemExit("RECEIPT_TIMEOUT")
 finally:
- call("DELETE",BASE+"schedule/%s/"%sid,allowed=(200,202,204,404,500,502,503,504))
+ endpoint="always_on" if kind=="always_on" else "schedule"\n call("DELETE",BASE+endpoint+"/%s/"%sid,allowed=(200,202,204,404,500,502,503,504))
