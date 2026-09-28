@@ -1009,6 +1009,20 @@ def runner_mode_main():
         return 1
 
     log('Receipt observed: %s' % receipt_found)
+    status, receipt_raw = pa_api_request('GET', '/files/path/home/%s/archive/reports/%s' % (PA_USERNAME, receipt_found), token)
+    if status != 200:
+        print('SEO-KOREA-KYIV-001 RELEASE BLOCKED -- receipt readback failed')
+        return 1
+    try:
+        receipt_value = json.loads(receipt_raw.decode('utf-8'))
+    except Exception:
+        print('SEO-KOREA-KYIV-001 RELEASE BLOCKED -- receipt JSON invalid')
+        return 1
+    final_status = str(receipt_value.get('final_status', ''))
+    log('Production receipt final_status: %s' % final_status)
+    if not final_status.startswith('SEO-KOREA-KYIV-001 PRODUCTION PASS'):
+        print('SEO-KOREA-KYIV-001 RELEASE BLOCKED -- production receipt is not PASS')
+        return 1
     log('Independently verifying public URLs')
     for url in [PUBLIC_BASE + '/video/index.html', PUBLIC_BASE + '/robots.txt', PUBLIC_BASE + '/sitemap.xml']:
         resp = http_get(url)
