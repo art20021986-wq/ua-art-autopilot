@@ -1,0 +1,26 @@
+name: SEO Structured 004 production
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cloud/seo_structured_004/patcher.py'
+      - 'cloud/seo_structured_004/release_controller.py'
+      - '.github/workflows/seo_structured_004_production.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile structured release
+        run: python3 -m py_compile cloud/seo_structured_004/patcher.py cloud/seo_structured_004/release_controller.py
+      - name: Run Product Car image breadcrumb release
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/seo_structured_004/release_controller.py
