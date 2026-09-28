@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import hashlib, html, json, os, pathlib, re, shutil, tempfile, time, urllib.request
-ROOT=pathlib.Path("/home/Carix"); V=ROOT/"video"; SEO=V/"seo"; ORIGIN="https://www.uaart.com.ua"
+# production trigger: owner-approved multilingual release\nROOT=pathlib.Path("/home/Carix"); V=ROOT/"video"; SEO=V/"seo"; ORIGIN="https://www.uaart.com.ua"
 STAMP=time.strftime("%Y%m%dT%H%M%SZ",time.gmtime()); BACK=ROOT/"archive/backups"/("SEO-MULTILINGUAL-003_"+STAMP)
 PHONE="+380992222020"; WA="+380992222002"
 SLUGS={"hub":{"uk":"avto-z-korei-do-kyieva-pid-kluch","ru":"avto-iz-korei-v-kiev-pod-kluch","ka":"avtomobili-koreidan-sakartveloshi"},
