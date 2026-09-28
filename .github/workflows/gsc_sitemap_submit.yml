@@ -1,0 +1,22 @@
+name: GSC Sitemap Submit
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'automation/gsc_sitemap_submit.py'
+      - '.github/workflows/gsc_sitemap_submit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Submit sitemap when OAuth scope permits
+        env:
+          GSC_CLIENT_ID: ${{ secrets.GSC_CLIENT_ID }}
+          GSC_CLIENT_SECRET: ${{ secrets.GSC_CLIENT_SECRET }}
+          GSC_REFRESH_TOKEN: ${{ secrets.GSC_REFRESH_TOKEN }}
+        run: python3 automation/gsc_sitemap_submit.py
