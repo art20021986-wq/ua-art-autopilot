@@ -36,7 +36,7 @@ if not sid:
  sid=json.loads(b.decode()).get("id")
 if not sid:raise SystemExit("NO_TRIGGER")
 try:
- deadline=time.time()+420
+ deadline=time.time()+600
  while time.time()<deadline:
   st,b=call("GET",furl(RECEIPT),allowed=(200,404))
   if st==200:
