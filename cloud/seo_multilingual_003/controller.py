@@ -46,4 +46,5 @@ try:
   time.sleep(5)
  raise SystemExit("RECEIPT_TIMEOUT")
 finally:
- endpoint="always_on" if kind=="always_on" else "schedule"\n call("DELETE",BASE+endpoint+"/%s/"%sid,allowed=(200,202,204,404,500,502,503,504))
+ endpoint="always_on" if kind=="always_on" else "schedule"
+ call("DELETE",BASE+endpoint+"/%s/"%sid,allowed=(200,202,204,404,500,502,503,504))
