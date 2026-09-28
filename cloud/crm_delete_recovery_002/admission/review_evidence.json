@@ -1,0 +1,226 @@
+{
+  "review_type": "independent_source_and_launcher_compatibility",
+  "task_id": "UA-ART-CRM-DELETE-RECOVERY-002",
+  "observed_at": "2026-09-21T06:48:41.648649+00:00",
+  "remote_main": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+  "production_ready": false,
+  "production_touched": false,
+  "gate_b": "OPEN_RUNTIME_ADMISSION",
+  "separate_installation_command_supplied": true,
+  "existing_unrelated_halt_preserved": true,
+  "authoritative_sources": [
+    {
+      "path": "automation/execution_contract.py",
+      "sha256": "22d167dbfd8b75881d60316a23cbd69da44b84b8ba6ea9c36322413b0b436985",
+      "git_blob_oid": "157ebe30c2a24d1a0ff946d9c5b34e4ca0735f87",
+      "remote_main_equality_verified_by_parent": true
+    },
+    {
+      "path": "automation/control_plane.py",
+      "sha256": "168ce50bd7ee432573832a888f220fe02205ee4e05192db455c6af144170d74b",
+      "git_blob_oid": "eb54309ecb046d2208bce753eec8e6cee145df1a",
+      "remote_main_equality_verified_by_parent": true
+    },
+    {
+      "path": "automation/critical_adapter.py",
+      "sha256": "94935cbb5331306bf37ee8a386aa0bc27a55cdbdf8ba82778fa99fa726dccd47",
+      "git_blob_oid": "89d247cea29714ffad809136251407a174288926",
+      "remote_main_equality_verified_by_parent": true
+    },
+    {
+      "path": ".github/workflows/uaart_critical.yml",
+      "sha256": "6f13c864a5d7b400474f3c9a1fe15e0d2d4dfca5d25dd195a628a3225d33e65a",
+      "git_blob_oid": "4f324c40c54aff58cdf8587a6c7257b4b69979ab",
+      "remote_main_equality_verified_by_parent": true
+    },
+    {
+      "path": "automation/autostart_intake.py",
+      "sha256": "379239468dc46cb2b5bdc6a1cdde8e6648d7c7414538078eca64115c7d8ea066",
+      "git_blob_oid": "09b6d0088694c438b133560707347fd509fb4dcc",
+      "remote_main_equality_verified_by_parent": true
+    }
+  ],
+  "fixture_test_modules_requiring_separate_admission_closure": [
+    {
+      "path": "cloud/crm_delete_recovery_002/bot_patch/test_bot_adapter.py",
+      "denied_call_lines": [
+        190
+      ]
+    },
+    {
+      "path": "cloud/crm_delete_recovery_002/deletion_core/test_runtime_current.py",
+      "denied_call_lines": [
+        73
+      ]
+    },
+    {
+      "path": "cloud/crm_delete_recovery_002/list_patch/test_resilient_list.py",
+      "denied_call_lines": [
+        139
+      ]
+    },
+    {
+      "path": "cloud/crm_delete_recovery_002/route_patch/test_deleted_routes.py",
+      "denied_call_lines": [
+        69
+      ]
+    },
+    {
+      "path": "cloud/crm_delete_recovery_002/writer_patch/test_publication_worker.py",
+      "denied_call_lines": [
+        69,
+        70
+      ]
+    },
+    {
+      "path": "cloud/crm_delete_recovery_002/writer_patch/test_writer_guard.py",
+      "denied_call_lines": [
+        198,
+        244,
+        279,
+        347,
+        348,
+        369,
+        371,
+        396,
+        414,
+        481,
+        527,
+        556,
+        568
+      ]
+    }
+  ],
+  "admission_local_findings_status": "SOURCE_INTEGRATION_VERIFIED_OFFLINE",
+  "unresolved_integration": [],
+  "updated_at": "2026-09-21T07:26:54.318018+00:00",
+  "owner_instruction": {
+    "status": "RECEIVED",
+    "path": "cloud/crm_delete_recovery_002/evidence/OWNER_INSTALL_INSTRUCTION_20260921.json",
+    "sha256": "037315045ecdd5d113b3fdd8dd9081d390e5afa178548672d4870b6d876ac071",
+    "requires_reconfirmation": false
+  },
+  "initial_no_arguments_invocation": {
+    "program": "cloud/crm_delete_recovery_002/install/lifecycle_controller.py",
+    "interpreter_flags": [
+      "-I",
+      "-B"
+    ],
+    "exit_code": 1,
+    "message": "Missing hash-bound lifecycle argument: --plan",
+    "provider_requests": 0,
+    "historical_finding": "Superseded by environment-only deploy controller; direct lifecycle CLI is not the workflow entrypoint"
+  },
+  "implemented_integration": [
+    "environment_only_entrypoints",
+    "complete_AST_compatible_python_closure",
+    "hash_bound_private_release_builder",
+    "bounded_authenticated_transport",
+    "actual_producer_wire_receipt_interoperability",
+    "existing_owner_approval_subject_schema",
+    "operation_specific_durable_transaction_admission",
+    "pinned_rollback_code_and_fresh_authority_split",
+    "actual_pinned_Git_worktree_five_overlay_test"
+  ],
+  "latest_completed_deploy_suite": {
+    "passed": 86,
+    "failed": 0,
+    "skipped": 0,
+    "duration_seconds": 2.385,
+    "network_used": false,
+    "production_touched": false,
+    "scope": "complete deployment package offline suite after final source materialization"
+  },
+  "remaining_runtime_gates": [
+    "unrelated_existing_AUTOPILOT_HALT",
+    "fresh_provider_capacity_inventory_and_process_namespace_proof",
+    "fresh_source_schema_storage_health_and_HTTP_binding",
+    "normal_exact_immutable_launch_admission",
+    "parent_live_Telegram_acceptance"
+  ],
+  "producer_consumer_integration": {
+    "phases": [
+      "backup",
+      "execute",
+      "rollback"
+    ],
+    "real_components": [
+      "Package",
+      "InstallWorker",
+      "PhaseRunner",
+      "SQLite WAL",
+      "filesystem readback",
+      "flock",
+      "receipt_from_result",
+      "execution_contract backup and rollback validators",
+      "critical_adapter final validator",
+      "task_orchestrator receipt validator"
+    ],
+    "test_doubles": [
+      "authority",
+      "provider",
+      "process startup observation",
+      "HTTP"
+    ],
+    "schema_digest_scope": "exact three SQLite schema objects; not raw crm.db bytes",
+    "newer_crm_edit_preserved_on_rollback": true,
+    "configuration_and_additive_schema_retained_on_rollback": true,
+    "same_original_backup_reused": true
+  },
+  "codec_interoperability": {
+    "policy": "actual package_install.encoded, compact ASCII without LF",
+    "critical_manifest_and_owner_subject": "canonical UTF-8 compact JSON plus LF",
+    "schema_projection": "canonical UTF-8 compact JSON plus LF",
+    "release_manifest": "exact original file bytes",
+    "wire_receipt": "canonical UTF-8 compact JSON plus LF",
+    "actual_producer_bytes_tested": true
+  },
+  "final_source_sha256": {
+    "cloud/crm_delete_recovery_002/deploy/backup_controller.py": "48854659dbebf00bc148bf8386db33998fd49486a287a86dbb48389c277c0fa3",
+    "cloud/crm_delete_recovery_002/deploy/contract.py": "22d730171ec8a52b166ad9a63471651eec0a0d68bec7adefadba66cc64ab88de",
+    "cloud/crm_delete_recovery_002/deploy/controller.py": "06f776a0f2b508e0d7e331b8db8486d5c552af92c96e26c15720756966ecde51",
+    "cloud/crm_delete_recovery_002/deploy/lifecycle_controller.py": "7ee033d34734206e3f95d562325272815950c2e42879a7ecf2532620e7bb195a",
+    "cloud/crm_delete_recovery_002/deploy/lifecycle_worker.py": "6b2a92f1fa4db6667885e56c0cf21422b86dfa58f39776b308aadd618ee3296f",
+    "cloud/crm_delete_recovery_002/deploy/package_install.py": "7fc417060df8a788aa6fd55de4901740c19b5b753de14b9c88faae68254d4c9b",
+    "cloud/crm_delete_recovery_002/deploy/recipe/bot_patch/build_bot_patch.py": "46702fa245f1ca37eee60a51358a3479c4c974ad8654172d802a9b07b9da6907",
+    "cloud/crm_delete_recovery_002/deploy/recipe/bot_patch/ua_crm_delete_bot.py": "e2c563055752c512a912ad5c3f7e4bd4318d012737517011ec5599e99159ae33",
+    "cloud/crm_delete_recovery_002/deploy/recipe/build_release.py": "163605029c5c7d8ded59b1f305f5cc8b1163e515c8cb926644d53b087cc6de99",
+    "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/__init__.py": "d5586e7d918456a61527291c1f80c9e8a31c9c675ea5a1c27c93763c8a7c1430",
+    "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/coordinator.py": "287f277b9b471557486f0fef6a08c96e45391d38dce96507a5c0b5ad5601a7d0",
+    "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/deletion_state.py": "35dd94313de833515afb611e41c620190e244f5fc91ffdb786d8dd5fcf4af31e",
+    "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/public_write_guard.py": "79248e9a172e491b51797d7786429be8ead0927e1b767ce4635e8184fa39330f",
+    "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/retirement.py": "3464c47ece14c642ccc49e4c7bf737aaaf08332f098ceb78037316228a39f4a6",
+    "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/runtime.py": "a6a917eb9a48a2504e3d5174669723798722f382537a6d4350f08f1def5a7f85",
+    "cloud/crm_delete_recovery_002/deploy/recipe/install/lifecycle_controller.py": "7ee033d34734206e3f95d562325272815950c2e42879a7ecf2532620e7bb195a",
+    "cloud/crm_delete_recovery_002/deploy/recipe/install/lifecycle_worker.py": "6b2a92f1fa4db6667885e56c0cf21422b86dfa58f39776b308aadd618ee3296f",
+    "cloud/crm_delete_recovery_002/deploy/recipe/install/package_install.py": "7fc417060df8a788aa6fd55de4901740c19b5b753de14b9c88faae68254d4c9b",
+    "cloud/crm_delete_recovery_002/deploy/recipe/install/remote_worker.py": "1f85c2e829e9c73d1da845bfe01846f03e0ef976aa047b4c38bb3a7b4f1dd431",
+    "cloud/crm_delete_recovery_002/deploy/recipe/install/watchdog.py": "bb3b5c9d8a76e230a5f5bf7e2208c9a1c4984cdb91dffb27087d511a9f314de5",
+    "cloud/crm_delete_recovery_002/deploy/recipe/list_patch/build_list_patch.py": "4b94b2e42dfaeaa6bd908e333e8b8ea2a53bb9be2833dea959dc6d424963bd05",
+    "cloud/crm_delete_recovery_002/deploy/recipe/list_patch/ua_crm_resilient_list.py": "f80874a906185e4703166c059f605d530e125ef77515e23a0b57b63ffa496b31",
+    "cloud/crm_delete_recovery_002/deploy/recipe/route_patch/build_route_patch.py": "86bc4022c321dcbc1e6d21661ba52ea6ff4170839a2ec89ec3897061019cae6a",
+    "cloud/crm_delete_recovery_002/deploy/recipe/route_patch/ua_crm_deleted_routes.py": "51a8e8482b32aa9408d42247705064f2c2984a058dab93c7df3b8297531e9706",
+    "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/build_writer_patch.py": "338707eabce2cd5552fa62a3d9e414589ffd4374ac009e31d18043a185c1db2a",
+    "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/cars_publication_patch.py": "a32f3b839aba04b1f8839f97949463afdc79013614d3c53db6ebdf779d9fdadc",
+    "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/ua_delete_public_guard.py": "0a309c8740aa1d87ab1d3bc44ded2976ec67504610184c85ad2ffdd848dc32f0",
+    "cloud/crm_delete_recovery_002/deploy/release_bundle.py": "2c4f12dfb3b61ba2b3764a186cbbf0691d97304959d1bf94af0ad29514840e96",
+    "cloud/crm_delete_recovery_002/deploy/remote_worker.py": "1f85c2e829e9c73d1da845bfe01846f03e0ef976aa047b4c38bb3a7b4f1dd431",
+    "cloud/crm_delete_recovery_002/deploy/rollback_controller.py": "87829b0ae57bf7090ac39121b5b88263933dcd6e06a153ed05fde9a209bab706",
+    "cloud/crm_delete_recovery_002/deploy/test_contract.py": "cbca9bc7d94990fa761e7d247814a33f2cdef85e7a44a8af5349524849eda35a",
+    "cloud/crm_delete_recovery_002/deploy/test_controller.py": "a9ba6341cbce3fed3748148dab71d22204995b468e72577e08e8da32f0386048",
+    "cloud/crm_delete_recovery_002/deploy/test_release_bundle.py": "0e826fea1ca8ba8a224265a470da308e10c35df9e6598ea7ae1926abb662038f",
+    "cloud/crm_delete_recovery_002/deploy/test_transport.py": "3725d47cd5b61a68f38fc2e77b92f6e5d384aead1bd9a2a955ba3e15ffa8cfe9",
+    "cloud/crm_delete_recovery_002/deploy/transport.py": "6b478e0583df38754d251e18afddbe5ae763ac1bd8238bc39b5a81887bd6b112",
+    "cloud/crm_delete_recovery_002/deploy/watchdog.py": "bb3b5c9d8a76e230a5f5bf7e2208c9a1c4984cdb91dffb27087d511a9f314de5"
+  },
+  "source_map_sha256": "e660e563ebd3428ee45ad03f95e4e186f11665ef5efc95160f8d522cde472ca9",
+  "assembled_offline_validation": {
+    "passed": 342,
+    "failed": 0,
+    "skipped": 0,
+    "canonical_snapshot_matches": 32,
+    "receipt_path": "cloud/crm_delete_recovery_002/evidence/offline_validation.json",
+    "build_receipt_path": "cloud/crm_delete_recovery_002/evidence/build_receipt.json",
+    "package_manifest_sha256": "b2d20d8059fa9f363c48e384a4f673c4b1d30640722e2741ead6b55ca5442b5c"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "candidate_sha256": "68eec23918c35cfbb2019c2761aaacbfa66c587fb1602ced11177a1307c15a6d",
+  "cars_ui_source_sha256": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+  "catalog_parser_sha256": "63cfe41b4ce4d6e5c1f5615235da8cad50c40fde3278a799a82dfae410daf7b0",
+  "executed_command": "BASELINE_CARS_UI=/workspace/scratch/946ab28b8831/private_sources/cars_ui.py BASELINE_CATALOG_MODULE=/workspace/scratch/946ab28b8831/private_sources/ua_crm_catalog_folders.py python -m unittest -v test_resilient_list.py",
+  "gate_b_recommendation": "PASS_FOR_LIST_ONLY_CANDIDATE_REVIEW; live import/restart/readback remain release checks",
+  "live_acceptance": "not_run",
+  "new_runtime_dependency": "ua_crm_resilient_list.py; no schema or writer integration dependency",
+  "observed_result": {
+    "errors": 0,
+    "failures": 0,
+    "reported_runtime_seconds": 0.066,
+    "skipped": 0,
+    "tests_run": 19
+  },
+  "receipt_created_at": "2026-09-21T06:04:31.608034+00:00",
+  "scope": "list-only offline candidate"
+}

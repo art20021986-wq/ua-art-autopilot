@@ -1,0 +1,163 @@
+# UA-ART-CRM-CATALOG-FOLDERS-001:START
+# UA-ART-CRM-DELETE-RECOVERY-002: resilient read-only CRM list.
+from pathlib import Path as _ua122_Path
+from html import escape as _ua002_html_escape
+from ua_crm_catalog_folders import parse_catalog as _ua122_parse_catalog
+from ua_crm_resilient_list import (
+    stable_catalog_ids as _ua002_stable_catalog_ids,
+    partition_crm_cards as _ua002_partition_crm_cards,
+)
+
+_UA122_CATALOG = _ua122_Path('/home/Carix/video/katalog.html')
+_UA122_LABELS = {'catalog': 'В каталоге', 'unpublished': 'Не опубликованные'}
+_UA122_PAGE_SIZE = 20
+_UA122_BASE_CARD_KB = card_kb
+_UA122_BASE_REGISTER = register
+
+
+def _ua122_catalog_ids():
+    return _ua002_stable_catalog_ids(_UA122_CATALOG, _ua122_parse_catalog)
+
+
+def _ua002_short_html(value, limit):
+    raw = str(value)[:limit]
+    escaped = _ua002_html_escape(raw)
+    while len(escaped) > limit:
+        raw = raw[:-1]
+        escaped = _ua002_html_escape(raw)
+    return escaped
+
+
+def _ua002_list_row(original):
+    """Keep a usable CRM open button even if one card cannot be rendered."""
+    try:
+        cid = int(original['id'])
+        if cid <= 0:
+            raise ValueError('Invalid CRM card ID')
+    except (KeyError, TypeError, ValueError):
+        log.exception('UA002: строка CRM без допустимого идентификатора')
+        return 'Карточка CRM с некорректным идентификатором.', None
+    try:
+        card = card_of(cid) or original
+        miss = S.missing_required(card)
+        state = ('черновик, не хватает %d' % len(miss)) if miss else 'заполнена'
+        stage = S.status_label(card.get('status')) if card.get('status') else 'этап не задан'
+        label = str(_ua082_title_button(card))[:64]
+        title = str(_ua082_title_html(card))
+        if len(title) > 100:
+            title = _ua002_short_html(label, 100)
+        line = title + '\n   ' + _ua002_short_html(stage, 45) + ' · ' + state
+    except Exception:
+        log.exception('UA002: краткое отображение карточки CRM id=%s', cid)
+        label = 'Карточка #%d · открыть' % cid
+        line = 'Карточка #%d · данные списка временно недоступны' % cid
+    return line, InlineKeyboardButton(label, callback_data='car_open:%d' % cid)
+
+
+async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q,)
+    staff = db.get_staff(q.from_user.id)
+    if not staff:
+        await q.message.reply_text('Доступ только для сотрудников.')
+        raise ApplicationHandlerStop
+    drop_wait(context)
+    context.user_data.pop('car_last', None)
+    context.user_data.pop('car_voice_active', None)
+    context.user_data.pop('voice_undo', None)
+    try:
+        # CRM is the authority for row existence, including during site repairs.
+        cards = list(db.list_cards('cars', limit=-1))
+        try:
+            groups = _ua002_partition_crm_cards(cards, _ua122_catalog_ids())
+            site_known = True
+        except Exception:
+            log.exception('UA002: статус сайта неизвестен, доступен полный список CRM')
+            groups = None
+            site_known = False
+        data = str(q.data or '')
+        root = data in ('cards_cars', 'cars_cards')
+        if root and site_known:
+            rows = [[InlineKeyboardButton('%s · %d' % (title, len(groups[key])),
+                     callback_data='ua122_cars:%s:0' % key)]
+                    for key, title in _UA122_LABELS.items()]
+            rows.append([InlineKeyboardButton('← Назад', callback_data='menu')])
+            await q.message.reply_text('Автомобили\nВыберите папку.',
+                                       reply_markup=InlineKeyboardMarkup(rows))
+            raise ApplicationHandlerStop
+        if root:
+            folder, requested_page = 'all', 0
+        else:
+            parts = data.split(':')
+            if (len(parts) != 3 or parts[0] != 'ua122_cars'
+                    or parts[1] not in ('catalog', 'unpublished', 'all')
+                    or not parts[2].isascii() or not parts[2].isdigit()
+                    or len(parts[2]) > 9):
+                raise ValueError('Invalid folder callback')
+            folder, requested_page = parts[1], int(parts[2])
+        # An old folder callback during a catalog failure must also show CRM
+        # rows, never imply that all cars are unpublished.
+        if not site_known:
+            requested_page = requested_page if folder == 'all' else 0
+            folder = 'all'
+        selected = cards if folder == 'all' else groups[folder]
+        last = max(0, (len(selected) - 1) // _UA122_PAGE_SIZE)
+        page = min(requested_page, last)
+        title = 'Все автомобили CRM' if folder == 'all' else _UA122_LABELS[folder]
+        lines = ['<b>%s · %d</b>' % (title, len(selected))]
+        if not site_known:
+            lines.append('Статус на сайте неизвестен. Показаны все автомобили CRM.')
+        rows = []
+        if not selected:
+            lines.append('Автомобилей пока нет.' if folder == 'all'
+                         else 'В этой папке пока нет автомобилей.')
+        for original in selected[page * _UA122_PAGE_SIZE:(page + 1) * _UA122_PAGE_SIZE]:
+            line, button = _ua002_list_row(original)
+            lines.append(line)
+            if button is not None:
+                rows.append([button])
+        nav = []
+        if page:
+            nav.append(InlineKeyboardButton('←', callback_data='ua122_cars:%s:%d' % (folder, page - 1)))
+        if page < last:
+            nav.append(InlineKeyboardButton('→', callback_data='ua122_cars:%s:%d' % (folder, page + 1)))
+        if nav:
+            lines.append('Страница %d из %d' % (page + 1, last + 1))
+            rows.append(nav)
+        rows.append([InlineKeyboardButton('← Автомобили', callback_data='cards_cars')])
+        if folder == 'all':
+            rows.append([InlineKeyboardButton('← Назад', callback_data='menu')])
+        await q.message.reply_text('\n'.join(lines), parse_mode='HTML',
+                                   reply_markup=InlineKeyboardMarkup(rows))
+    except ApplicationHandlerStop:
+        raise
+    except Exception:
+        log.exception('UA002: не удалось прочитать список CRM')
+        await q.message.reply_text(
+            'Не удалось прочитать список CRM. Повторите открытие раздела.',
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton('← Автомобили', callback_data='cards_cars'),
+                InlineKeyboardButton('← Назад', callback_data='menu')]]))
+    raise ApplicationHandlerStop
+
+
+def card_kb(card, staff):
+    markup = _UA122_BASE_CARD_KB(card, staff)
+    try:
+        folder = 'catalog' if card.get('auto_number') in _ua122_catalog_ids() else 'unpublished'
+    except Exception:
+        return markup
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton('← ' + _UA122_LABELS[folder],
+             callback_data='ua122_cars:%s:0' % folder)
+         if getattr(button, 'callback_data', None) in ('cards_cars', 'cars_cards')
+         else button for button in row]
+        for row in markup.inline_keyboard
+    ])
+
+
+def register(app):
+    _UA122_BASE_REGISTER(app)
+    app.add_handler(CallbackQueryHandler(cars_list,
+        pattern=r'^ua122_cars:(?:catalog|unpublished|all):[0-9]{1,9}$'), group=-1)
+# UA-ART-CRM-CATALOG-FOLDERS-001:END

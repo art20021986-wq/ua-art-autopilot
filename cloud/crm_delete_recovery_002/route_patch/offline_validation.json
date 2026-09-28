@@ -1,0 +1,32 @@
+{
+  "candidate_sha256": "297f8d572611b364503555680db803612e9752140457dbb72a94b06916109e92",
+  "default_legacy_routes": [
+    "/video/UA-0002-a6f9d391.html",
+    "/video/UA-0002-diag.html",
+    "/video/UA-0002.html"
+  ],
+  "files_sha256": {
+    "README.md": "f440bbf611e7b62b0797c5fa7792dfd01f31d821f0d8264f920a88910a1d1178",
+    "build_route_patch.py": "86bc4022c321dcbc1e6d21661ba52ea6ff4170839a2ec89ec3897061019cae6a",
+    "legacy_route_evidence.json": "2312f884b16c4a052c1e3c57278cc96011ddd1e0aae1bd9f03532eee16903a80",
+    "test_deleted_routes.py": "3e355c72bd705bf061ca55da226f9b73b5b43d426a77293bb44eb112d370e96e",
+    "ua_crm_deleted_routes.py": "51a8e8482b32aa9408d42247705064f2c2984a058dab93c7df3b8297531e9706"
+  },
+  "incident_plan_sha256": "891dbad7211277f1613655da9cbcb2ea19f80937c375bc2575767858c2aa6442",
+  "independent_review_fixes": [
+    "Explicit text plan and digest validation converts malformed intent metadata to bounded503",
+    "Per-card intent lookup isolates corrupt deletion record from unrelated car routes"
+  ],
+  "live_http_pass": false,
+  "production_write": false,
+  "remote_source_hash_verification": {
+    "observed_at": "2026-09-21T06:07:00Z",
+    "observed_by": "parent_authenticated_production_probe",
+    "sha256": "3067d39ec9c2eb976114afc6744e2c34b088a8414e98eb3e33e0a47c1849e308",
+    "status": "PASS"
+  },
+  "scope": "offline_only",
+  "source_sha256": "3067d39ec9c2eb976114afc6744e2c34b088a8414e98eb3e33e0a47c1849e308",
+  "tests_failed": 0,
+  "tests_passed": 16
+}

@@ -1,0 +1,367 @@
+{
+  "acceptance_scope": "INSTALLATION_AND_RUNTIME_HTTP_VERIFY",
+  "deployment": {
+    "data_sha256": {
+      "cloud/crm_delete_recovery_002/deploy/recipe/bot_patch/register_block.py.txt": "7619866905eb596c8fcd0563c82fc2b1ac2ee7ca68e04109d09bbd90309f62de",
+      "cloud/crm_delete_recovery_002/deploy/recipe/bot_patch/replacement_handlers.py.txt": "cd68303c7b6391ef408737785621558c0d5e8d96cf81c2c6c1794b6b3a11da19",
+      "cloud/crm_delete_recovery_002/deploy/recipe/list_patch/replacement_block.py.txt": "9af99a35ad235dfe9e1851e6ee245d01abedd99a33306810ef43aad4e4ef11ab",
+      "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/offline_validation.json": "c38ef621e88e41856d852559e4ab63f2a91190e8df74e3cbf1a9998c642c5bd2",
+      "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/test_publication_worker.py.txt": "df417f7979003e0cf739a26c62e371a27d51ec1097e1dcd34808151c2df5dde0",
+      "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/test_writer_guard.py.txt": "b6be0ed00a45cb89328241772d0a4929ecd962e4a27ace98921165d7616c9744"
+    },
+    "policy": {
+      "acceptance_scope": "INSTALLATION_AND_RUNTIME_HTTP_VERIFY",
+      "authority_policy": {
+        "control_plane_sha256": "168ce50bd7ee432573832a888f220fe02205ee4e05192db455c6af144170d74b",
+        "critical_workflow_sha256": "6f13c864a5d7b400474f3c9a1fe15e0d2d4dfca5d25dd195a628a3225d33e65a",
+        "trusted_controller_sha256": "06f776a0f2b508e0d7e331b8db8486d5c552af92c96e26c15720756966ecde51"
+      },
+      "http_checks": {
+        "baseline": [
+          {
+            "body_sha256": "c431a55cd28bf8d8a0473ad329bba340d592b9e1dfaca96523545e7205d72d18",
+            "status": 200,
+            "url": "https://www.uaart.com.ua/video/index.html"
+          },
+          {
+            "body_sha256": "279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01",
+            "status": 200,
+            "url": "https://www.uaart.com.ua/video/katalog.html"
+          },
+          {
+            "body_sha256": "db7add365b1925482d6c43b7616a2a066e24b15c8029eb58558a1caa35858aa7",
+            "status": 200,
+            "url": "https://www.uaart.com.ua/video/sitemap.xml"
+          },
+          {
+            "status": 302,
+            "url": "https://www.uaart.com.ua/video/UA-0002.html"
+          },
+          {
+            "status": 302,
+            "url": "https://www.uaart.com.ua/video/UA-0002-diag.html"
+          },
+          {
+            "status": 302,
+            "url": "https://www.uaart.com.ua/video/UA-0002-a6f9d391.html"
+          },
+          {
+            "status": 200,
+            "url": "https://www.uaart.com.ua/sitemap.xml"
+          }
+        ],
+        "installed": [
+          {
+            "body_sha256": "c431a55cd28bf8d8a0473ad329bba340d592b9e1dfaca96523545e7205d72d18",
+            "status": 200,
+            "url": "https://www.uaart.com.ua/video/index.html"
+          },
+          {
+            "body_sha256": "279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01",
+            "status": 200,
+            "url": "https://www.uaart.com.ua/video/katalog.html"
+          },
+          {
+            "body_sha256": "db7add365b1925482d6c43b7616a2a066e24b15c8029eb58558a1caa35858aa7",
+            "status": 200,
+            "url": "https://www.uaart.com.ua/video/sitemap.xml"
+          },
+          {
+            "status": 410,
+            "url": "https://www.uaart.com.ua/video/UA-0002.html"
+          },
+          {
+            "status": 410,
+            "url": "https://www.uaart.com.ua/video/UA-0002-diag.html"
+          },
+          {
+            "status": 410,
+            "url": "https://www.uaart.com.ua/video/UA-0002-a6f9d391.html"
+          },
+          {
+            "status": 200,
+            "url": "https://www.uaart.com.ua/sitemap.xml"
+          }
+        ]
+      },
+      "maximum_seconds": 1200,
+      "package_manifest_path": "package/manifest.json",
+      "package_manifest_sha256": "b2d20d8059fa9f363c48e384a4f673c4b1d30640722e2741ead6b55ca5442b5c",
+      "package_sources": {
+        "lifecycle_controller.py": "7ee033d34734206e3f95d562325272815950c2e42879a7ecf2532620e7bb195a",
+        "lifecycle_worker.py": "6b2a92f1fa4db6667885e56c0cf21422b86dfa58f39776b308aadd618ee3296f",
+        "package_install.py": "7fc417060df8a788aa6fd55de4901740c19b5b753de14b9c88faae68254d4c9b",
+        "remote_worker.py": "1f85c2e829e9c73d1da845bfe01846f03e0ef976aa047b4c38bb3a7b4f1dd431",
+        "watchdog.py": "bb3b5c9d8a76e230a5f5bf7e2208c9a1c4984cdb91dffb27087d511a9f314de5"
+      },
+      "parent_task_id": "UA-ART-CRM-DELETE-RECOVERY-002",
+      "provider": {
+        "always_on": [
+          {
+            "command_sha256": "bb7491b6a7cbf510aefe675ed052bf3c1b64fe0cff47edebcccfd8b6848ff240",
+            "enabled": true,
+            "id": 266084
+          },
+          {
+            "command_sha256": "6f49012cb3bc5a3a1a765aec4963f8e7fe19e4088f5c09f0d4270efcc7aa4af4",
+            "enabled": true,
+            "id": 270984
+          }
+        ],
+        "monitor_python_sha256": "987a7abf7b357c7363813f8d187532fc41143d646930618e2317095c43d2c087",
+        "scheduled": [
+          {
+            "command_sha256": "cda6feb1b3554593a00d80ed5437605bffdbf41d9c91ef2c960e861780898aea",
+            "enabled": true,
+            "hour": 21,
+            "id": 1502215,
+            "interval": "daily",
+            "minute": 28
+          },
+          {
+            "command_sha256": "af062b55672da06ae709fcfe5aa3c566c3a6e13c38756de452aab7f34ef8b606",
+            "enabled": false,
+            "hour": 8,
+            "id": 1502679,
+            "interval": "daily",
+            "minute": 2
+          },
+          {
+            "command_sha256": "b95db3d655dfdd272e8729ecc3a1977d47b69b3520e6eebafebf51a98d071337",
+            "enabled": true,
+            "hour": 19,
+            "id": 1505035,
+            "interval": "daily",
+            "minute": 0
+          }
+        ]
+      },
+      "task_id": "UA-ART-CRM-DELETE-RECOVERY-002-INSTALL",
+      "version": 1
+    },
+    "source_sha256": {
+      "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+      "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+      "emergency-plan.json": "891dbad7211277f1613655da9cbcb2ea19f80937c375bc2575767858c2aa6442",
+      "kadry_diagnostiki.py": "696a3b73af8e47a79d3352c6ead3a2364dd357b140a9cf7320fc4cad3d3106c0",
+      "public_fixture_tree/uploads/ua0002_job/console-result.json": "e12933ef0d154c6a33a76b17b5de90f637e8694aeffda6f7c662a3265d83981d",
+      "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+      "publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+      "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+      "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+      "seo_rehab_guard_068_repair.py": "88922c6774bec9ea624b381f06f76167f768b2ffe57ad302f2e0fb5f3697d6f3",
+      "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+      "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+      "ua_additional_spec.py": "6d2ab7b2bace29b8c0be58a6668264e695fd24f9e5e8f3ed6406da41ea45c672",
+      "ua_crm_catalog_folders.py": "63cfe41b4ce4d6e5c1f5615235da8cad50c40fde3278a799a82dfae410daf7b0",
+      "ua_site_counters.py": "500ca67145faa38ca9f72ac6da85e2a7d1c351f8f2fcca4a2edeb34c22734c23",
+      "ua_spec84_runtime.py": "938b8dd68f6eafa8b3022ef1dd1f03aa44fd27ec9979bef0819c36941fe022be",
+      "ua_spec_permanent.py": "2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d",
+      "ua_stage_catalog_sync.py": "c349d44821f92950234705d41507587c3ca2780dd750abda0028c060569a5beb",
+      "uaart_connection_monitor.py": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+      "www_uaart_com_ua_wsgi.py": "3067d39ec9c2eb976114afc6744e2c34b088a8414e98eb3e33e0a47c1849e308",
+      "yadro.py": "1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793"
+    },
+    "version": 1
+  },
+  "draft_status": "DRAFT_NOT_AUTHORIZED",
+  "executable_closure": {
+    "all_python_sha256": {
+      "cloud/crm_delete_recovery_002/deploy/backup_controller.py": "48854659dbebf00bc148bf8386db33998fd49486a287a86dbb48389c277c0fa3",
+      "cloud/crm_delete_recovery_002/deploy/contract.py": "22d730171ec8a52b166ad9a63471651eec0a0d68bec7adefadba66cc64ab88de",
+      "cloud/crm_delete_recovery_002/deploy/controller.py": "06f776a0f2b508e0d7e331b8db8486d5c552af92c96e26c15720756966ecde51",
+      "cloud/crm_delete_recovery_002/deploy/lifecycle_controller.py": "7ee033d34734206e3f95d562325272815950c2e42879a7ecf2532620e7bb195a",
+      "cloud/crm_delete_recovery_002/deploy/lifecycle_worker.py": "6b2a92f1fa4db6667885e56c0cf21422b86dfa58f39776b308aadd618ee3296f",
+      "cloud/crm_delete_recovery_002/deploy/package_install.py": "7fc417060df8a788aa6fd55de4901740c19b5b753de14b9c88faae68254d4c9b",
+      "cloud/crm_delete_recovery_002/deploy/recipe/bot_patch/build_bot_patch.py": "46702fa245f1ca37eee60a51358a3479c4c974ad8654172d802a9b07b9da6907",
+      "cloud/crm_delete_recovery_002/deploy/recipe/bot_patch/ua_crm_delete_bot.py": "e2c563055752c512a912ad5c3f7e4bd4318d012737517011ec5599e99159ae33",
+      "cloud/crm_delete_recovery_002/deploy/recipe/build_release.py": "163605029c5c7d8ded59b1f305f5cc8b1163e515c8cb926644d53b087cc6de99",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/__init__.py": "d5586e7d918456a61527291c1f80c9e8a31c9c675ea5a1c27c93763c8a7c1430",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/coordinator.py": "287f277b9b471557486f0fef6a08c96e45391d38dce96507a5c0b5ad5601a7d0",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/deletion_state.py": "35dd94313de833515afb611e41c620190e244f5fc91ffdb786d8dd5fcf4af31e",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/public_write_guard.py": "79248e9a172e491b51797d7786429be8ead0927e1b767ce4635e8184fa39330f",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/retirement.py": "3464c47ece14c642ccc49e4c7bf737aaaf08332f098ceb78037316228a39f4a6",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/runtime.py": "a6a917eb9a48a2504e3d5174669723798722f382537a6d4350f08f1def5a7f85",
+      "cloud/crm_delete_recovery_002/deploy/recipe/install/lifecycle_controller.py": "7ee033d34734206e3f95d562325272815950c2e42879a7ecf2532620e7bb195a",
+      "cloud/crm_delete_recovery_002/deploy/recipe/install/lifecycle_worker.py": "6b2a92f1fa4db6667885e56c0cf21422b86dfa58f39776b308aadd618ee3296f",
+      "cloud/crm_delete_recovery_002/deploy/recipe/install/package_install.py": "7fc417060df8a788aa6fd55de4901740c19b5b753de14b9c88faae68254d4c9b",
+      "cloud/crm_delete_recovery_002/deploy/recipe/install/remote_worker.py": "1f85c2e829e9c73d1da845bfe01846f03e0ef976aa047b4c38bb3a7b4f1dd431",
+      "cloud/crm_delete_recovery_002/deploy/recipe/install/watchdog.py": "bb3b5c9d8a76e230a5f5bf7e2208c9a1c4984cdb91dffb27087d511a9f314de5",
+      "cloud/crm_delete_recovery_002/deploy/recipe/list_patch/build_list_patch.py": "4b94b2e42dfaeaa6bd908e333e8b8ea2a53bb9be2833dea959dc6d424963bd05",
+      "cloud/crm_delete_recovery_002/deploy/recipe/list_patch/ua_crm_resilient_list.py": "f80874a906185e4703166c059f605d530e125ef77515e23a0b57b63ffa496b31",
+      "cloud/crm_delete_recovery_002/deploy/recipe/route_patch/build_route_patch.py": "86bc4022c321dcbc1e6d21661ba52ea6ff4170839a2ec89ec3897061019cae6a",
+      "cloud/crm_delete_recovery_002/deploy/recipe/route_patch/ua_crm_deleted_routes.py": "51a8e8482b32aa9408d42247705064f2c2984a058dab93c7df3b8297531e9706",
+      "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/build_writer_patch.py": "338707eabce2cd5552fa62a3d9e414589ffd4374ac009e31d18043a185c1db2a",
+      "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/cars_publication_patch.py": "a32f3b839aba04b1f8839f97949463afdc79013614d3c53db6ebdf779d9fdadc",
+      "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/ua_delete_public_guard.py": "0a309c8740aa1d87ab1d3bc44ded2976ec67504610184c85ad2ffdd848dc32f0",
+      "cloud/crm_delete_recovery_002/deploy/release_bundle.py": "2c4f12dfb3b61ba2b3764a186cbbf0691d97304959d1bf94af0ad29514840e96",
+      "cloud/crm_delete_recovery_002/deploy/remote_worker.py": "1f85c2e829e9c73d1da845bfe01846f03e0ef976aa047b4c38bb3a7b4f1dd431",
+      "cloud/crm_delete_recovery_002/deploy/rollback_controller.py": "87829b0ae57bf7090ac39121b5b88263933dcd6e06a153ed05fde9a209bab706",
+      "cloud/crm_delete_recovery_002/deploy/test_contract.py": "cbca9bc7d94990fa761e7d247814a33f2cdef85e7a44a8af5349524849eda35a",
+      "cloud/crm_delete_recovery_002/deploy/test_controller.py": "a9ba6341cbce3fed3748148dab71d22204995b468e72577e08e8da32f0386048",
+      "cloud/crm_delete_recovery_002/deploy/test_release_bundle.py": "0e826fea1ca8ba8a224265a470da308e10c35df9e6598ea7ae1926abb662038f",
+      "cloud/crm_delete_recovery_002/deploy/test_transport.py": "3725d47cd5b61a68f38fc2e77b92f6e5d384aead1bd9a2a955ba3e15ffa8cfe9",
+      "cloud/crm_delete_recovery_002/deploy/transport.py": "6b478e0583df38754d251e18afddbe5ae763ac1bd8238bc39b5a81887bd6b112",
+      "cloud/crm_delete_recovery_002/deploy/watchdog.py": "bb3b5c9d8a76e230a5f5bf7e2208c9a1c4984cdb91dffb27087d511a9f314de5"
+    },
+    "dependency_paths": [
+      "cloud/crm_delete_recovery_002/deploy/contract.py",
+      "cloud/crm_delete_recovery_002/deploy/lifecycle_controller.py",
+      "cloud/crm_delete_recovery_002/deploy/lifecycle_worker.py",
+      "cloud/crm_delete_recovery_002/deploy/package_install.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/bot_patch/build_bot_patch.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/bot_patch/ua_crm_delete_bot.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/build_release.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/__init__.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/coordinator.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/deletion_state.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/public_write_guard.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/retirement.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/deletion_core/runtime.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/install/lifecycle_controller.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/install/lifecycle_worker.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/install/package_install.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/install/remote_worker.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/install/watchdog.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/list_patch/build_list_patch.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/list_patch/ua_crm_resilient_list.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/route_patch/build_route_patch.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/route_patch/ua_crm_deleted_routes.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/build_writer_patch.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/cars_publication_patch.py",
+      "cloud/crm_delete_recovery_002/deploy/recipe/writer_patch/ua_delete_public_guard.py",
+      "cloud/crm_delete_recovery_002/deploy/release_bundle.py",
+      "cloud/crm_delete_recovery_002/deploy/remote_worker.py",
+      "cloud/crm_delete_recovery_002/deploy/transport.py",
+      "cloud/crm_delete_recovery_002/deploy/watchdog.py"
+    ],
+    "test_paths": [
+      "cloud/crm_delete_recovery_002/deploy/test_contract.py",
+      "cloud/crm_delete_recovery_002/deploy/test_controller.py",
+      "cloud/crm_delete_recovery_002/deploy/test_release_bundle.py",
+      "cloud/crm_delete_recovery_002/deploy/test_transport.py"
+    ]
+  },
+  "gate_b": "OPEN",
+  "http_checks": {
+    "baseline": [
+      {
+        "body_sha256": "c431a55cd28bf8d8a0473ad329bba340d592b9e1dfaca96523545e7205d72d18",
+        "status": 200,
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "body_sha256": "279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01",
+        "status": 200,
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "body_sha256": "db7add365b1925482d6c43b7616a2a066e24b15c8029eb58558a1caa35858aa7",
+        "status": 200,
+        "url": "https://www.uaart.com.ua/video/sitemap.xml"
+      },
+      {
+        "status": 302,
+        "url": "https://www.uaart.com.ua/video/UA-0002.html"
+      },
+      {
+        "status": 302,
+        "url": "https://www.uaart.com.ua/video/UA-0002-diag.html"
+      },
+      {
+        "status": 302,
+        "url": "https://www.uaart.com.ua/video/UA-0002-a6f9d391.html"
+      },
+      {
+        "status": 200,
+        "url": "https://www.uaart.com.ua/sitemap.xml"
+      }
+    ],
+    "installed": [
+      {
+        "body_sha256": "c431a55cd28bf8d8a0473ad329bba340d592b9e1dfaca96523545e7205d72d18",
+        "status": 200,
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "body_sha256": "279a221536aecd36111d496482f1bbf8594f38ed7cc19fb77561faed27fc6d01",
+        "status": 200,
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "body_sha256": "db7add365b1925482d6c43b7616a2a066e24b15c8029eb58558a1caa35858aa7",
+        "status": 200,
+        "url": "https://www.uaart.com.ua/video/sitemap.xml"
+      },
+      {
+        "status": 410,
+        "url": "https://www.uaart.com.ua/video/UA-0002.html"
+      },
+      {
+        "status": 410,
+        "url": "https://www.uaart.com.ua/video/UA-0002-diag.html"
+      },
+      {
+        "status": 410,
+        "url": "https://www.uaart.com.ua/video/UA-0002-a6f9d391.html"
+      },
+      {
+        "status": 200,
+        "url": "https://www.uaart.com.ua/sitemap.xml"
+      }
+    ]
+  },
+  "installation_policy_sha256": "0415f39dcf1eed52f1efb6f3d8eac63545ef8449e7129e78e701d5638cc1072b",
+  "observation_context": {
+    "always_on_capacity_verified": false,
+    "http_body_source": "private captured public_fixture_tree; require fresh HTTP comparison",
+    "native_provider_credential_present": true,
+    "provider_observed_at": "2026-09-21T06:28Z",
+    "remote_process_namespace_verified": false,
+    "schedule_interval": "daily template; compare complete fresh authenticated inventory",
+    "source_observation": "2026-09-21T05:52:00Z"
+  },
+  "owner_approval": null,
+  "package_manifest_sha256": "b2d20d8059fa9f363c48e384a4f673c4b1d30640722e2741ead6b55ca5442b5c",
+  "parent_acceptance_status": "PENDING_LIVE_TELEGRAM_ACCEPTANCE",
+  "parent_task_id": "UA-ART-CRM-DELETE-RECOVERY-002",
+  "production_allowed": false,
+  "required_before_admission": [
+    "Independent assembled-package review and exact regression evidence",
+    "Resolve unrelated AUTOPILOT_HALT through its existing authorized process",
+    "Fresh provider inventory, available trigger capacity, and process/lock reachability",
+    "Fresh public body hashes and exact baseline HTTP status read-back",
+    "Exact CRITICAL manifest, Gate A and storage/health evidence for installation child",
+    "Existing-schema owner approval bound by request_subject_sha256 and manifest_sha256",
+    "Normal immutable launch intake; no incident-console override"
+  ],
+  "separate_owner_installation_command": {
+    "evidence_path": "cloud/crm_delete_recovery_002/evidence/OWNER_INSTALL_INSTRUCTION_20260921.json",
+    "evidence_sha256": "037315045ecdd5d113b3fdd8dd9081d390e5afa178548672d4870b6d876ac071",
+    "requires_reconfirmation": false,
+    "status": "RECEIVED"
+  },
+  "sqlite_schema_migration": {
+    "action": "replace",
+    "after_projection": {
+      "ua_delete_confirmations": "CREATE TABLE ua_delete_confirmations (\n        token TEXT PRIMARY KEY, actor_id INTEGER NOT NULL,\n        car_id INTEGER NOT NULL, car_code TEXT NOT NULL, vin TEXT NOT NULL,\n        snapshot TEXT NOT NULL, snapshot_sha256 TEXT NOT NULL,\n        operation_id TEXT\n    )",
+      "ua_delete_intents": "CREATE TABLE ua_delete_intents (\n        operation_id TEXT PRIMARY KEY, car_id INTEGER NOT NULL UNIQUE,\n        car_code TEXT NOT NULL UNIQUE, vin TEXT NOT NULL,\n        actor_id INTEGER NOT NULL, snapshot TEXT NOT NULL,\n        snapshot_sha256 TEXT NOT NULL, expected_snapshot TEXT NOT NULL,\n        expected_snapshot_sha256 TEXT NOT NULL, plan TEXT NOT NULL,\n        plan_sha256 TEXT NOT NULL, backup_sha256 TEXT NOT NULL,\n        state TEXT NOT NULL CHECK(state IN ('REQUESTED','ROW_DELETED','COMPLETE')),\n        proof TEXT, proof_sha256 TEXT\n    )",
+      "ua_delete_jobs": "CREATE TABLE ua_delete_jobs (\n        operation_id TEXT PRIMARY KEY,\n        state TEXT NOT NULL CHECK(state IN ('PENDING','ROW_DELETED','COMPLETE')),\n        FOREIGN KEY(operation_id) REFERENCES ua_delete_intents(operation_id)\n            ON DELETE RESTRICT\n    )"
+    },
+    "before_projection": {
+      "ua_delete_confirmations": null,
+      "ua_delete_intents": null,
+      "ua_delete_jobs": null
+    },
+    "crm_row_invariant": "Logical application data digest unchanged; never restore an old database",
+    "database_file_hash_claimed": false,
+    "digest_scope": "sqlite_schema",
+    "expected_after_sha256": "dc66c4dfc02ae9fa5f2081ff25f5c931c11358aa970c3cbbf6241554e85328f4",
+    "expected_before_sha256": "2892055c2dd683658f34e9894534d5a6c0353b57394b7c55bc841cf9bc46dbe5",
+    "fresh_projection_verification_required": true,
+    "migration_payload_sha256": "35dd94313de833515afb611e41c620190e244f5fc91ffdb786d8dd5fcf4af31e",
+    "path": "production/crm.db",
+    "projection_definition": "Exact three deletion table names mapped to sqlite_master.sql or null; canonical UTF-8 sorted compact JSON plus LF"
+  },
+  "task_id": "UA-ART-CRM-DELETE-RECOVERY-002-INSTALL"
+}

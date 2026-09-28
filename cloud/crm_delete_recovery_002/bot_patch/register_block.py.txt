@@ -1,0 +1,15 @@
+# UA-ART-CRM-DELETE-RECOVERY-002:BEGIN
+_ua002_delete_base_register = register
+
+def register(app):
+    _ua002_delete_base_register(app)
+    try:
+        from ua_crm_delete_bot import CoordinatorBackend, register_adapter
+        # This source-bound factory is a mandatory separate integration gate.
+        # It must not migrate the schema or modify public files on construction.
+        from ua_delete_runtime import create_coordinator
+        register_adapter(app, backend=CoordinatorBackend(create_coordinator(db=db)),
+                         get_staff=db.get_staff, ack=_v168_ack, logger=log)
+    except Exception:
+        log.exception('UA002 deletion adapter not active; CRM retained, deletion fails closed')
+# UA-ART-CRM-DELETE-RECOVERY-002:END

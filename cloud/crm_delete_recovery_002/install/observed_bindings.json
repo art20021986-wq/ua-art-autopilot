@@ -1,0 +1,42 @@
+{
+  "existing_halt_observation": {
+    "clear_or_bypass_authorized": false,
+    "main_sha": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+    "observed_event_time": "2026-09-21T01:53:00Z",
+    "path": "state/AUTOPILOT_HALT.json",
+    "reported_by": "parent agent read of remote main",
+    "run_id": 35552076762,
+    "status": "EMERGENCY_HALT",
+    "task_id": "SEO-DAILY-PODBOR-CANONICAL-20260921"
+  },
+  "lifecycle_references_inspected_not_reused": {
+    "/workspace/scratch/1d3749e72886/ua0002_console_runner.py": "9577a50bad62d3a770c2ea4c76c7ed610ae6326879f7a0b4dc2b867baf48beb1",
+    "/workspace/scratch/a991651e104f/stage_a_candidate/remote_lifecycle.py": "e1f862209094f4c38460ee9f1c98ecc469ce32333dfd6fee44c6d56d7c2d3d13"
+  },
+  "observed_application_schema_sha256": "1d5aacc240cc0e330ae059bf56e32a3ce50200ee1bfe08da8834ae4f98c0480a",
+  "production_operations_executed": [],
+  "production_ready": false,
+  "scope": "offline preparation only",
+  "source_sha256": {
+    "autopilot_inbox/cloud/seo_rehab_guard_068/seo_rehab_guard_068_repair.py": "88922c6774bec9ea624b381f06f76167f768b2ffe57ad302f2e0fb5f3697d6f3",
+    "cars_ui.py": "d9bd8cb352ad95892f8ac2cddcce02898ec7f3f2fe5013f1a5007bf1469db837",
+    "db.py": "b732a5c731d85cb4c9b1cfddb2fc20961b75230d64e29563a5b5ac328d62c086",
+    "kadry_diagnostiki.py": "696a3b73af8e47a79d3352c6ead3a2364dd357b140a9cf7320fc4cad3d3106c0",
+    "publication_fence.py": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21",
+    "publikaciya.py": "296c389b477472032bad714e41f12bfa4b7e47ad784ac6900ba55f136d939c72",
+    "publish_transaction_guard.py": "b1e89bfcbe4af4890d1023293cb8290f34b6c59673b7a8e692ab64928f640159",
+    "run_all.py": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9",
+    "start_safe.py": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb",
+    "stranica.py": "cdb532f36e6e8fd17c7f933ad347a8bb0bcd8c00644d9c8ea7d9e3ddbb6ae687",
+    "ua_additional_spec.py": "6d2ab7b2bace29b8c0be58a6668264e695fd24f9e5e8f3ed6406da41ea45c672",
+    "ua_crm_catalog_folders.py": "63cfe41b4ce4d6e5c1f5615235da8cad50c40fde3278a799a82dfae410daf7b0",
+    "ua_site_counters.py": "500ca67145faa38ca9f72ac6da85e2a7d1c351f8f2fcca4a2edeb34c22734c23",
+    "ua_spec84_runtime.py": "938b8dd68f6eafa8b3022ef1dd1f03aa44fd27ec9979bef0819c36941fe022be",
+    "ua_spec_permanent.py": "2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d",
+    "ua_stage_catalog_sync.py": "c349d44821f92950234705d41507587c3ca2780dd750abda0028c060569a5beb",
+    "uaart_connection_monitor.py": "989acd5d3ff1ce2dc6a49810a96b4451d63d89faf558ec96da3726d369f276fd",
+    "www_uaart_com_ua_wsgi.py": "3067d39ec9c2eb976114afc6744e2c34b088a8414e98eb3e33e0a47c1849e308",
+    "yadro.py": "1c6bddccec30198179f9a179aa67ac8f2e40da1a794c87f2342150eb5d2ec793"
+  },
+  "task": "UA-ART-CRM-DELETE-RECOVERY-002-v1.0"
+}

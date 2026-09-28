@@ -1,0 +1,38 @@
+{
+  "task_id": "UA-ART-CRM-DELETE-RECOVERY-002",
+  "status": "READ_ONLY_DEPENDENCY_FINDINGS_NOT_RECONCILIATION",
+  "incident_task_id": "SEO-DAILY-PODBOR-CANONICAL-20260921",
+  "incident_run_id": "35552076762",
+  "observed_at": "2026-09-21T07:17Z",
+  "authoritative_main": "79c6aaccbfdc2decf7bf39d26738a2c38bde91f4",
+  "workflow": {
+    "url": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/35552076762",
+    "backup_job_id": 106188834586,
+    "backup": "failure",
+    "failure": "TimeoutError while GETting remote backup receipt; BACKUP_CONTROLLER_FAILED:1",
+    "open": "skipped",
+    "controller_production": "skipped",
+    "rollback_execute": "skipped"
+  },
+  "remote_observation": {
+    "method": "authenticated console existence and SHA256 only; no source executed",
+    "absent": [
+      "/home/Carix/archive/backups/SEO-DAILY-PODBOR-CANONICAL-20260921/35552076762/manifest.json",
+      "/home/Carix/archive/backups/SEO-DAILY-PODBOR-CANONICAL-20260921/35552076762/podbor.html",
+      "/home/Carix/uploads/seo_daily_podbor_canonical_20260921.json",
+      "/home/Carix/uploads/seo_daily_podbor_canonical_20260921.py"
+    ],
+    "present": {
+      "/home/Carix/video/podbor.html": "1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6"
+    }
+  },
+  "limits": [
+    "Absence of historical artifacts does not prove that the remote backup never started.",
+    "The incident manifest has no pinned target before-image; current file hash is not an unchanged-production proof.",
+    "No automatic incident reconciliation or release of HALT was performed."
+  ],
+  "halt_cleared": false,
+  "production_or_provider_mutations": false,
+  "installation_authorization_received": true,
+  "installation_gate_b_pass": false
+}
