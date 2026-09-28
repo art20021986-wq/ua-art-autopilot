@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# retry after runtime ROOT preflight fix
 import json, os, socket, time, urllib.error, urllib.parse, urllib.request, uuid
 TOKEN=(os.environ.get("PYTHONANYWHERE_API_TOKEN") or "").strip()
 BASE="https://www.pythonanywhere.com/api/v0/user/Carix/"
