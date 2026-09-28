@@ -35,6 +35,7 @@ import time
 import hashlib
 import shutil
 import traceback
+import socket
 import urllib.request
 import urllib.error
 import uuid
@@ -887,6 +888,10 @@ def pa_api_request(method, path, token, body=None, is_multipart_file=None):
             return resp.status, resp.read()
     except urllib.error.HTTPError as e:
         return e.code, e.read()
+    except (TimeoutError, socket.timeout) as e:
+        return 0, ('TIMEOUT: %s' % e).encode('utf-8')
+    except Exception as e:
+        return 0, ('ERROR: %s' % e).encode('utf-8')
 
 
 def runner_mode_main():
@@ -908,6 +913,16 @@ def runner_mode_main():
         log('Upload failed: status=%s body=%s' % (status, body[:200]))
         print('SEO-KOREA-KYIV-001 RELEASE BLOCKED -- upload to PythonAnywhere failed (status %s)' % status)
         return 1
+
+    # Snapshot existing receipts so a stale receipt can never satisfy this run.
+    existing_receipts = set()
+    status, body = pa_api_request('GET', '/files/path/home/%s/archive/reports/' % PA_USERNAME, token)
+    if status == 200:
+        try:
+            listing = json.loads(body.decode('utf-8'))
+            existing_receipts = {name for name in listing if isinstance(name, str) and name.startswith('SEO_KOREA_KYIV_001_receipt_')}
+        except Exception:
+            existing_receipts = set()
 
     log('Creating bounded one-shot scheduled-task trigger')
     now = datetime.now(timezone.utc)
@@ -941,7 +956,9 @@ def runner_mode_main():
             try:
                 listing = json.loads(body.decode('utf-8'))
                 for name in listing:
-                    if isinstance(name, str) and name.startswith('SEO_KOREA_KYIV_001_receipt_'):
+                    if (isinstance(name, str)
+                            and name.startswith('SEO_KOREA_KYIV_001_receipt_')
+                            and name not in existing_receipts):
                         receipt_found = name
                         break
             except Exception:
