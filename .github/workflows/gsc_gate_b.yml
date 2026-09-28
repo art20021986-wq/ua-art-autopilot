@@ -1,0 +1,21 @@
+name: GSC Gate B (SEO read-only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gsc-seo-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GSC_CLIENT_ID: ${{ secrets.GSC_CLIENT_ID }}
+      GSC_CLIENT_SECRET: ${{ secrets.GSC_CLIENT_SECRET }}
+      GSC_REFRESH_TOKEN: ${{ secrets.GSC_REFRESH_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Collect Search Console SEO snapshot
+        run: python3 automation/gsc_seo_snapshot.py
