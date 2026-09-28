@@ -21,9 +21,13 @@ def reference_kind(number):
 
 
 def tracking_links(value):
-    """Start SeaRates search with the complete reference; results remain external."""
+    """Use ONE for its explicit B/L prefix; otherwise let SeaRates detect the carrier."""
     number = normalize(value)
     if not number:
         return []
+    if reference_kind(number) == 'one_bl':
+        # ONE's own tracking form requires its B/L without the ONEY prefix.
+        return [('ONE', 'https://ecomm.one-line.com/one-ecom/manage-shipment/cargo-tracking?'
+                 + urlencode({'trakNoParam': number[4:]}), 'direct')]
     return [('SeaRates', 'https://www.searates.com/container/tracking/?'
              + urlencode({'number': number, 'sealine': 'AUTO'}), 'direct')]

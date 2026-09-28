@@ -1,13 +1,12 @@
-"""Upgrade the two installed tracking modules; verify existing renderer hooks."""
+"""Upgrade routing only; preserve the installed tracking widget and renderer hooks."""
 import ast
 from hashlib import sha256
 from pathlib import Path
 
 SOURCE_SHA256 = {
-    'ua_tracking_links.py': '9a4712ff4b7f97b94ae5931a326e64986c5a0d22297006a3bf91ecf97900f7b9',
-    'ua_tracking_widget.py': 'a96b76b662f2cf496a1c672ff8804f0dc940bbb4d02bdfcf37205b9c956f7477',
+    'ua_tracking_links.py': 'e00a626d18a47945f26278617cea567a5f3e741aae99c2ea65410bd7a07dffc5',
 }
-MODULES = ('ua_tracking_links.py', 'ua_tracking_widget.py')
+MODULES = ('ua_tracking_links.py',)
 RENDERERS = ('stranica.py', 'yadro.py', 'master_card.py')
 BEGIN = '    container = str(m.get("sea_container") or "").strip()\n'
 AFTER = '    kind, days, target = _ua_stage_eta(m, stage)\n'

@@ -134,6 +134,7 @@ def prepare(directory):
         'publication_fence.py','ua_public_freshness.py',
         'ua_site_counters.py','catalog_design_guard.py','cars_schema.py',
         'konteyner.py','cars_ui.py','publikaciya.py','ua_crm_public_sync.py','ua_publish_requests.py',
+        'ua_tracking_widget.py',
     }
     protected = {name:sha(read(ROOT/name)) for name in sorted(protected_names | set(RENDERERS))}
     references = card_references()
