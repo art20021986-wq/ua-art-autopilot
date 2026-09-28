@@ -101,8 +101,17 @@ def card_references():
 
 
 def tracking_inputs(references):
-    return {folder+'/'+code+'.html':reference for code,reference in references.items()
-            for folder in ('video','site') if (ROOT/folder/(code+'.html')).exists()}
+    inputs = {}
+    for folder in ('video', 'site'):
+        for path in sorted((ROOT/folder).glob('UA-*.html')):
+            match = re.fullmatch(r'(UA-[0-9]{4,})(?:-[0-9a-f]{8})?\.html', path.name)
+            if not match:
+                continue
+            code = match.group(1)
+            if code not in references:
+                raise DeploymentError('CARD_REFERENCE_MISSING:'+path.name)
+            inputs[str(path.relative_to(ROOT))] = references[code]
+    return inputs
 
 
 def verify_tracking_inputs(plan):
@@ -130,15 +139,12 @@ def prepare(directory):
     references = card_references()
     inputs = tracking_inputs(references)
     card_codes = []
-    for code, reference in sorted(references.items()):
-        for folder in ('video', 'site'):
-            relative = folder+'/'+code+'.html'
-            if not (ROOT/relative).exists():
-                continue
-            before = read(ROOT/relative)
-            source[relative] = before
-            candidate[relative] = upgrade_card(before.decode('utf-8'), reference).encode('utf-8')
-            if folder == 'video': card_codes.append(code)
+    for relative, reference in sorted(inputs.items()):
+        before = read(ROOT/relative)
+        source[relative] = before
+        candidate[relative] = upgrade_card(before.decode('utf-8'), reference).encode('utf-8')
+        if relative.startswith('video/'):
+            card_codes.append(Path(relative).stem)
     if not card_codes:
         raise DeploymentError('NO_EXISTING_CARDS')
     files = {}
