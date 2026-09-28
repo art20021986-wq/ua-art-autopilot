@@ -1,0 +1,29 @@
+name: GSC SEO Readonly Gate A
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GSC_CLIENT_ID: ${{ secrets.GSC_CLIENT_ID }}
+      GSC_CLIENT_SECRET: ${{ secrets.GSC_CLIENT_SECRET }}
+      GSC_REFRESH_TOKEN: ${{ secrets.GSC_REFRESH_TOKEN }}
+      GSC_SITE_URL: sc-domain:uaart.com.ua
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python version
+        run: python --version
+
+      - name: Compile isolated GSC module
+        run: python -m compileall -q seo/gsc
+
+      - name: Read Google index state
+        run: python -m seo.gsc.url_inspection
