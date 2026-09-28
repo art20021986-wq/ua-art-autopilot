@@ -1,0 +1,22 @@
+name: SEO Structured 004 Gate A
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cloud/seo_structured_004/**'
+      - '.github/workflows/seo_structured_004_gate_a.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile Gate A
+        run: python3 -m py_compile cloud/seo_structured_004/probe.py cloud/seo_structured_004/controller.py
+      - name: Run live read-only Gate A
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/seo_structured_004/controller.py
