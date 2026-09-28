@@ -1,0 +1,25 @@
+name: SEO TOP KYIV 002 production
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'cloud/seo_top_kyiv_002/**'
+      - '.github/workflows/seo_top_kyiv_002.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ua-art-production-writer
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile bounded release
+        run: python3 -m py_compile cloud/seo_top_kyiv_002/patcher.py cloud/seo_top_kyiv_002/controller.py
+      - name: Run bounded SEO repair
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 cloud/seo_top_kyiv_002/controller.py
