@@ -1,0 +1,31 @@
+{
+  "blocked_by": [
+    "FRESH_TARGET_ACCOUNT_STORAGE_MEASUREMENT",
+    "CURRENT_SOURCE_AND_UNPUBLISHED_TEST_CAR",
+    "REAL_RUNNING_BOT_ACCEPTANCE"
+  ],
+  "candidate_request_path": "tasks/requests/TASK088-GE-PRICE-CRM-STAGE1-R20260911T114500Z.json",
+  "candidate_request_sha256": "9d31299fcdbfe2683879eab87f9f74816cb6dc518913380ab22f373caffd6eb3",
+  "execution_contract_test": "PASS",
+  "execution_contract_validation": "PASS",
+  "global_safety_changes": 0,
+  "launch_marker_created": false,
+  "launch_ready": false,
+  "live_bot_ui": "NOT_VERIFIED",
+  "live_crm": "NOT_VERIFIED",
+  "local_test_count": 82,
+  "local_test_groups": {
+    "controller": 11,
+    "db": 11,
+    "installer": 8,
+    "owner_preflight": 8,
+    "ui_helpers_and_static_routes": 44
+  },
+  "owner_preflight": "READ_ONLY_CONSOLE_COMMAND_PREPARED",
+  "owner_protected_crm_route_authorized": true,
+  "production_allowed": false,
+  "remote_writes": 0,
+  "runtime_probe": "STATIC_SOURCE_SHAPE_ONLY",
+  "task_id": "TASK088-GE-PRICE-CRM-STAGE1",
+  "verified_at": "2026-09-11T13:13:57.016050+00:00"
+}
