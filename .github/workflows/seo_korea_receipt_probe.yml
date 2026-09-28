@@ -1,0 +1,20 @@
+name: SEO Korea final receipt probe
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'automation/seo_korea_receipt_probe.py'
+      - '.github/workflows/seo_korea_receipt_probe.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read final production report
+        env:
+          PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
+        run: python3 automation/seo_korea_receipt_probe.py
