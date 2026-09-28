@@ -17,8 +17,17 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Compile bounded multilingual release
-        run: python3 -m py_compile cloud/seo_multilingual_003/patcher.py cloud/seo_multilingual_003/controller.py
+      - name: Compile and validate bounded multilingual release
+        run: |
+          python3 -m py_compile cloud/seo_multilingual_003/patcher.py cloud/seo_multilingual_003/controller.py
+          python3 - <<'PY'
+          import ast
+          p='cloud/seo_multilingual_003/patcher.py'
+          tree=ast.parse(open(p,encoding='utf-8').read(),p)
+          names={n.targets[0].id for n in tree.body if isinstance(n,ast.Assign) and len(n.targets)==1 and isinstance(n.targets[0],ast.Name)}
+          assert 'ROOT' in names and 'V' in names and 'SEO' in names, names
+          print('MULTILINGUAL_RUNTIME_PREFLIGHT_PASS')
+          PY
       - name: Run bounded multilingual release
         env:
           PYTHONANYWHERE_API_TOKEN: ${{ secrets.PYTHONANYWHERE_API_TOKEN }}
