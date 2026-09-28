@@ -1,0 +1,77 @@
+{
+  "schema_version": "UA-ART-AUTOPILOT-BASELINE-1",
+  "task_id": "TASK116-AUTOPILOT-MAX-RELIABILITY",
+  "captured_at": "2026-09-05T07:45:00Z",
+  "source_main_sha": "c0244c51c846a6370de943eb247496935125e677",
+  "mode": "PACKAGE_PREPARATION_ONLY",
+  "production_allowed": false,
+  "launch_marker_allowed": false,
+  "baseline_score": 59,
+  "target_score": 93,
+  "minimum_acceptance_score": 90,
+  "confidence_range": {
+    "minimum": 55,
+    "maximum": 65
+  },
+  "component_scores": {
+    "guarded_execution_core": 79,
+    "actions_execution": 68,
+    "security_protection": 70,
+    "live_production_result": 75,
+    "full_owner_request_to_production_autonomy": 42,
+    "observability_status": 40
+  },
+  "execution_evidence": {
+    "history_runs": 2189,
+    "history_success": 1569,
+    "history_failure": 445,
+    "history_cancelled": 90,
+    "history_skipped": 85,
+    "automatic_mode_since": "2026-09-04T17:49:04Z",
+    "automatic_mode_runs": 77,
+    "automatic_mode_success": 67,
+    "automatic_mode_failure": 10,
+    "global_autostart_runs": 9,
+    "global_autostart_success": 2,
+    "task109_110_111_115_attempts": 36,
+    "task109_110_111_115_success": 4,
+    "latest_production_task": "TASK115-REMOVE-VIN-ADS",
+    "latest_production_run_id": "33945882409"
+  },
+  "confirmed_gaps": [
+    "main_not_protected",
+    "approval_same_repository_trust_root",
+    "no_active_owner_request_to_code_ai_runtime",
+    "low_first_attempt_success",
+    "real_watchdog_rollback_not_completed_automatically",
+    "stale_owner_status_files",
+    "monitor_checks_only_partial_public_scope",
+    "task108_and_task112_outside_active_queue",
+    "no_72_hour_uninterrupted_acceptance",
+    "no_independent_off_host_backup_proof"
+  ],
+  "immutable_product_guards": {
+    "vin_ads_allowed": false,
+    "vin_third_party_leakage_allowed": false,
+    "additional_specification_required": true,
+    "current_cards_required": 16,
+    "ua0009_separate_check": true,
+    "crm_write_allowed": false,
+    "site_write_allowed": false,
+    "media_write_allowed": false,
+    "dns_write_allowed": false,
+    "unexpected_changes_allowed": 0,
+    "primary_language": "uk"
+  },
+  "acceptance_targets": {
+    "first_attempt_success_percent": 95,
+    "consecutive_task_sample": 20,
+    "fault_drills_passed": "5/5",
+    "maximum_recovery_minutes": 15,
+    "maximum_status_staleness_minutes": 5,
+    "maximum_p0_alert_minutes": 5,
+    "manual_recovery_commits": 0,
+    "lost_tasks": 0,
+    "soak_hours": 72
+  }
+}
