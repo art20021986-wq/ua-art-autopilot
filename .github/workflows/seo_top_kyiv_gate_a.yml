@@ -15,8 +15,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run read-only SEO Gate A
-        env:
-          GSC_CLIENT_ID: ${{ secrets.GSC_CLIENT_ID }}
-          GSC_CLIENT_SECRET: ${{ secrets.GSC_CLIENT_SECRET }}
-          GSC_REFRESH_TOKEN: ${{ secrets.GSC_REFRESH_TOKEN }}
         run: python3 automation/seo_top_kyiv_gate_a.py
