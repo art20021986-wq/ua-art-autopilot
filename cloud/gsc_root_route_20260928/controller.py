@@ -23,14 +23,21 @@ endpoint=BASE+"webapps/"+DOMAIN+"/static_files/"
 _,raw=call("GET",endpoint)
 current=json.loads(raw.decode())
 if isinstance(current,dict): items=[{"url":k,"path":v} for k,v in current.items()]
-else: items=current if isinstance(current,list) else []
+elif isinstance(current,list): items=current
+else: raise SystemExit("STATIC_ROUTES_INVALID_RESPONSE")
+if not all(isinstance(x,dict) and isinstance(x.get("url"),str) and isinstance(x.get("path"),str) for x in items):
+ raise SystemExit("STATIC_ROUTES_INVALID_RESPONSE")
 for x in items:
  if x.get("url")==URL and x.get("path")!=PATH: raise SystemExit("STATIC_ROUTE_CONFLICT")
 if not any(x.get("url")==URL and x.get("path")==PATH for x in items):
  data=urllib.parse.urlencode({"url":URL,"path":PATH}).encode()
  call("POST",endpoint,data,{"Content-Type":"application/x-www-form-urlencoded"},(200,201))
-# PythonAnywhere reload can complete server-side while its API response stalls.
-call("POST",BASE+"webapps/"+DOMAIN+"/reload/",b"",allowed=(200,),timeout=12,allow_timeout=True)
+ print("GSC_ROOT_ROUTE_CREATED_RELOAD_REQUIRED")
+ # Reload only after a new mapping; repeating a healthy install must not drop traffic.
+ # PythonAnywhere reload can complete server-side while its API response stalls.
+ call("POST",BASE+"webapps/"+DOMAIN+"/reload/",b"",allowed=(200,),timeout=12,allow_timeout=True)
+else:
+ print("GSC_ROOT_ROUTE_UNCHANGED_RELOAD_SKIPPED")
 deadline=time.time()+150
 last=""
 while time.time()<deadline:
