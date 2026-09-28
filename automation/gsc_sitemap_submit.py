@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# one-time canonical sitemap submission attempt
 import json, os, urllib.parse, urllib.request, urllib.error
 CID=os.environ["GSC_CLIENT_ID"];SEC=os.environ["GSC_CLIENT_SECRET"];REF=os.environ["GSC_REFRESH_TOKEN"]
 SITE="https://www.uaart.com.ua/";MAP=SITE+"sitemap.xml"
