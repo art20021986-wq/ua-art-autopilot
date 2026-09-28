@@ -27,11 +27,16 @@ class TrackingTests(unittest.TestCase):
             self.assertEqual(urlsplit(urls[0][1]).netloc, 'www.searates.com')
             self.assertEqual(urlsplit(urls[0][1]).path, '/container/tracking/')
 
-    def test_one_bill_preserves_full_reference_for_searates(self):
-        number = 'ONEYTEST123456'
-        urls = tracking_links(number)
-        self.assertEqual(len(urls), 1)
-        self.assertEqual(parse_qs(urlsplit(urls[0][1]).query)['number'], [number])
+    def test_one_bill_uses_official_one_search_without_its_prefix(self):
+        for number in ('ONEYSELGB4471700', 'ONEYSELGF1046602', 'ONEYTEST123456'):
+            urls = tracking_links(number)
+            self.assertEqual(len(urls), 1)
+            self.assertEqual(urls[0][0], 'ONE')
+            parsed = urlsplit(urls[0][1])
+            self.assertEqual(parsed.netloc, 'ecomm.one-line.com')
+            self.assertEqual(parsed.path, '/one-ecom/manage-shipment/cargo-tracking')
+            self.assertEqual(parse_qs(parsed.query), {'trakNoParam': [number[4:]]})
+            self.assertIn(number, render_tracking(number))
 
     def test_unknown_reference_does_not_claim_carrier(self):
         links = tracking_links('BOOK/2026-12345')

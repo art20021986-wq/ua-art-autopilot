@@ -136,7 +136,7 @@ def run(operation=None):
                'protected_files_unchanged': True, 'crm_unchanged': True,
                'public_checks':public,'restart':value['crm_resume'],
                'code_sha256':verified['code_sha256'],
-               'acceptance_scope':'DIRECT_SEARATES_LINK_ALL_EXISTING_CARDS_AND_EXISTING_RENDERER_HOOKS',
+               'acceptance_scope':'ONE_BILL_OR_SEARATES_DIRECT_LINK_ALL_CARD_URLS_AND_RENDERER_HOOKS',
                'external_result_acceptance':'NOT_CONFIRMED_SEARATES_GUEST_LIMIT',
                'full_publication_acceptance':False,'database_migration_executed':False,
                'data_preservation_scope':value['preservation_scope']}
