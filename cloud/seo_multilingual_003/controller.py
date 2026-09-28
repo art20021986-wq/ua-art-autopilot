@@ -30,3 +30,4 @@ try:
   time.sleep(5)
  raise SystemExit("RECEIPT_TIMEOUT")
 finally:call("DELETE",BASE+"schedule/%s/"%sid,allowed=(200,202,204,404,500,502,503,504))
+\n# retry after bounded live verification fix\n
