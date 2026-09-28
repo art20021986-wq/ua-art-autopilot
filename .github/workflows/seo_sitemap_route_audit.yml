@@ -24,3 +24,4 @@ jobs:
           else: items=d
           print(json.dumps([x for x in items if x.get("url") in ("/sitemap.xml","/robots.txt")],indent=2))
           PY
+# run
