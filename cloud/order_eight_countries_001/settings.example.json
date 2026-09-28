@@ -1,0 +1,20 @@
+{
+  "enabled": false,
+  "storage": "mysql",
+  "origin": "https://www.uaart.com.ua",
+  "media_root": "/home/Carix/video/order",
+  "catalog_path": "/home/Carix/order_requests/country_models.json",
+  "strings_path": "/home/Carix/order_requests/strings.json",
+  "consent_version": "",
+  "consent_text": {
+    "uk": "",
+    "ru": "",
+    "ka": ""
+  },
+  "mysql": {
+    "host": "Carix.mysql.pythonanywhere-services.com",
+    "user": "Carix",
+    "database": "Carix$orders",
+    "defaults_file": "/home/Carix/.my.cnf"
+  }
+}

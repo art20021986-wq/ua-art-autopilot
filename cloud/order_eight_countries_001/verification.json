@@ -1,0 +1,424 @@
+{
+  "specification": "UA-ART-ORDER-8COUNTRIES-40-001 v1.1",
+  "checked_at_utc": "2026-09-27T12:55:00+00:00",
+  "status": "PRODUCTION_ENABLED_ADDITIONAL_BOT_RESTART_UNCONFIRMED",
+  "production_modified": true,
+  "gate_b": "NOT_PASSED",
+  "python_runtime": "3.12.14",
+  "checks": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "cloud/order_eight_countries_001/tests",
+        "-q"
+      ],
+      "exit_code": 0,
+      "output": "----------------------------------------------------------------------\nRan 42 tests in 0.201s\n\nOK",
+      "checked_at_utc": "2026-09-27T11:30:58.508227+00:00",
+      "pythonpath": "/workspace/scratch/69b74d13fd3d/qa_dependencies:cloud/order_eight_countries_001"
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "test_sandbox_executor.TestCountryModelsConfig",
+        "-q"
+      ],
+      "pythonpath": "cloud/ua_order_ge_8country_guard_016",
+      "exit_code": 0,
+      "output": "----------------------------------------------------------------------\nRan 5 tests in 0.002s\n\nOK"
+    },
+    {
+      "command": [
+        "node",
+        "cloud/order_eight_countries_001/tests/test_web_state.mjs"
+      ],
+      "pythonpath": null,
+      "exit_code": 0,
+      "output": "24 country/language routes + unknown-route, preserved-fields and payload scenarios passed"
+    },
+    {
+      "check": "order.js module syntax",
+      "exit_code": 0
+    },
+    {
+      "check": "Python 3.10 grammar only; not target-runtime execution",
+      "files": 25,
+      "status": "PASS",
+      "checked_at_utc": "2026-09-27T11:30:58.508227+00:00"
+    },
+    {
+      "check": "catalog and local asset hashes",
+      "countries": 8,
+      "positions": 40,
+      "distinct_photos": 35,
+      "flags": 8,
+      "status": "PASS"
+    }
+  ],
+  "public_input_sha256": {
+    "index-live.html": "4592c30afab03754563b65568792e06753e110ac754254b4f61983debca2ac6c",
+    "podbor-live.html": "1a8cc3d403151b48756f043c22b76ca8cd9f180f775f82a3d82e1b5f3ffd6be6"
+  },
+  "local_build": {
+    "status": "PASS",
+    "files": 52,
+    "manifest_sha256": "5e7a5eb79df15ce225a2eec1dcbe6e67a7e80a3b227b776e194fd802533b12b9"
+  },
+  "not_run": [
+    "browser and mobile visual acceptance",
+    "live Telegram customer submission to CRM notification",
+    "live production rollback"
+  ],
+  "continuation_checked_at_utc": "2026-09-27T12:01:00+00:00",
+  "adapter_chain_test": {
+    "status": "PASS",
+    "route": [
+      "WSGI handoff",
+      "customer Telegram adapter review",
+      "confirm and duplicate confirm",
+      "flat CRM list",
+      "CRM detail",
+      "outbox deliver",
+      "no second outbox delivery"
+    ],
+    "real_messages_sent": false,
+    "production_write": false
+  },
+  "exact_source_checks": {
+    "status": "PASS",
+    "files": 4,
+    "unrelated_top_level_nodes_unchanged": 294,
+    "current_client_registration_group": -1,
+    "crm_roles_checked": [
+      "manager",
+      "admin",
+      "owner"
+    ],
+    "source_drift_rejected": true,
+    "private_sources_published": false,
+    "live_module_imports": false,
+    "real_messages_sent": false
+  },
+  "current_sources": {
+    "lead_bot.py": {
+      "sha256": "27270e38f1b7ed913140127231149b6d862876f3b3a02a58c4a852b40ce8a3f8",
+      "bytes": 100314,
+      "ast": "PASS",
+      "read_date_utc": "2026-09-27",
+      "private_source_published": false
+    },
+    "client_ui.py": {
+      "sha256": "8e3a61fdc89f78623725b6e639277ce0bfbf8993d052e09806f0837da8fd1363",
+      "bytes": 32074,
+      "ast": "PASS",
+      "read_date_utc": "2026-09-27",
+      "private_source_published": false
+    },
+    "team_bot.py": {
+      "sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af",
+      "bytes": 65247,
+      "ast": "PASS",
+      "read_date_utc": "2026-09-27",
+      "private_source_published": false
+    },
+    "www_uaart_com_ua_wsgi.py": {
+      "sha256": "fc2d1d5b58b34d2dae2d2faf011a9cc7cf45d7940df0f58cc25bbaf3e7293c25",
+      "bytes": 3776,
+      "ast": "PASS",
+      "read_date_utc": "2026-09-27",
+      "private_source_published": false
+    }
+  },
+  "host_integration": {
+    "specification": "UA-ART-ORDER-8COUNTRIES-40-001 v1.1",
+    "production_write": true,
+    "gate_b": "NOT_PASSED",
+    "files": {
+      "lead_bot.py": {
+        "before_sha256": "27270e38f1b7ed913140127231149b6d862876f3b3a02a58c4a852b40ce8a3f8",
+        "after_sha256": "4759a116cb2797aeed858800e4e4535575e0954a5a1ba7e842ba4a6b6570e233"
+      },
+      "client_ui.py": {
+        "before_sha256": "8e3a61fdc89f78623725b6e639277ce0bfbf8993d052e09806f0837da8fd1363",
+        "after_sha256": "efbf9ddf5e4861e6c84fa6851ef42e7e184860d81bd8aa8fcf9eaea0062804f6"
+      },
+      "team_bot.py": {
+        "before_sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af",
+        "after_sha256": "09b789a06f91a9a2b50dfb591e40298e6d524a6b303de5509da4c2938a6758b9"
+      },
+      "www_uaart_com_ua_wsgi.py": {
+        "before_sha256": "fc2d1d5b58b34d2dae2d2faf011a9cc7cf45d7940df0f58cc25bbaf3e7293c25",
+        "after_sha256": "cb1e8b15223c429f2caa21c02be2bd8d23d2367560626ed5fba5e6a3e3417bcd"
+      }
+    },
+    "status": "INSTALLED",
+    "source_hashes_scope": "Fresh pre-install pins and installed file hashes verified by deploy.py"
+  },
+  "release_blockers": [],
+  "storage_check": {
+    "primary_docs": [
+      "https://www.sqlite.org/wal.html",
+      "https://help.pythonanywhere.com/pages/MySiteIsSlow",
+      "https://help.pythonanywhere.com/pages/KindsOfDatabases"
+    ],
+    "database_ui": "MYSQL_INITIALIZED_BY_OWNER",
+    "runtime_guard": "NETWORK_FILESYSTEM_REFUSED",
+    "production_mount_measured": false,
+    "new_service_or_library_added": false,
+    "database_ui_checked_at_utc": "2026-09-27T11:38:03.207565+00:00",
+    "driver": "MySQLdb import PASS on Python 3.10",
+    "mysql_server_version": "8.0.46",
+    "orders_connection": "PASS: deployment runtime preflight",
+    "mysql_adapter": "PASS: 9 real MySQL tests",
+    "orders_schema": "INITIALIZED; runtime enabled",
+    "test_database": "Carix$orders_test",
+    "test_data": "Synthetic only; no messages"
+  },
+  "observed_publisher": {
+    "r4": "ROLLED_BACK",
+    "r5": "FINISHED",
+    "main_ref": "6745ea17e43d65c46feaa225c57a649f787fcd35"
+  },
+  "recipient_delivery_checks": {
+    "status": "PASS",
+    "failed_recipient_does_not_block_others": true,
+    "acknowledged_recipient_not_repeated": true,
+    "pending_backoff_max_seconds": 3600,
+    "real_messages_sent": false
+  },
+  "owner_launch_authorization": {
+    "received_local": "2026-09-27T18:36:32+07:00",
+    "text": "Подтверждаю ☑️ запускай",
+    "production_deployed": true,
+    "remaining": "Launch completed; remaining acceptance limitations documented separately",
+    "latest_received_local": "2026-09-27T19:16:25+07:00",
+    "latest_text": "Включай и закачивай !"
+  },
+  "production_runtime_modified": true,
+  "server_changes": [
+    "Created isolated empty Carix$orders database",
+    "Created isolated empty Carix$orders_test database",
+    "Private six-file backup, CRM SQLite backup and isolated file rollback rehearsal",
+    "Installed ua_order package, private configuration and static resources",
+    "Replaced six pinned host/HTML files; enabled production settings",
+    "Reloaded existing web app and restarted the existing start_safe task once"
+  ],
+  "server_runtime_checks": {
+    "commit": "7b60d8ac1cb7e052ce92a4a7054278cce464ddb5",
+    "python": "3.10.12",
+    "ptb": "22.8",
+    "general_tests": {
+      "status": "PASS",
+      "count": 43,
+      "seconds": 0.497,
+      "TMPDIR": "/dev/shm"
+    },
+    "mysql_tests": {
+      "status": "PASS",
+      "count": 9,
+      "seconds": 1.797,
+      "mysql": "8.0.46",
+      "database": "Carix$orders_test"
+    },
+    "initial_runs": {
+      "mysql_trigger_fault_injection": "7 PASS, 1 setup ERROR; replaced test-only trigger with CHECK constraint",
+      "general_default_tempdir": "42 PASS, 1 configuration ERROR; network filesystem correctly rejected; repeated using local memory filesystem"
+    },
+    "production_source_hashes": "All four pinned SHA256 values matched at 12:01 UTC",
+    "real_messages_sent": false,
+    "runtime_files_changed": false,
+    "scope": "Isolated test run before deployment; file change status here is historical"
+  },
+  "review_fixes": [
+    "Production runtime refuses test database before connecting",
+    "Notification lease clock refreshed after lock acquisition",
+    "Deployment rollback covers new directory publication and final manifest write failures"
+  ],
+  "backup_rehearsal": {
+    "status": "PASS",
+    "checked_at_utc": "2026-09-27T12:08:46.910227+00:00",
+    "private_directory": "/home/Carix/order_release_check_20260927T1209",
+    "source_files": 6,
+    "crm_bytes": 6787072,
+    "crm_integrity": "ok",
+    "cars": 22,
+    "media_rows": 981,
+    "crm_snapshot_sha256": "209056347bb49aefd33613c631cc2fcd43056ec54488a78394c083d5587ef2a4",
+    "live_sources_changed": false,
+    "feature_paths_preexisting": false,
+    "file_install_and_restore": "PASS in /dev/shm",
+    "live_install_reload_rollback": "NOT_RUN",
+    "baseline_refresh_before_release": true
+  },
+  "local_general_tests_after_backup_guards": {
+    "status": "PASS",
+    "count": 45
+  },
+  "remaining_acceptance": [
+    "browser and mobile visual acceptance",
+    "live Telegram customer submission to CRM notification",
+    "live production rollback",
+    "External browser access could not be confirmed: cloud browser received 502 connection refused while server HTTPS checks returned 200"
+  ],
+  "deployment": {
+    "code_commit": "3da4acdafc41fee877cfa9c90c351cfb9ce41911",
+    "installed_at_utc": "2026-09-27T12:26:00+00:00",
+    "backup": "/home/Carix/order_release_check_20260927T1226_install",
+    "installer_status": "INSTALLED_RELOAD_REQUIRED",
+    "observed_status": "RELOADED_RUNNING",
+    "enabled": true,
+    "database": "Carix$orders",
+    "countries": 8,
+    "positions": 40,
+    "web_reload": true,
+    "existing_task_restart_count": 1,
+    "task_state": "Running",
+    "client_started_at_utc": "2026-09-27T12:33:14+00:00",
+    "team_started_at_utc": "2026-09-27T12:33:15+00:00",
+    "running_bots": 2,
+    "outbox_job_registered": "ua_order_outbox",
+    "startup_errors_in_checked_window": false,
+    "telegram_get_me": {
+      "UA_artcompany_LLC_bot": true,
+      "UA_artcompany_team_bot": true
+    },
+    "new_production_dependencies": false,
+    "real_test_messages_sent": false,
+    "consent": {
+      "source": "Previously prepared localized strings.json consent labels",
+      "version": "ua-order-contact-20260927-v1",
+      "separate_approved_company_privacy_policy_found": false
+    },
+    "http_checks": {
+      "origin": "HTTPS requests to public URLs executed on PythonAnywhere server",
+      "bootstrap": {
+        "status": 200,
+        "countries": 8,
+        "positions": 40
+      },
+      "index.html": {
+        "status": 200,
+        "bytes": 45466
+      },
+      "podbor.html": {
+        "status": 200,
+        "bytes": 26427
+      },
+      "order.js": {
+        "status": 200,
+        "bytes": 12648
+      },
+      "order.css": {
+        "status": 200,
+        "bytes": 4732
+      },
+      "kia-k5.jpg": {
+        "status": 200,
+        "bytes": 277182
+      }
+    },
+    "inventory_check": {
+      "checked_at_utc": "2026-09-27T12:42:00+00:00",
+      "comparison": "Row hashes against fresh install backup after bot restart",
+      "unchanged_tables": {
+        "cars": true,
+        "media": true,
+        "additional_specification": true,
+        "price_denylist": true
+      },
+      "row_values_exposed": false
+    },
+    "browser_visual": "NOT_RUN: 502 connection refused",
+    "live_submission_to_crm": "NOT_RUN",
+    "live_rollback": "NOT_RUN"
+  },
+  "deployment_failure_checks": {
+    "status": "PASS",
+    "count": 6,
+    "filesystem": "Real file writes in isolated temporary paths",
+    "database_and_runtime": "Test doubles only; real MySQL separately checked",
+    "cases": [
+      "normal install and rollback",
+      "last target replacement failure",
+      "module publication failure",
+      "private state publication failure",
+      "media publication failure",
+      "final manifest write failure"
+    ]
+  },
+  "additional_process_refresh": {
+    "owner_request": "Обнови процессы",
+    "owner_request_local": "2026-09-27T19:47:23+07:00",
+    "checked_at_utc": "2026-09-27T12:55:00+00:00",
+    "web_reload_clicked": true,
+    "public_api_after_reload": {
+      "status": 200,
+      "countries": 8,
+      "models": 40,
+      "request_origin": "PythonAnywhere server"
+    },
+    "existing_task_restart_clicks": 1,
+    "task_restart_accepted": "UNKNOWN",
+    "task_restart_completed": "UNCONFIRMED",
+    "hosting_task_panel": "Error connecting to server; then 502 connection refused",
+    "last_confirmed_bot_start_utc": [
+      "2026-09-27T12:33:14+00:00",
+      "2026-09-27T12:33:15+00:00"
+    ],
+    "last_confirmed_outbox_job_utc": "2026-09-27T12:33:15+00:00",
+    "manual_worker_spawned": false,
+    "force_kill_used": false,
+    "production_files_changed": false,
+    "remaining": "Confirm task state and fresh start log after hosting panel becomes available; authorization already received"
+  },
+  "ui_cleanup_20260927": {
+    "status": "INSTALLED_STATIC_UI",
+    "owner_authorized": true,
+    "removed": [
+      "visible photo artist/license labels",
+      "duplicate form logo",
+      "duplicate form language selector"
+    ],
+    "shared_header_languages": [
+      "uk",
+      "ru",
+      "ka"
+    ],
+    "new_dependencies": false,
+    "production_files_changed": true,
+    "processes_restarted": false,
+    "checks": {
+      "javascript_syntax": "PASS",
+      "existing_web_state_scenarios": "PASS",
+      "html_build_tests": 3,
+      "native_vm_language_integration": "PASS",
+      "isolated_static_install_rollback": "PASS",
+      "original_page_shell_preserved": "PASS",
+      "live_browser_visual": "PASS: desktop viewport, one header, 3 language buttons, 5 model photos loaded, no credit links",
+      "live_language_switch": "PASS: RU -> UA -> GE -> RU"
+    },
+    "report": "UI_CLEANUP.md",
+    "installed_code_commit": "78cebeeb55a7ba8ca1c18127c3b55e77e61ecdf6",
+    "installed_at_utc_minute": "2026-09-27T14:58",
+    "checked_at_utc": "2026-09-27T15:04:07.424726+00:00",
+    "backup": "/home/Carix/order_ui_cleanup_20260927_78cebee",
+    "hosting_access": "Recovered in a fresh browser tab; separate Bash console 48330073",
+    "live_url": "https://www.uaart.com.ua/video/podbor.html?lang=ru&strana=usa",
+    "installed_sha256": {
+      "video/podbor.html": "b77e91b2945415e5f0a75acab22cd22ca39240f33429a96b60c39724bbb688a1",
+      "video/order/order.js": "cba09512cac5fa634db8e34ea6c254a90fd99400c2112a87628e617cc5b6074d",
+      "video/order/order.css": "c37d2aaa4a59e1f05d089a1fd675be243445b06f9b08b69f1ee12cc5f3b80345",
+      "video/order/podbor.html": "b5c7624c4d86296061d9d029fe672f5d933b02ce1d51954fd264ea79e408f784"
+    },
+    "remaining_checks": [
+      "dedicated mobile browser viewport",
+      "real customer submission not sent for this UI-only update"
+    ]
+  }
+}
