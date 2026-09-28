@@ -381,7 +381,7 @@ nav a{margin-right:10px}
 <body>
 <nav>
 <a href='/video/index.html'>%s</a>
-<a href='/video/catalog.html'>%s</a>
+<a href='/video/katalog.html'>%s</a>
 <a href='/video/podbor.html'>%s</a>
 </nav>
 <h1>%s</h1>
@@ -597,16 +597,17 @@ def build_landing_pages():
 def build_sitemap(baseline, landing_urls):
     urls = [
         PUBLIC_BASE + '/video/index.html',
-        PUBLIC_BASE + '/video/catalog.html',
+        PUBLIC_BASE + '/video/katalog.html',
         PUBLIC_BASE + '/video/podbor.html',
         PUBLIC_BASE + '/video/info.html',
     ]
     urls.extend(landing_urls)
-    # NOTE: individual vehicle-card canonical URLs are appended dynamically
-    # from discover_baseline() file paths at execution time inside main().
-    entries = []
-    for u in urls:
-        entries.append('<url><loc>%s</loc></url>' % u)
+    for path in sorted(baseline.get('file_hashes', {})):
+        name = os.path.basename(path)
+        if re.fullmatch(r'UA-[0-9]{4,}\\.html', name, re.I):
+            urls.append(PUBLIC_BASE + '/video/' + name)
+    urls = list(dict.fromkeys(urls))
+    entries = ['<url><loc>%s</loc></url>' % u for u in urls]
     xml = ("<?xml version='1.0' encoding='UTF-8'?>\n"
            "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>\n" +
            '\n'.join(entries) + '\n</urlset>\n')
