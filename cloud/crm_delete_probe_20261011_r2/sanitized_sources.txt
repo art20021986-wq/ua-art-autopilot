@@ -1,0 +1,1047 @@
+# /home/Carix/cars_ui.py:1622
+async def toggle_publish(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    novoe = 0 if card.get('published') else 1
+    if novoe:
+        miss = S.missing_required(card)
+        if miss:
+            await q.message.reply_text('Для показа клиентам не хватает: %s' % ', '.join(miss), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Дозаполнить', callback_data='car_edit:%d' % cid)], [InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)]]))
+            raise ApplicationHandlerStop
+    db.update_card_field('cars', cid, 'published', novoe, q.from_user.id)
+    if novoe:
+        try:
+            import asyncio as _aio_rem2
+            import publikaciya as _pub_rem2
+            _ok_rem2, _txt_rem2 = await _aio_rem2.to_thread(_pub_rem2.opublikovat, card.get('auto_number'))
+            await q.message.reply_text(_txt_rem2)
+        except Exception as _e:
+            log.warning('Страница при публикации: %s', _e)
+    await q.message.reply_text('Машина видна клиентам в каталоге.' if novoe else 'Машина скрыта от клиентов.', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1659
+async def mark_sold(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    klient = client_of(card)
+    rows = [[InlineKeyboardButton('Да, продана', callback_data='car_soldok:%d' % cid)]]
+    if not klient:
+        rows.insert(0, [InlineKeyboardButton('Сначала оформить за клиентом', callback_data='car_client:%d' % cid)])
+    rows.append([InlineKeyboardButton('← Отмена', callback_data='car_open:%d' % cid)])
+    await q.message.reply_text('Отметить %s как проданную?\nОна пропадёт из каталога, но карточка и все данные останутся.' % (card.get('auto_number') or 'машину'), reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1677
+async def mark_sold_ok(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    set_field(cid, 'status', 'sold', q.from_user.id)
+    db.update_card_field('cars', cid, 'published', 0, q.from_user.id)
+    await q.message.reply_text('Отмечено: продана. Из каталога убрана.', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1690
+async def delete_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    name = '%s %s' % (card.get('auto_number') or '', ' '.join((str(x) for x in (card.get('brand'), card.get('model')) if x)))
+    await q.message.reply_text('Удалить карточку %s?\nВернуть её будет нельзя. Фото, видео и история пропадут вместе с ней.' % name.strip(), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Да, удалить', callback_data='car_delok:%d' % cid)], [InlineKeyboardButton('← Отмена', callback_data='car_open:%d' % cid)]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1707
+async def delete_ok(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    nomer = card.get('auto_number') if card else '#%d' % cid
+    try:
+        with db.connect() as c:
+            c.execute('DELETE FROM cars WHERE id=?', (cid,))
+        db.log_action(q.from_user.id, 'card_delete', 'cars', cid, 'auto_number', nomer, None)
+    except Exception as e:
+        log.warning('Не удалил карточку: %s', e)
+        await q.message.reply_text('Не получилось удалить: %s' % e)
+        raise ApplicationHandlerStop
+    context.user_data.pop('car_last', None)
+    await q.message.reply_text('Карточка %s удалена.' % nomer, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Все автомобили', callback_data='cards_cars')]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1941
+async def preview(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q, staff = await _ua099_require_staff(update)
+    cid = int(q.data.split(':')[-1])
+    await q.message.reply_text('Предпросмотр убран. Откройте карточку автомобиля.', reply_markup=_ua099_back(cid))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1999
+async def ad_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q, staff = await _ua099_require_staff(update)
+    cid = int(q.data.split(':')[-1])
+    card = _ua099_card(cid)
+    miss = S.missing_required(card)
+    from ua_delivery_status import stage_number
+    if miss or not stage_number(card.get('status')):
+        text = 'Сначала заполните: ' + ', '.join(miss) if miss else 'Выберите действующий этап доставки перед публикацией.'
+        await q.message.reply_text(text, reply_markup=_ua099_back(cid))
+        raise ApplicationHandlerStop
+    if context.application.job_queue is None:
+        await q.message.reply_text('Публикация не запущена: служба уведомлений недоступна.', reply_markup=_ua099_back(cid))
+        raise ApplicationHandlerStop
+    progress = await q.message.reply_text('Размещаю объявление. При временном сбое повторю автоматически.', reply_markup=_ua099_back(cid))
+    context.application.create_task(_ua_oneclick_submit(cid, q.from_user.id, card, progress), update=update)
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:3669
+def _ua083_publish_preimage(card):
+    return {name: card.get(name) for name in ('published', 'status', 'publish_pending')}
+
+# /home/Carix/cars_ui.py:3673
+def _ua083_restore_publish_preimage(cid, preimage, actor_id):
+    try:
+        for field in ('published', 'status', 'publish_pending'):
+            current = card_of(cid) or {}
+            if current.get(field) != preimage.get(field):
+                db.update_card_field('cars', int(cid), field, preimage.get(field), actor_id)
+        final = card_of(cid) or {}
+        return all((final.get(field) == preimage.get(field) for field in ('published', 'status', 'publish_pending')))
+    except Exception as exc:
+        log.error('TASK083: не удалось восстановить preimage %s: %s', cid, exc)
+        return False
+
+# /home/Carix/cars_ui.py:3687
+async def toggle_publish(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q, staff = await _ua099_require_staff(update)
+    cid = int(q.data.split(':')[-1])
+    card = _ua099_card(cid)
+    if q.data.startswith('car_ad:') and card.get('published'):
+        await q.message.reply_text('Объявление уже опубликовано.', reply_markup=_ua099_back(cid))
+        raise ApplicationHandlerStop
+    if q.data.startswith('car_hide:') and (not card.get('published')):
+        await q.message.reply_text('Объявление уже скрыто.', reply_markup=_ua099_back(cid))
+        raise ApplicationHandlerStop
+    actor_id = q.from_user.id
+    preimage = _ua083_publish_preimage(card)
+    novoe = 0 if card.get('published') else 1
+    back = InlineKeyboardMarkup([[InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)]])
+    if novoe:
+        miss = S.missing_required(card)
+        if miss:
+            await q.message.reply_text('Для показа клиентам не хватает: %s' % ', '.join(miss), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Дозаполнить', callback_data='car_edit:%d' % cid)], [InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)]]))
+            raise ApplicationHandlerStop
+    try:
+        import asyncio as _ua083_asyncio
+        import publikaciya as _ua083_publisher
+        db.update_card_field('cars', cid, 'published', novoe, actor_id)
+        if novoe:
+            ok, detail = await _ua083_asyncio.to_thread(_ua083_publisher.opublikovat, card.get('auto_number'))
+            success_text = 'Машина видна клиентам в каталоге.\nhttps://www.uaart.com.ua/video/%s.html' % _ua099_uid(card)
+        else:
+            ok, detail = await _ua083_asyncio.to_thread(_ua083_publisher.obnovit_katalog)
+            success_text = 'Машина скрыта от клиентов.'
+        if ok is not True:
+            restored = _ua083_restore_publish_preimage(cid, preimage, actor_id)
+            text = str(detail or 'Публикация не прошла проверку.')
+            if not restored:
+                text += ' КРИТИЧНО: состояние CRM не удалось восстановить автоматически.'
+            await q.message.reply_text(text, reply_markup=back)
+            raise ApplicationHandlerStop
+        if novoe:
+            try:
+                _ua_emergency_schedule_spec(card.get('auto_number'))
+            except Exception:
+                log.exception('Не удалось запланировать автоматический сбор спецификации %s', card.get('auto_number'))
+        await q.message.reply_text(success_text, reply_markup=back)
+        raise ApplicationHandlerStop
+    except ApplicationHandlerStop:
+        raise
+    except Exception as exc:
+        restored = _ua083_restore_publish_preimage(cid, preimage, actor_id)
+        log.exception('TASK083 publication exception for car %s', cid)
+        text = 'Публикация отменена: %s. Выполнен откат.' % exc
+        if not restored:
+            text += ' КРИТИЧНО: состояние CRM не удалось восстановить автоматически.'
+        await q.message.reply_text(text, reply_markup=back)
+        raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:3804
+def _ua099_back(cid):
+    return InlineKeyboardMarkup([[InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % int(cid))]])
+
+# /home/Carix/cars_ui.py:3836
+async def additional_spec_item(update, context):
+    q, staff = await _ua099_require_staff(update)
+    _, cid, spec_id = q.data.split(':', 2)
+    card = _ua099_card(cid)
+    item = _ua099_spec.get_spec(int(spec_id), _ua099_uid(card))
+    if not item:
+        await q.message.reply_text('Характеристика не найдена.', reply_markup=_ua099_back(cid))
+        raise ApplicationHandlerStop
+    state = 'видно клиентам' if int(item['is_visible']) else 'скрыто от клиентов'
+    manual = 'ручное значение защищено' if int(item['is_manual']) else 'подтверждено источниками'
+    try:
+        domains = ', '.join(__import__('json').loads(item.get('source_domains_json') or '[]')) or '—'
+    except Exception:
+        domains = '—'
+    text = '<b>%s</b>\n%s\nКатегория: %s · единица: %s\nПроверка: %s · уверенность %.0f%% · свидетельств %d\nИсточники: %s\nСтатус: %s · %s' % (_ua099_html.escape(str(item['label_ru'])), _ua099_html.escape(str(item['field_value'])), _ua099_html.escape(_ua099_spec.CATEGORY_TITLES.get(item['category'], item['category'])), _ua099_html.escape(str(item.get('unit') or '—')), _ua099_html.escape(str(item.get('verification_status') or 'VERIFIED')), float(item.get('confidence') or 0.0) * 100, int(item.get('evidence_count') or 0), _ua099_html.escape(domains), state, manual)
+    kb = InlineKeyboardMarkup([[InlineKeyboardButton('Скрыть' if int(item['is_visible']) else 'Показать', callback_data='car_spec_vis:%s:%s' % (cid, spec_id)), InlineKeyboardButton('Изменить значение', callback_data='car_spec_edit:%s:%s' % (cid, spec_id))], [InlineKeyboardButton('Изменить категорию', callback_data='car_spec_cat:%s:%s' % (cid, spec_id))], [InlineKeyboardButton('← К списку', callback_data='car_spec:%s' % cid)]])
+    await q.message.reply_text(text, parse_mode='HTML', reply_markup=kb)
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:3874
+async def additional_spec_visibility(update, context):
+    q, staff = await _ua099_require_staff(update)
+    _, cid, spec_id = q.data.split(':', 2)
+    card = _ua099_card(cid)
+    item = _ua099_spec.get_spec(int(spec_id), _ua099_uid(card))
+    if not item:
+        await q.message.reply_text('Характеристика не найдена.', reply_markup=_ua099_back(cid))
+        raise ApplicationHandlerStop
+    changed = _ua099_spec.set_visible(int(spec_id), _ua099_uid(card), not bool(int(item['is_visible'])), int(q.from_user.id))
+    await q.message.reply_text('Сохранено: %s.' % ('видно клиентам' if int(changed['is_visible']) else 'скрыто от клиентов'), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← К дополнительной спецификации', callback_data='car_spec:%s' % cid)]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:3890
+async def additional_spec_edit(update, context):
+    q, staff = await _ua099_require_staff(update)
+    _, cid, spec_id = q.data.split(':', 2)
+    card = _ua099_card(cid)
+    item = _ua099_spec.get_spec(int(spec_id), _ua099_uid(card))
+    if not item:
+        await q.message.reply_text('Характеристика не найдена.', reply_markup=_ua099_back(cid))
+        raise ApplicationHandlerStop
+    context.user_data['ua099_spec_edit'] = {'cid': int(cid), 'spec_id': int(spec_id), 'actor_id': int(q.from_user.id)}
+    await q.message.reply_text('Пришлите новое значение для «%s». Цена закупки и основные поля CRM здесь запрещены.' % item['label_ru'], reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Отмена', callback_data='car_spec:%s' % cid)]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:3939
+async def additional_spec_category(update, context):
+    q, staff = await _ua099_require_staff(update)
+    _, cid, spec_id = q.data.split(':', 2)
+    card = _ua099_card(cid)
+    item = _ua099_spec.get_spec(int(spec_id), _ua099_uid(card))
+    if not item:
+        await q.message.reply_text('Характеристика не найдена.', reply_markup=_ua099_back(cid))
+        raise ApplicationHandlerStop
+    buttons = []
+    for category in _ua099_spec.CATEGORIES:
+        buttons.append([InlineKeyboardButton(_ua099_spec.CATEGORY_TITLES[category], callback_data='car_spec_setcat:%s:%s:%s' % (cid, spec_id, category))])
+    buttons.append([InlineKeyboardButton('← Назад', callback_data='car_spec_item:%s:%s' % (cid, spec_id))])
+    await q.message.reply_text('Выберите категорию:', reply_markup=InlineKeyboardMarkup(buttons))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:4075
+async def _ua_emergency_spec_status(update, context):
+    q, staff = await _ua099_require_staff(update)
+    cid = int(q.data.split(':')[-1])
+    card = _ua099_card(cid)
+    uid = _ua099_uid(card)
+    await q.message.reply_text(_ua099_spec.crm_summary(uid), reply_markup=_ua099_back(cid), disable_web_page_preview=True)
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:4100
+def _ua122_catalog_ids():
+    before = _UA122_CATALOG.stat()
+    source = _UA122_CATALOG.read_text(encoding='utf-8')
+    after = _UA122_CATALOG.stat()
+    if (before.st_ino, before.st_size, before.st_mtime_ns) != (after.st_ino, after.st_size, after.st_mtime_ns):
+        raise ValueError('Catalog changed while reading')
+    return _ua122_parse_catalog(source)
+
+# /home/Carix/cars_ui.py:4111
+async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    staff = db.get_staff(q.from_user.id)
+    if not staff:
+        await q.message.reply_text('Доступ только для сотрудников.')
+        raise ApplicationHandlerStop
+    drop_wait(context)
+    context.user_data.pop('car_last', None)
+    context.user_data.pop('car_voice_active', None)
+    context.user_data.pop('voice_undo', None)
+    try:
+        cards = db.list_cards('cars', limit=-1)
+        groups = _ua122_partition(cards, _ua122_catalog_ids())
+        data = str(q.data or '')
+        if data in ('cards_cars', 'cars_cards'):
+            rows = [[InlineKeyboardButton('%s · %d' % (title, len(groups[key])), callback_data='ua122_cars:%s:0' % key)] for key, title in _UA122_LABELS.items()]
+            rows.append([InlineKeyboardButton('← Назад', callback_data='menu')])
+            await q.message.reply_text('Автомобили\nВыберите папку.', reply_markup=InlineKeyboardMarkup(rows))
+            raise ApplicationHandlerStop
+        parts = data.split(':')
+        if len(parts) != 3 or parts[0] != 'ua122_cars' or parts[1] not in _UA122_LABELS or (not parts[2].isascii()) or (not parts[2].isdigit()) or (len(parts[2]) > 9):
+            raise ValueError('Invalid folder callback')
+        folder = parts[1]
+        selected = groups[folder]
+        last = max(0, (len(selected) - 1) // _UA122_PAGE_SIZE)
+        page = min(int(parts[2]), last)
+        lines = ['<b>%s · %d</b>' % (_UA122_LABELS[folder], len(selected))]
+        rows = []
+        if not selected:
+            lines.append('В этой папке пока нет автомобилей.')
+        for original in selected[page * _UA122_PAGE_SIZE:(page + 1) * _UA122_PAGE_SIZE]:
+            card = card_of(original['id']) or original
+            miss = S.missing_required(card)
+            state = 'черновик, не хватает %d' % len(miss) if miss else 'заполнена'
+            stage = S.status_label(card.get('status')) if card.get('status') else 'этап не задан'
+            lines.extend([_ua082_title_html(card), '   %s · %s' % (stage, state)])
+            rows.append([InlineKeyboardButton(_ua082_title_button(card), callback_data='car_open:%d' % card['id'])])
+        nav = []
+        if page:
+            nav.append(InlineKeyboardButton('←', callback_data='ua122_cars:%s:%d' % (folder, page - 1)))
+        if page < last:
+            nav.append(InlineKeyboardButton('→', callback_data='ua122_cars:%s:%d' % (folder, page + 1)))
+        if nav:
+            lines.append('Страница %d из %d' % (page + 1, last + 1))
+            rows.append(nav)
+        rows.append([InlineKeyboardButton('← Автомобили', callback_data='cards_cars')])
+        await q.message.reply_text('\n'.join(lines), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+    except ApplicationHandlerStop:
+        raise
+    except Exception:
+        log.exception('Не удалось прочитать папки автомобилей')
+        await q.message.reply_text('Не удалось обновить список. Повторите открытие раздела.', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Автомобили', callback_data='cards_cars')]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:4177
+def card_kb(card, staff):
+    markup = _UA122_BASE_CARD_KB(card, staff)
+    try:
+        folder = 'catalog' if card.get('auto_number') in _ua122_catalog_ids() else 'unpublished'
+    except Exception:
+        return markup
+    return InlineKeyboardMarkup([[InlineKeyboardButton('← ' + _UA122_LABELS[folder], callback_data='ua122_cars:%s:0' % folder) if getattr(button, 'callback_data', None) in ('cards_cars', 'cars_cards') else button for button in row] for row in markup.inline_keyboard])
+
+# /home/Carix/cars_ui.py:4305
+async def _ua_oneclick_submit(cid, actor_id, expected, progress):
+    import asyncio
+    try:
+        await asyncio.to_thread(_ua_oneclick_prepare, cid, actor_id, expected, progress.chat_id, progress.message_id)
+    except Exception:
+        log.exception('One-click publication request failed for %s', cid)
+        await progress.edit_text('Не удалось подтвердить запуск публикации. Данные сохранены. Откройте карточку и повторите «Разместить объявление».', reply_markup=_ua099_back(cid))
+
+# /home/Carix/cars_ui.py:4330
+async def _ua_oneclick_receipts(context):
+    import asyncio
+    from ua_crm_public_sync import ROOT, snapshot, notify, start
+    import ua_publish_requests as requests
+    start()
+    for receipt in await asyncio.to_thread(requests.receipts, ROOT):
+        try:
+            live = await asyncio.to_thread(requests.current, ROOT, receipt['token'])
+            if live != receipt:
+                continue
+            if receipt['state'] == 'verified':
+                try:
+                    fresh = await asyncio.to_thread(_ua_oneclick_verified, receipt)
+                except Exception:
+                    fresh = False
+                if not fresh:
+                    revision = (await asyncio.to_thread(snapshot)).get(receipt['identity'])
+                    if revision and revision['delivery_status'] != 'hidden':
+                        await asyncio.to_thread(requests.enqueue, ROOT, receipt['identity'], revision, receipt['chat_id'], receipt['message_id'])
+                        notify()
+                        continue
+                    text = 'Публикация отменена: карточка удалена, скрыта или перенесена в архив.'
+                else:
+                    text = '✅ Объявление опубликовано на сайте.\nhttps://www.uaart.com.ua/video/%s.html' % receipt['code']
+            else:
+                text = 'Публикация отменена: карточка удалена, скрыта или перенесена в архив.'
+            if await asyncio.to_thread(requests.current, ROOT, receipt['token']) != receipt:
+                continue
+            try:
+                await context.bot.edit_message_text(text=text, chat_id=receipt['chat_id'], message_id=receipt['message_id'], reply_markup=_ua099_back(int(receipt['identity'])), disable_web_page_preview=True)
+            except Exception as exc:
+                if 'message is not modified' not in str(exc).lower():
+                    raise
+            await asyncio.to_thread(requests.delivered, ROOT, receipt['token'])
+            if receipt['state'] == 'verified' and fresh:
+                _ua_emergency_schedule_spec(receipt['code'])
+        except Exception:
+            log.exception('Publication receipt delivery will retry')
+
+# /home/Carix/cars_ui.py:4376
+async def _ua_oneclick_legacy_publish(update, context):
+    q, staff = await _ua099_require_staff(update)
+    cid = int(q.data.split(':')[-1])
+    await q.message.reply_text('Кнопка устарела. Откройте карточку и нажмите «Разместить объявление».', reply_markup=_ua099_back(cid))
+    raise ApplicationHandlerStop
+
+
+# /home/Carix/publikaciya.py:20
+def _sha(put):
+    try:
+        h = hashlib.sha256()
+        with open(put, 'rb') as f:
+            for k in iter(lambda: f.read(65536), b''):
+                h.update(k)
+        return h.hexdigest()
+    except Exception:
+        return '-'
+
+# /home/Carix/publikaciya.py:31
+def _sha_teksta(t):
+    if isinstance(t, str):
+        t = t.encode('utf-8')
+    return hashlib.sha256(t).hexdigest()
+
+# /home/Carix/publikaciya.py:37
+def _chitat(put):
+    try:
+        with io.open(put, 'r', encoding='utf-8', errors='ignore') as f:
+            return f.read()
+    except Exception:
+        return ''
+
+# /home/Carix/publikaciya.py:45
+def _zhurnal(stroki):
+    try:
+        with io.open(LOG, 'a', encoding='utf-8') as f:
+            for s in stroki:
+                f.write('%s  %s\n' % (time.strftime('%Y-%m-%d %H:%M:%S'), s))
+    except Exception:
+        pass
+
+# /home/Carix/publikaciya.py:54
+def _kartochki(krome=None):
+    """sha всех карточек и диагностик, кроме указанной машины."""
+    d = {}
+    for papka in (VIDEO, SITE):
+        if not os.path.isdir(papka):
+            continue
+        for imya in os.listdir(papka):
+            if not (imya.startswith('UA-') and imya.endswith('.html')):
+                continue
+            if krome and imya.startswith(krome):
+                continue
+            d[os.path.join(papka, imya)] = _sha(os.path.join(papka, imya))
+    return d
+
+# /home/Carix/publikaciya.py:70
+def proverit(html, kod):
+    """Возвращает список причин отказа. Пустой список = страница годная."""
+    prichiny = []
+    if not html or len(html) < 5000:
+        prichiny.append('страница короче 5 КБ')
+        return prichiny
+    n64 = html.count('data:image')
+    if n64 > 2:
+        prichiny.append('вшитые base64-фотографии: %d — чужой шаблон' % n64)
+    if len(html) > 600000:
+        prichiny.append('страница тяжелее 600 КБ (%d байт)' % len(html))
+    if kod not in html:
+        prichiny.append('нет номера машины %s' % kod)
+    chuzhie = sorted(set(re.findall('UA-\\d{4}', html)) - set([kod]))
+    if chuzhie:
+        prichiny.append('данные другой машины: %s' % ', '.join(chuzhie))
+    if '</html>' not in html:
+        prichiny.append('страница оборвана, нет </html>')
+    if not re.search('\\d[\\d\\s\\u00a0]{2,}\\s*\\$', html):
+        prichiny.append('нет цены')
+    if 'иагностик' not in html:
+        prichiny.append('нет раздела диагностики')
+    if kod + '-diag.html' not in html:
+        prichiny.append('нет ссылки на страницу диагностики')
+    if 'упить' not in html:
+        prichiny.append('нет кнопки Купить')
+    if 'оделиться' not in html:
+        prichiny.append('нет кнопки Поделиться')
+    if 'index.html' not in html:
+        prichiny.append('нет навигации на главную')
+    if 'wa.me' not in html:
+        prichiny.append('нет контакта WhatsApp')
+    if '<img' not in html:
+        prichiny.append('нет фотографий')
+    if 'aspect-ratio:16/10' not in html.replace(' ', ''):
+        prichiny.append('правило показа фото не совпадает с эталоном 16/10')
+    return prichiny
+
+# /home/Carix/publikaciya.py:109
+def _master(kod):
+    """Собирает карточку и диагностику мастер-генератором. Возвращает (html, diag, mashina)."""
+    import stranica as S
+    spisok = S.mashiny()
+    m = None
+    for x in spisok:
+        try:
+            if (S.nomer(x) or '').upper() == kod.upper():
+                m = x
+                break
+        except Exception:
+            continue
+    if m is None:
+        return (None, None, None)
+    kadry = S.kadry_mashiny(m)
+    html = S.sobrat_kartochku(m, kadry)
+    diag = None
+    try:
+        if S.est_diagnostika(m):
+            diag = S.sobrat_diagnostiku(m)
+    except Exception:
+        diag = None
+    if isinstance(html, bytes):
+        html = html.decode('utf-8', 'ignore')
+    if isinstance(diag, bytes):
+        diag = diag.decode('utf-8', 'ignore')
+    return (html, diag, m)
+
+# /home/Carix/publikaciya.py:138
+def _zapisat_atomarno(put, tekst):
+    from site_ge_inject import inject_html as _ua_site_ge_inject_html
+    tekst = _ua_site_ge_inject_html(tekst)
+    from ua_seo_metadata import normalize
+    from ua_seo_sitemap import sync_after_write
+    tekst = normalize(tekst, put)
+    vrem = put + '.rem2tmp'
+    with io.open(vrem, 'w', encoding='utf-8') as f:
+        f.write(tekst)
+    os.replace(vrem, put)
+    sync_after_write(put, tekst)
+
+# /home/Carix/publikaciya.py:153
+def opublikovat(kod, proba=False):
+    """Единственная разрешённая публикация карточки. (ok, текст для владельца)"""
+    kod = (kod or '').strip().upper()
+    if not re.match('^UA-\\d{3,5}$', kod):
+        return (False, 'Публикация отменена: непонятный номер машины.')
+    do = _kartochki(krome=kod)
+    try:
+        html, diag, m = _master(kod)
+    except Exception as e:
+        _zhurnal(['%s FAIL сборка мастером: %s' % (kod, e)])
+        return (False, 'Публикация отменена: сборщик не смог собрать %s (%s). Старая страница цела.' % (kod, e))
+    if not html:
+        _zhurnal(['%s FAIL машина не найдена в CRM' % kod])
+        return (False, 'Публикация отменена: %s не найдена среди машин CRM.' % kod)
+    prichiny = proverit(html, kod)
+    if prichiny:
+        _zhurnal(['%s FAIL валидация: %s' % (kod, '; '.join(prichiny))])
+        return (False, 'Публикация отменена, страница не прошла проверку:\n· %s\nПрежняя страница на сайте не тронута.' % '\n· '.join(prichiny))
+    if proba:
+        return (True, 'Проба: страница %s собрана и проверена, ничего не записано.' % kod)
+    papka_rez = os.path.join(REZERV_KORE, '%s_%s' % (kod, time.strftime('%Y%m%d_%H%M%S')))
+    celi = []
+    for papka in (VIDEO, SITE):
+        if not os.path.isdir(papka):
+            continue
+        celi.append(os.path.join(papka, kod + '.html'))
+        for imya in os.listdir(papka):
+            if re.match('^%s-[0-9a-f]{6,10}\\.html$' % kod, imya):
+                celi.append(os.path.join(papka, imya))
+        if diag:
+            celi.append(os.path.join(papka, kod + '-diag.html'))
+    try:
+        os.makedirs(papka_rez, exist_ok=True)
+        for put in celi:
+            if os.path.exists(put):
+                shutil.copy2(put, os.path.join(papka_rez, put.replace(BASE + '/', '').replace('/', '__')))
+    except Exception as e:
+        _zhurnal(['%s FAIL резерв: %s' % (kod, e)])
+        return (False, 'Публикация отменена: не удалось сделать резерв (%s).' % e)
+    bylo = dict(((put, _sha(put)) for put in celi))
+    try:
+        for put in celi:
+            _zapisat_atomarno(put, diag if put.endswith('-diag.html') else html)
+    except Exception as e:
+        _otkat(papka_rez, celi)
+        _zhurnal(['%s FAIL запись: %s — выполнен откат' % (kod, e)])
+        return (False, 'Публикация отменена при записи (%s). Выполнен откат.' % e)
+    posle = _kartochki(krome=kod)
+    izmenilis = [k for k in do if do.get(k) != posle.get(k)]
+    if izmenilis:
+        _otkat(papka_rez, celi)
+        _zhurnal(['%s FAIL регрессия: изменились %s — откат' % (kod, ', '.join(izmenilis))])
+        return (False, 'Публикация отменена: изменились чужие карточки (%s). Выполнен откат.' % ', '.join((os.path.basename(x) for x in izmenilis)))
+    stalo = dict(((put, _sha(put)) for put in celi))
+    _zhurnal(['%s PASS публикация · мастер stranica.sobrat_kartochku · файлов %d' % (kod, len(celi))] + ['    %s  %s -> %s' % (os.path.basename(k), (bylo.get(k) or '-')[:12], (stalo.get(k) or '-')[:12]) for k in celi])
+    hvost = '' if diag else '\nМатериалов диагностики в CRM нет — страница диагностики не трогалась.'
+    return (True, 'Страница %s обновлена на сайте по утверждённому шаблону.%s\nhttps://www.uaart.com.ua/video/%s.html?v=%d' % (kod, hvost, kod, int(time.time())))
+
+# /home/Carix/publikaciya.py:227
+def _otkat(papka_rez, celi):
+    for put in celi:
+        kopiya = os.path.join(papka_rez, put.replace(BASE + '/', '').replace('/', '__'))
+        try:
+            if os.path.exists(kopiya):
+                shutil.copy2(kopiya, put)
+        except Exception:
+            pass
+
+# /home/Carix/publikaciya.py:302
+def _ua9_waiting_text(diag):
+    if not isinstance(diag, str):
+        return diag
+    for old in ('Материалы диагностики пока не добавлены.', 'Материалы комплексной диагностики пока не добавлены.', 'Данные диагностики пока не добавлены.'):
+        diag = diag.replace(old, 'Комплексная диагностика ожидает данных.')
+    return diag
+
+# /home/Carix/publikaciya.py:313
+def _master(kod):
+    html, diag, mashina = _UA9_BASE_MASTER(kod)
+    if mashina is not None:
+        if not diag:
+            try:
+                import stranica as _ua9_stranica
+                diag = _ua9_stranica.sobrat_diagnostiku(mashina)
+            except Exception:
+                diag = None
+        try:
+            import master_card as _ua9_master_card
+            _ua9_master_card.cta_diagnostiki = lambda nom, m=None: _ua9_master_card._CTA_ON.replace('{KOD}', nom)
+            if html:
+                html = _ua9_master_card.obrabotat_kartochku(html, kod)
+        except Exception:
+            pass
+    if isinstance(html, str):
+        html = html.replace('>Забронировать авто за 500 $<', '>Задаток 500 $<')
+        html = html.replace('>Купить авто<', '>Задаток 500 $<')
+    diag = _ua9_waiting_text(diag)
+    return (html, diag, mashina)
+
+# /home/Carix/publikaciya.py:338
+def proverit(html, kod):
+    bedy = [x for x in _UA9_BASE_PROVERIT(html, kod) if x != 'нет кнопки Купить']
+    if 'Задаток 500 $' not in (html or ''):
+        bedy.append('нет кнопки Задаток 500 $')
+    return bedy
+
+# /home/Carix/publikaciya.py:345
+def _ua9_sobrat_katalog():
+    import stranica as _ua9_s
+    from ua_delivery_status import stage_number
+    spisok = [row for row in _ua9_s.mashiny() if row.get('published') == 1 and stage_number(row.get('status'))]
+    kadry = {}
+    for mashina in spisok:
+        nom = _ua9_s.nomer(mashina)
+        kadry[nom] = _ua9_s.kadry_mashiny(mashina)
+    katalog = _ua9_s.sobrat_katalog(spisok, kadry)
+    try:
+        import master_card as _ua9_m
+        katalog = _ua9_m.obrabotat_obshuyu(katalog)
+    except Exception:
+        pass
+    return (katalog, spisok)
+
+# /home/Carix/publikaciya.py:362
+def ua0009_urgent_probe():
+    kod = 'UA-0009'
+    html, diag, mashina = _master(kod)
+    katalog, spisok = _ua9_sobrat_katalog()
+    nomera = []
+    try:
+        import stranica as _ua9_s
+        nomera = [_ua9_s.nomer(x) for x in spisok]
+    except Exception:
+        pass
+    try:
+        import master_card as _ua9_m
+        master_bedy = _ua9_m.proverit(html, kod)
+    except Exception as e:
+        master_bedy = ['master check error: %s' % e]
+    diag_href_count = (html or '').count(kod + '-diag.html')
+    catalog_count = len(re.findall('href=[\'\\"]%s\\.html' % re.escape(kod), katalog or ''))
+    result = {'card_found': bool(mashina), 'card_validation': proverit(html, kod), 'master_validation': master_bedy, 'diag_page_bytes': len((diag or '').encode('utf-8')), 'diag_waiting_text': 'Комплексная диагностика ожидает данных.' in (diag or ''), 'diag_href_count': diag_href_count, 'deposit_cta_count': (html or '').count('Задаток 500 $'), 'catalog_ua0009_count': catalog_count, 'catalog_car_count': len(spisok), 'catalog_unique_numbers': len(nomera) == len(set(nomera))}
+    result['pass'] = bool(result['card_found'] and (not result['card_validation']) and (not result['master_validation']) and (result['diag_page_bytes'] > 5000) and result['diag_waiting_text'] and (result['diag_href_count'] == 1) and (result['deposit_cta_count'] == 1) and (result['catalog_ua0009_count'] == 1) and (result['catalog_car_count'] >= 9) and result['catalog_unique_numbers'])
+    return result
+
+# /home/Carix/publikaciya.py:406
+def ua0009_urgent_publish():
+    kod = 'UA-0009'
+    proba = ua0009_urgent_probe()
+    if not proba.get('pass'):
+        return (False, 'UA-0009 URGENT PROBE FAIL: %s' % json.dumps(proba, ensure_ascii=False, sort_keys=True))
+    ok, soobshchenie = _UA9_BASE_PUBLISH(kod, proba=False)
+    if not ok:
+        return (False, soobshchenie)
+    katalog, spisok = _ua9_sobrat_katalog()
+    metka = time.strftime('%Y%m%d_%H%M%S')
+    rezerv = os.path.join(REZERV_KORE, '%s_URGENT_CATALOG_%s' % (kod, metka))
+    os.makedirs(rezerv, exist_ok=True)
+    zapisannye = []
+    rezervy = {}
+    try:
+        for papka in (VIDEO, SITE):
+            if not os.path.isdir(papka):
+                continue
+            cel = os.path.join(papka, 'katalog.html')
+            kopiya = os.path.join(rezerv, os.path.basename(papka.rstrip(os.sep)) + '__katalog.html')
+            if os.path.exists(cel):
+                shutil.copy2(cel, kopiya)
+                rezervy[cel] = kopiya
+            _zapisat_atomarno(cel, katalog)
+            zapisannye.append(cel)
+        for cel in zapisannye:
+            fakt = _chitat(cel)
+            skolko = len(re.findall('href=[\'\\"]%s\\.html' % re.escape(kod), fakt))
+            if skolko != 1:
+                raise RuntimeError('catalog verification %s: UA-0009 count=%d' % (cel, skolko))
+    except Exception as e:
+        for cel, kopiya in rezervy.items():
+            try:
+                shutil.copy2(kopiya, cel)
+            except Exception:
+                pass
+        return (False, 'Карточка и диагностика созданы, но каталог возвращён из резерва: %s' % e)
+    return (True, '%s\nUA-0009 добавлена в каталог. Диагностика активна и ожидает данных. CTA: Задаток 500 $. Машин в каталоге: %d.' % (soobshchenie, len(spisok)))
+
+# /home/Carix/publikaciya.py:463
+def _master(kod):
+    html, diag, mashina = _UA9_MASTER_V1(kod)
+    if html and kod + '-diag.html' not in html:
+        cta = '<a class="mcf-diag-cta" href="%s-diag.html" style="display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(212,175,55,.20),rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);color:#f4e3ae"><span style="font-size:22px;line-height:1">🔧</span><span style="flex:1"><span style="display:block;font-weight:800;font-size:16px">Комплексная диагностика →</span><span style="display:block;font-size:13px;opacity:.85;margin-top:3px">Ожидает данных</span></span><span style="font-size:20px;opacity:.8">›</span></a>' % kod
+        poz = html.find("<a class='dejstvie kn_kupit'")
+        if poz < 0:
+            poz = html.find("<a class='dejstvie'")
+        if poz < 0:
+            poz = html.rfind('</body>')
+        if poz < 0:
+            poz = len(html)
+        html = html[:poz] + cta + html[poz:]
+    return (html, diag, mashina)
+
+# /home/Carix/publikaciya.py:494
+def opublikovat(kod, proba=False):
+    from publish_transaction_guard import publish_one as _ua083_publish_one
+    return _ua083_publish_one(_UA083_BASE_PUBLISH, kod, proba=proba)
+
+# /home/Carix/publikaciya.py:498
+def obnovit_katalog():
+    from publish_transaction_guard import rebuild_catalog as _ua083_rebuild_catalog
+    return _ua083_rebuild_catalog()
+
+# /home/Carix/publikaciya.py:507
+def _zapisat_atomarno(put, tekst):
+    import os as _ua099_os
+    import re as _ua099_re
+    name = _ua099_os.path.basename(str(put))
+    match = _ua099_re.search('(UA-[0-9]{4})-diag\\.html$', name, _ua099_re.I)
+    if match and isinstance(tekst, str):
+        import ua_additional_spec as _ua099_spec
+        uid = match.group(1).upper()
+        tekst = _ua099_spec.normalize_diagnostics(tekst, uid)
+        errors = _ua099_spec.diagnostics_contract_errors(tekst, uid)
+        if errors:
+            raise RuntimeError('UA099_DIAGNOSTICS_WRITE:%s:%s' % (uid, ';'.join(errors)))
+    return _UA099_BASE_WRITE(put, tekst)
+
+# /home/Carix/publikaciya.py:521
+def proverit(html, kod):
+    errors = [item for item in _UA099_BASE_PROVERIT(html, kod) if item not in ('нет кнопки Задаток 500 $', 'нет кнопки Купить')]
+    import re as _ua099_re
+    import ua_additional_spec as _ua099_spec
+    stage_match = _ua099_re.search('data-ua-stage=[\'\\"](\\d+)[\'\\"]', html or '', _ua099_re.I)
+    stage = int(stage_match.group(1)) if stage_match else _ua099_spec._stage_number(kod)
+    expected = 'Купить' if stage == 4 else 'Задаток 500 $'
+    if expected not in (html or ''):
+        errors.append('нет основной кнопки ' + expected)
+    for item in _ua099_spec.public_contract_errors(html or '', kod):
+        errors.append('TASK099: ' + item)
+    return list(dict.fromkeys(errors))
+
+# /home/Carix/publikaciya.py:542
+def _master(kod):
+    html, diag, card = _UA111_BASE_MASTER(kod)
+    if isinstance(html, str) and html:
+        import ua_additional_spec as _ua111_spec
+        html = _ua111_spec.inject_public_spec(html, kod)
+    return (html, diag, card)
+
+# /home/Carix/publikaciya.py:556
+def _ua84_require_uid(value):
+    candidate = _ua84_uid_from_path(str(value) + '.html')
+    if candidate is None:
+        raise ValueError('UA84_CARD_UID_REQUIRED')
+    return candidate
+
+# /home/Carix/publikaciya.py:562
+def _ua84_model_uid(model):
+    value = None
+    if hasattr(model, 'get'):
+        value = model.get('auto_number')
+    if not value:
+        value = nomer(model)
+    return _ua84_require_uid(value)
+
+# /home/Carix/publikaciya.py:572
+def _zapisat_atomarno(put, tekst):
+    uid = _ua84_uid_from_path(put)
+    if uid is not None:
+        with _ua84_write_lock():
+            tekst = _ua84_ensure_html(tekst, uid)
+            return _ua84_previous_zapisat_atomarno(put, tekst)
+    return _ua84_previous_zapisat_atomarno(put, tekst)
+
+
+# /home/Carix/ua_crm_catalog_folders.py:17
+class CatalogSnapshotError(ValueError):
+    """The supplied catalog/CRM snapshot cannot be classified unambiguously."""
+
+# /home/Carix/ua_crm_catalog_folders.py:21
+def _valid_number(value: Any) -> bool:
+    return isinstance(value, str) and _CAR_NUMBER.fullmatch(value) is not None
+
+# /home/Carix/ua_crm_catalog_folders.py:25
+class _CatalogParser(HTMLParser):
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.stack = []
+        self.seen = set()
+        self.closed_html = False
+        self.title_parts = []
+        self.numbers = set()
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'html':
+            if self.stack or 'html' in self.seen or self.closed_html:
+                raise CatalogSnapshotError('Catalog must contain exactly one HTML document')
+        elif not self.stack or self.closed_html:
+            raise CatalogSnapshotError('Element outside the catalog HTML document')
+        if tag in _STRUCTURAL:
+            if tag in self.seen:
+                raise CatalogSnapshotError('Duplicate catalog structural element: ' + tag)
+            if tag in ('head', 'body') and self.stack != ['html']:
+                raise CatalogSnapshotError('Invalid catalog structural nesting')
+            if tag == 'head' and 'body' in self.seen:
+                raise CatalogSnapshotError('Catalog head follows body')
+            if tag == 'title' and self.stack not in (['html'], ['html', 'head']):
+                raise CatalogSnapshotError('Invalid catalog title location')
+            self.stack.append(tag)
+            self.seen.add(tag)
+        if 'title' in self.stack and tag != 'title':
+            raise CatalogSnapshotError('Markup inside catalog title')
+        markers = [value for key, value in attrs if key == 'data-ua-card']
+        if len(markers) > 1:
+            raise CatalogSnapshotError('Duplicate data-ua-card attribute')
+        if markers:
+            number = markers[0]
+            if not _valid_number(number):
+                raise CatalogSnapshotError('Invalid catalog car number')
+            if number in self.numbers:
+                raise CatalogSnapshotError('Duplicate catalog car number: ' + number)
+            self.numbers.add(number)
+
+    def handle_endtag(self, tag):
+        if not self.stack or self.closed_html:
+            raise CatalogSnapshotError('Closing element outside catalog HTML')
+        if tag in _STRUCTURAL:
+            if self.stack[-1] != tag:
+                raise CatalogSnapshotError('Incomplete or misnested catalog document')
+            self.stack.pop()
+            if tag == 'html':
+                self.closed_html = True
+
+    def handle_startendtag(self, tag, attrs):
+        if tag in _STRUCTURAL:
+            raise CatalogSnapshotError('Self-closing catalog structural element')
+        self.handle_starttag(tag, attrs)
+
+    def handle_data(self, data):
+        if (not self.stack or self.closed_html) and data.strip():
+            raise CatalogSnapshotError('Text outside catalog HTML document')
+        if self.stack and self.stack[-1] == 'title':
+            self.title_parts.append(data)
+
+    def result(self) -> frozenset[str]:
+        if not self.closed_html or self.stack or 'title' not in self.seen:
+            raise CatalogSnapshotError('Incomplete catalog HTML document')
+        if _BRAND.search(''.join(self.title_parts)) is None:
+            raise CatalogSnapshotError('Catalog title does not identify UA ART')
+        return frozenset(self.numbers)
+
+# /home/Carix/ua_crm_catalog_folders.py:93
+def parse_catalog(source: str) -> frozenset[str]:
+    """Extract unique canonical numbers from a complete UA ART HTML document."""
+    if not isinstance(source, str) or not source.strip():
+        raise CatalogSnapshotError('Missing catalog HTML')
+    parser = _CatalogParser()
+    try:
+        parser.feed(source)
+        parser.close()
+    except CatalogSnapshotError:
+        raise
+    except (ValueError, AssertionError) as exc:
+        raise CatalogSnapshotError('Malformed catalog HTML') from exc
+    return parser.result()
+
+# /home/Carix/ua_crm_catalog_folders.py:108
+def partition_by_catalog(cards: Iterable[Mapping[str, Any]], ids: Iterable[str]) -> dict[str, list[Mapping[str, Any]]]:
+    """Keep original rows and order; catalog membership wins over CRM intent."""
+    catalog_ids = set()
+    for number in ids:
+        if not _valid_number(number) or number in catalog_ids:
+            raise CatalogSnapshotError('Invalid or duplicate catalog identifier')
+        catalog_ids.add(number)
+    groups = {'catalog': [], 'unpublished': []}
+    seen_ids = set()
+    seen_numbers = set()
+    for card in cards:
+        if not isinstance(card, Mapping):
+            raise CatalogSnapshotError('Invalid CRM car record')
+        cid = card.get('id')
+        number = card.get('auto_number')
+        if type(cid) is not int or cid <= 0 or cid in seen_ids:
+            raise CatalogSnapshotError('Missing, invalid or duplicate CRM car id')
+        if not _valid_number(number) or number in seen_numbers:
+            raise CatalogSnapshotError('Missing, invalid or duplicate CRM car number')
+        seen_ids.add(cid)
+        seen_numbers.add(number)
+        key = 'catalog' if number in catalog_ids else 'unpublished'
+        groups[key].append(card)
+    if catalog_ids - seen_numbers:
+        raise CatalogSnapshotError('Catalog contains car numbers absent from the CRM snapshot')
+    return groups
+
+
+# /home/Carix/ua_crm_public_sync.py:24
+def snapshot():
+    from ua_delivery_status import public_status
+    conn = sqlite3.connect((ROOT / 'crm.db').as_uri() + '?mode=ro', uri=True, timeout=5)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = [dict(r) for r in conn.execute('SELECT * FROM cars WHERE published=1')]
+    finally:
+        conn.close()
+    result = {}
+    codes = set()
+    for row in rows:
+        code = str(row.get('auto_number') or '')
+        if not code or code in codes:
+            raise RuntimeError('Missing or duplicate published auto_number')
+        codes.add(code)
+        raw = json.dumps(row, sort_keys=True, ensure_ascii=False, default=str).encode()
+        result[str(row['id'])] = {'code': code, 'sha256': hashlib.sha256(raw).hexdigest(), 'delivery_status': public_status(row.get('status'))}
+    return result
+
+# /home/Carix/ua_crm_public_sync.py:44
+def save_state(state):
+    fd, name = tempfile.mkstemp(prefix='.crm_public_sync_state.', dir=str(ROOT))
+    try:
+        with os.fdopen(fd, 'w') as out:
+            os.fchmod(out.fileno(), 384)
+            json.dump(state, out, sort_keys=True)
+            out.flush()
+            os.fsync(out.fileno())
+        os.replace(name, STATE)
+    finally:
+        if os.path.exists(name):
+            os.unlink(name)
+
+# /home/Carix/ua_crm_public_sync.py:58
+def initialize():
+    if STATE.exists():
+        raise RuntimeError('State already exists; refusing to reset pending revisions')
+    save_state({'version': 1, 'baseline_at': time.time(), 'revisions': snapshot(), 'retry': {}, 'last_success': None})
+
+# /home/Carix/ua_crm_public_sync.py:67
+def notify():
+    """Called after DB commit; cannot block the Telegram handler."""
+    _wake.set()
+
+# /home/Carix/ua_crm_public_sync.py:72
+def reconcile_once(publish=None, clock=time.time):
+    with open(LOCK, 'a') as lock:
+        os.chmod(LOCK, 384)
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return 'busy'
+        with STATE.open() as source:
+            state = json.load(source)
+        if state.get('version') != 1:
+            raise RuntimeError('Unsupported sync state')
+        rows = snapshot()
+        retry = state.setdefault('retry', {})
+        import ua_publish_requests as requests
+        explicit = requests.pending(ROOT)
+        for identity, request in explicit.items():
+            if identity not in rows or rows[identity]['delivery_status'] == 'hidden':
+                requests.finish(ROOT, request['token'], 'cancelled')
+        rows = dict(sorted(rows.items(), key=lambda item: item[0] not in explicit))
+        source_revision = hashlib.sha256(json.dumps(rows, sort_keys=True).encode()).hexdigest()
+        catalog_retry = state.get('catalog_retry', {})
+        if catalog_retry.get('source_revision') == source_revision and catalog_retry.get('after', 0) > clock():
+            return 'catalog_retry_pending'
+        if catalog_retry and catalog_retry.get('source_revision') != source_revision:
+            blocked_code = catalog_retry.get('code')
+            retry = {key: value for key, value in retry.items() if blocked_code not in value.get('error', '')} if blocked_code else retry
+            state['retry'] = retry
+            state.pop('catalog_retry', None)
+        for identity, revision in rows.items():
+            request = explicit.get(identity)
+            if not request and revision['sha256'] == state['revisions'].get(identity, {}).get('sha256'):
+                continue
+            attempt = retry.get(identity, {})
+            if attempt.get('sha256') == revision['sha256'] and attempt.get('after', 0) > clock():
+                continue
+            try:
+                if revision['delivery_status'] == 'hidden':
+                    from ua_stage_catalog_sync import reconcile
+                    reconcile(apply=True)
+                else:
+                    if publish is None:
+                        from publikaciya import opublikovat
+                        publish = opublikovat
+                    ok, message = publish(revision['code'])
+                    if not ok:
+                        raise RuntimeError(str(message)[:500])
+                    from ua_public_freshness import verify_public
+                    verify_public(revision['code'])
+                if snapshot().get(identity) != revision:
+                    LOG.warning('CRM sync: changed during publish: %s', revision['code'])
+                    return 'changed_during_publish'
+                state['revisions'][identity] = revision
+                retry.pop(identity, None)
+                state.pop('catalog_retry', None)
+                state['last_success'] = {'code': revision['code'], 'at': clock()}
+                save_state(state)
+                if request and revision['delivery_status'] != 'hidden':
+                    requests.finish(ROOT, request['token'], 'verified', revision['sha256'])
+                LOG.info('CRM sync PASS: %s', revision['code'])
+                return 'hidden' if revision['delivery_status'] == 'hidden' else 'published'
+            except Exception as exc:
+                count = (attempt.get('count', 0) if attempt.get('sha256') == revision['sha256'] else 0) + 1
+                retry[identity] = {'sha256': revision['sha256'], 'count': count, 'after': clock() + min(900, 15 * 2 ** min(count - 1, 6)), 'error': type(exc).__name__ + ': ' + str(exc)[:500]}
+                catalog_error = next((code for code in ('CATALOG_ROW_SET_MISMATCH', 'CATALOG_PUBLISHED_SET_MISMATCH') if code in str(exc)), None)
+                if catalog_error:
+                    state['catalog_retry'] = {'source_revision': source_revision, 'after': clock() + 900, 'code': catalog_error}
+                save_state(state)
+                LOG.exception('CRM sync failed; retry pending: %s', revision['code'])
+                if catalog_error:
+                    return 'catalog_retry_pending'
+        return 'idle'
+
+# /home/Carix/ua_crm_public_sync.py:157
+def _run():
+    LOG.info('CRM public sync worker started')
+    while True:
+        _wake.wait(15)
+        _wake.clear()
+        time.sleep(2)
+        try:
+            if reconcile_once() in ('published', 'hidden', 'changed_during_publish'):
+                _wake.set()
+        except Exception:
+            LOG.exception('CRM sync worker error; retry in 15 seconds')
+
+# /home/Carix/ua_crm_public_sync.py:171
+def start():
+    global _thread
+    with _start_lock:
+        if _thread is not None and _thread.is_alive():
+            return
+        if not STATE.exists():
+            raise RuntimeError('Installation baseline missing; not silently resetting sync state')
+        _thread = threading.Thread(target=_run, name='crm-public-sync', daemon=True)
+        _thread.start()
+        _wake.set()

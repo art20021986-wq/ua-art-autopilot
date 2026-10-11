@@ -1,0 +1,19 @@
+{
+  "deletion_performed": false,
+  "evidence_path": "cloud/crm_delete_probe_20261011_r2/evidence.json",
+  "finished_at": "2026-10-11T13:37:44Z",
+  "live_source_environment": "production",
+  "production_required": false,
+  "request_sha256": "f17780fb9278350e84a15cdd6a7a86dbba60494b5836c4fe0dabc88f92b72841",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_REMOTE_WRITES",
+  "run_id": "38143853469",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "CRM-DELETE-PROBE-20261011-R2",
+  "tests": "PASS",
+  "tests_scope": "FIXED_GET_SCOPE_AND_SAFE_EVIDENCE_ONLY",
+  "unavailable_paths": [],
+  "unexpected_changes": 0
+}

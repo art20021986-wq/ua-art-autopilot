@@ -1,0 +1,423 @@
+{
+  "completion_meaning": "READ_ONLY_DIAGNOSIS_ONLY",
+  "database": null,
+  "finished_at": "2026-10-11T13:37:44Z",
+  "http_methods": [
+    "GET"
+  ],
+  "log": null,
+  "path_status": {
+    "/home/Carix/cars_ui.py": {
+      "bytes": 208536,
+      "sha256": "fed3ccd110e750947288bbe5892f1c62262b23d6818653f43c7d57b584bf92dd",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/publikaciya.py": {
+      "bytes": 25009,
+      "sha256": "1771351a32f33f02a8bd6dd51f58f87525e1f8243f0dd3441f4c3e52dfa75ef5",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/ua_crm_catalog_folders.py": {
+      "bytes": 5824,
+      "sha256": "63cfe41b4ce4d6e5c1f5615235da8cad50c40fde3278a799a82dfae410daf7b0",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/ua_crm_public_sync.py": {
+      "bytes": 7932,
+      "sha256": "8c65eeb598c15007f489e2eaa0453362c97b9c426a3f67cf02c6a09a0d37015f",
+      "status": "RECEIVED"
+    }
+  },
+  "raw_private_data_persisted": false,
+  "remote_write_count": 0,
+  "request_sha256": "f17780fb9278350e84a15cdd6a7a86dbba60494b5836c4fe0dabc88f92b72841",
+  "run_id": "38143853469",
+  "sanitized_source_excerpts_path": "cloud/crm_delete_probe_20261011_r2/sanitized_sources.txt",
+  "source_facts": {
+    "/home/Carix/cars_ui.py": {
+      "bytes": 208536,
+      "definitions": [
+        {
+          "end_line": 1656,
+          "excerpt": "EXPORTED",
+          "line": 1622,
+          "name": "toggle_publish"
+        },
+        {
+          "end_line": 1674,
+          "excerpt": "EXPORTED",
+          "line": 1659,
+          "name": "mark_sold"
+        },
+        {
+          "end_line": 1687,
+          "excerpt": "EXPORTED",
+          "line": 1677,
+          "name": "mark_sold_ok"
+        },
+        {
+          "end_line": 1704,
+          "excerpt": "EXPORTED",
+          "line": 1690,
+          "name": "delete_ask"
+        },
+        {
+          "end_line": 1727,
+          "excerpt": "EXPORTED",
+          "line": 1707,
+          "name": "delete_ok"
+        },
+        {
+          "end_line": 1946,
+          "excerpt": "EXPORTED",
+          "line": 1941,
+          "name": "preview"
+        },
+        {
+          "end_line": 2017,
+          "excerpt": "EXPORTED",
+          "line": 1999,
+          "name": "ad_screen"
+        },
+        {
+          "end_line": 3670,
+          "excerpt": "EXPORTED",
+          "line": 3669,
+          "name": "_ua083_publish_preimage"
+        },
+        {
+          "end_line": 3684,
+          "excerpt": "EXPORTED",
+          "line": 3673,
+          "name": "_ua083_restore_publish_preimage"
+        },
+        {
+          "end_line": 3750,
+          "excerpt": "EXPORTED",
+          "line": 3687,
+          "name": "toggle_publish"
+        },
+        {
+          "end_line": 3807,
+          "excerpt": "EXPORTED",
+          "line": 3804,
+          "name": "_ua099_back"
+        },
+        {
+          "end_line": 3872,
+          "excerpt": "EXPORTED",
+          "line": 3836,
+          "name": "additional_spec_item"
+        },
+        {
+          "end_line": 3888,
+          "excerpt": "EXPORTED",
+          "line": 3874,
+          "name": "additional_spec_visibility"
+        },
+        {
+          "end_line": 3906,
+          "excerpt": "EXPORTED",
+          "line": 3890,
+          "name": "additional_spec_edit"
+        },
+        {
+          "end_line": 3954,
+          "excerpt": "EXPORTED",
+          "line": 3939,
+          "name": "additional_spec_category"
+        },
+        {
+          "end_line": 4083,
+          "excerpt": "EXPORTED",
+          "line": 4075,
+          "name": "_ua_emergency_spec_status"
+        },
+        {
+          "end_line": 4108,
+          "excerpt": "EXPORTED",
+          "line": 4100,
+          "name": "_ua122_catalog_ids"
+        },
+        {
+          "end_line": 4174,
+          "excerpt": "EXPORTED",
+          "line": 4111,
+          "name": "cars_list"
+        },
+        {
+          "end_line": 4189,
+          "excerpt": "EXPORTED",
+          "line": 4177,
+          "name": "card_kb"
+        },
+        {
+          "end_line": 4317,
+          "excerpt": "EXPORTED",
+          "line": 4305,
+          "name": "_ua_oneclick_submit"
+        },
+        {
+          "end_line": 4374,
+          "excerpt": "EXPORTED",
+          "line": 4330,
+          "name": "_ua_oneclick_receipts"
+        },
+        {
+          "end_line": 4381,
+          "excerpt": "EXPORTED",
+          "line": 4376,
+          "name": "_ua_oneclick_legacy_publish"
+        }
+      ],
+      "path": "/home/Carix/cars_ui.py",
+      "sha256": "fed3ccd110e750947288bbe5892f1c62262b23d6818653f43c7d57b584bf92dd"
+    },
+    "/home/Carix/publikaciya.py": {
+      "bytes": 25009,
+      "definitions": [
+        {
+          "end_line": 28,
+          "excerpt": "EXPORTED",
+          "line": 20,
+          "name": "_sha"
+        },
+        {
+          "end_line": 34,
+          "excerpt": "EXPORTED",
+          "line": 31,
+          "name": "_sha_teksta"
+        },
+        {
+          "end_line": 42,
+          "excerpt": "EXPORTED",
+          "line": 37,
+          "name": "_chitat"
+        },
+        {
+          "end_line": 51,
+          "excerpt": "EXPORTED",
+          "line": 45,
+          "name": "_zhurnal"
+        },
+        {
+          "end_line": 66,
+          "excerpt": "EXPORTED",
+          "line": 54,
+          "name": "_kartochki"
+        },
+        {
+          "end_line": 106,
+          "excerpt": "EXPORTED",
+          "line": 70,
+          "name": "proverit"
+        },
+        {
+          "end_line": 135,
+          "excerpt": "EXPORTED",
+          "line": 109,
+          "name": "_master"
+        },
+        {
+          "end_line": 150,
+          "excerpt": "EXPORTED",
+          "line": 138,
+          "name": "_zapisat_atomarno"
+        },
+        {
+          "end_line": 224,
+          "excerpt": "EXPORTED",
+          "line": 153,
+          "name": "opublikovat"
+        },
+        {
+          "end_line": 234,
+          "excerpt": "EXPORTED",
+          "line": 227,
+          "name": "_otkat"
+        },
+        {
+          "end_line": 311,
+          "excerpt": "EXPORTED",
+          "line": 302,
+          "name": "_ua9_waiting_text"
+        },
+        {
+          "end_line": 336,
+          "excerpt": "EXPORTED",
+          "line": 313,
+          "name": "_master"
+        },
+        {
+          "end_line": 343,
+          "excerpt": "EXPORTED",
+          "line": 338,
+          "name": "proverit"
+        },
+        {
+          "end_line": 360,
+          "excerpt": "EXPORTED",
+          "line": 345,
+          "name": "_ua9_sobrat_katalog"
+        },
+        {
+          "end_line": 404,
+          "excerpt": "EXPORTED",
+          "line": 362,
+          "name": "ua0009_urgent_probe"
+        },
+        {
+          "end_line": 456,
+          "excerpt": "EXPORTED",
+          "line": 406,
+          "name": "ua0009_urgent_publish"
+        },
+        {
+          "end_line": 489,
+          "excerpt": "EXPORTED",
+          "line": 463,
+          "name": "_master"
+        },
+        {
+          "end_line": 496,
+          "excerpt": "EXPORTED",
+          "line": 494,
+          "name": "opublikovat"
+        },
+        {
+          "end_line": 500,
+          "excerpt": "EXPORTED",
+          "line": 498,
+          "name": "obnovit_katalog"
+        },
+        {
+          "end_line": 519,
+          "excerpt": "EXPORTED",
+          "line": 507,
+          "name": "_zapisat_atomarno"
+        },
+        {
+          "end_line": 533,
+          "excerpt": "EXPORTED",
+          "line": 521,
+          "name": "proverit"
+        },
+        {
+          "end_line": 547,
+          "excerpt": "EXPORTED",
+          "line": 542,
+          "name": "_master"
+        },
+        {
+          "end_line": 560,
+          "excerpt": "EXPORTED",
+          "line": 556,
+          "name": "_ua84_require_uid"
+        },
+        {
+          "end_line": 569,
+          "excerpt": "EXPORTED",
+          "line": 562,
+          "name": "_ua84_model_uid"
+        },
+        {
+          "end_line": 578,
+          "excerpt": "EXPORTED",
+          "line": 572,
+          "name": "_zapisat_atomarno"
+        }
+      ],
+      "path": "/home/Carix/publikaciya.py",
+      "sha256": "1771351a32f33f02a8bd6dd51f58f87525e1f8243f0dd3441f4c3e52dfa75ef5"
+    },
+    "/home/Carix/ua_crm_catalog_folders.py": {
+      "bytes": 5824,
+      "definitions": [
+        {
+          "end_line": 18,
+          "excerpt": "EXPORTED",
+          "line": 17,
+          "name": "CatalogSnapshotError"
+        },
+        {
+          "end_line": 22,
+          "excerpt": "EXPORTED",
+          "line": 21,
+          "name": "_valid_number"
+        },
+        {
+          "end_line": 90,
+          "excerpt": "EXPORTED",
+          "line": 25,
+          "name": "_CatalogParser"
+        },
+        {
+          "end_line": 105,
+          "excerpt": "EXPORTED",
+          "line": 93,
+          "name": "parse_catalog"
+        },
+        {
+          "end_line": 135,
+          "excerpt": "EXPORTED",
+          "line": 108,
+          "name": "partition_by_catalog"
+        }
+      ],
+      "path": "/home/Carix/ua_crm_catalog_folders.py",
+      "sha256": "63cfe41b4ce4d6e5c1f5615235da8cad50c40fde3278a799a82dfae410daf7b0"
+    },
+    "/home/Carix/ua_crm_public_sync.py": {
+      "bytes": 7932,
+      "definitions": [
+        {
+          "end_line": 41,
+          "excerpt": "EXPORTED",
+          "line": 24,
+          "name": "snapshot"
+        },
+        {
+          "end_line": 55,
+          "excerpt": "EXPORTED",
+          "line": 44,
+          "name": "save_state"
+        },
+        {
+          "end_line": 64,
+          "excerpt": "EXPORTED",
+          "line": 58,
+          "name": "initialize"
+        },
+        {
+          "end_line": 69,
+          "excerpt": "EXPORTED",
+          "line": 67,
+          "name": "notify"
+        },
+        {
+          "end_line": 154,
+          "excerpt": "EXPORTED",
+          "line": 72,
+          "name": "reconcile_once"
+        },
+        {
+          "end_line": 168,
+          "excerpt": "EXPORTED",
+          "line": 157,
+          "name": "_run"
+        },
+        {
+          "end_line": 180,
+          "excerpt": "EXPORTED",
+          "line": 171,
+          "name": "start"
+        }
+      ],
+      "path": "/home/Carix/ua_crm_public_sync.py",
+      "sha256": "8c65eeb598c15007f489e2eaa0453362c97b9c426a3f67cf02c6a09a0d37015f"
+    }
+  },
+  "started_at": "2026-10-11T13:37:44Z",
+  "task_id": "CRM-DELETE-PROBE-20261011-R2",
+  "unavailable_paths": []
+}
