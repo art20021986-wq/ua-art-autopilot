@@ -38,8 +38,8 @@ MAX_EXCERPT_BYTES = 256 * 1024
 # Definitions exported by name, or because their code touches deletion.
 NAMES = frozenset(('delete_ask', 'delete_ok', 'card_of', '_ua099_card', '_ua099_require_staff',
                    '_v168_ack', 'connect', 'log_action', 'get_card', 'Soedinenie', '_UaKursor'))
-MARKERS = ('car_del', 'DELETE FROM', 'card_delete', 'foreign_keys')
-LOG_KEYS = re.compile(r'(?i)(delet|удал|car_del|foreign key|integrity|mercedes|мерседес|benz)')
+MARKERS = ('car_del', 'DELETE FROM', 'card_delete', 'foreign_keys', 'обновить список', 'cards_cars')
+LOG_KEYS = re.compile(r'(?i)(delet|удал|car_del|foreign key|integrity|mercedes|мерседес|benz|traceback|error|обновить список|cards_cars)')
 LOG_CONTEXT = 12
 LOG_MAX_LINES = 600
 SECRET = re.compile(r'(?i)(token|password|secret|api_key|authorization)\s*[:=]|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|\b(gh[pousr]_|github_pat_|sk-)[A-Za-z0-9_-]{12,}')
@@ -192,7 +192,8 @@ def database_facts(con):
              'foreign_keys': references,
              'triggers': [{'name': r[0], 'table': r[1], 'sql': r[2]}
                           for r in q("SELECT name, tbl_name, sql FROM sqlite_master WHERE type='trigger'")],
-             'cars_schema': (q("SELECT sql FROM sqlite_master WHERE name='cars'") or [[None]])[0][0]}
+             'cars_schema': (q("SELECT sql FROM sqlite_master WHERE name='cars'") or [[None]])[0][0],
+             'quick_check': [r[0] for r in q('PRAGMA quick_check')][:20]}
     if 'cars' in columns:
         fields = [f for f in CAR_FIELDS if f in columns['cars']]
         rows = q('SELECT %s FROM cars WHERE %s ORDER BY id' % (', '.join(fields), MERCEDES))
@@ -203,6 +204,7 @@ def database_facts(con):
                 '%s.%s' % (ref['table'], ref['from']): q('SELECT COUNT(*) FROM "%s" WHERE "%s"=?' % (
                     ref['table'], ref['from']), (car['id'],))[0][0] for ref in to_cars}
         facts['mercedes_cars'] = cars
+        facts['all_cars'] = [dict(zip(fields, map(short, r))) for r in q('SELECT %s FROM cars ORDER BY id' % ', '.join(fields))]
     actions = []
     for t in tables:
         if 'action' in columns[t]:
