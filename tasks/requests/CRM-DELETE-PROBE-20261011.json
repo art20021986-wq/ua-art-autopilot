@@ -1,0 +1,35 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/crm_delete_probe_20261011/evidence.json",
+    "cloud/crm_delete_probe_20261011/sanitized_sources.txt"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Read-only diagnosis of the Telegram card delete action (owner report: Mercedes card does not delete) and the cars list error \"Не удалось обновить список\". Five fixed GETs: cars_ui.py, db.py, start_safe.py, bot log, transient read-only CRM copy. Exports delete-related code, filtered redacted log lines, schema/foreign keys/triggers and Mercedes card facts only. No remote writes, no raw data persisted.",
+  "execution": {
+    "controller_path": "cloud/crm_delete_probe_20261011/controller.py",
+    "controller_sha256": "3eaee5e08139ec62b59c6a26cc4e660a8d990d9ad93bbd085e172b2cdb198812",
+    "dependency_paths": [],
+    "evidence_paths": [
+      "cloud/crm_delete_probe_20261011/evidence.json",
+      "cloud/crm_delete_probe_20261011/sanitized_sources.txt",
+      "state/receipts/CRM-DELETE-PROBE-20261011.json"
+    ],
+    "file_sha256": {
+      "cloud/crm_delete_probe_20261011/test_contract.py": "f1b8bebfe538de8273be5c23607eeec1be113e2f24f2d802953d41fa93ba1756"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/CRM-DELETE-PROBE-20261011.json",
+    "test_paths": [
+      "cloud/crm_delete_probe_20261011/test_contract.py"
+    ],
+    "timeout_seconds": 600
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 536870912,
+  "task_id": "CRM-DELETE-PROBE-20261011",
+  "title": "Read-only Telegram card delete diagnosis"
+}
