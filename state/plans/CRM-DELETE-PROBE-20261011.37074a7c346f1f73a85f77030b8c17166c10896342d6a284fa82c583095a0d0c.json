@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-DELETE-PROBE-20261011.37074a7c346f1f73a85f77030b8c17166c10896342d6a284fa82c583095a0d0c.json",
+  "autostart_ledger_sha256": "dee2c8611e811040e4f797d483ed3fcd004ef0f451600cd372486aafeb5585a1",
+  "autostart_source_commit": "1c27923fc46e7491a449d7c2e09fe6b3714262eb",
+  "created_at": "2026-10-11T13:32:44Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "38143543425",
+    "task_id": "CRM-DELETE-PROBE-20261011",
+    "task_sha256": "37074a7c346f1f73a85f77030b8c17166c10896342d6a284fa82c583095a0d0c"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-2ac23360e70c5b93-3881a1ebcefe42f5",
+  "request_path": "tasks/requests/CRM-DELETE-PROBE-20261011.json",
+  "resource_locks": [
+    "READ_ONLY:2ac23360e70c5b93"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
