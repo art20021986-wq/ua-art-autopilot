@@ -7,21 +7,23 @@
   "created_at": "2026-10-11T17:18:00Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-11T17:18:00Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-11T17:22:31Z",
+  "heartbeat_at": "2026-10-11T17:22:31Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "38158994619",
     "task_id": "CRM-CARD-DELETE-PREFLIGHT-20261011",
     "task_sha256": "c73fd9b6fc73b05728b48295488bb8774b440365145bd1a089fa75a70ed5a3f4"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-CARD-DELETE-PREFLIGHT-20261011.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "2115cd5900b8f1d6c28f5649734f6069eb2f0039862de343795888f740fff783",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-CARD-DELETE-PREFLIGHT-20261011.json",
   "request_sha256": "c73fd9b6fc73b05728b48295488bb8774b440365145bd1a089fa75a70ed5a3f4",
   "resource_locks": [
@@ -29,8 +31,35 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "6dae64a5c5ad39ba7f080b2c3c533fa265831ce0",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92101947392,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.528
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-11T17:18:00Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "93415417a739cbb4511449e72dbfd1f3b18438668de3e659a12cb77cada19673",
+    "file_sha256": {
+      "cloud/crm_card_delete_002/build_cars_ui.py": "5e62a49396cb9757a33aa0e1bd865ba7f358309a816e03642cb1014a53b63634",
+      "cloud/crm_card_delete_002/candidate_builder.py": "2bd4bc6be6341a9e48716de8b32aa036f2d12bbed153b7a36a9b3ff96139e940",
+      "cloud/crm_card_delete_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_card_delete_002/deployment_bootstrap.py": "81b610bb6a4f9a5462ccfd7dfe7994fa50f691bddf2e4e036ca2f304d71da37d",
+      "cloud/crm_card_delete_002/deployment_remote.py": "d1ba73baccc27e2a87cf36854eedfef2af5879224dd67c2aa1327bc725b5e2fd",
+      "cloud/crm_card_delete_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_card_delete_002/deployment_transport.py": "5bd3324b8bdb8a0aa81491644879d2ee432eafdeee28ffa66dc447afdeececec",
+      "cloud/crm_card_delete_002/release_constants.py": "2df0cc27806d8f8688a95d51785fd2d3ea36ebfdefda3acd993fed246bf9407c",
+      "cloud/crm_card_delete_002/test_build_cars_ui.py": "feed2efeac20f4f8146afdef23826c3cd70b5549ca35628bca30a1fcf5c2e20a",
+      "cloud/crm_card_delete_002/test_card_delete.py": "06942904e2628b3f10e355dd76b5fc2c14c268e95158d7acc5418716877ae961",
+      "cloud/crm_card_delete_002/test_deployment.py": "ee93cbb3f20cca90b2e815bb8b7ce8f712a7bf17bf618becb4edfb73984f5d3e",
+      "cloud/crm_card_delete_002/test_release.py": "3f5ae2bc63bdd8d0dbf6fbb22a1f96b1d107e291d7d521366e9912e69f8a0bb9",
+      "cloud/crm_card_delete_002/ua_card_delete.py": "e50663be0c846293f15bfdb9485c7c4e059071668fc350b606371ff59df4e2f5"
+    }
+  },
+  "updated_at": "2026-10-11T17:22:31Z"
 }
