@@ -307,7 +307,7 @@ LIMITS_AND_NEXT: Repeated unchanged route installation no longer creates reload 
 
 CRM_TELEGRAM_DELETE_20261011:
 OWNER_REQUEST: Mercedes card does not delete from Telegram; find cause, fix, prevent recurrence.
-STATUS: DIAGNOSIS_PREPARED_BLOCKED_BY_AUTOPILOT_HALT. No production read or write performed.
+STATUS: ROOT_CAUSE_CONFIRMED; FIX_WRITTEN_AND_TESTED; NOT_INSTALLED_AWAITING_OWNER_YES.
 HYPOTHESIS: delete_ok runs bare DELETE FROM cars with PRAGMA foreign_keys=ON; dependent media/status/spec rows without ON DELETE CASCADE likely reject the delete. Second candidate: deleted card not removed from site pages. Unconfirmed until fresh code/log/schema.
 BLOCKER: state/AUTOPILOT_HALT.json EMERGENCY_HALT since 2026-09-28 (run 36446740036). Every watchdog run fails ACTIVE_WORKFLOW_SET_MISMATCH: 17 gsc_*/seo_* workflows exist outside ACTIVE_WORKFLOW_EVENT_POLICY. Any autostart run will be refused until resolved through the registered procedure. Owner decision required.
 PREPARED: cloud/crm_delete_probe_20261011 + tasks/requests/CRM-DELETE-PROBE-20261011.json (read-only, tests PASS, not launched). Task note: tasks/CRM-TELEGRAM-DELETE-001.md.
@@ -320,3 +320,5 @@ VALIDATION: Unchanged verify-mode (no halt allowance) PASS AUTOMATIC; watchdog d
 EVIDENCE: cloud/seo_halt_recovery_20261011/RECOVERY_EVIDENCE.json
 NOT_FIXED: Daily SEO radar was already failing (Google token rejected, TOKEN_HTTP_400). SEO workflows can be returned only through registered control-plane policy, not as standalone workflows with the production key.
 NEXT: Confirm first scheduled watchdog/maintenance run is green on main; then Telegram delete diagnosis (CRM-DELETE-PROBE-20261011) and review existing PR116 delete fix.
+CRM_TELEGRAM_DELETE_ROOT_CAUSE: delete_ok removed UA-0008 from CRM but not from site catalog; cars_list then fails CatalogSnapshotError ("Не удалось обновить список"). Evidence: cloud/crm_delete_probe_20261011{,_r2}/evidence.json.
+CRM_TELEGRAM_DELETE_FIX: cloud/crm_card_delete_001 (module + exact-hash single-function builder, 7 tests PASS). Install needs owner "да": install + bot restart + one catalog rebuild. PR116 is obsolete (Sept sources, 27k lines) — do not install.
