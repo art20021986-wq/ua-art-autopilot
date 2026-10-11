@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-CARD-DELETE-INSTALL-20261011.8abd6b6e7a9cb3b422ed0b4a55b1d2fbfefe2c5c3e3c8fc3d9586e02adf58956.json",
+  "autostart_ledger_sha256": "90abf940436c8231952a0f26c6d699ee32737c1149de282fa93aeee399e8438b",
+  "autostart_source_commit": "89d5c4af84b1451d79ed16d5b19ea96654f1f536",
+  "created_at": "2026-10-11T23:25:04Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-11T23:25:04Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "38184149170",
+    "task_id": "CRM-CARD-DELETE-INSTALL-20261011",
+    "task_sha256": "8abd6b6e7a9cb3b422ed0b4a55b1d2fbfefe2c5c3e3c8fc3d9586e02adf58956"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-d0e98f1a1ef06032-8092e98827462271",
+  "receipt_path": "state/receipts/CRM-CARD-DELETE-INSTALL-20261011.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CRM-CARD-DELETE-INSTALL-20261011.json",
+  "request_sha256": "8abd6b6e7a9cb3b422ed0b4a55b1d2fbfefe2c5c3e3c8fc3d9586e02adf58956",
+  "resource_locks": [
+    "PATH_SCOPE:d0e98f1a1ef06032"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "76b144dc441d71e77c9bede2d4df8bcf2b5ca0d1",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-11T23:25:04Z"
+}
