@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-CARD-DELETE-PREFLIGHT-20261011-R2.bbb9be48c6ff4f2a80b16780b5b1a63ce664b07f1bf87064c2d4939c63200e71.json",
+  "autostart_ledger_sha256": "93f1e39966e6f06cf21038696e7a07c3e787fc162ae0f8201f1318cdcd85fccb",
+  "autostart_source_commit": "8cca1600dc11113a4dbec5163639fe2199dc0f9d",
+  "created_at": "2026-10-11T23:54:31Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "38185967657",
+    "task_id": "CRM-CARD-DELETE-PREFLIGHT-20261011-R2",
+    "task_sha256": "bbb9be48c6ff4f2a80b16780b5b1a63ce664b07f1bf87064c2d4939c63200e71"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/CRM-CARD-DELETE-PREFLIGHT-20261011-R2.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
