@@ -312,3 +312,11 @@ HYPOTHESIS: delete_ok runs bare DELETE FROM cars with PRAGMA foreign_keys=ON; de
 BLOCKER: state/AUTOPILOT_HALT.json EMERGENCY_HALT since 2026-09-28 (run 36446740036). Every watchdog run fails ACTIVE_WORKFLOW_SET_MISMATCH: 17 gsc_*/seo_* workflows exist outside ACTIVE_WORKFLOW_EVENT_POLICY. Any autostart run will be refused until resolved through the registered procedure. Owner decision required.
 PREPARED: cloud/crm_delete_probe_20261011 + tasks/requests/CRM-DELETE-PROBE-20261011.json (read-only, tests PASS, not launched). Task note: tasks/CRM-TELEGRAM-DELETE-001.md.
 NEXT: Restore control plane (register or relocate SEO workflows, reconcile HALT) → run probe → minimal delete-module fix with test → main Actions install with backup.
+
+AUTOPILOT_HALT_RECOVERY_20261011:
+OWNER_AUTHORIZATION: «Разрешаю перенести SEO-задачи в архив и снять аварийную остановку».
+CHANGE: 17 gsc_*/seo_* workflows moved to .github/legacy-workflows/SEO-HALT-RECOVERY-20261011/ (11 held the production credential outside policy). SYSTEM-WATCHDOG halt of 2026-09-28 archived to state/halt_history/SYSTEM-WATCHDOG-20260928-36446740036/halt.json. Same procedure as 2026-09-19 precedent.
+VALIDATION: Unchanged verify-mode (no halt allowance) PASS AUTOMATIC; watchdog discover: no pending transactions. No runtime code, manifest, credentials, site or CRM changed.
+EVIDENCE: cloud/seo_halt_recovery_20261011/RECOVERY_EVIDENCE.json
+NOT_FIXED: Daily SEO radar was already failing (Google token rejected, TOKEN_HTTP_400). SEO workflows can be returned only through registered control-plane policy, not as standalone workflows with the production key.
+NEXT: Confirm first scheduled watchdog/maintenance run is green on main; then Telegram delete diagnosis (CRM-DELETE-PROBE-20261011) and review existing PR116 delete fix.

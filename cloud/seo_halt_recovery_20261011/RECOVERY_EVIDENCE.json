@@ -1,0 +1,114 @@
+{
+  "after_clear_mode_validation": {
+    "allow_halt_for_recovery": false,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "authorization_scope": "Archive 17 SEO workflows created outside ACTIVE_WORKFLOW_EVENT_POLICY and archive the resolved SYSTEM-WATCHDOG halt; preserve all protection policies, Gate B, backup and operator data",
+  "base_main": "aae4b155c9cb93ea8537455b00b5352d4728185c",
+  "before_clear_mode_validation": {
+    "allow_halt_for_recovery": true,
+    "status": "FAIL_ACTIVE_WORKFLOW_SET_MISMATCH"
+  },
+  "before_error": "ACTIVE_WORKFLOW_SET_MISMATCH (17 gsc_*/seo_* workflows); 11 of them referenced the production PythonAnywhere credential directly",
+  "contract": "OWNER-AUTHORIZED-REPOSITORY-HALT-RECOVERY-EVIDENCE-1",
+  "credentials_read_or_changed": false,
+  "execution_mode_bytes_changed": false,
+  "existing_launch_markers_replayed": false,
+  "halt_archive": "state/halt_history/SYSTEM-WATCHDOG-20260928-36446740036/halt.json",
+  "halt_sha256": "e250228cd2160b308be9e9ce289f621f5c85cd53782b87af05a28a4c616714a1",
+  "historical_halt": {
+    "halted_at": "2026-09-28T15:51:39Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "Production watchdog discovery failed in run 36446740036",
+    "request_path": "",
+    "request_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "run_id": "36446740036",
+    "status": "EMERGENCY_HALT",
+    "task_id": "SYSTEM-WATCHDOG"
+  },
+  "known_issue_not_fixed": "gsc_daily_seo_radar failed daily with TOKEN_HTTP_400 (Google refresh token rejected) before archiving",
+  "owner_statement": "Разрешаю перенести SEO-задачи в архив и снять аварийную остановку",
+  "precedent": "cloud/pr114_halt_recovery_20260919/RECOVERY_EVIDENCE.json",
+  "production_launch_created": false,
+  "production_transaction_validation": {
+    "has_pending": false,
+    "pending_count": 0,
+    "transaction_status": "NONE"
+  },
+  "recorded_at": "2026-10-11T13:18:17+00:00",
+  "required_production_gates_weakened": false,
+  "runtime_code_changed": false,
+  "runtime_manifest_bytes_changed": false,
+  "site_or_crm_written": false,
+  "workflows_archived": {
+    ".github/workflows/gsc_daily_seo_radar.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/gsc_daily_seo_radar.yml",
+      "sha256": "896e2f882d651effa70385d757411888b0b6c293a95e3016dd789fc9e376bda7"
+    },
+    ".github/workflows/gsc_gate_a.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/gsc_gate_a.yml",
+      "sha256": "97841ae7d3d0d3745a7dd967fbbf4f744e1c3da38dde39e74127837159d9575c"
+    },
+    ".github/workflows/gsc_gate_b.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/gsc_gate_b.yml",
+      "sha256": "db348165893c249c227f437feda7c97d018906856aa343570e3a2d1e3e81fa66"
+    },
+    ".github/workflows/gsc_html_verify_install.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/gsc_html_verify_install.yml",
+      "sha256": "365df66a8144d6248de81aad7049168b6557f18c4eb77dbf7f74a11cb1601a5b"
+    },
+    ".github/workflows/gsc_root_route.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/gsc_root_route.yml",
+      "sha256": "9041347bd02993a9fbfd1e339779cf4ee3e9031bf828557f62deae3638cc977f"
+    },
+    ".github/workflows/gsc_sitemap_submit.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/gsc_sitemap_submit.yml",
+      "sha256": "e9358e85559b2a7142e90bd0190498a97f942abaafff99283b9ab073196eb649"
+    },
+    ".github/workflows/gsc_verification_route_fix.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/gsc_verification_route_fix.yml",
+      "sha256": "b65d1421ff99492113eb45d45d9f91e4ca0b13453c1c4377a51029358b29832a"
+    },
+    ".github/workflows/seo_korea_receipt_probe.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/seo_korea_receipt_probe.yml",
+      "sha256": "601d0fb3a188304102396703d6f5f15348381fe8cf343bdb6ee91fbe4f535cd1"
+    },
+    ".github/workflows/seo_multilingual_003.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/seo_multilingual_003.yml",
+      "sha256": "4b7397ad6405b924327eb9e0d4bfc86ee63fedabc882464c6d80dba1c1681c29"
+    },
+    ".github/workflows/seo_semantic_atlas_gate_a.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/seo_semantic_atlas_gate_a.yml",
+      "sha256": "8bdf7ac4bf32c40f89195bf1b81b9334f49c3ccbe8246aee1e3a9c6a6bcd6ae8"
+    },
+    ".github/workflows/seo_sitemap_route_audit.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/seo_sitemap_route_audit.yml",
+      "sha256": "294f8213b520f26f0a44651e56ae8925ec35625144d15c10c83ab137caf97599"
+    },
+    ".github/workflows/seo_structured_004_gate_a.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/seo_structured_004_gate_a.yml",
+      "sha256": "c669182bd0252015c447578a98009d20d46bff122afc2631b240cadc1606d2c3"
+    },
+    ".github/workflows/seo_structured_004_production.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/seo_structured_004_production.yml",
+      "sha256": "b6049383510ea4af2cfac1a5724343a46dae7ac18f474c645284ccd2fd0b723a"
+    },
+    ".github/workflows/seo_top_kyiv_002.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/seo_top_kyiv_002.yml",
+      "sha256": "a75ffad908341c7df514ad6762479b30d5e62d1d7dd648ef7faab6fe4ae79070"
+    },
+    ".github/workflows/seo_top_kyiv_gate_a.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/seo_top_kyiv_gate_a.yml",
+      "sha256": "17fc74d7b6ebb96038e86b5b6d7ebb64b69555ccc6f212e8f9c40f271ac743ac"
+    },
+    ".github/workflows/seo_top_kyiv_gate_b.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/seo_top_kyiv_gate_b.yml",
+      "sha256": "3dd19e3b8e38fbba19041848613fb2daf03b06a726d61351fb218cf402eb62d3"
+    },
+    ".github/workflows/seo_top_kyiv_receipt_verify.yml": {
+      "archive": ".github/legacy-workflows/SEO-HALT-RECOVERY-20261011/seo_top_kyiv_receipt_verify.yml",
+      "sha256": "ee73dc17282965fcc07e612139540da9a1911f65eb3d000ba85783d1ee66aa24"
+    }
+  }
+}
