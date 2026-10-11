@@ -1,0 +1,35 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/crm_delete_probe_20261011_r2/evidence.json",
+    "cloud/crm_delete_probe_20261011_r2/sanitized_sources.txt"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Read-only follow-up for the Telegram delete incident: four fixed GETs of current publisher, catalog-folder, public-sync modules and publish/hide handlers in cars_ui.py, needed to write a minimal delete fix against installed code. No remote writes, no data.",
+  "execution": {
+    "controller_path": "cloud/crm_delete_probe_20261011_r2/controller.py",
+    "controller_sha256": "e8ac2025911db3ec2815fb83b8c464bc94a287dc48a0b9accedee64360f86415",
+    "dependency_paths": [],
+    "evidence_paths": [
+      "cloud/crm_delete_probe_20261011_r2/evidence.json",
+      "cloud/crm_delete_probe_20261011_r2/sanitized_sources.txt",
+      "state/receipts/CRM-DELETE-PROBE-20261011-R2.json"
+    ],
+    "file_sha256": {
+      "cloud/crm_delete_probe_20261011_r2/test_contract.py": "442b481202e68031170530b1b0065c84ed03ea5dc6ce5919863095ac39db0adf"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/CRM-DELETE-PROBE-20261011-R2.json",
+    "test_paths": [
+      "cloud/crm_delete_probe_20261011_r2/test_contract.py"
+    ],
+    "timeout_seconds": 600
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 67108864,
+  "task_id": "CRM-DELETE-PROBE-20261011-R2",
+  "title": "Read-only publisher sources for Telegram delete fix"
+}
