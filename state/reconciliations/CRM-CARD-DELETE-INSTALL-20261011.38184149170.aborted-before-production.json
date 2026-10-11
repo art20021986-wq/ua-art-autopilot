@@ -1,0 +1,46 @@
+{
+  "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-1",
+  "semantic_outcome": "ABORTED_NO_PRODUCTION_WRITE",
+  "task_id": "CRM-CARD-DELETE-INSTALL-20261011",
+  "original_run_id": "38184149170",
+  "request_sha256": "8abd6b6e7a9cb3b422ed0b4a55b1d2fbfefe2c5c3e3c8fc3d9586e02adf58956",
+  "base_main_commit": "613539930e79b07ea545ac508da92ce9d45f6bb0",
+  "prepared_at": "2026-10-11T23:52:15.272992+00:00",
+  "apply_parent_main": "613539930e79b07ea545ac508da92ce9d45f6bb0",
+  "owner_statement": "Разрешаю снять остановку после неудачной установки и повторить установку",
+  "original_failure_preserved": true,
+  "original_failure_code": "STORAGE_PROBE_STALE_OR_FUTURE",
+  "failure_job_id": "114602995688",
+  "failure_stage": "critical prepare / production storage freshness validation (probe measured 17:21Z, run 23:25Z, limit 30 min)",
+  "transaction_created": false,
+  "production_backup_executed": false,
+  "production_install_controller_executed": false,
+  "production_write_executed": false,
+  "production_rollback_executed": false,
+  "production_service_reload_executed": false,
+  "metadata_terminal_status": "FAILED",
+  "metadata_terminal_status_meaning": "Run aborted before a production transaction existed; no rollback or installation PASS is asserted.",
+  "consumed_launch_unchanged": true,
+  "successor_installation_authorized_by_this_record": false,
+  "precedent": "state/reconciliations/GE-PRICE-CACHE-20260922.35696840719.aborted-before-production.json",
+  "before_sha256": {
+    "state/AUTOPILOT_HALT.json": "3bb326794a380e05c9539fb35873a9ecdc5f0f21ff0531d5889e6dd86ad71fc2",
+    "state/claims/CRM-CARD-DELETE-INSTALL-20261011.8abd6b6e7a9cb3b422ed0b4a55b1d2fbfefe2c5c3e3c8fc3d9586e02adf58956.38184149170.json": "d5e0513b91419af22f10688f5e69d85c351ffcddd6cb9a62d33cb58b8c8fb32f",
+    "tasks/requests/CRM-CARD-DELETE-INSTALL-20261011.json": "8abd6b6e7a9cb3b422ed0b4a55b1d2fbfefe2c5c3e3c8fc3d9586e02adf58956",
+    "state/storage/CRM-CARD-DELETE-INSTALL-20261011.json": "67527b12222035f8173b1aef7b517d162f6e1e5f25cc1308c86685d47807ff74"
+  },
+  "after_sha256": {
+    "state/claims/CRM-CARD-DELETE-INSTALL-20261011.8abd6b6e7a9cb3b422ed0b4a55b1d2fbfefe2c5c3e3c8fc3d9586e02adf58956.38184149170.json": "bd4e1f055690054a1ccd6b3fa95ee37748a7c423a3d1b42dd7ac45d45d32cd17"
+  },
+  "halt_archive": {
+    "path": "state/halt_history/CRM-CARD-DELETE-INSTALL-20261011.38184149170/halt.json",
+    "sha256": "3bb326794a380e05c9539fb35873a9ecdc5f0f21ff0531d5889e6dd86ad71fc2",
+    "byte_identical_required": true
+  },
+  "claim_archive": {
+    "path": "state/halt_history/CRM-CARD-DELETE-INSTALL-20261011.38184149170/claim.before.json",
+    "sha256": "d5e0513b91419af22f10688f5e69d85c351ffcddd6cb9a62d33cb58b8c8fb32f",
+    "byte_identical_required": true
+  },
+  "no_transaction_or_receipt_paths_observed": true
+}
