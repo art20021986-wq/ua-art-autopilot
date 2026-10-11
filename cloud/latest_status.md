@@ -303,3 +303,12 @@ VALIDATION: Seven tests / 22 cases PASS locally and in main Actions. Original co
 PUBLIC_ACCEPTANCE: Cloud desktop Chrome opened /video/index.html?utm_source=tiktok&ttclid=diagnostic, then navigated through the real catalog link to UA-0018. The card rendered its price, specifications, gallery and contact links. Separate verified HTTPS GETs returned 200 for sitemap.xml (valid XML, 10 entries), public prices (valid JSON), ua-site-languages.js and the exact Google verification body. This is desktop/synthetic-query evidence, not a real TikTok ad click, iPhone or the owner's network.
 PRODUCTION_WRITES: No website reload, mapping change, site/CRM/card/media/DNS/TLS or campaign write by this repair. Main sitemap verification skipped reload. Backup, rollback, health and transaction-watchdog controls were preserved; concurrent SEO work was not modified. Repository source/tests/task note and this checkpoint are the only changes.
 LIMITS_AND_NEXT: Repeated unchanged route installation no longer creates reload downtime. Required application deployments and other workflows can still reload this single-host application. Do not promise flawless availability or all browser issues solved. If the original symptom persists, capture the exact advertising URL and a real failing mobile journey/time, then correlate fresh logs. The excluded apex-domain issue and the protected six-hour monitor were not changed.
+
+
+CRM_TELEGRAM_DELETE_20261011:
+OWNER_REQUEST: Mercedes card does not delete from Telegram; find cause, fix, prevent recurrence.
+STATUS: DIAGNOSIS_PREPARED_BLOCKED_BY_AUTOPILOT_HALT. No production read or write performed.
+HYPOTHESIS: delete_ok runs bare DELETE FROM cars with PRAGMA foreign_keys=ON; dependent media/status/spec rows without ON DELETE CASCADE likely reject the delete. Second candidate: deleted card not removed from site pages. Unconfirmed until fresh code/log/schema.
+BLOCKER: state/AUTOPILOT_HALT.json EMERGENCY_HALT since 2026-09-28 (run 36446740036). Every watchdog run fails ACTIVE_WORKFLOW_SET_MISMATCH: 17 gsc_*/seo_* workflows exist outside ACTIVE_WORKFLOW_EVENT_POLICY. Any autostart run will be refused until resolved through the registered procedure. Owner decision required.
+PREPARED: cloud/crm_delete_probe_20261011 + tasks/requests/CRM-DELETE-PROBE-20261011.json (read-only, tests PASS, not launched). Task note: tasks/CRM-TELEGRAM-DELETE-001.md.
+NEXT: Restore control plane (register or relocate SEO workflows, reconcile HALT) → run probe → minimal delete-module fix with test → main Actions install with backup.
