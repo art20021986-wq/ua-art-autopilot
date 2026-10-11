@@ -1,0 +1,401 @@
+# /home/Carix/cars_ui.py:235
+def card_of(card_id):
+    card = db.get_card('cars', int(card_id))
+    if not card:
+        return None
+    for old, new in LEGACY.items():
+        if not card.get(new) and card.get(old):
+            card[new] = card[old]
+    return card
+
+# /home/Carix/cars_ui.py:483
+def card_kb(card, staff):
+    cid = card['id']
+    rows = [[InlineKeyboardButton('Редактировать данные', callback_data='car_edit:%d' % cid), InlineKeyboardButton('Фото и видео', callback_data='car_media:%d' % cid)], [InlineKeyboardButton('🚚 Доставка и этапы', callback_data='car_stage:%d' % cid)], [InlineKeyboardButton('Комплексная диагностика', callback_data='car_cond:%d' % cid)]]
+    klient = client_of(card)
+    rows.append([InlineKeyboardButton('Покупатель' if klient else 'Оформить за клиентом', callback_data='car_client:%d' % cid)])
+    rows.append([InlineKeyboardButton('Разместить объявление', callback_data='car_ad:%d' % cid)])
+    rows.append([InlineKeyboardButton('Продано', callback_data='car_sold:%d' % cid)])
+    if card.get('published'):
+        rows.append([InlineKeyboardButton('Скрыть от клиентов', callback_data='car_hide:%d' % cid)])
+    rows.append([InlineKeyboardButton('Удалить', callback_data='car_del:%d' % cid)])
+    rows.append([InlineKeyboardButton('← Все автомобили', callback_data='cards_cars')])
+    return InlineKeyboardMarkup(rows)
+
+# /home/Carix/cars_ui.py:1690
+async def delete_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    name = '%s %s' % (card.get('auto_number') or '', ' '.join((str(x) for x in (card.get('brand'), card.get('model')) if x)))
+    await q.message.reply_text('Удалить карточку %s?\nВернуть её будет нельзя. Фото, видео и история пропадут вместе с ней.' % name.strip(), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Да, удалить', callback_data='car_delok:%d' % cid)], [InlineKeyboardButton('← Отмена', callback_data='car_open:%d' % cid)]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1707
+async def delete_ok(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    nomer = card.get('auto_number') if card else '#%d' % cid
+    try:
+        with db.connect() as c:
+            c.execute('DELETE FROM cars WHERE id=?', (cid,))
+        db.log_action(q.from_user.id, 'card_delete', 'cars', cid, 'auto_number', nomer, None)
+    except Exception as e:
+        log.warning('Не удалил карточку: %s', e)
+        await q.message.reply_text('Не получилось удалить: %s' % e)
+        raise ApplicationHandlerStop
+    context.user_data.pop('car_last', None)
+    await q.message.reply_text('Карточка %s удалена.' % nomer, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Все автомобили', callback_data='cards_cars')]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:2240
+async def _v168_ack(query, *args, **kwargs):
+    try:
+        import crm_online_guard as _v168_guard
+        import asyncio as _v168_asyncio
+        action = 'crm_' + str(getattr(query, 'data', 'callback') or 'callback').split(':', 1)[0]
+        if args or kwargs:
+            token, _started = _v168_guard.start_operation(action)
+            try:
+                await _v168_asyncio.wait_for(query.answer(*args, **kwargs), timeout=0.75)
+                _v168_guard.finish_operation(token, 'ack')
+            except Exception as exc:
+                _v168_guard.finish_operation(token, 'continued', type(exc).__name__)
+        else:
+            token, _started = await _v168_guard.safe_callback_answer(query, action)
+            _v168_guard.finish_operation(token, 'ack')
+    except Exception:
+        try:
+            await query.answer(*args, **kwargs)
+        except Exception:
+            pass
+
+# /home/Carix/cars_ui.py:3328
+def register(app):
+    ensure_columns()
+    _v168_start_guard(app, 'crm_bot')
+    try:
+        import ai_filter
+        ai_filter.register(app)
+    except Exception as e:
+        log.warning('ai_filter не подключён: %s', e)
+    try:
+        import photo_hide
+        photo_hide.register(app)
+    except Exception as e:
+        log.warning('photo_hide не подключён: %s', e)
+    g = -1
+    app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, catch_message), group=g)
+    app.add_handler(CallbackQueryHandler(voice_undo, pattern='^car_vundo:'), group=g)
+    app.add_handler(CallbackQueryHandler(open_card, pattern='^card_open:cars:'), group=g)
+    app.add_handler(CallbackQueryHandler(open_card, pattern='^car_open:'), group=g)
+    app.add_handler(CallbackQueryHandler(clear_field, pattern='^car_clr:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_clear, pattern='^diag_clr:'), group=g)
+    app.add_handler(CallbackQueryHandler(cars_list, pattern='^cards_cars$'), group=g)
+    app.add_handler(CallbackQueryHandler(cars_list, pattern='^cars_cards$'), group=g)
+    app.add_handler(CallbackQueryHandler(edit_menu, pattern='^car_edit:'), group=g)
+    app.add_handler(CallbackQueryHandler(edit_ask, pattern='^car_setf:'), group=g)
+    app.add_handler(CallbackQueryHandler(media_screen, pattern='^car_media:'), group=g)
+    app.add_handler(CallbackQueryHandler(video_remove_all, pattern='^car_vidvseok:'), group=g)
+    app.add_handler(CallbackQueryHandler(video_remove_all_ask, pattern='^car_vidvse:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_photo_show, pattern='^car_dgal:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_video_show, pattern='^car_dvid:'), group=g)
+    app.add_handler(CallbackQueryHandler(gallery, pattern='^car_gal:'), group=g)
+    app.add_handler(CallbackQueryHandler(video_gallery, pattern='^car_vid:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove_menu, pattern='^car_rmphoto:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove, pattern='^car_rmpok:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove_all_ask, pattern='^car_rmvse:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove_all, pattern='^car_rmvse2:'), group=g)
+    app.add_handler(CallbackQueryHandler(add_media_start, pattern='^car_add:'), group=g)
+    app.add_handler(CallbackQueryHandler(condition_screen, pattern='^car_cond:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_clear_ask, pattern='^diag_ask:'), group=g)
+    app.add_handler(CallbackQueryHandler(stage_menu, pattern='^car_stage:'), group=g)
+    app.add_handler(CallbackQueryHandler(stage_set, pattern='^car_setstage:'), group=g)
+    app.add_handler(CallbackQueryHandler(price_screen, pattern='^car_price:'), group=g)
+    app.add_handler(CallbackQueryHandler(keep_price, pattern='^car_keepprice:'), group=g)
+    app.add_handler(CallbackQueryHandler(save_ai_text, pattern='^car_saveai:'), group=g)
+    app.add_handler(CallbackQueryHandler(preview, pattern='^car_preview:'), group=g)
+    app.add_handler(CallbackQueryHandler(preview_demo, pattern='^car_demo:'), group=g)
+    app.add_handler(CallbackQueryHandler(ad_screen, pattern='^car_ad:'), group=g)
+    app.add_handler(CallbackQueryHandler(client_screen, pattern='^car_client:'), group=g)
+    app.add_handler(CallbackQueryHandler(client_ask, pattern='^car_setc:'), group=g)
+    app.add_handler(CallbackQueryHandler(client_unlink, pattern='^car_unclient:'), group=g)
+    app.add_handler(CallbackQueryHandler(_ua_oneclick_legacy_publish, pattern='^car_pub:'), group=g)
+    app.add_handler(CallbackQueryHandler(toggle_publish, pattern='^car_hide:'), group=g)
+    app.add_handler(CallbackQueryHandler(mark_sold, pattern='^car_sold:'), group=g)
+    app.add_handler(CallbackQueryHandler(mark_sold_ok, pattern='^car_soldok:'), group=g)
+    app.add_handler(CallbackQueryHandler(delete_ask, pattern='^car_del:'), group=g)
+    app.add_handler(CallbackQueryHandler(delete_ok, pattern='^car_delok:'), group=g)
+    app.add_handler(CallbackQueryHandler(crm_stats, pattern='^crm_stats$'), group=g)
+    app.add_handler(CallbackQueryHandler(clients_screen, pattern='^cards_clients$'), group=g)
+    app.add_handler(CallbackQueryHandler(crm_leads, pattern='^crm_leads$'), group=g)
+    app.add_handler(CallbackQueryHandler(more_screen, pattern='^crm_more$'), group=g)
+    app.add_handler(CallbackQueryHandler(optimize_screen, pattern='^crm_optimize$'), group=g)
+    app.add_handler(CallbackQueryHandler(svodka_screen, pattern='^crm_svodka$'), group=g)
+    app.add_handler(CallbackQueryHandler(crm_stats_week, pattern='^crm_stats_week$'), group=g)
+    try:
+        import konteyner
+        konteyner.register(app, -2)
+    except Exception as e:
+        log.warning('konteyner не подключён: %s', e)
+    log.info('cars_ui подключён')
+
+# /home/Carix/cars_ui.py:3789
+async def _ua099_require_staff(update):
+    q = update.callback_query
+    await _v168_ack(q)
+    staff = db.get_staff(q.from_user.id)
+    if not staff:
+        await q.message.reply_text('Доступ к CRM не разрешён.')
+        raise ApplicationHandlerStop
+    return (q, staff)
+
+# /home/Carix/cars_ui.py:3798
+def _ua099_card(cid):
+    card = card_of(int(cid))
+    if not card or not _ua099_uid(card):
+        raise ValueError('Карточка не найдена')
+    return card
+
+# /home/Carix/cars_ui.py:4111
+async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    staff = db.get_staff(q.from_user.id)
+    if not staff:
+        await q.message.reply_text('Доступ только для сотрудников.')
+        raise ApplicationHandlerStop
+    drop_wait(context)
+    context.user_data.pop('car_last', None)
+    context.user_data.pop('car_voice_active', None)
+    context.user_data.pop('voice_undo', None)
+    try:
+        cards = db.list_cards('cars', limit=-1)
+        groups = _ua122_partition(cards, _ua122_catalog_ids())
+        data = str(q.data or '')
+        if data in ('cards_cars', 'cars_cards'):
+            rows = [[InlineKeyboardButton('%s · %d' % (title, len(groups[key])), callback_data='ua122_cars:%s:0' % key)] for key, title in _UA122_LABELS.items()]
+            rows.append([InlineKeyboardButton('← Назад', callback_data='menu')])
+            await q.message.reply_text('Автомобили\nВыберите папку.', reply_markup=InlineKeyboardMarkup(rows))
+            raise ApplicationHandlerStop
+        parts = data.split(':')
+        if len(parts) != 3 or parts[0] != 'ua122_cars' or parts[1] not in _UA122_LABELS or (not parts[2].isascii()) or (not parts[2].isdigit()) or (len(parts[2]) > 9):
+            raise ValueError('Invalid folder callback')
+        folder = parts[1]
+        selected = groups[folder]
+        last = max(0, (len(selected) - 1) // _UA122_PAGE_SIZE)
+        page = min(int(parts[2]), last)
+        lines = ['<b>%s · %d</b>' % (_UA122_LABELS[folder], len(selected))]
+        rows = []
+        if not selected:
+            lines.append('В этой папке пока нет автомобилей.')
+        for original in selected[page * _UA122_PAGE_SIZE:(page + 1) * _UA122_PAGE_SIZE]:
+            card = card_of(original['id']) or original
+            miss = S.missing_required(card)
+            state = 'черновик, не хватает %d' % len(miss) if miss else 'заполнена'
+            stage = S.status_label(card.get('status')) if card.get('status') else 'этап не задан'
+            lines.extend([_ua082_title_html(card), '   %s · %s' % (stage, state)])
+            rows.append([InlineKeyboardButton(_ua082_title_button(card), callback_data='car_open:%d' % card['id'])])
+        nav = []
+        if page:
+            nav.append(InlineKeyboardButton('←', callback_data='ua122_cars:%s:%d' % (folder, page - 1)))
+        if page < last:
+            nav.append(InlineKeyboardButton('→', callback_data='ua122_cars:%s:%d' % (folder, page + 1)))
+        if nav:
+            lines.append('Страница %d из %d' % (page + 1, last + 1))
+            rows.append(nav)
+        rows.append([InlineKeyboardButton('← Автомобили', callback_data='cards_cars')])
+        await q.message.reply_text('\n'.join(lines), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+    except ApplicationHandlerStop:
+        raise
+    except Exception:
+        log.exception('Не удалось прочитать папки автомобилей')
+        await q.message.reply_text('Не удалось обновить список. Повторите открытие раздела.', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Автомобили', callback_data='cards_cars')]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:4177
+def card_kb(card, staff):
+    markup = _UA122_BASE_CARD_KB(card, staff)
+    try:
+        folder = 'catalog' if card.get('auto_number') in _ua122_catalog_ids() else 'unpublished'
+    except Exception:
+        return markup
+    return InlineKeyboardMarkup([[InlineKeyboardButton('← ' + _UA122_LABELS[folder], callback_data='ua122_cars:%s:0' % folder) if getattr(button, 'callback_data', None) in ('cards_cars', 'cars_cards') else button for button in row] for row in markup.inline_keyboard])
+
+
+# /home/Carix/db.py:166
+class _UaKursor(sqlite3.Cursor):
+    """Cursor path cannot bypass the transaction queue."""
+
+    def _vypolnit(self, method, sql, *args):
+        conn = self.connection
+        novaya = conn._pered_zapisyu(sql)
+        try:
+            return method(self, sql, *args)
+        except Exception:
+            if novaya and (not conn.in_transaction):
+                conn._otpustit()
+            raise
+
+    def execute(self, sql, parameters=()):
+        return self._vypolnit(sqlite3.Cursor.execute, sql, parameters)
+
+    def executemany(self, sql, seq_of_parameters):
+        return self._vypolnit(sqlite3.Cursor.executemany, sql, seq_of_parameters)
+
+    def executescript(self, sql_script):
+        return self._vypolnit(sqlite3.Cursor.executescript, sql_script)
+
+# /home/Carix/db.py:189
+class Soedinenie(sqlite3.Connection):
+    """Own the process queue only while a write transaction is active."""
+
+    def _pered_zapisyu(self, sql):
+        if not _ua_sql_pishet(sql) or getattr(self, '_ua_zapis_v_ocheredi', False):
+            return False
+        vzyata = ZAMOK.acquire(timeout=ZAMOK_OZHIDANIE)
+        if not vzyata:
+            raise sqlite3.OperationalError('CRM thread queue timeout')
+        self._ochered_vzyata = True
+        try:
+            _ua_fayl_zahvatit(ZAMOK_OZHIDANIE)
+            self._fayl_zaregistrirovan = True
+            self._ua_zapis_v_ocheredi = True
+            return True
+        except Exception:
+            self._ochered_vzyata = False
+            try:
+                ZAMOK.release()
+            except Exception:
+                pass
+            raise
+
+    def _otpustit(self):
+        self._ua_zapis_v_ocheredi = False
+        if getattr(self, '_fayl_zaregistrirovan', False):
+            self._fayl_zaregistrirovan = False
+            try:
+                _ua_fayl_otpustit()
+            except Exception:
+                pass
+        if getattr(self, '_ochered_vzyata', False):
+            self._ochered_vzyata = False
+            try:
+                ZAMOK.release()
+            except Exception:
+                pass
+
+    def cursor(self, factory=None):
+        return sqlite3.Connection.cursor(self, factory or _UaKursor)
+
+    def execute(self, sql, parameters=()):
+        novaya = self._pered_zapisyu(sql)
+        try:
+            return sqlite3.Connection.execute(self, sql, parameters)
+        except Exception:
+            if novaya and (not self.in_transaction):
+                self._otpustit()
+            raise
+
+    def executemany(self, sql, seq_of_parameters):
+        novaya = self._pered_zapisyu(sql)
+        try:
+            return sqlite3.Connection.executemany(self, sql, seq_of_parameters)
+        except Exception:
+            if novaya and (not self.in_transaction):
+                self._otpustit()
+            raise
+
+    def executescript(self, sql_script):
+        novaya = self._pered_zapisyu(sql_script)
+        try:
+            return sqlite3.Connection.executescript(self, sql_script)
+        except Exception:
+            if novaya and (not self.in_transaction):
+                self._otpustit()
+            raise
+
+    def _commit_s_povtorom(self):
+        import time as _ua_time
+        for attempt in range(5):
+            try:
+                sqlite3.Connection.commit(self)
+                return
+            except sqlite3.OperationalError as exc:
+                text = str(exc).casefold()
+                if 'locked' not in text and 'busy' not in text:
+                    raise
+                if attempt == 4:
+                    raise
+                _ua_time.sleep(0.15 * 2 ** attempt)
+
+    def commit(self):
+        try:
+            self._commit_s_povtorom()
+        except Exception:
+            try:
+                sqlite3.Connection.rollback(self)
+            finally:
+                self._otpustit()
+            raise
+        self._otpustit()
+
+    def rollback(self):
+        try:
+            return sqlite3.Connection.rollback(self)
+        finally:
+            self._otpustit()
+
+    def close(self):
+        try:
+            if self.in_transaction:
+                sqlite3.Connection.rollback(self)
+            sqlite3.Connection.close(self)
+        finally:
+            self._otpustit()
+
+    def __exit__(self, tip, znachenie, sled):
+        try:
+            if tip is None:
+                self.commit()
+            else:
+                self.rollback()
+        finally:
+            try:
+                self.close()
+            except Exception:
+                self._otpustit()
+        return False
+
+    def __del__(self):
+        self._otpustit()
+
+# /home/Carix/db.py:315
+def connect():
+    conn = sqlite3.connect(DB_FILE, timeout=ZAMOK_OZHIDANIE, factory=Soedinenie)
+    conn.row_factory = sqlite3.Row
+    try:
+        sqlite3.Connection.execute(conn, 'PRAGMA journal_mode=DELETE')
+    except Exception:
+        pass
+    sqlite3.Connection.execute(conn, 'PRAGMA busy_timeout=%d' % (ZAMOK_OZHIDANIE * 1000))
+    sqlite3.Connection.execute(conn, 'PRAGMA foreign_keys=ON')
+    return conn
+
+# /home/Carix/db.py:486
+def log_action(actor_id, action, entity_type=None, entity_id=None, field=None, old_value=None, new_value=None):
+    """Пишем каждое значимое действие. Историю задним числом не восстановить,
+    поэтому журнал ведётся с первого дня."""
+    with connect() as c:
+        c.execute('INSERT INTO audit (actor_id, action, entity_type, entity_id, field, old_value, new_value, created_at) VALUES (?,?,?,?,?,?,?,?)', (actor_id, action, entity_type, entity_id, field, str(old_value) if old_value is not None else None, str(new_value) if new_value is not None else None, now()))
+
+# /home/Carix/db.py:716
+def get_card(table: str, card_id: int):
+    with connect() as c:
+        row = c.execute(f'SELECT * FROM {table} WHERE id=?', (card_id,)).fetchone()
+        return dict(row) if row else None
+
+
