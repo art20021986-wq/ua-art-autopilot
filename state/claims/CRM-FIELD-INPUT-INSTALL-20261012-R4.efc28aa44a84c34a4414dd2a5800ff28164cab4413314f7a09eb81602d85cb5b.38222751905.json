@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "5eb7d8e4f819c8e726e0d9a72c5a2f5dac4feea232143c5050772aa1d40c24b9",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T08:20:17Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-12T08:22:55Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "38222751905",
     "task_id": "CRM-FIELD-INPUT-INSTALL-20261012-R4",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-38222751905-efc28aa44a84c34a",
   "production_transaction_path": "state/transactions/CRM-FIELD-INPUT-INSTALL-20261012-R4.efc28aa44a84c34a4414dd2a5800ff28164cab4413314f7a09eb81602d85cb5b.38222751905.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-99843882176a377d-1e4c5e1d26f7423d",
   "receipt_path": "state/receipts/CRM-FIELD-INPUT-INSTALL-20261012-R4.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/crm_field_input_001/test_release.py": "73e87fdaf672d25dedc09402e3ba3a2de637d7f23362bf9098b57e0a3187e705"
     }
   },
-  "updated_at": "2026-10-12T08:20:17Z"
+  "updated_at": "2026-10-12T08:22:55Z"
 }
