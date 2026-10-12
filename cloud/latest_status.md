@@ -1,10 +1,9 @@
 SEO_GROWTH_TASK: SEO-GROWTH-001 (tasks/SEO-GROWTH-001.md, cloud/seo_growth_001/README.md)
-SEO_GROWTH_STATUS: PREVIEW_PASS_WAITING_OWNER_YES
-SEO_GROWTH_FACTS: Sitemap frozen (catalog written only by publish_transaction_guard, sitemap hook never ran); past SEO inserts wiped by card rebuilds; cards lack keywords/JSON-LD/links; landing pages orphaned with wrong phone; CPU 1.5% (147/10000 s).
-SEO_GROWTH_CANDIDATE: 8 files, plan 2f12e720… (preview run 38229347533, server build byte-identical to local). 4 new pure modules + ua_seo_metadata/ua_seo_sitemap replaced + guard refresh block + SEO version in card revision (worker republishes every card once).
-SEO_GROWTH_TESTS: 38 PASS (real pages, byte-exact installed sources, rollback, CPU guard, import check).
-SEO_GROWTH_PRODUCTION_WRITTEN: NO
-SEO_GROWTH_NEXT: After owner "да": install request + manifest + Gate A + approval + storage, launch CRITICAL via main; then read-only probe of republished cards, landings, sitemap. Not in scope (proposed separately): Ukrainian card URLs via generator, cleanup of public *.txt/proba files in video/, GSC token renewal, hashed card copies.
+SEO_GROWTH_STATUS: INSTALLED_LIVE_VERIFIED_19_OF_20_CARDS
+SEO_GROWTH_INSTALL: owner «Да ок»; CRITICAL run 38231988041 FINISHED: 8 code hashes = plan, crm_unchanged, protected unchanged, bot 266084 running, index/katalog PASS, CPU 2.2% before.
+SEO_GROWTH_LIVE: SEO-GROWTH-VERIFY-20261012 (cloud/seo_growth_verify_20261012/evidence.json): 19/20 cards with keyword titles + JSON-LD (Car/Offer, AutoDealer, Breadcrumb) + links block; 12 uk/ru landing pages HTTP 200 with ItemList/hreflang; sitemap 39 URLs, all with lastmod; robots.txt points to sitemap.
+SEO_GROWTH_BLOCKER_PREEXISTING: UA-0021 cannot be republished by anyone: TASK115 guard (_UA115_APPROVED_HOSTS) rejects www.searates.com, which CARRIER-TRACKING-INSTALL-20260928 put on its card (owner rule). Worker retries with backoff ≤15 min (a few CPU s each). Old UA-0021 page intact. Fix proposed to owner: add www.searates.com to the approved hosts (separate CRITICAL task).
+SEO_GROWTH_NEXT: Owner decision on the UA-0021 host fix; GSC access renewal (owner action) to submit sitemap and measure; re-check with SEO-GROWTH-VERIFY-20261012-R2 after fixes. Proposed separately, not done: Ukrainian card URLs via generator, cleanup of public *.txt/proba files in video/, hashed card copies.
 
 TRAFFIC_AUDIT_TASK: TRAFFIC-AUDIT-20261012
 TRAFFIC_AUDIT_STATUS: REPORT_DONE_READ_ONLY
