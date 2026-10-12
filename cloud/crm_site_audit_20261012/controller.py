@@ -16,11 +16,11 @@ import urllib.request
 
 import audit
 
-TASK_ID = 'CRM-SITE-AUDIT-20261012'
+TASK_ID = 'CRM-SITE-AUDIT-20261012-R2'
 PACKAGE = 'cloud/crm_site_audit_20261012'
 REQUEST = 'tasks/requests/' + TASK_ID + '.json'
 RECEIPT = 'state/receipts/' + TASK_ID + '.json'
-EVIDENCE = PACKAGE + '/evidence.json'
+EVIDENCE = PACKAGE + '/evidence_r2.json'
 ROOT = Path(__file__).resolve().parents[2]
 API = 'https://www.pythonanywhere.com/api/v0/user/Carix/files/path/home/Carix/'
 SITE = 'https://www.uaart.com.ua/'

@@ -6,7 +6,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import audit as a  # noqa: E402
-from fixture_public import CATALOG, PRICES  # noqa: E402
+from fixture_public import CARD_0017, CATALOG, PRICES  # noqa: E402
 
 
 K5 = {'auto_number': 'UA-0022', 'brand': 'Kia', 'model': 'K5', 'year': '2020', 'mileage_km': 167007,
@@ -43,14 +43,33 @@ class AuditTests(unittest.TestCase):
         self.assertEqual(s['served_bytes_differ_from_server'], ['video/katalog.html'])
         self.assertEqual([c['code'] for c in report['cars']], ['UA-0022', 'UA-0099'])
 
-    def test_stage_and_description_from_card_page(self):
-        page = ('<div class="etap proshel">Корея</div><div class="etap tut"><span class="krug">2</span>'
-                ' В пути морем</div><p>Отличное состояние</p>')
-        frag = '<article class="catalog-card" data-stage="sea"><div class="status-pill">Морем</div></article>'
-        car = a.audit_car(dict(K5, description='Отличное  состояние'), page, frag, {})
-        self.assertEqual(car['description']['result'], 'PASS')
-        self.assertEqual(car['stage']['detail']['card_current_step'], '2 В пути морем')
-        self.assertEqual(car['stage']['detail']['catalog_stage'], ['sea'])
+    def test_current_card_page_matches_crm(self):
+        audi = {'auto_number': 'UA-0017', 'brand': 'Audi', 'model': 'A6', 'year': '2015', 'mileage_km': 118000,
+                'engine_cc': 2967, 'fuel': 'diesel', 'gearbox': 'автомат', 'drive': 'полный',
+                'color': 'серебристый', 'vin': 'WAUZZZ4GXGN069684', 'price_uah': 22000, 'price_georgia': None,
+                'photos': json.dumps(['p%d' % i for i in range(40)]), 'hidden_photos': '["p39"]',
+                'status': 'ge_waiting', 'cover_photo': '001.jpg'}
+        frag = ('<article class="catalog-card" data-stage="georgia"><div class="status-pill" data-ru="x">'
+                'В Грузии · маршрут — Киев</div></article>')
+        car = a.audit_car(audi, CARD_0017, frag, {})
+        for name in ('card_page_fields', 'photos', 'price_card_page', 'stage'):
+            self.assertEqual(car[name]['result'], 'PASS', (name, car[name]))
+        self.assertEqual(car['photos']['detail'], {'photos': 39})
+        self.assertEqual(car['description']['result'], 'SKIP')
+        self.assertIn('site shows a description', car['description']['why'])
+
+    def test_card_mismatches_are_reported(self):
+        audi = {'auto_number': 'UA-0017', 'brand': 'Audi', 'model': 'A6', 'year': '2016', 'mileage_km': 118000,
+                'engine_cc': 2967, 'fuel': 'diesel', 'gearbox': 'автомат', 'drive': 'полный',
+                'color': 'серебристый', 'vin': 'WAUZZZ4GXGN069684', 'photos': '["a"]', 'hidden_photos': '[]',
+                'condition_text': 'Другой текст'}
+        frag = '<article data-stage="sea"><div class="status-pill">На пароме · Корея</div></article>'
+        car = a.audit_car(audi, CARD_0017, frag, {})
+        self.assertIn('identity', car['card_page_fields']['reason'])
+        self.assertIn('card gallery 39 photos', car['photos']['reason'])
+        self.assertIn('differs from CRM condition_text', car['description']['reason'])
+        self.assertIn('stage differs', car['stage']['reason'])
+
 
 if __name__ == '__main__':
     unittest.main()

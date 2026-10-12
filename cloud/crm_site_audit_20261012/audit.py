@@ -6,10 +6,11 @@ Each check returns PASS, FAIL (with a short reason) or SKIP (with why).
 from __future__ import annotations
 
 from html import unescape
-from html.parser import HTMLParser
 import re
 
-# Unchanged copies of the reviewed verifiers from crm_site_consistency_001.
+# Copies of the reviewed verifiers from crm_site_consistency_001 (title rule updated).
+import json
+
 import public_fields
 import public_media
 
@@ -65,31 +66,34 @@ class Skip(Exception):
     pass
 
 
-class _Stage(HTMLParser):
-    def __init__(self):
-        super().__init__(convert_charrefs=True)
-        self.depth, self.text = 0, []
-
-    def handle_starttag(self, tag, attrs):
-        classes = dict(attrs).get('class', '').split()
-        if self.depth:
-            self.depth += 1
-        elif 'etap' in classes and 'tut' in classes:
-            self.depth = 1
-
-    def handle_endtag(self, tag):
-        if self.depth:
-            self.depth -= 1
-
-    def handle_data(self, data):
-        if self.depth:
-            self.text.append(data)
+def first(pattern, html):
+    found = re.findall(pattern, html or '', re.S)
+    return ' '.join(unescape(re.sub(r'<[^>]+>', ' ', found[0])).split()) if found else None
 
 
-def card_stage(page):
-    parser = _Stage()
-    parser.feed(page)
-    return ' '.join(' '.join(parser.text).split())
+def card_gallery(page, card):
+    """Current card layout: <section class="um-gallery" data-ua-media="photo"> with JSON photo list."""
+    code = card['auto_number']
+    blocks = re.findall(r'<section class="um-gallery" data-ua-media="photo".*?<script type="application/json"'
+                        r' class="um-data">(.*?)</script>', page, re.S)
+    if len(blocks) != 1:
+        raise RuntimeError('Missing or ambiguous photo gallery')
+    sources = [item.get('src') for item in json.loads(blocks[0])]
+    pattern = r'foto/' + re.escape(code) + r'/[A-Za-z0-9_-]+\.(?:jpg|jpeg|png|webp)'
+    if any(not isinstance(s, str) or not re.fullmatch(pattern, s) for s in sources) or len(set(sources)) != len(sources):
+        raise RuntimeError('Foreign or duplicate gallery photo')
+    visible = len(public_media.visible_photo_ids(card))
+    if len(sources) != visible:
+        raise RuntimeError('card gallery %d photos, CRM visible %d' % (len(sources), visible))
+    cover = card.get('cover_photo')
+    if cover and sources and sources[0] != 'foto/%s/%s' % (code, cover):
+        raise RuntimeError('first photo %s, CRM cover %s' % (sources[0], cover))
+    return {'photos': len(sources)}
+
+
+def text_lines(value):
+    value = re.sub(r'(?i)<br\s*/?>', '\n', str(value or ''))
+    return ' '.join(unescape(re.sub(r'<[^>]+>', ' ', value)).split())
 
 
 def audit_car(card, page, fragment, prices_json):
@@ -116,24 +120,31 @@ def audit_car(card, page, fragment, prices_json):
             raise RuntimeError('catalog photo count %s, CRM visible %d' % (shown, visible))
 
     def description():
-        text = ' '.join(str(card.get('description') or '').split())
-        if not text:
-            raise Skip('no CRM description')
-        if text not in plain_text(need(page, 'card page')):
-            raise RuntimeError('CRM description not shown on card page')
+        sources = {k: text_lines(card.get(k)) for k in ('description', 'condition_text') if text_lines(card.get(k))}
+        shown = first(r"<div class='tehtekst'>(.*?)</div>", re.sub(r'(?i)<br\s*/?>', ' ', need(page, 'card page')))
+        if not sources:
+            raise Skip('no CRM description or condition text' + ('; site shows a description' if shown else ''))
+        if shown is None:
+            raise RuntimeError('CRM text present, card shows no description')
+        matched = [k for k, v in sources.items() if v == shown]
+        if not matched:
+            raise RuntimeError('card description differs from CRM %s' % '/'.join(sources))
+        return {'matches': matched}
 
     def stage():
-        status = card.get('status')
-        tile = re.findall(r'<article[^>]*data-stage="([^"]*)"', need(fragment, 'catalog card'))
-        pill = re.findall(r'class="status-pill"[^>]*>([^<]*)<', fragment)
-        on_page = card_stage(need(page, 'card page'))
-        return {'crm_status': status, 'catalog_stage': tile, 'catalog_pill': pill, 'card_current_step': on_page}
+        card_chip = first(r"<div class='chip'>(.*?)</div>", need(page, 'card page'))
+        pill = first(r'class="status-pill"[^>]*>(.*?)</div>', need(fragment, 'catalog card'))
+        tile = re.findall(r'<article[^>]*data-stage="([^"]*)"', fragment)
+        detail = {'crm_status': card.get('status'), 'catalog_stage': tile, 'catalog_pill': pill, 'card_chip': card_chip}
+        if not card_chip or not pill or card_chip.split(' · ')[0] != pill.split(' · ')[0]:
+            raise RuntimeError('stage differs between card and catalog: %s' % detail)
+        return detail
 
     return {
         'code': code,
         'card_page_fields': check(lambda: public_fields.verify_core_fields(need(page, 'card page'), card)),
         'catalog_fields': check(lambda: public_fields.verify_core_fields(need(fragment, 'catalog card'), card, catalog=True)),
-        'photos': check(lambda: public_media.verify_photo_structure(need(page, 'card page'), card)),
+        'photos': check(lambda: card_gallery(need(page, 'card page'), card)),
         'catalog_photo_count': check(photo_count),
         'price_card_page': check(lambda: price(page, 'card page')),
         'price_catalog': check(lambda: price(fragment, 'catalog card')),
@@ -141,6 +152,11 @@ def audit_car(card, page, fragment, prices_json):
         'description': check(description),
         'stage': check(stage),
     }
+
+
+def cars_report(cards, shown, pages, articles, prices_json):
+    return [audit_car(c, pages.get(c['auto_number']), articles.get(c['auto_number']), prices_json)
+            for c in sorted(cards, key=lambda c: c['auto_number']) if c['auto_number'] in shown]
 
 
 def audit(cards, catalog, pages, prices_json, served=None, page_files=()):
@@ -161,8 +177,14 @@ def audit(cards, catalog, pages, prices_json, served=None, page_files=()):
                                               if c.get('published') == 1 and c.get('status') in HIDDEN_STATUSES),
         'served_bytes_differ_from_server': sorted(k for k, ok in (served or {}).items() if ok is False),
     }
-    cars = [audit_car(c, pages.get(c['auto_number']), articles.get(c['auto_number']), prices_json)
-            for c in sorted(cards, key=lambda c: c['auto_number']) if c['auto_number'] in shown]
+    labels = {}
+    for c in cards:
+        pill = first(r'class="status-pill"[^>]*>(.*?)</div>', articles.get(c['auto_number']))
+        if pill:
+            labels.setdefault(str(c.get('status')), set()).add(pill.split(' · ')[0])
+    summary['stage_label_by_crm_status'] = {k: sorted(v) for k, v in sorted(labels.items())}
+    summary['crm_status_with_several_stage_labels'] = sorted(k for k, v in labels.items() if len(v) > 1)
+    cars = cars_report(cards, shown, pages, articles, prices_json)
     counts = {}
     for car in cars:
         for name, value in car.items():
