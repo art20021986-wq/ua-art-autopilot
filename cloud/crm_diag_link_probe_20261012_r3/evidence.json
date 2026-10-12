@@ -1,0 +1,111 @@
+{
+  "audit": [
+    {
+      "action": "card_edit",
+      "auto_number": "UA-0018",
+      "created_at": "2026-10-12T04:20:34",
+      "entity_id": 28,
+      "entity_type": "cars",
+      "field": "price_uah",
+      "new_chars": 5,
+      "old_chars": 5
+    },
+    {
+      "action": "card_edit",
+      "auto_number": "UA-0018",
+      "created_at": "2026-10-12T04:20:34",
+      "entity_id": 28,
+      "entity_type": "cars",
+      "field": "price_history",
+      "new_chars": 24,
+      "old_chars": 24
+    },
+    {
+      "action": "card_edit",
+      "auto_number": "UA-0020",
+      "created_at": "2026-10-12T04:21:31",
+      "entity_id": 30,
+      "entity_type": "cars",
+      "field": "price_uah",
+      "new_chars": 5,
+      "old_chars": 5
+    },
+    {
+      "action": "card_edit",
+      "auto_number": "UA-0020",
+      "created_at": "2026-10-12T04:21:31",
+      "entity_id": 30,
+      "entity_type": "cars",
+      "field": "price_history",
+      "new_chars": 24,
+      "old_chars": 24
+    },
+    {
+      "action": "card_edit",
+      "auto_number": "UA-0020",
+      "created_at": "2026-10-12T04:23:55",
+      "entity_id": 30,
+      "entity_type": "cars",
+      "field": "condition_videos",
+      "new_chars": 99,
+      "old_chars": 0
+    },
+    {
+      "action": "inbox_create",
+      "created_at": "2026-10-12T04:24:56",
+      "entity_id": 180,
+      "entity_type": "inbox",
+      "field": "status",
+      "new_chars": 3,
+      "old_chars": 0
+    },
+    {
+      "action": "inbox_create",
+      "created_at": "2026-10-12T04:25:38",
+      "entity_id": 181,
+      "entity_type": "inbox",
+      "field": "status",
+      "new_chars": 3,
+      "old_chars": 0
+    },
+    {
+      "action": "inbox_create",
+      "created_at": "2026-10-12T04:38:37",
+      "entity_id": 182,
+      "entity_type": "inbox",
+      "field": "status",
+      "new_chars": 3,
+      "old_chars": 0
+    }
+  ],
+  "http_methods": [
+    "GET"
+  ],
+  "log": {
+    "bytes": 14583,
+    "lines": [
+      "Oct 12 04:20:[N]:20:10,919 WARNING start_safe: сеть подвела на novyj, попытка 1 из 3, пауза 2 c",
+      "Oct 12 04:20:[N]:20:12,510 WARNING start_safe: сеть подвела на novyj, попытка 2 из 3, пауза 3 c",
+      "Oct 12 04:20:[N]:20:14,833 WARNING card_render: CRM media batch timeout",
+      "Oct 12 04:20:[N]:20:39,344 WARNING start_safe: сеть подвела на novyj, попытка 1 из 3, пауза 2 c",
+      "Oct 12 04:20:[N]:20:40,927 WARNING start_safe: сеть подвела на novyj, попытка 2 из 3, пауза 3 c",
+      "Oct 12 04:20:[N]:20:43,263 WARNING card_render: CRM media batch timeout",
+      "Oct 12 04:20:[N]:20:53,935 INFO ua_crm_public_sync: CRM sync PASS: UA-0018",
+      "Oct 12 04:21:[N]:21:14,677 WARNING card_render: CRM media batch timeout",
+      "Oct 12 04:21:[N]:21:42,380 WARNING card_render: CRM media batch timeout",
+      "Oct 12 04:21:[N]:21:54,689 INFO ua_crm_public_sync: CRM sync PASS: UA-0020",
+      "Oct 12 04:22:[N]:22:29,962 WARNING start_safe: сеть подвела на novyj, попытка 1 из 3, пауза 2 c",
+      "Oct 12 04:22:[N]:22:31,546 WARNING start_safe: сеть подвела на novyj, попытка 2 из 3, пауза 3 c",
+      "Oct 12 04:22:[N]:22:33,881 WARNING card_render: CRM media batch timeout",
+      "Oct 12 04:23:[N]:23:11,404 WARNING start_safe: сеть подвела на novyj, попытка 1 из 3, пауза 2 c",
+      "Oct 12 04:23:[N]:23:12,987 WARNING start_safe: сеть подвела на novyj, попытка 2 из 3, пауза 3 c",
+      "Oct 12 04:23:[N]:23:15,323 WARNING card_render: CRM media batch timeout",
+      "Oct 12 04:23:[N]:23:25,024 WARNING card_render: CRM media batch timeout",
+      "Oct 12 04:24:[N]:24:08,191 INFO ua_crm_public_sync: CRM sync PASS: UA-0020"
+    ],
+    "window_lines": 18
+  },
+  "remote_write_count": 0,
+  "run_id": "38204963191",
+  "task_id": "CRM-DIAG-LINK-PROBE-20261012-R3"
+}

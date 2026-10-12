@@ -1,0 +1,53 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-DIAG-LINK-PROBE-20261012-R3.aa75eb2ddc213b33ef1477423662e8f81ee9fece54c280ae2970404bedeb0c08.json",
+  "autostart_ledger_sha256": "e04e9929ec84bf0cf4197941b76d4373361d5ad7574e595128cbb0f4d706d6a5",
+  "autostart_source_commit": "578718f923b360838404c2e2f895513ad0cd0a25",
+  "created_at": "2026-10-12T04:44:35Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-10-12T04:45:27Z",
+  "heartbeat_at": "2026-10-12T04:45:27Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "38204963191",
+    "task_id": "CRM-DIAG-LINK-PROBE-20261012-R3",
+    "task_sha256": "aa75eb2ddc213b33ef1477423662e8f81ee9fece54c280ae2970404bedeb0c08"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "read_only-73a97ee127a10042-1e5dedc2fd20742b",
+  "receipt_path": "state/receipts/CRM-DIAG-LINK-PROBE-20261012-R3.json",
+  "receipt_sha256": "1af0eb8c40530da04c4a4d6f838d86c85c0d7ada55d25cbb0a2039011bdaae71",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CRM-DIAG-LINK-PROBE-20261012-R3.json",
+  "request_sha256": "aa75eb2ddc213b33ef1477423662e8f81ee9fece54c280ae2970404bedeb0c08",
+  "resource_locks": [
+    "READ_ONLY:73a97ee127a10042"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "e6225e045a6446bc504361701f5a8bc662f9075d",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92096909312,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 40.531
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "33cb4146139518ddf7adb5f803109040115f9bc0bc0bab9adc240d7475e67e64",
+    "file_sha256": {
+      "cloud/crm_diag_link_probe_20261012_r3/test_controller.py": "045733e4f1c292698ae028702042ca0d822974ba50da20961a9a1d8b0bfae7f1"
+    }
+  },
+  "updated_at": "2026-10-12T04:45:27Z"
+}
