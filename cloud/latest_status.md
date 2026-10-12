@@ -1,7 +1,8 @@
 CRM_MENU_CLEANUP_TASK: CRM-MENU-CLEANUP-001 (tasks/CRM-MENU-CLEANUP-001.md, cloud/crm_menu_cleanup_001/README.md)
-CRM_MENU_CLEANUP_STATUS: PREVIEW_PASS_WAITING_OWNER_YES
-CRM_MENU_CLEANUP_PREVIEW: run 38254781022 FINISHED; cars_ui.py ce0d1327… → 19adbff3…, plan b1ab0cb6…; only with_stats_button replaced (no «Отчёт по клиентам», «Запуск оптимизации», «Ещё»; MORE buttons dropped). CRM/site writes: none.
-CRM_MENU_CLEANUP_NEXT: After owner «да» — install request/manifest/Gate A/approval by the crm_field_input_001 pattern, launch CRITICAL install, check receipt.
+CRM_MENU_CLEANUP_STATUS: INSTALLED_PRODUCTION
+CRM_MENU_CLEANUP_INSTALL: owner «Да»; CRITICAL run 38276358052 FINISHED: cars_ui.py ce0d1327… → 19adbff3… (only with_stats_button), backup/rollback ready, crm_unchanged, protected unchanged, bot 266084 running, index/katalog PASS. Owner menu: no «Отчёт по клиентам», «Запуск оптимизации», «Ещё». Old handlers kept (buttons in old chat messages still answer).
+CRM_MENU_CLEANUP_NOTE: first install launch 38272312355 refused at intake (launch expiry ≠ approval expiry; nothing consumed). Launch created_at/expires_at must equal approval approved_at/expires_at; storage probe valid 30 min.
+CRM_MENU_CLEANUP_NEXT: Owner visual check in Telegram (/start). Optional, proposed only: remove the unused screens/handlers from code.
 
 SEO_GROWTH_TASK: SEO-GROWTH-001 (tasks/SEO-GROWTH-001.md, cloud/seo_growth_001/README.md)
 SEO_GROWTH_STATUS: INSTALLED_LIVE_VERIFIED_20_OF_20_CARDS
