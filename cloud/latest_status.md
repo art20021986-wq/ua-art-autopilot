@@ -4,11 +4,11 @@ CRM_MENU_CLEANUP_PREVIEW: run 38254781022 FINISHED; cars_ui.py ce0d1327… → 1
 CRM_MENU_CLEANUP_NEXT: After owner «да» — install request/manifest/Gate A/approval by the crm_field_input_001 pattern, launch CRITICAL install, check receipt.
 
 SEO_GROWTH_TASK: SEO-GROWTH-001 (tasks/SEO-GROWTH-001.md, cloud/seo_growth_001/README.md)
-SEO_GROWTH_STATUS: INSTALLED_LIVE_VERIFIED_19_OF_20_CARDS
+SEO_GROWTH_STATUS: INSTALLED_LIVE_VERIFIED_20_OF_20_CARDS
 SEO_GROWTH_INSTALL: owner «Да ок»; CRITICAL run 38231988041 FINISHED: 8 code hashes = plan, crm_unchanged, protected unchanged, bot 266084 running, index/katalog PASS, CPU 2.2% before.
 SEO_GROWTH_LIVE: SEO-GROWTH-VERIFY-20261012 (cloud/seo_growth_verify_20261012/evidence.json): 19/20 cards with keyword titles + JSON-LD (Car/Offer, AutoDealer, Breadcrumb) + links block; 12 uk/ru landing pages HTTP 200 with ItemList/hreflang; sitemap 39 URLs, all with lastmod; robots.txt points to sitemap.
-SEO_GROWTH_BLOCKER_PREEXISTING: UA-0021 cannot be republished by anyone: TASK115 guard (_UA115_APPROVED_HOSTS) rejects www.searates.com, which CARRIER-TRACKING-INSTALL-20260928 put on its card (owner rule). Worker retries with backoff ≤15 min (a few CPU s each). Old UA-0021 page intact. Fix proposed to owner: add www.searates.com to the approved hosts (separate CRITICAL task).
-SEO_GROWTH_NEXT: Owner decision on the UA-0021 host fix; GSC access renewal (owner action) to submit sitemap and measure; re-check with SEO-GROWTH-VERIFY-20261012-R2 after fixes. Proposed separately, not done: Ukrainian card URLs via generator, cleanup of public *.txt/proba files in video/, hashed card copies.
+SEO_GROWTH_UA0021_FIX: owner «Да»; UA0021-SEARATES-HOST-INSTALL-20261012 FINISHED (ua_additional_spec.py d79b5e5f…, www.searates.com added to TASK115 approved hosts; crm_unchanged, bot running). SEO-GROWTH-VERIFY-20261012-R2: 20/20 cards with SEO, 15 landings 200, sitemap 39/39 lastmod, worker retry queue empty.
+SEO_GROWTH_NEXT: GSC access renewal (owner action) to submit sitemap and measure impressions in 2–4 weeks. Proposed separately, not done: Ukrainian card URLs via generator, cleanup of public *.txt/proba files in video/, hashed card copies.
 
 TRAFFIC_AUDIT_TASK: TRAFFIC-AUDIT-20261012
 TRAFFIC_AUDIT_STATUS: REPORT_DONE_READ_ONLY
