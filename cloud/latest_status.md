@@ -369,3 +369,13 @@ ROOT_CAUSE: kadry_diagnostiki downloads diag media every 120 s in its own thread
 FIX: cloud/crm_diag_media_publish_001 — new ua_diag_files.py + snapshot() revision includes diag file names (only when present). 6 tests on exact installed ua_crm_public_sync.py (8c65eeb5…). Not installed; needs owner «да». Effect: one-time republish of cards with diag files.
 FIELD_INPUT_INSTALL: owner said «да». Preview R1 rejected (exec in test), R2 remote builder refused multi-line client_ask (no write), R3 refused RESOURCE_BUSY: R2 claim stuck BLOCKED_ROOT_CAUSE holding CRM_DB lock. Needs reconciliation of that claim (precedent CRM-CARD-DELETE-INSTALL-20261011) before preview R3 can run.
 LOG_NOTE: /var/log/alwayson-log-266084.log has no lines after 04:24:08.
+
+CRM_FIELD_INPUT_AND_DIAG_MEDIA_INSTALLED_20261012:
+OWNER: «Да» + «Разрешаю закрыть зависшую служебную запись автопилота CRM-FIELD-INPUT-PREFLIGHT-20261012-R2 и установить обе правки».
+RECONCILED: stuck preview claim CRM-FIELD-INPUT-PREFLIGHT-20261012-R2 → FAILED (no remote write), record state/reconciliations/CRM-FIELD-INPUT-PREFLIGHT-20261012-R2.38206266916.failed-before-remote-write.json, claim archived byte-identical.
+INSTALL_1: CRM-FIELD-INPUT-INSTALL-20261012-R4, run 38222751905 FINISHED / production PASS / live_verify PASS; cars_ui.py ce0d1327…; crm_unchanged, protected files unchanged, bot 266084 running. Field prompt (edit_ask/client_ask) now cancels pending media/container/spec input.
+INSTALL_2: CRM-DIAG-MEDIA-PUBLISH-INSTALL-20261012, run 38225289348 FINISHED / production PASS / live_verify PASS; ua_crm_public_sync.py 543c43ef…, new ua_diag_files.py 245f7fc5…; crm_unchanged, bot running.
+VERIFIED (CRM-VIDEO-PROBE-20261012-R6, read-only): video/UA-0020-diag.html now has video diag/UA-0020/01.mp4, placeholder gone; UA-0017 diag stays empty (no diag media in CRM).
+NOT_CLAIMED: manual Telegram test of entering link/description after media upload not done by Claude. UA-0020 diag link/description from 11:24–11:38 were not saved then — owner must resend.
+LEARNED: autostart launch must be a single non-merge commit (use rebase-merge PR); tests may not call exec/eval; storage probe in install request must be <30 min old at run time.
+OPTIONAL_NOT_DONE: human labels for diag_link/diag_text in edit prompt; same race may exist for regular card videos (media rows stay pending).
