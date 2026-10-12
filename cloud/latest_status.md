@@ -1,3 +1,9 @@
+TRAFFIC_AUDIT_TASK: TRAFFIC-AUDIT-20261012
+TRAFFIC_AUDIT_STATUS: REPORT_DONE_READ_ONLY
+TRAFFIC_AUDIT_FACTS: GSC 2026-09-06..10-03: 5 impressions, 0 clicks; no sitemap registered; car cards unknown to Google; GSC radar TOKEN_HTTP_400 since 2026-10-06.
+TRAFFIC_AUDIT_PRODUCTION_WRITTEN: NO
+TRAFFIC_AUDIT_NEXT: Owner chooses items from cloud/traffic_audit_20261012/README.md; each site change is a separate task with approval.
+
 TASK_ID: UA-ART-CRM-SITE-CONSISTENCY-001
 STATUS: BLOCKED_CPU_QUOTA_AND_PENDING_FULL_REHEARSAL
 OWNER_INSTRUCTION: 2026-09-26 — critical production repair and prevention authorized; repeated approval is not needed for this scope, required gates remain mandatory.
