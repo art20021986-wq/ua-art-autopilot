@@ -1,3 +1,8 @@
+CRM_MENU_CLEANUP_TASK: CRM-MENU-CLEANUP-001 (tasks/CRM-MENU-CLEANUP-001.md, cloud/crm_menu_cleanup_001/README.md)
+CRM_MENU_CLEANUP_STATUS: PREVIEW_PASS_WAITING_OWNER_YES
+CRM_MENU_CLEANUP_PREVIEW: run 38254781022 FINISHED; cars_ui.py ce0d1327… → 19adbff3…, plan b1ab0cb6…; only with_stats_button replaced (no «Отчёт по клиентам», «Запуск оптимизации», «Ещё»; MORE buttons dropped). CRM/site writes: none.
+CRM_MENU_CLEANUP_NEXT: After owner «да» — install request/manifest/Gate A/approval by the crm_field_input_001 pattern, launch CRITICAL install, check receipt.
+
 SEO_GROWTH_TASK: SEO-GROWTH-001 (tasks/SEO-GROWTH-001.md, cloud/seo_growth_001/README.md)
 SEO_GROWTH_STATUS: INSTALLED_LIVE_VERIFIED_19_OF_20_CARDS
 SEO_GROWTH_INSTALL: owner «Да ок»; CRITICAL run 38231988041 FINISHED: 8 code hashes = plan, crm_unchanged, protected unchanged, bot 266084 running, index/katalog PASS, CPU 2.2% before.
