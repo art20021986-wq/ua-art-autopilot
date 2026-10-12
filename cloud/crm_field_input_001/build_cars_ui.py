@@ -37,13 +37,17 @@ def _unique(tree, name, kind):
     return nodes[0]
 
 
-def _wait_assignment(function):
-    """The single one-line statement `context.user_data['car_wait'] = {...}`."""
+def _wait_assignment(function, lines):
+    """The single statement `context.user_data['car_wait'] = {...}` that owns its whole lines."""
     found = [n for n in function.body if isinstance(n, ast.Assign) and len(n.targets) == 1
              and ast.unparse(n.targets[0]) == "context.user_data['car_wait']"]
-    if len(found) != 1 or found[0].lineno != found[0].end_lineno:
+    if len(found) != 1:
         raise BuildError('CAR_WAIT_NOT_UNIQUE:' + function.name)
-    return found[0]
+    node = found[0]
+    first, last = lines[node.lineno - 1], lines[node.end_lineno - 1]
+    if first[:node.col_offset].strip() or last[node.end_col_offset:].strip():
+        raise BuildError('CAR_WAIT_SHARES_LINE:' + function.name)
+    return node
 
 
 def build(source: bytes, *, expected=EXPECTED_SHA256) -> bytes:
@@ -55,12 +59,12 @@ def build(source: bytes, *, expected=EXPECTED_SHA256) -> bytes:
         raise BuildError('ALREADY_BUILT')
     anchor = _unique(tree, 'drop_wait', ast.FunctionDef)
     lines = text.splitlines(keepends=True)
-    # Replace bottom-up so earlier line numbers stay valid.
-    edits = [_wait_assignment(_unique(tree, name, ast.AsyncFunctionDef)) for name in PROMPTS]
+    # Replace bottom-up so earlier line numbers stay valid; a multi-line value keeps its own layout.
+    edits = [_wait_assignment(_unique(tree, name, ast.AsyncFunctionDef), lines) for name in PROMPTS]
     for node in sorted(edits, key=lambda n: n.lineno, reverse=True):
-        line = lines[node.lineno - 1]
-        indent = line[:len(line) - len(line.lstrip())]
-        lines[node.lineno - 1] = '%s_ua_wait_text(context, %s)\n' % (indent, ast.get_source_segment(text, node.value))
+        indent = lines[node.lineno - 1][:node.col_offset]
+        lines[node.lineno - 1:node.end_lineno] = [
+            '%s_ua_wait_text(context, %s)\n' % (indent, ast.get_source_segment(text, node.value))]
     if anchor.end_lineno >= min(n.lineno for n in edits):
         raise BuildError('DROP_WAIT_AFTER_PROMPTS')
     lines.insert(anchor.end_lineno, HELPER)
