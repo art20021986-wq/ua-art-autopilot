@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/UA0021-SEARATES-HOST-INSTALL-20261012.14c9515570c18b1119217d8cca82a6936c4a00028105f995116600ae3c4c4464.json",
+  "autostart_ledger_sha256": "ed8a080c32b061a06c2ac7227b0c67777095c2c82bb0176e530e5c4d25f5c98e",
+  "autostart_source_commit": "6a6d95b975e078f670aec83826663235f9e83659",
+  "created_at": "2026-10-12T12:56:18Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "38252124651",
+    "task_id": "UA0021-SEARATES-HOST-INSTALL-20261012",
+    "task_sha256": "14c9515570c18b1119217d8cca82a6936c4a00028105f995116600ae3c4c4464"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-c21927c695ba6f6e-c4f99c3b1ee532f7",
+  "request_path": "tasks/requests/UA0021-SEARATES-HOST-INSTALL-20261012.json",
+  "resource_locks": [
+    "PATH_SCOPE:c21927c695ba6f6e"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
