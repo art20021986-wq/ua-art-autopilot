@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-VIDEO-PROBE-20261012-R3.7bb00e39f10c29e4cf15396ebbe034f57b6b52acdc4c52d203cac33f5207dbf9.json",
+  "autostart_ledger_sha256": "2cb26ffff7eac7fe8624aeba27eff6df397643e691b252d0e6717badd1546fdf",
+  "autostart_source_commit": "9c83dffb622035914e31d4987b48b59bbe0c0ee5",
+  "created_at": "2026-10-12T05:21:09Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "38207504583",
+    "task_id": "CRM-VIDEO-PROBE-20261012-R3",
+    "task_sha256": "7bb00e39f10c29e4cf15396ebbe034f57b6b52acdc4c52d203cac33f5207dbf9"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-bbb0977bb8940d67-007b47388316a986",
+  "request_path": "tasks/requests/CRM-VIDEO-PROBE-20261012-R3.json",
+  "resource_locks": [
+    "READ_ONLY:bbb0977bb8940d67"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
