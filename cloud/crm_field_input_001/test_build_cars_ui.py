@@ -5,6 +5,7 @@ import asyncio
 import hashlib
 import importlib.util
 from pathlib import Path
+import tempfile
 from types import SimpleNamespace
 import unittest
 
@@ -53,9 +54,14 @@ def sha(data):
 
 
 def load(source):
-    namespace = {}
-    exec(compile(source, 'cars_ui.py', 'exec'), namespace)
-    return namespace
+    """Import the given source as a real module from a temporary file."""
+    with tempfile.TemporaryDirectory() as temp:
+        path = Path(temp) / 'cars_ui_fixture.py'
+        path.write_bytes(source)
+        module_spec = importlib.util.spec_from_file_location('cars_ui_fixture', path)
+        module = importlib.util.module_from_spec(module_spec)
+        module_spec.loader.exec_module(module)
+    return vars(module)
 
 
 def prompt(module, name, data, user_data):
