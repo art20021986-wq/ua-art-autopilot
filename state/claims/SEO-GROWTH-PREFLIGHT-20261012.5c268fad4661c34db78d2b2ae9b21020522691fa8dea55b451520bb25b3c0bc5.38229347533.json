@@ -7,21 +7,23 @@
   "created_at": "2026-10-12T09:22:06Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T09:22:06Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-12T09:26:58Z",
+  "heartbeat_at": "2026-10-12T09:26:58Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "38229347533",
     "task_id": "SEO-GROWTH-PREFLIGHT-20261012",
     "task_sha256": "5c268fad4661c34db78d2b2ae9b21020522691fa8dea55b451520bb25b3c0bc5"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-51b290ac2f40b3a6-618b94dde87d17e3",
   "receipt_path": "state/receipts/SEO-GROWTH-PREFLIGHT-20261012.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "990e7f112e2e6aa0c274323e13ec93e2d76d7629cc92b2855875b5e28c1aafa9",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SEO-GROWTH-PREFLIGHT-20261012.json",
   "request_sha256": "5c268fad4661c34db78d2b2ae9b21020522691fa8dea55b451520bb25b3c0bc5",
   "resource_locks": [
@@ -29,8 +31,40 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "683966b7b138a14018e7e4cb2e073a4851928cdc",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91148271616,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.144
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-12T09:22:06Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "11cd6bb2af62cb0735e26541565801dc0fc0e85ec4a3180d4efa581031a53d41",
+    "file_sha256": {
+      "cloud/seo_growth_001/build_guard.py": "12780061e41a8e88617fc9924422c2ef57e0d569bb2ddd6bec7d9fab53305bfe",
+      "cloud/seo_growth_001/build_public_sync.py": "492cc8549af6a919c56b60bd4ecbe0f664f48fe6ebae73668b277acc37fc1b96",
+      "cloud/seo_growth_001/candidate_builder.py": "74b406f79c436fef39fa8ee777231b5b94c0750489bdc878eed556e1e30851cd",
+      "cloud/seo_growth_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/seo_growth_001/deployment_bootstrap.py": "fa7f5e89ee68ab3a21b817d01177f725b49e0165dde32556d967a3ec8c6ab857",
+      "cloud/seo_growth_001/deployment_remote.py": "16a9ec90c841ff58987966482ab855a8f556c596c40b01cf5dd09a12669012e1",
+      "cloud/seo_growth_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/seo_growth_001/deployment_transport.py": "5405d2e354c95e9571cd301c766c1f43dc60efed224f1e72433057e4323ce120",
+      "cloud/seo_growth_001/release_constants.py": "fbcb31567551356221576039914d4c01bedad8fcec13e43c02bb35373b99eadb",
+      "cloud/seo_growth_001/test_deployment.py": "02c1f34fc0e4632082dd39e6853dbe27819d9a932d41d66cb40f649f6e6c029f",
+      "cloud/seo_growth_001/test_release.py": "b8ce342499f0edb55d4e0763eb45034c142fc7747a7e754676783d0e70e64536",
+      "cloud/seo_growth_001/test_seo_growth.py": "71c6f5a6909efe44fde68b0e8c1fde8cf86e6dd8da1bd1860d17e5af7fd03a5f",
+      "cloud/seo_growth_001/ua_seo_catalog.py": "5b66b369c97f914b302e9bc564dd139c617927fb64489d618d982fd0b5c8c0aa",
+      "cloud/seo_growth_001/ua_seo_index.py": "ba6f6a4e6c2c0dc95a1dab995ff50de98368ed81b432bfe93f9773e6421fb19a",
+      "cloud/seo_growth_001/ua_seo_landings.py": "b66dbdb7fa5c1421bec7f4ba917845ae38e8cceb22b0943259bae35187e19129",
+      "cloud/seo_growth_001/ua_seo_metadata.py": "ba11ec4153c596aef4a1aebe821f965177a0c13a56b3000e0d6e7e4ff13609d5",
+      "cloud/seo_growth_001/ua_seo_schema.py": "a569865c836146f8a42720e36b0431770c2757e7170e250ee7ad42d9d6697557",
+      "cloud/seo_growth_001/ua_seo_sitemap.py": "0a7e44f8b52d0f27355ab1475aeb62180baee2ced9c35412cb3ef4689eb36a09"
+    }
+  },
+  "updated_at": "2026-10-12T09:26:58Z"
 }
