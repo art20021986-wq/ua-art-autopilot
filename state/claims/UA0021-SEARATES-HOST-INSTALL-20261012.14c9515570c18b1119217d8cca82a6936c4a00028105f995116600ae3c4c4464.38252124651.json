@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "0e6dbdb6917a45b73bf6b3a394565e4e43ff27871821706c0a84ae5cdbdc7ad0",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T13:01:22Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-10-12T13:13:53Z",
+  "heartbeat_at": "2026-10-12T13:13:53Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "38252124651",
     "task_id": "UA0021-SEARATES-HOST-INSTALL-20261012",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 904.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 310.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-38252124651-14c9515570c18b11",
   "production_transaction_path": "state/transactions/UA0021-SEARATES-HOST-INSTALL-20261012.14c9515570c18b1119217d8cca82a6936c4a00028105f995116600ae3c4c4464.38252124651.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-c21927c695ba6f6e-c4f99c3b1ee532f7",
   "receipt_path": "state/receipts/UA0021-SEARATES-HOST-INSTALL-20261012.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "e5ba3e110ad525f621afbd1ee57e0fa6cbd6db579826c97ca83c0fc1e021db5f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/UA0021-SEARATES-HOST-INSTALL-20261012.json",
   "request_sha256": "14c9515570c18b1119217d8cca82a6936c4a00028105f995116600ae3c4c4464",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "badb5a5f613ad398604a9c92ea813efa5974b6a2256e76114a61e275c38733db",
     "file_sha256": {
@@ -85,5 +108,5 @@
       "cloud/ua0021_searates_host_001/test_release.py": "c37c5cc49ecdb0eb4430ecf3b8be215bb5278630c40e807eed3e092ca01993ec"
     }
   },
-  "updated_at": "2026-10-12T13:01:22Z"
+  "updated_at": "2026-10-12T13:13:53Z"
 }
