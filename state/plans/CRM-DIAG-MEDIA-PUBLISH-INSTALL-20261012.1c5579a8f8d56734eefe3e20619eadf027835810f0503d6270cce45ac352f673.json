@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-DIAG-MEDIA-PUBLISH-INSTALL-20261012.1c5579a8f8d56734eefe3e20619eadf027835810f0503d6270cce45ac352f673.json",
+  "autostart_ledger_sha256": "e644a667e7bcac05a2d049820000b263a351dd44a4ac7151edf25bf83369e378",
+  "autostart_source_commit": "553b5341791c6a59dfa98fcb8e6d44f81e25c0bf",
+  "created_at": "2026-10-12T08:43:56Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "38225289348",
+    "task_id": "CRM-DIAG-MEDIA-PUBLISH-INSTALL-20261012",
+    "task_sha256": "1c5579a8f8d56734eefe3e20619eadf027835810f0503d6270cce45ac352f673"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/CRM-DIAG-MEDIA-PUBLISH-INSTALL-20261012.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
