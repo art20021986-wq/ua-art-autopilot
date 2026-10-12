@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-DIAG-LINK-PROBE-20261012-R2.b93c9d118cceda0b7d6ed492c8e2cd86cf35b2c031d4c711503fc02b8b39c35f.json",
+  "autostart_ledger_sha256": "65138058bc5e2de5dad93c468112521903d9de75cd5611fb215520336e83625d",
+  "autostart_source_commit": "f09f31a617a21a121e30ab23ba39727899488018",
+  "created_at": "2026-10-12T04:41:16Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "38204744016",
+    "task_id": "CRM-DIAG-LINK-PROBE-20261012-R2",
+    "task_sha256": "b93c9d118cceda0b7d6ed492c8e2cd86cf35b2c031d4c711503fc02b8b39c35f"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-6d2f292241b5a385-593ff15057f57a22",
+  "request_path": "tasks/requests/CRM-DIAG-LINK-PROBE-20261012-R2.json",
+  "resource_locks": [
+    "READ_ONLY:6d2f292241b5a385"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
