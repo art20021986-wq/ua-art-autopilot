@@ -1,0 +1,35 @@
+{
+    "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-1",
+    "semantic_outcome": "FAILED_NO_PRODUCTION_WRITE",
+    "task_id": "CRM-FIELD-INPUT-PREFLIGHT-20261012-R2",
+    "original_run_id": "38206266916",
+    "request_sha256": "02b72baf5d33bff941c974b85143a936b52cd646891699ad6ff212cb0b609456",
+    "prepared_at": "2026-10-12T08:11:01.082953+00:00",
+    "owner_statement": "Разрешаю закрыть зависшую служебную запись автопилота CRM-FIELD-INPUT-PREFLIGHT-20261012-R2 и установить обе правки",
+    "original_failure_preserved": true,
+    "original_failure_code": "REMOTE_PREVIEW:BuildError:CAR_WAIT_NOT_UNIQUE:client_ask",
+    "failure_stage": "STANDARD preview: remote source-only builder refused the installed multi-line statement before writing any candidate file",
+    "task_class": "STANDARD",
+    "production_required": false,
+    "transaction_created": false,
+    "production_backup_executed": false,
+    "production_install_controller_executed": false,
+    "production_write_executed": false,
+    "production_rollback_executed": false,
+    "production_service_reload_executed": false,
+    "metadata_terminal_status": "FAILED",
+    "metadata_terminal_status_meaning": "Source-only preview stopped by its own input guard; the claim kept the CRM_DB queue lock (RESOURCE_BUSY for run 38207031720). Successor preview uses a new task id.",
+    "successor_installation_authorized_by_this_record": false,
+    "precedent": "state/reconciliations/CRM-CARD-DELETE-INSTALL-20261011.38184149170.aborted-before-production.json",
+    "before_sha256": {
+        "state/claims/CRM-FIELD-INPUT-PREFLIGHT-20261012-R2.02b72baf5d33bff941c974b85143a936b52cd646891699ad6ff212cb0b609456.38206266916.json": "5d12461fa215abc38464464c07b3701c7a7f2af67d41cfc0e00efe7dad2e3645"
+    },
+    "after_sha256": {
+        "state/claims/CRM-FIELD-INPUT-PREFLIGHT-20261012-R2.02b72baf5d33bff941c974b85143a936b52cd646891699ad6ff212cb0b609456.38206266916.json": "d36a420225628907c6ef6831ef9ee182729e9e03e6c439fa3122ad1e51a9d9e9"
+    },
+    "claim_archive": {
+        "path": "state/halt_history/CRM-FIELD-INPUT-PREFLIGHT-20261012-R2.38206266916/claim.before.json",
+        "sha256": "5d12461fa215abc38464464c07b3701c7a7f2af67d41cfc0e00efe7dad2e3645",
+        "byte_identical_required": true
+    }
+}
