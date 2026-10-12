@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-SITE-PAGES-20261012-R3.e347dc4e0a538453f61324eec591b739f0d925ca0dc9d7feb8bccca3032a1bf7.json",
+  "autostart_ledger_sha256": "c30dd9ff3740c49ddfbbb3e49a5eb88d87b3cbfb18a9e7b8c4dc4a6d6c12f6a1",
+  "autostart_source_commit": "a39ca2f0de4b482c21e877f365d134c834d20d6d",
+  "created_at": "2026-10-12T04:05:21Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-12T04:05:21Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "38202303778",
+    "task_id": "CRM-SITE-PAGES-20261012-R3",
+    "task_sha256": "e347dc4e0a538453f61324eec591b739f0d925ca0dc9d7feb8bccca3032a1bf7"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "read_only-14958e30bd3f0d6a-8a0e62bb9b2bdbe9",
+  "receipt_path": "state/receipts/CRM-SITE-PAGES-20261012-R3.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CRM-SITE-PAGES-20261012-R3.json",
+  "request_sha256": "e347dc4e0a538453f61324eec591b739f0d925ca0dc9d7feb8bccca3032a1bf7",
+  "resource_locks": [
+    "READ_ONLY:14958e30bd3f0d6a"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "b7408cd552b6aed77b143de7df99c7525cc0238c",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-12T04:05:21Z"
+}
