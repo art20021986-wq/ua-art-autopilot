@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "1d3895996810808b71a4a08256a17d6bc510282c0fe76615a96cc6b439efec0d",
   "autostart_source_commit": "f5c2946a48a07003c33515a0b95af6b3d56481f1",
   "created_at": "2026-10-11T23:59:58Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "850f590de0dbc8eff5b64a277d36b58308213c3e89b73aaacb84369b7e6ba7a5",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-11T23:59:58Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-10-12T00:01:04Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "38186287980",
     "task_id": "CRM-CARD-DELETE-INSTALL-20261011-R2",
     "task_sha256": "1e3a58a5e6c0b19455265dd4d950083e06475b57f0a5aba024283cd04a808193"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 327.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 308.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-38186287980-1e3a58a5e6c0b194",
+  "production_transaction_path": "state/transactions/CRM-CARD-DELETE-INSTALL-20261011-R2.1e3a58a5e6c0b19455265dd4d950083e06475b57f0a5aba024283cd04a808193.38186287980.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-d0e98f1a1ef06032-8092e98827462271",
   "receipt_path": "state/receipts/CRM-CARD-DELETE-INSTALL-20261011-R2.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,39 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "491ba7bff5882b35387f9507637e01163f0a90d1",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 258.645,
+    "allowed": true,
+    "evidence_path": "state/storage/CRM-CARD-DELETE-INSTALL-20261011-R2.json",
+    "evidence_sha256": "98019fa113b3c58ec92fe408c24e295b814fe611bd5911947f6009335a007772",
+    "free_bytes": 1226671390720,
+    "heavy": true,
+    "measured_at": "2026-10-11T23:56:42.369636+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "WARN_70",
+    "usage_percent": 79.76109390383931
+  },
+  "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-11T23:59:58Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "93415417a739cbb4511449e72dbfd1f3b18438668de3e659a12cb77cada19673",
+    "file_sha256": {
+      "cloud/crm_card_delete_002/build_cars_ui.py": "5e62a49396cb9757a33aa0e1bd865ba7f358309a816e03642cb1014a53b63634",
+      "cloud/crm_card_delete_002/candidate_builder.py": "2bd4bc6be6341a9e48716de8b32aa036f2d12bbed153b7a36a9b3ff96139e940",
+      "cloud/crm_card_delete_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_card_delete_002/deployment_bootstrap.py": "81b610bb6a4f9a5462ccfd7dfe7994fa50f691bddf2e4e036ca2f304d71da37d",
+      "cloud/crm_card_delete_002/deployment_remote.py": "d1ba73baccc27e2a87cf36854eedfef2af5879224dd67c2aa1327bc725b5e2fd",
+      "cloud/crm_card_delete_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_card_delete_002/deployment_transport.py": "5bd3324b8bdb8a0aa81491644879d2ee432eafdeee28ffa66dc447afdeececec",
+      "cloud/crm_card_delete_002/release_constants.py": "2a8b5127ed247a601ac47c19be8d6068ab0565837d1521469b5499c1f617ddf7",
+      "cloud/crm_card_delete_002/test_build_cars_ui.py": "feed2efeac20f4f8146afdef23826c3cd70b5549ca35628bca30a1fcf5c2e20a",
+      "cloud/crm_card_delete_002/test_card_delete.py": "06942904e2628b3f10e355dd76b5fc2c14c268e95158d7acc5418716877ae961",
+      "cloud/crm_card_delete_002/test_deployment.py": "ee93cbb3f20cca90b2e815bb8b7ce8f712a7bf17bf618becb4edfb73984f5d3e",
+      "cloud/crm_card_delete_002/test_release.py": "3f5ae2bc63bdd8d0dbf6fbb22a1f96b1d107e291d7d521366e9912e69f8a0bb9",
+      "cloud/crm_card_delete_002/ua_card_delete.py": "e50663be0c846293f15bfdb9485c7c4e059071668fc350b606371ff59df4e2f5"
+    }
+  },
+  "updated_at": "2026-10-12T00:01:04Z"
 }
