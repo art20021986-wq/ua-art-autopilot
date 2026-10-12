@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "2e97ac4cf4eae298df6aef7d3307ee463665c5d7eaedcc2e04183acac9916ecb",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T16:19:19Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-12T16:23:02Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "38276358052",
     "task_id": "CRM-MENU-CLEANUP-INSTALL-20261012-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-38276358052-bea3ef9b60746319",
   "production_transaction_path": "state/transactions/CRM-MENU-CLEANUP-INSTALL-20261012-R2.bea3ef9b607463194db3827515062061c38a6d51f4ec20011ebef24ae1794377.38276358052.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-8ed5214c7b0a4720-6862f1e8dfe389df",
   "receipt_path": "state/receipts/CRM-MENU-CLEANUP-INSTALL-20261012-R2.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/crm_menu_cleanup_001/test_release.py": "98e0c9548b0cfc8a64caf75f974963391b6c5c310d10dd02840b54ce514b11be"
     }
   },
-  "updated_at": "2026-10-12T16:19:19Z"
+  "updated_at": "2026-10-12T16:23:02Z"
 }
