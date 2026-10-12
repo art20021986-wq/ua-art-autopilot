@@ -42,6 +42,7 @@ class AuditTests(unittest.TestCase):
         self.assertEqual(s['card_pages_without_crm_car'], ['UA-0008.html'])
         self.assertEqual(s['served_bytes_differ_from_server'], ['video/katalog.html'])
         self.assertEqual([c['code'] for c in report['cars']], ['UA-0022', 'UA-0099'])
+        self.assertEqual(s['catalog_stage_conflicts'], [])
 
     def test_current_card_page_matches_crm(self):
         audi = {'auto_number': 'UA-0017', 'brand': 'Audi', 'model': 'A6', 'year': '2015', 'mileage_km': 118000,
@@ -55,8 +56,16 @@ class AuditTests(unittest.TestCase):
         for name in ('card_page_fields', 'photos', 'price_card_page', 'stage'):
             self.assertEqual(car[name]['result'], 'PASS', (name, car[name]))
         self.assertEqual(car['photos']['detail'], {'photos': 39})
-        self.assertEqual(car['description']['result'], 'SKIP')
-        self.assertIn('site shows a description', car['description']['why'])
+        self.assertIn('CRM text is empty', car['description']['reason'])
+
+    def test_bullet_list_description_matches_renderer(self):
+        page = ("<div class='blok'><div class='zag'>Описание</div><div class='tehstr'><div class='m'>•</div>"
+                "<div>Без ДТП</div></div><div class='tehstr'><div class='m'>•</div><div>Один владелец</div></div></div>")
+        self.assertEqual(a.shown_description(page), 'Без ДТП Один владелец')
+        self.assertEqual(a.expected_description('- Без ДТП\r\n\n• Один владелец'), 'Без ДТП Один владелец')
+        self.assertEqual(a.expected_description('Строка 1\nСтрока 2'), 'Строка 1 Строка 2')
+        car = a.audit_car(dict(K5, condition_text='- Без ДТП\n- Один владелец'), page, None, {})
+        self.assertEqual(car['description']['result'], 'PASS')
 
     def test_card_mismatches_are_reported(self):
         audi = {'auto_number': 'UA-0017', 'brand': 'Audi', 'model': 'A6', 'year': '2016', 'mileage_km': 118000,
@@ -67,8 +76,8 @@ class AuditTests(unittest.TestCase):
         car = a.audit_car(audi, CARD_0017, frag, {})
         self.assertIn('identity', car['card_page_fields']['reason'])
         self.assertIn('card gallery 39 photos', car['photos']['reason'])
-        self.assertIn('differs from CRM condition_text', car['description']['reason'])
-        self.assertIn('stage differs', car['stage']['reason'])
+        self.assertIn('differs from CRM text', car['description']['reason'])
+        self.assertEqual(car['stage']['detail']['card_chip'], 'В Грузии · Поти/Батуми, оформление')
 
 
 if __name__ == '__main__':
