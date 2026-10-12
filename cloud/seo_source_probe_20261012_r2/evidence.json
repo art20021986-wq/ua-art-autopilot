@@ -1,0 +1,39 @@
+{
+  "cpu": {
+    "http": 200,
+    "value": {
+      "daily_cpu_limit_seconds": 10000,
+      "daily_cpu_total_usage_seconds": 133.403967,
+      "next_reset_time": "2026-10-13T08:43:16+00:00"
+    }
+  },
+  "http_methods": [
+    "GET"
+  ],
+  "listings": {},
+  "modules": {
+    "ua_additional_spec.py": {
+      "bytes": 36741,
+      "http": 200,
+      "sha256": "6d2ab7b2bace29b8c0be58a6668264e695fd24f9e5e8f3ed6406da41ea45c672"
+    },
+    "ua_delivery_status.py": {
+      "bytes": 2628,
+      "http": 200,
+      "sha256": "c544bc121b7b3b66d45519d5b63ed3687567af7e9d5f7011ae2fb53cc372bdd0"
+    },
+    "ua_price_html_v2.py": {
+      "bytes": 2494,
+      "http": 200,
+      "sha256": "b2698517788b8328771deb1d92737148fccfadf265b5ec906a47dc41ebc7b51c"
+    },
+    "ua_public_freshness.py": {
+      "bytes": 2855,
+      "http": 200,
+      "sha256": "6c750d0ffcfd3959413120905e46b8765049a2a207b77741d7fc5721a225c134"
+    }
+  },
+  "remote_write_count": 0,
+  "run_id": "38228748869",
+  "task_id": "SEO-SOURCE-PROBE-20261012-R2"
+}

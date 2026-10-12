@@ -1,0 +1,1055 @@
+# ===== ua_public_freshness.py =====
+"""Check CRM identity and public bytes before marking a sync revision successful."""
+import hashlib
+import re
+import time
+import urllib.request
+from pathlib import Path
+
+ROOT = Path('/home/Carix')
+BASE = 'https://www.uaart.com.ua/video/'
+
+
+def verify_public(code, fetch=None, card=None, root=None):
+    if not re.fullmatch(r'UA-[0-9]{4,}', code):
+        raise ValueError('Invalid public car code')
+    if card is None:
+        import sqlite3
+        with sqlite3.connect('file:/home/Carix/crm.db?mode=ro', uri=True) as conn:
+            conn.row_factory = sqlite3.Row
+            rows = conn.execute('SELECT * FROM cars WHERE auto_number=? AND published=1', (code,)).fetchall()
+        if len(rows) != 1:
+            raise RuntimeError('Published CRM row missing or ambiguous')
+        card = dict(rows[0])
+    vin = str(card.get('vin') or '').strip()
+    year = str(card.get('year') or '').strip()
+    if not vin or not re.fullmatch(r'[0-9]{4}', year):
+        raise RuntimeError('CRM VIN/year missing; freshness unverified')
+    fetch = fetch or urllib.request.urlopen
+    root = root or ROOT / 'video'
+    for name in (code + '.html', 'katalog.html'):
+        expected = (root / name).read_bytes()
+        html = expected.decode('utf-8')
+        from ua_price_html_v2 import verify_prices
+        verify_prices(html)
+        if name == 'katalog.html':
+            fragments = [x for x in re.findall(r'<article\b.*?</article>', html, re.S | re.I)
+                         if re.search(r'href=[\"\']' + re.escape(code) + r'\.html(?:[?\"\'])', x)]
+            if len(fragments) != 1:
+                raise RuntimeError('Catalog car fragment missing or ambiguous')
+            fragment = fragments[0]
+            heading = re.search(r'<h2\b[^>]*>(.*?)</h2>', fragment, re.S | re.I)
+        else:
+            fragment = html
+            heading = re.search(r'<title\b[^>]*>(.*?)</title>', html, re.S | re.I)
+        if vin not in fragment or not heading or not re.search(r'(?<!\d)' + year + r'(?!\d)', heading[1]):
+            raise RuntimeError('Generated HTML does not match CRM VIN/year: ' + name)
+        digest = hashlib.sha256(expected).digest()
+        for fresh in (True, False):
+            url = BASE + name + ('?_crm_verify=' + str(time.time_ns()) if fresh else '')
+            headers = {'Cache-Control': 'no-cache', 'Pragma': 'no-cache'} if fresh else {}
+            with fetch(urllib.request.Request(url, headers=headers), timeout=20) as response:
+                actual = response.read(4 * 1024 * 1024 + 1)
+                if response.status != 200 or hashlib.sha256(actual).digest() != digest:
+                    raise RuntimeError('Public HTML is stale or differs: ' + name + '; fresh=' + str(fresh))
+        if (root / name).read_bytes() != expected:
+            raise RuntimeError('Generated HTML changed during verification: ' + name)
+
+# ===== ua_price_html_v2.py =====
+"""Render CRM market prices into generated HTML before publication."""
+import re
+
+START = '<!-- UA-ART-MARKET-PRICES-V1:START -->'
+END = '<!-- UA-ART-MARKET-PRICES-V1:END -->'
+BLOCK = re.compile(re.escape(START) + r'.*?' + re.escape(END), re.S)
+ARTICLE = re.compile(r'<article\b[^>]*\bclass=[\"\'][^\"\']*\bcatalog-card\b[^\"\']*[\"\'][^>]*>.*?</article>', re.S | re.I)
+LEGACY = re.compile(r'<div\b[^>]*\bclass=[\"\']cena[\"\'][^>]*>.*?</div>(?:\s*<div\b[^>]*\bclass=[\"\']tih[oо][\"\'][^>]*>.*?</div>)?',re.S | re.I)
+TOP = re.compile(r'(<div\b[^>]*\bclass=[\"\']catalog-top[\"\'][^>]*>\s*<span\b[^>]*>\s*(UA-\d{4})\s*</span>\s*)<b\b[^>]*>.*?</b>',re.S | re.I)
+
+
+def render(source, prices=None):
+    if not isinstance(source,str):
+        return source
+    articles=list(ARTICLE.finditer(source))
+    canonical=re.search(r'[URL])\.html',source)
+    if not articles and not (canonical and (LEGACY.search(source) or BLOCK.search(source))):
+        return source
+    if prices is None:
+        from uaart_public_prices_v1 import snapshot
+        prices=snapshot()['cars']
+    def article(match):
+        part=match[0]
+        code=re.search(r'href=[\"\'](?:[^\"\']*/)?(UA-\d{4})\.html(?:[?\"\'])',part)
+        if not code or code[1] not in prices:
+            raise ValueError('Unknown published catalog price')
+        block=prices[code[1]]['compact']
+        if BLOCK.search(part):
+            if len(BLOCK.findall(part))!=1:raise ValueError('Duplicate price blocks')
+            return BLOCK.sub(lambda _:block,part,count=1)
+        value,count=TOP.subn(lambda m:m[1]+block,part,count=1)
+        if count!=1:raise ValueError('Unsupported catalog price slot: '+code[1])
+        return value
+    if articles:
+        return ARTICLE.sub(article,source)
+    code=canonical[1]
+    if code not in prices:
+        return source  # Unpublished preview is not promoted to public data.
+    block=prices[code]['full']
+    if BLOCK.search(source):
+        if len(BLOCK.findall(source))!=1:raise ValueError('Duplicate card price blocks')
+        return BLOCK.sub(lambda _:block,source,count=1)
+    value,count=LEGACY.subn(lambda _:block,source,count=1)
+    if count!=1:raise ValueError('Unsupported card price slot: '+code)
+    return value
+
+
+def verify_prices(source, prices=None):
+    """Used by the public verifier: re-render must be an exact no-op."""
+    if render(source,prices)!=source:
+        raise RuntimeError('HTML market prices differ from current CRM')
+
+# ===== ua_additional_spec.py =====
+#!/usr/bin/env python3
+"""Shared CRM/public renderer for the operator-separated additional specification."""
+from __future__ import annotations
+
+import html
+import json
+import os
+import pathlib
+import re
+import sqlite3
+from typing import Any
+
+
+DB_PATH = pathlib.Path(os.environ.get("UA_ART_CRM_DB", "/home/Carix/crm.db"))
+CARD_RE = re.compile(r"^UA[-‑–—]?0*(\d{1,4})$", re.I)
+PRICE_RE = re.compile(
+    r"(?:[$€£₴₽₩¥]|\b(?:price|cost|purchase|auction|wholesale|dealer|margin|markup|"
+    r"закуп|себесто|цена|вартість|낙찰|경매|금액|만원)\b)", re.I,
+)
+CATEGORIES = (
+    "engine", "dynamics", "consumption", "dimensions", "capacity", "weight",
+    "suspension", "brakes", "steering", "wheels", "ecology", "additional",
+)
+CATEGORY_TITLES = {
+    "engine": "Двигатель",
+    "dynamics": "Динамика",
+    "consumption": "Расход",
+    "dimensions": "Размеры",
+    "capacity": "Вместимость",
+    "weight": "Масса",
+    "suspension": "Подвеска",
+    "brakes": "Тормоза",
+    "steering": "Рулевое управление",
+    "wheels": "Колёса",
+    "ecology": "Экология",
+    "additional": "Дополнительно",
+}
+UNIT_ALIASES = {
+    "mm": ("mm", "мм"),
+    "мм": ("mm", "мм"),
+    "cm": ("cm", "см"),
+    "см": ("cm", "см"),
+    "km": ("km", "км"),
+    "км": ("km", "км"),
+    "kg": ("kg", "кг"),
+    "кг": ("kg", "кг"),
+    "kw": ("kw", "квт"),
+    "квт": ("kw", "квт"),
+    "hp": ("hp", "лс", "л.с"),
+    "лс": ("hp", "лс", "л.с"),
+    "л.с.": ("hp", "лс", "л.с"),
+    "ps": ("ps", "hp", "лс", "л.с"),
+    "kgf·m": ("kgf·m", "kgfm", "кгс·м", "кгс м"),
+    "кгс·м": ("kgf·m", "kgfm", "кгс·м", "кгс м"),
+    "l": ("l", "л"),
+    "л": ("l", "л"),
+}
+SEMANTIC_LABEL_GENERIC_TOKENS = {
+    "auto", "car", "vehicle", "body", "overall",
+    "авто", "автомобиль", "автомобиля", "машина", "машины",
+    "общий", "общая", "общее", "габаритный", "габаритная",
+}
+START = "<!--UA099_ADD_SPEC_START-->"
+END = "<!--UA099_ADD_SPEC_END-->"
+VIN_START = "<!--UA099_CLEAN_VIN_START-->"
+VIN_END = "<!--UA099_CLEAN_VIN_END-->"
+PRIMARY_ACTION_RE = re.compile(
+    r"(?P<open><(?P<tag>a|button|div)\b"
+    r"(?=[^>]*(?:class=['\"][^'\"]*\bkn_kupit\b|data-ua-primary-action(?:=['\"][^'\"]*['\"])?))"
+    r"[^>]*>)(?P<inner>[\s\S]*?)(?P<close></(?P=tag)>)",
+    re.I,
+)
+
+
+def canonical_uid(value: Any) -> str | None:
+    match = CARD_RE.fullmatch(str(value or "").strip())
+    return "UA-%04d" % int(match.group(1)) if match else None
+
+
+def connect(readonly: bool = True) -> sqlite3.Connection:
+    resolved = DB_PATH.resolve()
+    if readonly:
+        conn = sqlite3.connect("file:" + str(resolved) + "?mode=ro", uri=True, timeout=20)
+        conn.execute("PRAGMA query_only=ON")
+    else:
+        conn = sqlite3.connect(str(resolved), timeout=30)
+        conn.execute("PRAGMA foreign_keys=ON")
+        conn.execute("PRAGMA busy_timeout=30000")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
+    return conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,)
+    ).fetchone() is not None
+
+
+def fetch_specs(value: Any, include_hidden: bool = False) -> list[dict[str, Any]]:
+    uid = canonical_uid(value)
+    if not uid or not DB_PATH.is_file():
+        return []
+    with connect(True) as conn:
+        if not _table_exists(conn, "additional_specification"):
+            return []
+        rows = conn.execute(
+            """
+            SELECT a.id,a.car_uid,a.field_key,a.field_value,a.confidence,
+                   COALESCE(m.label_ru,a.field_key) AS label_ru,
+                   COALESCE(m.category,'additional') AS category,
+                   COALESCE(m.unit,'') AS unit,
+                   COALESCE(m.verification_status,'VERIFIED') AS verification_status,
+                   COALESCE(m.evidence_count,0) AS evidence_count,
+                   COALESCE(m.source_domains_json,'[]') AS source_domains_json,
+                   COALESCE(m.is_manual,0) AS is_manual,
+                   COALESCE(m.is_visible,1) AS is_visible
+              FROM additional_specification a
+              LEFT JOIN additional_specification_meta m
+                ON m.car_uid=a.car_uid AND m.field_key=a.field_key
+             WHERE a.car_uid=?
+               AND a.is_price_field=0
+               AND (?=1 OR COALESCE(m.is_visible,1)=1)
+             ORDER BY CASE COALESCE(m.category,'additional')
+               WHEN 'engine' THEN 1 WHEN 'dynamics' THEN 2 WHEN 'consumption' THEN 3
+               WHEN 'dimensions' THEN 4 WHEN 'capacity' THEN 5 WHEN 'weight' THEN 6
+               WHEN 'suspension' THEN 7 WHEN 'brakes' THEN 8 WHEN 'steering' THEN 9
+               WHEN 'wheels' THEN 10 WHEN 'ecology' THEN 11 ELSE 12 END,
+               COALESCE(m.label_ru,a.field_key),a.id
+            """,
+            (uid, 1 if include_hidden else 0),
+        ).fetchall()
+    result = []
+    for row in rows:
+        item = dict(row)
+        if PRICE_RE.search(str(item.get("field_key") or "")):
+            continue
+        if PRICE_RE.search(str(item.get("label_ru") or "")):
+            continue
+        if PRICE_RE.search(str(item.get("field_value") or "")):
+            continue
+        result.append(item)
+    return result
+
+
+def get_spec(spec_id: int, car_uid: Any | None = None) -> dict[str, Any] | None:
+    uid = canonical_uid(car_uid) if car_uid is not None else None
+    with connect(True) as conn:
+        row = conn.execute(
+            """
+            SELECT a.id,a.car_uid,a.field_key,a.field_value,a.confidence,
+                   COALESCE(m.label_ru,a.field_key) AS label_ru,
+                   COALESCE(m.category,'additional') AS category,
+                   COALESCE(m.unit,'') AS unit,COALESCE(m.is_manual,0) AS is_manual,
+                   COALESCE(m.is_visible,1) AS is_visible,
+                   COALESCE(m.evidence_count,0) AS evidence_count,
+                   COALESCE(m.source_domains_json,'[]') AS source_domains_json,
+                   COALESCE(m.verification_status,'VERIFIED') AS verification_status
+              FROM additional_specification a
+              LEFT JOIN additional_specification_meta m
+                ON m.car_uid=a.car_uid AND m.field_key=a.field_key
+             WHERE a.id=?
+            """,
+            (int(spec_id),),
+        ).fetchone()
+    item = dict(row) if row else None
+    return item if item and (uid is None or item["car_uid"] == uid) else None
+
+
+def _ensure_safe_value(value: Any) -> str:
+    text = str(value or "").strip()
+    if not text or len(text) > 500:
+        raise ValueError("INVALID_ADDITIONAL_SPEC_VALUE")
+    if PRICE_RE.search(text):
+        raise ValueError("PRICE_VALUE_FORBIDDEN")
+    return text
+
+
+def _value_with_unit(value: Any, unit: Any) -> str:
+    raw_value = str(value or "").strip()
+    raw_unit = str(unit or "").strip()
+    if not raw_unit:
+        return raw_value
+    aliases = UNIT_ALIASES.get(raw_unit.casefold(), (raw_unit.casefold(),))
+    normalized = raw_value.casefold().replace("\u00a0", " ")
+    for alias in aliases:
+[REDACTED]
+        if re.search(r"(?<![a-zа-яёіїєґ])" + token + r"(?![a-zа-яёіїєґ])", normalized, re.I):
+            return raw_value
+    return raw_value + " " + raw_unit
+
+
+def set_visible(spec_id: int, car_uid: Any, visible: bool, actor_id: int | None = None) -> dict[str, Any]:
+    item = get_spec(spec_id, car_uid)
+    if not item:
+        raise ValueError("ADDITIONAL_SPEC_NOT_FOUND")
+    with connect(False) as conn:
+        conn.execute("BEGIN IMMEDIATE")
+        conn.execute(
+            "UPDATE additional_specification_meta SET is_visible=?,updated_at=datetime('now') "
+            "WHERE car_uid=? AND field_key=?",
+            (1 if visible else 0, item["car_uid"], item["field_key"]),
+        )
+        conn.execute(
+            "INSERT INTO additional_specification_audit"
+            "(car_uid,field_key,action,new_value,actor_id) VALUES(?,?,?,?,?)",
+            (item["car_uid"], item["field_key"], "VISIBILITY", str(int(bool(visible))), actor_id),
+        )
+        conn.commit()
+    return get_spec(spec_id, car_uid) or item
+
+
+def set_category(spec_id: int, car_uid: Any, category: str, actor_id: int | None = None) -> dict[str, Any]:
+    item = get_spec(spec_id, car_uid)
+    if not item or category not in CATEGORIES:
+        raise ValueError("INVALID_ADDITIONAL_SPEC_CATEGORY")
+    with connect(False) as conn:
+        conn.execute("BEGIN IMMEDIATE")
+        conn.execute(
+            "UPDATE additional_specification_meta SET category=?,is_manual=1,"
+            "verification_status='MANUAL_VERIFIED',updated_at=datetime('now') "
+            "WHERE car_uid=? AND field_key=?",
+            (category, item["car_uid"], item["field_key"]),
+        )
+        conn.execute(
+            "INSERT INTO additional_specification_audit"
+            "(car_uid,field_key,action,old_value,new_value,actor_id) VALUES(?,?,?,?,?,?)",
+            (item["car_uid"], item["field_key"], "CATEGORY", item["category"], category, actor_id),
+        )
+        conn.commit()
+    return get_spec(spec_id, car_uid) or item
+
+
+def set_manual_value(spec_id: int, car_uid: Any, value: Any, actor_id: int | None = None) -> dict[str, Any]:
+    item = get_spec(spec_id, car_uid)
+    if not item:
+        raise ValueError("ADDITIONAL_SPEC_NOT_FOUND")
+    clean = _ensure_safe_value(value)
+    with connect(False) as conn:
+        conn.execute("BEGIN IMMEDIATE")
+        conn.execute(
+            "UPDATE additional_specification SET field_value=?,normalized_value=?,source='AI' "
+            "WHERE id=? AND car_uid=?",
+            (clean, re.sub(r"\s+", " ", clean.casefold()).strip(), int(spec_id), item["car_uid"]),
+        )
+        conn.execute(
+            "UPDATE additional_specification_meta SET is_manual=1,is_visible=1,"
+            "verification_status='MANUAL_VERIFIED',updated_at=datetime('now') "
+            "WHERE car_uid=? AND field_key=?",
+            (item["car_uid"], item["field_key"]),
+        )
+        conn.execute(
+            "INSERT INTO additional_specification_audit"
+            "(car_uid,field_key,action,old_value,new_value,actor_id) VALUES(?,?,?,?,?,?)",
+            (item["car_uid"], item["field_key"], "VALUE", item["field_value"], clean, actor_id),
+        )
+        conn.commit()
+    return get_spec(spec_id, car_uid) or item
+
+
+def _car_vin(uid: str) -> str:
+    if not DB_PATH.is_file():
+        return ""
+    with connect(True) as conn:
+        row = conn.execute("SELECT vin FROM cars WHERE auto_number=?", (uid,)).fetchone()
+    return str(row[0] or "").strip().upper() if row else ""
+
+
+def _car_status(uid: str) -> str:
+    if not DB_PATH.is_file():
+        return ""
+    with connect(True) as conn:
+        row = conn.execute("SELECT status FROM cars WHERE auto_number=?", (uid,)).fetchone()
+    return str(row[0] or "").strip() if row else ""
+
+
+def _car_mileage(uid: str) -> int | None:
+    if not DB_PATH.is_file():
+        return None
+    with connect(True) as conn:
+        columns = {str(row[1]) for row in conn.execute("PRAGMA table_info(cars)")}
+        if "mileage_km" not in columns:
+            return None
+        row = conn.execute("SELECT mileage_km FROM cars WHERE auto_number=?", (uid,)).fetchone()
+    if not row or row[0] is None:
+        return None
+    try:
+        return max(0, int(float(str(row[0]).replace(" ", "").replace(",", "."))))
+    except (TypeError, ValueError):
+        return None
+
+
+def crm_summary(value: Any) -> str:
+    rows = fetch_specs(value, include_hidden=True)
+    visible = sum(1 for row in rows if int(row.get("is_visible") or 0) == 1)
+    manual = sum(1 for row in rows if int(row.get("is_manual") or 0) == 1)
+    if not rows:
+        return "Подтверждённые дополнительные характеристики пока не найдены."
+    return "Подтверждено: %d · видно клиентам: %d · ручных правок: %d" % (
+        len(rows), visible, manual,
+    )
+
+
+def render_public_block(value: Any) -> str:
+    uid = canonical_uid(value)
+    rows = fetch_specs(uid) if uid else []
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        category = row["category"] if row["category"] in CATEGORIES else "additional"
+        grouped.setdefault(category, []).append(row)
+    body = []
+    for category in CATEGORIES:
+        items = grouped.get(category) or []
+        if not items:
+            continue
+        rendered = []
+        for row in items:
+            shown_value = _value_with_unit(row["field_value"], row.get("unit"))
+            rendered.append(
+                "<div class='ua-addspec-row'><dt>%s</dt><dd>%s</dd></div>" % (
+                    html.escape(str(row["label_ru"])), html.escape(shown_value),
+                )
+            )
+        body.append(
+            "<section class='ua-addspec-group'><h3>%s</h3><dl>%s</dl></section>" % (
+                html.escape(CATEGORY_TITLES[category]), "".join(rendered),
+            )
+        )
+    if not body:
+        body.append(
+            "<p class='ua-addspec-empty'>Подтверждённые дополнительные характеристики "
+            "пока не найдены.</p>"
+        )
+    count = len(rows)
+    noun = "параметров" if count == 0 or count >= 5 else ("параметр" if count == 1 else "параметра")
+    return (
+        START
+        + "<details class='blok ua-additional-spec' data-ua-additional-spec='1'>"
+          "<summary><span>Дополнительная спецификация</span>"
+          "<small>%d %s</small></summary><div class='ua-addspec-body'>%s</div></details>"
+        % (count, noun, "".join(body))
+        + END
+    )
+
+
+def _contract_marker_span(source: str, kind: str) -> tuple[int, int] | None:
+    comments = list(re.finditer(r"<!--[\s\S]{0,500}?-->", source))
+    candidates = [m for m in comments if kind.casefold() in m.group(0).casefold()]
+    starts = [m for m in candidates if re.search(r"(?:START|BEGIN)", m.group(0), re.I)]
+    ends = [m for m in candidates if re.search(r"(?:END|FINISH)", m.group(0), re.I)]
+    if starts and ends:
+        start = starts[0]
+        end = next((m for m in ends if m.start() > start.end()), None)
+        if end:
+            return start.start(), end.end()
+    return None
+
+
+def _remove_original_vin(source: str) -> str:
+    span = _contract_marker_span(source, "VIN")
+    if span:
+        source = source[:span[0]] + source[span[1]:]
+    source = re.sub(
+        r"<tr>\s*<td\s+class=['\"]k['\"]>\s*VIN\s*</td>\s*<td>[^<]*</td>\s*</tr>",
+        "", source, flags=re.I,
+    )
+    source = re.sub(
+        r"<a\b[^>]*href=['\"][^'\"]*carhistory\.kr[^'\"]*['\"][^>]*>[\s\S]*?</a>",
+        "", source, flags=re.I,
+    )
+    return source
+
+
+def _stage_number(uid: str) -> int:
+    status = _car_status(uid)
+    if status == "ua_arrived":
+        return 4
+    if status == "ge_waiting":
+        return 3
+    if status in ("sea_loaded", "sea_transit"):
+        return 2
+    return 1
+
+
+def _expected_action(uid: str) -> str:
+    return "Купить" if _stage_number(uid) == 4 else "Задаток 500 $"
+
+
+def _set_primary_action(source: str, expected: str) -> str:
+    return PRIMARY_ACTION_RE.sub(
+        lambda match: match.group("open") + html.escape(expected) + match.group("close"),
+        source,
+    )
+
+
+def _primary_action_texts(source: str) -> list[str]:
+    return [
+        re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", match.group("inner")))).strip()
+        for match in PRIMARY_ACTION_RE.finditer(source)
+    ]
+
+
+def _ensure_diagnostics_action(source: str, uid: str) -> str:
+    expected = _expected_action(uid)
+    source = _set_primary_action(source, expected)
+    if not _primary_action_texts(source):
+        stage = _stage_number(uid)
+        block = (
+            "<div class='blok ua-diagnostics-primary-action'>"
+            "<a class='dejstvie kn_kupit ua-primary-action-v1' "
+            "data-ua-primary-action='1' data-ua-stage-action='%d' "
+            "href='[URL]'>%s</a></div>"
+            % (stage, html.escape(uid), html.escape(expected))
+        )
+        for anchor in ("</main>", "</body>"):
+            if anchor in source.lower():
+                position = source.lower().rfind(anchor)
+                source = source[:position] + block + source[position:]
+                break
+        else:
+            source += block
+    actions = _primary_action_texts(source)
+    if actions != [expected]:
+        raise RuntimeError("UA099_DIAGNOSTICS_ACTION:%s:%r" % (uid, actions))
+    return source
+
+
+def _clean_vin_block(uid: str, stage: int | None = None, videos: int | None = None) -> str:
+    vin = _car_vin(uid)
+    if not vin:
+        return ""
+    stage = int(stage) if stage is not None else _stage_number(uid)
+    videos = max(0, int(videos or 0))
+    return (
+        VIN_START
+        + "<div class='blok ua-clean-vin' data-ua-clean-vin='1' data-ua-card='%s' "
+          "data-ua-stage='%d' data-ua-video-count='%d'><div class='zag'>VIN</div>"
+          "<div class='ua-vin-value'>%s</div><div class='ua-vin-note'>"
+          "VIN внесён оператором CRM. Проверка истории выполняется менеджером по запросу."
+          "</div></div>" % (html.escape(uid), stage, videos, html.escape(vin))
+        + VIN_END
+    )
+
+
+def _insert_before_stage(source: str, block: str) -> str:
+    span = _contract_marker_span(source, "STAGE")
+    if span:
+        return source[:span[0]] + block + source[span[0]:]
+    marker = re.search(r"<[^>]+data-ua-stage=['\"]\d+['\"][^>]*>", source, re.I)
+    if marker:
+        nearest = max(source.rfind("<section", 0, marker.start()), source.rfind("<div", 0, marker.start()))
+        if nearest >= 0:
+            return source[:nearest] + block + source[nearest:]
+    table = re.search(
+        r"<div\s+class=['\"]blok['\"]>\s*<div\s+class=['\"]zag['\"]>\s*Коротко\s*</div>"
+        r"[\s\S]*?</table>\s*</div>", source, re.I,
+    )
+    if table:
+        return source[:table.end()] + block + source[table.end():]
+    raise RuntimeError("UA099_STAGE_INSERTION_ANCHOR_MISSING:" + block[:30])
+
+
+def _remove_duplicate_description_label(source: str) -> str:
+    pattern = re.compile(
+        r"(<div\s+class=['\"]zag['\"]>\s*Описание\s*</div>)\s*"
+        r"<div\s+class=['\"]tehstr['\"]>\s*<div\s+class=['\"]m['\"]>\s*•\s*</div>\s*"
+        r"<div>\s*Описание\s*</div>\s*</div>", re.I,
+    )
+    return pattern.sub(r"\1", source, count=1)
+
+
+DESCRIPTION_MILEAGE_RE = re.compile(
+    r"(?P<prefix>\b(?:Пробег|Пробіг)\b[\s:—–-]*)(?P<number>\d(?:[\d\s\u00a0.,]*\d)?)"
+    r"(?P<suffix>\s*км\b)", re.I,
+)
+
+
+def _description_tail(source: str) -> tuple[int, str] | None:
+    marker = re.search(
+        r"<div\s+class=['\"]zag['\"]>\s*(?:Описание|Опис)\s*</div>", source, re.I,
+    )
+    return (marker.end(), source[marker.end():]) if marker else None
+
+
+def _synchronize_description_mileage(source: str, uid: str) -> str:
+    mileage = _car_mileage(uid)
+    tail = _description_tail(source)
+    if mileage is None or not tail:
+        return source
+    start, fragment = tail
+    shown = f"{mileage:,}".replace(",", " ")
+    fragment = DESCRIPTION_MILEAGE_RE.sub(
+        lambda match: match.group("prefix") + shown + match.group("suffix"), fragment,
+    )
+    return source[:start] + fragment
+
+
+def _description_mileages(source: str) -> list[int]:
+    tail = _description_tail(source)
+    if not tail:
+        return []
+    result = []
+    for match in DESCRIPTION_MILEAGE_RE.finditer(tail[1]):
+        digits = re.sub(r"\D", "", match.group("number"))
+        if digits:
+            result.append(int(digits))
+    return result
+
+
+def _semantic_label_signature(value: Any) -> str:
+    words = re.findall(
+        r"[a-zа-яёіїєґ0-9]+", str(value or "").casefold().replace("ё", "е")
+    )
+    return " ".join(sorted(word for word in words if word not in SEMANTIC_LABEL_GENERIC_TOKENS))
+
+
+def _css() -> str:
+    return """
+<style id="ua099-additional-spec-style">
+.ua-additional-spec{padding:0;overflow:hidden}.ua-additional-spec summary{list-style:none;cursor:pointer;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:800;font-size:18px}.ua-additional-spec summary::-webkit-details-marker{display:none}.ua-additional-spec summary:after{content:'＋';font-size:22px;color:#eda63a}.ua-additional-spec[open] summary:after{content:'−'}.ua-additional-spec summary small{margin-left:auto;color:var(--seryj,#9aa8ba);font-size:12px;font-weight:600;white-space:nowrap}.ua-addspec-body{padding:0 20px 18px}.ua-addspec-group{padding:14px 0;border-top:1px solid rgba(120,150,185,.18)}.ua-addspec-group h3{margin:0 0 8px;color:#eda63a;font-size:14px;letter-spacing:.06em;text-transform:uppercase}.ua-addspec-group dl{margin:0}.ua-addspec-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;padding:8px 0}.ua-addspec-row dt{color:var(--seryj,#9aa8ba);min-width:0;overflow-wrap:anywhere}.ua-addspec-row dd{margin:0;text-align:right;font-weight:700;min-width:0;overflow-wrap:anywhere}.ua-addspec-empty{margin:0;padding:14px 0;color:var(--seryj,#9aa8ba)}.ua-clean-vin .ua-vin-value{font-size:18px;font-weight:800;letter-spacing:.04em;overflow-wrap:anywhere}.ua-clean-vin .ua-vin-note{margin-top:8px;color:var(--seryj,#9aa8ba);font-size:13px}@media(max-width:560px){.ua-additional-spec summary{padding:16px}.ua-addspec-body{padding:0 16px 16px}.ua-addspec-row{grid-template-columns:1fr;gap:3px}.ua-addspec-row dd{text-align:left}.ua-additional-spec summary small{display:none}}
+</style>
+""".strip()
+
+
+def inject_public_spec(source: str, value: Any) -> str:
+    uid = canonical_uid(value)
+    if not source or not uid:
+        return source
+    # The operator CRM status is authoritative.  Generated legacy HTML may
+    # contain more than one stale data-ua-stage attribute while wrappers are
+    # being normalized, so it must not decide the public CTA.
+    stage = _stage_number(uid)
+    # Count what the browser will actually render.  Legacy metadata can be
+    # stale and was the source of a false publication block on UA-0001.
+    videos = len(re.findall(r"<video\b", source, re.I))
+    source = re.sub(re.escape(START) + r"[\s\S]*?" + re.escape(END), "", source)
+    source = re.sub(re.escape(VIN_START) + r"[\s\S]*?" + re.escape(VIN_END), "", source)
+    source = _remove_original_vin(source)
+    source = _remove_duplicate_description_label(source)
+    source = _synchronize_description_mileage(source, uid)
+    source = re.sub(r"\bВ море\b", "На пароме", source, flags=re.I)
+    source = source.replace(">Забронировать авто за 500 $<", ">Задаток 500 $<")
+    source = source.replace(">Купить авто<", ">Купить<")
+    source = _set_primary_action(source, _expected_action(uid))
+    block = render_public_block(uid) + _clean_vin_block(uid, stage, videos)
+    source = _insert_before_stage(source, block)
+    if "ua099-additional-spec-style" not in source:
+        source = re.sub(r"</head>", _css() + "</head>", source, count=1, flags=re.I)
+    errors = public_contract_errors(source, uid)
+    if errors:
+        raise RuntimeError("UA099_PUBLIC_CONTRACT:%s:%s" % (uid, ";".join(errors)))
+    return source
+
+
+def normalize_diagnostics(source: str, value: Any) -> str:
+    uid = canonical_uid(value)
+    if not source or not uid:
+        return source
+    source = re.sub(r"\bВ море\b", "На пароме", source, flags=re.I)
+    expected_action = _expected_action(uid)
+    source = source.replace(">Забронировать авто за 500 $<", ">" + expected_action + "<")
+    source = source.replace(">Задаток 500 $<", ">" + expected_action + "<")
+    source = source.replace(">Купить авто<", ">" + expected_action + "<")
+    source = _set_primary_action(source, expected_action)
+    if re.search(r"carhistory\.kr", source, re.I):
+        source = re.sub(
+            r"<a\b[^>]*href=['\"][^'\"]*carhistory\.kr[^'\"]*['\"][^>]*>[\s\S]*?</a>",
+            "", source, flags=re.I,
+        )
+    source = _ensure_diagnostics_action(source, uid)
+    errors = diagnostics_contract_errors(source, uid)
+    if errors:
+        raise RuntimeError("UA099_DIAGNOSTICS_CONTRACT:%s:%s" % (uid, ";".join(errors)))
+    return source
+
+
+def diagnostics_contract_errors(source: str, value: Any) -> list[str]:
+    uid = canonical_uid(value) or str(value)
+    errors = []
+    if _primary_action_texts(source) != [_expected_action(uid)]:
+        errors.append("diagnostics primary action")
+    if re.search(r"carhistory\.kr|Проверить VIN", source, re.I):
+        errors.append("diagnostics external VIN CTA")
+    if re.search(r"\bВ море\b", source, re.I):
+        errors.append("diagnostics old sea wording")
+    if uid not in source or "</html>" not in source.lower():
+        errors.append("diagnostics identity or incomplete HTML")
+    return errors
+
+
+def public_contract_errors(source: str, value: Any) -> list[str]:
+    uid = canonical_uid(value) or str(value)
+    errors = []
+    if source.count(START) != 1 or source.count(END) != 1:
+        errors.append("additional spec blocks != 1")
+    if source.count(VIN_START) != 1 or source.count(VIN_END) != 1:
+        errors.append("clean VIN blocks != 1")
+    if len(re.findall(r"data-ua-additional-spec=['\"]1['\"]", source, re.I)) != 1:
+        errors.append("additional spec element != 1")
+    if re.search(r"carhistory\.kr|Korea\s+CarHistory|Проверить VIN", source, re.I):
+        errors.append("external VIN CTA remains")
+    if re.search(r"\bВ море\b", source, re.I):
+        errors.append("old sea wording remains")
+    expected_action = _expected_action(uid)
+    actions = _primary_action_texts(source)
+    if actions != [expected_action]:
+        errors.append("primary action != 1 exact %s" % expected_action)
+    if source.find(START) > source.find(VIN_START) or source.find(VIN_START) < 0:
+        errors.append("additional spec/VIN order")
+    stage = _contract_marker_span(source, "STAGE")
+    if stage and source.find(VIN_END) > stage[0]:
+        errors.append("VIN/stage order")
+    diag = re.findall(
+        r"href=['\"](?:[^'\"]*/)?" + re.escape(uid) + r"-diag\.html(?:\?[^'\"]*)?['\"]",
+        source, re.I,
+    )
+    if len(diag) != 1:
+        errors.append("diagnostics links != 1")
+    if re.search(
+        r"<div\s+class=['\"]zag['\"]>\s*Описание\s*</div>\s*"
+        r"<div\s+class=['\"]tehstr['\"][\s\S]{0,180}?<div>\s*Описание\s*</div>",
+        source, re.I,
+    ):
+        errors.append("duplicate description label")
+    mileage = _car_mileage(uid)
+    description_mileages = _description_mileages(source)
+    if mileage is not None and any(value != mileage for value in description_mileages):
+        errors.append("description mileage differs from operator CRM")
+    labels = [
+        html.unescape(re.sub(r"<[^>]+>", "", label)).strip()
+        for label in re.findall(
+            r"<div\s+class=['\"]ua-addspec-row['\"]>\s*<dt>([\s\S]*?)</dt>",
+            source, re.I,
+        )
+    ]
+    signatures = [_semantic_label_signature(label) for label in labels]
+    if len(signatures) != len(set(signatures)):
+        errors.append("semantic duplicate additional labels")
+    if "</html>" not in source.lower():
+        errors.append("html incomplete")
+    return errors
+
+
+if __name__ == "__main__":
+    assert canonical_uid("UA-9") == "UA-0009"
+    assert canonical_uid("UA-0016") == "UA-0016"
+    assert PRICE_RE.search("purchase price")
+    assert _value_with_unit("151 л.с. при 6200 об/мин", "PS") == "151 л.с. при 6200 об/мин"
+    assert _value_with_unit("19.8 кгс·м при 4200 об/мин", "kgf·m") == "19.8 кгс·м при 4200 об/мин"
+    print("UA099_ADDITIONAL_SPEC_SELFTEST_PASS")
+
+# >>> UA110 SIDECAR SPEC STORAGE V1
+# Main CRM remains the source of truth and is always opened read-only here.
+_UA110_MAIN_DB_PATH = DB_PATH
+_UA110_SPEC_DB_PATH = pathlib.Path(
+    os.environ.get("UA_ART_SPEC_DB", "/home/Carix/vin_specs_task111_v3.db")
+)
+
+def connect(readonly: bool = True) -> sqlite3.Connection:
+    resolved = _UA110_SPEC_DB_PATH.resolve()
+    if readonly:
+        conn = sqlite3.connect("file:" + str(resolved) + "?mode=ro", uri=True, timeout=20)
+        conn.execute("PRAGMA query_only=ON")
+    else:
+        conn = sqlite3.connect(str(resolved), timeout=30)
+        conn.execute("PRAGMA foreign_keys=ON")
+        conn.execute("PRAGMA busy_timeout=30000")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def _ua110_main_connect() -> sqlite3.Connection:
+    resolved = _UA110_MAIN_DB_PATH.resolve()
+    conn = sqlite3.connect("file:" + str(resolved) + "?mode=ro", uri=True, timeout=20)
+    conn.execute("PRAGMA query_only=ON")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def _car_vin(uid: str) -> str:
+    if not _UA110_MAIN_DB_PATH.is_file():
+        return ""
+    with _ua110_main_connect() as conn:
+        row = conn.execute("SELECT vin FROM cars WHERE auto_number=?", (uid,)).fetchone()
+    return str(row[0] or "").strip().upper() if row else ""
+
+def _car_status(uid: str) -> str:
+    if not _UA110_MAIN_DB_PATH.is_file():
+        return ""
+    with _ua110_main_connect() as conn:
+        row = conn.execute("SELECT status FROM cars WHERE auto_number=?", (uid,)).fetchone()
+    return str(row[0] or "").strip() if row else ""
+
+def _car_mileage(uid: str) -> int | None:
+    if not _UA110_MAIN_DB_PATH.is_file():
+        return None
+    with _ua110_main_connect() as conn:
+        columns = {str(row[1]) for row in conn.execute("PRAGMA table_info(cars)")}
+        if "mileage_km" not in columns:
+            return None
+        row = conn.execute("SELECT mileage_km FROM cars WHERE auto_number=?", (uid,)).fetchone()
+    if not row or row[0] is None:
+        return None
+    try:
+        return max(0, int(float(str(row[0]).replace(" ", "").replace(",", "."))))
+    except (TypeError, ValueError):
+        return None
+
+_UA110_BASE_CRM_SUMMARY = crm_summary
+_UA110_BASE_INJECT_PUBLIC_SPEC = inject_public_spec
+
+def _ua110_sanitize_public_spec_fragments(source: str) -> str:
+    """Remove complete, nested and orphaned legacy spec fragments.
+
+    TASK099 already replaces one well-formed marker pair.  Interrupted or
+    concurrent publications can leave START/END markers nested or orphaned;
+    strip those remnants and any unmarked old spec element before invoking
+    TASK099's authoritative renderer.
+    """
+    import re as _ua110_re
+    if not isinstance(source, str) or not source:
+        return source
+    source = _ua110_re.sub(
+        _ua110_re.escape(START) + r"[\s\S]*?" + _ua110_re.escape(END),
+        "", source,
+    )
+    source = source.replace(START, "").replace(END, "")
+    source = _ua110_re.sub(
+        r"<details\b[^>]*\bdata-ua-additional-spec=['\"]1['\"][^>]*>"
+        r"[\s\S]*?</details>",
+        "", source, flags=_ua110_re.I,
+    )
+    return source
+
+def inject_public_spec(source: str, value: Any) -> str:
+    return _UA110_BASE_INJECT_PUBLIC_SPEC(
+        _ua110_sanitize_public_spec_fragments(source), value
+    )
+
+def crm_summary(value: Any) -> str:
+    base = _UA110_BASE_CRM_SUMMARY(value)
+    try:
+        import vin_spec_service as _ua110_service
+        state = _ua110_service.card_state(value)
+        labels = {
+            "NOT_QUEUED": "VIN ещё не поставлен в очередь",
+            "PENDING": "сбор поставлен в очередь",
+            "RUNNING": "идёт сбор из пула 10 источников",
+            "READY": "сбор завершён",
+            "NEEDS_REVIEW": "нужна проверка менеджера",
+            "FAILED": "сбор не выполнен",
+        }
+        status = labels.get(str(state.get("status")), str(state.get("status") or "—"))
+        sync = str(state.get("site_sync_status") or "NOT_REQUIRED")
+        if sync == "PASS":
+            status += " · страница обновлена"
+        elif sync == "FAIL":
+            status += " · обновление страницы не прошло"
+        return base + "\nVIN-автосбор: " + status
+    except Exception:
+        return base + "\nVIN-автосбор: статус временно недоступен"
+# <<< UA110 SIDECAR SPEC STORAGE V1
+
+# >>> UA115 NO PUBLIC VIN ADS
+_UA115_BASE_INJECT_PUBLIC_SPEC = inject_public_spec
+_UA115_APPROVED_HOSTS = {
+    "www.uaart.com.ua", "uaart.com.ua", "wa.me", "t.me", "telegram.org",
+    "maps.app.goo.gl", "ecomm.one-line.com", "schema.org", "www.w3.org",
+}
+_UA115_MIN_SPEC_ROWS = 10
+
+def _ua115_external_hosts(source: str) -> set[str]:
+    import html as _ua115_html
+    import urllib.parse as _ua115_urlparse
+    decoded = _ua115_html.unescape(str(source or ""))
+    candidates = []
+    attribute = re.compile(
+        r"\b(?:href|src|action|formaction)\s*=\s*"
+        r"(?:\"([^\"]*)\"|'([^']*)'|([^\s\"'`=<>]+))",
+        re.I,
+    )
+    for match in attribute.finditer(decoded):
+        candidates.append(next(item for item in match.groups() if item is not None))
+    for tag in re.findall(r"<meta\b[^>]*>", decoded, re.I | re.S):
+        content = re.search(
+            r"\bcontent\s*=\s*(?:\"([^\"]*)\"|'([^']*)'|([^\s\"'`=<>]+))",
+            tag,
+            re.I,
+        )
+        if content:
+            value = next(item for item in content.groups() if item is not None)
+            refresh = re.search(r"\burl\s*=\s*([^;\s]+|['\"][^'\"]+['\"])", value, re.I)
+            if refresh:
+                candidates.append(refresh.group(1).strip("'\""))
+    candidates.extend(
+        match.group(1).strip().strip("'\"")
+        for match in re.finditer(r"\burl\(\s*([^)]*?)\s*\)", decoded, re.I)
+    )
+    candidates.extend(
+        next(item for item in match.groups() if item is not None)
+        for match in re.finditer(
+            r"@import\s+(?:url\(\s*)?(?:\"([^\"]+)\"|'([^']+)'|([^\s;\)]+))",
+            decoded,
+            re.I,
+        )
+    )
+    candidates.extend(re.findall(
+        r"(?i)(?<![:A-Za-z0-9+.-])(?:(?:https?|ftp|wss?):)?//"
+        r"(?:(?:[a-z0-9-]+\.)+[a-z0-9-]{2,63}|"
+        r"\d{1,3}(?:\.\d{1,3}){3}|\[[0-9a-f:]+\])(?::\d+)?"
+        r"(?:[/?#][^\s\"'<>`{}|\\^]*)?",
+        decoded,
+    ))
+    result = set()
+    for candidate in candidates:
+        value = candidate.strip().rstrip(",.;)}]")
+        if value.startswith("//"):
+            value = "https:" + value
+        host = (_ua115_urlparse.urlsplit(value).hostname or "").casefold().rstrip(".")
+        if host:
+            result.add(host)
+    return result
+
+def inject_public_spec(source: str, value: Any) -> str:
+    output = _UA115_BASE_INJECT_PUBLIC_SPEC(source, value)
+    uid = canonical_uid(value)
+    if not output or not uid:
+        return output
+    vin = _car_vin(uid)
+    stage = _stage_number(uid)
+    videos = len(re.findall(r"<video\b", output, re.I))
+    compact = (VIN_START + "<div class='blok ua-clean-vin' data-ua-clean-vin='1' "
+               "data-ua-card='%s' data-ua-stage='%d' data-ua-video-count='%d'>"
+               "<div class='zag'>VIN</div>"
+               "<div class='ua-vin-value'>%s</div></div>" %
+               (html.escape(uid), stage, videos, html.escape(vin)) + VIN_END)
+    output = re.sub(re.escape(VIN_START) + r"[\s\S]*?" + re.escape(VIN_END), compact, output)
+    expected_spec_rows = len(fetch_specs(uid))
+    rendered_spec_rows = len(re.findall(
+        r"<div\b[^>]*class=['\"][^'\"]*\bua-addspec-row\b[^'\"]*['\"]",
+        output, re.I,
+    ))
+    if rendered_spec_rows != expected_spec_rows:
+        raise RuntimeError(
+            "UA115_ADDITIONAL_SPEC_INCOMPLETE:%s:%d:%d" %
+            (uid, rendered_spec_rows, expected_spec_rows)
+        )
+    if output.count(VIN_START) != 1 or output.count(VIN_END) != 1:
+        raise RuntimeError("UA115_VIN_BLOCK_COUNT:" + uid)
+    if re.search(
+            r"carhistory(?:\.kr)?|vindecoderz(?:\.com)?|"
+            r"проверить\s+vin|перевірити\s+vin|2\s*200\s*krw",
+            output, re.I):
+        raise RuntimeError("UA115_PUBLIC_VIN_AD_GUARD:" + uid)
+    _ua115_unknown = _ua115_external_hosts(output) - _UA115_APPROVED_HOSTS
+    if _ua115_unknown:
+        raise RuntimeError("UA115_UNAPPROVED_EXTERNAL_HOST:" + uid + ":" + ",".join(sorted(_ua115_unknown)))
+    return output
+# <<< UA115 NO PUBLIC VIN ADS
+
+# ===== ua_delivery_status.py =====
+"""Public delivery status projection for CRM and site boundaries."""
+
+from collections import Counter
+from enum import Enum
+from typing import Iterable
+
+
+class DeliveryStatus(str, Enum):
+    KOREA = "korea"
+    FERRY = "ferry"
+    GEORGIA = "georgia"
+    KYIV = "kyiv"
+
+
+HIDDEN = "hidden"
+
+CHOICES = (
+    ("korea", "kr_bought", 1, "В Корее"),
+    ("ferry", "sea_loaded", 2, "На пароме"),
+    ("georgia", "ge_waiting", 3, "В Грузии"),
+    ("kyiv", "ua_arrived", 4, "В Киеве"),
+)
+LABELS = {
+    DeliveryStatus.KOREA.value: "В Корее",
+    DeliveryStatus.FERRY.value: "На пароме",
+    DeliveryStatus.GEORGIA.value: "В Грузии",
+    DeliveryStatus.KYIV.value: "В Киеве",
+}
+
+# Existing CRM codes are translated at the boundary; the stored codes remain intact.
+_INPUT = {
+    "korea": "korea",
+    "kr_bought": "korea",
+    "ferry": "ferry",
+    "sea_loaded": "ferry",
+    "georgia": "georgia",
+    "ge_waiting": "georgia",
+    "kyiv": "kyiv",
+    "ua_arrived": "kyiv",
+}
+
+_CANONICAL = frozenset(status.value for status in DeliveryStatus)
+_CRM_CODES = {public: internal for public, internal, _, _ in CHOICES}
+_STAGE_NUMBERS = {public: number for public, _, number, _ in CHOICES}
+
+
+def normalize_status(value: object) -> str:
+    """Accept only the public enum at an untrusted input boundary."""
+    if not isinstance(value, str):
+        return HIDDEN
+    return value if value in _CANONICAL else HIDDEN
+
+
+def crm_status_from_input(value: object) -> str:
+    """Translate a new canonical CRM callback to its existing storage code."""
+    return _CRM_CODES.get(normalize_status(value), HIDDEN)
+
+
+def storage_status(value: object) -> str:
+    """Normalize trusted existing writers and new canonical status codes."""
+    if not isinstance(value, str):
+        return HIDDEN
+    if value in _CRM_CODES.values():
+        return value
+    return crm_status_from_input(value)
+
+
+def stage_number(value: object) -> int:
+    """Return zero for a card excluded from the public catalogue."""
+    return _STAGE_NUMBERS.get(public_status(value), 0)
+
+
+def public_status(value: object) -> str:
+    """Map a known active CRM value; hide everything else."""
+    return _INPUT.get(value, HIDDEN) if isinstance(value, str) else HIDDEN
+
+
+def public_label(value: object) -> str | None:
+    """Return no label for a hidden card."""
+    return LABELS.get(public_status(value))
+
+
+def catalog_counts(statuses: Iterable[object]) -> dict[str, int]:
+    """Count only cars with a visible delivery status."""
+    counts = Counter(map(public_status, statuses))
+    return {code: counts[code] for code in LABELS}

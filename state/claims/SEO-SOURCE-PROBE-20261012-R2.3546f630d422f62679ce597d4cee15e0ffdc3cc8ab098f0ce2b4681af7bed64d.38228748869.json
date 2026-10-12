@@ -7,21 +7,23 @@
   "created_at": "2026-10-12T09:16:52Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T09:16:52Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-12T09:17:34Z",
+  "heartbeat_at": "2026-10-12T09:17:34Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "38228748869",
     "task_id": "SEO-SOURCE-PROBE-20261012-R2",
     "task_sha256": "3546f630d422f62679ce597d4cee15e0ffdc3cc8ab098f0ce2b4681af7bed64d"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-3afa3d755fd615b6-a8cd1fefb75a2c7d",
   "receipt_path": "state/receipts/SEO-SOURCE-PROBE-20261012-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "8a8e852941db50d59a06317208c499d5670ac1f9b9863cb81da271740c7c993d",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SEO-SOURCE-PROBE-20261012-R2.json",
   "request_sha256": "3546f630d422f62679ce597d4cee15e0ffdc3cc8ab098f0ce2b4681af7bed64d",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "8a49ae8ea1b4e40c2e73086d1b2ee63cd6922711",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91148582912,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 41.143
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-12T09:16:52Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "87372c354ba78fe6840dd716f7893731d890675d274317645d1e1d9d4d6037c6",
+    "file_sha256": {
+      "cloud/seo_source_probe_20261012_r2/test_controller.py": "58a1528b635e6fb87d292894c48105b8c4e9f54c8ecc8e14fe6fa7a406bd08cf"
+    }
+  },
+  "updated_at": "2026-10-12T09:17:34Z"
 }
