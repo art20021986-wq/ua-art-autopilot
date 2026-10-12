@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/crm_site_audit_20261012/evidence.json",
+  "finished_at": "2026-10-12T00:31:43Z",
+  "live_source_environment": "production",
+  "production_required": false,
+  "request_sha256": "109bf78bf1b28d3ad3788146587c8d565287371a933bb3da457fcb94b1000fc8",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_REMOTE_WRITES",
+  "run_id": "38188201584",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "CRM-SITE-AUDIT-20261012",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_AUDIT",
+  "unexpected_changes": 0
+}
