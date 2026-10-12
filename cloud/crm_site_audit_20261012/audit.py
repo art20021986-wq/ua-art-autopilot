@@ -91,9 +91,27 @@ def card_gallery(page, card):
     return {'photos': len(sources)}
 
 
-def text_lines(value):
-    value = re.sub(r'(?i)<br\s*/?>', '\n', str(value or ''))
-    return ' '.join(unescape(re.sub(r'<[^>]+>', ' ', value)).split())
+BULLETS = '-–—•*·'
+DESCRIPTION_RE = re.compile(r"<div class='zag'>Описание</div>((?:<div class='tehtekst'>.*?</div>"
+                            r"|<div class='tehstr'><div class='m'>•</div><div>.*?</div></div>)+)", re.S)
+
+
+def expected_description(text):
+    """Same layout rule as the site renderer: a bullet list or one paragraph of lines."""
+    lines = [s.strip() for s in str(text or '').replace('\r', '').split('\n') if s.strip()]
+    if sum(1 for s in lines if s[:1] in BULLETS) >= 2:
+        lines = [s.lstrip(BULLETS + ' ').strip() for s in lines]
+    return ' '.join(' '.join(s for s in lines if s).split())
+
+
+def shown_description(page):
+    found = DESCRIPTION_RE.findall(page)
+    if len(found) > 1:
+        raise RuntimeError('Several description blocks')
+    if not found:
+        return None
+    items = re.sub(r"<div class='m'>•</div>", ' ', found[0])
+    return ' '.join(unescape(re.sub(r'<[^>]+>', ' ', items)).split())
 
 
 def audit_car(card, page, fragment, prices_json):
@@ -109,9 +127,9 @@ def audit_car(card, page, fragment, prices_json):
         got = markets(need(html, where))
         if got.get('ukraine') != expected['ukraine']:
             raise RuntimeError('UA price site=%s CRM=%s' % (got.get('ukraine'), expected['ukraine']))
-        if got.get('georgia') != expected['georgia']:
-            note = ' (Kyiv rule hides GE)' if card.get('status') == 'ua_arrived' and got.get('georgia') == [''] else ''
-            raise RuntimeError('GE price site=%s CRM=%s%s' % (got.get('georgia'), expected['georgia'], note))
+        # No GE value in CRM may be shown as an empty GE block or no GE block at all.
+        if got.get('georgia', ['']) != expected['georgia']:
+            raise RuntimeError('GE price site=%s CRM=%s' % (got.get('georgia'), expected['georgia']))
 
     def photo_count():
         shown = re.findall(r'(\d+)\s*фото', need(fragment, 'catalog card'))
@@ -120,25 +138,25 @@ def audit_car(card, page, fragment, prices_json):
             raise RuntimeError('catalog photo count %s, CRM visible %d' % (shown, visible))
 
     def description():
-        sources = {k: text_lines(card.get(k)) for k in ('description', 'condition_text') if text_lines(card.get(k))}
-        shown = first(r"<div class='tehtekst'>(.*?)</div>", re.sub(r'(?i)<br\s*/?>', ' ', need(page, 'card page')))
-        if not sources:
-            raise Skip('no CRM description or condition text' + ('; site shows a description' if shown else ''))
+        # The renderer shows condition_text, or description when condition_text is empty.
+        text = str(card.get('condition_text') or '').strip() or str(card.get('description') or '').strip()
+        shown = shown_description(need(page, 'card page'))
+        if not text:
+            if shown:
+                raise RuntimeError('card shows a description, CRM text is empty')
+            raise Skip('no CRM description')
         if shown is None:
             raise RuntimeError('CRM text present, card shows no description')
-        matched = [k for k, v in sources.items() if v == shown]
-        if not matched:
-            raise RuntimeError('card description differs from CRM %s' % '/'.join(sources))
-        return {'matches': matched}
+        if shown != expected_description(text):
+            raise RuntimeError('card description differs from CRM text')
 
     def stage():
         card_chip = first(r"<div class='chip'>(.*?)</div>", need(page, 'card page'))
         pill = first(r'class="status-pill"[^>]*>(.*?)</div>', need(fragment, 'catalog card'))
-        tile = re.findall(r'<article[^>]*data-stage="([^"]*)"', fragment)
-        detail = {'crm_status': card.get('status'), 'catalog_stage': tile, 'catalog_pill': pill, 'card_chip': card_chip}
-        if not card_chip or not pill or card_chip.split(' · ')[0] != pill.split(' · ')[0]:
-            raise RuntimeError('stage differs between card and catalog: %s' % detail)
-        return detail
+        if not card_chip or not pill:
+            raise RuntimeError('stage label missing on %s' % ('card' if not card_chip else 'catalog'))
+        return {'crm_status': card.get('status'), 'catalog_pill': pill, 'card_chip': card_chip,
+                'catalog_stage': re.findall(r'<article[^>]*data-stage="([^"]*)"', fragment)}
 
     return {
         'code': code,
@@ -177,14 +195,15 @@ def audit(cards, catalog, pages, prices_json, served=None, page_files=()):
                                               if c.get('published') == 1 and c.get('status') in HIDDEN_STATUSES),
         'served_bytes_differ_from_server': sorted(k for k, ok in (served or {}).items() if ok is False),
     }
-    labels = {}
-    for c in cards:
-        pill = first(r'class="status-pill"[^>]*>(.*?)</div>', articles.get(c['auto_number']))
-        if pill:
-            labels.setdefault(str(c.get('status')), set()).add(pill.split(' · ')[0])
-    summary['stage_label_by_crm_status'] = {k: sorted(v) for k, v in sorted(labels.items())}
-    summary['crm_status_with_several_stage_labels'] = sorted(k for k, v in labels.items() if len(v) > 1)
     cars = cars_report(cards, shown, pages, articles, prices_json)
+    for where, key in (('catalog', 'catalog_pill'), ('card', 'card_chip')):
+        labels = {}
+        for car in cars:
+            detail = car['stage'].get('detail') or {}
+            if detail.get(key):
+                labels.setdefault(str(detail['crm_status']), set()).add(detail[key].split(' · ')[0])
+        summary['%s_stage_by_crm_status' % where] = {k: sorted(v) for k, v in sorted(labels.items())}
+        summary['%s_stage_conflicts' % where] = sorted(k for k, v in labels.items() if len(v) > 1)
     counts = {}
     for car in cars:
         for name, value in car.items():
