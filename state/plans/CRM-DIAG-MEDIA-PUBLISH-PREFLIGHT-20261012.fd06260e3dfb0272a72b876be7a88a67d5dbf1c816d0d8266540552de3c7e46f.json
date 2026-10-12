@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-DIAG-MEDIA-PUBLISH-PREFLIGHT-20261012.fd06260e3dfb0272a72b876be7a88a67d5dbf1c816d0d8266540552de3c7e46f.json",
+  "autostart_ledger_sha256": "463c400f68c9996e9b7713c70602255e44184d6a810c0503d8d7e60a0ca6900f",
+  "autostart_source_commit": "39fc33c4b94c3d9dea6a9ab8d3995a9ff8b0b5e6",
+  "created_at": "2026-10-12T08:38:26Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "38224714473",
+    "task_id": "CRM-DIAG-MEDIA-PUBLISH-PREFLIGHT-20261012",
+    "task_sha256": "fd06260e3dfb0272a72b876be7a88a67d5dbf1c816d0d8266540552de3c7e46f"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/CRM-DIAG-MEDIA-PUBLISH-PREFLIGHT-20261012.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
