@@ -7,21 +7,23 @@
   "created_at": "2026-10-12T00:41:40Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T00:41:40Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-12T00:42:25Z",
+  "heartbeat_at": "2026-10-12T00:42:25Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "38188938377",
     "task_id": "CRM-SITE-RENDER-PROBE-20261012",
     "task_sha256": "c661157447da03220cba7601fafc79c372772a5d29d3840474892bcf51234756"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-8f405b3b20a1c053-5e01a08e2e965dbb",
   "receipt_path": "state/receipts/CRM-SITE-RENDER-PROBE-20261012.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b97e78510c452ec1e475c4e6f67ac5806f1988017adc18679cc523080c0f9417",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-SITE-RENDER-PROBE-20261012.json",
   "request_sha256": "c661157447da03220cba7601fafc79c372772a5d29d3840474892bcf51234756",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "56d636a206ae182393b499c510bc9f36ed3ebe98",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92100177920,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 40.529
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-12T00:41:40Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "9b1a3a3a7e9f78ca88126123ad04c2b5002ccbf47f35604ae59f0993260d2ea6",
+    "file_sha256": {
+      "cloud/crm_site_render_probe_20261012/test_contract.py": "8ad11233e388a4b0237a5eb79c4090bc6bc529b6bfbe34674fb3f76b4f49ccf1"
+    }
+  },
+  "updated_at": "2026-10-12T00:42:25Z"
 }

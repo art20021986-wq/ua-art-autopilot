@@ -1,0 +1,110 @@
+{
+  "completion_meaning": "READ_ONLY_DIAGNOSIS_ONLY",
+  "database": null,
+  "finished_at": "2026-10-12T00:42:03Z",
+  "http_methods": [
+    "GET"
+  ],
+  "log": null,
+  "path_status": {
+    "/home/Carix/master_card.py": {
+      "bytes": 147236,
+      "sha256": "da12928d48c622bbcb259cedd190ebf93a6985bb8e82f7962471cc498b29c65d",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/stranica.py": {
+      "bytes": 202732,
+      "sha256": "6d5afd1b72c6b53623996b231b4e2d4143ec6850e00cdd1c38beedf209d0794b",
+      "status": "RECEIVED"
+    }
+  },
+  "raw_private_data_persisted": false,
+  "remote_write_count": 0,
+  "request_sha256": "c661157447da03220cba7601fafc79c372772a5d29d3840474892bcf51234756",
+  "run_id": "38188938377",
+  "sanitized_source_excerpts_path": "cloud/crm_site_render_probe_20261012/sanitized_sources.txt",
+  "source_facts": {
+    "/home/Carix/master_card.py": {
+      "bytes": 147236,
+      "definitions": [],
+      "path": "/home/Carix/master_card.py",
+      "sha256": "da12928d48c622bbcb259cedd190ebf93a6985bb8e82f7962471cc498b29c65d"
+    },
+    "/home/Carix/stranica.py": {
+      "bytes": 202732,
+      "definitions": [
+        {
+          "end_line": 99,
+          "excerpt": "EXPORTED",
+          "line": 93,
+          "name": "mashiny"
+        },
+        {
+          "end_line": 103,
+          "excerpt": "EXPORTED",
+          "line": 102,
+          "name": "nomer"
+        },
+        {
+          "end_line": 385,
+          "excerpt": "EXPORTED",
+          "line": 364,
+          "name": "kadry_mashiny"
+        },
+        {
+          "end_line": 823,
+          "excerpt": "EXPORTED",
+          "line": 725,
+          "name": "sobrat_diagnostiku"
+        },
+        {
+          "end_line": 1151,
+          "excerpt": "EXPORTED",
+          "line": 1011,
+          "name": "sobrat_kartochku"
+        },
+        {
+          "end_line": 1213,
+          "excerpt": "EXPORTED",
+          "line": 1155,
+          "name": "sobrat_katalog"
+        },
+        {
+          "end_line": 3048,
+          "excerpt": "EXPORTED",
+          "line": 3043,
+          "name": "sobrat_kartochku"
+        },
+        {
+          "end_line": 3052,
+          "excerpt": "EXPORTED",
+          "line": 3051,
+          "name": "sobrat_katalog"
+        },
+        {
+          "end_line": 3909,
+          "excerpt": "EXPORTED",
+          "line": 3904,
+          "name": "sobrat_kartochku"
+        },
+        {
+          "end_line": 3925,
+          "excerpt": "EXPORTED",
+          "line": 3912,
+          "name": "sobrat_katalog"
+        },
+        {
+          "end_line": 3952,
+          "excerpt": "EXPORTED",
+          "line": 3950,
+          "name": "sobrat_kartochku"
+        }
+      ],
+      "path": "/home/Carix/stranica.py",
+      "sha256": "6d5afd1b72c6b53623996b231b4e2d4143ec6850e00cdd1c38beedf209d0794b"
+    }
+  },
+  "started_at": "2026-10-12T00:42:02Z",
+  "task_id": "CRM-SITE-RENDER-PROBE-20261012",
+  "unavailable_paths": []
+}

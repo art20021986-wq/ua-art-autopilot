@@ -1,0 +1,282 @@
+# /home/Carix/stranica.py:93
+def mashiny():
+    con = sqlite3.connect('file:%s?mode=ro' % os.path.join(BAZA_DIR, 'crm.db'), uri=True)
+    con.row_factory = sqlite3.Row
+    try:
+        return [dict(r) for r in con.execute('SELECT * FROM cars WHERE published=1 ORDER BY id')]
+    finally:
+        con.close()
+
+# /home/Carix/stranica.py:102
+def nomer(m):
+    return (m.get('auto_number') or 'UA-%04d' % int(m.get('id') or 0)).strip()
+
+# /home/Carix/stranica.py:364
+def kadry_mashiny(m):
+    nom = nomer(m)
+    papka = os.path.join(PAPKA_FOTO, nom)
+    os.makedirs(papka, exist_ok=True)
+    est = sorted(glob.glob(os.path.join(papka, '*.jpg')))
+    if not est:
+        dostat_iz_stranic(nom, papka)
+        est = sorted(glob.glob(os.path.join(papka, '*.jpg')))
+    puti = ['foto/%s/%s' % (nom, os.path.basename(x)) for x in est if os.path.getsize(x) > 1000]
+    from photo_visibility import visible_names
+    visible = set(visible_names(m, [os.path.basename(p) for p in puti]))
+    puti = [p for p in puti if os.path.basename(p) in visible]
+    if not m.get('cover_photo'):
+        for otn in puti:
+            sh, vy = razmer_jpeg(os.path.join(PAPKA_VID, otn))
+            if sh and vy and (sh / float(vy) >= 1.2):
+                if puti[0] != otn:
+                    puti = [otn] + [x for x in puti if x != otn]
+                break
+    return puti
+
+# /home/Carix/stranica.py:725
+def sobrat_diagnostiku(m):
+    nom = nomer(m)
+    nazvanie = ' '.join((str(x) for x in [m.get('brand'), m.get('model'), m.get('year')] if x))
+    tekst = (m.get('diag_text') or '').strip()
+    foto, video = kadry_diagnostiki(m)
+    sredn = [umenshit(x, 'm', SREDNIJ, 78) for x in foto]
+    c = []
+    c.append('<!doctype html><html lang=\'ru\'><head><meta charset=\'utf-8\'><!-- UA-ART-FAVICON-20260928 -->\n<link rel="icon" href="/video/brand/ua-art/favicon.ico" sizes="16x16 32x32 48x48" type="image/x-icon">\n<link rel="icon" href="/video/brand/ua-art/favicon-96.png" sizes="96x96" type="image/png">\n<link rel="apple-touch-icon" href="/video/brand/ua-art/apple-touch-icon.png" sizes="180x180">\n<!-- /UA-ART-FAVICON-20260928 -->')
+    c.append("<meta name='viewport' content='width=device-width,initial-scale=1'>")
+    c.append("<script src='https://telegram.org/js/telegram-web-app.js'></script>")
+    c.append('<title>Диагностика %s — UA ART COMPANY</title><style>%s</style></head><body>' % (ekran(nazvanie), STIL))
+    c.append(shapka())
+    c.append("<div class='blok'><div class='nom'>%s</div><h1>%s</h1><div class='chip'>комплексная диагностика</div></div>" % (ekran(nom), ekran(nazvanie)))
+    if tekst:
+        c.append("<div class='blok'><div class='zag'>Описание</div>")
+        stroki = [s.strip() for s in tekst.replace('\r', '').split('\n')]
+        stroki = [s for s in stroki if s]
+        spiskom = sum((1 for s in stroki if s[:1] in '-–—•*·')) >= 2
+        if spiskom:
+            for s in stroki:
+                s = s.lstrip('-–—•*· ').strip()
+                if s:
+                    c.append("<div class='tehstr'><div class='m'>•</div><div>%s</div></div>" % ekran(s))
+        else:
+            c.append("<div class='tehtekst'>%s</div>" % '<br>'.join((ekran(s) for s in stroki)))
+        c.append('</div>')
+    if sredn:
+        c.append("<div class='zagolovok'>Фото проверки</div>")
+        c.append("<div class='lenta'>")
+        for i, k in enumerate(sredn, 1):
+            c.append("<div class='kadr'><img src='%s' loading='%s' decoding='async' alt=''><div class='podpis_kadra'>кадр %d</div></div>" % (k, 'eager' if i <= 2 else 'lazy', i))
+        c.append('</div>')
+        c.append("<div class='schet'>%d фото · листайте вбок, тап — во весь экран</div>" % len(sredn))
+    if video:
+        c.append("<div class='zagolovok'>Видео проверки</div>")
+        poster_diag = " poster='%s'" % sredn[0] if sredn else ''
+        for v in video:
+            c.append("<video controls playsinline webkit-playsinline preload='metadata'%s><source src='%s' type='video/mp4'><a class='vtoraya' href='%s'>Открыть видео отдельно</a></video>" % (zastavka(v) or poster_diag, v, v))
+        c.append("<div class='schet'>%d видео</div>" % len(video))
+    if (m.get('diag_link') or '').strip():
+        c.append("<div class='zagolovok'>Отчёт сканера</div>")
+        c.append("<a class='diag' href='%s'>Открыть отчёт OBD</a>" % ekran(m['diag_link']))
+        c.append("<div class='diag_pod'>Полный отчёт компьютерной диагностики</div>")
+    prodana = (m.get('status') or '').lower().startswith('sold')
+    if not prodana:
+        _st_cta = (m.get('status') or m.get('stage') or '').strip()
+        if _st_cta in ('ge_waiting', 'sea_loaded', 'kr_bought'):
+            c.append("<a class='dejstvie' href='%s'>Забронировать авто за 500 $</a>" % v_bota('bron_' + nom))
+            c.append('<p class="cta-note" style="margin:8px 0 0;text-align:center;font-size:14px;color:#c8d2e1;background:none;border:0">500 $ входит в стоимость автомобиля</p>')
+        else:
+            c.append("<a class='dejstvie' href='%s'>Купить авто</a>" % v_bota('kupit_' + nom))
+    c.append("<a class='vtoraya' href='%s.html?v=%d'>← Вернуться к машине</a>" % (nom, int(time.time())))
+    c.append(podval(' · диагностика ' + ekran(nom)))
+    if sredn:
+        c.append("<div id='lupa'><img id='bolshoe' src='' alt=''></div><div id='lupaschet'></div>")
+        c.append('<script>var kadry=%s;var tek=0;' % json.dumps(sredn))
+        c.append("\nvar sloj=document.getElementById('lupa'),bol=document.getElementById('bolshoe'),\n    sch=document.getElementById('lupaschet');\nfunction pokazat(i){tek=(i+kadry.length)%kadry.length;bol.src=kadry[tek];\n sloj.style.display='flex';sch.style.display='block';sch.textContent=(tek+1)+' / '+kadry.length;\n document.body.style.overflow='hidden';}\nfunction zakryt(){sloj.style.display='none';sch.style.display='none';document.body.style.overflow='';}\ndocument.querySelectorAll('.lenta img').forEach(function(el,i){\n el.addEventListener('click',function(){pokazat(i);});});\nvar x0=null;\nsloj.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;});\nsloj.addEventListener('touchend',function(e){if(x0===null)return;\n var dx=e.changedTouches[0].clientX-x0;\n if(Math.abs(dx)>50){pokazat(dx<0?tek+1:tek-1);}else{zakryt();}x0=null;});\nsloj.addEventListener('click',function(e){if(e.target===sloj)zakryt();});\n")
+        c.append('</script>')
+    c.append(CHAT_KNOPKA)
+    c.append(SKRIPT_TG)
+    c.append('</body></html>')
+    return ''.join(c)
+
+# /home/Carix/stranica.py:1011
+def sobrat_kartochku(m, kadry, sredn=None):
+    from ua_media_gallery import photos, videos, poster_url, assets
+    nom = nomer(m)
+    sredn = sredn or kadry
+    nazvanie = ' '.join((str(x) for x in [m.get('brand'), m.get('model'), m.get('year')] if x))
+    etap_tekst, mozhno_bron = etap_dlinno(m)
+    prodana = (m.get('status') or '').lower().startswith('sold')
+    video_est = os.path.exists(os.path.join(PAPKA_VID, nom + '.mp4'))
+    c = []
+    c.append('<!doctype html><html lang=\'ru\'><head><meta charset=\'utf-8\'><!-- UA-ART-FAVICON-20260928 -->\n<link rel="icon" href="/video/brand/ua-art/favicon.ico" sizes="16x16 32x32 48x48" type="image/x-icon">\n<link rel="icon" href="/video/brand/ua-art/favicon-96.png" sizes="96x96" type="image/png">\n<link rel="apple-touch-icon" href="/video/brand/ua-art/apple-touch-icon.png" sizes="180x180">\n<!-- /UA-ART-FAVICON-20260928 -->')
+    c.append("<meta name='viewport' content='width=device-width,initial-scale=1'>")
+    c.append("<script src='https://telegram.org/js/telegram-web-app.js'></script>")
+    c.append('<title>%s — UA ART COMPANY</title><style>%s</style></head><body>' % (ekran(nazvanie), STIL))
+    c.append(shapka())
+    if not kadry:
+        c.append("<div class='blok' style='text-align:center;color:var(--seryj)'>Фотографии готовятся — пришлём в чат, как только появятся.</div>")
+    if kadry:
+        c.append(photos(kadry, sredn, nazvanie))
+    if video_est:
+        poster = " poster='%s'" % sredn[0] if sredn else ''
+        _vse = ['%s.mp4' % nom]
+        try:
+            for _f in sorted(os.listdir(PAPKA_VID)):
+                if _f.startswith(nom + '-') and _f.lower().endswith('.mp4') and ('.mp4.' not in _f):
+                    _vse.append(_f)
+        except Exception:
+            pass
+        c.append("<div class='zagolovok'>Видео</div>")
+        c.append(videos(_vse, [poster_url(zastavka(_f) or poster) for _f in _vse], nazvanie))
+    c.append("<div class='blok'>")
+    c.append("<div class='nom'>%s</div><h1>%s</h1>" % (ekran(nom), ekran(nazvanie)))
+    c.append("<div class='chip'>%s</div>" % ekran(etap_tekst))
+    c.append("<div class='cena' style='margin-top:14px'>%s</div>" % cena(m))
+    c.append("<div class='tihо'>Под ключ в Киеве. Выкуп на аукционе, доставка, растаможка и сертификат — доплат нет.</div>")
+    c.append('</div>')
+    pary = []
+    if m.get('mileage_km'):
+        try:
+            pary.append(('Пробег', '{:,} км'.format(int(m['mileage_km'])).replace(',', ' ')))
+        except Exception:
+            pass
+    if m.get('engine_cc'):
+        pary.append(('Двигатель', '%s см³%s' % (m['engine_cc'], ', ' + str(m['fuel']) if m.get('fuel') else '')))
+    elif m.get('fuel'):
+        pary.append(('Топливо', str(m['fuel'])))
+    for nazv, pole in (('Коробка', 'gearbox'), ('Привод', 'drive'), ('Цвет', 'color'), ('VIN', 'vin')):
+        if m.get(pole):
+            pary.append((nazv, str(m[pole])))
+    if pary:
+        c.append("<div class='blok'><div class='zag'>Коротко</div><table class='kratko'>")
+        for a, b in pary:
+            c.append("<tr><td class='k'>%s</td><td>%s</td></tr>" % (ekran(a), ekran(b)))
+        c.append('</table></div>')
+    c.append(_ua_delivery_stage_anchor(m))
+
+    def blok_teksta(zagolovok, tekst):
+        tekst = (tekst or '').strip()
+        if not tekst:
+            return
+        c.append("<div class='blok'><div class='zag'>%s</div>" % ekran(zagolovok))
+        stroki = [s.strip() for s in tekst.replace('\r', '').split('\n')]
+        stroki = [s for s in stroki if s]
+        spiskom = sum((1 for s in stroki if s[:1] in '-–—•*·')) >= 2
+        if spiskom:
+            for s in stroki:
+                s = s.lstrip('-–—•*· ').strip()
+                if s:
+                    c.append("<div class='tehstr'><div class='m'>•</div><div>%s</div></div>" % ekran(s))
+        else:
+            c.append("<div class='tehtekst'>%s</div>" % '<br>'.join((ekran(s) for s in stroki)))
+        c.append('</div>')
+    sostoyanie = (m.get('condition_text') or '').strip()
+    opisanie = (m.get('description') or '').strip()
+    polnoe_opisanie = sostoyanie or opisanie
+    blok_teksta('Описание', polnoe_opisanie)
+    c.append('<!--ua-art-diagnostics-permanent-v1-->')
+    c.append('<a class="mcf-diag-cta" href="%s-diag.html" style="display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(212,175,55,.20),rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);color:#f4e3ae"><span style="font-size:22px;line-height:1">🔧</span><span style="flex:1"><span style="display:block;font-weight:800;font-size:16px">Открыть комплексную диагностику →</span><span style="display:block;font-size:13px;opacity:.85;margin-top:3px">ЛКП · OBD · ходовая · фото · видео</span></span><span style="font-size:20px;opacity:.8">›</span></a>' % nom)
+    if prodana:
+        c.append("<a class='dejstvie' href='podbor.html?v=%d'>Хочу такую же под заказ</a>" % int(time.time()))
+    else:
+        _st_cta = (m.get('status') or m.get('stage') or '').strip()
+        if _st_cta in ('ge_waiting', 'sea_loaded', 'kr_bought'):
+            c.append("<a class='dejstvie kn_kupit' href='%s'>Забронировать авто за 500 $</a>" % v_bota('bron_' + nom))
+            c.append('<p class="cta-note" style="margin:8px 0 0;text-align:center;font-size:14px;color:#c8d2e1;background:none;border:0">500 $ входит в стоимость автомобиля</p>')
+        else:
+            c.append("<a class='dejstvie kn_kupit' href='%s'>Купить авто</a>" % v_bota('kupit_' + nom))
+        c.append("<a class='vtoraya' id='vopros' href='%s'>Задать вопрос по этой машине</a>" % v_bota('vopros_' + nom))
+    c.append("<a class='vtoraya' href='katalog.html?v=%d'>← Все машины</a>" % int(time.time()))
+    c.append(USPEH_BLOK)
+    c.append(podval(' · ' + ekran(nom)))
+    c.append("<script>(function(){document.querySelectorAll('.kn_kupit').forEach(function(kp){kp.addEventListener('click',function(e){e.preventDefault();otpravit_zayavku({t:'kupit',nom:'%(n)s'},'Заявка на покупку принята','Менеджер Артём свяжется с вами в течение часа, подтвердит наличие и подготовит договор с фиксированной ценой.', kp.getAttribute('href'));});});var b=document.getElementById('bron');if(b){b.addEventListener('click',function(e){e.preventDefault();otpravit_zayavku({t:'bron',nom:'%(n)s'},'Бронь принята','Автомобиль забронирован за вами. Менеджер Артём свяжется в течение часа и подтвердит договор с фиксированной ценой.', b.getAttribute('href'));});}var v=document.getElementById('vopros');if(v){v.addEventListener('click',function(e){e.preventDefault();otpravit_zayavku({t:'vopros',nom:'%(n)s'},'Вопрос отправлен','Менеджер Артём ответит вам в чате в ближайшее время.', v.getAttribute('href'));});}})();</script>" % {'n': nom})
+    c.append(assets())
+    c.append(CHAT_KNOPKA)
+    c.append(SKRIPT_TG)
+    c.append('</body></html>')
+    return ''.join(c)
+
+# /home/Carix/stranica.py:1155
+def sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru=None):
+    c = []
+    c.append('<!doctype html><html lang=\'ru\'><head><meta charset=\'utf-8\'><!-- UA-ART-FAVICON-20260928 -->\n<link rel="icon" href="/video/brand/ua-art/favicon.ico" sizes="16x16 32x32 48x48" type="image/x-icon">\n<link rel="icon" href="/video/brand/ua-art/favicon-96.png" sizes="96x96" type="image/png">\n<link rel="apple-touch-icon" href="/video/brand/ua-art/apple-touch-icon.png" sizes="180x180">\n<!-- /UA-ART-FAVICON-20260928 -->')
+    c.append("<meta name='viewport' content='width=device-width,initial-scale=1'>")
+    c.append("<script src='https://telegram.org/js/telegram-web-app.js'></script>")
+    c.append('<title>UA ART COMPANY — авто из Кореи</title><style>%s</style></head><body>' % STIL)
+    c.append(shapka())
+    c.append("<div class='zagolovok'>Авто в наличии и в пути</div>")
+    c.append("<div class='schet'>%d в подборке · цены под ключ в Киеве</div>" % len(spisok))
+    if not spisok:
+        c.append("<div class='blok'>Сейчас витрина пуста — привезём под заказ из Кореи за 45–60 дней с фиксированной ценой в договоре.</div>")
+    for m in spisok:
+        nom = nomer(m)
+        kadry = kadry_po_nomeru.get(nom) or []
+        sredn, mal = (legkie_po_nomeru or {}).get(nom) or (kadry, kadry)
+        video_est = os.path.exists(os.path.join(PAPKA_VID, nom + '.mp4'))
+        c.append("<a class='plitka' href='%s.html?v=%d'>" % (nom, int(time.time())))
+        if kadry and sredn:
+            c.append("<div class='ramka'><img src='%s' decoding='async' alt=''>" % sredn[0])
+            if video_est:
+                c.append("<div class='znak_video'><b>▶</b> видео</div>")
+            c.append('</div>')
+            if len(mal) > 1:
+                c.append("<div class='mini_lenta'>")
+                for k in mal[1:4]:
+                    c.append("<img src='%s' loading='lazy' decoding='async' alt=''>" % k)
+                if len(mal) > 4:
+                    c.append("<div class='eshche'>+%d</div>" % (len(mal) - 4))
+                c.append('</div>')
+        c.append("<div class='telo'><div class='stroka'>")
+        c.append("<div class='nazv'>%s</div>" % ekran(' '.join((str(x) for x in [m.get('brand'), m.get('model'), m.get('year')] if x))))
+        c.append("<div class='cn'>%s</div></div>" % cena(m))
+        c.append("<div class='niz'>%s · %s · %d фото%s</div></div></a>" % (ekran(etap_korotko(m)), ekran(nom), len(kadry), ' · видео' if video_est else ''))
+    c.append("<a class='vtoraya' href='podbor.html?v=%d'>Нужно другое — подберём под заказ</a>" % int(time.time()))
+    c.append("<a class='vtoraya' href='index.html?v=%d'>← На главную</a>" % int(time.time()))
+    c.append("<div class='blok'><div class='zag'>Как мы работаем</div><div class='tihо' style='line-height:1.9'>1 · Подбираем варианты под бюджет<br>2 · Заключаем официальный договор. Предоплата — %d $, она входит в общую стоимость автомобиля. Цена фиксируется в договоре по курсу НБУ на дату его заключения.<br>3 · Проверяем историю и отчёт аукциона перед покупкой<br>4 · Стоянка в Корее, ждём погрузку<br>5 · Паром: Корея → Грузия<br>6 · Поти/Батуми: оформление<br>7 · Киев: растаможка, сертификат, выдача</div></div>" % BRON_USD)
+    c.append(podval())
+    c.append(CHAT_KNOPKA)
+    c.append(SKRIPT_TG)
+    c.append('</body></html>')
+    return ''.join(c)
+
+# /home/Carix/stranica.py:3043
+def sobrat_kartochku(m, kadry, sredn=None):
+    result = _ua_seo068_original_sobrat_kartochku(m, kadry, sredn)
+    identifier = _ua_seo068_identifier(m)
+    if not _ua_seo068_re.fullmatch('UA-[0-9]{4,}', identifier):
+        raise RuntimeError('SEO068_CARD_ID_INVALID:' + identifier)
+    return _ua_seo068_normalize(result, identifier + '.html', identifier)
+
+# /home/Carix/stranica.py:3051
+def sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru):
+    return _ua_seo068_normalize(_ua_seo068_original_sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru), 'katalog.html')
+
+# /home/Carix/stranica.py:3904
+def sobrat_kartochku(m, kadry, sredn=None):
+    html = _ua068_stranica_card_original(m, kadry, sredn)
+    kod = str(nomer(m))
+    row = dict(m or {})
+    row['_ua068_vin_duplicates'] = 1
+    return _ua068_ensure_card(html, kod, row)
+
+# /home/Carix/stranica.py:3912
+def sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru=None):
+    from ua_delivery_status import stage_number
+    spisok = [row for row in spisok if stage_number(row.get('status'))]
+    html = _ua068_stranica_catalog_original(spisok, kadry_po_nomeru, legkie_po_nomeru)
+    counts = {}
+    for row in spisok:
+        vin = str(row.get('vin') or '').strip().upper()
+        counts[vin] = counts.get(vin, 0) + 1
+    rows = {}
+    for item in spisok:
+        row = dict(item or {})
+        row['_ua068_vin_duplicates'] = counts.get(str(row.get('vin') or '').strip().upper(), 1)
+        rows[str(nomer(row)).upper()] = row
+    return _ua068_ensure_catalog(html, rows)
+
+# /home/Carix/stranica.py:3950
+def sobrat_kartochku(m, kadry, sredn=None):
+    result = _ua84_previous_sobrat_kartochku(m, kadry, sredn)
+    return _ua84_ensure_html(result, _ua84_model_uid(m))
+
+
