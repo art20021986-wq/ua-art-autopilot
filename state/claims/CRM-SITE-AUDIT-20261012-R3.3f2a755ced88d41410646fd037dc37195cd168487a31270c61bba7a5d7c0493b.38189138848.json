@@ -7,21 +7,23 @@
   "created_at": "2026-10-12T00:44:53Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T00:44:53Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-12T00:46:08Z",
+  "heartbeat_at": "2026-10-12T00:46:08Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "38189138848",
     "task_id": "CRM-SITE-AUDIT-20261012-R3",
     "task_sha256": "3f2a755ced88d41410646fd037dc37195cd168487a31270c61bba7a5d7c0493b"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-b825a0c626ab496c-33a8ae012861d5ca",
   "receipt_path": "state/receipts/CRM-SITE-AUDIT-20261012-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "e69591b641ab5328f8abeef0e73e4d4593bc62a3522b1fd0b30d994d569b3bc4",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-SITE-AUDIT-20261012-R3.json",
   "request_sha256": "3f2a755ced88d41410646fd037dc37195cd168487a31270c61bba7a5d7c0493b",
   "resource_locks": [
@@ -29,8 +31,28 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "7efacaba2dc8f026cf0f8fcd7fcb2e05c0e28178",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92099960832,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 40.529
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-12T00:44:53Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "7669adf59b21bbbf071e9efd5bb3d0a78cc85ac75e7bfc845e828341e5f0b2ab",
+    "file_sha256": {
+      "cloud/crm_site_audit_20261012/audit.py": "30f1f735a24c4ee28a4e60d53be5e77232b9a0d0bf8c03dd94080563e79510bc",
+      "cloud/crm_site_audit_20261012/fixture_public.py": "2c39ca336c0a8ddbcd6e67e40732678570379fb56e25b8827392d60a7d8cf409",
+      "cloud/crm_site_audit_20261012/public_fields.py": "7c2e649cfbe183cca3e0082cad3c8e0f871e4e041a3c5951bd9859f585bc75ec",
+      "cloud/crm_site_audit_20261012/public_media.py": "5f73de75a6c43af1828d462b4ac85e7365fbd780aae1a92de08f684bb27cd440",
+      "cloud/crm_site_audit_20261012/test_audit.py": "f1f5ff57316709b9c90213e1e7a1ce3f9ba258678975fcb6b7240a2c54566410",
+      "cloud/crm_site_audit_20261012/test_controller.py": "a4f6ade338410dace5dd173d948145a37fc875be049d52418d722e0b761a196b"
+    }
+  },
+  "updated_at": "2026-10-12T00:46:08Z"
 }
