@@ -7,21 +7,23 @@
   "created_at": "2026-10-12T04:32:05Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T04:32:05Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-12T04:34:00Z",
+  "heartbeat_at": "2026-10-12T04:34:00Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "38204119497",
     "task_id": "CRM-DIAG-LINK-PROBE-20261012",
     "task_sha256": "527689856a8e8d506e8d1fb7e3066c2434429f5d2fefa5d7a9d388a6e730a5dd"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-a1c0529ddbe24124-7107852a0f2b94f2",
   "receipt_path": "state/receipts/CRM-DIAG-LINK-PROBE-20261012.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "6c0203006fc907f12724c0cbffa8ae024690f55c28d6e14043806ac2f073fe10",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-DIAG-LINK-PROBE-20261012.json",
   "request_sha256": "527689856a8e8d506e8d1fb7e3066c2434429f5d2fefa5d7a9d388a6e730a5dd",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "4d922f2fcb14fc3607c36a0b38706503eebf6731",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92097093632,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 40.531
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-12T04:32:05Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "b0324dd176050646bc1426cfe74b093233ef09295ef6ff536c53c21d55a87a94",
+    "file_sha256": {
+      "cloud/crm_diag_link_probe_20261012/test_controller.py": "866c529d7392acd9cae135e43dc1bd5d2946b2af39348174378a67bc8ea4a992"
+    }
+  },
+  "updated_at": "2026-10-12T04:34:00Z"
 }

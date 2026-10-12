@@ -1,0 +1,376 @@
+{
+  "http_methods": [
+    "GET"
+  ],
+  "modules_scanned": {
+    "ai.py": "NO_MATCH",
+    "ai370.py": {
+      "match": true,
+      "sha256": "fa2a1cc5612f6d03e269357a56655ba41b666c5f1ab7375fd329d310ca60197e"
+    },
+    "ai_fast_schema.py": "NO_MATCH",
+    "ai_filter.py": "NO_MATCH",
+    "ajs.py": "NO_MATCH",
+    "analitika_bot.py": "NO_MATCH",
+    "analitika_knopka.py": "NO_MATCH",
+    "analitika_otchet.py": "NO_MATCH",
+    "analitika_wsgi.py": "NO_MATCH",
+    "analitika_yadro.py": "NO_MATCH",
+    "arch1.py": {
+      "match": true,
+      "sha256": "9288ae968909c2f83c02ad0c3b8b8f2165f4b9a1c4f3dfbf6f9e5bf7320c3fba"
+    },
+    "arch2.py": {
+      "match": true,
+      "sha256": "67e1cafa014b573030fbcda485f70789c39412b341f24e1000c2cadd494e8ec4"
+    },
+    "arch2b.py": {
+      "match": true,
+      "sha256": "2791e33e0630262a6f680634a0692499ee0a7e8ac0ed10351a81594241b6984c"
+    },
+    "arch2c.py": {
+      "match": true,
+      "sha256": "99004179337006cb7169ad6bf5757addb15c265b2db4db11da34ad216158f58e"
+    },
+    "arch2d.py": {
+      "match": true,
+      "sha256": "959f123e190d5cd35e4358e2e830fabf18cecc3bdd3c2ae5673c525cd777299d"
+    },
+    "arch2e.py": {
+      "match": true,
+      "sha256": "092226bbe0e0aa02a0afb02d820f88f7f13158299308edcb8795aaee1659bcd2"
+    },
+    "arch2f.py": {
+      "match": true,
+      "sha256": "6eb081d7041a332860737bb3c01fc45963cf90aa271b48ffad93349462ace0f6"
+    },
+    "arch2g.py": {
+      "match": true,
+      "sha256": "b7f4f6071e9d6842cb83b1015bdce2f85906e137dc2f562908f2613ca7f07350"
+    },
+    "arch3.py": {
+      "match": true,
+      "sha256": "08659afdaf68bfefa64573566bdeb9a3660885b288ad6895aaf9ac08d3200aea"
+    },
+    "assistant.py": "NO_MATCH",
+    "avto.py": "NO_MATCH",
+    "avtomat.py": "NO_MATCH",
+    "avtoperedacha.py": "NO_MATCH",
+    "baseline.py": {
+      "match": true,
+      "sha256": "50b97e95e0497d4a9db4e82dbc74c4552fbb6f89c47829d7ea2499d0e7a155df"
+    },
+    "bezopasnost.py": "NO_MATCH",
+    "busti.py": {
+      "match": true,
+      "sha256": "242da80a48b02fe813e4cafc52e28154d2544641370b6d02afa86bf6b7e05efc"
+    },
+    "busti2.py": "NO_MATCH",
+    "busti3.py": "NO_MATCH",
+    "busti4.py": "NO_MATCH",
+    "card15.py": {
+      "match": true,
+      "sha256": "ed135783f3ab2126c391419f0b7809d6a3fffae4d5a236d8ed045173cdfdca02"
+    },
+    "card_html.py": {
+      "match": true,
+      "sha256": "244908a035ac9a74d3db0908be3f97328762857d24644193b61f4c59ddc014b1"
+    },
+    "card_render.py": {
+      "match": true,
+      "sha256": "01a596eca29a6c0bcd2d4229404cbf0e62fea3e62077782be259c1e713e03a2c"
+    },
+    "cars_schema.py": {
+      "match": true,
+      "sha256": "16d53277834ecfad1eabc10f75e5cabb1060b35416b61b6f534ec024ce9dbc07"
+    },
+    "cars_ui.py": {
+      "match": true,
+      "sha256": "5da4d9e828d8f68913eea283d0ed736ea7be3458e75c3a04f64e128a41932ee2"
+    },
+    "catalog_design_guard.py": "NO_MATCH",
+    "catalog_stage_guard_core.py": "NO_MATCH",
+    "chatfix.py": "NO_MATCH",
+    "check3.py": "NO_MATCH",
+    "chern.py": "NO_MATCH",
+    "cifry.py": "NO_MATCH",
+    "cikl.py": "NO_MATCH",
+    "cikl2.py": "NO_MATCH",
+    "client_order_inbox_deploy.py": "NO_MATCH",
+    "client_order_inbox_verify.py": "NO_MATCH",
+    "client_style.py": "NO_MATCH",
+    "client_ui.py": {
+      "match": true,
+      "sha256": "efbf9ddf5e4861e6c84fa6851ef42e7e184860d81bd8aa8fcf9eaea0062804f6"
+    },
+    "crm_folders_install_20260910.py": "NO_MATCH",
+    "crm_online_guard.py": "NO_MATCH",
+    "crm_voice_watchdog.py": "NO_MATCH",
+    "cta.py": "NO_MATCH",
+    "cta2.py": "NO_MATCH",
+    "ctaprim.py": "NO_MATCH",
+    "ctaprim2.py": "NO_MATCH",
+    "db.py": "NO_MATCH",
+    "filtr.py": "NO_MATCH",
+    "filtr2.py": "NO_MATCH",
+    "filtr3.py": "NO_MATCH",
+    "fix947b.py": "NO_MATCH",
+    "fixchip.py": "NO_MATCH",
+    "fixchip2.py": "NO_MATCH",
+    "fixclick.py": "NO_MATCH",
+    "fixcss.py": "NO_MATCH",
+    "fixcta.py": {
+      "match": true,
+      "sha256": "94f50832738c8349c23f42fc8ec6947702caf2342b3a73da9c8393d398748628"
+    },
+    "fixcta2.py": {
+      "match": true,
+      "sha256": "35f21b7595319bcd4574310070b0095ae80c9945f2fa547f05c1bda001ac121a"
+    },
+    "fixcta3.py": {
+      "match": true,
+      "sha256": "203e2ddaeeba8aa13a6f5125eaf823032dcd8fff72552b0a9f037a99cb4f2e1f"
+    },
+    "fixrec.py": "NO_MATCH",
+    "home_counters_install_20260910.py": "NO_MATCH",
+    "install_autopilot_runner.py": "NO_MATCH",
+    "install_stage_sync_20260910.py": "NO_MATCH",
+    "install_sync_20260926.py": "NO_MATCH",
+    "install_sync_20260926_v2.py": "NO_MATCH",
+    "itg.py": "NO_MATCH",
+    "kadry_diagnostiki.py": "NO_MATCH",
+    "karta.py": {
+      "match": true,
+      "sha256": "ef29107757fa6501bf1f231bf7ef8dc90774d5c40cc9f863b6333e6f7ca5f36d"
+    },
+    "karta_iz_crm.py": "NO_MATCH",
+    "karta_klienta.py": "NO_MATCH",
+    "karta_knopka.py": "NO_MATCH",
+    "kartochka.py": {
+      "match": true,
+      "sha256": "954a6527c3c76a0cde3f44da4a047870680855babfd5e8cbe807d5b35606c4e8"
+    },
+    "konteyner.py": {
+      "match": true,
+      "sha256": "cb09e8cfac57f05a004f7dae73d57f76c422132a8e0d6a16f28f0a949647760e"
+    },
+    "lead_bot.py": {
+      "match": true,
+      "sha256": "e45cec0e4359831928029f30804f3b9c2d629ffa920654250ae8a85de04c05e8"
+    },
+    "local_ocr.py": "NO_MATCH",
+    "lock1.py": "NO_MATCH",
+    "lock2.py": "NO_MATCH",
+    "lock3.py": "NO_MATCH",
+    "lock4.py": "NO_MATCH",
+    "lock4_zhurnal.py": "NO_MATCH",
+    "lock5.py": "NO_MATCH",
+    "lock6.py": "NO_MATCH",
+    "lock7.py": "NO_MATCH",
+    "lock8.py": "NO_MATCH",
+    "master_card.py": {
+      "match": true,
+      "sha256": "da12928d48c622bbcb259cedd190ebf93a6985bb8e82f7962471cc498b29c65d"
+    },
+    "master_guard.py": "NO_MATCH",
+    "med1.py": "NO_MATCH",
+    "med2.py": "NO_MATCH",
+    "med3.py": "NO_MATCH",
+    "med31.py": "NO_MATCH",
+    "med32.py": "NO_MATCH",
+    "med33.py": {
+      "match": true,
+      "sha256": "12fe0d3fdedc717c3ebdeee07e1ebe4c57d7b0a8706af02862b736452df87ba6"
+    },
+    "med34.py": "NO_MATCH",
+    "med35.py": "NO_MATCH",
+    "menu_cleanup.py": "NO_MATCH",
+    "menu_knopka.py": "NO_MATCH",
+    "obnovit.py": "NO_MATCH",
+    "observe_point4_core_dynamic.py": "NO_MATCH",
+    "odna_karta.py": "NO_MATCH",
+    "order_route_inspect.py": "NO_MATCH",
+    "otvet_knopki.py": "NO_MATCH",
+    "pesok.py": {
+      "match": true,
+      "sha256": "f31287a0f96e7d6a5f19a4994c9fc85d06c677a762c492c9b4fe557fc3301da9"
+    },
+    "pesok2.py": {
+      "match": true,
+      "sha256": "2ef63bab93f82895084d35ea2b87640ed1a4b226a0e6fedd73e299c6210428f9"
+    },
+    "pesok3.py": {
+      "match": true,
+      "sha256": "5f652099d44bffbbdfddf73808f358d8664463edb8cfda4c12e7b4b57cc4e26c"
+    },
+    "photo_hide.py": "NO_MATCH",
+    "photo_visibility.py": "NO_MATCH",
+    "play.py": "NO_MATCH",
+    "pochini.py": "NO_MATCH",
+    "poryadok.py": "NO_MATCH",
+    "poster.py": {
+      "match": true,
+      "sha256": "152a743c7323d1a0dc89e8ba0980c96adf48ca13faabdba55ab4958bd395cf6f"
+    },
+    "prichina.py": {
+      "match": true,
+      "sha256": "d4998a20d6a7ad150ed74ecf2e3f4f2042f0c8623a87323fc10899607278e40d"
+    },
+    "profile_library.py": "NO_MATCH",
+    "proof.py": "NO_MATCH",
+    "publication_fence.py": "NO_MATCH",
+    "publik.py": {
+      "match": true,
+      "sha256": "43b502c74aa63f7697636244ad6485af876883ee6890ba0a6fe196e3158c6506"
+    },
+    "publikaciya.py": "NO_MATCH",
+    "publikuy.py": "NO_MATCH",
+    "publish_transaction_guard.py": {
+      "match": true,
+      "sha256": "9b41f15e8455ec7e579bea1e194e6c855cc50b7b0e060ee2a010301d28c981e8"
+    },
+    "reader1.py": "NO_MATCH",
+    "run_all.py": "NO_MATCH",
+    "s2_live_acceptance.py": "NO_MATCH",
+    "s2activation_probe.py": "NO_MATCH",
+    "s2activation_source.py": "NO_MATCH",
+    "s2activation_verify.py": "NO_MATCH",
+    "s2probe_20260913.py": "NO_MATCH",
+    "s2probe_v2_20260913.py": "NO_MATCH",
+    "s2restart_crm.py": "NO_MATCH",
+    "s2supervisor_read.py": "NO_MATCH",
+    "s2sync_source.py": "NO_MATCH",
+    "samokontrol.py": "NO_MATCH",
+    "sandbox.py": "NO_MATCH",
+    "sborka_diag.py": {
+      "match": true,
+      "sha256": "e25ffa50ea334df2529162b3285b6ac8b3cef9c35f6d8bc71f0665baad63368d"
+    },
+    "setup_autopilot.py": "NO_MATCH",
+    "site_ge_inject.py": "NO_MATCH",
+    "source_policy.py": "NO_MATCH",
+    "spec84_collector.py": "NO_MATCH",
+    "spec_catalog_pages.py": "NO_MATCH",
+    "spec_emergency_install_20260910_r1.py": "NO_MATCH",
+    "spec_emergency_install_code_20260910_r1.py": "NO_MATCH",
+    "spec_emergency_install_pages_20260910_r1.py": "NO_MATCH",
+    "spec_emergency_install_pages_20260910_r2.py": "NO_MATCH",
+    "spec_emergency_prepare_20260910_r1.py": "NO_MATCH",
+    "spec_emergency_restore_20260910_r1.py": "NO_MATCH",
+    "spec_issue84_bundle_20260910_r1.py": "NO_MATCH",
+    "spec_model_profiles.py": "NO_MATCH",
+    "spec_retry84.py": "NO_MATCH",
+    "spec_reviewed_17_18_20260910_r1.py": "NO_MATCH",
+    "srochno.py": "NO_MATCH",
+    "stage_exact_preview_20260922.py": "NO_MATCH",
+    "start_safe.py": {
+      "match": true,
+      "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+    },
+    "storozh_dizayna.py": "NO_MATCH",
+    "storozh_media.py": "NO_MATCH",
+    "stranica.py": {
+      "match": true,
+      "sha256": "6d5afd1b72c6b53623996b231b4e2d4143ec6850e00cdd1c38beedf209d0794b"
+    },
+    "stranica_hranitel.py": "NO_MATCH",
+    "stranica_klienta.py": {
+      "match": true,
+      "sha256": "348d2d1deffc978072678cde8959af593cca9d57cb8d595252626df755064a86"
+    },
+    "stroy3.py": "NO_MATCH",
+    "stroy6.py": "NO_MATCH",
+    "sub1.py": "NO_MATCH",
+    "svezhiy_hesh.py": "NO_MATCH",
+    "svyaz.py": "NO_MATCH",
+    "team_bot.py": {
+      "match": true,
+      "sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+    },
+    "tokeny_iz_botfather.py": "NO_MATCH",
+    "trace.py": "NO_MATCH",
+    "trace_zhurnal.py": "NO_MATCH",
+    "ua0004.py": "NO_MATCH",
+    "ua0009.py": {
+      "match": true,
+      "sha256": "0782a47e6ed7b1d302d1ab127e3cdf0f2d94553d2afc1c4b5657f3447f654212"
+    },
+    "ua0009_release_gate.py": "NO_MATCH",
+    "ua0009_v2.py": {
+      "match": true,
+      "sha256": "ced616d75d182bbff009663762f89d251a4eaa2ed4c881fc7d3564901fb71e07"
+    },
+    "ua0009_v3.py": {
+      "match": true,
+      "sha256": "19d872ed623c8a1a237c52989864a477c7cf95d3cab111fc73c809b5ed010f25"
+    },
+    "ua0009_v4.py": {
+      "match": true,
+      "sha256": "61f6114ffae21fc46b00de941d4562dd8cb228cef04b1e9759294befc3601ed5"
+    },
+    "ua_additional_spec.py": "NO_MATCH",
+    "ua_art_home_ge_001_install.py": "NO_MATCH",
+    "ua_art_site_ge_002_install.py": "NO_MATCH",
+    "ua_card_delete.py": "NO_MATCH",
+    "ua_crm_catalog_folders.py": "NO_MATCH",
+    "ua_crm_public_sync.py": "NO_MATCH",
+    "ua_delivery_status.py": "NO_MATCH",
+    "ua_homepage.py": "NO_MATCH",
+    "ua_media_gallery.py": "NO_MATCH",
+    "ua_media_script.py": "NO_MATCH",
+    "ua_media_styles.py": "NO_MATCH",
+    "ua_price_html_v2.py": "NO_MATCH",
+    "ua_public_freshness.py": "NO_MATCH",
+    "ua_publish_requests.py": "NO_MATCH",
+    "ua_seo_metadata.py": "NO_MATCH",
+    "ua_seo_sitemap.py": "NO_MATCH",
+    "ua_site_counters.py": "NO_MATCH",
+    "ua_spec84_runtime.py": "NO_MATCH",
+    "ua_spec_permanent.py": "NO_MATCH",
+    "ua_stage_catalog_sync.py": "NO_MATCH",
+    "ua_tracking_links.py": "NO_MATCH",
+    "ua_tracking_widget.py": "NO_MATCH",
+    "uaart_bridge_install.py": "NO_MATCH",
+    "uaart_bridge_postrun_verify.py": "NO_MATCH",
+    "uaart_bridge_prereload.py": "NO_MATCH",
+    "uaart_bridge_selftest.py": "NO_MATCH",
+    "uaart_bridge_wsgi.py": "NO_MATCH",
+    "uaart_connection_monitor.py": "NO_MATCH",
+    "uaart_public_prices_v1.py": "NO_MATCH",
+    "uaart_public_renderer_v1.py": "NO_MATCH",
+    "ui9.py": "NO_MATCH",
+    "v155.py": "NO_MATCH",
+    "video_edino.py": "NO_MATCH",
+    "video_helper.py": "NO_MATCH",
+    "video_sinhron.py": "NO_MATCH",
+    "video_universal.py": "NO_MATCH",
+    "vin1.py": "NO_MATCH",
+    "vin_spec_service.py": "NO_MATCH",
+    "visits.py": "NO_MATCH",
+    "vitrina.py": {
+      "match": true,
+      "sha256": "bbd990b532e8a05126bedf82775d14393d8b884bb80c7b30496b9937125bbd76"
+    },
+    "voice.py": "NO_MATCH",
+    "vosstan.py": {
+      "match": true,
+      "sha256": "6aa65355db77f28c6967a5ff5faf76cccb454d494202cfa8fe85380dd98ddd30"
+    },
+    "vse.py": "NO_MATCH",
+    "who9.py": {
+      "match": true,
+      "sha256": "c70c5cafed20f3e6aad0dafd446e785d10a29cb761d693eca75835299f41d927"
+    },
+    "yadro.py": {
+      "match": true,
+      "sha256": "957781c01304549757eda4e854a4b382a9cb0c471d59875173b4429946d294c8"
+    },
+    "zapusk_stroka.py": {
+      "match": true,
+      "sha256": "530ac3cdd7e898916cf91009b36044f2beb50abbb84310b08260a9a1ec8d3eaa"
+    }
+  },
+  "remote_write_count": 0,
+  "run_id": "38204119497",
+  "task_id": "CRM-DIAG-LINK-PROBE-20261012"
+}
