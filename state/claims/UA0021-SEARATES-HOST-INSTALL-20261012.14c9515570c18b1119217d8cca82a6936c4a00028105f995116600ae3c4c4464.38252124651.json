@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "ed8a080c32b061a06c2ac7227b0c67777095c2c82bb0176e530e5c4d25f5c98e",
   "autostart_source_commit": "6a6d95b975e078f670aec83826663235f9e83659",
   "created_at": "2026-10-12T12:56:18Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "0e6dbdb6917a45b73bf6b3a394565e4e43ff27871821706c0a84ae5cdbdc7ad0",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T12:56:18Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-10-12T12:57:31Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "38252124651",
     "task_id": "UA0021-SEARATES-HOST-INSTALL-20261012",
     "task_sha256": "14c9515570c18b1119217d8cca82a6936c4a00028105f995116600ae3c4c4464"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 299.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 338.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-38252124651-14c9515570c18b11",
+  "production_transaction_path": "state/transactions/UA0021-SEARATES-HOST-INSTALL-20261012.14c9515570c18b1119217d8cca82a6936c4a00028105f995116600ae3c4c4464.38252124651.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-c21927c695ba6f6e-c4f99c3b1ee532f7",
   "receipt_path": "state/receipts/UA0021-SEARATES-HOST-INSTALL-20261012.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "8ba1f93762e2bc27ae3492d36991ff70845b6682",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 215.411,
+    "allowed": true,
+    "evidence_path": "state/storage/UA0021-SEARATES-HOST-INSTALL-20261012.json",
+    "evidence_sha256": "b04df1873c1e3b6cfbe0e621bba546154f05c03e2467bed5b630d8bc12d9b23f",
+    "free_bytes": 1224369766400,
+    "heavy": true,
+    "measured_at": "2026-10-12T12:53:52.711448+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "WARN_70",
+    "usage_percent": 79.79906501149273
+  },
+  "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-12T12:56:18Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "badb5a5f613ad398604a9c92ea813efa5974b6a2256e76114a61e275c38733db",
+    "file_sha256": {
+      "cloud/ua0021_searates_host_001/build_spec.py": "36b20f669b58ec6db0382c6582380c886d77c8066c4775ac4aa431591b479d5e",
+      "cloud/ua0021_searates_host_001/candidate_builder.py": "cf812e7224a7448a4e741679ad8abfd8fb681c0f0e687b60ac70f7f161adb834",
+      "cloud/ua0021_searates_host_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/ua0021_searates_host_001/deployment_bootstrap.py": "cf8d9927dc5f78eaeeddad503799b43b58246ebed9b1bfa408729951add99b68",
+      "cloud/ua0021_searates_host_001/deployment_remote.py": "c5d58a8ed163117d1465dc673792a26ca914079a1b4e8620bb68d4ab0169b5b7",
+      "cloud/ua0021_searates_host_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/ua0021_searates_host_001/deployment_transport.py": "d07bc714485ddaa1553f7db048323275a1f0e6f567b05d7521827c922bb70dca",
+      "cloud/ua0021_searates_host_001/release_constants.py": "989ef29bff9d41ff94f1f1721543f46e4c40c70658ba1cf958902c5c300b331f",
+      "cloud/ua0021_searates_host_001/test_deployment.py": "d20217097eb9cfcaf12175a400d244c26a0c40fc944493af2b5b20d67406395a",
+      "cloud/ua0021_searates_host_001/test_release.py": "c37c5cc49ecdb0eb4430ecf3b8be215bb5278630c40e807eed3e092ca01993ec"
+    }
+  },
+  "updated_at": "2026-10-12T12:57:31Z"
 }
