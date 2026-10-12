@@ -1,0 +1,819 @@
+# arch2.py:392
+def etap6(k):
+    zagolovok('6. ЧТО ПОЛУЧИЛОСЬ У НОВЫХ КАРТОЧЕК')
+    vse_ok = True
+    for kod in NOVYE:
+        html = chitat(SB_VIDEO + '/' + kod + '.html')
+        hd = chitat(SB_VIDEO + '/' + kod + '-diag.html')
+        s = k.svodka(html)
+        d = k.materialy_diagnostiki(kod)
+        diag_video_v_karte = [x for x in s['video'] if 'diag/' in x]
+        diag_v_diag = len(re.findall('<video', hd))
+        p('')
+        p('%s' % kod)
+        p('   фото на карточке        : %d' % len(s['foto']))
+        p('   основных видео          : %d %s' % (len(s['video']), s['video']))
+        p('   обложки видео           : %s' % s['poster'])
+        p('   ссылок на диагностику   : %d' % s['diag_links'])
+        p('   золотых CTA             : %d' % s['gold'])
+        p('   тёмных CTA              : %d' % s['dark'])
+        p('   диагностическое видео на диске: %d' % len(d['video']))
+        p('   видео на странице диагностики : %d' % diag_v_diag)
+        p('   диагностическое видео в галерее: %d (должно быть 0)' % len(diag_video_v_karte))
+        p('   OBD в CRM               : %s' % ('есть' if d['obd'] else 'нет'))
+        p('   OBD на странице диагностики: %s' % ('есть' if d['obd'] and d['obd'] in hd else 'НЕТ'))
+        bedy = k.validate_card(kod, html)
+        p('   валидатор               : %s' % ('PASS' if not bedy else '; '.join(bedy)))
+        horosho = not bedy and s['dark'] == 0 and (s['gold'] == 1) and (s['diag_links'] == 1) and (not diag_video_v_karte) and (diag_v_diag >= 1)
+        if not horosho:
+            vse_ok = False
+        p('   ВЕРДИКТ                 : %s' % ('PASS' if horosho else 'FAIL'))
+    itog('UA-0009 SANDBOX', vse_ok, 'фото + 2 видео + диагностика + OBD')
+    itog('UA-0010 SANDBOX', vse_ok, 'только фото + диагностика + OBD')
+    return vse_ok
+
+# arch2b.py:534
+def etap6(k):
+    zagolovok('6. ЧТО ПОЛУЧИЛОСЬ У НОВЫХ КАРТОЧЕК')
+    vse_ok = True
+    for kod in NOVYE:
+        html = chitat(SB_VIDEO + '/' + kod + '.html')
+        hd = chitat(SB_VIDEO + '/' + kod + '-diag.html')
+        s = k.svodka(html)
+        d = k.materialy_diagnostiki(kod)
+        diag_video_v_karte = [x for x in s['video'] if 'diag/' in x]
+        diag_v_diag = len(re.findall('<video', hd))
+        p('')
+        p('%s' % kod)
+        p('   фото на карточке        : %d' % len(s['foto']))
+        p('   основных видео          : %d %s' % (len(s['video']), s['video']))
+        p('   обложки видео           : %s' % s['poster'])
+        p('   ссылок на диагностику   : %d' % s['diag_links'])
+        p('   золотых CTA             : %d' % s['gold'])
+        p('   тёмных CTA              : %d' % s['dark'])
+        p('   диагностическое видео на диске: %d' % len(d['video']))
+        p('   видео на странице диагностики : %d' % diag_v_diag)
+        p('   диагностическое видео в галерее: %d (должно быть 0)' % len(diag_video_v_karte))
+        p('   OBD в CRM               : %s' % ('есть' if d['obd'] else 'нет'))
+        p('   OBD на странице диагностики: %s' % ('есть' if d['obd'] and d['obd'] in hd else 'НЕТ'))
+        bedy = k.validate_card(kod, html)
+        p('   валидатор               : %s' % ('PASS' if not bedy else '; '.join(bedy)))
+        horosho = not bedy and s['dark'] == 0 and (s['gold'] == 1) and (s['diag_links'] == 1) and (not diag_video_v_karte) and (diag_v_diag >= 1)
+        if not horosho:
+            vse_ok = False
+        p('   ВЕРДИКТ                 : %s' % ('PASS' if horosho else 'FAIL'))
+    itog('UA-0009 SANDBOX', vse_ok, 'фото + 2 видео + диагностика + OBD')
+    itog('UA-0010 SANDBOX', vse_ok, 'только фото + диагностика + OBD')
+    return vse_ok
+
+# arch2c.py:599
+def etap6(k):
+    zagolovok('6. ЧТО ПОЛУЧИЛОСЬ У НОВЫХ КАРТОЧЕК')
+    vse_ok = True
+    for kod in NOVYE:
+        html = chitat(SB_VIDEO + '/' + kod + '.html')
+        hd = chitat(SB_VIDEO + '/' + kod + '-diag.html')
+        s = k.svodka(html)
+        d = k.materialy_diagnostiki(kod)
+        diag_video_v_karte = [x for x in s['video'] if 'diag/' in x]
+        diag_v_diag = len(re.findall('<video', hd))
+        p('')
+        p('%s' % kod)
+        p('   фото на карточке        : %d' % len(s['foto']))
+        p('   основных видео          : %d %s' % (len(s['video']), s['video']))
+        p('   обложки видео           : %s' % s['poster'])
+        p('   ссылок на диагностику   : %d' % s['diag_links'])
+        p('   золотых CTA             : %d' % s['gold'])
+        p('   тёмных CTA              : %d' % s['dark'])
+        p('   диагностическое видео на диске: %d' % len(d['video']))
+        p('   видео на странице диагностики : %d' % diag_v_diag)
+        p('   диагностическое видео в галерее: %d (должно быть 0)' % len(diag_video_v_karte))
+        p('   OBD в CRM               : %s' % ('есть' if d['obd'] else 'нет'))
+        p('   OBD на странице диагностики: %s' % ('есть' if d['obd'] and d['obd'] in hd else 'НЕТ'))
+        bedy = k.validate_card(kod, html)
+        p('   валидатор               : %s' % ('PASS' if not bedy else '; '.join(bedy)))
+        horosho = not bedy and s['dark'] == 0 and (s['gold'] == 1) and (s['diag_links'] == 1) and (not diag_video_v_karte) and (diag_v_diag >= 1)
+        if not horosho:
+            vse_ok = False
+        p('   ВЕРДИКТ                 : %s' % ('PASS' if horosho else 'FAIL'))
+    itog('UA-0009 SANDBOX', vse_ok, 'фото + 2 видео + диагностика + OBD')
+    itog('UA-0010 SANDBOX', vse_ok, 'только фото + диагностика + OBD')
+    return vse_ok
+
+# arch2d.py:1220
+def etap6(k):
+    zagolovok('6. ЧТО ПОЛУЧИЛОСЬ У НОВЫХ КАРТОЧЕК')
+    vse_ok = True
+    for kod in NOVYE:
+        html = chitat(SB_VIDEO + '/' + kod + '.html')
+        hd = chitat(SB_VIDEO + '/' + kod + '-diag.html')
+        s = k.svodka(html)
+        d = k.materialy_diagnostiki(kod)
+        diag_video_v_karte = [x for x in s['video'] if 'diag/' in x]
+        diag_v_diag = len(re.findall('<video', hd))
+        p('')
+        p('%s' % kod)
+        p('   фото на карточке        : %d' % len(s['foto']))
+        p('   основных видео          : %d %s' % (len(s['video']), s['video']))
+        p('   обложки видео           : %s' % s['poster'])
+        p('   ссылок на диагностику   : %d' % s['diag_links'])
+        p('   золотых CTA             : %d' % s['gold'])
+        p('   тёмных CTA              : %d' % s['dark'])
+        p('   диагностическое видео на диске: %d' % len(d['video']))
+        p('   видео на странице диагностики : %d' % diag_v_diag)
+        p('   диагностическое видео в галерее: %d (должно быть 0)' % len(diag_video_v_karte))
+        p('   OBD в CRM               : %s' % ('есть' if d['obd'] else 'нет'))
+        p('   OBD на странице диагностики: %s' % ('есть' if d['obd'] and d['obd'] in hd else 'НЕТ'))
+        bedy = k.validate_card(kod, html)
+        p('   валидатор               : %s' % ('PASS' if not bedy else '; '.join(bedy)))
+        horosho = not bedy and s['dark'] == 0 and (s['gold'] == 1) and (s['diag_links'] == 1) and (not diag_video_v_karte) and (diag_v_diag >= 1)
+        if not horosho:
+            vse_ok = False
+        p('   ВЕРДИКТ                 : %s' % ('PASS' if horosho else 'FAIL'))
+    itog('UA-0009 SANDBOX', vse_ok, 'фото + 2 видео + диагностика + OBD')
+    itog('UA-0010 SANDBOX', vse_ok, 'только фото + диагностика + OBD')
+    return vse_ok
+
+# arch2e.py:1387
+def etap6(k):
+    zagolovok('6. ЧТО ПОЛУЧИЛОСЬ У НОВЫХ КАРТОЧЕК')
+    vse_ok = True
+    for kod in NOVYE:
+        html = chitat(SB_VIDEO + '/' + kod + '.html')
+        hd = chitat(SB_VIDEO + '/' + kod + '-diag.html')
+        s = k.svodka(html)
+        d = k.materialy_diagnostiki(kod)
+        diag_video_v_karte = [x for x in s['video'] if 'diag/' in x]
+        diag_v_diag = len(re.findall('<video', hd))
+        p('')
+        p('%s' % kod)
+        p('   фото на карточке        : %d' % len(s['foto']))
+        p('   основных видео          : %d %s' % (len(s['video']), s['video']))
+        p('   обложки видео           : %s' % s['poster'])
+        p('   ссылок на диагностику   : %d' % s['diag_links'])
+        p('   золотых CTA             : %d' % s['gold'])
+        p('   тёмных CTA              : %d' % s['dark'])
+        p('   диагностическое видео на диске: %d' % len(d['video']))
+        p('   видео на странице диагностики : %d' % diag_v_diag)
+        p('   диагностическое видео в галерее: %d (должно быть 0)' % len(diag_video_v_karte))
+        p('   OBD в CRM               : %s' % ('есть' if d['obd'] else 'нет'))
+        _obd_est = k.obd_na_stranice(kod, hd) if hasattr(k, 'obd_na_stranice') else d['obd'] in hd
+        p('   OBD на странице диагностики: %s' % ('есть' if _obd_est else 'НЕТ'))
+        bedy = k.validate_card(kod, html)
+        p('   валидатор               : %s' % ('PASS' if not bedy else '; '.join(bedy)))
+        horosho = not bedy and s['dark'] == 0 and (s['gold'] == 1) and (s['diag_links'] == 1) and (not diag_video_v_karte) and (diag_v_diag >= 1)
+        if not horosho:
+            vse_ok = False
+        p('   ВЕРДИКТ                 : %s' % ('PASS' if horosho else 'FAIL'))
+    itog('UA-0009 SANDBOX', vse_ok, 'фото + 2 видео + диагностика + OBD')
+    itog('UA-0010 SANDBOX', vse_ok, 'только фото + диагностика + OBD')
+    return vse_ok
+
+# arch2f.py:1391
+def etap6(k):
+    zagolovok('6. ЧТО ПОЛУЧИЛОСЬ У НОВЫХ КАРТОЧЕК')
+    vse_ok = True
+    for kod in NOVYE:
+        html = chitat(SB_VIDEO + '/' + kod + '.html')
+        hd = chitat(SB_VIDEO + '/' + kod + '-diag.html')
+        s = k.svodka(html)
+        d = k.materialy_diagnostiki(kod)
+        diag_video_v_karte = [x for x in s['video'] if 'diag/' in x]
+        diag_v_diag = len(re.findall('<video', hd))
+        p('')
+        p('%s' % kod)
+        p('   фото на карточке        : %d' % len(s['foto']))
+        p('   основных видео          : %d %s' % (len(s['video']), s['video']))
+        p('   обложки видео           : %s' % s['poster'])
+        p('   ссылок на диагностику   : %d' % s['diag_links'])
+        p('   золотых CTA             : %d' % s['gold'])
+        p('   тёмных CTA              : %d' % s['dark'])
+        p('   диагностическое видео на диске: %d' % len(d['video']))
+        p('   видео на странице диагностики : %d' % diag_v_diag)
+        p('   диагностическое видео в галерее: %d (должно быть 0)' % len(diag_video_v_karte))
+        p('   OBD в CRM               : %s' % ('есть' if d['obd'] else 'нет'))
+        _obd_est = k.obd_na_stranice(kod, hd) if hasattr(k, 'obd_na_stranice') else d['obd'] in hd
+        p('   OBD на странице диагностики: %s' % ('есть' if _obd_est else 'НЕТ'))
+        bedy = k.validate_card(kod, html)
+        p('   валидатор               : %s' % ('PASS' if not bedy else '; '.join(bedy)))
+        horosho = not bedy and s['dark'] == 0 and (s['gold'] == 1) and (s['diag_links'] == 1) and (not diag_video_v_karte) and (diag_v_diag >= 1)
+        if not horosho:
+            vse_ok = False
+        p('   ВЕРДИКТ                 : %s' % ('PASS' if horosho else 'FAIL'))
+    itog('UA-0009 SANDBOX', vse_ok, 'фото + 2 видео + диагностика + OBD')
+    itog('UA-0010 SANDBOX', vse_ok, 'только фото + диагностика + OBD')
+    return vse_ok
+
+# arch2g.py:1437
+def etap6(k):
+    zagolovok('6. ЧТО ПОЛУЧИЛОСЬ У НОВЫХ КАРТОЧЕК')
+    vse_ok = True
+    for kod in NOVYE:
+        html = chitat(SB_VIDEO + '/' + kod + '.html')
+        hd = chitat(SB_VIDEO + '/' + kod + '-diag.html')
+        s = k.svodka(html)
+        d = k.materialy_diagnostiki(kod)
+        diag_video_v_karte = [x for x in s['video'] if 'diag/' in x]
+        diag_v_diag = len(re.findall('<video', hd))
+        p('')
+        p('%s' % kod)
+        p('   фото на карточке        : %d' % len(s['foto']))
+        p('   основных видео          : %d %s' % (len(s['video']), s['video']))
+        p('   обложки видео           : %s' % s['poster'])
+        p('   ссылок на диагностику   : %d' % s['diag_links'])
+        p('   золотых CTA             : %d' % s['gold'])
+        p('   тёмных CTA              : %d' % s['dark'])
+        p('   диагностическое видео на диске: %d' % len(d['video']))
+        p('   видео на странице диагностики : %d' % diag_v_diag)
+        p('   диагностическое видео в галерее: %d (должно быть 0)' % len(diag_video_v_karte))
+        p('   OBD в CRM               : %s' % ('есть' if d['obd'] else 'нет'))
+        _obd_est = k.obd_na_stranice(kod, hd) if hasattr(k, 'obd_na_stranice') else d['obd'] in hd
+        p('   OBD на странице диагностики: %s' % ('есть' if _obd_est else 'НЕТ'))
+        bedy = k.validate_card(kod, html)
+        p('   валидатор               : %s' % ('PASS' if not bedy else '; '.join(bedy)))
+        horosho = not bedy and s['dark'] == 0 and (s['gold'] == 1) and (s['diag_links'] == 1) and (not diag_video_v_karte) and (diag_v_diag >= 1)
+        if not horosho:
+            vse_ok = False
+        p('   ВЕРДИКТ                 : %s' % ('PASS' if horosho else 'FAIL'))
+    itog('UA-0009 SANDBOX', vse_ok, 'фото + 2 видео + диагностика + OBD')
+    itog('UA-0010 SANDBOX', vse_ok, 'только фото + диагностика + OBD')
+    return vse_ok
+
+# arch3.py:285
+def etap4(k):
+    zagolovok('4. СОСТОЯНИЕ КАЖДОЙ БОЕВОЙ КАРТОЧКИ ПОСЛЕ ПРИМЕНЕНИЯ')
+    p('%-9s %-5s %-5s %-5s %-6s %-6s %-6s %-9s %-9s %s' % ('код', 'diag', 'gold', 'dark', 'фото', 'видео', 'диаг', 'цена', 'пробег', 'вердикт'))
+    vse_ok = True
+    for kod in VSE:
+        html = chitat(VIDEO + '/' + kod + '.html')
+        hd = chitat(VIDEO + '/' + kod + '-diag.html')
+        s = k.svodka(html)
+        ist = k.istochnik(kod)
+        bedy = k.validate_card_strogo(kod, html)
+        diag_video = len(re.findall('<video', hd))
+        p('%-9s %-5d %-5d %-5d %-6d %-6d %-6d %-9s %-9s %s' % (kod, s['diag_links'], s['gold'], s['dark'], len(s['foto']), len(s['video']), diag_video, ','.join(s['cena'])[:9] or '—', ','.join(s['probeg'])[:9] or '—', 'PASS' if not bedy else 'FAIL: ' + '; '.join(bedy)[:50]))
+        if bedy:
+            vse_ok = False
+    p('')
+    dark = sum((k.svodka(chitat(VIDEO + '/' + x + '.html'))['dark'] for x in VSE))
+    zoloto = sum((1 for x in VSE if k.svodka(chitat(VIDEO + '/' + x + '.html'))['gold'] == (1 if k.est_diagnostika(x) else 0)))
+    p('тёмных CTA на восьми карточках: %d' % dark)
+    p('карточек с верным числом золотых CTA: %d из 8' % zoloto)
+    itog('DARK DIAG CTA', dark == 0, 'всего %d' % dark)
+    itog('GOLD DIAG CTA', zoloto == len(VSE), '%d/8' % zoloto)
+    itog('8/8 PASS', vse_ok, 'валидатор по каждой карточке')
+    return vse_ok
+
+# card_html.py:70
+async def _one_photo(bot, item, index, sem):
+    """Скачивает и сжимает один кадр."""
+    fid = item.get('file_id') if isinstance(item, dict) else item
+    tag = (item.get('tag') if isinstance(item, dict) else '') or 'Фото %d' % (index + 1)
+    async with sem:
+        try:
+            f = await bot.get_file(fid)
+            raw = bytes(await f.download_as_bytearray())
+        except Exception:
+            return None
+    return (tag, _szhat(raw))
+
+# card_html.py:310
+async def _videos(bot, card):
+    """Видео под фотографиями. Тяжёлые ролики пропускаем — они идут в чат."""
+    out = []
+    ves = 0
+    try:
+        nomer = _cr()._get(card, 'auto_number')
+    except Exception:
+        nomer = None
+    svoy = _video_s_diska(nomer)
+    if svoy:
+        ves += len(svoy)
+        out.append(('Видео', base64.b64encode(svoy).decode()))
+        return out
+    try:
+        items = _u().videos_of(card) or []
+    except Exception:
+        items = []
+    for i, v in enumerate(items):
+        fid = v.get('file_id') if isinstance(v, dict) else v
+        tag = (v.get('tag') if isinstance(v, dict) else '') or 'Видео %d' % (i + 1)
+        try:
+            f = await bot.get_file(fid)
+        except Exception:
+            continue
+        try:
+            razmer = int(getattr(f, 'file_size', 0) or 0)
+            if razmer and razmer > ONE_VIDEO_MAX:
+                continue
+            raw = bytes(await f.download_as_bytearray())
+            raw = _szhat_video(raw)
+        except Exception:
+            continue
+        if len(raw) > ONE_VIDEO_MAX or ves + len(raw) > VIDEO_BUDGET:
+            continue
+        ves += len(raw)
+        out.append((tag, base64.b64encode(raw).decode()))
+    return out
+
+# cars_ui.py:3200
+async def diag_video_show(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Показать видео проверки — только их."""
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    items = jload(card.get('condition_videos'))
+    if not items:
+        await q.message.reply_text('Видео проверки пока нет.', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← К диагностике', callback_data='car_cond:%d' % cid)]]))
+        raise ApplicationHandlerStop
+    for v in items[:10]:
+        fid = v.get('file_id') if isinstance(v, dict) else v
+        try:
+            await q.message.reply_video(fid)
+        except Exception as e:
+            log.warning('Видео проверки: %s', e)
+    await q.message.reply_text('Видео проверки: %d.' % len(items), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← К диагностике', callback_data='car_cond:%d' % cid)]]))
+    raise ApplicationHandlerStop
+
+# cars_ui.py:3325
+def register(app):
+    ensure_columns()
+    _v168_start_guard(app, 'crm_bot')
+    try:
+        import ai_filter
+        ai_filter.register(app)
+    except Exception as e:
+        log.warning('ai_filter не подключён: %s', e)
+    try:
+        import photo_hide
+        photo_hide.register(app)
+    except Exception as e:
+        log.warning('photo_hide не подключён: %s', e)
+    g = -1
+    app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, catch_message), group=g)
+    app.add_handler(CallbackQueryHandler(voice_undo, pattern='^car_vundo:'), group=g)
+    app.add_handler(CallbackQueryHandler(open_card, pattern='^card_open:cars:'), group=g)
+    app.add_handler(CallbackQueryHandler(open_card, pattern='^car_open:'), group=g)
+    app.add_handler(CallbackQueryHandler(clear_field, pattern='^car_clr:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_clear, pattern='^diag_clr:'), group=g)
+    app.add_handler(CallbackQueryHandler(cars_list, pattern='^cards_cars$'), group=g)
+    app.add_handler(CallbackQueryHandler(cars_list, pattern='^cars_cards$'), group=g)
+    app.add_handler(CallbackQueryHandler(edit_menu, pattern='^car_edit:'), group=g)
+    app.add_handler(CallbackQueryHandler(edit_ask, pattern='^car_setf:'), group=g)
+    app.add_handler(CallbackQueryHandler(media_screen, pattern='^car_media:'), group=g)
+    app.add_handler(CallbackQueryHandler(video_remove_all, pattern='^car_vidvseok:'), group=g)
+    app.add_handler(CallbackQueryHandler(video_remove_all_ask, pattern='^car_vidvse:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_photo_show, pattern='^car_dgal:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_video_show, pattern='^car_dvid:'), group=g)
+    app.add_handler(CallbackQueryHandler(gallery, pattern='^car_gal:'), group=g)
+    app.add_handler(CallbackQueryHandler(video_gallery, pattern='^car_vid:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove_menu, pattern='^car_rmphoto:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove, pattern='^car_rmpok:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove_all_ask, pattern='^car_rmvse:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove_all, pattern='^car_rmvse2:'), group=g)
+    app.add_handler(CallbackQueryHandler(add_media_start, pattern='^car_add:'), group=g)
+    app.add_handler(CallbackQueryHandler(condition_screen, pattern='^car_cond:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_clear_ask, pattern='^diag_ask:'), group=g)
+    app.add_handler(CallbackQueryHandler(stage_menu, pattern='^car_stage:'), group=g)
+    app.add_handler(CallbackQueryHandler(stage_set, pattern='^car_setstage:'), group=g)
+    app.add_handler(CallbackQueryHandler(price_screen, pattern='^car_price:'), group=g)
+    app.add_handler(CallbackQueryHandler(keep_price, pattern='^car_keepprice:'), group=g)
+    app.add_handler(CallbackQueryHandler(save_ai_text, pattern='^car_saveai:'), group=g)
+    app.add_handler(CallbackQueryHandler(preview, pattern='^car_preview:'), group=g)
+    app.add_handler(CallbackQueryHandler(preview_demo, pattern='^car_demo:'), group=g)
+    app.add_handler(CallbackQueryHandler(ad_screen, pattern='^car_ad:'), group=g)
+    app.add_handler(CallbackQueryHandler(client_screen, pattern='^car_client:'), group=g)
+    app.add_handler(CallbackQueryHandler(client_ask, pattern='^car_setc:'), group=g)
+    app.add_handler(CallbackQueryHandler(client_unlink, pattern='^car_unclient:'), group=g)
+    app.add_handler(CallbackQueryHandler(_ua_oneclick_legacy_publish, pattern='^car_pub:'), group=g)
+    app.add_handler(CallbackQueryHandler(toggle_publish, pattern='^car_hide:'), group=g)
+    app.add_handler(CallbackQueryHandler(mark_sold, pattern='^car_sold:'), group=g)
+    app.add_handler(CallbackQueryHandler(mark_sold_ok, pattern='^car_soldok:'), group=g)
+    app.add_handler(CallbackQueryHandler(delete_ask, pattern='^car_del:'), group=g)
+    app.add_handler(CallbackQueryHandler(delete_ok, pattern='^car_delok:'), group=g)
+    app.add_handler(CallbackQueryHandler(crm_stats, pattern='^crm_stats$'), group=g)
+    app.add_handler(CallbackQueryHandler(clients_screen, pattern='^cards_clients$'), group=g)
+    app.add_handler(CallbackQueryHandler(crm_leads, pattern='^crm_leads$'), group=g)
+    app.add_handler(CallbackQueryHandler(more_screen, pattern='^crm_more$'), group=g)
+    app.add_handler(CallbackQueryHandler(optimize_screen, pattern='^crm_optimize$'), group=g)
+    app.add_handler(CallbackQueryHandler(svodka_screen, pattern='^crm_svodka$'), group=g)
+    app.add_handler(CallbackQueryHandler(crm_stats_week, pattern='^crm_stats_week$'), group=g)
+    try:
+        import konteyner
+        konteyner.register(app, -2)
+    except Exception as e:
+        log.warning('konteyner не подключён: %s', e)
+    log.info('cars_ui подключён')
+
+# karta.py:173
+def karta_mashiny(kod):
+    p('')
+    p('=' * 58)
+    p('=== %s ===' % kod)
+    p('=' * 58)
+    d = crm(kod)
+    videos = spisok(d.get('videos'))
+    cond_v = spisok(d.get('condition_videos'))
+    cond_f = spisok(d.get('condition_photos'))
+    obd = (d.get('diag_link') or '').strip()
+    p('CRM: обычных видео %d · condition_videos %d · condition_photos %d · OBD %s' % (len(videos), len(cond_v), len(cond_f), 'есть' if obd else 'нет'))
+    osnovnye = sorted((x for x in glob.glob(VIDEO + '/' + kod + '.mp4') + glob.glob(VIDEO + '/' + kod + '-*.mp4') if x.endswith('.mp4') and razmer(x) > 1000))
+    p('')
+    p('ОСНОВНЫЕ РОЛИКИ НА ДИСКЕ: %d' % len(osnovnye))
+    sha_osnovnyh = {}
+    for x in osnovnye:
+        h = sha(x)
+        sha_osnovnyh[h] = os.path.basename(x)
+        p('   %-24s %9d байт · %-8s · sha %s' % (os.path.basename(x), razmer(x), dlitelnost(x), h[:16]))
+    diagnostich = sorted((x for x in glob.glob(DIAG + '/' + kod + '/*') if os.path.isfile(x) and x.lower().endswith(('.mp4', '.mov', '.m4v')) and (razmer(x) > 1000)))
+    p('')
+    p('ДИАГНОСТИЧЕСКИЕ РОЛИКИ В /video/diag/%s/: %d' % (kod, len(diagnostich)))
+    podmena = []
+    for x in diagnostich:
+        h = sha(x)
+        sovpal = sha_osnovnyh.get(h)
+        p('   %-24s %9d байт · %-8s · sha %s%s' % (os.path.basename(x), razmer(x), dlitelnost(x), h[:16], '  ← ЭТО КОПИЯ ОСНОВНОГО РОЛИКА %s' % sovpal if sovpal else ''))
+        if sovpal:
+            podmena.append((os.path.basename(x), sovpal))
+    v_rezervah = diag_v_rezervah(kod)
+    p('')
+    p('ДИАГНОСТИЧЕСКИЕ РОЛИКИ В РЕЗЕРВАХ: %d' % len(v_rezervah))
+    inye = []
+    tekushchie_sha = set((sha(x) for x in diagnostich))
+    for x in v_rezervah[:12]:
+        h = sha(x)
+        pometka = ''
+        if h in tekushchie_sha:
+            pometka = '  (тот же файл, что сейчас)'
+        elif h in sha_osnovnyh:
+            pometka = '  ← это основной ролик %s' % sha_osnovnyh[h]
+        else:
+            pometka = '  ← ОТЛИЧАЕТСЯ от текущего: возможный исходный диагностический'
+            inye.append(x)
+        p('   %-46s %9d байт · sha %s%s' % (x.replace(DOM + '/', '')[:46], razmer(x), h[:12], pometka))
+    if len(v_rezervah) > 12:
+        p('   … и ещё %d' % (len(v_rezervah) - 12))
+    html = chitat(VIDEO + '/' + kod + '.html')
+    glav = istochniki_video(html)
+    p('')
+    p('ГЛАВНАЯ СТРАНИЦА: видеоблоков %d' % len(glav))
+    for i, b in enumerate(glav, 1):
+        p('   VIDEO %d src=%s poster=%s' % (i, b['src'] or 'НЕТ', b['poster'] or 'нет'))
+    p('   переходов в диагностику: %d · тёмная кнопка: %s · золотая: %s' % (len(re.findall('href\\s*=\\s*["\\\'][^"\\\']*-diag\\.html', html)), 'есть' if 'Комплексная диагностика авто' in html else 'нет', 'есть' if 'Открыть комплексную диагностику' in html else 'нет'))
+    put_d = VIDEO + '/' + kod + '-diag.html'
+    hd = chitat(put_d)
+    dg = istochniki_video(hd)
+    p('')
+    p('СТРАНИЦА ДИАГНОСТИКИ: %s' % ('есть, %d байт, изменена %s' % (razmer(put_d), time.strftime('%d.%m %H:%M', time.localtime(os.path.getmtime(put_d)))) if os.path.isfile(put_d) else 'НЕТ ФАЙЛА'))
+    chuzhie_v_diag = []
+    for i, b in enumerate(dg, 1):
+        src = b['src']
+        kuda = 'папка диагностики' if 'diag/' in src else 'КОРЕНЬ /video — ЭТО ОБЫЧНЫЙ РОЛИК КАРТОЧКИ'
+        p('   VIDEO %d src=%s' % (i, src or 'НЕТ'))
+        p('        ведёт в: %s' % kuda)
+        p('        poster : %s' % (b['poster'] or 'нет'))
+        if src and 'diag/' not in src:
+            chuzhie_v_diag.append(src)
+    p('   заглушка «материалы не добавлены»: %s' % ('ЕСТЬ' if 'не добавлен' in hd else 'нет'))
+    p('   OBD на странице: %s' % ('есть' if obd and obd.split('?')[0] in hd else 'нет'))
+    p('')
+    if chuzhie_v_diag:
+        verdikt = 'ПЕРЕПУТАНО: в диагностику подставлены обычные ролики карточки (%s)' % ', '.join(chuzhie_v_diag)
+    elif podmena:
+        verdikt = 'ПОДМЕНА ФАЙЛА: в папке диагностики лежит копия основного ролика (%s)' % ', '.join(('%s = %s' % (a, b) for a, b in podmena))
+    elif diagnostich and (not dg):
+        verdikt = 'МАТЕРИАЛЫ ЕСТЬ, СТРАНИЦА ПУСТА'
+    elif diagnostich and dg:
+        verdikt = 'ДИАГНОСТИКА ВЕРНА'
+    elif not diagnostich and (cond_v or cond_f):
+        verdikt = 'В CRM материалы есть, на диске файлов нет'
+    elif not diagnostich and (not obd):
+        verdikt = 'МАТЕРИАЛОВ ДИАГНОСТИКИ НЕТ — переход не нужен'
+    else:
+        verdikt = 'только OBD, роликов нет'
+    p('ВЕРДИКТ: ' + verdikt)
+    return {'kod': kod, 'osnovnye': [os.path.basename(x) for x in osnovnye], 'diag': [os.path.basename(x) for x in diagnostich], 'v_html_diag': [b['src'] for b in dg], 'chuzhie': chuzhie_v_diag, 'podmena': podmena, 'rezerv_inye': [x.replace(DOM + '/', '') for x in inye], 'obd': bool(obd), 'verdikt': verdikt, 'perehodov': len(re.findall('href\\s*=\\s*["\\\'][^"\\\']*-diag\\.html', html))}
+
+# kartochka.py:453
+def istochnik(kod):
+    return {'foto': sorted((os.path.basename(x) for x in glob.glob(VIDEO + '/foto/' + kod + '/*.jpg') if razmer(x) > 1000)), 'video': sorted((os.path.basename(x) for x in glob.glob(VIDEO + '/' + kod + '.mp4') + glob.glob(VIDEO + '/' + kod + '-*.mp4') if x.endswith('.mp4') and godnoe_video(x))), 'diag_video': sorted((os.path.basename(x) for x in glob.glob(DIAG + '/' + kod + '/*.mp4') if godnoe_video(x))), 'diag_foto': sorted((os.path.basename(x) for x in glob.glob(DIAG + '/' + kod + '/*.jpg') if razmer(x) > 1000 and '.poster.' not in x)), 'obd': materialy_diagnostiki(kod)['obd']}
+
+# kartochka.py:482
+def validate_card_strogo(kod, html, bylo=None):
+    bedy = validate_card(kod, html, bylo)
+    ist = istochnik(kod)
+    for imya in ist['video']:
+        if imya not in html:
+            bedy.append('video %s est na diske, no net na stranice' % imya)
+    poteryano_foto = [x for x in ist['foto'] if x not in html]
+    if poteryano_foto:
+        bedy.append('foto na diske %d, net na stranice %d' % (len(ist['foto']), len(poteryano_foto)))
+    for imya in ist['diag_video']:
+        if imya in html:
+            bedy.append('diagnosticheskoe video %s popalo v galereyu' % imya)
+    bitye = bitye_ssylki(html)
+    if bitye:
+        bedy.append('bitye ssylki: %s' % ', '.join(bitye[:3]))
+    return bedy
+
+# kartochka.py:501
+def validate_diag_strogo(kod, html):
+    bedy = []
+    ist = istochnik(kod)
+    if not html or len(html) < 500:
+        return ['stranica diagnostiki pustaya'] if ist['diag_video'] or ist['obd'] else []
+    for imya in ist['diag_video']:
+        if imya not in html:
+            bedy.append('diagnosticheskoe video %s ne podklyucheno' % imya)
+    if ist['obd'] and htmlmod.unescape(ist['obd']) not in htmlmod.unescape(html):
+        bedy.append('OBD est v CRM, no net na stranice diagnostiki')
+    if ist['diag_foto'] and (not re.search('<img', html)):
+        bedy.append('foto diagnostiki est na diske, net na stranice')
+    for teg in TEG_VIDEO.findall(html):
+        if 'poster=' not in teg:
+            bedy.append('u diagnosticheskogo video net poster')
+        if 'controls' not in teg:
+            bedy.append('u diagnosticheskogo video net controls')
+    bitye = bitye_ssylki(html)
+    if bitye:
+        bedy.append('bitye ssylki: %s' % ', '.join(bitye[:3]))
+    return bedy
+
+# stranica.py:703
+def kadry_diagnostiki(m):
+    """Фото и видео проверки из /home/Carix/video/diag/UA-XXXX/."""
+    nom = nomer(m)
+    papka = os.path.join(PAPKA_VID, 'diag', nom)
+    if not os.path.isdir(papka):
+        return ([], [])
+    foto = []
+    for obraz in ('*.jpg', '*.jpeg', '*.JPG', '*.png'):
+        foto += glob.glob(os.path.join(papka, obraz))
+    foto = sorted(set(foto))
+    foto = [p for p in foto if os.path.getsize(p) > 1000][:50]
+    video = sorted(glob.glob(os.path.join(papka, '*.mp4')))[:10]
+    otn_foto = ['diag/%s/%s' % (nom, os.path.basename(x)) for x in foto]
+    otn_video = ['diag/%s/%s' % (nom, os.path.basename(x)) for x in video]
+    return (otn_foto, otn_video)
+
+# team_bot.py:319
+async def run_ai_draft(update, context, inbox_id, kind, text, file_id):
+    """Open a schema-closed CRM draft from photo, text, or voice."""
+    import asyncio
+    import time
+    import ai_fast_schema as fast
+    import local_ocr
+    msg = update.message
+    if ai.is_stopped():
+        await msg.reply_text('🛑 ИИ остановлен. Включите ИИ в главном меню.')
+        return
+    started = time.monotonic()
+    hard_deadline = started + 15.0
+    data = {}
+    thinking = None
+    allowed = fast.car_fields(ai_filter)
+
+    async def download_bytes(fid):
+        tg_file = await context.bot.get_file(fid)
+        return bytes(await tg_file.download_as_bytearray())
+    if kind in ('voice', 'audio', 'video_note') and file_id:
+        thinking = await msg.reply_text('🎤 ИИ распознаёт голосовое...')
+        if not ai.voice_enabled():
+            await thinking.edit_text('🎤 Расшифровка голоса не настроена.')
+            return
+        try:
+            remaining = max(0.1, hard_deadline - time.monotonic())
+            audio = await asyncio.wait_for(download_bytes(file_id), timeout=min(3.0, remaining))
+            import crm_voice_watchdog as _v178_voice
+            _v184_voice = msg.voice or msg.audio or msg.video_note
+            _v184_filename = 'voice.ogg' if msg.voice else 'audio.mp3' if msg.audio else 'video_note.mp4'
+            _v184_result = await _v178_voice.transcribe_with_restart(audio, _v184_filename, getattr(_v184_voice, 'duration', 0))
+            text = _v184_result.text if _v184_result.ok else ''
+            if not _v184_result.ok:
+                logging.warning('AI voice worker failed inbox=%s attempts=%s restarts=%s error=%s', inbox_id, _v184_result.attempts, _v184_result.restarted_workers, _v184_result.error)
+        except asyncio.TimeoutError:
+            text = ''
+            logging.warning('AI voice hard timeout inbox=%s', inbox_id)
+        except Exception as exc:
+            text = ''
+            logging.error('Voice recognition failed inbox=%s error=%s', inbox_id, exc)
+        if text:
+            data.update(local_ocr.fields_from_text(text, allowed))
+            data.update(fast.fast_text_data(text, ai_filter))
+    elif kind in ('photo', 'document') and file_id:
+        if kind == 'document':
+            mime = msg.document.mime_type or '' if msg.document else ''
+            if not mime.startswith('image/'):
+                await msg.reply_text('📎 Нужен файл-изображение.')
+                return
+        if msg.media_group_id:
+            marker = 'ai_mg_%s' % msg.media_group_id
+            if context.chat_data.get(marker):
+                return
+            context.chat_data[marker] = True
+        thinking = await msg.reply_text('🖼 ИИ распознаёт, до 15 секунд...')
+        try:
+            remaining = max(0.1, hard_deadline - time.monotonic())
+            image = await asyncio.wait_for(download_bytes(file_id), timeout=remaining)
+            remaining = max(0.5, hard_deadline - time.monotonic())
+            image_data = await asyncio.wait_for(asyncio.to_thread(local_ocr.fields_from_image, image, allowed, remaining), timeout=remaining)
+            data.update(image_data)
+            if (text or '').strip():
+                data.update(local_ocr.fields_from_text(text, allowed))
+                data.update(fast.fast_text_data(text, ai_filter))
+        except asyncio.TimeoutError:
+            data = {}
+            logging.warning('Local OCR hard timeout inbox=%s', inbox_id)
+        except Exception as exc:
+            data = {}
+            logging.error('Local OCR failed inbox=%s error=%s', inbox_id, exc)
+    elif (text or '').strip():
+        thinking = await msg.reply_text('🧠 ИИ распознаёт, до 15 секунд...')
+        data.update(local_ocr.fields_from_text(text, allowed))
+        data.update(fast.fast_text_data(text, ai_filter))
+    if data:
+        parsed = fast.parsed_from_data(data)
+        data = fast.clean_car(parsed, ai_filter, '')
+    if data:
+        parsed = fast.parsed_from_data(data)
+        context.user_data['ai_draft'] = {'inbox_id': inbox_id, 'parsed': parsed, 'clean_data': data, 'source_text': '', 'review': None}
+        rows = [[InlineKeyboardButton('✅ Сохранить карточку', callback_data='ai_ok')], [InlineKeyboardButton('✏️ Дополнить', callback_data='ai_edit'), InlineKeyboardButton('❌ Отменить', callback_data='ai_no')]]
+        elapsed = time.monotonic() - started
+        if thinking is None:
+            thinking = await msg.reply_text('🧠 ИИ распознаёт, до 15 секунд...')
+        await thinking.edit_text('✅ Новая карточка открыта\n\n' + ai_filter.render(data) + '\n\n⏱ %.1f с · локально · 0 AI-токенов' % elapsed, parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+        return
+    if thinking is None:
+        thinking = await msg.reply_text('🧠 ИИ распознаёт, до 15 секунд...')
+    await thinking.edit_text('Поля CRM не распознаны. Пришлите более чёткое фото, текст или голос.')
+
+# ua0009.py:518
+def proverit_scenariy(bukva, html, diag):
+    """Возвращает список претензий."""
+    bedy = []
+    est_diag_foto = bukva in ('B', 'D')
+    est_diag_video = bukva in ('C', 'D')
+    est_obd = bukva == 'D'
+    srcs_karta = src_iz(html)
+    srcs_diag = src_iz(diag)
+    for s in srcs_karta:
+        if s.startswith('diag/'):
+            bedy.append('диагностическое видео попало в галерею: %s' % s)
+    chuzhie = [s for s in srcs_diag if not s.startswith('diag/')]
+    if chuzhie:
+        bedy.append('обычные ролики в диагностике: %s' % ', '.join(chuzhie))
+    if est_diag_video and (not srcs_diag):
+        bedy.append('диагностическое видео есть, но в HTML его нет')
+    if not est_diag_video and srcs_diag:
+        bedy.append('диагностического видео нет, но в HTML оно появилось')
+    if est_diag_foto and (not re.search('<img', diag or '')):
+        bedy.append('фото диагностики есть, но в HTML их нет')
+    if est_obd and htmlmod.unescape(OBD_TEST) not in htmlmod.unescape(diag or ''):
+        bedy.append('OBD есть в данных, но нет на странице диагностики')
+    if not est_obd and OBD_TEST in (diag or ''):
+        bedy.append('OBD не задан, но появился на странице')
+    perehody = len(re.findall('href\\s*=\\s*[\'\\"][^\'\\"]*-diag\\.html', html or ''))
+    temnyh = (html or '').count('Комплексная диагностика авто')
+    nuzhen = est_diag_foto or est_diag_video or est_obd
+    if temnyh:
+        bedy.append('тёмная кнопка диагностики: %d' % temnyh)
+    if nuzhen and perehody == 0:
+        bedy.append('материалы есть, а перехода в диагностику нет')
+    if not nuzhen and perehody:
+        bedy.append('материалов нет, а переход в диагностику есть: %d' % perehody)
+    if perehody > 1:
+        bedy.append('дубль перехода в диагностику: %d' % perehody)
+    wa = len(re.findall('wa\\.me|whatsapp', html or '', re.I))
+    if wa == 0:
+        bedy.append('нет кнопки связи')
+    return bedy
+
+# ua0009_v2.py:560
+def proverit_scenariy(bukva, html, diag):
+    """Возвращает список претензий."""
+    bedy = []
+    est_diag_foto = bukva in ('B', 'D')
+    est_diag_video = bukva in ('C', 'D')
+    est_obd = bukva == 'D'
+    srcs_karta = src_iz(html)
+    srcs_diag = src_iz(diag)
+    for s in srcs_karta:
+        if s.startswith('diag/'):
+            bedy.append('диагностическое видео попало в галерею: %s' % s)
+    chuzhie = [s for s in srcs_diag if not s.startswith('diag/')]
+    if chuzhie:
+        bedy.append('обычные ролики в диагностике: %s' % ', '.join(chuzhie))
+    if est_diag_video and (not srcs_diag):
+        bedy.append('диагностическое видео есть, но в HTML его нет')
+    if not est_diag_video and srcs_diag:
+        bedy.append('диагностического видео нет, но в HTML оно появилось')
+    if est_diag_foto and (not re.search('<img', diag or '')):
+        bedy.append('фото диагностики есть, но в HTML их нет')
+    if est_obd and htmlmod.unescape(OBD_TEST) not in htmlmod.unescape(diag or ''):
+        bedy.append('OBD есть в данных, но нет на странице диагностики')
+    if not est_obd and OBD_TEST in (diag or ''):
+        bedy.append('OBD не задан, но появился на странице')
+    perehody = len(re.findall('href\\s*=\\s*[\'\\"][^\'\\"]*-diag\\.html', html or ''))
+    temnyh = (html or '').count('Комплексная диагностика авто')
+    nuzhen = est_diag_foto or est_diag_video or est_obd
+    if temnyh:
+        bedy.append('тёмная кнопка диагностики: %d' % temnyh)
+    if nuzhen and perehody == 0:
+        bedy.append('материалы есть, а перехода в диагностику нет')
+    if not nuzhen and perehody:
+        bedy.append('материалов нет, а переход в диагностику есть: %d' % perehody)
+    if perehody > 1:
+        bedy.append('дубль перехода в диагностику: %d' % perehody)
+    wa = len(re.findall('wa\\.me|whatsapp', html or '', re.I))
+    if wa == 0:
+        bedy.append('нет кнопки связи')
+    return bedy
+
+# ua0009_v3.py:663
+def proverit_scenariy(bukva, html, diag):
+    """Возвращает список претензий."""
+    bedy = []
+    est_diag_foto = bukva in ('B', 'D')
+    est_diag_video = bukva in ('C', 'D')
+    est_obd = bukva == 'D'
+    srcs_karta = src_iz(html)
+    srcs_diag = src_iz(diag)
+    for s in srcs_karta:
+        if s.startswith('diag/'):
+            bedy.append('диагностическое видео попало в галерею: %s' % s)
+    chuzhie = [s for s in srcs_diag if not s.startswith('diag/')]
+    if chuzhie:
+        bedy.append('обычные ролики в диагностике: %s' % ', '.join(chuzhie))
+    if est_diag_video and (not srcs_diag):
+        bedy.append('диагностическое видео есть, но в HTML его нет')
+    if not est_diag_video and srcs_diag:
+        bedy.append('диагностического видео нет, но в HTML оно появилось')
+    if est_diag_foto and (not re.search('<img', diag or '')):
+        bedy.append('фото диагностики есть, но в HTML их нет')
+    if est_obd and htmlmod.unescape(OBD_TEST) not in htmlmod.unescape(diag or ''):
+        bedy.append('OBD есть в данных, но нет на странице диагностики')
+    if not est_obd and OBD_TEST in (diag or ''):
+        bedy.append('OBD не задан, но появился на странице')
+    perehody = len(re.findall('href\\s*=\\s*[\'\\"][^\'\\"]*-diag\\.html', html or ''))
+    temnyh = (html or '').count('Комплексная диагностика авто')
+    zolotyh = (html or '').count('Открыть комплексную диагностику')
+    nuzhen = est_diag_foto or est_diag_video or est_obd
+    if temnyh:
+        bedy.append('тёмная кнопка диагностики: %d' % temnyh)
+    if nuzhen and perehody == 0:
+        bedy.append('материалы есть, а перехода в диагностику нет')
+    if not nuzhen and perehody:
+        bedy.append('материалов нет, а переход в диагностику есть: %d' % perehody)
+    if perehody > 1:
+        bedy.append('дубль перехода в диагностику: %d' % perehody)
+    if nuzhen and perehody != 1:
+        bedy.append('кнопок диагностики %d, должна быть ровно 1' % perehody)
+    wa = len(re.findall('wa\\.me|whatsapp', html or '', re.I))
+    if wa == 0:
+        bedy.append('нет кнопки связи')
+    return bedy
+
+# ua0009_v4.py:804
+def proverit_scenariy(bukva, html, diag):
+    """Возвращает список претензий."""
+    bedy = []
+    est_diag_foto = bukva in ('B', 'D')
+    est_diag_video = bukva in ('C', 'D')
+    est_obd = bukva == 'D'
+    srcs_karta = src_iz(html)
+    srcs_diag = src_iz(diag)
+    for s in srcs_karta:
+        if s.startswith('diag/'):
+            bedy.append('диагностическое видео попало в галерею: %s' % s)
+    chuzhie = [s for s in srcs_diag if not s.startswith('diag/')]
+    if chuzhie:
+        bedy.append('обычные ролики в диагностике: %s' % ', '.join(chuzhie))
+    if est_diag_video and (not srcs_diag):
+        bedy.append('диагностическое видео есть, но в HTML его нет')
+    if not est_diag_video and srcs_diag:
+        bedy.append('диагностического видео нет, но в HTML оно появилось')
+    if est_diag_foto and (not re.search('<img', diag or '')):
+        bedy.append('фото диагностики есть, но в HTML их нет')
+    if est_obd and htmlmod.unescape(OBD_TEST) not in htmlmod.unescape(diag or ''):
+        bedy.append('OBD есть в данных, но нет на странице диагностики')
+    if not est_obd and OBD_TEST in (diag or ''):
+        bedy.append('OBD не задан, но появился на странице')
+    perehody = len(re.findall('href\\s*=\\s*[\'\\"][^\'\\"]*-diag\\.html', html or ''))
+    temnyh = (html or '').count('Комплексная диагностика авто')
+    zolotyh = (html or '').count('Открыть комплексную диагностику')
+    nuzhen = est_diag_foto or est_diag_video or est_obd
+    if temnyh:
+        bedy.append('тёмная кнопка диагностики: %d' % temnyh)
+    if nuzhen and perehody == 0:
+        bedy.append('материалы есть, а перехода в диагностику нет')
+    if not nuzhen and perehody:
+        bedy.append('материалов нет, а переход в диагностику есть: %d' % perehody)
+    if perehody > 1:
+        bedy.append('дубль перехода в диагностику: %d' % perehody)
+    if nuzhen and perehody != 1:
+        bedy.append('кнопок диагностики %d, должна быть ровно 1' % perehody)
+    wa = len(re.findall('wa\\.me|whatsapp', html or '', re.I))
+    if wa == 0:
+        bedy.append('нет кнопки связи')
+    return bedy
