@@ -1,0 +1,910 @@
+# ===== kadry_diagnostiki.py =====
+# -*- coding: utf-8 -*-
+# UA-V73 - кадры диагностики в /video/diag/UA-XXXX/
+
+import json
+import os
+import sqlite3
+import threading
+import time
+import urllib.request
+
+BAZA = "/home/Carix"
+BD = os.path.join(BAZA, "crm.db")
+KUDA = os.path.join(BAZA, "video", "diag")
+LOG = os.path.join(BAZA, "kadry_diagnostiki_log.txt")
+UCHET = os.path.join(BAZA, ".kadry_diagnostiki.json")
+
+PAUZA = 120
+FOTO_PREDEL = 50
+VIDEO_PREDEL = 10
+
+
+def log(stroka):
+    try:
+        with open(LOG, "a", encoding="utf-8") as f:
+            f.write(time.strftime("%Y-%m-%d %H:%M:%S") + "  "
+                    + stroka + "\n")
+    except Exception:
+        pass
+
+
+def kolonki_cars():
+    try:
+        soed = sqlite3.connect(BD, timeout=20)
+        est = [r[1] for r in soed.execute("PRAGMA table_info(cars)")]
+        soed.close()
+        return est
+    except Exception:
+        return []
+
+
+def pole_nomera(est=None):
+    """Как в этой базе называется номер машины."""
+    est = est if est is not None else kolonki_cars()
+    for imya in ("auto_number", "code", "number", "nomer"):
+        if imya in est:
+            return imya
+    return None
+
+
+def nomer_mashiny(ryad, pole):
+    znachenie = ""
+    if pole:
+        try:
+            znachenie = str(ryad[pole] or "").strip()
+        except Exception:
+            znachenie = ""
+    if znachenie:
+        return znachenie
+    try:
+        return "UA-%04d" % int(ryad["id"])
+    except Exception:
+        return ""
+
+
+def tokeny():
+    najdeno = []
+    for imya in ("team_token.txt", "bot_token.txt"):
+        try:
+            with open(os.path.join(BAZA, imya), "r",
+                      encoding="utf-8") as f:
+                znachenie = f.read().strip()
+            if znachenie:
+                najdeno.append(znachenie)
+        except Exception:
+            pass
+    return najdeno
+
+
+def _zapros(adres):
+    with urllib.request.urlopen(adres, timeout=60) as otvet:
+        return otvet.read()
+
+
+def skachat_odin(file_id, kuda_put):
+    for token in tokeny():
+        try:
+            syroe = _zapros("[URL] + token
+                            + "/getFile?file_id=" + file_id)
+            otvet = json.loads(syroe.decode("utf-8"))
+            if not otvet.get("ok"):
+                continue
+            put_na_servere = otvet["result"]["file_path"]
+            dannye = _zapros("[URL]
+                             + token + "/" + put_na_servere)
+            if not dannye or len(dannye) < 500:
+                continue
+            vremenno = kuda_put + ".vremenno"
+            with open(vremenno, "wb") as f:
+                f.write(dannye)
+            os.replace(vremenno, kuda_put)
+            return True
+        except Exception as e:
+            log("не скачать " + file_id[:14] + ": " + repr(e))
+    return False
+
+
+def _spisok(syroe):
+    try:
+        dannye = json.loads(syroe or "[]")
+    except Exception:
+        return []
+    itog = []
+    for element in dannye:
+        if isinstance(element, str):
+            itog.append(element)
+        elif isinstance(element, dict):
+            znachenie = element.get("file_id") or element.get("id")
+            if znachenie:
+                itog.append(znachenie)
+    return itog
+
+
+def uchet_prochest():
+    try:
+        with open(UCHET, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def uchet_zapisat(dannye):
+    try:
+        vremenno = UCHET + ".vremenno"
+        with open(vremenno, "w", encoding="utf-8") as f:
+            json.dump(dannye, f, ensure_ascii=False)
+        os.replace(vremenno, UCHET)
+    except Exception:
+        pass
+
+
+def mashiny():
+    est = kolonki_cars()
+    if not est:
+        return [], None
+    pole = pole_nomera(est)
+    berem = [k for k in (pole, "id", "condition_photos",
+                         "condition_videos") if k and k in est]
+    if not berem:
+        return [], None
+    try:
+        soed = sqlite3.connect(BD, timeout=20)
+        soed.row_factory = sqlite3.Row
+        ryady = soed.execute(
+            "SELECT " + ", ".join(berem) + " FROM cars").fetchall()
+        soed.close()
+        return ryady, pole
+    except Exception as e:
+        log("не прочитать базу: " + repr(e))
+        return [], None
+
+
+def shag(tiho=True):
+    uchet = uchet_prochest()
+    otchet = []
+    ryady, pole = mashiny()
+
+    for ryad in ryady:
+        nom = nomer_mashiny(ryad, pole)
+        if not nom:
+            continue
+        try:
+            foto = _spisok(ryad["condition_photos"])[:FOTO_PREDEL]
+        except Exception:
+            foto = []
+        try:
+            video = _spisok(ryad["condition_videos"])[:VIDEO_PREDEL]
+        except Exception:
+            video = []
+        if not foto and not video:
+            continue
+
+        papka = os.path.join(KUDA, nom)
+        try:
+            os.makedirs(papka, exist_ok=True)
+        except Exception as e:
+            log("не создать папку " + papka + ": " + repr(e))
+            continue
+
+        bylo = uchet.get(nom) or {}
+        stalo = dict(bylo)
+        novyh = 0
+
+        for nabor, konec in ((foto, ".jpg"), (video, ".mp4")):
+            for poryadok, file_id in enumerate(nabor, 1):
+                imya = "%02d%s" % (poryadok, konec)
+                put = os.path.join(papka, imya)
+                if os.path.exists(put) and bylo.get(imya) == file_id:
+                    continue
+                if skachat_odin(file_id, put):
+                    # UA-V85 — проверяем, что внутри
+                    itog_put = polozhit_pravilno(
+                        put, os.path.splitext(imya)[1])
+                    if itog_put != put:
+                        imya = os.path.basename(itog_put) \
+                            if itog_put else imya
+                    stalo[imya] = file_id
+                    novyh += 1
+                    time.sleep(0.3)
+
+        nuzhnye = set(["%02d.jpg" % i for i in range(1, len(foto) + 1)]
+                      + ["%02d.mp4" % i for i in range(1, len(video) + 1)])
+        try:
+            for imya in os.listdir(papka):
+                if imya.endswith((".jpg", ".mp4")) and imya not in nuzhnye:
+                    os.remove(os.path.join(papka, imya))
+                    stalo.pop(imya, None)
+        except Exception:
+            pass
+
+        uchet[nom] = stalo
+        if novyh:
+            soobshchenie = (nom + ": скачано новых " + str(novyh)
+                            + " (фото " + str(len(foto))
+                            + ", видео " + str(len(video)) + ")")
+            log(soobshchenie)
+            otchet.append(soobshchenie)
+        elif not tiho:
+            otchet.append(nom + ": всё на месте, фото " + str(len(foto))
+                          + ", видео " + str(len(video)))
+
+    uchet_zapisat(uchet)
+    return otchet
+
+
+def _cikl():
+    time.sleep(40)
+    while True:
+        try:
+            shag()
+        except Exception as e:
+            log("сбой: " + repr(e))
+        time.sleep(PAUZA)
+
+
+_zapushchen = False
+
+
+def start():
+    global _zapushchen
+    if _zapushchen:
+        return
+    _zapushchen = True
+    threading.Thread(target=_cikl, daemon=True).start()
+    log("модуль запущен (UA-V73)")
+
+
+# UA-V140 · обработчик поднимается только из run_all.py и только один
+def _v140_mozhno_zapuskat():
+    import sys as _s140
+    stroka = " ".join(_s140.argv) or "?"
+    if "run_all" not in stroka:
+        try:
+            log("автозапуск пропущен · запуск: %s" % stroka[:120])
+        except Exception:
+            pass
+        return False
+    zamok = os.path.join(BAZA, ".kadry_diagnostiki_zamok")
+    try:
+        if os.path.exists(zamok):
+            vozrast = time.time() - os.path.getmtime(zamok)
+            if vozrast < 240:
+                log("обработчик уже работает (замок %d сек назад) — второй не поднимаю"
+                    % int(vozrast))
+                return False
+        with open(zamok, "w", encoding="utf-8") as f:
+            f.write("%d %s" % (os.getpid(), time.strftime("%Y-%m-%d %H:%M:%S")))
+    except Exception:
+        pass
+    return True
+
+
+# UA-V142 · при импорте обработчик НЕ поднимается ни при каких условиях.
+# Единственная точка запуска — явный вызов zapustit_iz_run_all() из run_all.py.
+_v142_zamok_fajl = None
+
+
+def zapustit_iz_run_all():
+    """Запуск обработчика с настоящим межпроцессным замком (fcntl.flock).
+
+    Замок снимает ядро при завершении процесса, поэтому зависший экземпляр
+    не блокирует запуск навсегда, а второй одновременный — не поднимается.
+    """
+    global _v142_zamok_fajl
+    log("zapustit_iz_run_all вызван · pid %d · argv %s"   # UA-V143
+        % (os.getpid(), " ".join(__import__("sys").argv)[:100]))
+    import fcntl as _f142
+    put = os.path.join(BAZA, ".kadry_diagnostiki.lock")
+    try:
+        _v142_zamok_fajl = open(put, "a+")
+        _f142.flock(_v142_zamok_fajl, _f142.LOCK_EX | _f142.LOCK_NB)
+    except Exception as e:
+        log("обработчик уже работает в другом процессе — второй не поднимаю (%s)" % e)
+        try:
+            if _v142_zamok_fajl:
+                _v142_zamok_fajl.close()
+        except Exception:
+            pass
+        _v142_zamok_fajl = None
+        return False
+    try:
+        _v142_zamok_fajl.seek(0)
+        _v142_zamok_fajl.truncate()
+        _v142_zamok_fajl.write("%d %s\n" % (os.getpid(), time.strftime("%Y-%m-%d %H:%M:%S")))
+        _v142_zamok_fajl.flush()
+    except Exception:
+        pass
+    log("обработчик поднят явно из run_all · pid %d" % os.getpid())
+    start()
+    return True
+
+
+# UA-V85 ---- тип файла по содержимому, а не по имени -------
+
+def tip_po_soderzhimomu(put):
+    """Смотрит первые байты. Возвращает '.jpg', '.mp4' или ''."""
+    try:
+        with open(put, "rb") as f:
+            golova = f.read(16)
+        if os.path.getsize(put) < 1000:
+            return ""
+    except Exception:
+        return ""
+    if golova[:3] == b"\xff\xd8\xff" or golova[:4] == b"\x89PNG":
+        return ".jpg"
+    if golova[4:8] == b"ftyp":
+        return ".mp4"
+    return ""
+
+
+def polozhit_pravilno(put, ozhidaemoe):
+    """Файл уже скачан. Если внутри не то, что ждали по имени —
+    переносим под правильным именем. Возвращает итоговый путь."""
+    nastoyashchee = tip_po_soderzhimomu(put)
+    if not nastoyashchee or nastoyashchee == ozhidaemoe:
+        return put
+
+    papka = os.path.dirname(put)
+    imya = os.path.basename(put)
+    osnova = os.path.splitext(imya)[0]
+
+    # ищем свободный номер для правильного вида
+    for nomer in range(1, 61):
+        cel = os.path.join(papka, "%02d%s" % (nomer, nastoyashchee))
+        if not os.path.exists(cel):
+            try:
+                os.replace(put, cel)
+                log(imya + " на самом деле " + nastoyashchee
+                    + " — переложил в " + os.path.basename(cel))
+                return cel
+            except Exception as e:
+                log("не переложить " + imya + ": " + repr(e))
+                return put
+
+    # места нет — уносим в сторону, чтобы не ломало страницу
+    storona = os.path.join(papka, "neverno")
+    try:
+        os.makedirs(storona, exist_ok=True)
+        os.replace(put, os.path.join(storona, imya))
+        log(imya + " унесён в neverno/")
+    except Exception:
+        pass
+    return ""
+
+# ---- конец добавки UA-V85 -----------------------------------
+
+
+# UA-V136 · три попытки на битый file_id, потом пауза
+STOP_FAJL = os.path.join(BAZA, ".kadry_diagnostiki_stop.json")
+POPYTOK_PREDEL = 3
+POVTOR_CHEREZ = 6 * 3600
+
+
+def _v136_prochest():
+    try:
+        with open(STOP_FAJL, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _v136_zapisat(dannye):
+    try:
+        vremenno = STOP_FAJL + ".vremenno"
+        with open(vremenno, "w", encoding="utf-8") as f:
+            json.dump(dannye, f, ensure_ascii=False)
+        os.replace(vremenno, STOP_FAJL)
+    except Exception:
+        pass
+
+
+_v136_skachat_ishodnyy = skachat_odin
+
+
+def skachat_odin(file_id, kuda_put):
+    spisok = _v136_prochest()
+    zapis = spisok.get(file_id) or {}
+    teper = time.time()
+    popytok = int(zapis.get("popytok") or 0)
+
+    # уже признан недоступным - молча ждём шесть часов
+    if popytok >= POPYTOK_PREDEL and (teper - float(zapis.get("kogda") or 0)) < POVTOR_CHEREZ:
+        return False
+
+    mashina = os.path.basename(os.path.dirname(kuda_put)) or "?"
+    imya_fajla = os.path.basename(kuda_put)
+
+    # на время попытки заглушаем построчный лог исходной функции
+    sobrano = []
+    nastoyashchiy_log = log
+    globals()["log"] = lambda stroka: sobrano.append(str(stroka))
+    try:
+        vyshlo = _v136_skachat_ishodnyy(file_id, kuda_put)
+    except Exception as e:
+        sobrano.append(repr(e))
+        vyshlo = False
+    finally:
+        globals()["log"] = nastoyashchiy_log
+
+    prichina = (sobrano[-1] if sobrano else "не скачалось")[:160]
+
+    if vyshlo:
+        if file_id in spisok:
+            spisok.pop(file_id)
+            _v136_zapisat(spisok)
+            log("%s · %s · скачался после пометки, пометка снята" % (mashina, imya_fajla))
+        return True
+
+    popytok += 1
+    spisok[file_id] = {"popytok": popytok, "kogda": teper, "mashina": mashina,
+                       "fajl": imya_fajla, "prichina": prichina}
+    _v136_zapisat(spisok)
+
+    if popytok < POPYTOK_PREDEL:
+        log("%s · %s · попытка %d из %d · %s"
+            % (mashina, imya_fajla, popytok, POPYTOK_PREDEL, prichina))
+    elif popytok == POPYTOK_PREDEL:
+        log("%s · %s · НЕ КАЧАЕТСЯ после %d попыток · %s · следующая попытка не раньше "
+            "чем через 6 часов · file_id: %s"
+            % (mashina, imya_fajla, POPYTOK_PREDEL, prichina, file_id))
+    else:
+        log("%s · %s · повтор через 6 часов снова не удался (%d-я попытка) · %s"
+            % (mashina, imya_fajla, popytok, prichina))
+    return False
+
+
+# UA-V137 · подпись источника: видно, какой процесс и какой файл пишет строку
+import sys as _sys137
+
+_v137_log_ishodnyy = log
+
+
+def log(stroka):
+    try:
+        otkuda = os.path.abspath(__file__)
+    except Exception:
+        otkuda = "?"
+    _v137_log_ishodnyy("[pid %d · %s] %s" % (os.getpid(), otkuda, stroka))
+
+
+try:
+    log("модуль загружен · python %s" % _sys137.version.split()[0])
+except Exception:
+    pass
+
+# UA-V138 · в подписи видно, каким запуском поднят процесс
+try:
+    log("запуск: %s" % " ".join(_sys137.argv)[:200])
+except Exception:
+    pass
+
+
+# UA-V143 · биение: каждый рабочий круг обработчика виден в журнале
+try:
+    _v143_shag_ishodnyy = shag
+
+    def shag(tiho=True):
+        nachalo = time.time()
+        try:
+            itog = _v143_shag_ishodnyy(tiho)
+        except Exception as e:
+            log("круг обработчика · ОШИБКА · %r" % e)
+            raise
+        log("круг обработчика · pid %d · %.1f сек · сообщений %d"
+            % (os.getpid(), time.time() - nachalo, len(itog or [])))
+        return itog
+except NameError:
+    pass
+
+
+# ===== ua_crm_public_sync.py =====
+"""CRM publication reconciliation using the existing transactional publisher.
+No CRM writes. Persistent revision ledger, per-card retry, one publisher worker.
+"""
+import fcntl
+import hashlib
+import json
+import logging
+import os
+from pathlib import Path
+import sqlite3
+import tempfile
+import threading
+import time
+
+ROOT = Path('/home/Carix')
+STATE = ROOT / '.crm_public_sync_state.json'
+LOCK = ROOT / '.crm_public_sync_worker.lock'
+LOG = logging.getLogger(__name__)
+_wake = threading.Event()
+_thread = None
+_start_lock = threading.Lock()
+
+
+def snapshot():
+    from ua_delivery_status import public_status
+    conn = sqlite3.connect((ROOT / 'crm.db').as_uri() + '?mode=ro', uri=True, timeout=5)
+    conn.row_factory = sqlite3.Row
+    try:
+        rows = [dict(r) for r in conn.execute('SELECT * FROM cars WHERE published=1')]
+    finally:
+        conn.close()
+    result = {}
+    codes = set()
+    for row in rows:
+        code = str(row.get('auto_number') or '')
+        if not code or code in codes:
+            raise RuntimeError('Missing or duplicate published auto_number')
+        codes.add(code)
+        raw = json.dumps(row, sort_keys=True, ensure_ascii=False, default=str).encode()
+        result[str(row['id'])] = {'code': code, 'sha256': hashlib.sha256(raw).hexdigest(), 'delivery_status': public_status(row.get('status'))}
+    return result
+
+
+def save_state(state):
+    fd, name = tempfile.mkstemp(prefix='.crm_public_sync_state.', dir=str(ROOT))
+    try:
+        with os.fdopen(fd, 'w') as out:
+            os.fchmod(out.fileno(), 0o600)
+            json.dump(state, out, sort_keys=True)
+            out.flush()
+            os.fsync(out.fileno())
+        os.replace(name, STATE)
+    finally:
+        if os.path.exists(name):
+            os.unlink(name)
+
+
+def initialize():
+    if STATE.exists():
+        raise RuntimeError('State already exists; refusing to reset pending revisions')
+    # Existing rows are an installation baseline, not a claim of verification.
+    # UA-0022 was explicitly published before installation; other cards untouched.
+    save_state({'version': 1, 'baseline_at': time.time(), 'revisions': snapshot(),
+                'retry': {}, 'last_success': None})
+
+
+def notify():
+    """Called after DB commit; cannot block the Telegram handler."""
+    _wake.set()
+
+
+def reconcile_once(publish=None, clock=time.time):
+    with open(LOCK, 'a') as lock:
+        os.chmod(LOCK, 0o600)
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return 'busy'
+        with STATE.open() as source:
+            state = json.load(source)
+        if state.get('version') != 1:
+            raise RuntimeError('Unsupported sync state')
+        rows = snapshot()
+        retry = state.setdefault('retry', {})
+        import ua_publish_requests as requests
+        explicit = requests.pending(ROOT)
+        for identity, request in explicit.items():
+            if identity not in rows or rows[identity]['delivery_status'] == 'hidden':
+                requests.finish(ROOT, request['token'], 'cancelled')
+        rows = dict(sorted(rows.items(), key=lambda item: item[0] not in explicit))
+        # A catalog set mismatch affects the whole publication, not one car.
+        # Persist the cooldown so restarts and repeated UI wakes do not defeat it.
+        source_revision = hashlib.sha256(json.dumps(rows, sort_keys=True).encode()).hexdigest()
+        catalog_retry = state.get('catalog_retry', {})
+        if (catalog_retry.get('source_revision') == source_revision
+                and catalog_retry.get('after', 0) > clock()):
+            return 'catalog_retry_pending'
+        if catalog_retry and catalog_retry.get('source_revision') != source_revision:
+            # Fresh operator data may resolve the mismatch; keep its chance to run.
+            blocked_code = catalog_retry.get('code')
+            retry = {key: value for key, value in retry.items()
+                     if blocked_code not in value.get('error', '')} if blocked_code else retry
+            state['retry'] = retry
+            state.pop('catalog_retry', None)
+        for identity, revision in rows.items():
+            request = explicit.get(identity)
+            if (not request and revision['sha256'] == state['revisions'].get(identity, {}).get('sha256')):
+                continue
+            attempt = retry.get(identity, {})
+            if attempt.get('sha256') == revision['sha256'] and attempt.get('after', 0) > clock():
+                continue
+            try:
+                if revision['delivery_status'] == 'hidden':
+                    from ua_stage_catalog_sync import reconcile
+                    reconcile(apply=True)
+                else:
+                    if publish is None:
+                        from publikaciya import opublikovat
+                        publish = opublikovat
+                    ok, message = publish(revision['code'])
+                    if not ok:
+                        raise RuntimeError(str(message)[:500])
+                    from ua_public_freshness import verify_public
+                    verify_public(revision['code'])
+                if snapshot().get(identity) != revision:
+                    # Keep old ledger revision: a newer operator edit needs another pass.
+                    LOG.warning('CRM sync: changed during publish: %s', revision['code'])
+                    return 'changed_during_publish'
+                state['revisions'][identity] = revision
+                retry.pop(identity, None)
+                state.pop('catalog_retry', None)
+                state['last_success'] = {'code': revision['code'], 'at': clock()}
+                save_state(state)
+                if request and revision['delivery_status'] != 'hidden':
+                    requests.finish(ROOT, request['token'], 'verified', revision['sha256'])
+                LOG.info('CRM sync PASS: %s', revision['code'])
+                return 'hidden' if revision['delivery_status'] == 'hidden' else 'published'
+            except Exception as exc:
+                count = (attempt.get('count', 0) if attempt.get('sha256') == revision['sha256'] else 0) + 1
+                retry[identity] = {'sha256': revision['sha256'], 'count': count,
+                                   'after': clock() + min(900, 15 * 2 ** min(count-1, 6)),
+                                   'error': type(exc).__name__ + ': ' + str(exc)[:500]}
+                catalog_error = next((code for code in (
+                    'CATALOG_ROW_SET_MISMATCH', 'CATALOG_PUBLISHED_SET_MISMATCH'
+                ) if code in str(exc)), None)
+                if catalog_error:
+                    state['catalog_retry'] = {'source_revision': source_revision,
+                                              'after': clock() + 900, 'code': catalog_error}
+                save_state(state)
+                LOG.exception('CRM sync failed; retry pending: %s', revision['code'])
+                if catalog_error:
+                    return 'catalog_retry_pending'
+                # Continue so a failing card does not starve other pending cards.
+        return 'idle'
+
+
+def _run():
+    LOG.info('CRM public sync worker started')
+    while True:
+        _wake.wait(15)
+        _wake.clear()
+        # Debounce burst saves (media albums and multi-field edits).
+        time.sleep(2)
+        try:
+            if reconcile_once() in ('published', 'hidden', 'changed_during_publish'):
+                _wake.set()
+        except Exception:
+            LOG.exception('CRM sync worker error; retry in 15 seconds')
+
+
+def start():
+    global _thread
+    with _start_lock:
+        if _thread is not None and _thread.is_alive():
+            return
+        if not STATE.exists():
+            raise RuntimeError('Installation baseline missing; not silently resetting sync state')
+        _thread = threading.Thread(target=_run, name='crm-public-sync', daemon=True)
+        _thread.start()
+        _wake.set()
+
+# ===== ua_publish_requests.py =====
+"""Durable explicit publication requests; no HTML rendering or CRM row writes."""
+from contextlib import contextmanager
+from pathlib import Path
+import os
+import sqlite3
+import time
+import uuid
+
+
+@contextmanager
+def connection(root):
+    directory = Path(root) / '.crm_publish_requests'
+    directory.mkdir(mode=0o700, exist_ok=True)
+    os.chmod(directory, 0o700)
+    conn = sqlite3.connect(directory / 'requests.sqlite3', timeout=2)
+    conn.row_factory = sqlite3.Row
+    try:
+        conn.execute('''CREATE TABLE IF NOT EXISTS requests (
+            identity TEXT PRIMARY KEY, code TEXT NOT NULL, token TEXT NOT NULL,
+            revision TEXT NOT NULL, state TEXT NOT NULL, verified_revision TEXT,
+            chat_id INTEGER NOT NULL, message_id INTEGER NOT NULL,
+            delivered INTEGER NOT NULL DEFAULT 0, created REAL NOT NULL)''')
+        with conn:
+            yield conn
+    finally:
+        conn.close()
+
+
+def enqueue(root, identity, revision, chat_id, message_id):
+    identity = str(int(identity))
+    with connection(root) as conn:
+        conn.execute('BEGIN IMMEDIATE')
+        old = conn.execute('SELECT * FROM requests WHERE identity=?', (identity,)).fetchone()
+        if old and old['state'] == 'pending' and old['revision'] == revision['sha256']:
+            # A second tap joins the current request; it does not reset retries.
+            conn.execute('UPDATE requests SET chat_id=?, message_id=? WHERE identity=?',
+                         (chat_id, message_id, identity))
+            return old['token']
+[REDACTED]
+        conn.execute('''INSERT OR REPLACE INTO requests
+            (identity,code,token,revision,state,verified_revision,chat_id,message_id,delivered,created)
+            VALUES (?,?,?,?,'pending',NULL,?,?,0,?)''',
+            (identity, revision['code'], token, revision['sha256'], chat_id, message_id, time.time()))
+        return token
+
+
+def pending(root):
+    with connection(root) as conn:
+        return {row['identity']: dict(row) for row in conn.execute(
+            "SELECT * FROM requests WHERE state='pending' ORDER BY created")}
+
+
+def finish(root, token, state, revision=None):
+    if state not in ('verified', 'cancelled'):
+        raise ValueError('INVALID_REQUEST_STATE')
+    with connection(root) as conn:
+        # A superseded request cannot complete the newer one.
+        return conn.execute('''UPDATE requests SET state=?, verified_revision=?
+[REDACTED]
+
+
+def receipts(root):
+    with connection(root) as conn:
+        return [dict(row) for row in conn.execute(
+            "SELECT * FROM requests WHERE state!='pending' AND delivered=0 ORDER BY created LIMIT 20")]
+
+
+def current(root, token):
+    with connection(root) as conn:
+[REDACTED]
+        return dict(row) if row else None
+
+
+def delivered(root, token):
+    with connection(root) as conn:
+[REDACTED]
+
+# ===== run_all.py =====
+
+# UA-V144 · журнал жизненного цикла процесса. Обработчик диагностики
+# поднимается НЕ здесь, а внутри run_bots, рядом с ботами.
+import os as _os144
+import sys as _s144
+import time as _tm144
+import atexit as _at144
+import traceback as _tb144
+
+if "/home/Carix" not in _s144.path:
+    _s144.path.insert(0, "/home/Carix")
+
+_V144_LOG = "/home/Carix/run_all_log.txt"
+
+
+def _v144_zhurnal(stroka):
+    try:
+        with open(_V144_LOG, "a", encoding="utf-8") as _f:
+            _f.write("%s  pid %d  %s\n"
+                     % (_tm144.strftime("%Y-%m-%d %H:%M:%S"), _os144.getpid(), stroka))
+    except Exception:
+        pass
+
+
+def _v144_konec():
+    _v144_zhurnal("процесс завершается (штатный выход интерпретатора)")
+
+
+def _v144_lovushka(tip, znachenie, sled):
+    _v144_zhurnal("АВАРИЙНОЕ ЗАВЕРШЕНИЕ: %s: %s" % (tip.__name__, znachenie))
+    for _s in "".join(_tb144.format_exception(tip, znachenie, sled)).split("\n"):
+        if _s.strip():
+            _v144_zhurnal("   " + _s.rstrip())
+
+
+_at144.register(_v144_konec)
+_s144.excepthook = _v144_lovushka
+_v144_zhurnal("СТАРТ процесса · команда: %s · python %s"
+              % (" ".join(_s144.argv), _s144.version.split()[0]))
+
+
+"""
+UA Art Company — запуск обоих ботов одним процессом.
+==============================================================================
+ЗАЧЕМ ЭТОТ ФАЙЛ:
+На тарифе PythonAnywhere доступна одна always-on задача, а ботов теперь два:
+клиентский (lead_bot) и внутренний для сотрудников (team_bot). Этот скрипт
+поднимает оба в одном процессе, в общем цикле asyncio.
+
+КОМАНДА ДЛЯ ALWAYS-ON TASK:
+    python3.10 /home/Carix/run_all.py
+
+ФАЙЛЫ С ТОКЕНАМИ (каждый — одна строка, без кавычек):
+    bot_token.txt   — клиентский бот
+    team_token.txt  — внутренний бот
+
+Если какого-то токена нет, соответствующий бот просто не поднимется,
+а второй продолжит работать — это осознанно, чтобы одна ошибка
+не роняла всю систему.
+"""
+
+import asyncio
+import logging
+import traceback
+
+logging.basicConfig(
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    level=logging.INFO,
+)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+import db
+
+
+async def run_bots():
+    db.init_db()
+    _v144_zhurnal("база готова, собираем ботов")
+
+    # UA-V144 · обработчик диагностики живёт внутри этого процесса
+    try:
+        import kadry_diagnostiki as _kd144
+        _v144_zhurnal("обработчик диагностики: поднят" if _kd144.zapustit_iz_run_all()
+                      else "обработчик диагностики: уже работает в другом процессе")
+    except Exception as _e144:
+        _v144_zhurnal("обработчик диагностики НЕ поднят: %r" % _e144)
+
+    apps = []
+
+    # --- Клиентский бот ---
+    try:
+        import lead_bot
+        client_app = lead_bot.build_application()
+        if client_app:
+            apps.append(("клиентский", client_app))
+    except Exception as e:
+        logging.error(f"Клиентский бот не собрался: {e}", exc_info=True)
+
+    # --- Внутренний бот ---
+    try:
+        import team_bot
+        team_app = team_bot.build_application()
+        if team_app:
+            apps.append(("внутренний", team_app))
+    except Exception as e:
+        logging.error(f"Внутренний бот не собрался: {e}", exc_info=True)
+
+    if not apps:
+        logging.error("Ни один бот не запустился. Проверьте файлы с токенами.")
+        return
+
+    for name, app in apps:
+        await app.initialize()
+        await app.start()
+        await app.updater.start_polling(drop_pending_updates=False)
+        logging.info(f"Запущен бот: {name}")
+        _v144_zhurnal("запущен бот: %s" % name)
+
+    logging.info(f"Всего работает ботов: {len(apps)}")
+    _v144_zhurnal("всего работает ботов: %d — вход в ожидание" % len(apps))
+
+    try:
+        # Держим процесс живым
+        while True:
+            await asyncio.sleep(3600)
+    finally:
+        _v144_zhurnal("ВЫХОД из ожидания — боты останавливаются")
+        for name, app in apps:
+            try:
+                await app.updater.stop()
+                await app.stop()
+                await app.shutdown()
+                logging.info(f"Остановлен бот: {name}")
+            except Exception as e:
+                logging.warning(f"Ошибка остановки {name}: {e}")
+
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(run_bots())
+        _v144_zhurnal("run_bots вернул управление — процесс закончил работу сам")
+    except KeyboardInterrupt:
+        logging.info("Остановлено вручную.")
+        _v144_zhurnal("остановлено вручную (KeyboardInterrupt)")
+    except BaseException as _e144m:
+        _v144_zhurnal("ИСКЛЮЧЕНИЕ В ГЛАВНОМ ЦИКЛЕ: %r" % _e144m)
+        for _s in traceback.format_exc().split("\n"):
+            if _s.strip():
+                _v144_zhurnal("   " + _s.rstrip())
+        raise
