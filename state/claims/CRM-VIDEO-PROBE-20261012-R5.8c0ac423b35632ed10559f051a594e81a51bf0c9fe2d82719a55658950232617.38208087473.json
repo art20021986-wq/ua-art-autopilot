@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-VIDEO-PROBE-20261012-R5.8c0ac423b35632ed10559f051a594e81a51bf0c9fe2d82719a55658950232617.json",
+  "autostart_ledger_sha256": "ca0ac6e72bae8adafe07ddcb34133baf32677a0155362023a8e4736baa9454ad",
+  "autostart_source_commit": "1ae498cbc35bc83094322340bec0e59b3cab38d3",
+  "created_at": "2026-10-12T05:29:29Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-12T05:29:29Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "38208087473",
+    "task_id": "CRM-VIDEO-PROBE-20261012-R5",
+    "task_sha256": "8c0ac423b35632ed10559f051a594e81a51bf0c9fe2d82719a55658950232617"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "read_only-3be20142aac848e1-0c047898ea3fdfa6",
+  "receipt_path": "state/receipts/CRM-VIDEO-PROBE-20261012-R5.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CRM-VIDEO-PROBE-20261012-R5.json",
+  "request_sha256": "8c0ac423b35632ed10559f051a594e81a51bf0c9fe2d82719a55658950232617",
+  "resource_locks": [
+    "READ_ONLY:3be20142aac848e1"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "38dae702f941da541c3d6f4d5c470495f334eaca",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-12T05:29:29Z"
+}
