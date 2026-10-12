@@ -7,21 +7,23 @@
   "created_at": "2026-10-12T05:21:09Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T05:21:09Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-12T05:22:22Z",
+  "heartbeat_at": "2026-10-12T05:22:22Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "38207504583",
     "task_id": "CRM-VIDEO-PROBE-20261012-R3",
     "task_sha256": "7bb00e39f10c29e4cf15396ebbe034f57b6b52acdc4c52d203cac33f5207dbf9"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-bbb0977bb8940d67-007b47388316a986",
   "receipt_path": "state/receipts/CRM-VIDEO-PROBE-20261012-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "2051098e9eb2c138b9d07c2c2c321a36b0b2e332425c08e77142b301944675e6",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-VIDEO-PROBE-20261012-R3.json",
   "request_sha256": "7bb00e39f10c29e4cf15396ebbe034f57b6b52acdc4c52d203cac33f5207dbf9",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "5b111222bc1d02869be2f73ef9a9d929e0256eeb",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92092076032,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 40.534
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-12T05:21:09Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "ad5b4a57b6532cc41bab3c22db3f7e1d1129256e618bcd8ef5e8721f59a90afc",
+    "file_sha256": {
+      "cloud/crm_video_probe_20261012_r3/test_controller.py": "d374bc7c4991f5e25ba95bc58bd015312fddb4ff66ef7ceadf031feb9a3200cb"
+    }
+  },
+  "updated_at": "2026-10-12T05:22:22Z"
 }
