@@ -17,7 +17,7 @@ def database():
         con.executescript(
             "CREATE TABLE cars(id INTEGER PRIMARY KEY, auto_number TEXT, status TEXT, videos TEXT,"
             " condition_videos TEXT);"
-            "INSERT INTO cars VALUES (26, 'UA-0017', 'ge_waiting', '[{\"file_id\":\"BAACAgIAAxkBAAIBTELEGRAMID\"}]', '[]');"
+            "INSERT INTO cars VALUES (26, 'UA-0007', 'ge_waiting', '[{\"file_id\":\"BAACAgIAAxkBAAIBTELEGRAMID\"}]', '[]');"
             "CREATE TABLE media(id INTEGER PRIMARY KEY, car_id INT, vid TEXT, file_id TEXT, status TEXT,"
             " poryadok INT, primechanie TEXT);"
             "INSERT INTO media VALUES (5, 26, 'video', 'SECRETFILEID', 'quarantine', 1,"
@@ -34,13 +34,13 @@ def database():
 class Fake:
     def server(self, path):
         return {'crm.db': database(),
-                'video/': json.dumps({'UA-0017.html': {}, 'UA-0017.mp4': {}, 'UA-0001.mp4': {}}).encode()}.get(path)
+                'video/': json.dumps({'UA-0007.html': {}, 'UA-0007.mp4': {}, 'UA-0001.mp4': {}}).encode()}.get(path)
 
 
 class ProbeTests(unittest.TestCase):
     def test_scope(self):
         reader = c.Reader('test-value', opener=object())
-        for bad in ('../x', 'video/UA-0017.mp4', 'cars_ui.py', ''):
+        for bad in ('../x', 'video/UA-0007.mp4', 'cars_ui.py', ''):
             with self.assertRaises(c.ProbeError):
                 reader.server(bad)
 
@@ -54,10 +54,10 @@ class ProbeTests(unittest.TestCase):
             c.execute(env, root=root, reader=Fake())
             text = (root / c.EVIDENCE).read_text()
         evidence = json.loads(text)
-        audi = evidence['cars']['UA-0017']
+        audi = evidence['cars']['UA-0007']
         self.assertEqual(audi['fields']['videos'], {'count': 1, 'entry_keys': ['file_id']})
         self.assertEqual(audi['media_by_vid_status'], {'foto/ready': 1, 'video/quarantine': 1})
-        self.assertEqual(evidence['site_video_files']['UA-0017'], ['UA-0017.mp4'])
+        self.assertEqual(evidence['site_video_files']['UA-0007'], ['UA-0007.mp4'])
         self.assertEqual(len(evidence['unlinked_inbox_videos_or_documents']), 1)
         for secret in ('TELEGRAMID', 'SECRETFILEID', '123456789', 'private words', 'FID"'):
             self.assertNotIn(secret, text)
