@@ -37,7 +37,9 @@ async def edit_ask(update, context):
 async def client_ask(update, context):
     q = update.callback_query
     _, cid, field = q.data.split(':')
-    context.user_data['car_wait'] = {'card_id': int(cid), 'field': field, 'client': True}
+    context.user_data['car_wait'] = {
+        'card_id': int(cid), 'field': field,
+        'client': True}
     raise ApplicationHandlerStop
 
 
@@ -106,7 +108,14 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(names, ['ApplicationHandlerStop', 'drop_wait', '_ua_wait_text',
                                  'edit_ask', 'client_ask', 'catch_text'])
         removed = set(SOURCE.decode().splitlines()) - set(out.splitlines())
-        self.assertEqual(len(removed), 2)
+        self.assertEqual(len(removed), 3)  # one-line and three-line car_wait statements
+        self.assertIn("    _ua_wait_text(context, {\n        'card_id': int(cid), 'field': field,\n        'client': True})\n", out)
+
+    def test_refuses_statement_sharing_a_line(self):
+        shared = SOURCE.replace(b"    context.user_data['car_wait'] = {'card_id': int(cid), 'field': field}\n",
+                                b"    x = 1; context.user_data['car_wait'] = {'card_id': int(cid), 'field': field}\n")
+        with self.assertRaises(b.BuildError):
+            b.build(shared, expected=sha(shared))
 
     def test_refuses_other_source_duplicates_and_rebuild(self):
         with self.assertRaises(b.BuildError):
