@@ -1,0 +1,976 @@
+{
+  "cars": [
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0001",
+      "description": {
+        "detail": {
+          "matches": [
+            "condition_text"
+          ]
+        },
+        "result": "PASS"
+      },
+      "photos": {
+        "detail": {
+          "photos": 30
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "В Грузии · Поти/Батуми, оформление",
+          "catalog_pill": "В Грузии · маршрут — Киев",
+          "catalog_stage": [
+            "georgia"
+          ],
+          "crm_status": "ge_waiting"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0003",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 26
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "reason": "stage differs between card and catalog: {'crm_status': 'kr_bought', 'catalog_stage': ['korea'], 'catalog_pill': 'В Корее · выкуплен и проверен', 'card_chip': 'Выкуплена · стоянка в Корее'}",
+        "result": "FAIL"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0004",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 28
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "reason": "stage differs between card and catalog: {'crm_status': 'kr_bought', 'catalog_stage': ['korea'], 'catalog_pill': 'В Корее · выкуплен и проверен', 'card_chip': 'Выкуплена · стоянка в Корее'}",
+        "result": "FAIL"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0005",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 11
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "На пароме · Корея → Грузия",
+          "catalog_pill": "На пароме · маршрут — Киев",
+          "catalog_stage": [
+            "sea"
+          ],
+          "crm_status": "sea_loaded"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0006",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 40
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "На пароме · Корея → Грузия",
+          "catalog_pill": "На пароме · маршрут — Киев",
+          "catalog_stage": [
+            "sea"
+          ],
+          "crm_status": "sea_loaded"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0007",
+      "description": {
+        "detail": {
+          "matches": [
+            "condition_text"
+          ]
+        },
+        "result": "PASS"
+      },
+      "photos": {
+        "detail": {
+          "photos": 30
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "reason": "GE price site=None CRM=['']",
+        "result": "FAIL"
+      },
+      "price_catalog": {
+        "reason": "GE price site=None CRM=['']",
+        "result": "FAIL"
+      },
+      "price_live_json": {
+        "reason": "GE price site=None CRM=['']",
+        "result": "FAIL"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "В Киеве · можно посмотреть",
+          "catalog_pill": "В Киеве · можно посмотреть",
+          "catalog_stage": [
+            "kiev"
+          ],
+          "crm_status": "ua_arrived"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0009",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 20
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "В Грузии · Поти/Батуми, оформление",
+          "catalog_pill": "В Грузии · маршрут — Киев",
+          "catalog_stage": [
+            "georgia"
+          ],
+          "crm_status": "ge_waiting"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0010",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 28
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "В Грузии · Поти/Батуми, оформление",
+          "catalog_pill": "В Грузии · маршрут — Киев",
+          "catalog_stage": [
+            "georgia"
+          ],
+          "crm_status": "ge_waiting"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0011",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 35
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "В Грузии · Поти/Батуми, оформление",
+          "catalog_pill": "В Грузии · маршрут — Киев",
+          "catalog_stage": [
+            "georgia"
+          ],
+          "crm_status": "ge_waiting"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0012",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 11
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "В Грузии · Поти/Батуми, оформление",
+          "catalog_pill": "В Грузии · маршрут — Киев",
+          "catalog_stage": [
+            "georgia"
+          ],
+          "crm_status": "ge_waiting"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0013",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 46
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "На пароме · Корея → Грузия",
+          "catalog_pill": "На пароме · маршрут — Киев",
+          "catalog_stage": [
+            "sea"
+          ],
+          "crm_status": "sea_loaded"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0014",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 46
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "На пароме · Корея → Грузия",
+          "catalog_pill": "На пароме · маршрут — Киев",
+          "catalog_stage": [
+            "sea"
+          ],
+          "crm_status": "sea_loaded"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0015",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 37
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "reason": "stage differs between card and catalog: {'crm_status': 'kr_bought', 'catalog_stage': ['korea'], 'catalog_pill': 'В Корее · выкуплен и проверен', 'card_chip': 'Выкуплена · стоянка в Корее'}",
+        "result": "FAIL"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0016",
+      "description": {
+        "detail": {
+          "matches": [
+            "condition_text"
+          ]
+        },
+        "result": "PASS"
+      },
+      "photos": {
+        "detail": {
+          "photos": 31
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "reason": "stage differs between card and catalog: {'crm_status': 'kr_bought', 'catalog_stage': ['korea'], 'catalog_pill': 'В Корее · выкуплен и проверен', 'card_chip': 'Выкуплена · стоянка в Корее'}",
+        "result": "FAIL"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "reason": "catalog photo count ['40'], CRM visible 39",
+        "result": "FAIL"
+      },
+      "code": "UA-0017",
+      "description": {
+        "detail": {
+          "matches": [
+            "condition_text"
+          ]
+        },
+        "result": "PASS"
+      },
+      "photos": {
+        "detail": {
+          "photos": 39
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "В Грузии · Поти/Батуми, оформление",
+          "catalog_pill": "В Грузии · маршрут — Киев",
+          "catalog_stage": [
+            "georgia"
+          ],
+          "crm_status": "ge_waiting"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0018",
+      "description": {
+        "detail": {
+          "matches": [
+            "condition_text"
+          ]
+        },
+        "result": "PASS"
+      },
+      "photos": {
+        "detail": {
+          "photos": 59
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "reason": "GE price site=None CRM=['']",
+        "result": "FAIL"
+      },
+      "price_catalog": {
+        "reason": "GE price site=None CRM=['']",
+        "result": "FAIL"
+      },
+      "price_live_json": {
+        "reason": "GE price site=None CRM=['']",
+        "result": "FAIL"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "В Киеве · можно посмотреть",
+          "catalog_pill": "В Киеве · можно посмотреть",
+          "catalog_stage": [
+            "kiev"
+          ],
+          "crm_status": "ua_arrived"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0020",
+      "description": {
+        "detail": {
+          "matches": [
+            "condition_text"
+          ]
+        },
+        "result": "PASS"
+      },
+      "photos": {
+        "detail": {
+          "photos": 55
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "reason": "GE price site=None CRM=['']",
+        "result": "FAIL"
+      },
+      "price_catalog": {
+        "reason": "GE price site=None CRM=['']",
+        "result": "FAIL"
+      },
+      "price_live_json": {
+        "reason": "GE price site=None CRM=['']",
+        "result": "FAIL"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "В Киеве · можно посмотреть",
+          "catalog_pill": "В Киеве · можно посмотреть",
+          "catalog_stage": [
+            "kiev"
+          ],
+          "crm_status": "ua_arrived"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0021",
+      "description": {
+        "detail": {
+          "matches": [
+            "condition_text"
+          ]
+        },
+        "result": "PASS"
+      },
+      "photos": {
+        "detail": {
+          "photos": 37
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "На пароме · Корея → Грузия",
+          "catalog_pill": "На пароме · маршрут — Киев",
+          "catalog_stage": [
+            "sea"
+          ],
+          "crm_status": "sea_loaded"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "result": "PASS"
+      },
+      "code": "UA-0022",
+      "description": {
+        "detail": {
+          "matches": [
+            "condition_text"
+          ]
+        },
+        "result": "PASS"
+      },
+      "photos": {
+        "detail": {
+          "photos": 23
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "На пароме · Корея → Грузия",
+          "catalog_pill": "На пароме · маршрут — Киев",
+          "catalog_stage": [
+            "sea"
+          ],
+          "crm_status": "sea_loaded"
+        },
+        "result": "PASS"
+      }
+    },
+    {
+      "card_page_fields": {
+        "result": "PASS"
+      },
+      "catalog_fields": {
+        "result": "PASS"
+      },
+      "catalog_photo_count": {
+        "reason": "catalog photo count ['38'], CRM visible 37",
+        "result": "FAIL"
+      },
+      "code": "UA-0023",
+      "description": {
+        "reason": "CRM text present, card shows no description",
+        "result": "FAIL"
+      },
+      "photos": {
+        "detail": {
+          "photos": 37
+        },
+        "result": "PASS"
+      },
+      "price_card_page": {
+        "result": "PASS"
+      },
+      "price_catalog": {
+        "result": "PASS"
+      },
+      "price_live_json": {
+        "result": "PASS"
+      },
+      "stage": {
+        "detail": {
+          "card_chip": "На пароме · Корея → Грузия",
+          "catalog_pill": "На пароме · маршрут — Киев",
+          "catalog_stage": [
+            "sea"
+          ],
+          "crm_status": "sea_loaded"
+        },
+        "result": "PASS"
+      }
+    }
+  ],
+  "check_totals": {
+    "card_page_fields": {
+      "PASS": 20
+    },
+    "catalog_fields": {
+      "PASS": 20
+    },
+    "catalog_photo_count": {
+      "FAIL": 2,
+      "PASS": 18
+    },
+    "description": {
+      "FAIL": 12,
+      "PASS": 8
+    },
+    "photos": {
+      "PASS": 20
+    },
+    "price_card_page": {
+      "FAIL": 3,
+      "PASS": 17
+    },
+    "price_catalog": {
+      "FAIL": 3,
+      "PASS": 17
+    },
+    "price_live_json": {
+      "FAIL": 3,
+      "PASS": 17
+    },
+    "stage": {
+      "FAIL": 4,
+      "PASS": 16
+    }
+  },
+  "finished_at": "2026-10-12T00:39:15Z",
+  "http_methods": [
+    "GET"
+  ],
+  "raw_private_data_persisted": false,
+  "remote_write_count": 0,
+  "request_sha256": "97127842da19d400385d27e90e54f9d83867b540cbd98e7de658738ccaf5eebc",
+  "run_id": "38188712620",
+  "scope": "Published CRM cars vs server card pages, catalog, live prices JSON and public serving",
+  "started_at": "2026-10-12T00:38:36Z",
+  "summary": {
+    "card_pages_without_crm_car": [
+      "UA-0008.html",
+      "UA-0019.html"
+    ],
+    "catalog_cards": [
+      "UA-0001",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016",
+      "UA-0017",
+      "UA-0018",
+      "UA-0020",
+      "UA-0021",
+      "UA-0022",
+      "UA-0023"
+    ],
+    "catalog_not_in_crm": [],
+    "catalog_not_published_in_crm": [],
+    "crm_cars": 20,
+    "crm_should_be_on_site": [
+      "UA-0001",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016",
+      "UA-0017",
+      "UA-0018",
+      "UA-0020",
+      "UA-0021",
+      "UA-0022",
+      "UA-0023"
+    ],
+    "crm_status_with_several_stage_labels": [],
+    "missing_from_catalog": [],
+    "published_but_hidden_status": [],
+    "served_bytes_differ_from_server": [],
+    "stage_label_by_crm_status": {
+      "ge_waiting": [
+        "В Грузии"
+      ],
+      "kr_bought": [
+        "В Корее"
+      ],
+      "sea_loaded": [
+        "На пароме"
+      ],
+      "ua_arrived": [
+        "В Киеве"
+      ]
+    }
+  },
+  "task_id": "CRM-SITE-AUDIT-20261012-R2"
+}
