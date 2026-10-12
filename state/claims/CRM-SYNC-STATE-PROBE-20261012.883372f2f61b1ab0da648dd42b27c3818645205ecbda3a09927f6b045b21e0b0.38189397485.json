@@ -7,21 +7,23 @@
   "created_at": "2026-10-12T00:48:59Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T00:48:59Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-12T00:49:43Z",
+  "heartbeat_at": "2026-10-12T00:49:43Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "38189397485",
     "task_id": "CRM-SYNC-STATE-PROBE-20261012",
     "task_sha256": "883372f2f61b1ab0da648dd42b27c3818645205ecbda3a09927f6b045b21e0b0"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-006f48cf2bd89e04-955871a201cba241",
   "receipt_path": "state/receipts/CRM-SYNC-STATE-PROBE-20261012.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "071e7152409b3f6427c54abb24a644d5f45dc5a816f1ddd7f910d40ecf17a212",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-SYNC-STATE-PROBE-20261012.json",
   "request_sha256": "883372f2f61b1ab0da648dd42b27c3818645205ecbda3a09927f6b045b21e0b0",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "80f18e4be4543fc52f48dfffd68047ce24974179",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92099719168,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 134217728,
+    "status": "PASS",
+    "usage_percent": 40.529
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-12T00:48:59Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "7896c542093ca7c75f0fc415d94e00c4221b3830f014f49ec8dc0b6a76d89b12",
+    "file_sha256": {
+      "cloud/crm_sync_state_probe_20261012/test_contract.py": "f865351c4b74bb76d0d36b609d7a8cde1b6e60208de4775408fb9bbcba9f7810"
+    }
+  },
+  "updated_at": "2026-10-12T00:49:43Z"
 }

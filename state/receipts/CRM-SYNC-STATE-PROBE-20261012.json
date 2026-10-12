@@ -1,0 +1,19 @@
+{
+  "deletion_performed": false,
+  "evidence_path": "cloud/crm_sync_state_probe_20261012/evidence.json",
+  "finished_at": "2026-10-12T00:49:22Z",
+  "live_source_environment": "production",
+  "production_required": false,
+  "request_sha256": "883372f2f61b1ab0da648dd42b27c3818645205ecbda3a09927f6b045b21e0b0",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_REMOTE_WRITES",
+  "run_id": "38189397485",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "CRM-SYNC-STATE-PROBE-20261012",
+  "tests": "PASS",
+  "tests_scope": "FIXED_GET_SCOPE_AND_SAFE_EVIDENCE_ONLY",
+  "unavailable_paths": [],
+  "unexpected_changes": 0
+}

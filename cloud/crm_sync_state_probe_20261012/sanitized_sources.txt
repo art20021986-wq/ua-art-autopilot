@@ -1,0 +1,266 @@
+# /home/Carix/publish_transaction_guard.py:137
+def _matching_paths(codes: set[str]) -> set[pathlib.Path]:
+    paths: set[pathlib.Path] = {root / 'katalog.html' for root in ROOTS}
+    for code in codes:
+        for root in ROOTS:
+            paths.add(root / (code + '.html'))
+            paths.add(root / (code + '-diag.html'))
+            if root.is_dir():
+                paths.update((path for path in root.glob(code + '*') if path.is_file()))
+            for folder in (root / 'foto' / code, root / 'diag' / code):
+                if folder.is_dir():
+                    paths.update((path for path in folder.rglob('*') if path.is_file()))
+        archive = ROOT / 'archive' / 'video_dubli'
+        if archive.is_dir():
+            paths.update((path for path in archive.glob(code + '*') if path.is_file()))
+    return paths
+
+# /home/Carix/publish_transaction_guard.py:285
+def _catalog_card_window(source: str, code: str) -> str:
+    match = re.search('href\\s*=\\s*[\'\\"][^\'\\"]*' + re.escape(code) + '\\.html(?:\\?[^\'\\"]*)?[\'\\"]', source, re.I)
+    if not match:
+        return ''
+    start = max(0, match.start() - 1200)
+    end = min(len(source), match.end() + 14000)
+    return source[start:end]
+
+# /home/Carix/publish_transaction_guard.py:298
+def _validate_catalog(source: str, rows: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    if len(source.encode('utf-8')) < 5000 or '</html>' not in source.lower():
+        raise PublishError('CATALOG_HTML_INVALID')
+    counts = _href_counts(source)
+    expected = set(rows)
+    wrong = {code: counts.get(code, 0) for code in sorted(expected) if counts.get(code, 0) != 1}
+    unexpected = sorted(set(counts) - expected)
+    if wrong:
+        raise PublishError('CATALOG_CARD_COUNT:' + json.dumps(wrong, sort_keys=True))
+    if unexpected:
+        raise PublishError('CATALOG_UNEXPECTED_IDS:' + ','.join(unexpected))
+    cards: dict[str, Any] = {}
+    for code, row in rows.items():
+        stage = _stage(row)
+        category = _category(stage)
+        window = _catalog_card_window(source, code)
+        tokens = ('data-ua-stage="%d"' % stage, "data-ua-stage='%d'" % stage, 'data-ua-stage-tile="%d"' % stage, "data-ua-stage-tile='%d'" % stage, 'data-stage="%d"' % stage, "data-stage='%d'" % stage)
+        if not window or not any((token in window for token in tokens)):
+            raise PublishError('CATALOG_STAGE_MISMATCH:%s:%d' % (code, stage))
+        cards[code] = {'href_count': 1, 'stage': stage, 'category': category, 'category_token': bool(re.search('(?:data-(?:category|filter)|[?&](?:f|etap|stage)=)[\'\\"]?' + re.escape(category), window, re.I))}
+    return {'count': len(expected), 'cards': cards, 'ids': sorted(expected)}
+
+# /home/Carix/publish_transaction_guard.py:365
+def _build_catalog() -> tuple[str, list[dict[str, Any]]]:
+    import publikaciya as publisher
+    if not hasattr(publisher, '_ua9_sobrat_katalog'):
+        raise PublishError('CATALOG_MASTER_MISSING')
+    value, rows = publisher._ua9_sobrat_katalog()
+    if isinstance(value, bytes):
+        value = value.decode('utf-8', 'replace')
+    return (str(value or ''), list(rows or []))
+
+# /home/Carix/publish_transaction_guard.py:376
+def _install_catalog(source: str, target: str | None) -> dict[str, Any]:
+    row_map, _ = _row_map()
+    before = _validate_catalog(source, row_map)
+    try:
+        import catalog_stage_guard_core as stage_guard
+    except ModuleNotFoundError as exc:
+        raise PublishError('CATALOG_STAGE_GUARD_MISSING') from exc
+    photos: dict[str, str] = {}
+    for code in sorted(row_map):
+        primary_path = VIDEO / (code + '.html')
+        if not primary_path.is_file():
+            raise PublishError('CATALOG_PRIMARY_NOT_READY:' + code)
+        primary = _read(primary_path).decode('utf-8', 'replace')
+        photos[code] = stage_guard.extract_main_photo(primary, 'https://www.uaart.com.ua/video/%s.html' % code, code)
+        if not photos[code]:
+            raise PublishError('CATALOG_MAIN_PHOTO_NOT_READY:' + code)
+    try:
+        normalized = stage_guard.enforce_catalog(source, list(row_map.values()), photos)
+        stage_audit = stage_guard.audit_catalog(normalized, list(row_map.values()))
+    except Exception as exc:
+        raise PublishError('CATALOG_STAGE_GUARD_FAIL:' + str(exc)) from exc
+    if not isinstance(stage_audit, dict) or stage_audit.get('status') != 'PASS':
+        raise PublishError('CATALOG_STAGE_AUDIT_FAIL')
+    data = normalized.encode('utf-8')
+    for root in ROOTS:
+        path = root / 'katalog.html'
+        _atomic(path, data, path.stat().st_mode & 511 if path.exists() else 420)
+        if _read(path) != data:
+            raise PublishError('CATALOG_READBACK_MISMATCH:' + str(path))
+    after: dict[str, Any] = {}
+    for root in ROOTS:
+        path = root / 'katalog.html'
+        after[str(path)] = {'sha256': _sha(_read(path)), 'audit': _validate_catalog(_read(path).decode('utf-8', 'replace'), row_map)}
+    return {'candidate': before, 'stage_guard': stage_audit, 'target': target, 'installed': after}
+
+# /home/Carix/publish_transaction_guard.py:425
+def _verify_bundle(codes: list[str]) -> dict[str, Any]:
+    rows, digest = _row_map()
+    targets: dict[str, Any] = {}
+    for code in codes:
+        row = rows.get(code)
+        if row is None:
+            raise PublishError('TARGET_NOT_PUBLISHED:' + code)
+        files: dict[str, Any] = {}
+        for root in ROOTS:
+            primary_path = root / (code + '.html')
+            diag_path = root / (code + '-diag.html')
+            if not primary_path.is_file() or not diag_path.is_file():
+                raise PublishError('TARGET_FILE_MISSING:%s:%s' % (code, root))
+            primary_text = _read(primary_path).decode('utf-8', 'replace')
+            diag_text = _read(diag_path).decode('utf-8', 'replace')
+            if code not in diag_text or '</html>' not in diag_text.lower():
+                raise PublishError('DIAGNOSTIC_READBACK_INVALID:%s:%s' % (code, root))
+            files[str(root)] = {'primary_sha256': _sha(_read(primary_path)), 'diag_sha256': _sha(_read(diag_path)), 'primary': _validate_primary(code, row, primary_text)}
+        targets[code] = {'status': row.get('status'), 'stage': _stage(row), 'category': _category(_stage(row)), 'files': files}
+    catalogs: dict[str, Any] = {}
+    for root in ROOTS:
+        path = root / 'katalog.html'
+        catalogs[str(path)] = _validate_catalog(_read(path).decode('utf-8', 'replace'), rows)
+    return {'targets': targets, 'catalogs': catalogs, 'published_rows_sha256': digest}
+
+# /home/Carix/publish_transaction_guard.py:469
+def _publish_locked(base_publish: Callable[..., Any], codes: list[str], proba: bool=False) -> tuple[bool, str, dict[str, Any]]:
+    codes = [_code(value) for value in codes]
+    if not codes or len(codes) != len(set(codes)):
+        raise PublishError('TARGET_SET_INVALID')
+    snapshot = Snapshot(codes)
+    before_rows, before_db = _row_map()
+    missing = [code for code in codes if code not in before_rows]
+    if missing:
+        raise PublishError('TARGETS_NOT_PUBLISHED:' + ','.join(missing))
+    protected = _protected_pages(set(codes))
+    evidence: dict[str, Any] = {'contract_id': CONTRACT_ID, 'codes': codes, 'mode': 'PROBE' if proba else 'INSTALL', 'backup_root': str(snapshot.root), 'published_rows_sha256_before': before_db, 'staged_diagnostics': {}, 'base_results': {}, 'catalog': None, 'verification': None, 'rollback': None}
+    try:
+        evidence['staged_diagnostics'] = _stage_diags(codes)
+        for code in codes:
+            ok, message = _call_base(base_publish, code, proba)
+            evidence['base_results'][code] = {'ok': ok, 'message': message[:2000]}
+            if not ok:
+                raise PublishError('BASE_PUBLISH_FAILED:%s:%s' % (code, message[:500]))
+        catalog_source, catalog_rows = _build_catalog()
+        generated_ids = {str(row.get('auto_number') or '').upper() for row in catalog_rows}
+        if generated_ids != set(before_rows):
+            raise PublishError('CATALOG_ROW_SET_MISMATCH')
+        _validate_catalog(catalog_source, before_rows)
+        if proba:
+            evidence['rollback'] = snapshot.restore()
+            evidence['status'] = 'PASS'
+            return (True, 'Проба публикации прошла; production-файлы не изменены.', evidence)
+        evidence['catalog'] = _install_catalog(catalog_source, codes[-1])
+        after_rows, after_db = _row_map()
+        if before_db != after_db or set(before_rows) != set(after_rows):
+            raise PublishError('CRM_ROWS_CHANGED_DURING_PUBLICATION')
+        if _protected_pages(set(codes)) != protected:
+            raise PublishError('PROTECTED_PAGE_CHANGED')
+        evidence['verification'] = _verify_bundle(codes)
+        evidence['published_rows_sha256_after'] = after_db
+        evidence['status'] = 'PASS'
+        _append_log('PASS %s backup=%s' % (','.join(codes), snapshot.root))
+        return (True, 'Страницы, диагностика и оба каталога опубликованы одним проверенным пакетом: ' + ', '.join(codes), evidence)
+    except Exception as exc:
+        try:
+            evidence['rollback'] = snapshot.restore()
+        except Exception as rollback_exc:
+            evidence['rollback_error'] = type(rollback_exc).__name__ + ':' + str(rollback_exc)
+            _append_log('CRITICAL ROLLBACK FAIL %s %s' % (','.join(codes), rollback_exc))
+            raise
+        evidence['status'] = 'FAIL'
+        evidence['error'] = type(exc).__name__ + ':' + str(exc)
+        _append_log('FAIL %s %s rollback=PASS' % (','.join(codes), evidence['error']))
+        return (False, 'Публикация отменена: %s. Выполнен полный откат.' % str(exc), evidence)
+
+# /home/Carix/publish_transaction_guard.py:546
+def publish_one(base_publish: Callable[..., Any], code: str, proba: bool=False) -> tuple[bool, str]:
+    ok, message, _ = publish_batch(base_publish, [code], proba=proba)
+    return (ok, message)
+
+# /home/Carix/publish_transaction_guard.py:553
+def rebuild_catalog() -> tuple[bool, str]:
+    with _exclusive_lock():
+        snapshot = Snapshot([])
+        before_rows, before_db = _row_map()
+        protected = _protected_pages(set())
+        try:
+            source, generated_rows = _build_catalog()
+            generated_ids = {str(row.get('auto_number') or '').upper() for row in generated_rows}
+            if generated_ids != set(before_rows):
+                raise PublishError('CATALOG_ROW_SET_MISMATCH')
+            _install_catalog(source, None)
+            _, after_db = _row_map()
+            if after_db != before_db:
+                raise PublishError('CRM_ROWS_CHANGED_DURING_CATALOG_REBUILD')
+            if _protected_pages(set()) != protected:
+                raise PublishError('PROTECTED_PAGE_CHANGED')
+            return (True, 'Каталог обновлён.')
+        except Exception as exc:
+            snapshot.restore()
+            return (False, 'Каталог не обновлён: %s. Выполнен откат.' % str(exc))
+
+# /home/Carix/publish_transaction_guard.py:612
+def _validate_catalog(source, rows):
+    import catalog_design_guard as _ua090_design
+    _golden = _ua090_design.GOLDEN_PATH.read_text(encoding='utf-8')
+    _audit = _ua090_design.audit_catalog(source, rows.values(), _golden)
+    if _audit.get('status') != 'PASS':
+        raise PublishError('TASK090_CATALOG_CONTRACT:' + ','.join(_audit.get('errors') or []))
+    return _audit
+
+# /home/Carix/publish_transaction_guard.py:621
+def _install_catalog(source, target):
+    import catalog_design_guard as _ua090_design
+    _rows_map, _rows_digest = _row_map()
+    _photos = {}
+    for _identifier in sorted(_rows_map):
+        _primary_path = VIDEO / (_identifier + '.html')
+        if not _primary_path.is_file():
+            raise PublishError('TASK090_PRIMARY_NOT_READY:' + _identifier)
+        _primary = _read(_primary_path).decode('utf-8', 'replace')
+        _photos[_identifier] = _ua090_design.extract_main_photo(_primary, _identifier)
+    _normalized = _ua090_design.build_from_golden_path(_rows_map.values(), _photos)
+    from site_ge_inject import inject_html as _ua_site_ge_inject_html
+    _normalized = _ua_site_ge_inject_html(_normalized)
+    _before = _validate_catalog(_normalized, _rows_map)
+    _data = _normalized.encode('utf-8')
+    for _root in ROOTS:
+        _path = _root / 'katalog.html'
+        _atomic(_path, _data, _path.stat().st_mode & 511 if _path.exists() else 420)
+        if _read(_path) != _data:
+            raise PublishError('TASK090_CATALOG_READBACK:' + str(_path))
+    _installed = {}
+    for _root in ROOTS:
+        _path = _root / 'katalog.html'
+        _text = _read(_path).decode('utf-8', 'replace')
+        _installed[str(_path)] = {'sha256': _sha(_read(_path)), 'audit': _validate_catalog(_text, _rows_map)}
+    return {'candidate': _before, 'design_guard': _before, 'target': target, 'published_rows_sha256': _rows_digest, 'installed': _installed}
+
+# /home/Carix/publish_transaction_guard.py:669
+def _matching_paths(codes):
+    normalized = {_code(value) for value in codes}
+    paths = {root / 'katalog.html' for root in ROOTS}
+    for code in normalized:
+        for root in ROOTS:
+            paths.add(root / (code + '.html'))
+            paths.add(root / (code + '-diag.html'))
+            if root.is_dir():
+                paths.update((path for path in root.glob(code + '*.html') if path.is_file()))
+    return paths
+
+# /home/Carix/publish_transaction_guard.py:772
+def _install_catalog(source, target):
+    result = _UA123_BASE_INSTALL(source, target)
+    updates, counts = _ua123_prepare_updates(ROOTS)
+    for path, before, after in updates:
+        if _read(path) != before:
+            raise PublishError('COUNTER_SOURCE_CHANGED:' + str(path))
+        if after != before:
+            _atomic(path, after, path.stat().st_mode & 511)
+        if _read(path) != after:
+            raise PublishError('COUNTER_READBACK:' + str(path))
+    result['site_counters'] = counts
+    rows, _ = _row_map()
+    for path_string, evidence in result.get('installed', {}).items():
+        path = pathlib.Path(path_string)
+        evidence['sha256'] = _sha(_read(path))
+        evidence['audit'] = _validate_catalog(_read(path).decode('utf-8'), rows)
+    return result

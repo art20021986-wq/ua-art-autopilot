@@ -1,0 +1,472 @@
+{
+  "completion_meaning": "READ_ONLY_DIAGNOSIS_ONLY",
+  "finished_at": "2026-10-12T00:49:22Z",
+  "http_methods": [
+    "GET"
+  ],
+  "log": {
+    "bytes": 123338,
+    "first_line_ts": "Oct  6 06:18:04 2026-10-06 06:18:04,010 ",
+    "lines": [
+      "638: Oct  8 10:49:11 2026-10-08 10:49:11,195 WARNING start_safe: сеть подвела на novyj, попытка 2 из 3, пауза 3 c",
+      "639: Oct  8 10:49:13 2026-10-08 10:49:13,530 WARNING card_render: CRM media batch timeout",
+      "640: Oct  8 10:49:57 2026-10-08 10:49:57,656 INFO ua_crm_public_sync: CRM sync PASS: UA-0018",
+      "641: Oct  8 10:50:32 2026-10-08 10:50:32,152 INFO ua_crm_public_sync: CRM sync PASS: UA-0018",
+      "642: Oct  8 10:54:45 2026-10-08 10:54:45,705 WARNING start_safe: сеть подвела на novyj, попытка 1 из 3, пауза 2 c",
+      "643: Oct  8 10:54:47 2026-10-08 10:54:47,289 WARNING start_safe: сеть подвела на novyj, попытка 2 из 3, пауза 3 c",
+      "644: Oct  8 10:54:49 2026-10-08 10:54:49,625 WARNING card_render: CRM media batch timeout",
+      "645: Oct  8 10:55:21 2026-10-08 10:55:21,090 WARNING card_render: CRM media batch timeout",
+      "646: Oct  8 11:07:06 2026-10-08 11:07:06,063 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "647: Oct  8 11:07:06 Traceback (most recent call last):",
+      "648: Oct  8 11:07:06   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "649: Oct  8 11:07:06     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "650: Oct  8 11:07:06   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "651: Oct  8 11:07:06     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "652: Oct  8 11:07:06 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "653: Oct  8 11:07:09 2026-10-08 11:07:09,035 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "654: Oct  8 11:07:09 Traceback (most recent call last):",
+      "655: Oct  8 11:07:09   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "656: Oct  8 11:07:09     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "657: Oct  8 11:07:09   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "658: Oct  8 11:07:09     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "659: Oct  8 11:07:09 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "660: Oct  8 11:07:15 2026-10-08 11:07:15,567 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "661: Oct  8 11:07:15 Traceback (most recent call last):",
+      "662: Oct  8 11:07:15   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "663: Oct  8 11:07:15     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "664: Oct  8 11:07:15   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "665: Oct  8 11:07:15     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "666: Oct  8 11:07:15 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "667: Oct  9 04:06:36 2026-10-09 04:06:36,657 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "668: Oct  9 04:06:36 Traceback (most recent call last):",
+      "669: Oct  9 04:06:36   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "670: Oct  9 04:06:36     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "671: Oct  9 04:06:36   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "672: Oct  9 04:06:36     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "673: Oct  9 04:06:36 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "674: Oct  9 04:06:45 2026-10-09 04:06:45,880 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "675: Oct  9 04:06:45 Traceback (most recent call last):",
+      "676: Oct  9 04:06:45   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "677: Oct  9 04:06:45     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "678: Oct  9 04:06:45   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "679: Oct  9 04:06:45     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "680: Oct  9 04:06:45 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "681: Oct  9 04:07:18 2026-10-09 04:07:18,685 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "682: Oct  9 04:07:18 Traceback (most recent call last):",
+      "683: Oct  9 04:07:18   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "684: Oct  9 04:07:18     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "685: Oct  9 04:07:18   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "686: Oct  9 04:07:18     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "687: Oct  9 04:07:18 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "688: Oct  9 04:07:22 2026-10-09 04:07:22,707 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "689: Oct  9 04:07:22 Traceback (most recent call last):",
+      "690: Oct  9 04:07:22   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "691: Oct  9 04:07:22     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "692: Oct  9 04:07:22   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "693: Oct  9 04:07:22     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "694: Oct  9 04:07:22 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "695: Oct  9 04:07:33 2026-10-09 04:07:33,381 WARNING start_safe: сеть подвела на novyj, попытка 1 из 3, пауза 2 c",
+      "696: Oct  9 04:07:34 2026-10-09 04:07:34,965 WARNING start_safe: сеть подвела на novyj, попытка 2 из 3, пауза 3 c",
+      "697: Oct  9 04:07:37 2026-10-09 04:07:37,299 WARNING card_render: CRM media batch timeout",
+      "698: Oct  9 04:07:37 2026-10-09 04:07:37,353 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "699: Oct  9 04:07:37 Traceback (most recent call last):",
+      "700: Oct  9 04:07:37   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "701: Oct  9 04:07:37     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "702: Oct  9 04:07:37   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "703: Oct  9 04:07:37     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "704: Oct  9 04:07:37 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "705: Oct  9 06:18:04 2026-10-09 06:18:04,128 INFO root: Резервная копия: /home/Carix/backups/crm_2026-10-09.db",
+      "706: Oct  9 06:18:04 2026-10-09 06:18:04,142 INFO root: Резервная копия готова: /home/Carix/backups/crm_2026-10-09.db",
+      "707: Oct 10 01:10:59 2026-10-10 01:10:59,920 ERROR telegram.ext.Updater: Exception happened while polling for updates.",
+      "708: Oct 10 01:10:59 Traceback (most recent call last):",
+      "709: Oct 10 01:10:59   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/ext/_utils/networkloop.py\", line 161, in network_retry_loop",
+      "710: Oct 10 01:10:59     await do_action()",
+      "711: Oct 10 01:10:59   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/ext/_utils/networkloop.py\", line 154, in do_action",
+      "712: Oct 10 01:10:59     action_cb_task.result()",
+      "713: Oct 10 01:10:59   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/ext/_updater.py\", line 340, in polling_action_cb",
+      "714: Oct 10 01:10:59     updates = await self.bot.get_updates(",
+      "715: Oct 10 01:10:59   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/ext/_extbot.py\", line 680, in get_updates",
+      "754: Oct 10 04:16:26 Traceback (most recent call last):",
+      "755: Oct 10 04:16:26   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "756: Oct 10 04:16:26     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "757: Oct 10 04:16:26   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "758: Oct 10 04:16:26     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "759: Oct 10 04:16:26 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "760: Oct 10 06:18:03 2026-10-10 06:18:03,977 INFO root: Резервная копия: /home/Carix/backups/crm_2026-10-10.db",
+      "761: Oct 10 06:18:03 2026-10-10 06:18:03,996 INFO root: Резервная копия готова: /home/Carix/backups/crm_2026-10-10.db",
+      "762: Oct 10 06:56:39 2026-10-10 06:56:39,382 ERROR telegram.ext.Updater: Exception happened while polling for updates.",
+      "763: Oct 10 06:56:39 Traceback (most recent call last):",
+      "764: Oct 10 06:56:39   File \"/usr/local/lib/python3.10/dist-packages/httpx/_transports/default.py\", line 72, in map_httpcore_exceptions",
+      "765: Oct 10 06:56:39     yield",
+      "766: Oct 10 06:56:39   File \"/usr/local/lib/python3.10/dist-packages/httpx/_transports/default.py\", line 377, in handle_async_request",
+      "767: Oct 10 06:56:39     resp = await self._pool.handle_async_request(req)",
+      "768: Oct 10 06:56:39   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/connection_pool.py\", line 256, in handle_async_request",
+      "769: Oct 10 06:56:39     raise exc from None",
+      "770: Oct 10 06:56:39   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/connection_pool.py\", line 236, in handle_async_request",
+      "1053: Oct 11 13:17:37 Traceback (most recent call last):",
+      "1054: Oct 11 13:17:37   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1055: Oct 11 13:17:37     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1056: Oct 11 13:17:37   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1057: Oct 11 13:17:37     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1058: Oct 11 13:17:37 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1059: Oct 11 13:17:48 2026-10-11 13:17:48,205 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1060: Oct 11 13:17:48 Traceback (most recent call last):",
+      "1061: Oct 11 13:17:48   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1062: Oct 11 13:17:48     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1063: Oct 11 13:17:48   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1064: Oct 11 13:17:48     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1065: Oct 11 13:17:48 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1066: Oct 11 13:17:50 2026-10-11 13:17:50,535 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1067: Oct 11 13:17:50 Traceback (most recent call last):",
+      "1068: Oct 11 13:17:50   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1069: Oct 11 13:17:50     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1070: Oct 11 13:17:50   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1071: Oct 11 13:17:50     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1072: Oct 11 13:17:50 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1073: Oct 11 13:17:51 2026-10-11 13:17:51,804 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1074: Oct 11 13:17:51 Traceback (most recent call last):",
+      "1075: Oct 11 13:17:51   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1076: Oct 11 13:17:51     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1077: Oct 11 13:17:51   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1078: Oct 11 13:17:51     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1079: Oct 11 13:17:51 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1080: Oct 11 13:35:55 2026-10-11 13:35:55,390 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1081: Oct 11 13:35:55 Traceback (most recent call last):",
+      "1082: Oct 11 13:35:55   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1083: Oct 11 13:35:55     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1084: Oct 11 13:35:55   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1085: Oct 11 13:35:55     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1086: Oct 11 13:35:55 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1087: Oct 11 13:37:47 2026-10-11 13:37:47,630 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1088: Oct 11 13:37:47 Traceback (most recent call last):",
+      "1089: Oct 11 13:37:47   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1090: Oct 11 13:37:47     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1091: Oct 11 13:37:47   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1092: Oct 11 13:37:47     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1093: Oct 11 13:37:47 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1094: Oct 11 14:56:44 2026-10-11 14:56:44,798 ERROR telegram.ext.Updater: Exception happened while polling for updates.",
+      "1095: Oct 11 14:56:44 Traceback (most recent call last):",
+      "1096: Oct 11 14:56:44   File \"/usr/local/lib/python3.10/dist-packages/httpx/_transports/default.py\", line 72, in map_httpcore_exceptions",
+      "1097: Oct 11 14:56:44     yield",
+      "1098: Oct 11 14:56:44   File \"/usr/local/lib/python3.10/dist-packages/httpx/_transports/default.py\", line 377, in handle_async_request",
+      "1099: Oct 11 14:56:44     resp = await self._pool.handle_async_request(req)",
+      "1100: Oct 11 14:56:44   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/connection_pool.py\", line 256, in handle_async_request",
+      "1101: Oct 11 14:56:44     raise exc from None",
+      "1102: Oct 11 14:56:44   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/connection_pool.py\", line 236, in handle_async_request",
+      "1103: Oct 11 14:56:44     response = await connection.handle_async_request(",
+      "1104: Oct 11 14:56:44   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/connection.py\", line 103, in handle_async_request",
+      "1168: Oct 11 22:58:30 Traceback (most recent call last):",
+      "1169: Oct 11 22:58:30   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1170: Oct 11 22:58:30     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1171: Oct 11 22:58:30   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1172: Oct 11 22:58:30     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1173: Oct 11 22:58:30 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1174: Oct 11 23:22:47 2026-10-11 23:22:47,684 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1175: Oct 11 23:22:47 Traceback (most recent call last):",
+      "1176: Oct 11 23:22:47   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1177: Oct 11 23:22:47     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1178: Oct 11 23:22:47   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1179: Oct 11 23:22:47     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1180: Oct 11 23:22:47 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1181: Oct 11 23:23:00 2026-10-11 23:23:00,025 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1182: Oct 11 23:23:00 Traceback (most recent call last):",
+      "1183: Oct 11 23:23:00   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1184: Oct 11 23:23:00     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1185: Oct 11 23:23:00   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1186: Oct 11 23:23:00     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1187: Oct 11 23:23:00 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1188: Oct 11 23:50:59 2026-10-11 23:50:59,838 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1189: Oct 11 23:50:59 Traceback (most recent call last):",
+      "1190: Oct 11 23:50:59   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1191: Oct 11 23:50:59     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1192: Oct 11 23:50:59   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1193: Oct 11 23:50:59     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1194: Oct 11 23:50:59 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1195: Oct 11 23:51:04 2026-10-11 23:51:04,081 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1196: Oct 11 23:51:04 Traceback (most recent call last):",
+      "1197: Oct 11 23:51:04   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1198: Oct 11 23:51:04     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1199: Oct 11 23:51:04   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1200: Oct 11 23:51:04     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1201: Oct 11 23:51:04 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1202: Oct 11 23:58:08 2026-10-11 23:58:08,893 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1203: Oct 11 23:58:08 Traceback (most recent call last):",
+      "1204: Oct 11 23:58:08   File \"/home/Carix/cars_ui.py\", line 4124, in cars_list",
+      "1205: Oct 11 23:58:08     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1206: Oct 11 23:58:08   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1207: Oct 11 23:58:08     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1208: Oct 11 23:58:08 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1209: Oct 12 00:12:36 2026-10-12 00:12:36,247 INFO start_safe: таймауты соединения подняты",
+      "1210: Oct 12 00:12:36 2026-10-12 00:12:36,247 INFO start_safe: защищено методов отправки: 13",
+      "1211: Oct 12 00:12:36 2026-10-12 00:12:36,248 INFO start_safe: фильтр сетевых ошибок включён",
+      "1212: Oct 12 00:12:36 2026-10-12 00:12:36,250 INFO start_safe: HTML облегчён, правила: BYTE_BUDGET, VIDEO_BUDGET",
+      "1213: Oct 12 00:12:36 2026-10-12 00:12:36,250 INFO start_safe: кэш скачанных кадров включён",
+      "1214: Oct 12 00:12:36 2026-10-12 00:12:36,757 INFO start_safe: защита включена, запускаю run_all.py",
+      "1215: Oct 12 00:12:36 2026-10-12 00:12:36,827 INFO root: База готова: /home/Carix/crm.db",
+      "1216: Oct 12 00:12:36 /home/Carix/lead_bot.py:1982: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.",
+      "1217: Oct 12 00:12:36   lead_conv = ConversationHandler(",
+      "1218: Oct 12 00:12:36 /home/Carix/lead_bot.py:2020: PTBUserWarning: If 'per_message=False', 'CallbackQueryHandler' will not be tracked for every message. Read this FAQ entry to learn more about the per_* settings: https://github.com/python-telegram-bot/python-telegram-bot/wiki/Frequently-Asked-Questions#what-do-the-per_-settings-in-conversationhandler-do.",
+      "1219: Oct 12 00:12:36   buy_conv = ConversationHandler(",
+      "1264: Oct 12 00:12:38 2026-10-12 00:12:38,039 INFO start_safe: команда /pokaz подключена",
+      "1265: Oct 12 00:12:38 2026-10-12 00:12:38,039 INFO apscheduler.scheduler: Added job \"crm-guard-heartbeat-crm_bot\" to job store \"default\"",
+      "1266: Oct 12 00:12:38 2026-10-12 00:12:38,039 INFO apscheduler.scheduler: Added job \"ua-stage-catalog-sync-004\" to job store \"default\"",
+      "1267: Oct 12 00:12:38 2026-10-12 00:12:38,039 INFO apscheduler.scheduler: Added job \"oneclick-publication-receipts\" to job store \"default\"",
+      "1268: Oct 12 00:12:38 2026-10-12 00:12:38,039 INFO apscheduler.scheduler: Added job \"media_spool_worker_job\" to job store \"default\"",
+      "1269: Oct 12 00:12:38 2026-10-12 00:12:38,039 INFO apscheduler.scheduler: Added job \"backup_job\" to job store \"default\"",
+      "1270: Oct 12 00:12:38 2026-10-12 00:12:38,040 INFO apscheduler.scheduler: Added job \"vvodnye_job\" to job store \"default\"",
+      "1271: Oct 12 00:12:38 2026-10-12 00:12:38,040 INFO apscheduler.scheduler: Scheduler started",
+      "1272: Oct 12 00:12:38 2026-10-12 00:12:38,040 INFO telegram.ext.Application: Application started",
+      "1273: Oct 12 00:12:38 2026-10-12 00:12:38,138 INFO root: Запущен бот: внутренний",
+      "1274: Oct 12 00:12:38 2026-10-12 00:12:38,142 INFO root: Всего работает ботов: 2",
+      "1275: Oct 12 00:12:42 2026-10-12 00:12:42,399 INFO apscheduler.scheduler: Removed job eb7d180b6f61454b9218eecc429ab088",
+      "1276: Oct 12 00:14:37 2026-10-12 00:14:37,728 INFO root: Резервная копия: /home/Carix/backups/crm_2026-10-12.db",
+      "1277: Oct 12 00:14:37 2026-10-12 00:14:37,738 INFO root: Резервная копия готова: /home/Carix/backups/crm_2026-10-12.db",
+      "1278: Oct 12 00:14:40 2026-10-12 00:14:40,425 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1279: Oct 12 00:14:40 Traceback (most recent call last):",
+      "1280: Oct 12 00:14:40   File \"/home/Carix/cars_ui.py\", line 4121, in cars_list",
+      "1281: Oct 12 00:14:40     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1282: Oct 12 00:14:40   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1283: Oct 12 00:14:40     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1284: Oct 12 00:14:40 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1285: Oct 12 00:14:45 2026-10-12 00:14:45,257 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1286: Oct 12 00:14:45 Traceback (most recent call last):",
+      "1287: Oct 12 00:14:45   File \"/home/Carix/cars_ui.py\", line 4121, in cars_list",
+      "1288: Oct 12 00:14:45     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1289: Oct 12 00:14:45   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1290: Oct 12 00:14:45     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1291: Oct 12 00:14:45 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1292: Oct 12 00:14:47 2026-10-12 00:14:47,862 ERROR cars_ui: Не удалось прочитать папки автомобилей",
+      "1293: Oct 12 00:14:47 Traceback (most recent call last):",
+      "1294: Oct 12 00:14:47   File \"/home/Carix/cars_ui.py\", line 4121, in cars_list",
+      "1295: Oct 12 00:14:47     groups = _ua122_partition(cards, _ua122_catalog_ids())",
+      "1296: Oct 12 00:14:47   File \"/home/Carix/ua_crm_catalog_folders.py\", line 134, in partition_by_catalog",
+      "1297: Oct 12 00:14:47     raise CatalogSnapshotError(\"Catalog contains car numbers absent from the CRM snapshot\")",
+      "1298: Oct 12 00:14:47 ua_crm_catalog_folders.CatalogSnapshotError: Catalog contains car numbers absent from the CRM snapshot",
+      "1299: Oct 12 00:31:46 2026-10-12 00:31:46,889 ERROR telegram.ext.Updater: Exception happened while polling for updates.",
+      "1300: Oct 12 00:31:46 Traceback (most recent call last):",
+      "1301: Oct 12 00:31:46   File \"/usr/local/lib/python3.10/dist-packages/httpx/_transports/default.py\", line 72, in map_httpcore_exceptions",
+      "1302: Oct 12 00:31:46     yield",
+      "1303: Oct 12 00:31:46   File \"/usr/local/lib/python3.10/dist-packages/httpx/_transports/default.py\", line 377, in handle_async_request",
+      "1304: Oct 12 00:31:46     resp = await self._pool.handle_async_request(req)",
+      "1305: Oct 12 00:31:46   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/connection_pool.py\", line 256, in handle_async_request",
+      "1306: Oct 12 00:31:46     raise exc from None",
+      "1307: Oct 12 00:31:46   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/connection_pool.py\", line 236, in handle_async_request",
+      "1308: Oct 12 00:31:46     response = await connection.handle_async_request(",
+      "1309: Oct 12 00:31:46   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/connection.py\", line 103, in handle_async_request"
+    ],
+    "matched_lines_exported": 245,
+    "total_lines": 1371
+  },
+  "path_status": {
+    "/home/Carix/.crm_public_sync_state.json": {
+      "bytes": 2667,
+      "sha256": "776df9b5ab871bec558691f38d410904b1d8c7f4c1a21cd726ee858ec7642706",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/publish_transaction_guard.py": {
+      "bytes": 31947,
+      "sha256": "9b41f15e8455ec7e579bea1e194e6c855cc50b7b0e060ee2a010301d28c981e8",
+      "status": "RECEIVED"
+    },
+    "/var/log/alwayson-log-266084.log": {
+      "bytes": 123338,
+      "sha256": "0d581017068b95618914cf84901499df8acb7e4d29710c2f99207753a68153e2",
+      "status": "RECEIVED"
+    }
+  },
+  "raw_private_data_persisted": false,
+  "remote_write_count": 0,
+  "request_sha256": "883372f2f61b1ab0da648dd42b27c3818645205ecbda3a09927f6b045b21e0b0",
+  "run_id": "38189397485",
+  "sanitized_source_excerpts_path": "cloud/crm_sync_state_probe_20261012/sanitized_sources.txt",
+  "source_facts": {
+    "/home/Carix/publish_transaction_guard.py": {
+      "bytes": 31947,
+      "definitions": [
+        {
+          "end_line": 151,
+          "excerpt": "EXPORTED",
+          "line": 137,
+          "name": "_matching_paths"
+        },
+        {
+          "end_line": 295,
+          "excerpt": "EXPORTED",
+          "line": 285,
+          "name": "_catalog_card_window"
+        },
+        {
+          "end_line": 334,
+          "excerpt": "EXPORTED",
+          "line": 298,
+          "name": "_validate_catalog"
+        },
+        {
+          "end_line": 373,
+          "excerpt": "EXPORTED",
+          "line": 365,
+          "name": "_build_catalog"
+        },
+        {
+          "end_line": 422,
+          "excerpt": "EXPORTED",
+          "line": 376,
+          "name": "_install_catalog"
+        },
+        {
+          "end_line": 459,
+          "excerpt": "EXPORTED",
+          "line": 425,
+          "name": "_verify_bundle"
+        },
+        {
+          "end_line": 536,
+          "excerpt": "EXPORTED",
+          "line": 469,
+          "name": "_publish_locked"
+        },
+        {
+          "end_line": 550,
+          "excerpt": "EXPORTED",
+          "line": 546,
+          "name": "publish_one"
+        },
+        {
+          "end_line": 572,
+          "excerpt": "EXPORTED",
+          "line": 553,
+          "name": "rebuild_catalog"
+        },
+        {
+          "end_line": 618,
+          "excerpt": "EXPORTED",
+          "line": 612,
+          "name": "_validate_catalog"
+        },
+        {
+          "end_line": 659,
+          "excerpt": "EXPORTED",
+          "line": 621,
+          "name": "_install_catalog"
+        },
+        {
+          "end_line": 678,
+          "excerpt": "EXPORTED",
+          "line": 669,
+          "name": "_matching_paths"
+        },
+        {
+          "end_line": 789,
+          "excerpt": "EXPORTED",
+          "line": 772,
+          "name": "_install_catalog"
+        }
+      ],
+      "path": "/home/Carix/publish_transaction_guard.py",
+      "sha256": "9b41f15e8455ec7e579bea1e194e6c855cc50b7b0e060ee2a010301d28c981e8"
+    }
+  },
+  "started_at": "2026-10-12T00:49:22Z",
+  "sync_state": {
+    "baseline_at": 1790423992.593794,
+    "catalog_retry": {},
+    "last_success": {
+      "at": 1791456632.1367705,
+      "code": "UA-0018"
+    },
+    "retry": {},
+    "revisions": {
+      "10": {
+        "code": "UA-0004",
+        "delivery_status": null
+      },
+      "11": {
+        "code": "UA-0005",
+        "delivery_status": null
+      },
+      "12": {
+        "code": "UA-0006",
+        "delivery_status": null
+      },
+      "13": {
+        "code": "UA-0007",
+        "delivery_status": "kyiv"
+      },
+      "14": {
+        "code": "UA-0008",
+        "delivery_status": "kyiv"
+      },
+      "15": {
+        "code": "UA-0009",
+        "delivery_status": null
+      },
+      "16": {
+        "code": "UA-0010",
+        "delivery_status": null
+      },
+      "18": {
+        "code": "UA-0011",
+        "delivery_status": null
+      },
+      "19": {
+        "code": "UA-0012",
+        "delivery_status": null
+      },
+      "20": {
+        "code": "UA-0013",
+        "delivery_status": null
+      },
+      "21": {
+        "code": "UA-0014",
+        "delivery_status": null
+      },
+      "22": {
+        "code": "UA-0015",
+        "delivery_status": null
+      },
+      "25": {
+        "code": "UA-0016",
+        "delivery_status": "korea"
+      },
+      "26": {
+        "code": "UA-0017",
+        "delivery_status": null
+      },
+      "28": {
+        "code": "UA-0018",
+        "delivery_status": "kyiv"
+      },
+      "29": {
+        "code": "UA-0019",
+        "delivery_status": null
+      },
+      "30": {
+        "code": "UA-0020",
+        "delivery_status": "kyiv"
+      },
+      "31": {
+        "code": "UA-0021",
+        "delivery_status": "ferry"
+      },
+      "32": {
+        "code": "UA-0022",
+        "delivery_status": "ferry"
+      },
+      "33": {
+        "code": "UA-0023",
+        "delivery_status": "ferry"
+      },
+      "7": {
+        "code": "UA-0001",
+        "delivery_status": null
+      },
+      "9": {
+        "code": "UA-0003",
+        "delivery_status": null
+      }
+    },
+    "version": 1
+  },
+  "task_id": "CRM-SYNC-STATE-PROBE-20261012",
+  "unavailable_paths": []
+}
