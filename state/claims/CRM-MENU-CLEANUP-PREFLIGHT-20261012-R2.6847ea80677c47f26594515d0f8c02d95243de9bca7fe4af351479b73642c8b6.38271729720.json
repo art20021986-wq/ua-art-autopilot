@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-MENU-CLEANUP-PREFLIGHT-20261012-R2.6847ea80677c47f26594515d0f8c02d95243de9bca7fe4af351479b73642c8b6.json",
+  "autostart_ledger_sha256": "bc2f55d5043af0a7dba0f240d4a40de8260d5f0f15daa2ee317924f12767b4ff",
+  "autostart_source_commit": "c5689b7bbcc59d510a6ef3e3c3ad5d0664b23eda",
+  "created_at": "2026-10-12T15:39:24Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-12T15:39:24Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "38271729720",
+    "task_id": "CRM-MENU-CLEANUP-PREFLIGHT-20261012-R2",
+    "task_sha256": "6847ea80677c47f26594515d0f8c02d95243de9bca7fe4af351479b73642c8b6"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/CRM-MENU-CLEANUP-PREFLIGHT-20261012-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CRM-MENU-CLEANUP-PREFLIGHT-20261012-R2.json",
+  "request_sha256": "6847ea80677c47f26594515d0f8c02d95243de9bca7fe4af351479b73642c8b6",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "13967f49fc8bf8a1dd44cf7b5744d3ab6a9e7b10",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-12T15:39:24Z"
+}
