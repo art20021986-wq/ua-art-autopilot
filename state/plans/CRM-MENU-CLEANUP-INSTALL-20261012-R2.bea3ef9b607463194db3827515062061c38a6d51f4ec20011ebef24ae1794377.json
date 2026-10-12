@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-MENU-CLEANUP-INSTALL-20261012-R2.bea3ef9b607463194db3827515062061c38a6d51f4ec20011ebef24ae1794377.json",
+  "autostart_ledger_sha256": "0af97765fc3eb7d4499fa2d3a5f0d9ceb9817be146d24c1c9192145ff1abe4bd",
+  "autostart_source_commit": "3ad61e305048857364a6bd6fff9d5ffe9a8f9429",
+  "created_at": "2026-10-12T16:18:18Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "38276358052",
+    "task_id": "CRM-MENU-CLEANUP-INSTALL-20261012-R2",
+    "task_sha256": "bea3ef9b607463194db3827515062061c38a6d51f4ec20011ebef24ae1794377"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-8ed5214c7b0a4720-6862f1e8dfe389df",
+  "request_path": "tasks/requests/CRM-MENU-CLEANUP-INSTALL-20261012-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:8ed5214c7b0a4720"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
