@@ -1,0 +1,64 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-DIAG-MEDIA-PUBLISH-PREFLIGHT-20261012.fd06260e3dfb0272a72b876be7a88a67d5dbf1c816d0d8266540552de3c7e46f.json",
+  "autostart_ledger_sha256": "463c400f68c9996e9b7713c70602255e44184d6a810c0503d8d7e60a0ca6900f",
+  "autostart_source_commit": "39fc33c4b94c3d9dea6a9ab8d3995a9ff8b0b5e6",
+  "created_at": "2026-10-12T08:38:26Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-10-12T08:41:20Z",
+  "heartbeat_at": "2026-10-12T08:41:20Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "38224714473",
+    "task_id": "CRM-DIAG-MEDIA-PUBLISH-PREFLIGHT-20261012",
+    "task_sha256": "fd06260e3dfb0272a72b876be7a88a67d5dbf1c816d0d8266540552de3c7e46f"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/CRM-DIAG-MEDIA-PUBLISH-PREFLIGHT-20261012.json",
+  "receipt_sha256": "5c882e5325e7010d22da39bf4a6fe2f73531a16ad927ec1f2d3feeeb83e16909",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CRM-DIAG-MEDIA-PUBLISH-PREFLIGHT-20261012.json",
+  "request_sha256": "fd06260e3dfb0272a72b876be7a88a67d5dbf1c816d0d8266540552de3c7e46f",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "16547759cea7dd7a4bacabd7c0b5be87f86adbe7",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91152539648,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.141
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "3daa061696364588af55f981db35e8e91f10ab74ecf3d1c4c2a48e990c67de6b",
+    "file_sha256": {
+      "cloud/crm_diag_media_publish_001/build_public_sync.py": "7810f71fac8c049070dffe99fbaa651fd20f4fe20854a862897558b3e8fc1a6a",
+      "cloud/crm_diag_media_publish_001/candidate_builder.py": "9bebb89e0e93504da1221670c0d0aa080abb3989b85929390a14544d91a0d069",
+      "cloud/crm_diag_media_publish_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_diag_media_publish_001/deployment_bootstrap.py": "6249e8ebdca9d18217f323aa2871578c564a6b92f6c54830790e8a6d5a4d2b73",
+      "cloud/crm_diag_media_publish_001/deployment_remote.py": "1f766d49b13938f37cf1f356c21796a71d79691000fb1120b141fb8a1a0dc312",
+      "cloud/crm_diag_media_publish_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_diag_media_publish_001/deployment_transport.py": "142f04f2266fa06122496bddc3f507ec9fb57d755d484a7ecdfffd59b87bce83",
+      "cloud/crm_diag_media_publish_001/release_constants.py": "c6c0433c4a9dd2610d357db7502b0bca057f54038dbb3ef63e3a61a742f23842",
+      "cloud/crm_diag_media_publish_001/test_deployment.py": "3def4aa8320e72e49fd7085778208e795c7cf302185f339f36179579b5b5f2bf",
+      "cloud/crm_diag_media_publish_001/test_diag_media_publish.py": "0069f6bb0777301dd2cffa1b8eb6a179b677b2d7397bfcbd4910deddfd31a710",
+      "cloud/crm_diag_media_publish_001/test_release.py": "8563cf5b01df27e132e37347ab23c9113c503522dcda7fd6caf2b400c2fb5237",
+      "cloud/crm_diag_media_publish_001/ua_diag_files.py": "245f7fc512e316ebab6a63b53e0bebc7e2246f95ab79ce6235640f35007d445d"
+    }
+  },
+  "updated_at": "2026-10-12T08:41:20Z"
+}
