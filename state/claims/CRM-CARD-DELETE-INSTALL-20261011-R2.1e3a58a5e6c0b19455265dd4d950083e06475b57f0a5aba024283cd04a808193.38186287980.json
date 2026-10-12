@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "850f590de0dbc8eff5b64a277d36b58308213c3e89b73aaacb84369b7e6ba7a5",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T00:04:47Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-10-12T00:17:49Z",
+  "heartbeat_at": "2026-10-12T00:17:49Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "38186287980",
     "task_id": "CRM-CARD-DELETE-INSTALL-20261011-R2",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 750.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 175.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-38186287980-1e3a58a5e6c0b194",
   "production_transaction_path": "state/transactions/CRM-CARD-DELETE-INSTALL-20261011-R2.1e3a58a5e6c0b19455265dd4d950083e06475b57f0a5aba024283cd04a808193.38186287980.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-d0e98f1a1ef06032-8092e98827462271",
   "receipt_path": "state/receipts/CRM-CARD-DELETE-INSTALL-20261011-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "a19863d5856d08ad98f52c9b4f475e801fd56ccf8baa18e944f24fb513fd566f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-CARD-DELETE-INSTALL-20261011-R2.json",
   "request_sha256": "1e3a58a5e6c0b19455265dd4d950083e06475b57f0a5aba024283cd04a808193",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "WARN_70",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "93415417a739cbb4511449e72dbfd1f3b18438668de3e659a12cb77cada19673",
     "file_sha256": {
@@ -88,5 +111,5 @@
       "cloud/crm_card_delete_002/ua_card_delete.py": "e50663be0c846293f15bfdb9485c7c4e059071668fc350b606371ff59df4e2f5"
     }
   },
-  "updated_at": "2026-10-12T00:04:47Z"
+  "updated_at": "2026-10-12T00:17:49Z"
 }
