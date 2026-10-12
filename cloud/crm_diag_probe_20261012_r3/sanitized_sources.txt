@@ -1,0 +1,287 @@
+# cars_ui.py:712
+async def diag_clear(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """UA-V77 — убрать все кадры проверки разом."""
+    q = update.callback_query
+    await _v168_ack(q)
+    try:
+        _, cid, pole = (q.data or '').split(':', 2)
+    except ValueError:
+        return
+    if pole not in ('condition_photos', 'condition_videos'):
+        return
+    card = card_of(cid)
+    bylo = len(jload(card.get(pole))) if card else 0
+    try:
+        db.update_card_field('cars', int(cid), pole, '[]', q.from_user.id)
+    except Exception as e:
+        await q.message.reply_text('Не удалось убрать: %r' % (e,))
+        raise ApplicationHandlerStop
+    ubrano_faylov = 0
+    try:
+        import glob as _glob
+        nom = str((card or {}).get('auto_number') or '').strip()
+        if not nom and card:
+            nom = 'UA-%04d' % int(card['id'])
+        papka = os.path.join('/home/Carix', 'video', 'diag', nom)
+        _nuzhno_video = pole == 'condition_videos'
+        for _imya in sorted(os.listdir(papka)):
+            put = os.path.join(papka, _imya)
+            if not os.path.isfile(put):
+                continue
+            try:
+                with open(put, 'rb') as _f:
+                    _b = _f.read(16)
+            except Exception:
+                continue
+            _eto_video = _b[4:8] == b'ftyp'
+            if _eto_video != _nuzhno_video:
+                continue
+            try:
+                os.remove(put)
+                ubrano_faylov += 1
+                if os.path.exists(put + '.poster.jpg'):
+                    os.remove(put + '.poster.jpg')
+            except Exception:
+                pass
+    except Exception:
+        pass
+    _peresobrat_stranicy()
+    chto = 'Фото' if pole == 'condition_photos' else 'Видео'
+    await q.message.reply_text('%s проверки убраны: %d.\nНа сайте пропадут после пересборки.' % (chto, bylo), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← К диагностике', callback_data='car_cond:%s' % cid)], [InlineKeyboardButton('← К карточке', callback_data='car_open:%s' % cid)]]))
+    raise ApplicationHandlerStop
+
+# cars_ui.py:3570
+def save_media(card, target, file_id, actor_id, tag=''):
+    otvet = _v152_save_media(card, target, file_id, actor_id, tag)
+    cel = 'videos' if target in ('video_h', 'video_v') else target
+    vid = _V152_VID.get(cel)
+    otkaz = otvet and any((word in str(otvet).casefold() for word in ('слишком большое', 'не принят', 'не проверен', 'достигнут предел')))
+    if vid and (not otkaz):
+        with db.connect() as con:
+            est = con.execute('SELECT id FROM media WHERE car_id=? AND vid=? AND file_id=?', (card['id'], vid, file_id)).fetchone()
+            if not est:
+                nomer = con.execute('SELECT COALESCE(MAX(poryadok),0)+1 FROM media WHERE car_id=? AND vid=?', (card['id'], vid)).fetchone()[0]
+                con.execute("INSERT INTO media (car_id, auto_number, vid, file_id, status, tag, poryadok, kogda, kto, primechanie) VALUES (?,?,?,?,'pending',?,?,?,?,?)", (card['id'], str(card.get('auto_number') or ''), vid, file_id, tag, nomer, _t140.strftime('%Y-%m-%dT%H:%M:%S'), str(actor_id), 'принят ботом, ждёт скачивания'))
+                _v140_zapis('media: заведена запись %s %s pending' % (card.get('auto_number'), vid))
+    return otvet
+
+# master_card.py:927
+def est_materialy(kod, m=None):
+    """Активная кнопка только при реальных материалах именно этой машины."""
+    if m is None:
+        m = dannye(kod)
+    if not os.path.exists(os.path.join(VIDEO, '%s-diag.html' % kod)):
+        return False
+    for pole in ('diag_link', 'diag_text', 'diag_report'):
+        if ('%s' % (m.get(pole) or '')).strip():
+            return True
+    for pole in ('condition_photos', 'condition_videos'):
+        v = ('%s' % (m.get(pole) or '')).strip()
+        if v and v not in ('[]', 'null', '{}'):
+            return True
+    papka = os.path.join(VIDEO, 'diag', kod)
+    if os.path.isdir(papka):
+        for f in os.listdir(papka):
+            if not f.startswith('.') and f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.mp4', '.mov', '.webm')):
+                return True
+    return False
+
+# med2.py:168
+def etap2_razvedka():
+    zagolovok('2. КТО СОЗДАЁТ .novoe / .iskhodnoe (разведка, только чтение)')
+    avtory = {}
+    fayly = sorted(glob.glob(DOM + '/*.py')) + sorted(glob.glob(DOM + '/*/*.py'))
+    for put in fayly:
+        imya = os.path.basename(put)
+        if imya.startswith(('med1', 'med2')):
+            continue
+        t = chitat(put)
+        if not t or ('.novoe' not in t and '.iskhodnoe' not in t):
+            continue
+        stroki = t.split('\n')
+        for n, s in enumerate(stroki, 1):
+            if '.novoe' in s or '.iskhodnoe' in s:
+                fn = funkciya_stroki(t, n)
+                avtory.setdefault(put, []).append((n, fn, s.strip()))
+    if not avtory:
+        p('НИ ОДИН файл кода не упоминает .novoe / .iskhodnoe.')
+        p('Значит имена собираются из частей — ищу по частям:')
+        for put in fayly:
+            t = chitat(put)
+            if not t:
+                continue
+            for n, s in enumerate(t.split('\n'), 1):
+                if re.search('"\\.?novoe|\\\'\\.?novoe|iskhodnoe|\\+\\s*"\\.novoe', s):
+                    p('   %s стр.%d %s' % (os.path.basename(put), n, s.strip()[:110]))
+    for put, spisok in avtory.items():
+        t = chitat(put)
+        stroki = t.split('\n')
+        p('')
+        p('--- ФАЙЛ: %s (%d байт, изменён %s)' % (put, razmer(put), vremya(put)))
+        for n, fn, s in spisok:
+            p('   стр.%-5d [%s]  %s' % (n, fn, s[:120]))
+        n0 = spisok[0][0]
+        p('   окружение стр.%d:' % n0)
+        for i in range(max(0, n0 - 7), min(len(stroki), n0 + 8)):
+            p('      %5d| %s' % (i + 1, stroki[i][:120]))
+        zameny = [(n, s) for n, fn, s in spisok if re.search('(os\\.replace|shutil\\.move|os\\.rename)', s)]
+        proverka = bool(re.search('getsize|st_size|>\\s*1000|razmer\\s*>', t))
+        p('   строк замены рабочего файла: %d' % len(zameny))
+        p('   проверка размера в файле   : %s' % ('есть' if proverka else 'НЕТ'))
+        avtory[put] = {'stroki': spisok, 'zameny': zameny, 'proverka': proverka}
+    zagolovok('2б. ЖИВЫЕ ПРОЦЕССЫ (никого не завершаем)')
+    procs = []
+    try:
+        for pid in sorted(os.listdir('/proc')):
+            if not pid.isdigit():
+                continue
+            try:
+                cmd = open('/proc/%s/cmdline' % pid, 'rb').read().replace(b'\x00', b' ').decode('utf-8', 'ignore').strip()
+            except Exception:
+                continue
+            if not cmd:
+                continue
+            procs.append((pid, cmd))
+    except Exception as e:
+        p('список процессов недоступен: %r' % e)
+    for pid, cmd in procs:
+        p('   pid %-6s %s' % (pid, cmd[:130]))
+    p('')
+    p('процессов всего: %d' % len(procs))
+    zagolovok('2в. НАБЛЮДЕНИЕ 60 СЕКУНД: работает ли обработчик прямо сейчас')
+
+    def slepok():
+        d = {}
+        for shabl in (VIDEO + '/*.mp4', VIDEO + '/*.mp4.*', VIDEO + '/*.part', DIAG + '/*/*'):
+            for x in glob.glob(shabl):
+                try:
+                    d[x] = (os.path.getsize(x), int(os.path.getmtime(x)))
+                except Exception:
+                    pass
+        return d
+    do = slepok()
+    p('файлов под наблюдением: %d, ждём 60 сек…' % len(do))
+    time.sleep(60)
+    posle = slepok()
+    aktivnost = []
+    for k, v in posle.items():
+        if k not in do:
+            aktivnost.append('ПОЯВИЛСЯ  %s (%d байт)' % (k, v[0]))
+        elif do[k] != v:
+            aktivnost.append('ИЗМЕНЁН   %s (%d → %d байт)' % (k, do[k][0], v[0]))
+    for k in do:
+        if k not in posle:
+            aktivnost.append('ИСЧЕЗ     %s' % k)
+    if aktivnost:
+        for x in aktivnost:
+            p('   ' + x)
+        p('ВЫВОД: обработчик медиа АКТИВЕН прямо сейчас')
+    else:
+        p('   изменений нет')
+        p('ВЫВОД: за окно наблюдения ни один медиафайл не создан и не изменён')
+    return (avtory, procs, aktivnost)
+
+# med2.py:405
+def rolik_fayly(kod):
+    """Годные ролики основного раздела: только .mp4, без .iskhodnoe/.novoe/.part."""
+    out = []
+    for put in sorted(glob.glob(VIDEO + '/' + kod + '.mp4') + glob.glob(VIDEO + '/' + kod + '-*.mp4')):
+        if put.endswith('.mp4') and razmer(put) > 1000 and eto_video(put):
+            out.append(put)
+    return out
+
+# samokontrol.py:229
+def kadry_ne_dokachany(est, pole):
+    """Сколько кадров диагностики в базе и сколько файлов на диске."""
+    if not est or 'condition_photos' not in est:
+        return []
+    berem = [k for k in (pole, 'id', 'condition_photos', 'condition_videos') if k and k in est]
+    try:
+        soed = sqlite3.connect(BD, timeout=20)
+        soed.row_factory = sqlite3.Row
+        ryady = soed.execute('SELECT ' + ', '.join(berem) + ' FROM cars').fetchall()
+        soed.close()
+    except Exception:
+        return []
+    otstayut = []
+    for ryad in ryady:
+        nom = ''
+        if pole:
+            try:
+                nom = str(ryad[pole] or '').strip()
+            except Exception:
+                nom = ''
+        if not nom:
+            try:
+                nom = 'UA-%04d' % int(ryad['id'])
+            except Exception:
+                continue
+        try:
+            v_baze = len(json.loads(ryad['condition_photos'] or '[]'))
+        except Exception:
+            v_baze = 0
+        if not v_baze:
+            continue
+        papka = os.path.join(PAPKA_VID, 'diag', nom)
+        na_diske = len(glob.glob(os.path.join(papka, '*.jpg')))
+        if na_diske < v_baze:
+            otstayut.append((nom, v_baze, na_diske))
+    return otstayut
+
+# stranica.py:703
+def kadry_diagnostiki(m):
+    """Фото и видео проверки из /home/Carix/video/diag/UA-XXXX/."""
+    nom = nomer(m)
+    papka = os.path.join(PAPKA_VID, 'diag', nom)
+    if not os.path.isdir(papka):
+        return ([], [])
+    foto = []
+    for obraz in ('*.jpg', '*.jpeg', '*.JPG', '*.png'):
+        foto += glob.glob(os.path.join(papka, obraz))
+    foto = sorted(set(foto))
+    foto = [p for p in foto if os.path.getsize(p) > 1000][:50]
+    video = sorted(glob.glob(os.path.join(papka, '*.mp4')))[:10]
+    otn_foto = ['diag/%s/%s' % (nom, os.path.basename(x)) for x in foto]
+    otn_video = ['diag/%s/%s' % (nom, os.path.basename(x)) for x in video]
+    return (otn_foto, otn_video)
+
+# ua_publish_requests.py:47
+def pending(root):
+    with connection(root) as conn:
+        return {row['identity']: dict(row) for row in conn.execute("SELECT * FROM requests WHERE state='pending' ORDER BY created")}
+
+# ua_publish_requests.py:62
+def receipts(root):
+    with connection(root) as conn:
+        return [dict(row) for row in conn.execute("SELECT * FROM requests WHERE state!='pending' AND delivered=0 ORDER BY created LIMIT 20")]
+
+# video_universal.py:78
+def perekodirovat(put):
+    """Переписывает файл в вид, который играет везде."""
+    vremenno = put + '.novoe.mp4'
+    komanda = ['ffmpeg', '-y', '-i', put, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', KACHESTVO, '-profile:v', 'high', '-level', '4.0', '-pix_fmt', 'yuv420p', '-vf', "scale='min(1920,iw)':'min(%d,ih)':force_original_aspect_ratio=decrease,scale=trunc(iw/2)*2:trunc(ih/2)*2" % VYSOTA, '-c:a', 'aac', '-b:a', '128k', '-ac', '2', '-movflags', '+faststart', vremenno]
+    try:
+        itog = subprocess.run(komanda, capture_output=True, text=True, timeout=1800)
+    except Exception as e:
+        log('перекодировать не вышло: ' + repr(e)[:120])
+        try:
+            os.remove(vremenno)
+        except Exception:
+            pass
+        return False
+    if itog.returncode != 0 or not os.path.exists(vremenno) or os.path.getsize(vremenno) < 20000:
+        hvost = (itog.stderr or '').strip().split('\n')[-1:]
+        log('ffmpeg отказался: ' + ' '.join(hvost)[:150])
+        try:
+            os.remove(vremenno)
+        except Exception:
+            pass
+        return False
+    iskhodnoe = put + '.iskhodnoe'
+    try:
+        if not os.path.exists(iskhodnoe):
+            shutil.copy2(put, iskhodnoe)
+    except Exception:
+        pass
+    os.replace(vremenno, put)
+    return True
