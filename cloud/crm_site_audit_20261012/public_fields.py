@@ -1,4 +1,6 @@
-"""Check structured identity and main specifications against a captured CRM row; no I/O."""
+"""Check structured identity and main specifications against a captured CRM row; no I/O.
+
+Copy of crm_site_consistency_001/public_fields.py; only the title rule follows the current SEO title."""
 import re
 from html import unescape
 from html.parser import HTMLParser
@@ -69,8 +71,8 @@ def verify_core_fields(source,card,catalog=False):
         values=[v for t,v in doc.headings if t==tag]
         if len(values)!=1:raise RuntimeError('Missing or ambiguous '+tag)
         value=values[0].casefold()
-        # The title includes an existing company suffix; visible headings are exact.
-        if not (value==expected or (tag=='title' and value.startswith(expected+' — '))):
+        # The SEO title continues after the identity ("…, 118 000 км — купить | UA ART"); visible headings are exact.
+        if not (value==expected or (tag=='title' and (value+' ')[len(expected)] in ', —' and value.startswith(expected))):
             raise RuntimeError('CRM identity differs in '+tag)
     mileage=_integer(card.get('mileage_km'),'mileage_km')
     engine=_integer(card.get('engine_cc'),'engine_cc')
