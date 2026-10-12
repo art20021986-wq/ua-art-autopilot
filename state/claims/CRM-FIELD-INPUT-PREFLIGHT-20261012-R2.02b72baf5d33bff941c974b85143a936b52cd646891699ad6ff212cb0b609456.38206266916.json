@@ -26,13 +26,14 @@
     "task_sha256": "02b72baf5d33bff941c974b85143a936b52cd646891699ad6ff212cb0b609456"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "NOT_REACHED",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-FIELD-INPUT-PREFLIGHT-20261012-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_validation_status": "NOT_CREATED",
+  "reconciliation_path": "state/reconciliations/CRM-FIELD-INPUT-PREFLIGHT-20261012-R2.38206266916.failed-before-remote-write.json",
   "request_path": "tasks/requests/CRM-FIELD-INPUT-PREFLIGHT-20261012-R2.json",
   "request_sha256": "02b72baf5d33bff941c974b85143a936b52cd646891699ad6ff212cb0b609456",
   "resource_locks": [
@@ -40,8 +41,8 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "9b614a955f7cdbf8b3e6b3b412fd40bc3f27777f",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight_status": "NOT_REQUIRED_FAILED",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "task_execution_status": "FAILED",
   "updated_at": "2026-10-12T05:08:34Z"
 }
