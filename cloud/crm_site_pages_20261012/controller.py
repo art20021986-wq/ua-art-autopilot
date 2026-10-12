@@ -45,6 +45,7 @@ def execute(env, root=ROOT, get=fetch):
                'unexpected_changes': 0, 'rollback_ready': True, 'rollback_ready_scope': 'NO_REMOTE_WRITES',
                'production_required': False, 'request_sha256': env['UAART_REQUEST_SHA256'],
                'run_id': env['UAART_RUN_ID'], 'evidence_path': PACKAGE + '/UA-0017.html'}
+    (root / RECEIPT).parent.mkdir(parents=True, exist_ok=True)
     with open(root / RECEIPT, 'x') as handle:
         handle.write(json.dumps(receipt, sort_keys=True, indent=2) + '\n')
     return receipt
