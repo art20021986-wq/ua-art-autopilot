@@ -1,0 +1,53 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-VIDEO-PROBE-20261012-R3.7bb00e39f10c29e4cf15396ebbe034f57b6b52acdc4c52d203cac33f5207dbf9.json",
+  "autostart_ledger_sha256": "2cb26ffff7eac7fe8624aeba27eff6df397643e691b252d0e6717badd1546fdf",
+  "autostart_source_commit": "9c83dffb622035914e31d4987b48b59bbe0c0ee5",
+  "created_at": "2026-10-12T05:21:09Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-10-12T05:22:22Z",
+  "heartbeat_at": "2026-10-12T05:22:22Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "38207504583",
+    "task_id": "CRM-VIDEO-PROBE-20261012-R3",
+    "task_sha256": "7bb00e39f10c29e4cf15396ebbe034f57b6b52acdc4c52d203cac33f5207dbf9"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "read_only-bbb0977bb8940d67-007b47388316a986",
+  "receipt_path": "state/receipts/CRM-VIDEO-PROBE-20261012-R3.json",
+  "receipt_sha256": "2051098e9eb2c138b9d07c2c2c321a36b0b2e332425c08e77142b301944675e6",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CRM-VIDEO-PROBE-20261012-R3.json",
+  "request_sha256": "7bb00e39f10c29e4cf15396ebbe034f57b6b52acdc4c52d203cac33f5207dbf9",
+  "resource_locks": [
+    "READ_ONLY:bbb0977bb8940d67"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "5b111222bc1d02869be2f73ef9a9d929e0256eeb",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92092076032,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 40.534
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "ad5b4a57b6532cc41bab3c22db3f7e1d1129256e618bcd8ef5e8721f59a90afc",
+    "file_sha256": {
+      "cloud/crm_video_probe_20261012_r3/test_controller.py": "d374bc7c4991f5e25ba95bc58bd015312fddb4ff66ef7ceadf031feb9a3200cb"
+    }
+  },
+  "updated_at": "2026-10-12T05:22:22Z"
+}
