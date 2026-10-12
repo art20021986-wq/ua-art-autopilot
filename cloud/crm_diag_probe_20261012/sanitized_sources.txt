@@ -1,0 +1,409 @@
+# stranica.py:27
+def zastavka(otn):
+    """Возвращает poster='...', если рядом с роликом лежит его первый кадр."""
+    try:
+        put = os.path.join(PAPKA_VID, otn + '.poster.jpg')
+        if os.path.exists(put) and os.path.getsize(put) > 1000:
+            return " poster='%s.poster.jpg'" % otn
+    except Exception:
+        pass
+    return ''
+
+# stranica.py:703
+def kadry_diagnostiki(m):
+    """Фото и видео проверки из /home/Carix/video/diag/UA-XXXX/."""
+    nom = nomer(m)
+    papka = os.path.join(PAPKA_VID, 'diag', nom)
+    if not os.path.isdir(papka):
+        return ([], [])
+    foto = []
+    for obraz in ('*.jpg', '*.jpeg', '*.JPG', '*.png'):
+        foto += glob.glob(os.path.join(papka, obraz))
+    foto = sorted(set(foto))
+    foto = [p for p in foto if os.path.getsize(p) > 1000][:50]
+    video = sorted(glob.glob(os.path.join(papka, '*.mp4')))[:10]
+    otn_foto = ['diag/%s/%s' % (nom, os.path.basename(x)) for x in foto]
+    otn_video = ['diag/%s/%s' % (nom, os.path.basename(x)) for x in video]
+    return (otn_foto, otn_video)
+
+# stranica.py:725
+def sobrat_diagnostiku(m):
+    nom = nomer(m)
+    nazvanie = ' '.join((str(x) for x in [m.get('brand'), m.get('model'), m.get('year')] if x))
+    tekst = (m.get('diag_text') or '').strip()
+    foto, video = kadry_diagnostiki(m)
+    sredn = [umenshit(x, 'm', SREDNIJ, 78) for x in foto]
+    c = []
+    c.append('<!doctype html><html lang=\'ru\'><head><meta charset=\'utf-8\'><!-- UA-ART-FAVICON-20260928 -->\n<link rel="icon" href="/video/brand/ua-art/favicon.ico" sizes="16x16 32x32 48x48" type="image/x-icon">\n<link rel="icon" href="/video/brand/ua-art/favicon-96.png" sizes="96x96" type="image/png">\n<link rel="apple-touch-icon" href="/video/brand/ua-art/apple-touch-icon.png" sizes="180x180">\n<!-- /UA-ART-FAVICON-20260928 -->')
+    c.append("<meta name='viewport' content='width=device-width,initial-scale=1'>")
+    c.append("<script src='https://telegram.org/js/telegram-web-app.js'></script>")
+    c.append('<title>Диагностика %s — UA ART COMPANY</title><style>%s</style></head><body>' % (ekran(nazvanie), STIL))
+    c.append(shapka())
+    c.append("<div class='blok'><div class='nom'>%s</div><h1>%s</h1><div class='chip'>комплексная диагностика</div></div>" % (ekran(nom), ekran(nazvanie)))
+    if tekst:
+        c.append("<div class='blok'><div class='zag'>Описание</div>")
+        stroki = [s.strip() for s in tekst.replace('\r', '').split('\n')]
+        stroki = [s for s in stroki if s]
+        spiskom = sum((1 for s in stroki if s[:1] in '-–—•*·')) >= 2
+        if spiskom:
+            for s in stroki:
+                s = s.lstrip('-–—•*· ').strip()
+                if s:
+                    c.append("<div class='tehstr'><div class='m'>•</div><div>%s</div></div>" % ekran(s))
+        else:
+            c.append("<div class='tehtekst'>%s</div>" % '<br>'.join((ekran(s) for s in stroki)))
+        c.append('</div>')
+    if sredn:
+        c.append("<div class='zagolovok'>Фото проверки</div>")
+        c.append("<div class='lenta'>")
+        for i, k in enumerate(sredn, 1):
+            c.append("<div class='kadr'><img src='%s' loading='%s' decoding='async' alt=''><div class='podpis_kadra'>кадр %d</div></div>" % (k, 'eager' if i <= 2 else 'lazy', i))
+        c.append('</div>')
+        c.append("<div class='schet'>%d фото · листайте вбок, тап — во весь экран</div>" % len(sredn))
+    if video:
+        c.append("<div class='zagolovok'>Видео проверки</div>")
+        poster_diag = " poster='%s'" % sredn[0] if sredn else ''
+        for v in video:
+            c.append("<video controls playsinline webkit-playsinline preload='metadata'%s><source src='%s' type='video/mp4'><a class='vtoraya' href='%s'>Открыть видео отдельно</a></video>" % (zastavka(v) or poster_diag, v, v))
+        c.append("<div class='schet'>%d видео</div>" % len(video))
+    if (m.get('diag_link') or '').strip():
+        c.append("<div class='zagolovok'>Отчёт сканера</div>")
+        c.append("<a class='diag' href='%s'>Открыть отчёт OBD</a>" % ekran(m['diag_link']))
+        c.append("<div class='diag_pod'>Полный отчёт компьютерной диагностики</div>")
+    prodana = (m.get('status') or '').lower().startswith('sold')
+    if not prodana:
+        _st_cta = (m.get('status') or m.get('stage') or '').strip()
+        if _st_cta in ('ge_waiting', 'sea_loaded', 'kr_bought'):
+            c.append("<a class='dejstvie' href='%s'>Забронировать авто за 500 $</a>" % v_bota('bron_' + nom))
+            c.append('<p class="cta-note" style="margin:8px 0 0;text-align:center;font-size:14px;color:#c8d2e1;background:none;border:0">500 $ входит в стоимость автомобиля</p>')
+        else:
+            c.append("<a class='dejstvie' href='%s'>Купить авто</a>" % v_bota('kupit_' + nom))
+    c.append("<a class='vtoraya' href='%s.html?v=%d'>← Вернуться к машине</a>" % (nom, int(time.time())))
+    c.append(podval(' · диагностика ' + ekran(nom)))
+    if sredn:
+        c.append("<div id='lupa'><img id='bolshoe' src='' alt=''></div><div id='lupaschet'></div>")
+        c.append('<script>var kadry=%s;var tek=0;' % json.dumps(sredn))
+        c.append("\nvar sloj=document.getElementById('lupa'),bol=document.getElementById('bolshoe'),\n    sch=document.getElementById('lupaschet');\nfunction pokazat(i){tek=(i+kadry.length)%kadry.length;bol.src=kadry[tek];\n sloj.style.display='flex';sch.style.display='block';sch.textContent=(tek+1)+' / '+kadry.length;\n document.body.style.overflow='hidden';}\nfunction zakryt(){sloj.style.display='none';sch.style.display='none';document.body.style.overflow='';}\ndocument.querySelectorAll('.lenta img').forEach(function(el,i){\n el.addEventListener('click',function(){pokazat(i);});});\nvar x0=null;\nsloj.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;});\nsloj.addEventListener('touchend',function(e){if(x0===null)return;\n var dx=e.changedTouches[0].clientX-x0;\n if(Math.abs(dx)>50){pokazat(dx<0?tek+1:tek-1);}else{zakryt();}x0=null;});\nsloj.addEventListener('click',function(e){if(e.target===sloj)zakryt();});\n")
+        c.append('</script>')
+    c.append(CHAT_KNOPKA)
+    c.append(SKRIPT_TG)
+    c.append('</body></html>')
+    return ''.join(c)
+
+# stranica.py:1011
+def sobrat_kartochku(m, kadry, sredn=None):
+    from ua_media_gallery import photos, videos, poster_url, assets
+    nom = nomer(m)
+    sredn = sredn or kadry
+    nazvanie = ' '.join((str(x) for x in [m.get('brand'), m.get('model'), m.get('year')] if x))
+    etap_tekst, mozhno_bron = etap_dlinno(m)
+    prodana = (m.get('status') or '').lower().startswith('sold')
+    video_est = os.path.exists(os.path.join(PAPKA_VID, nom + '.mp4'))
+    c = []
+    c.append('<!doctype html><html lang=\'ru\'><head><meta charset=\'utf-8\'><!-- UA-ART-FAVICON-20260928 -->\n<link rel="icon" href="/video/brand/ua-art/favicon.ico" sizes="16x16 32x32 48x48" type="image/x-icon">\n<link rel="icon" href="/video/brand/ua-art/favicon-96.png" sizes="96x96" type="image/png">\n<link rel="apple-touch-icon" href="/video/brand/ua-art/apple-touch-icon.png" sizes="180x180">\n<!-- /UA-ART-FAVICON-20260928 -->')
+    c.append("<meta name='viewport' content='width=device-width,initial-scale=1'>")
+    c.append("<script src='https://telegram.org/js/telegram-web-app.js'></script>")
+    c.append('<title>%s — UA ART COMPANY</title><style>%s</style></head><body>' % (ekran(nazvanie), STIL))
+    c.append(shapka())
+    if not kadry:
+        c.append("<div class='blok' style='text-align:center;color:var(--seryj)'>Фотографии готовятся — пришлём в чат, как только появятся.</div>")
+    if kadry:
+        c.append(photos(kadry, sredn, nazvanie))
+    if video_est:
+        poster = " poster='%s'" % sredn[0] if sredn else ''
+        _vse = ['%s.mp4' % nom]
+        try:
+            for _f in sorted(os.listdir(PAPKA_VID)):
+                if _f.startswith(nom + '-') and _f.lower().endswith('.mp4') and ('.mp4.' not in _f):
+                    _vse.append(_f)
+        except Exception:
+            pass
+        c.append("<div class='zagolovok'>Видео</div>")
+        c.append(videos(_vse, [poster_url(zastavka(_f) or poster) for _f in _vse], nazvanie))
+    c.append("<div class='blok'>")
+    c.append("<div class='nom'>%s</div><h1>%s</h1>" % (ekran(nom), ekran(nazvanie)))
+    c.append("<div class='chip'>%s</div>" % ekran(etap_tekst))
+    c.append("<div class='cena' style='margin-top:14px'>%s</div>" % cena(m))
+    c.append("<div class='tihо'>Под ключ в Киеве. Выкуп на аукционе, доставка, растаможка и сертификат — доплат нет.</div>")
+    c.append('</div>')
+    pary = []
+    if m.get('mileage_km'):
+        try:
+            pary.append(('Пробег', '{:,} км'.format(int(m['mileage_km'])).replace(',', ' ')))
+        except Exception:
+            pass
+    if m.get('engine_cc'):
+        pary.append(('Двигатель', '%s см³%s' % (m['engine_cc'], ', ' + str(m['fuel']) if m.get('fuel') else '')))
+    elif m.get('fuel'):
+        pary.append(('Топливо', str(m['fuel'])))
+    for nazv, pole in (('Коробка', 'gearbox'), ('Привод', 'drive'), ('Цвет', 'color'), ('VIN', 'vin')):
+        if m.get(pole):
+            pary.append((nazv, str(m[pole])))
+    if pary:
+        c.append("<div class='blok'><div class='zag'>Коротко</div><table class='kratko'>")
+        for a, b in pary:
+            c.append("<tr><td class='k'>%s</td><td>%s</td></tr>" % (ekran(a), ekran(b)))
+        c.append('</table></div>')
+    c.append(_ua_delivery_stage_anchor(m))
+
+    def blok_teksta(zagolovok, tekst):
+        tekst = (tekst or '').strip()
+        if not tekst:
+            return
+        c.append("<div class='blok'><div class='zag'>%s</div>" % ekran(zagolovok))
+        stroki = [s.strip() for s in tekst.replace('\r', '').split('\n')]
+        stroki = [s for s in stroki if s]
+        spiskom = sum((1 for s in stroki if s[:1] in '-–—•*·')) >= 2
+        if spiskom:
+            for s in stroki:
+                s = s.lstrip('-–—•*· ').strip()
+                if s:
+                    c.append("<div class='tehstr'><div class='m'>•</div><div>%s</div></div>" % ekran(s))
+        else:
+            c.append("<div class='tehtekst'>%s</div>" % '<br>'.join((ekran(s) for s in stroki)))
+        c.append('</div>')
+    sostoyanie = (m.get('condition_text') or '').strip()
+    opisanie = (m.get('description') or '').strip()
+    polnoe_opisanie = sostoyanie or opisanie
+    blok_teksta('Описание', polnoe_opisanie)
+    c.append('<!--ua-art-diagnostics-permanent-v1-->')
+    c.append('<a class="mcf-diag-cta" href="%s-diag.html" style="display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(212,175,55,.20),rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);color:#f4e3ae"><span style="font-size:22px;line-height:1">🔧</span><span style="flex:1"><span style="display:block;font-weight:800;font-size:16px">Открыть комплексную диагностику →</span><span style="display:block;font-size:13px;opacity:.85;margin-top:3px">ЛКП · OBD · ходовая · фото · видео</span></span><span style="font-size:20px;opacity:.8">›</span></a>' % nom)
+    if prodana:
+        c.append("<a class='dejstvie' href='podbor.html?v=%d'>Хочу такую же под заказ</a>" % int(time.time()))
+    else:
+        _st_cta = (m.get('status') or m.get('stage') or '').strip()
+        if _st_cta in ('ge_waiting', 'sea_loaded', 'kr_bought'):
+            c.append("<a class='dejstvie kn_kupit' href='%s'>Забронировать авто за 500 $</a>" % v_bota('bron_' + nom))
+            c.append('<p class="cta-note" style="margin:8px 0 0;text-align:center;font-size:14px;color:#c8d2e1;background:none;border:0">500 $ входит в стоимость автомобиля</p>')
+        else:
+            c.append("<a class='dejstvie kn_kupit' href='%s'>Купить авто</a>" % v_bota('kupit_' + nom))
+        c.append("<a class='vtoraya' id='vopros' href='%s'>Задать вопрос по этой машине</a>" % v_bota('vopros_' + nom))
+    c.append("<a class='vtoraya' href='katalog.html?v=%d'>← Все машины</a>" % int(time.time()))
+    c.append(USPEH_BLOK)
+    c.append(podval(' · ' + ekran(nom)))
+    c.append("<script>(function(){document.querySelectorAll('.kn_kupit').forEach(function(kp){kp.addEventListener('click',function(e){e.preventDefault();otpravit_zayavku({t:'kupit',nom:'%(n)s'},'Заявка на покупку принята','Менеджер Артём свяжется с вами в течение часа, подтвердит наличие и подготовит договор с фиксированной ценой.', kp.getAttribute('href'));});});var b=document.getElementById('bron');if(b){b.addEventListener('click',function(e){e.preventDefault();otpravit_zayavku({t:'bron',nom:'%(n)s'},'Бронь принята','Автомобиль забронирован за вами. Менеджер Артём свяжется в течение часа и подтвердит договор с фиксированной ценой.', b.getAttribute('href'));});}var v=document.getElementById('vopros');if(v){v.addEventListener('click',function(e){e.preventDefault();otpravit_zayavku({t:'vopros',nom:'%(n)s'},'Вопрос отправлен','Менеджер Артём ответит вам в чате в ближайшее время.', v.getAttribute('href'));});}})();</script>" % {'n': nom})
+    c.append(assets())
+    c.append(CHAT_KNOPKA)
+    c.append(SKRIPT_TG)
+    c.append('</body></html>')
+    return ''.join(c)
+
+# stranica.py:1670
+def zapisat(imya_bez, soderzhimoe):
+    """Пишем во все копии: обе папки, все адреса с хэшем."""
+    try:
+        _sh_imya = os.path.basename(str(imya_bez)).strip().lower()
+        if _sh_imya.replace('.html', '') in ('index', 'katalog', 'podbor', 'info'):
+            try:
+                with io.open('/home/Carix/shchit_log.txt', 'a', encoding='utf-8') as _sh_zh:
+                    _sh_zh.write('%s  запрет zapisat: %s\n' % (time.strftime('%Y-%m-%d %H:%M:%S'), imya_bez))
+            except Exception:
+                pass
+            return True
+    except Exception:
+        pass
+    from site_ge_inject import inject_html as _ua_site_ge_inject_html
+    soderzhimoe = _ua_site_ge_inject_html(soderzhimoe)
+    celi = []
+    for papka in (PAPKA_VID, PAPKA_SITE):
+        os.makedirs(papka, exist_ok=True)
+        celi.append(os.path.join(papka, imya_bez + '.html'))
+        for _variant in glob.glob(os.path.join(papka, imya_bez + '-*.html')):
+            _base = os.path.basename(_variant)
+            if str(imya_bez).startswith('UA-') and (not str(imya_bez).endswith('-diag')) and _base.startswith(str(imya_bez) + '-diag'):
+                continue
+            celi.append(_variant)
+    for put in set(celi):
+        try:
+            with io.open(put, 'w', encoding='utf-8') as f:
+                f.write(soderzhimoe)
+        except Exception:
+            continue
+    return len(set(celi))
+
+# stranica.py:1763
+def obnovit_etalon(imya_bez, soderzhimoe):
+    """Если стоит замок вида — закрепляем в нём новую страницу, иначе он её откатит."""
+    papka = os.path.join(BAZA_DIR, 'etalon')
+    if not os.path.isdir(papka):
+        return 0
+    from site_ge_inject import inject_html as _ua_site_ge_inject_html
+    soderzhimoe = _ua_site_ge_inject_html(soderzhimoe)
+    skolko = 0
+    for put in glob.glob(os.path.join(papka, '**', imya_bez + '*.html'), recursive=True):
+        _base = os.path.basename(put)
+        if str(imya_bez).startswith('UA-') and (not str(imya_bez).endswith('-diag')) and _base.startswith(str(imya_bez) + '-diag'):
+            continue
+        if 'otklonennye' in put:
+            continue
+        try:
+            with io.open(put, 'w', encoding='utf-8') as f:
+                f.write(soderzhimoe)
+            skolko += 1
+        except Exception:
+            continue
+    return skolko
+
+# stranica.py:1792
+def main():
+    print('СБОРКА СТРАНИЦ UA ART — %s' % time.strftime('%d.%m.%Y %H:%M'))
+    print()
+    staroe = otklyuchit_staroe()
+    if staroe:
+        print('выключено: %s' % ', '.join(staroe))
+        print()
+    try:
+        spisok = mashiny()
+    except Exception:
+        print('Не читается база:')
+        print(traceback.format_exc(limit=2))
+        return
+    try:
+        from PIL import Image
+        szhatie = True
+    except Exception:
+        szhatie = False
+        print('ВНИМАНИЕ: библиотека Pillow недоступна — фото пойдут в полном размере,')
+        print('страницы будут грузиться медленно. Поставьте её один раз в консоли:')
+        print('  pip3.10 install --user Pillow')
+        print()
+    kadry_po_nomeru = {}
+    legkie_po_nomeru = {}
+    bylo_vsego = stalo_vsego = 0
+    for m in spisok:
+        nom = nomer(m)
+        kadry = kadry_mashiny(m)
+        kadry_po_nomeru[nom] = kadry
+        if kadry:
+            sredn, mal = legkie(kadry)
+            legkie_po_nomeru[nom] = (sredn, mal)
+            bylo_vsego += ves(kadry)
+            stalo_vsego += ves(sredn)
+        else:
+            sredn = []
+            print('  %s — без фотографий, страница собрана с одним текстом' % nom)
+        html = sobrat_kartochku(m, kadry, sredn)
+        skolko = zapisat(nom, html)
+        v_zamke = obnovit_etalon(nom, html)
+        if est_diagnostika(m):
+            diag = sobrat_diagnostiku(m)
+            zapisat(nom + '-diag', diag)
+            obnovit_etalon(nom + '-diag', diag)
+            df, dv = kadry_diagnostiki(m)
+            print('  %s — диагностика: фото %d · видео %d · отчёт %s' % (nom, len(df), len(dv), 'есть' if (m.get('diag_link') or '').strip() else 'нет'))
+        video = 'есть' if os.path.exists(os.path.join(PAPKA_VID, nom + '.mp4')) else 'нет'
+        print('  %s — %s · фото %d · видео %s · %s · копий %d%s' % (nom, cena(m), len(kadry), video, etap_korotko(m), skolko, ' · в замке %d' % v_zamke if v_zamke else ''))
+    katalog = sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru)
+    skolko = zapisat('katalog', katalog)
+    obnovit_etalon('katalog', katalog)
+    print('  каталог — машин %d · копий %d' % (len(spisok), skolko))
+    glavnaya = sobrat_glavnuyu(spisok, kadry_po_nomeru, legkie_po_nomeru)
+    zapisat('index', glavnaya)
+    obnovit_etalon('index', glavnaya)
+    print('  главная — собрана')
+    for imya, sbor in (('podbor', sobrat_podbor), ('info', sobrat_info)):
+        stranica = sbor()
+        zapisat(imya, stranica)
+        obnovit_etalon(imya, stranica)
+    print('  подбор и условия — собраны')
+    if bylo_vsego and szhatie:
+        print()
+        print('  фото облегчены: %d МБ → %d МБ (в %.0f раз легче)' % (bylo_vsego // 1048576, max(stalo_vsego // 1048576, 1), bylo_vsego / max(stalo_vsego, 1)))
+    print()
+    print('ССЫЛКИ')
+    metka = int(time.time())
+    print('  ГЛАВНАЯ:  %s/index.html?v=%d' % (sajt(), metka))
+    print('  каталог:  %s/katalog.html?v=%d' % (sajt(), metka))
+    print('  подбор:   %s/podbor.html?v=%d' % (sajt(), metka))
+    print('  условия:  %s/info.html?v=%d' % (sajt(), metka))
+    for m in spisok:
+        print('  карточка: %s/%s.html?v=%d' % (sajt(), nomer(m), metka))
+    print()
+    print('Готово. Перезапускать бота не нужно — страницы уже обновлены.')
+
+# stranica.py:2072
+def sobrat_diagnostiku(m, *a, **k):
+    nom = str((m or {}).get('auto_number') or '').upper()
+    try:
+        html = _v167_sobrat_ishodnaya(m, *a, **k)
+    except Exception as e:
+        try:
+            print('  диагностика %s собрана запасным видом: %r' % (nom, e))
+        except Exception:
+            pass
+        html = ''
+    if not html or (len(html) < 300 and 'diag/' + nom not in html):
+        return _v167_zapasnaya(nom)
+    if 'diag/' + nom not in html and _V167_PUSTO not in html:
+        vstavka = "<div style='padding:14px;margin-top:12px;border-radius:12px;background:rgba(148,163,184,.12)'>" + _V167_PUSTO + '</div>'
+        if '</body>' in html:
+            html = html.replace('</body>', vstavka + '</body>', 1)
+        else:
+            html = html + vstavka
+    return html
+
+# stranica.py:2990
+def _ua_seo068_diag_anchor(identifier):
+    return '<!--seo-rehab-guard-068-diagnostics--><a class="mcf-diag-cta" href="%s-diag.html" style="display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(212,175,55,.20),rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);color:#f4e3ae"><span style="font-size:22px;line-height:1">🔧</span><span style="flex:1"><span style="display:block;font-weight:800;font-size:16px">Открыть комплексную диагностику →</span><span style="display:block;font-size:13px;opacity:.85;margin-top:3px">ЛКП · OBD · ходовая · фото · видео</span></span><span style="font-size:20px;opacity:.8">›</span></a>' % identifier
+
+# stranica.py:3003
+def _ua_seo068_normalize(source, file_name, identifier=''):
+    if not source:
+        return source
+    source = _UA_SEO068_CANONICAL.sub('', str(source))
+    source = _UA_SEO068_ROBOTS.sub('', source)
+    source = _ua_seo068_head(source, '<link rel="canonical" href="%s/video/%s">' % (_UA_SEO068_ORIGIN, file_name))
+    if identifier:
+        identifier = str(identifier).upper()
+        target = identifier + '-diag.html'
+        if not any((_ua_seo068_os.path.isfile(_ua_seo068_os.path.join(root, target)) for root in ('/home/Carix/video', '/home/Carix/site'))):
+            raise RuntimeError('SEO068_DIAGNOSTIC_TARGET_MISSING:' + identifier)
+        hrefs = []
+        for tag in _ua_seo068_re.findall('<a\\b[^>]*>', source, _ua_seo068_re.I):
+            href = _ua_seo068_attr(tag, 'href')
+            match = _ua_seo068_re.search('(UA-[0-9]{4,}-diag\\.html)(?:[?#]|$)', href, _ua_seo068_re.I)
+            if match:
+                hrefs.append(match.group(1).upper())
+        if any((value != target.upper() for value in hrefs)):
+            raise RuntimeError('SEO068_WRONG_DIAGNOSTIC:' + identifier)
+        source = _UA_SEO068_DIAG.sub('', source).replace('<!--seo-rehab-guard-068-diagnostics-->', '')
+        source = _ua_seo068_cta(source)
+        purchase = _ua_seo068_re.search('<a\\b(?=[^>]*\\bclass\\s*=\\s*["\\\'][^"\\\']*\\bkn_kupit\\b[^"\\\']*["\\\'])', source, _ua_seo068_re.I)
+        position = purchase.start() if purchase else source.lower().rfind('</body>')
+        if position < 0:
+            raise RuntimeError('SEO068_INSERTION_POINT_MISSING:' + identifier)
+        source = source[:position] + _ua_seo068_diag_anchor(identifier) + '\n' + source[position:]
+    from ua_seo_metadata import normalize
+    return normalize(source, file_name)
+
+# stranica.py:3355
+def _ua068_diag_anchor(kod):
+    return _UA068_DIAG + '<a class="mcf-diag-cta" href="%s-diag.html" style="display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(212,175,55,.20),rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);color:#f4e3ae"><span style="font-size:22px">🔧</span><span style="flex:1"><b>Открыть комплексную диагностику →</b><small style="display:block;margin-top:3px;opacity:.82">ЛКП · OBD · ходовая · фото · видео</small></span><span>›</span></a>' % _ua068_e(kod)
+
+# stranica.py:3374
+def _ua068_ensure_diag_files(kod, row):
+    """Future-card failsafe: create only missing targets; never overwrite reports."""
+    from site_ge_inject import inject_html as _ua_site_ge_inject_html
+    payload = _ua_site_ge_inject_html(_ua068_diag_placeholder(kod, row)).encode('utf-8')
+    for root in ('/home/Carix/video', '/home/Carix/site'):
+        path = _ua068_os.path.join(root, '%s-diag.html' % kod)
+        if _ua068_os.path.exists(path):
+            continue
+        try:
+            _ua068_os.makedirs(root, exist_ok=True)
+            handle = _ua068_tempfile.NamedTemporaryFile(prefix='.ua068-diag-', suffix='.tmp', dir=root, delete=False)
+            temp_path = handle.name
+            with handle:
+                handle.write(payload)
+                handle.flush()
+                _ua068_os.fsync(handle.fileno())
+            if not _ua068_os.path.exists(path):
+                _ua068_os.replace(temp_path, path)
+            elif _ua068_os.path.exists(temp_path):
+                _ua068_os.unlink(temp_path)
+        except Exception:
+            try:
+                if 'temp_path' in locals() and _ua068_os.path.exists(temp_path):
+                    _ua068_os.unlink(temp_path)
+            except Exception:
+                pass

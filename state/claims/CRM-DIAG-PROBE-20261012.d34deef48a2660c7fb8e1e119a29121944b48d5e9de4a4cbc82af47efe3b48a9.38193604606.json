@@ -7,21 +7,23 @@
   "created_at": "2026-10-12T01:53:45Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T01:53:45Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-12T01:55:08Z",
+  "heartbeat_at": "2026-10-12T01:55:08Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "38193604606",
     "task_id": "CRM-DIAG-PROBE-20261012",
     "task_sha256": "d34deef48a2660c7fb8e1e119a29121944b48d5e9de4a4cbc82af47efe3b48a9"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-e1128ec02086b973-9c99ac1980fde448",
   "receipt_path": "state/receipts/CRM-DIAG-PROBE-20261012.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "9049bb79b45e91d14f647b7d3995070479fd0444438ab6a16b95a2aa0ad8d38a",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-DIAG-PROBE-20261012.json",
   "request_sha256": "d34deef48a2660c7fb8e1e119a29121944b48d5e9de4a4cbc82af47efe3b48a9",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "e4596a7f2fc649c57f9f409e7fe9f867eef664a0",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92099534848,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 40.53
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-12T01:53:45Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "0355d98ebd1aac820de9fb88d7e6c8409586fec00dec4811353459f521877433",
+    "file_sha256": {
+      "cloud/crm_diag_probe_20261012/test_controller.py": "017a6eaf42da38acfd91c110d145557367d4e8e8455c64d4b3fa6d2f5003472c"
+    }
+  },
+  "updated_at": "2026-10-12T01:55:08Z"
 }
