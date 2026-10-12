@@ -1,3 +1,11 @@
+SEO_GROWTH_TASK: SEO-GROWTH-001 (tasks/SEO-GROWTH-001.md, cloud/seo_growth_001/README.md)
+SEO_GROWTH_STATUS: PREVIEW_PASS_WAITING_OWNER_YES
+SEO_GROWTH_FACTS: Sitemap frozen (catalog written only by publish_transaction_guard, sitemap hook never ran); past SEO inserts wiped by card rebuilds; cards lack keywords/JSON-LD/links; landing pages orphaned with wrong phone; CPU 1.5% (147/10000 s).
+SEO_GROWTH_CANDIDATE: 8 files, plan 2f12e720… (preview run 38229347533, server build byte-identical to local). 4 new pure modules + ua_seo_metadata/ua_seo_sitemap replaced + guard refresh block + SEO version in card revision (worker republishes every card once).
+SEO_GROWTH_TESTS: 38 PASS (real pages, byte-exact installed sources, rollback, CPU guard, import check).
+SEO_GROWTH_PRODUCTION_WRITTEN: NO
+SEO_GROWTH_NEXT: After owner "да": install request + manifest + Gate A + approval + storage, launch CRITICAL via main; then read-only probe of republished cards, landings, sitemap. Not in scope (proposed separately): Ukrainian card URLs via generator, cleanup of public *.txt/proba files in video/, GSC token renewal, hashed card copies.
+
 TRAFFIC_AUDIT_TASK: TRAFFIC-AUDIT-20261012
 TRAFFIC_AUDIT_STATUS: REPORT_DONE_READ_ONLY
 TRAFFIC_AUDIT_FACTS: GSC 2026-09-06..10-03: 5 impressions, 0 clicks; no sitemap registered; car cards unknown to Google; GSC radar TOKEN_HTTP_400 since 2026-10-06.
