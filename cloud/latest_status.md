@@ -345,3 +345,12 @@ UKRAINE (ua_arrived) — ALL MATCH: UA-0007 videos 1/1, diag empty/empty; UA-001
 AUDI UA-0017: 4 videos received 2026-09-15; CRM videos list now empty, server keeps only 3 .iskhodnoe originals, site shows none (consistent with CRM; likely removed 2026-09-16 — not proven). Diagnostics of both Audis empty in CRM and on site.
 OBSERVATIONS: media table rows stay 'pending' forever (registry never updated; files are downloaded by another path) — misleading, not site-facing. Diagnostics CTA shown even when diagnostics are empty. UA-0004 diag video (2026-08-17) failed Telegram download (HTTP 400, likely >20 MB) and was later cleared.
 NEXT: owner choice — restore UA-0017 videos from originals / move to diagnostics / hide empty-diagnostics link; earlier audit items (catalog photo count UA-0017/0023, descriptions UA-0012/0014, orphan pages UA-0008/0019).
+
+CRM_FIELD_INPUT_20261012:
+OWNER_REQUEST: «Комплексная диагностика» — ссылка OBD/УБД не сохраняется («Поля CRM не распознаны»); исправить для всех карточек.
+ROOT_CAUSE: probe CRM-DIAG-LINK-PROBE-20261012 (run 38204119497, read-only). After «Добавить фото/видео» car_media_wait stays set; edit_ask/client_ask set car_wait without clearing it; catch_message returns on plain text in media mode → team_bot.intake → run_ai_draft. Owner screenshot shows «Сохранено. Всего: 1 из 10» just before.
+FIX: cloud/crm_field_input_001/build_cars_ui.py — helper _ua_wait_text clears car_media_wait/cont_wait/ua099_spec_edit, used in edit_ask and client_ask (2 lines + helper) on exact cars_ui.py 5da4d9e8…. 4 tests PASS.
+PRODUCTION_WRITTEN: NO.
+NEXT: owner «да» → deployment package (pattern crm_card_delete_002, one file, no catalog repair) → preview → main Actions install → verify hashes, bot running, public pages.
+NOTE: launch file must be a single non-merge commit on main (merge commit of PR #257 was rejected at intake, run 38204048361; rebase-merge PR #258 worked).
+OPTIONAL_NOT_DONE: human labels for diag_link/diag_text in edit prompt.
