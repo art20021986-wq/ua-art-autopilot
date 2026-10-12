@@ -355,3 +355,11 @@ PRODUCTION_WRITTEN: NO.
 NEXT: owner «да» → deployment package (pattern crm_card_delete_002, one file, no catalog repair) → preview → main Actions install → verify hashes, bot running, public pages.
 NOTE: launch file must be a single non-merge commit on main (merge commit of PR #257 was rejected at intake, run 38204048361; rebase-merge PR #258 worked).
 OPTIONAL_NOT_DONE: human labels for diag_link/diag_text in edit prompt.
+
+CRM_DIAG_MEDIA_PUBLISH_20261012:
+OWNER_REQUEST: diagnostics video added to the Audi is not on the site.
+FACTS (probes CRM-VIDEO-PROBE-20261012-R3/R4/R5, read-only): Audi A6 = UA-0020. condition_videos=1 since 04:23:55, file video/diag/UA-0020/01.mp4 present, UA-0020-diag.html still placeholder; CRM sync PASS UA-0020 04:24:08.
+ROOT_CAUSE: kadry_diagnostiki downloads diag media every 120 s in its own thread; ua_crm_public_sync republishes only on CRM row change → published before download, never again.
+FIX: cloud/crm_diag_media_publish_001 — new ua_diag_files.py + snapshot() revision includes diag file names (only when present). 6 tests on exact installed ua_crm_public_sync.py (8c65eeb5…). Not installed; needs owner «да». Effect: one-time republish of cards with diag files.
+FIELD_INPUT_INSTALL: owner said «да». Preview R1 rejected (exec in test), R2 remote builder refused multi-line client_ask (no write), R3 refused RESOURCE_BUSY: R2 claim stuck BLOCKED_ROOT_CAUSE holding CRM_DB lock. Needs reconciliation of that claim (precedent CRM-CARD-DELETE-INSTALL-20261011) before preview R3 can run.
+LOG_NOTE: /var/log/alwayson-log-266084.log has no lines after 04:24:08.
