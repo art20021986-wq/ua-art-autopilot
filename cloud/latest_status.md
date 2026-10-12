@@ -350,6 +350,7 @@ CRM_FIELD_INPUT_20261012:
 OWNER_REQUEST: «Комплексная диагностика» — ссылка OBD/УБД не сохраняется («Поля CRM не распознаны»); исправить для всех карточек.
 ROOT_CAUSE: probe CRM-DIAG-LINK-PROBE-20261012 (run 38204119497, read-only). After «Добавить фото/видео» car_media_wait stays set; edit_ask/client_ask set car_wait without clearing it; catch_message returns on plain text in media mode → team_bot.intake → run_ai_draft. Owner screenshot shows «Сохранено. Всего: 1 из 10» just before.
 FIX: cloud/crm_field_input_001/build_cars_ui.py — helper _ua_wait_text clears car_media_wait/cont_wait/ua099_spec_edit, used in edit_ask and client_ask (2 lines + helper) on exact cars_ui.py 5da4d9e8…. 4 tests PASS.
+VOICE_REPORT: owner also could not add description by voice. Probes R2/R3: UA-0020 condition_videos 04:23:55, then inbox (AI intake) rows 04:24:56 URL, 04:25:38 URL, 04:38:37 text 40 chars; no diag_link/diag_text audit. Same root cause; same fix covers voice (media branch returns for voice too). Bot log has no lines after 04:24.
 PRODUCTION_WRITTEN: NO.
 NEXT: owner «да» → deployment package (pattern crm_card_delete_002, one file, no catalog repair) → preview → main Actions install → verify hashes, bot running, public pages.
 NOTE: launch file must be a single non-merge commit on main (merge commit of PR #257 was rejected at intake, run 38204048361; rebase-merge PR #258 worked).
