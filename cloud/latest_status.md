@@ -330,3 +330,11 @@ VERIFIED: crm_unchanged, protected files unchanged, unexpected_changes 0, bot 26
 FIRST_ATTEMPT: run 38184149170 aborted before any write (stale storage probe); reconciled per GE-PRICE-CACHE precedent (state/reconciliations/CRM-CARD-DELETE-INSTALL-20261011.38184149170.aborted-before-production.json).
 NOT_CLAIMED: manual Telegram tap on «Автомобили»/«Удалить» not performed by Claude — owner check pending.
 OPTIONAL_NOT_DONE: delete media rows of deleted cars; remove orphan UA-0008.html; tolerant cars_list; GSC radar token (TOKEN_HTTP_400); SEO workflows archived in .github/legacy-workflows/SEO-HALT-RECOVERY-20261011.
+
+CRM_SITE_AUDIT_20261012:
+OWNER_REQUEST: Comprehensive diagnosis that everything entered in Telegram (CRM) matches the website.
+TOOL: cloud/crm_site_audit_20261012 (pure audit.py + GET-only controller; reviewed field/photo verifiers adapted to current layout). Final run R3: cloud/crm_site_audit_20261012/evidence_r3.json. No production writes.
+MATCH (20/20 published cars): catalog set = CRM published set; title/year/VIN/mileage/engine/fuel/gearbox/drive/colour on card and catalog; card gallery count = CRM visible photos; UA/GE prices on card, catalog and live price JSON; stage labels consistent per CRM status; public serving = server bytes.
+MISMATCH: (1) catalog «N фото» counts a hidden photo: UA-0017 40 vs 39, UA-0023 38 vs 37 (catalog rebuilt 2026-10-12, so renderer path, not staleness — exact source not yet read: catalog photo-count generator / photo_visibility mapping). (2) card description differs from CRM text: UA-0012, UA-0014 (sync state has no pending retries; difference detail not yet captured — could be renderer formatting). (3) pages of deleted cars still reachable: video/UA-0008.html, video/UA-0019.html.
+SYNC: .crm_public_sync_state.json — 0 retries, no catalog_retry, last success UA-0018 2026-10-08; revisions still list deleted UA-0008/UA-0019 ids. Every card publish also rebuilds both catalogs (publish_transaction_guard.publish_one).
+NEXT (owner choice): read catalog photo-count source and capture UA-0012/0014 description diff, then minimal fixes through main Actions with owner «да».
