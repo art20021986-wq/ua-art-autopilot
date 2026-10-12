@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "0e6dbdb6917a45b73bf6b3a394565e4e43ff27871821706c0a84ae5cdbdc7ad0",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T12:57:31Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-12T13:01:22Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "38252124651",
     "task_id": "UA0021-SEARATES-HOST-INSTALL-20261012",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-38252124651-14c9515570c18b11",
   "production_transaction_path": "state/transactions/UA0021-SEARATES-HOST-INSTALL-20261012.14c9515570c18b1119217d8cca82a6936c4a00028105f995116600ae3c4c4464.38252124651.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-c21927c695ba6f6e-c4f99c3b1ee532f7",
   "receipt_path": "state/receipts/UA0021-SEARATES-HOST-INSTALL-20261012.json",
   "receipt_validation_status": "PENDING",
@@ -85,5 +85,5 @@
       "cloud/ua0021_searates_host_001/test_release.py": "c37c5cc49ecdb0eb4430ecf3b8be215bb5278630c40e807eed3e092ca01993ec"
     }
   },
-  "updated_at": "2026-10-12T12:57:31Z"
+  "updated_at": "2026-10-12T13:01:22Z"
 }
