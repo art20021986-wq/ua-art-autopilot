@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "2f61e9c0885318d91f6d5c70b9e53daff3903d21e7aa7875e4abfdea8e67bd55",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-12T08:44:59Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-12T08:49:39Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "38225289348",
     "task_id": "CRM-DIAG-MEDIA-PUBLISH-INSTALL-20261012",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-38225289348-1c5579a8f8d56734",
   "production_transaction_path": "state/transactions/CRM-DIAG-MEDIA-PUBLISH-INSTALL-20261012.1c5579a8f8d56734eefe3e20619eadf027835810f0503d6270cce45ac352f673.38225289348.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-DIAG-MEDIA-PUBLISH-INSTALL-20261012.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/crm_diag_media_publish_001/ua_diag_files.py": "245f7fc512e316ebab6a63b53e0bebc7e2246f95ab79ce6235640f35007d445d"
     }
   },
-  "updated_at": "2026-10-12T08:44:59Z"
+  "updated_at": "2026-10-12T08:49:39Z"
 }
