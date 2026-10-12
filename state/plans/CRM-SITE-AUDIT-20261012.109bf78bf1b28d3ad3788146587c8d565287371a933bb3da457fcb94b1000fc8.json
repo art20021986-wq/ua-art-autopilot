@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-SITE-AUDIT-20261012.109bf78bf1b28d3ad3788146587c8d565287371a933bb3da457fcb94b1000fc8.json",
+  "autostart_ledger_sha256": "e709c95fba6d6643cb5ac1f9e955925835da5872a66e102af3ad185c1c0380bc",
+  "autostart_source_commit": "805e00b2aa3a69a88257644ec3e34211d237caec",
+  "created_at": "2026-10-12T00:30:28Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "38188201584",
+    "task_id": "CRM-SITE-AUDIT-20261012",
+    "task_sha256": "109bf78bf1b28d3ad3788146587c8d565287371a933bb3da457fcb94b1000fc8"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-d955a7d3f475fc6f-b7fee779d6d517ed",
+  "request_path": "tasks/requests/CRM-SITE-AUDIT-20261012.json",
+  "resource_locks": [
+    "READ_ONLY:d955a7d3f475fc6f"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
