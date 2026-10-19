@@ -1,3 +1,8 @@
+AI_SEARCH_TASK: AI-SEARCH-001 (tasks/AI-SEARCH-001.md), owner approved TZ 2026-10-19
+AI_SEARCH_PROBE: AI-SEARCH-PROBE-20261019 FINISHED run 39213553545 (cloud/ai_search_probe_20261019/README.md): 10 days logs — OAI-SearchBot 83, ChatGPT-User 10, GPTBot 9, Googlebot 52, bingbot 0, Perplexity/Claude 0; all crawlers get 200; robots.txt already open; home page has no JSON-LD; hubs have no FAQ.
+AI_SEARCH_PRODUCTION_WRITTEN: NO
+AI_SEARCH_NEXT: robots.txt change dropped (not needed). Prepare IndexNow (key in /video/), FAQ block in uk/ru hubs, company JSON-LD on home page; each install needs owner «да». Owner: Bing Webmaster Tools import from GSC.
+
 CRM_MENU_CLEANUP_TASK: CRM-MENU-CLEANUP-001 (tasks/CRM-MENU-CLEANUP-001.md, cloud/crm_menu_cleanup_001/README.md)
 CRM_MENU_CLEANUP_STATUS: INSTALLED_PRODUCTION
 CRM_MENU_CLEANUP_INSTALL: owner «Да»; CRITICAL run 38276358052 FINISHED: cars_ui.py ce0d1327… → 19adbff3… (only with_stats_button), backup/rollback ready, crm_unchanged, protected unchanged, bot 266084 running, index/katalog PASS. Owner menu: no «Отчёт по клиентам», «Запуск оптимизации», «Ещё». Old handlers kept (buttons in old chat messages still answer).
