@@ -7,21 +7,23 @@
   "created_at": "2026-10-19T07:04:25Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-19T07:04:25Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-19T07:05:16Z",
+  "heartbeat_at": "2026-10-19T07:05:16Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "39213553545",
     "task_id": "AI-SEARCH-PROBE-20261019",
     "task_sha256": "f336513da9c1501c31dd260061e9f61f64438cb3c5a8b67e713ba9adabfdf1f6"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-7e7888a51ab8ff55-4ba83e7df6092e0a",
   "receipt_path": "state/receipts/AI-SEARCH-PROBE-20261019.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b76147835783146d3eea1ace62e6125493ad462ca8f89eec8daacf8ad5091775",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AI-SEARCH-PROBE-20261019.json",
   "request_sha256": "f336513da9c1501c31dd260061e9f61f64438cb3c5a8b67e713ba9adabfdf1f6",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "1d30d5b5b6e5b5ff2d281ef3b6d05db9b95cb65b",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91870654464,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 40.677
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-19T07:04:25Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "e8895dd86e1fc93fd6e21795e72848ef538d0617790dc19c2b2adc14df9d10f1",
+    "file_sha256": {
+      "cloud/ai_search_probe_20261019/test_controller.py": "2a8ccea03c64da2ef89550c24d8aeceb61a30d3ca0b7f0fddc4eb4477881aaa0"
+    }
+  },
+  "updated_at": "2026-10-19T07:05:16Z"
 }

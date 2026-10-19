@@ -1,0 +1,387 @@
+{
+  "access": {
+    "crawlers": {
+      "Applebot": {
+        "first_day": "2026-10-15",
+        "hits": 1,
+        "last_day": "2026-10-15",
+        "status": {
+          "200": 1
+        },
+        "top_paths": [
+          [
+            "/robots.txt",
+            1
+          ]
+        ]
+      },
+      "ChatGPT-User": {
+        "first_day": "2026-10-11",
+        "hits": 10,
+        "last_day": "2026-10-18",
+        "status": {
+          "200": 10
+        },
+        "top_paths": [
+          [
+            "/video/UA-0018.html",
+            2
+          ],
+          [
+            "/video/UA-0022.html",
+            2
+          ],
+          [
+            "/",
+            2
+          ],
+          [
+            "/video/UA-0015.html",
+            1
+          ],
+          [
+            "/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html",
+            1
+          ],
+          [
+            "/video/seo/ua/hyundai-sonata-koreya-kyiv.html",
+            1
+          ],
+          [
+            "/video/seo/ru/avto-iz-korei-v-kiev-pod-kluch.html",
+            1
+          ]
+        ]
+      },
+      "GPTBot": {
+        "first_day": "2026-10-10",
+        "hits": 9,
+        "last_day": "2026-10-18",
+        "status": {
+          "200": 9
+        },
+        "top_paths": [
+          [
+            "/sitemap.xml",
+            9
+          ]
+        ]
+      },
+      "Googlebot": {
+        "first_day": "2026-10-10",
+        "hits": 52,
+        "last_day": "2026-10-18",
+        "status": {
+          "200": 51,
+          "404": 1
+        },
+        "top_paths": [
+          [
+            "/robots.txt",
+            19
+          ],
+          [
+            "/video/katalog.html",
+            6
+          ],
+          [
+            "/video/index.html",
+            5
+          ],
+          [
+            "/video/UA-0008.html",
+            2
+          ],
+          [
+            "/video/UA-0005-diag.html",
+            1
+          ],
+          [
+            "/video/ua-site-languages.js",
+            1
+          ],
+          [
+            "/",
+            1
+          ],
+          [
+            "/ua/a.js",
+            1
+          ],
+          [
+            "/video/UA-0001.html",
+            1
+          ],
+          [
+            "/ua-art-public-prices-v1.json",
+            1
+          ]
+        ]
+      },
+      "OAI-SearchBot": {
+        "first_day": "2026-10-10",
+        "hits": 83,
+        "last_day": "2026-10-19",
+        "status": {
+          "200": 83
+        },
+        "top_paths": [
+          [
+            "/robots.txt",
+            31
+          ],
+          [
+            "/video/UA-0015.html",
+            8
+          ],
+          [
+            "/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html",
+            1
+          ],
+          [
+            "/video/seo/ru/hyundai-sonata-koreya-kiev.html",
+            1
+          ],
+          [
+            "/video/seo/ru/avto-iz-korei-v-kiev-pod-kluch.html",
+            1
+          ],
+          [
+            "/video/seo/ua/hyundai-sonata-koreya-kyiv.html",
+            1
+          ],
+          [
+            "/video/katalog.html",
+            1
+          ],
+          [
+            "/video/seo/gu/avtomobili-koreidan-sakartveloshi.html",
+            1
+          ],
+          [
+            "/video/seo/gu/hyundai-sonata-koreidan-sakartveloshi.html",
+            1
+          ],
+          [
+            "/video/foto/UA-0015/009.jpg",
+            1
+          ]
+        ]
+      },
+      "meta-externalagent": {
+        "first_day": "2026-10-10",
+        "hits": 12,
+        "last_day": "2026-10-12",
+        "status": {
+          "200": 12
+        },
+        "top_paths": [
+          [
+            "/video/katalog.html",
+            12
+          ]
+        ]
+      }
+    },
+    "crawlers_never_seen": [
+      "PerplexityBot",
+      "Perplexity-User",
+      "ClaudeBot",
+      "Claude-SearchBot",
+      "Claude-User",
+      "Google-Extended",
+      "bingbot",
+      "DuckDuckBot",
+      "YandexBot",
+      "Amazonbot",
+      "CCBot",
+      "Bytespider"
+    ],
+    "days": 10,
+    "first_day": "2026-10-10",
+    "last_day": "2026-10-19",
+    "lines": 39815,
+    "parsed": 39815,
+    "referrals": {
+      "chatgpt": {
+        "first_day": "2026-10-18",
+        "last_day": "2026-10-18",
+        "top_paths": [
+          [
+            "/video/index.html",
+            1
+          ]
+        ],
+        "visits": 1
+      },
+      "google": {
+        "first_day": "2026-10-10",
+        "last_day": "2026-10-19",
+        "top_paths": [
+          [
+            "/video/index.html",
+            2
+          ],
+          [
+            "/video/katalog.html",
+            2
+          ],
+          [
+            "/video/UA-0013.html",
+            1
+          ],
+          [
+            "/",
+            1
+          ]
+        ],
+        "visits": 6
+      }
+    }
+  },
+  "as_crawler": {
+    "Claude-SearchBot": {
+      "bytes": 47286,
+      "http": 200
+    },
+    "OAI-SearchBot": {
+      "bytes": 47286,
+      "http": 200
+    },
+    "PerplexityBot": {
+      "bytes": 47286,
+      "http": 200
+    },
+    "bingbot": {
+      "bytes": 47286,
+      "http": 200
+    }
+  },
+  "http_methods": [
+    "GET"
+  ],
+  "log_files": {
+    ".1": {
+      "http": 200,
+      "lines": 3771
+    },
+    ".10.gz": {
+      "http": 404
+    },
+    ".2.gz": {
+      "http": 200,
+      "lines": 4382
+    },
+    ".3.gz": {
+      "http": 200,
+      "lines": 4441
+    },
+    ".4.gz": {
+      "http": 200,
+      "lines": 4503
+    },
+    ".5.gz": {
+      "http": 200,
+      "lines": 4036
+    },
+    ".6.gz": {
+      "http": 200,
+      "lines": 4261
+    },
+    ".7.gz": {
+      "http": 200,
+      "lines": 5306
+    },
+    ".8.gz": {
+      "http": 200,
+      "lines": 4740
+    },
+    ".9.gz": {
+      "http": 200,
+      "lines": 3866
+    },
+    "current": {
+      "http": 200,
+      "lines": 509
+    }
+  },
+  "pages": {
+    "/robots.txt": {
+      "body": "User-agent: *\nAllow: /\nDisallow: /video/preview/\nSitemap: https://www.uaart.com.ua/sitemap.xml\n",
+      "http": 200
+    },
+    "/video/index.html": {
+      "address": true,
+      "bytes": 47286,
+      "faq": false,
+      "h1": [
+        "<span data-ru=\"Автомобили\" data-uk=\"Автомобілі\" data-ka=\"ავტომობილები\">Автомобілі</span><br><span data-ru=\"под ключ в Киеве\" data-uk=\"під ключ у Києві\" data-ka=\"სრული მომსახურებით კიევში\">під ключ у Києві</span>"
+      ],
+      "h2_count": 2,
+      "http": 200,
+      "ld_types": [],
+      "phone": true,
+      "scripts": 7,
+      "visible_chars": 1207
+    },
+    "/video/seo/ru/avto-iz-korei-v-kiev-pod-kluch.html": {
+      "address": true,
+      "bytes": 15796,
+      "faq": false,
+      "h1": [
+        "Авто из Кореи под ключ в Киеве"
+      ],
+      "h2_count": 3,
+      "http": 200,
+      "ld_types": [
+        "AutoDealer",
+        "BreadcrumbList",
+        "ItemList"
+      ],
+      "phone": true,
+      "scripts": 1,
+      "visible_chars": 2360
+    },
+    "/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html": {
+      "address": true,
+      "bytes": 15868,
+      "faq": false,
+      "h1": [
+        "Авто з Кореї під ключ у Києві"
+      ],
+      "h2_count": 3,
+      "http": 200,
+      "ld_types": [
+        "AutoDealer",
+        "BreadcrumbList",
+        "ItemList"
+      ],
+      "phone": true,
+      "scripts": 1,
+      "visible_chars": 2392
+    }
+  },
+  "remote_write_count": 0,
+  "run_id": "39213553545",
+  "static_routes": {
+    "http": 200,
+    "routes": [
+      {
+        "id": 2185199,
+        "path": "/home/Carix/video/",
+        "url": "/video/"
+      },
+      {
+        "id": 2207633,
+        "path": "/home/Carix/video/google609494476a22f741.html",
+        "url": "/google609494476a22f741.html"
+      },
+      {
+        "id": 2207693,
+        "path": "/home/Carix/video/sitemap.xml",
+        "url": "/sitemap.xml"
+      }
+    ]
+  },
+  "task_id": "AI-SEARCH-PROBE-20261019"
+}
