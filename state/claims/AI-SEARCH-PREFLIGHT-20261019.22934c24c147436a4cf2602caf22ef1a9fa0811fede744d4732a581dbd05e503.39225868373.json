@@ -7,21 +7,23 @@
   "created_at": "2026-10-19T08:53:14Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-19T08:53:14Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-19T08:56:38Z",
+  "heartbeat_at": "2026-10-19T08:56:38Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "39225868373",
     "task_id": "AI-SEARCH-PREFLIGHT-20261019",
     "task_sha256": "22934c24c147436a4cf2602caf22ef1a9fa0811fede744d4732a581dbd05e503"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-09e4b8d8158dcdd5-5123734efc08063f",
   "receipt_path": "state/receipts/AI-SEARCH-PREFLIGHT-20261019.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "2c996cc808921f7c73baa9ab595b51e0c83d03bee121a2ea336e4ff39c1e03bf",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AI-SEARCH-PREFLIGHT-20261019.json",
   "request_sha256": "22934c24c147436a4cf2602caf22ef1a9fa0811fede744d4732a581dbd05e503",
   "resource_locks": [
@@ -29,8 +31,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "1a007d85790380b9c72ba21e60b8cc3167ffe423",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91869687808,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.678
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-19T08:53:14Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "2695d8b947493a81047a93332f9194607a3f8b0232277c934db370c97db1bd19",
+    "file_sha256": {
+      "cloud/ai_search_001/build_home.py": "acb7a61b99068b17ffc2fbbbfe7bd1996ed24ccb76d4b104adc6286075099e3f",
+      "cloud/ai_search_001/candidate_builder.py": "6d8af22903bee8387a3fa41742d899e4aad7444e1d85ffeb3293fbd03b0f5c97",
+      "cloud/ai_search_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/ai_search_001/deployment_bootstrap.py": "201d839dd1986d82d5a5bdfbe13f0edfa26a8ad86d8376681aa554fd91b051ff",
+      "cloud/ai_search_001/deployment_remote.py": "5e8d98b95d16efc7de9320308a1a12e206dcb91a4d9afae283336c0937ea72c0",
+      "cloud/ai_search_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/ai_search_001/deployment_transport.py": "25f88d6b704b679916f69d66d28ee7ed09b513f92fe04fc35056267f33e1ca58",
+      "cloud/ai_search_001/release_constants.py": "221869e9c00946e5c84170f13ee3edbbd76abceef33c7ce29bb211ac4ff0215f",
+      "cloud/ai_search_001/test_ai_search.py": "63e939342ad36282cc0fed445c7f4bba7ceba7fb8490c325a109f83dd58da987",
+      "cloud/ai_search_001/test_deployment.py": "30e79bab4bef754c5a54d761469c77d22a1043deba4410384d6fe1a9f77d4134",
+      "cloud/ai_search_001/test_release.py": "65876c6b881f6e3549dedf0e42e95003189008e0d495cf58bff83703e0904361",
+      "cloud/ai_search_001/ua_indexnow.py": "0faa75073d7fabc2bacf68e53cf5f4811857c206fb1ea4f05b9ff0ea3210407f",
+      "cloud/ai_search_001/ua_seo_index.py": "3550406560ede2d536fce4b6ef4d4f67918d57eae84c1482a4b9104bf8540e61",
+      "cloud/ai_search_001/ua_seo_landings.py": "0ae86f24f954536bcd2963036d6ca5880618968f285753a789041e026cb2fd55",
+      "cloud/ai_search_001/ua_seo_schema.py": "050c90e5717dfcbed228fb486764423f1e578329d4ba8909b44e3b9ebfa50b62"
+    }
+  },
+  "updated_at": "2026-10-19T08:56:38Z"
 }
