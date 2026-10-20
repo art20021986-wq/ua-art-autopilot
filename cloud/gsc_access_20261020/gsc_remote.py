@@ -16,7 +16,8 @@ import urllib.request
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-KEY = HOME/'uaart-autopilot-110fb4d36d23.json'
+# Uploaded from an iPhone the extension may be dropped.
+KEYS = (HOME/'uaart-autopilot-110fb4d36d23.json', HOME/'uaart-autopilot-110fb4d36d23')
 SITE = 'https://www.uaart.com.ua/'
 SCOPE = 'https://www.googleapis.com/auth/webmasters'
 API = 'https://www.googleapis.com/webmasters/v3/sites/'
@@ -26,10 +27,10 @@ PAGES = ('video/index.html', 'video/katalog.html', 'video/seo/ua/avto-z-korei-do
          'video/UA-0023.html')
 
 
-def token():
+def token(key):
     from google.oauth2 import service_account
     from google.auth.transport.requests import Request
-    credentials = service_account.Credentials.from_service_account_file(str(KEY), scopes=[SCOPE])
+    credentials = service_account.Credentials.from_service_account_file(str(key), scopes=[SCOPE])
     credentials.refresh(Request())
     return credentials.service_account_email, credentials.token
 
@@ -66,11 +67,12 @@ def inspect(bearer, page):
 
 
 def report():
-    if not KEY.is_file():
+    keys = [key for key in KEYS if key.is_file()]
+    if not keys:
         return {'status': 'FAIL', 'error': 'KEY_MISSING',
-                'candidates': sorted(p.name for p in HOME.glob('uaart-autopilot*.json'))}
+                'candidates': sorted(p.name for p in HOME.glob('uaart-autopilot*'))}
     try:
-        email, bearer = token()
+        email, bearer = token(keys[0])
     except ImportError as error:
         return {'status': 'FAIL', 'error': 'GOOGLE_AUTH_MISSING:' + str(error)[:120]}
     except Exception as error:

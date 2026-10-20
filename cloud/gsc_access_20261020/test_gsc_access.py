@@ -67,10 +67,10 @@ class RemoteTests(unittest.TestCase):
     def test_missing_key_lists_candidates_only(self):
         with tempfile.TemporaryDirectory() as temp:
             home = Path(temp)
-            (home / 'uaart-autopilot-other.json').write_text('{"private_key": "x"}')
-            with patch.object(remote, 'HOME', home), patch.object(remote, 'KEY', home / 'absent.json'):
+            (home / 'uaart-autopilot-other').write_text('{"private_key": "x"}')
+            with patch.object(remote, 'HOME', home), patch.object(remote, 'KEYS', (home / 'absent.json',)):
                 value = remote.report()
-        self.assertEqual(value, {'status': 'FAIL', 'error': 'KEY_MISSING', 'candidates': ['uaart-autopilot-other.json']})
+        self.assertEqual(value, {'status': 'FAIL', 'error': 'KEY_MISSING', 'candidates': ['uaart-autopilot-other']})
 
     def test_report_shapes_api_answers(self):
         def call(bearer, url, body=None):
@@ -82,9 +82,9 @@ class RemoteTests(unittest.TestCase):
                 return 200, {'rows': [{'keys': ['авто из кореи'], 'clicks': 1, 'impressions': 9, 'position': 8.44}]}
             return 200, {'inspectionResult': {'indexStatusResult': {'verdict': 'PASS', 'coverageState': 'Indexed'}}}
         with tempfile.TemporaryDirectory() as temp:
-            key = Path(temp) / 'key.json'
+            key = Path(temp) / 'uaart-autopilot-110fb4d36d23'
             key.write_text('{}')
-            with patch.object(remote, 'KEY', key), patch.object(remote, 'token', return_value=('sa@x', 't')), \
+            with patch.object(remote, 'KEYS', (Path(temp) / 'absent.json', key)), patch.object(remote, 'token', return_value=('sa@x', 't')), \
                  patch.object(remote, 'call', side_effect=call):
                 value = remote.report()
         self.assertEqual((value['status'], value['permission'], value['service_account']), ('PASS', 'siteFullUser', 'sa@x'))
