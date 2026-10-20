@@ -1,3 +1,6 @@
+GSC_ACCESS: restored 2026-10-20 via service account uaart-autopilot@uaart-autopilot.iam.gserviceaccount.com (Full user), key on server /home/Carix/uaart-autopilot-110fb4d36d23.txt; read via cloud/gsc_access_20261020 (STANDARD, temporary always-on task). Report R2 in cloud/gsc_access_20261020/README.md. Old OAuth radar (GSC_REFRESH_TOKEN) obsolete. Owner submitted sitemap.xml in GSC 2026-10-20 (39 URLs).
+GSC_NEXT (proposed, need owner «да» where site is written): Google sitemap resubmit at publication (server, like IndexNow); weekly read-only GSC report; uk/ru page for «авто під замовлення / підбір авто»; canonical for podbor.html?params.
+
 AI_SEARCH_TASK: AI-SEARCH-001 (tasks/AI-SEARCH-001.md, cloud/ai_search_001/README.md)
 AI_SEARCH_STATUS: INSTALLED_LIVE_VERIFIED
 AI_SEARCH_INSTALL: owner «Да» + «Заверши… всё, что нужно, сделай»; CRITICAL run 39382682975 FINISHED: ua_indexnow.py (new), ua_seo_index/landings/schema replaced, video/2276049735fd4daeaf42574afb0c29a3.txt (IndexNow key), AutoDealer JSON-LD in video/index.html head; crm_unchanged, protected unchanged, bot 266084 running. Hubs uk/ru got 6-answer FAQ + FAQPage; 12 landings + sitemap rebuilt; first IndexNow submission HTTP 202, 32 URLs. Public checks PASS (home, 2 hubs, key file, catalog).
