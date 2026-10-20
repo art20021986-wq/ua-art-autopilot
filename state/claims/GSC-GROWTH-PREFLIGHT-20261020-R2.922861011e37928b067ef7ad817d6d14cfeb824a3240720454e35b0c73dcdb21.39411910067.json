@@ -7,21 +7,23 @@
   "created_at": "2026-10-20T11:01:22Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-20T11:01:22Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-20T11:07:53Z",
+  "heartbeat_at": "2026-10-20T11:07:53Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "39411910067",
     "task_id": "GSC-GROWTH-PREFLIGHT-20261020-R2",
     "task_sha256": "922861011e37928b067ef7ad817d6d14cfeb824a3240720454e35b0c73dcdb21"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-ec48ae4cd1dd62d2-1b20cd8da1caf11f",
   "receipt_path": "state/receipts/GSC-GROWTH-PREFLIGHT-20261020-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "73eba4ff9d2e672f4c9332411c2fbf4f9befd71dc49777defae82ecda6fc3a89",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/GSC-GROWTH-PREFLIGHT-20261020-R2.json",
   "request_sha256": "922861011e37928b067ef7ad817d6d14cfeb824a3240720454e35b0c73dcdb21",
   "resource_locks": [
@@ -29,8 +31,35 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "56d46e0c395aa6352dea00a98f94c7463d3dfc91",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91081621504,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.187
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-20T11:01:22Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "c8160d56ba77b7b6ba63aca8c5719c54c75b4ead01a705abb856618875221c0b",
+    "file_sha256": {
+      "cloud/gsc_growth_001/candidate_builder.py": "e5be9550ed1e8e0f9b63a9222d300c116735be107f6adecb53336ee855a11f7f",
+      "cloud/gsc_growth_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/gsc_growth_001/deployment_bootstrap.py": "809e658395a73d447716f9e8367ecd583a78ca71d518cd19654160be538d87fd",
+      "cloud/gsc_growth_001/deployment_remote.py": "e8dcb79d71a1d3d1bcbe2cb656d26a0627fd0ec98d678c28c93f18cd882a7851",
+      "cloud/gsc_growth_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/gsc_growth_001/deployment_transport.py": "6983d118ce7b17f103c4f9644ecfd1d1747c9fb03f7cecc8d581c2ec04d6e58d",
+      "cloud/gsc_growth_001/release_constants.py": "31271c0b151f7e0ec0116c1c96ca193bb928d5ad88414d00cf818c922ad28a4d",
+      "cloud/gsc_growth_001/test_deployment.py": "1f56f448249930bf5c7b8c79e927c0fa1bbd9c5d2868264ffa87527f605b1390",
+      "cloud/gsc_growth_001/test_gsc_growth.py": "6e5cbb4c8d2c47081e6bfbdd214dd53205ecb921f9e1fcbd991997d393db2947",
+      "cloud/gsc_growth_001/test_release.py": "9f83e5e1184d56b5f80ffc67b88782865cbb58a84a1d85e435cebe091cb50b03",
+      "cloud/gsc_growth_001/ua_google_sitemap.py": "0b99b8ee4d36a0790ef065d8fdf6f75f955242af4cd7a93b5d22de3d95f2d38a",
+      "cloud/gsc_growth_001/ua_seo_index.py": "d44febac96a86e2e53434f482732be6fdabd70128d6856288805d01d2451b805",
+      "cloud/gsc_growth_001/ua_seo_landings.py": "fa59c25af19134d83b0f9ce6fe08f2e3ff097c2794eddcc70a5c38ae2be876e6"
+    }
+  },
+  "updated_at": "2026-10-20T11:07:53Z"
 }
