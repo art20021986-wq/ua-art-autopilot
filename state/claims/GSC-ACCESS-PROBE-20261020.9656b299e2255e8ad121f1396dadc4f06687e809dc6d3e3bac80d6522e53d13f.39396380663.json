@@ -7,21 +7,23 @@
   "created_at": "2026-10-20T08:51:55Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-20T08:51:55Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-20T08:56:17Z",
+  "heartbeat_at": "2026-10-20T08:56:17Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "39396380663",
     "task_id": "GSC-ACCESS-PROBE-20261020",
     "task_sha256": "9656b299e2255e8ad121f1396dadc4f06687e809dc6d3e3bac80d6522e53d13f"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-2b51b9f091a0c9b6-d070dc1a93a1eafe",
   "receipt_path": "state/receipts/GSC-ACCESS-PROBE-20261020.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "a6e116f37090fee7ad2c098f8727784035afbba7f47986ee042635ed143d4d2c",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/GSC-ACCESS-PROBE-20261020.json",
   "request_sha256": "9656b299e2255e8ad121f1396dadc4f06687e809dc6d3e3bac80d6522e53d13f",
   "resource_locks": [
@@ -29,8 +31,26 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "ff2e6e1acda2db47f98a2c6b8bfe34194e6268f4",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91082543104,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.186
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-20T08:51:55Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "718842c28bfcdb52883c558457071059c55c8d5b19b8c8a7d9ff5e03a354789f",
+    "file_sha256": {
+      "cloud/gsc_access_20261020/bootstrap.py": "5502d995c60eecbf1f21f0836e60bcf3145f120a3bcfec913e11ae172787a5cf",
+      "cloud/gsc_access_20261020/gsc_remote.py": "495ad7293ad35cc50ddcd6f65ee07c2acb00e47aabebe47466b9e620242c0963",
+      "cloud/gsc_access_20261020/test_gsc_access.py": "e61948f16a2ab1aacd7bd4dbd649387283eea28af04b54ec2138535718feee94",
+      "cloud/gsc_access_20261020/transport.py": "187dcd641ded8faba813fe696cf92e14f38f7340fc9480147a67b6442da4783f"
+    }
+  },
+  "updated_at": "2026-10-20T08:56:17Z"
 }
