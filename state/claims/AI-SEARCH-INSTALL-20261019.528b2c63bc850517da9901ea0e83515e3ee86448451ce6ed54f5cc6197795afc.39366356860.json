@@ -5,7 +5,7 @@
   "autostart_ledger_sha256": "40be47b351b4ec977fe0d676f6d613c20b12e61b7799c620898a20eef12defb7",
   "autostart_source_commit": "9f14ed60343ae0758ef2745472c28c2a96ba4059",
   "created_at": "2026-10-20T03:50:58Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_status": "NOT_REACHED",
   "execution_mode": "AUTOMATIC",
   "failure_history": [
     {
@@ -27,12 +27,12 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PENDING",
-  "post_health_status": "REQUIRED",
+  "post_health_status": "NOT_REQUIRED_ABORTED_BEFORE_PRODUCTION",
   "pre_health_status": "REQUIRED",
   "production_required": true,
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/AI-SEARCH-INSTALL-20261019.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_validation_status": "NOT_CREATED",
   "request_path": "tasks/requests/AI-SEARCH-INSTALL-20261019.json",
   "request_sha256": "528b2c63bc850517da9901ea0e83515e3ee86448451ce6ed54f5cc6197795afc",
   "resource_locks": [
@@ -40,8 +40,9 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "94b9a52176292d5d080d0d6a7a8378d78f73edf8",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight_status": "THROTTLE_80",
   "task_class": "CRITICAL",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-10-20T03:52:04Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-10-20T03:52:04Z",
+  "reconciliation_path": "state/reconciliations/AI-SEARCH-INSTALL-20261019.39366356860.aborted-before-production.json"
 }
