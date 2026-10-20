@@ -1,7 +1,10 @@
-AI_SEARCH_TASK: AI-SEARCH-001 (tasks/AI-SEARCH-001.md), owner approved TZ 2026-10-19
-AI_SEARCH_PROBE: AI-SEARCH-PROBE-20261019 FINISHED run 39213553545 (cloud/ai_search_probe_20261019/README.md): 10 days logs — OAI-SearchBot 83, ChatGPT-User 10, GPTBot 9, Googlebot 52, bingbot 0, Perplexity/Claude 0; all crawlers get 200; robots.txt already open; home page has no JSON-LD; hubs have no FAQ.
+AI_SEARCH_TASK: AI-SEARCH-001 (tasks/AI-SEARCH-001.md, cloud/ai_search_001/README.md), owner approved TZ 2026-10-19
+AI_SEARCH_PROBE: AI-SEARCH-PROBE-20261019 run 39213553545: OAI-SearchBot 83, ChatGPT-User 10, GPTBot 9, Googlebot 52, bingbot 0, Perplexity/Claude 0; robots.txt already open (item 2 dropped).
+AI_SEARCH_BING: owner added site to Bing Webmaster Tools (import from GSC) and submitted sitemap.xml on 2026-10-19 (0 errors).
+AI_SEARCH_PACKAGE: IndexNow + hub FAQ/FAQPage + home AutoDealer JSON-LD; 31 tests PASS; previews 39225868373 and 39365871561 PASS (plan 1ac9018d…). Owner «Да» for install 2026-10-19.
+AI_SEARCH_INSTALL: run 39366356860 FAILED at critical prepare storage gate: THROTTLE_80 (shared PythonAnywhere filesystem 80.39% used; production is always heavy). No transaction, backup, credential or production write. Fail-closed recovery wrote state/AUTOPILOT_HALT.json (EMERGENCY_HALT).
 AI_SEARCH_PRODUCTION_WRITTEN: NO
-AI_SEARCH_NEXT: robots.txt change dropped (not needed). Prepare IndexNow (key in /video/), FAQ block in uk/ru hubs, company JSON-LD on home page; each install needs owner «да». Owner: Bing Webmaster Tools import from GSC.
+AI_SEARCH_NEXT: (1) owner permission to reconcile the halt as ABORTED_NO_PRODUCTION_WRITE (precedent state/reconciliations/CRM-CARD-DELETE-INSTALL-20261011.*); (2) install retry only when storage gate < 80% — shared disk was 79.8% on 10-12, 80.3–80.4% on 10-19/20; owner decision whether to measure the account's own usage instead (changes a safety check — not done without explicit decision).
 
 CRM_MENU_CLEANUP_TASK: CRM-MENU-CLEANUP-001 (tasks/CRM-MENU-CLEANUP-001.md, cloud/crm_menu_cleanup_001/README.md)
 CRM_MENU_CLEANUP_STATUS: INSTALLED_PRODUCTION
