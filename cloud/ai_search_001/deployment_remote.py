@@ -13,6 +13,7 @@ import resource
 import shutil
 import sqlite3
 import stat
+import subprocess
 import sys
 import tempfile
 import time
@@ -22,6 +23,9 @@ from candidate_builder import SOURCE_FILES, DEPENDENCY_SHA256, build
 
 ROOT = Path('/home/Carix')
 HERE = Path(__file__).resolve().parent
+# The account's PythonAnywhere disk quota (owner's Files page, 2026-10-20:
+# "8.2 GB of your 35.0 GB quota"); decimal GB is the conservative reading.
+QUOTA_BYTES = 35 * 10**9
 PAGES = ('video/katalog.html', 'site/katalog.html', 'video/index.html', 'site/index.html')
 PROTECTED = ('start_safe.py', 'run_all.py', 'ua_site_counters.py',
              'publication_fence.py', 'catalog_design_golden.html')
@@ -335,6 +339,31 @@ def protected_data(plan):
         database=sha(('\n'.join(con.iterdump())+'\n').encode())
     return {'database_logical_sha256':database,'pages_and_pending_ledger':pages}
 
+def account_used_bytes():
+    """Bytes counted against the quota: home and /tmp, measured as PythonAnywhere's help does."""
+    result = subprocess.run(['du', '-s', '-B1', str(ROOT), '/tmp'], capture_output=True, text=True,
+                            timeout=600, check=False)
+    sizes = [int(line.split('\t')[0]) for line in result.stdout.splitlines() if line.strip()]
+    if result.returncode != 0 or len(sizes) != 2:
+        raise DeploymentError('ACCOUNT_USAGE:'+result.stderr[-160:])
+    return sum(sizes)
+
+
+def storage_probe():
+    """Space against the account quota; the shared filesystem figure is kept for reference only."""
+    measured_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    used = account_used_bytes()
+    if used > QUOTA_BYTES:
+        raise DeploymentError('ACCOUNT_OVER_QUOTA')
+    shared = shutil.disk_usage(ROOT)
+    return {'target_environment': 'production', 'read_only': True, 'measured_at': measured_at,
+            'total_bytes': QUOTA_BYTES, 'used_bytes': used, 'free_bytes': QUOTA_BYTES-used,
+            'account_quota_measured': True,
+            'measurement_method': 'account quota: du -s -B1 /home/Carix /tmp against the 35.0 GB plan quota',
+            'shared_filesystem': {'total_bytes': shared.total, 'used_bytes': shared.used, 'free_bytes': shared.free,
+                                  'measurement_method': 'shutil.disk_usage(/home/Carix)'}}
+
+
 def installed(run_id, expected_plan, backup_sha):
     """Return the backup manifest and install result only for a finished install."""
     _, manifest = load_backup(backup_sha)
@@ -375,13 +404,7 @@ def main():
             if args.mode == 'preview':
                 plan = prepare(work/'preview')
                 value.update(status='PASS', plan=plan, plan_sha256=sha(canonical(plan)))
-                usage = shutil.disk_usage(ROOT)
-                value['storage_probe'] = {
-                    'target_environment': 'production', 'read_only': True,
-                    'measured_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                    'total_bytes': usage.total, 'used_bytes': usage.used, 'free_bytes': usage.free,
-                    'measurement_method': 'shutil.disk_usage(/home/Carix)',
-                }
+                value['storage_probe'] = storage_probe()
             elif args.mode == 'backup':
                 value.update(backup(args.run, args.plan), status='PASS')
             elif args.mode in ('install', 'rollback'):
