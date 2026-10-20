@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/GSC-ACCESS-PROBE-20261020-R2.e09d6cc5921bb19a5293c4d6b7e649e4db587d183cf8cacc07bd405d274d2d05.json",
+  "autostart_ledger_sha256": "cbdceb2e80c6cf29272e1ccc9314b1df4b32c293ebfcbd499118cd4edd3a8811",
+  "autostart_source_commit": "20395a9e39ecd2841b866add2f737d5b0b5276c9",
+  "created_at": "2026-10-20T08:58:18Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "39397160386",
+    "task_id": "GSC-ACCESS-PROBE-20261020-R2",
+    "task_sha256": "e09d6cc5921bb19a5293c4d6b7e649e4db587d183cf8cacc07bd405d274d2d05"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-2b51b9f091a0c9b6-d070dc1a93a1eafe",
+  "request_path": "tasks/requests/GSC-ACCESS-PROBE-20261020-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:2b51b9f091a0c9b6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
