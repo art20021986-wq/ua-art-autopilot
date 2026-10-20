@@ -13,4 +13,4 @@
 
 Владелец: Bing Webmaster Tools (импорт из Search Console); восстановить доступ Search Console.
 Каждая запись на сайт — отдельное «да». Не делаем: llms.txt, скрытые тексты, правки карточек.
-Пакет проверки: `cloud/ai_search_probe_20261019/`.
+Пакет проверки: `cloud/ai_search_probe_20261019/`. Установлено 2026-10-20, run 39382682975 (см. `cloud/ai_search_001/README.md`).
