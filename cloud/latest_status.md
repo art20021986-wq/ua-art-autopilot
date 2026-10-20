@@ -1,5 +1,6 @@
 GSC_ACCESS: restored 2026-10-20 via service account uaart-autopilot@uaart-autopilot.iam.gserviceaccount.com (Full user), key on server /home/Carix/uaart-autopilot-110fb4d36d23.txt; read via cloud/gsc_access_20261020 (STANDARD, temporary always-on task). Report R2 in cloud/gsc_access_20261020/README.md. Old OAuth radar (GSC_REFRESH_TOKEN) obsolete. Owner submitted sitemap.xml in GSC 2026-10-20 (39 URLs).
-GSC_NEXT (proposed, need owner «да» where site is written): Google sitemap resubmit at publication (server, like IndexNow); weekly read-only GSC report; uk/ru page for «авто під замовлення / підбір авто»; canonical for podbor.html?params.
+GSC_GROWTH: INSTALLED_LIVE_VERIFIED run 39412886656 (cloud/gsc_growth_001/README.md): ua_google_sitemap.py (Google sitemaps.submit at every sitemap change, HTTP 204 at install), uk/ru custom-order pages seo/ua/avto-pid-zamovlennia-kyiv.html + seo/ru/avto-pod-zakaz-kiev.html with FAQPage, hub links; IndexNow 2 new URLs; crm_unchanged, bot running. Item 4 (podbor.html?strana duplicate) needs no change: canonical already present.
+GSC_REPORT: weekly read-only report cloud/gsc_report (make_request.py request|launch <date>); first GSC-REPORT-20261020: 15/39 indexed, 15 discovered-not-indexed, 9 unknown. Scheduled task trig_01TcbzmoYWYTFaWJiBwEeZMe fires into this session Mondays 09:51 Kyiv.
 
 AI_SEARCH_TASK: AI-SEARCH-001 (tasks/AI-SEARCH-001.md, cloud/ai_search_001/README.md)
 AI_SEARCH_STATUS: INSTALLED_LIVE_VERIFIED
