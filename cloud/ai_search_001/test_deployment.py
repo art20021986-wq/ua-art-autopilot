@@ -200,6 +200,32 @@ class RecoveryTests(unittest.TestCase):
             remote.HERE=old_here
 
 
+class StorageProbeTests(unittest.TestCase):
+    def du(self, stdout, returncode=0):
+        return SimpleNamespace(stdout=stdout, stderr='du: denied', returncode=returncode)
+
+    def test_quota_measurement_keeps_shared_figure(self):
+        shared = SimpleNamespace(total=6*10**12, used=5*10**12, free=10**12)
+        with patch.object(remote.subprocess, 'run', return_value=self.du('8000000000\t/home/Carix\n200000000\t/tmp\n')), \
+             patch.object(remote.shutil, 'disk_usage', return_value=shared):
+            probe = remote.storage_probe()
+        self.assertEqual((probe['total_bytes'], probe['used_bytes'], probe['free_bytes']),
+                         (35*10**9, 8200000000, 26800000000))
+        self.assertTrue(probe['account_quota_measured'])
+        self.assertEqual(probe['shared_filesystem']['used_bytes'], 5*10**12)
+
+    def test_incomplete_measurement_fails_closed(self):
+        for result in (self.du('8000000000\t/home/Carix\n', 0), self.du('1\t/home/Carix\n2\t/tmp\n', 1)):
+            with patch.object(remote.subprocess, 'run', return_value=result):
+                with self.assertRaisesRegex(remote.DeploymentError, 'ACCOUNT_USAGE'):
+                    remote.storage_probe()
+
+    def test_over_quota_fails_closed(self):
+        with patch.object(remote.subprocess, 'run', return_value=self.du('36000000000\t/home/Carix\n0\t/tmp\n')):
+            with self.assertRaisesRegex(remote.DeploymentError, 'ACCOUNT_OVER_QUOTA'):
+                remote.storage_probe()
+
+
 class TransportTests(unittest.TestCase):
     def test_resume_does_not_reset_an_already_starting_bot(self):
         api = API('test-token')
