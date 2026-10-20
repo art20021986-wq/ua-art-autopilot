@@ -10,7 +10,7 @@ import json
 import sys
 
 P = 'cloud/gsc_report/'
-DEPENDENCIES = [P + 'bootstrap.py', P + 'gsc_remote.py', P + 'transport.py']
+DEPENDENCIES = [P + 'bootstrap.py', P + 'gsc_remote.py', P + 'make_request.py', P + 'transport.py']
 TESTS = [P + 'test_gsc_report.py']
 
 
