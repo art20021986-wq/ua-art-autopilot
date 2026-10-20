@@ -1,0 +1,46 @@
+{
+  "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-1",
+  "semantic_outcome": "ABORTED_NO_PRODUCTION_WRITE",
+  "task_id": "AI-SEARCH-INSTALL-20261019",
+  "original_run_id": "39366356860",
+  "request_sha256": "528b2c63bc850517da9901ea0e83515e3ee86448451ce6ed54f5cc6197795afc",
+  "base_main_commit": "b6d219707b7e052d5b32f305d0edb53a7a3cd667",
+  "prepared_at": "2026-10-20T06:14:53.241129+00:00",
+  "apply_parent_main": "b6d219707b7e052d5b32f305d0edb53a7a3cd667",
+  "owner_statement": "Заверши, конечно, установку, все, что нужно, сделай.",
+  "original_failure_preserved": true,
+  "original_failure_code": "STORAGE_THROTTLE_80",
+  "failure_job_id": "118444336549",
+  "failure_stage": "critical prepare / Rebuild trusted gates: production storage probe 80.393% used (THROTTLE_80, production is heavy)",
+  "transaction_created": false,
+  "production_backup_executed": false,
+  "production_install_controller_executed": false,
+  "production_write_executed": false,
+  "production_rollback_executed": false,
+  "production_service_reload_executed": false,
+  "metadata_terminal_status": "FAILED",
+  "metadata_terminal_status_meaning": "Run aborted before a production transaction existed; no rollback or installation PASS is asserted.",
+  "consumed_launch_unchanged": true,
+  "successor_installation_authorized_by_this_record": false,
+  "precedent": "state/reconciliations/CRM-CARD-DELETE-INSTALL-20261011.38184149170.aborted-before-production.json",
+  "before_sha256": {
+    "state/AUTOPILOT_HALT.json": "2bf6c990f7cd4fae719d3256711801c7a6973f5e8a2a212e640b02871c4feb95",
+    "state/claims/AI-SEARCH-INSTALL-20261019.528b2c63bc850517da9901ea0e83515e3ee86448451ce6ed54f5cc6197795afc.39366356860.json": "ff4a45e16b388a0d12515c638f95b9bb4527fb0695147464e1c317cd62bcf8b7",
+    "tasks/requests/AI-SEARCH-INSTALL-20261019.json": "528b2c63bc850517da9901ea0e83515e3ee86448451ce6ed54f5cc6197795afc",
+    "state/storage/AI-SEARCH-INSTALL-20261019.json": "e7c4a1cfe98aee3c3c0f749aadc1638a599e7b6e230adc5b9821dfe8c061130c"
+  },
+  "after_sha256": {
+    "state/claims/AI-SEARCH-INSTALL-20261019.528b2c63bc850517da9901ea0e83515e3ee86448451ce6ed54f5cc6197795afc.39366356860.json": "2bca04033fcae2d9420ca0bfc88435e2eb26e1c2ee74c2e662fb54ba7814ad75"
+  },
+  "halt_archive": {
+    "path": "state/halt_history/AI-SEARCH-INSTALL-20261019.39366356860/halt.json",
+    "sha256": "2bf6c990f7cd4fae719d3256711801c7a6973f5e8a2a212e640b02871c4feb95",
+    "byte_identical_required": true
+  },
+  "claim_archive": {
+    "path": "state/halt_history/AI-SEARCH-INSTALL-20261019.39366356860/claim.before.json",
+    "sha256": "ff4a45e16b388a0d12515c638f95b9bb4527fb0695147464e1c317cd62bcf8b7",
+    "byte_identical_required": true
+  },
+  "no_transaction_or_receipt_paths_observed": true
+}
