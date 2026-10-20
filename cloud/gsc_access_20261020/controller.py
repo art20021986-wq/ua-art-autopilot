@@ -13,7 +13,7 @@ import re
 
 from transport import API, upload_package
 
-TASK = 'GSC-ACCESS-PROBE-20261020'
+TASK = 'GSC-ACCESS-PROBE-20261020-R2'
 PACKAGE = 'cloud/gsc_access_20261020'
 ROOT = Path(__file__).resolve().parents[2]
 SECRET = re.compile(r'-----BEGIN|private_key"')
@@ -60,7 +60,7 @@ def execute(env, *, root=None, api=None, upload=upload_package):
     request_sha, run_id = validate_identity(env, root)
     api = api or API(env.get('PYTHONANYWHERE_API_TOKEN', ''))
     report = api.run('probe', run_id, upload(api))
-    evidence = PACKAGE + '/evidence.json'
+    evidence = PACKAGE + '/evidence_r2.json'
     write(root, evidence, dump({'task_id': TASK, 'run_id': run_id, **report}))
     receipt = {'task_id': TASK, 'status': 'FINISHED', 'task_class': 'STANDARD', 'target_environment': 'shadow',
                'live_source_environment': 'production', 'tests': 'PASS', 'tests_scope': 'READ_ONLY_PROBE',

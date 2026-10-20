@@ -16,8 +16,8 @@ import urllib.request
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-# Uploaded from an iPhone the extension may be dropped.
-KEYS = (HOME/'uaart-autopilot-110fb4d36d23.json', HOME/'uaart-autopilot-110fb4d36d23')
+# Uploaded from an iPhone the extension may be dropped or become .txt.
+KEYS = tuple(HOME/('uaart-autopilot-110fb4d36d23' + ext) for ext in ('.json', '', '.txt'))
 SITE = 'https://www.uaart.com.ua/'
 SCOPE = 'https://www.googleapis.com/auth/webmasters'
 API = 'https://www.googleapis.com/webmasters/v3/sites/'
