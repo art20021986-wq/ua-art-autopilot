@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/GSC-GROWTH-PREFLIGHT-20261020-R2.922861011e37928b067ef7ad817d6d14cfeb824a3240720454e35b0c73dcdb21.json",
+  "autostart_ledger_sha256": "fce5b6f97a70923a459e9c44048427761846940ff33e81dd725de359878d3864",
+  "autostart_source_commit": "9749903bf0280ab69702c340dc5fc926d59ede10",
+  "created_at": "2026-10-20T11:01:22Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "39411910067",
+    "task_id": "GSC-GROWTH-PREFLIGHT-20261020-R2",
+    "task_sha256": "922861011e37928b067ef7ad817d6d14cfeb824a3240720454e35b0c73dcdb21"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-ec48ae4cd1dd62d2-1b20cd8da1caf11f",
+  "request_path": "tasks/requests/GSC-GROWTH-PREFLIGHT-20261020-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:ec48ae4cd1dd62d2"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
