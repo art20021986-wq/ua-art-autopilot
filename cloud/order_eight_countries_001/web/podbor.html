@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Авто під замовлення — UA ART COMPANY</title>
+  <link rel="stylesheet" href="order.css?v=20260927.2">
+  <script type="module" src="order.js?v=20260927.2"></script>
+</head>
+<body>
+  <main class="ua-order" id="ua-order" data-site-no-translate>
+    <h1 data-label="title">Авто під замовлення</h1>
+    <p id="message" role="status" aria-live="polite">Завантаження…</p>
+    <section aria-labelledby="country-heading">
+      <h2 id="country-heading" data-label="choose_country">Оберіть країну підбору</h2>
+      <nav id="countries" class="country-grid" aria-labelledby="country-heading"></nav>
+    </section>
+    <section id="model-section" hidden aria-labelledby="model-heading">
+      <h2 id="model-heading" data-label="choose_model">Оберіть модель</h2>
+      <div id="models" class="models"></div>
+      <button type="button" id="other-model" class="secondary" data-label="other">Інша модель</button>
+    </section>
+    <form id="order-form" hidden>
+      <p id="selection" class="selection"></p>
+      <label id="other-wrap" hidden><span data-label="other">Інша модель</span><input name="other_model" minlength="2" maxlength="120"></label>
+      <div class="form-grid">
+        <label><span data-label="budget">Бюджет під ключ</span><select name="budget" required></select></label>
+        <label><span data-label="vehicle_type">Тип автомобіля</span><select name="vehicle_type" required></select></label>
+        <label><span data-label="delivery_country">Країна доставки</span><input name="delivery_country" autocomplete="country-name" minlength="2" maxlength="80" required></label>
+        <label><span data-label="delivery_city">Місто доставки</span><input name="delivery_city" autocomplete="address-level2" minlength="2" maxlength="80" required></label>
+        <label><span data-label="customer_name">Ваше ім’я</span><input name="customer_name" autocomplete="name" minlength="2" maxlength="80" required></label>
+        <label><span data-label="contact">Телефон, WhatsApp або @Telegram</span><input name="contact_value" autocomplete="tel" maxlength="80" required></label>
+      </div>
+      <label><span data-label="comment">Побажання або посилання</span><textarea name="comment" rows="3" maxlength="2000"></textarea></label>
+      <p id="consent-copy"></p>
+      <label class="consent"><input type="checkbox" name="consent" required><span data-label="consent"></span></label>
+      <button type="submit" data-label="review">Перевірте заявку</button>
+    </form>
+    <section id="review" hidden aria-labelledby="review-heading">
+      <h2 id="review-heading" data-label="review">Перевірте заявку</h2>
+      <dl id="summary"></dl>
+      <div class="actions">
+        <button type="button" id="confirm" data-label="confirm">Підтвердити заявку</button>
+        <button type="button" id="edit" class="secondary" data-label="edit">Змінити дані</button>
+        <button type="button" id="handoff" class="secondary" data-label="handoff">Продовжити в Telegram</button>
+      </div>
+    </section>
+    <section id="receipt" hidden>
+      <h2 data-label="saved">Заявку збережено</h2>
+      <p id="number"></p>
+      <a id="whatsapp" class="button" rel="noopener" target="_blank" data-label="whatsapp">Написати у WhatsApp</a>
+      <button type="button" id="new-request" class="secondary" data-label="new_request">Нова заявка</button>
+    </section>
+    <noscript>Для форми потрібен JavaScript. Телефон: +380 99 222 20 02.</noscript>
+  </main>
+</body>
+</html>
