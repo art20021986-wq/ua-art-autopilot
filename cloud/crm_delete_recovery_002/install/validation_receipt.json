@@ -1,0 +1,44 @@
+{
+  "excluded_from_claim": [
+    "production execution",
+    "actual provider host placement",
+    "actual source installation",
+    "live WSGI reload",
+    "live CRM restart",
+    "live Telegram acceptance"
+  ],
+  "files_sha256": {
+    "README.md": "72124b8bce8618b08e9a34735d191bf66e9a6df57fbcf8cd3c0e5a7336559b2f",
+    "lifecycle_controller.py": "7ee033d34734206e3f95d562325272815950c2e42879a7ecf2532620e7bb195a",
+    "lifecycle_worker.py": "6b2a92f1fa4db6667885e56c0cf21422b86dfa58f39776b308aadd618ee3296f",
+    "observed_bindings.json": "1ba8dffe0bc715e3e31ca1a22aad18e43bff9a5e683be7b34265cc339e33e979",
+    "package_install.py": "7fc417060df8a788aa6fd55de4901740c19b5b753de14b9c88faae68254d4c9b",
+    "remote_worker.py": "1f85c2e829e9c73d1da845bfe01846f03e0ef976aa047b4c38bb3a7b4f1dd431",
+    "test_lifecycle.py": "e06b8da3ae928c9918b89e4f6073e43a9b962a02208ce943a10ba706977bce71",
+    "test_package_install.py": "6c98692f781478e633397f8537b0237b40b4087ab244d60f7bd367365139517b",
+    "test_remote_worker.py": "382b6d2d6d3caa8aa65957700f740fbb5ddf99c52cf7831282ebd385088ead93",
+    "test_watchdog.py": "fa87ab1ea27b227f757867c82a2181745526e960a142118b8b788c435e040039",
+    "watchdog.py": "bb3b5c9d8a76e230a5f5bf7e2208c9a1c4984cdb91dffb27087d511a9f314de5"
+  },
+  "production_operations_executed": [],
+  "production_ready": false,
+  "remaining_gates": [
+    "normal structured Gate B admission of exact reviewed release",
+    "existing unrelated SEO EMERGENCY_HALT must be handled through its authorized process",
+    "fresh provider inventory and pre-pause actual CRM process/singleton namespace proof",
+    "actual installation and live HTTP/runtime read-back",
+    "parent live Telegram deletion/recovery acceptance remains pending"
+  ],
+  "separate_owner_instruction_received": true,
+  "separate_owner_instruction_reported_time": "2026-09-21T07:01:57Z",
+  "status": "OFFLINE_INSTALLATION_CANDIDATE_PASS",
+  "test_command": "python -m unittest discover -s cloud/crm_delete_recovery_002/install -p 'test_*.py' -q",
+  "test_suites": {
+    "lifecycle_authority_real_worker": 32,
+    "package": 17,
+    "remote_phase": 24,
+    "watchdog": 34
+  },
+  "tests_failed": 0,
+  "tests_passed": 107
+}

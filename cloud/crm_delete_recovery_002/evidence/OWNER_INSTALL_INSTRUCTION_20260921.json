@@ -1,0 +1,35 @@
+{
+  "schema": "UAART_OWNER_INSTALL_INSTRUCTION_RECORD_V1",
+  "task_id": "UA-ART-CRM-DELETE-RECOVERY-002",
+  "spec_version": "1.0",
+  "recorded_date": "2026-09-21",
+  "owner_instruction_verbatim": "Установио.",
+  "interpretation": "Install the PR116 CRM list/deletion recovery correction discussed immediately before this instruction.",
+  "separate_installation_command_received": true,
+  "scope": "Existing approved specification; preserve all unrelated car data and media.",
+  "candidate_head_observed": "b52ddbbc782821e32a8fccd6757a52689b338d58",
+  "authorization_effect": "The separate-command prerequisite is satisfied. Do not request the same general installation permission again.",
+  "not_a_gate_or_launch": true,
+  "gate_b": "OPEN_NOT_ACCEPTED",
+  "production_installation_launched": false,
+  "remaining_blockers": [
+    "Existing production-route integration incomplete per admission/review_evidence.json: three operation entrypoints, bound remote transport and policy, persisted transaction verification, exact receipts and complete admission-compatible dependency closure.",
+    "Active unrelated EMERGENCY_HALT SEO-DAILY-PODBOR-CANONICAL-20260921 / run 35552076762. Its own authorized reconciliation must establish the remote outcome before normal admission.",
+    "Exact final assembled release requires validation and independent review; no production PASS or backup evidence is supplied by this instruction record."
+  ],
+  "halt_diagnosis": {
+    "job_id": 106188834586,
+    "failure": "GET remote backup receipt timed out after controller requested backup; BACKUP_CONTROLLER_FAILED:1",
+    "remote_outcome": "UNKNOWN_FROM_WORKFLOW_LOGS_DO_NOT_REPLAY",
+    "production_controller_job": "SKIPPED",
+    "backup_completion_not_proven": true
+  },
+  "next_action": "Complete and independently review the existing route integration; reconcile remote backup outcome through the authorized incident route. Bind actual final release/backup to normal Gate B, then install under this owner instruction.",
+  "constraints": [
+    "Do not remove or bypass active HALT",
+    "Do not relabel prior UA0002 emergency console runner as installer",
+    "Do not fabricate approval/Gate/backup/receipt",
+    "Do not repeat completed UA0002 retirement",
+    "Do not restore old CRM data over current edits"
+  ]
+}
