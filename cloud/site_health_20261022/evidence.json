@@ -1,0 +1,344 @@
+{
+  "access_log": {
+    "bytes": 440830,
+    "hours": {
+      "22/Oct/2026 03": {
+        "2xx": 36,
+        "4xx": 2
+      },
+      "22/Oct/2026 04": {
+        "2xx": 155,
+        "4xx": 5
+      },
+      "22/Oct/2026 05": {
+        "2xx": 149,
+        "4xx": 8
+      },
+      "22/Oct/2026 06": {
+        "2xx": 166,
+        "3xx": 1,
+        "4xx": 6
+      },
+      "22/Oct/2026 07": {
+        "2xx": 202,
+        "3xx": 2,
+        "4xx": 11
+      },
+      "22/Oct/2026 08": {
+        "2xx": 154,
+        "3xx": 4,
+        "4xx": 4
+      },
+      "22/Oct/2026 09": {
+        "2xx": 337,
+        "3xx": 7,
+        "4xx": 9
+      },
+      "22/Oct/2026 10": {
+        "2xx": 182,
+        "3xx": 3,
+        "4xx": 6
+      },
+      "22/Oct/2026 11": {
+        "2xx": 154,
+        "4xx": 12
+      },
+      "22/Oct/2026 12": {
+        "2xx": 160,
+        "3xx": 9,
+        "4xx": 1
+      },
+      "22/Oct/2026 13": {
+        "2xx": 95,
+        "3xx": 64,
+        "4xx": 2
+      }
+    },
+    "http": 200
+  },
+  "always_on": [
+    {
+      "command": "python3.10 /home/Carix/start_safe.py",
+      "description": "",
+      "enabled": true,
+      "id": 266084,
+      "state": "Running"
+    },
+    {
+      "command": "python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json",
+      "description": "UA ART site connection watch — read-only — 5 min",
+      "enabled": true,
+      "id": 270984,
+      "state": "Running"
+    }
+  ],
+  "cpu": {
+    "daily_cpu_limit_seconds": 10000,
+    "daily_cpu_total_usage_seconds": 690.684977,
+    "next_reset_time": "2026-10-23T09:08:15+00:00"
+  },
+  "error_log": {
+    "bytes": 6992,
+    "http": 200,
+    "last_lines": [
+      "2026-10-19 13:31:18,713: OSError: write error",
+      "2026-10-19 15:27:45,715: OSError: write error",
+      "2026-10-19 17:07:27,900: OSError: write error",
+      "2026-10-19 17:40:28,645: OSError: write error",
+      "2026-10-20 02:38:26,387: OSError: write error",
+      "2026-10-20 06:42:36,059: OSError: write error",
+      "2026-10-20 09:35:02,189: OSError: write error",
+      "2026-10-20 11:58:58,861: OSError: write error",
+      "2026-10-20 13:11:04,059: OSError: write error",
+      "2026-10-20 17:48:28,781: OSError: write error",
+      "2026-10-21 10:10:45,765: OSError: write error",
+      "2026-10-21 10:15:46,882: OSError: write error",
+      "2026-10-21 11:06:01,390: OSError: write error",
+      "2026-10-21 15:38:05,616: OSError: write error",
+      "2026-10-21 16:05:32,792: OSError: write error",
+      "2026-10-21 16:22:11,300: OSError: write error",
+      "2026-10-21 19:20:02,936: OSError: write error",
+      "2026-10-21 19:26:12,532: OSError: write error",
+      "2026-10-21 19:26:19,439: OSError: write error",
+      "2026-10-21 21:16:36,698: OSError: write error",
+      "2026-10-22 02:49:36,544: OSError: write error",
+      "2026-10-22 03:55:53,241: OSError: write error",
+      "2026-10-22 08:10:59,000: OSError: write error",
+      "2026-10-22 08:38:57,854: OSError: write error",
+      "2026-10-22 12:37:27,808: OSError: write error"
+    ],
+    "per_hour": {
+      "2026-10-17 13": 1,
+      "2026-10-17 15": 1,
+      "2026-10-18 11": 1,
+      "2026-10-18 14": 1,
+      "2026-10-19 00": 1,
+      "2026-10-19 02": 1,
+      "2026-10-19 05": 1,
+      "2026-10-19 09": 1,
+      "2026-10-19 10": 1,
+      "2026-10-19 11": 1,
+      "2026-10-19 12": 1,
+      "2026-10-19 13": 2,
+      "2026-10-19 15": 1,
+      "2026-10-19 17": 2,
+      "2026-10-20 02": 1,
+      "2026-10-20 06": 1,
+      "2026-10-20 09": 1,
+      "2026-10-20 11": 1,
+      "2026-10-20 13": 1,
+      "2026-10-20 17": 1,
+      "2026-10-21 10": 2,
+      "2026-10-21 11": 1,
+      "2026-10-21 15": 1,
+      "2026-10-21 16": 2,
+      "2026-10-21 19": 3,
+      "2026-10-21 21": 1,
+      "2026-10-22 02": 1,
+      "2026-10-22 03": 1,
+      "2026-10-22 08": 2,
+      "2026-10-22 12": 1
+    }
+  },
+  "http_methods": [
+    "GET"
+  ],
+  "public": {
+    "http://uaart.com.ua/": {
+      "bytes": 795,
+      "head": "<!DOCTYPE html> <html style=\"height:100%\"> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\" /> <title> 301 Moved Permanently </title><style>@media (prefers-color-scheme:dark){body{background-color:#000!important}}</style></head> <body style=\"color: #444; ",
+      "http": 301,
+      "location": "https://www.uaart.com.ua/video/index.html",
+      "seconds": 0.61,
+      "title": "301 Moved Permanently",
+      "type": "text/html"
+    },
+    "http://www.uaart.com.ua/": {
+      "bytes": 151,
+      "head": "<html> <head><title>302 Found</title></head> <body> <center><h1>302 Found</h1></center> <hr><center>openresty/x.x.x.x</center> </body> </html> ",
+      "http": 302,
+      "location": "https://www.uaart.com.ua/",
+      "seconds": 0.48,
+      "title": "302 Found",
+      "type": "text/html"
+    },
+    "https://uaart.com.ua/": {
+      "bytes": 795,
+      "head": "<!DOCTYPE html> <html style=\"height:100%\"> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\" /> <title> 301 Moved Permanently </title><style>@media (prefers-color-scheme:dark){body{background-color:#000!important}}</style></head> <body style=\"color: #444; ",
+      "http": 301,
+      "location": "https://www.uaart.com.ua/video/index.html",
+      "seconds": 0.86,
+      "title": "301 Moved Permanently",
+      "type": "text/html"
+    },
+    "https://www.uaart.com.ua/": {
+      "bytes": 47827,
+      "head": null,
+      "http": 200,
+      "seconds": 0.21,
+      "title": "Автомобілі під ключ у Києві — UA ART COMPANY",
+      "type": "text/html; charset=utf-8"
+    },
+    "https://www.uaart.com.ua/robots.txt": {
+      "bytes": 95,
+      "head": null,
+      "http": 200,
+      "seconds": 0.15,
+      "title": null,
+      "type": "text/plain; charset=utf-8"
+    },
+    "https://www.uaart.com.ua/sitemap.xml": {
+      "bytes": 4544,
+      "head": null,
+      "http": 200,
+      "seconds": 0.14,
+      "title": null,
+      "type": "application/xml"
+    },
+    "https://www.uaart.com.ua/video/UA-0007.html": {
+      "bytes": 89025,
+      "head": null,
+      "http": 200,
+      "seconds": 0.22,
+      "title": "Mercedes-Benz B-Class 2011 из Кореи, 50 000 км | купить в Киеве | UA ART",
+      "type": "text/html"
+    },
+    "https://www.uaart.com.ua/video/UA-0017-diag.html": {
+      "bytes": 17881,
+      "head": null,
+      "http": 200,
+      "seconds": 0.21,
+      "title": "Диагностика Audi A6 2015 — UA ART COMPANY",
+      "type": "text/html"
+    },
+    "https://www.uaart.com.ua/video/UA-0017.html": {
+      "bytes": 86794,
+      "head": null,
+      "http": 200,
+      "seconds": 0.21,
+      "title": "Audi A6 2015 из Кореи, 118 000 км | купить в Киеве | UA ART",
+      "type": "text/html"
+    },
+    "https://www.uaart.com.ua/video/foto/UA-0017/001.jpg": {
+      "bytes": 44786,
+      "head": null,
+      "http": 200,
+      "seconds": 0.16,
+      "title": null,
+      "type": "image/jpeg"
+    },
+    "https://www.uaart.com.ua/video/index.html": {
+      "bytes": 47823,
+      "head": null,
+      "http": 200,
+      "seconds": 0.18,
+      "title": "Автомобілі під ключ у Києві — UA ART COMPANY",
+      "type": "text/html"
+    },
+    "https://www.uaart.com.ua/video/info.html": {
+      "bytes": 25753,
+      "head": null,
+      "http": 200,
+      "seconds": 0.19,
+      "title": "Условия покупки и доставки авто — UA ART COMPANY",
+      "type": "text/html"
+    },
+    "https://www.uaart.com.ua/video/katalog.html": {
+      "bytes": 84672,
+      "head": null,
+      "http": 200,
+      "seconds": 0.22,
+      "title": "Каталог авто в наличии и в пути — UA ART COMPANY",
+      "type": "text/html"
+    },
+    "https://www.uaart.com.ua/video/podbor.html": {
+      "bytes": 27892,
+      "head": null,
+      "http": 200,
+      "seconds": 0.22,
+      "title": "Підбір авто під замовлення в Україну — UA ART COMPANY",
+      "type": "text/html"
+    },
+    "https://www.uaart.com.ua/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html": {
+      "bytes": 20247,
+      "head": null,
+      "http": 200,
+      "seconds": 0.16,
+      "title": "Авто з Кореї під ключ у Києві — ціни та наявність | UA ART",
+      "type": "text/html"
+    }
+  },
+  "remote_write_count": 0,
+  "run_id": "39787539884",
+  "server_log": {
+    "bytes": 66104,
+    "http": 200,
+    "last_lines": [
+      "2026-10-22 12:59:08   подбор:   https://www.uaart.com.ua/video/podbor.html?v=1792673948",
+      "2026-10-22 12:59:08   условия:  https://www.uaart.com.ua/video/info.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0001.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0003.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0004.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0005.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0006.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0007.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0009.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0010.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0011.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0012.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0013.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0014.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0015.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0016.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0017.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0018.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0020.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0021.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0022.html?v=1792673948",
+      "2026-10-22 12:59:08   карточка: https://www.uaart.com.ua/video/UA-0023.html?v=1792673948",
+      "2026-10-22 12:59:08 ",
+      "2026-10-22 12:59:08 Готово. Перезапускать бота не нужно — страницы уже обновлены.",
+      "2026-10-22 12:59:08   ПУБЛИКАЦИЯ ОТМЕНЕНА: /home/Carix/video/index.html: машин 0, надо 20; /home/Carix/video/index.html: счётчик не найден; /home/Carix/video/index.html: стран 8, надо 5; /home/Carix/site/index.html: машин 6, надо 20; /home/Carix/site/index.html: счётчик 7, надо 20"
+    ],
+    "per_hour": {
+      "2026-10-19 09": 2,
+      "2026-10-19 10": 3,
+      "2026-10-19 11": 78,
+      "2026-10-19 12": 2,
+      "2026-10-19 13": 4,
+      "2026-10-19 15": 2,
+      "2026-10-19 17": 4,
+      "2026-10-19 21": 1,
+      "2026-10-19 22": 1,
+      "2026-10-20 02": 2,
+      "2026-10-20 06": 2,
+      "2026-10-20 09": 2,
+      "2026-10-20 11": 2,
+      "2026-10-20 13": 2,
+      "2026-10-20 17": 2,
+      "2026-10-21 04": 76,
+      "2026-10-21 10": 4,
+      "2026-10-21 11": 2,
+      "2026-10-21 14": 2,
+      "2026-10-21 15": 2,
+      "2026-10-21 16": 5,
+      "2026-10-21 19": 106,
+      "2026-10-21 21": 2,
+      "2026-10-22 02": 2,
+      "2026-10-22 03": 2,
+      "2026-10-22 04": 1,
+      "2026-10-22 08": 4,
+      "2026-10-22 09": 76,
+      "2026-10-22 10": 1,
+      "2026-10-22 12": 155
+    }
+  },
+  "task_id": "SITE-HEALTH-PROBE-20261022",
+  "webapp": {
+    "enabled": true,
+    "expiry": null,
+    "force_https": true,
+    "python_version": "3.10",
+    "source_directory": "/home/Carix/mysite"
+  }
+}
