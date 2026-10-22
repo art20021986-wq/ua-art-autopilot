@@ -7,21 +7,23 @@
   "created_at": "2026-10-22T13:13:48Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-22T13:13:48Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-22T13:18:52Z",
+  "heartbeat_at": "2026-10-22T13:18:52Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "39784862554",
     "task_id": "FUEL-NORMALIZE-PREFLIGHT-20261022",
     "task_sha256": "fe404276b456d2d5e439b9c31fefb0670a0203fee236015981bbbb539d7adb1e"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-e9e9f9f1468d8334-3cf766bcc70eafc0",
   "receipt_path": "state/receipts/FUEL-NORMALIZE-PREFLIGHT-20261022.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "0ce8222f4df4973690a49430cfaa922255262d6554198ec51d7019a2a7e02cab",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/FUEL-NORMALIZE-PREFLIGHT-20261022.json",
   "request_sha256": "fe404276b456d2d5e439b9c31fefb0670a0203fee236015981bbbb539d7adb1e",
   "resource_locks": [
@@ -29,8 +31,30 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "9e0896caefb91400a76ed7271ae02a75834bb328",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 90707099648,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.428
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-22T13:13:48Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "dfd7e9b2d726bda5a3a1267966c4b4105de13719d38a8e63c48d3e1bc2193341",
+    "file_sha256": {
+      "cloud/fuel_normalize_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/fuel_normalize_001/deployment_bootstrap.py": "b36617db649a0e50a6d87427f9172bcc841fcdff4576184608f2d128e06d84ba",
+      "cloud/fuel_normalize_001/deployment_remote.py": "4de8a20d962000b5dcbc458210dc28ee4d20288cd83a732de0a9665d44a11d49",
+      "cloud/fuel_normalize_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/fuel_normalize_001/deployment_transport.py": "15a046317c71855b1d2df0e8b8ba18d3f9b89a5b165a1eb535f26cf26720ead7",
+      "cloud/fuel_normalize_001/fuel_vocabulary.py": "f9e111812a0c6abbff3bae6b8f31668cce9fd9aaffda370ef3e83a891c3cadae",
+      "cloud/fuel_normalize_001/release_constants.py": "075dfd0159dceb7577511757b2c36c5a45157385de4a9a66679819407f823131",
+      "cloud/fuel_normalize_001/test_fuel.py": "bfad620d8438b8ed8d25ff4645bc7dfae21c5625188fda9465ac17d8a3ae40a0"
+    }
+  },
+  "updated_at": "2026-10-22T13:18:52Z"
 }
