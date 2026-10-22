@@ -17,13 +17,13 @@ import urllib.request
 from collections import Counter
 
 PACKAGE = 'cloud/site_health_20261022'
-TASKS = ('SITE-HEALTH-PROBE-20261022', 'SITE-HEALTH-PROBE-20261022-R2')
+TASKS = ('SITE-HEALTH-PROBE-20261022', 'SITE-HEALTH-PROBE-20261022-R2', 'SITE-HEALTH-PROBE-20261022-R3')
 ROOT = Path(__file__).resolve().parents[2]
 API = 'https://www.pythonanywhere.com/api/v0/user/Carix/'
 DOMAIN = 'www.uaart.com.ua'
 LOGS = {'error': 'files/path/var/log/%s.error.log' % DOMAIN, 'access': 'files/path/var/log/%s.access.log' % DOMAIN,
         'server': 'files/path/var/log/%s.server.log' % DOMAIN}
-# R2: who runs the legacy whole-site rebuild and how often it fails.
+# R2/R3: who runs the legacy whole-site rebuild and how often it fails.
 HISTORY = {'publication_log': 'files/path/home/Carix/publikaciya_log.txt',
            'connection_monitor': 'files/path/home/Carix/uaart-monitor/latest.json'}
 WEBAPP_DIR = 'files/path/home/Carix/mysite/'
@@ -192,8 +192,9 @@ def execute(env, *, root=None, reader=None):
     root = ROOT if root is None else Path(root)
     request_sha, run_id = validate_identity(env, root)
     task = env['UAART_TASK_ID']
-    evidence = PACKAGE+('/evidence_r2.json' if task.endswith('-R2') else '/evidence.json')
-    result = collect(reader or Reader(env.get('PYTHONANYWHERE_API_TOKEN', '')), task.endswith('-R2'))
+    history_run = task != TASKS[0]
+    evidence = PACKAGE+('/evidence_%s.json' % task.rsplit('-', 1)[1].lower() if history_run else '/evidence.json')
+    result = collect(reader or Reader(env.get('PYTHONANYWHERE_API_TOKEN', '')), history_run)
     write(root, evidence, dump({'task_id': task, 'run_id': run_id, 'http_methods': ['GET'], 'remote_write_count': 0, **result}))
     receipt = {'task_id': task, 'status': 'FINISHED', 'task_class': 'STANDARD', 'target_environment': 'shadow',
                'live_source_environment': 'production', 'tests': 'PASS', 'tests_scope': 'READ_ONLY_PROBE',
