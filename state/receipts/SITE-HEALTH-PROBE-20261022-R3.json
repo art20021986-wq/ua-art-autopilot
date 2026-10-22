@@ -1,0 +1,16 @@
+{
+  "evidence_path": "cloud/site_health_20261022/evidence_r3.json",
+  "live_source_environment": "production",
+  "production_required": false,
+  "request_sha256": "bf09b1f41d7686704188dff45f467e9fb1412236d5d1fdaf8836770b5f56d691",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_REMOTE_WRITES",
+  "run_id": "39789898295",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "SITE-HEALTH-PROBE-20261022-R3",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}
