@@ -7,21 +7,23 @@
   "created_at": "2026-10-22T13:20:03Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-22T13:20:03Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-22T13:25:03Z",
+  "heartbeat_at": "2026-10-22T13:25:03Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "39785769230",
     "task_id": "PRICE-PAGE-PREFLIGHT-20261022",
     "task_sha256": "2b2353f192d8df2851fc99ab273edbcbd79ce3a0b87b570ac1eb280d99c85e3d"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-fa22a6f76e93ec31-5d0f0eb7a4dd3c8e",
   "receipt_path": "state/receipts/PRICE-PAGE-PREFLIGHT-20261022.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "7f89f4f07b6d6ea591bb443fd9b80bda4364c1ccd099547dd04086c8f40ceee9",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/PRICE-PAGE-PREFLIGHT-20261022.json",
   "request_sha256": "2b2353f192d8df2851fc99ab273edbcbd79ce3a0b87b570ac1eb280d99c85e3d",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "030813cb25efde8879eb8b009bb47ea6d84be832",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91081265152,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.187
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-22T13:20:03Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "87ca53a1feeb81377f16fe600945e674af0015668b20111296b40d3240c19e4c",
+    "file_sha256": {
+      "cloud/price_page_001/candidate_builder.py": "dbcb68d3e68c22940ee0ccf925d6509190b7def8861f30809857e0bd102a5d19",
+      "cloud/price_page_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/price_page_001/deployment_bootstrap.py": "28074f1f03bc531674796590c57982e3e7ec0d37aa077cb99765f8047a0f93d2",
+      "cloud/price_page_001/deployment_remote.py": "21952cfcdeb022aaabdf45ff3b1867796d6f6ad1d2145728c82113f4ccdb3af0",
+      "cloud/price_page_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/price_page_001/deployment_transport.py": "9d5a208b460b7252d652c2fb2bbe1174ae08d1a96d629c771bf1b6bd90da36fc",
+      "cloud/price_page_001/release_constants.py": "e9f8c7c8f59bcb65b9aed126360188a73236f0982e2c052eb20e8fbf5e18c121",
+      "cloud/price_page_001/test_deployment.py": "f92b2f03591a89c75379e6c256415c17c2191d059ebc9e412b019218cb18d66a",
+      "cloud/price_page_001/test_price_page.py": "0dafef3175103d1c1e91793fed8fa34e167d2fab0b2fb6328fb9dfdbf18a888b",
+      "cloud/price_page_001/test_release.py": "c5d76e4a4acb902fda813974c116c05361ce6cac14e8941e84c9ab3acaf3e8b5",
+      "cloud/price_page_001/ua_seo_landings.py": "3d0ed02ed6b685d11117493b20fbfee090bfb00bcf63b89e000a94c08f53e6f9"
+    }
+  },
+  "updated_at": "2026-10-22T13:25:03Z"
 }
