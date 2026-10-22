@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SITE-HEALTH-PROBE-20261022-R3.bf09b1f41d7686704188dff45f467e9fb1412236d5d1fdaf8836770b5f56d691.json",
+  "autostart_ledger_sha256": "bcaba03151067531f1135e72fe5693f8dff3533dcbd3e42972ceab67ab33da7b",
+  "autostart_source_commit": "be3237a30f0eec7e183330c97ac29b138f0773f0",
+  "created_at": "2026-10-22T13:47:48Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "39789898295",
+    "task_id": "SITE-HEALTH-PROBE-20261022-R3",
+    "task_sha256": "bf09b1f41d7686704188dff45f467e9fb1412236d5d1fdaf8836770b5f56d691"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-5fc619c7a9238efc-74d49a821377daee",
+  "request_path": "tasks/requests/SITE-HEALTH-PROBE-20261022-R3.json",
+  "resource_locks": [
+    "READ_ONLY:5fc619c7a9238efc"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
