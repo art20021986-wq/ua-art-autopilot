@@ -94,6 +94,7 @@ class RemoteTests(unittest.TestCase):
                 value = remote.report()
         self.assertEqual((value['status'], value['permission'], value['service_account']), ('PASS', 'siteFullUser', 'sa@x'))
         self.assertEqual(value['queries']['rows'][0], {'key': 'авто из кореи', 'clicks': 1, 'impressions': 9, 'position': 8.4})
+        self.assertEqual(value['dates']['rows'][0]['impressions'], 9)
         self.assertNotIn('extra', value['sitemaps']['entries'][0])
         self.assertEqual(value['inspection']['video/UA-0018.html']['coverageState'], 'Indexed')
         self.assertEqual(len(value['inspection']), remote.MAX_PAGES)

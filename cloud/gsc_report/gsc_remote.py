@@ -1,6 +1,6 @@
 """Weekly read-only Search Console report on the server, where the service account key lives.
 
-GET/query only: properties and permission, sitemaps, top queries and pages for 28 days,
+GET/query only: properties and permission, sitemaps, top queries and pages for 28 days, daily totals for 90 days,
 and the index status of every page in the sitemap. The key itself never leaves the server.
 """
 import argparse
@@ -50,9 +50,9 @@ def call(bearer, url, body=None):
         return error.code, {'error': error.read(400).decode('utf-8', 'replace')}
 
 
-def rows(bearer, dimension, start, end):
+def rows(bearer, dimension, start, end, limit=50):
     status, value = call(bearer, API + urllib.parse.quote(SITE, safe='') + '/searchAnalytics/query', {
-        'startDate': str(start), 'endDate': str(end), 'dimensions': [dimension], 'rowLimit': 50, 'type': 'web'})
+        'startDate': str(start), 'endDate': str(end), 'dimensions': [dimension], 'rowLimit': limit, 'type': 'web'})
     if status != 200:
         return {'http': status, **value}
     return {'http': status, 'rows': [{'key': r['keys'][0], 'clicks': r.get('clicks', 0),
@@ -91,7 +91,8 @@ def report():
                                                                                 'isPending', 'errors', 'warnings', 'contents')}
                                                           for s in sitemaps.get('sitemap', [])] if status_map == 200 else sitemaps},
              'window': [str(start), str(end)], 'queries': rows(bearer, 'query', start, end),
-             'pages': rows(bearer, 'page', start, end), 'inspection': {p: inspect(bearer, p) for p in pages()}}
+             'pages': rows(bearer, 'page', start, end),
+             'dates': rows(bearer, 'date', end - datetime.timedelta(days=89), end, 100), 'inspection': {p: inspect(bearer, p) for p in pages()}}
     full = [e for e in value['sites']['entries'] if isinstance(e, dict) and e.get('siteUrl') == SITE] \
         if isinstance(value['sites']['entries'], list) else []
     value['permission'] = full[0].get('permissionLevel') if full else None
