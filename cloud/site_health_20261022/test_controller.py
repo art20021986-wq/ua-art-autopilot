@@ -41,7 +41,7 @@ class ProbeTests(unittest.TestCase):
     def test_execute(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            task = c.TASKS[1]
+            task = c.TASKS[2]
             request = root/'tasks/requests'/(task+'.json')
             request.parent.mkdir(parents=True)
             request.write_text(json.dumps({'read_only': True, 'production_required': False}))
