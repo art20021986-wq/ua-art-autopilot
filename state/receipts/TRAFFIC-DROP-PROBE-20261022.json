@@ -1,0 +1,16 @@
+{
+  "evidence_path": "cloud/traffic_drop_20261022/evidence.json",
+  "live_source_environment": "production",
+  "production_required": false,
+  "request_sha256": "d835c07424de3107ca3371153542c43bdf592ee8d81eadf220e64fad77a3b50f",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_REMOTE_WRITES",
+  "run_id": "39753435276",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "TRAFFIC-DROP-PROBE-20261022",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}
