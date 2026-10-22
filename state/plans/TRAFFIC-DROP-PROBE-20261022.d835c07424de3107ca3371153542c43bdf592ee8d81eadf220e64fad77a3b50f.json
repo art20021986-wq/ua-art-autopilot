@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TRAFFIC-DROP-PROBE-20261022.d835c07424de3107ca3371153542c43bdf592ee8d81eadf220e64fad77a3b50f.json",
+  "autostart_ledger_sha256": "96fcebe80842970f2feb421f1dadfc49e2be95df9d9ef2f74a6a336c4b2c2c39",
+  "autostart_source_commit": "3bec9424addf663277cb979629f07bc08d6c0925",
+  "created_at": "2026-10-22T09:11:56Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "39753435276",
+    "task_id": "TRAFFIC-DROP-PROBE-20261022",
+    "task_sha256": "d835c07424de3107ca3371153542c43bdf592ee8d81eadf220e64fad77a3b50f"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-250b6e1b9c72c31b-d9ca5802f9fb5799",
+  "request_path": "tasks/requests/TRAFFIC-DROP-PROBE-20261022.json",
+  "resource_locks": [
+    "READ_ONLY:250b6e1b9c72c31b"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
