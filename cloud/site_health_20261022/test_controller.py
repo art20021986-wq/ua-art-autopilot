@@ -16,7 +16,10 @@ class Fake:
     def api(self, endpoint):
         body = {c.LOGS['access']: ACCESS, c.LOGS['error']: ERROR, 'cpu/': '{"daily_cpu_total_usage_seconds": 5}',
                 'always_on/': '[{"id": 266084, "enabled": true, "state": "running", "command": "python3.10 start_safe.py", "x": 1}]',
-                c.ENDPOINTS[0]: '{"enabled": true, "expiry": null}'}.get(endpoint)
+                c.ENDPOINTS[0]: '{"enabled": true, "expiry": null}',
+                c.HISTORY['publication_log']: '2026-10-22 12:59:08  FAIL  x\n',
+                c.WEBAPP_DIR: '{"flask_app.py": {}, "notes.txt": {}}',
+                c.WEBAPP_DIR + 'flask_app.py': 'import stranica\nTOKEN = "x"  # stranica token\nstranica.main()\n'}.get(endpoint)
         return {'http': 200 if body else 404, 'body': (body or '').encode()}
 
     def public(self, url):
@@ -28,7 +31,8 @@ class Fake:
 class ProbeTests(unittest.TestCase):
     def test_scope(self):
         reader = c.Reader('t', opener=object())
-        for bad in ('files/path/home/Carix/crm.db', 'consoles/', 'always_on/266084/'):
+        for bad in ('files/path/home/Carix/crm.db', 'consoles/', 'always_on/266084/', c.WEBAPP_DIR + '../db.py',
+                    c.WEBAPP_DIR + 'x.txt'):
             with self.assertRaises(c.ProbeError):
                 reader.api(bad)
         with self.assertRaises(c.ProbeError):
@@ -37,7 +41,7 @@ class ProbeTests(unittest.TestCase):
     def test_execute(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            task = c.TASKS[0]
+            task = c.TASKS[1]
             request = root/'tasks/requests'/(task+'.json')
             request.parent.mkdir(parents=True)
             request.write_text(json.dumps({'read_only': True, 'production_required': False}))
@@ -55,6 +59,9 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(evidence['public']['http://uaart.com.ua/']['location'], 'https://www.uaart.com.ua/')
         self.assertEqual(evidence['public']['https://www.uaart.com.ua/']['title'], 'UA ART')
         self.assertEqual(evidence['server_log']['http'], 404)
+        calls = evidence['history']['webapp_sources']['calls']['flask_app.py']
+        self.assertEqual(calls, ['1: import stranica', '3: stranica.main()'])
+        self.assertEqual(evidence['history']['publication_log']['last'], ['2026-10-22 12:59:08  FAIL  x'])
 
 
 if __name__ == '__main__':

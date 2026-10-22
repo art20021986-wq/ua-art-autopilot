@@ -17,13 +17,18 @@ import urllib.request
 from collections import Counter
 
 PACKAGE = 'cloud/site_health_20261022'
-TASKS = ('SITE-HEALTH-PROBE-20261022',)
+TASKS = ('SITE-HEALTH-PROBE-20261022', 'SITE-HEALTH-PROBE-20261022-R2')
 ROOT = Path(__file__).resolve().parents[2]
 API = 'https://www.pythonanywhere.com/api/v0/user/Carix/'
 DOMAIN = 'www.uaart.com.ua'
 LOGS = {'error': 'files/path/var/log/%s.error.log' % DOMAIN, 'access': 'files/path/var/log/%s.access.log' % DOMAIN,
         'server': 'files/path/var/log/%s.server.log' % DOMAIN}
-ENDPOINTS = ('webapps/%s/' % DOMAIN, 'cpu/', 'always_on/') + tuple(LOGS.values())
+# R2: who runs the legacy whole-site rebuild and how often it fails.
+HISTORY = {'publication_log': 'files/path/home/Carix/publikaciya_log.txt',
+           'connection_monitor': 'files/path/home/Carix/uaart-monitor/latest.json'}
+WEBAPP_DIR = 'files/path/home/Carix/mysite/'
+CALLS = re.compile(r'stranica|subprocess|os\.system|Popen|\bmain\(|publikaciya|rebuild|perestro', re.I)
+ENDPOINTS = ('webapps/%s/' % DOMAIN, 'cpu/', 'always_on/', WEBAPP_DIR) + tuple(LOGS.values()) + tuple(HISTORY.values())
 URLS = ('http://uaart.com.ua/', 'https://uaart.com.ua/', 'http://www.uaart.com.ua/', 'https://www.uaart.com.ua/',
         'https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/katalog.html',
         'https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/info.html',
@@ -75,7 +80,7 @@ class Reader:
         self._opener = opener or urllib.request.build_opener(Keep3xx())
 
     def api(self, endpoint):
-        if endpoint not in ENDPOINTS:
+        if endpoint not in ENDPOINTS and not re.fullmatch(re.escape(WEBAPP_DIR) + r'[A-Za-z0-9_]+\.py', endpoint):
             raise ProbeError('API_PATH_OUTSIDE_SCOPE')
         return get(self._opener, urllib.request.Request(API+endpoint, headers={
             'Authorization': 'Token '+self._token, 'User-Agent': 'uaart-site-health/1'}))
@@ -120,7 +125,25 @@ def access_log(text):
     return {hour: dict(c) for hour, c in list(stats.items())[-12:]}
 
 
-def collect(reader):
+def history(reader):
+    result = {}
+    value = reader.api(HISTORY['publication_log'])
+    lines = (value.get('body') or b'').decode('utf-8', 'replace').splitlines()
+    result['publication_log'] = {'http': value['http'], 'lines': len(lines), 'last': [IP.sub('x.x.x.x', l)[:400] for l in lines[-60:]]}
+    value = reader.api(HISTORY['connection_monitor'])
+    result['connection_monitor'] = {'http': value['http'], 'body': IP.sub('x.x.x.x', (value.get('body') or b'').decode('utf-8', 'replace')[:6000])}
+    value = reader.api(WEBAPP_DIR)
+    listing = as_json(value)
+    files = sorted(n for n in listing if re.fullmatch(r'[A-Za-z0-9_]+\.py', n)) if isinstance(listing, dict) else []
+    result['webapp_sources'] = {'http': value['http'], 'files': files, 'calls': {}}
+    for name in files[:40]:
+        text = (reader.api(WEBAPP_DIR + name).get('body') or b'').decode('utf-8', 'replace')
+        result['webapp_sources']['calls'][name] = ['%d: %s' % (i, l.strip()[:200]) for i, l in enumerate(text.splitlines(), 1)
+                                                   if CALLS.search(l) and not re.search(r'token|password|secret|key\s*=', l, re.I)][:60]
+    return result
+
+
+def collect(reader, r2=False):
     result = {'public': {url: page(reader.public(url)) for url in URLS}}
     web = as_json(reader.api(ENDPOINTS[0]))
     result['webapp'] = {k: web.get(k) for k in ('enabled', 'expiry', 'force_https', 'python_version', 'source_directory')} if isinstance(web, dict) else None
@@ -131,8 +154,12 @@ def collect(reader):
     for name, endpoint in LOGS.items():
         value = reader.api(endpoint)
         text = (value.get('body') or b'').decode('utf-8', 'replace')
+        if name == 'server':
+            result['server_tail'] = [IP.sub('x.x.x.x', l)[:300] for l in text.splitlines()[-260:]]
         result[name+'_log'] = {'http': value['http'], 'bytes': len(text.encode()),
                                **({'hours': access_log(text)} if name == 'access' else error_log(text))}
+    if r2:
+        result['history'] = history(reader)
     return result
 
 
@@ -165,8 +192,8 @@ def execute(env, *, root=None, reader=None):
     root = ROOT if root is None else Path(root)
     request_sha, run_id = validate_identity(env, root)
     task = env['UAART_TASK_ID']
-    evidence = PACKAGE+'/evidence.json'
-    result = collect(reader or Reader(env.get('PYTHONANYWHERE_API_TOKEN', '')))
+    evidence = PACKAGE+('/evidence_r2.json' if task.endswith('-R2') else '/evidence.json')
+    result = collect(reader or Reader(env.get('PYTHONANYWHERE_API_TOKEN', '')), task.endswith('-R2'))
     write(root, evidence, dump({'task_id': task, 'run_id': run_id, 'http_methods': ['GET'], 'remote_write_count': 0, **result}))
     receipt = {'task_id': task, 'status': 'FINISHED', 'task_class': 'STANDARD', 'target_environment': 'shadow',
                'live_source_environment': 'production', 'tests': 'PASS', 'tests_scope': 'READ_ONLY_PROBE',
