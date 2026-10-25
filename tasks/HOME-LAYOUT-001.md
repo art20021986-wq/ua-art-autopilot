@@ -27,4 +27,4 @@
 Старая полная пересборка сайта (stranica.main) переписывает index —
 правка должна идти через генератор, иначе её затрёт (см. SITE_HEALTH_20261022).
 
-Статус: PROPOSAL_WAITING_OWNER. Production не менялся.
+Статус: INSTALLED_LIVE_VERIFIED 2026-10-25, run 40171553845 (см. cloud/latest_status.md).
