@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "32c16878fac955cbcc6b2bca7375c96792c78232d8d93a36587c2b3acfba564c",
   "autostart_source_commit": "32e84ad9843147b87ec1d0d52900137602a62a2e",
   "created_at": "2026-10-25T08:49:49Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "52810012bb25fe3f03c9412818159b550e66f0133b1dd58fc6379794d8742ec4",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-25T08:49:49Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-10-25T08:50:58Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "40178119422",
     "task_id": "HOME-HEADING-INSTALL-20261025",
     "task_sha256": "322198f7cd75b9cff8bd740d30d31eb384f628bfbf535e111c37d262a0acc56f"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 208.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 195.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-40178119422-322198f7cd75b9cf",
+  "production_transaction_path": "state/transactions/HOME-HEADING-INSTALL-20261025.322198f7cd75b9cff8bd740d30d31eb384f628bfbf535e111c37d262a0acc56f.40178119422.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-HEADING-INSTALL-20261025.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "87bd3b73160284282889fe8d15726d70d607d531",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 222.94,
+    "allowed": true,
+    "evidence_path": "state/storage/HOME-HEADING-INSTALL-20261025.json",
+    "evidence_sha256": "83729895f5c2d87a933977ee1de73687f99cd812f87e4edd63f5e7c9118ac815",
+    "free_bytes": 26208693760,
+    "heavy": true,
+    "measured_at": "2026-10-25T08:47:12.565198+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 25.11801782857143
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-25T08:49:49Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "cf0bc7ae456eea023d8e53d30ddf9bec8a624f3228a26591469a4e5e53dc7134",
+    "file_sha256": {
+      "cloud/home_heading_001/candidate_builder.py": "d2771994118c1e96cbf8261608ee2928fe81884e3da17acddc1cf47cea174add",
+      "cloud/home_heading_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_heading_001/deployment_bootstrap.py": "7b928f5496eb7ab342a0bdb3c5b12ff31e6751fc405e14886e1b7cf77a203885",
+      "cloud/home_heading_001/deployment_remote.py": "54ef70c105c620405c8285d6366b8341cf3f620628c5eaaad9c648ebec16c8bc",
+      "cloud/home_heading_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_heading_001/deployment_transport.py": "ebc2000f08fc6eab1e01b5ee7b6d7ecb6a9629f22015676845e9e86988c5c7c8",
+      "cloud/home_heading_001/edit_home.py": "88b20804c9d088f1481e452f684ecba5bc1bde71e3efd85836b542b21acf5511",
+      "cloud/home_heading_001/release_constants.py": "5458393873234e32c4fa612c7754d8f8541d3026e8dd3da9380296bc88d932e0",
+      "cloud/home_heading_001/test_deployment.py": "fa16bf927e7fb4c4a2720912dfae8a3e178fb622522921b3323c3f07490c47db",
+      "cloud/home_heading_001/test_edit_home.py": "dc577de4a8cadeeb3645db2784cdd9511f5c06afadb06f49a64dcbccb186d56e"
+    }
+  },
+  "updated_at": "2026-10-25T08:50:58Z"
 }
