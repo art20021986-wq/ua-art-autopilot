@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "165f518349ca5efea12ad8f8b6ff7c5b766aea9fd03dcd4892362a4255ae11f0",
   "autostart_source_commit": "2cf425512a77c9def928256e7932b47e8b4c8c10",
   "created_at": "2026-10-25T07:07:41Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "51f5bda479b38a2f07184f78cbb471568b5bc7a489588d90e938c4a3626239e3",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-25T07:07:41Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-10-25T07:08:40Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "40171553845",
     "task_id": "HOME-LAYOUT-INSTALL-20261025",
     "task_sha256": "772a4b3663a6e089d4d5d480e43bde43fa28276857a563e1aa7244641c155d48"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 203.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 166.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-40171553845-772a4b3663a6e089",
+  "production_transaction_path": "state/transactions/HOME-LAYOUT-INSTALL-20261025.772a4b3663a6e089d4d5d480e43bde43fa28276857a563e1aa7244641c155d48.40171553845.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-LAYOUT-INSTALL-20261025.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,40 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "7ff1c71518094d2a847ea4df10b01334b1645484",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 276.271,
+    "allowed": true,
+    "evidence_path": "state/storage/HOME-LAYOUT-INSTALL-20261025.json",
+    "evidence_sha256": "8bb2eec1e450098d4ac73f6a0cbef286ddfeda536c1e3ec7807ba4e7a6573ed1",
+    "free_bytes": 26224623104,
+    "heavy": true,
+    "measured_at": "2026-10-25T07:04:02.333817+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 25.072505417142857
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-25T07:07:41Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "2ff6030bb75a78cdb93a616f0eb540112d3a58afa074c9c76484ad4ec8ea940d",
+    "file_sha256": {
+      "cloud/home_layout_001/build_home.py": "602f6b41b4c4af61079cec9b0587de81db01497e61b54d5dbb1002b71a7297bd",
+      "cloud/home_layout_001/candidate_builder.py": "49a6e1ad5119ba39d76357692fd4407973341f88530f6d03a58325ab0e211dff",
+      "cloud/home_layout_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_layout_001/deployment_bootstrap.py": "5e19d55b66e4ed215f2dbc89dc1585fcd8a13175b041f6bb592790755ee5b1d6",
+      "cloud/home_layout_001/deployment_remote.py": "ba8001b95b25ecff43ebcb6250fe2c958424e54d6cee716b95133d9b5e47fbf2",
+      "cloud/home_layout_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_layout_001/deployment_transport.py": "92ef5eb4951170b2acd4041b271b277ffdbf68b77545fc09326025934a79dd0e",
+      "cloud/home_layout_001/home_photos.py": "6088915a78d245cb866fd719e4e1f80e6213955888d8e5bcadffdf5e59d215d0",
+      "cloud/home_layout_001/probe.py": "11666843421c801d706230daeb543ce5e088343cad44ee7d017ee18f2a635d89",
+      "cloud/home_layout_001/release_constants.py": "0de41daa812aa7526de2d1dd6643b1b3ad6fc2d96a8082deeb1db7b5618fa320",
+      "cloud/home_layout_001/test_build_home.py": "d91fb5bbe3d6623d01a21cdc51693b671d5250e052d6f16b6149ae6ac6b7b478",
+      "cloud/home_layout_001/test_deployment.py": "709e5e0f3a29544e2a39418cfc1db83abf5cf0b3f04f9a3937cf07e229bb476b",
+      "cloud/home_layout_001/test_probe.py": "531ed6205f09bedf332de512273fed270c6260cc2be68776d19b6460f63e6fc7",
+      "cloud/home_layout_001/test_release.py": "7af511b5264a539d80757b0509529ea66a07c8020571fc141b3091416ad37f3d"
+    }
+  },
+  "updated_at": "2026-10-25T07:08:40Z"
 }
