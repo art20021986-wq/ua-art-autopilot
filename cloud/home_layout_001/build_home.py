@@ -9,8 +9,8 @@ import re
 MARK = 'ua-home-layout-001'
 TELEGRAM = 'https://t.me/UA_artcompany_LLC_bot'
 VIBER = 'viber://chat?number=%2B380992222002'
-DESKTOP = '/video/order/hero/kia_k5_desktop.webp'
-MOBILE = '/video/order/hero/kia_k5_mobile.webp'
+DESKTOP = '/video/order/kia_k5_desktop.webp'
+MOBILE = '/video/order/kia_k5_mobile.webp'
 
 HERO = re.compile(r'<section class="hero hero-main"[^>]*>.*?</section>', re.S)
 ORDER = re.compile(r'<section class="order-feature section-frame">.*?</section>', re.S)
