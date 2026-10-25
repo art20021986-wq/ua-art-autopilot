@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "51f5bda479b38a2f07184f78cbb471568b5bc7a489588d90e938c4a3626239e3",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-25T07:08:40Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-25T07:12:23Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "40171553845",
     "task_id": "HOME-LAYOUT-INSTALL-20261025",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-40171553845-772a4b3663a6e089",
   "production_transaction_path": "state/transactions/HOME-LAYOUT-INSTALL-20261025.772a4b3663a6e089d4d5d480e43bde43fa28276857a563e1aa7244641c155d48.40171553845.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-LAYOUT-INSTALL-20261025.json",
   "receipt_validation_status": "PENDING",
@@ -89,5 +89,5 @@
       "cloud/home_layout_001/test_release.py": "7af511b5264a539d80757b0509529ea66a07c8020571fc141b3091416ad37f3d"
     }
   },
-  "updated_at": "2026-10-25T07:08:40Z"
+  "updated_at": "2026-10-25T07:12:23Z"
 }
