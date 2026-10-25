@@ -7,21 +7,23 @@
   "created_at": "2026-10-25T10:11:05Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-25T10:11:05Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-25T10:14:57Z",
+  "heartbeat_at": "2026-10-25T10:14:57Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40183017913",
     "task_id": "PODBOR-FORM-PREFLIGHT-20261025",
     "task_sha256": "1d3a4178afaaa8a74a94d07d29f7c132135aa8c01c008a407ec5d7a14a143cb1"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-d1949e247832908c-ca6dd766dec05dc8",
   "receipt_path": "state/receipts/PODBOR-FORM-PREFLIGHT-20261025.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "2f0074311e64791de2d77119220ca512e37e27d152b647327ff788f0a757ea3f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/PODBOR-FORM-PREFLIGHT-20261025.json",
   "request_sha256": "1d3a4178afaaa8a74a94d07d29f7c132135aa8c01c008a407ec5d7a14a143cb1",
   "resource_locks": [
@@ -29,8 +31,32 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "a9f278baf588b0438106a782a8d0865b088fe92a",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91445129216,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.952
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-25T10:11:05Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "8fa43d781559ce9584b13bd4c5a6c2e7da3a6faa17bafc2c24e4f31a27a91d89",
+    "file_sha256": {
+      "cloud/podbor_form_001/candidate_builder.py": "b5a2c5f2e052990c11db5fdc45264cc9e989b51b706aaec97e055d5c03a4f564",
+      "cloud/podbor_form_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/podbor_form_001/deployment_bootstrap.py": "04ff7288607dd22d312364082b390f07d51fd3aba0cb28c54d7dc578276f5e81",
+      "cloud/podbor_form_001/deployment_remote.py": "f3874dff1871de29c8940e199a7fc1099ab7ffba1a10791631836c3b7cf480c5",
+      "cloud/podbor_form_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/podbor_form_001/deployment_transport.py": "0ca087123ccb242665f997ce53a988e2ab98d8d9a34043917b6373192d977b7c",
+      "cloud/podbor_form_001/edit_order.py": "6c7649485398ab0cc96a1241ea0f5edfdf4a10ddf015b7f97441947aa54c27eb",
+      "cloud/podbor_form_001/release_constants.py": "bf73eb7d2a31680d3789f36d99af1397a004907f23fd8930b11cf30382ee95a2",
+      "cloud/podbor_form_001/test_deployment.py": "bf22285b55d6b895cceb38cf7499ab7012f50468cf7a00996cf58510fc1cf2b4",
+      "cloud/podbor_form_001/test_edit_order.py": "37f9add257b1448c6c9cdd0b6c66546cf345031e50a946b3bd909f0db6d4b000"
+    }
+  },
+  "updated_at": "2026-10-25T10:14:57Z"
 }
