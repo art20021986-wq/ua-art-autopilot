@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/GA4-TAG-PREFLIGHT-20261025.f74c37e8948d470a1d89e05d7e52a6062107993eb6269e7a6a9bc9624dada22e.json",
+  "autostart_ledger_sha256": "dbaa8dd6c903db8f85f7513e357b30b5a6ad359c1cb01c0041c5da2c0e05e9bf",
+  "autostart_source_commit": "1d3cba7a32cb64a96e66ec9ec696e59272ed1747",
+  "created_at": "2026-10-25T16:15:05Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40209480523",
+    "task_id": "GA4-TAG-PREFLIGHT-20261025",
+    "task_sha256": "f74c37e8948d470a1d89e05d7e52a6062107993eb6269e7a6a9bc9624dada22e"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-b1983787917dd193-bc162b13148cf6ff",
+  "request_path": "tasks/requests/GA4-TAG-PREFLIGHT-20261025.json",
+  "resource_locks": [
+    "PATH_SCOPE:b1983787917dd193"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
