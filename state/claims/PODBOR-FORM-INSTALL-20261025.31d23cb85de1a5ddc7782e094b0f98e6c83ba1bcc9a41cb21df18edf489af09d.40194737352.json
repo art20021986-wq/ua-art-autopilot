@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "dced815604adcbf75c663dcbdff625bcfc9e1c323d3fa61e9d84c0ce55e4a1da",
   "autostart_source_commit": "8702271f902b7043f3fc6df206f3fb0d2677d2ea",
   "created_at": "2026-10-25T12:52:45Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "ab4f7d724ca01e1dcc12a2d31c13797950e85a0423bb071042f9870d6ac8bc6a",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-25T12:52:45Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-10-25T12:53:50Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "40194737352",
     "task_id": "PODBOR-FORM-INSTALL-20261025",
     "task_sha256": "31d23cb85de1a5ddc7782e094b0f98e6c83ba1bcc9a41cb21df18edf489af09d"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 233.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 219.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-40194737352-31d23cb85de1a5dd",
+  "production_transaction_path": "state/transactions/PODBOR-FORM-INSTALL-20261025.31d23cb85de1a5ddc7782e094b0f98e6c83ba1bcc9a41cb21df18edf489af09d.40194737352.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-957006e8007bf6ed-edad59686033ee7a",
   "receipt_path": "state/receipts/PODBOR-FORM-INSTALL-20261025.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "24a760b07eef132da206f1371ba78ed81d9716fb",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 427.242,
+    "allowed": true,
+    "evidence_path": "state/storage/PODBOR-FORM-INSTALL-20261025.json",
+    "evidence_sha256": "07f43482938597c248fd181b8e79374dd2fa9f31c9c253623d94e843aee7920e",
+    "free_bytes": 26185104896,
+    "heavy": true,
+    "measured_at": "2026-10-25T12:46:41.226506+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 25.185414582857142
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-25T12:52:45Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "9c3f2fd2f939b8a89083b73c7e6ce2fb311615616c2b6455da7b9348f836af83",
+    "file_sha256": {
+      "cloud/podbor_form_001/candidate_builder.py": "b5a2c5f2e052990c11db5fdc45264cc9e989b51b706aaec97e055d5c03a4f564",
+      "cloud/podbor_form_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/podbor_form_001/deployment_bootstrap.py": "04ff7288607dd22d312364082b390f07d51fd3aba0cb28c54d7dc578276f5e81",
+      "cloud/podbor_form_001/deployment_remote.py": "f3874dff1871de29c8940e199a7fc1099ab7ffba1a10791631836c3b7cf480c5",
+      "cloud/podbor_form_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/podbor_form_001/deployment_transport.py": "0ca087123ccb242665f997ce53a988e2ab98d8d9a34043917b6373192d977b7c",
+      "cloud/podbor_form_001/edit_order.py": "7a70415a8b42d1f8e00867a84fb9adfa73e4e65a54ecf695ae351fd8c3de5e3d",
+      "cloud/podbor_form_001/release_constants.py": "4de688575dff2ff20b09c42e28661c27c30ed19abd6d48f43a60b1f1ad99e6c7",
+      "cloud/podbor_form_001/test_deployment.py": "7ddd28b2d460ff87169e7949bce5903f0c7a1b8bdacf8d3b658b8c404d67f2e7",
+      "cloud/podbor_form_001/test_edit_order.py": "bab22673d66c90d3a5c7e51d4a6f614a929d06045db510bc32a969d6d257d747"
+    }
+  },
+  "updated_at": "2026-10-25T12:53:50Z"
 }
