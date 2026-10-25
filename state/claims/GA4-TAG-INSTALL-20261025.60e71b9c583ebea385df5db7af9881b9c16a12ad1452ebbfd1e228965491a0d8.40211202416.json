@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "494411c4a12acb49d024d7033d15dc152582946a09a3ea18ce5eb005b02ca354",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-25T16:22:28Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-25T16:26:10Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "40211202416",
     "task_id": "GA4-TAG-INSTALL-20261025",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-40211202416-60e71b9c583ebea3",
   "production_transaction_path": "state/transactions/GA4-TAG-INSTALL-20261025.60e71b9c583ebea385df5db7af9881b9c16a12ad1452ebbfd1e228965491a0d8.40211202416.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "card-ua-0001-bd5af11a345f8c18",
   "receipt_path": "state/receipts/GA4-TAG-INSTALL-20261025.json",
   "receipt_validation_status": "PENDING",
@@ -111,5 +111,5 @@
       "cloud/ga4_tag_001/ua_seo_metadata.py": "c313a17fc364c30b71c331ebb86734d476b54721033d347dca3847acf88090fa"
     }
   },
-  "updated_at": "2026-10-25T16:22:28Z"
+  "updated_at": "2026-10-25T16:26:10Z"
 }
