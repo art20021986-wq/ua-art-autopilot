@@ -22,10 +22,10 @@ def request(day):
     task = 'GA4-SETUP-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'One-time Google Analytics setup (owner «настраивай» 2026-10-25). Bounded run in the existing private inbox: '
+        'description': 'Google Analytics setup (owner «настраивай»; R3 key events after owner «Да» to leads as goals, 2026-10-25). Bounded run in the existing private inbox: '
                        'upload this package, run analytics_remote.py once in a temporary always-on task (removed after its receipt; '
                        'never the CRM bot) which reads the server-held service account key, finds the owner property «UA ART», '
-                       'creates its web data stream for www.uaart.com.ua if missing and sets event retention to 14 months. '
+                       'creates its web data stream for www.uaart.com.ua if missing, sets event retention to 14 months and marks the site leads (generate_lead, contact) as key events. '
                        'The key never leaves the server; the report is checked for key material. No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],

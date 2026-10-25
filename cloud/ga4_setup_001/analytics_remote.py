@@ -23,6 +23,8 @@ ENABLE = 'https://serviceusage.googleapis.com/v1/projects/%s/services/analyticsa
 PROPERTY_NAME = 'UA ART'
 SITE = 'https://www.uaart.com.ua'
 STREAM_NAME = 'Сайт www.uaart.com.ua'
+# R3: leads the site tag sends (ua_google_tag.py), counted as key events.
+KEY_EVENTS = ('generate_lead', 'contact')
 
 
 def token(key):
@@ -100,6 +102,18 @@ def report():
             writes.append('retention_14_months')
     result['retention'] = {'http': status, 'eventDataRetention': retention.get('eventDataRetention'),
                            **({'error': retention['error'][:300]} if 'error' in retention else {})}
+    status, existing = call(bearer, ADMIN + prop + '/keyEvents')
+    names = {item.get('eventName') for item in existing.get('keyEvents', [])} if status == 200 else set()
+    result['key_events'] = {'http': status}
+    for name in KEY_EVENTS:
+        if status == 200 and name not in names:
+            created_status, created = call(bearer, ADMIN + prop + '/keyEvents',
+                                           {'eventName': name, 'countingMethod': 'ONCE_PER_EVENT'})
+            result['key_events'][name] = created_status
+            if created_status == 200:
+                writes.append('key_event_' + name)
+        else:
+            result['key_events'][name] = 'exists' if name in names else status
     measurement = result['stream']['measurementId'] or ''
     return {'status': 'PASS' if re.fullmatch(r'G-[A-Z0-9]+', measurement) else 'FAIL', 'analytics_writes': writes, **result}
 
