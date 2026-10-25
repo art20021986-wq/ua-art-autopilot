@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-LANDINGS-PREFLIGHT-20261025-R2.002c9b6fd12c6566c51afda1c0d56276c8b30b851da947d892533bfce40abcea.json",
+  "autostart_ledger_sha256": "bf1958a9648ec1ce7739e7ebf2efdb4cfb06b3501a5dd66307202f7eba5c64f7",
+  "autostart_source_commit": "77c1b547b88e54e9b3394eb48b9763ed066b5329",
+  "created_at": "2026-10-25T14:50:07Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40204027597",
+    "task_id": "SEO-LANDINGS-PREFLIGHT-20261025-R2",
+    "task_sha256": "002c9b6fd12c6566c51afda1c0d56276c8b30b851da947d892533bfce40abcea"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-2ecdf85fe83bc2b1-a5d4bdb59e2f0e6b",
+  "request_path": "tasks/requests/SEO-LANDINGS-PREFLIGHT-20261025-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:2ecdf85fe83bc2b1"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
