@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/GA4-SETUP-20261025-R3.f7307f50ffbd80e3641c94127da9f2de94afe4bac37eb416857ac17006f0d79f.json",
+  "autostart_ledger_sha256": "9eaef7b438ecda5f0f3da83db46bbc62ea26734258cf6f5d3a1bd95477df05c3",
+  "autostart_source_commit": "2823dbcd7c3b5aa9e2f82607dc1e33964bf62b14",
+  "created_at": "2026-10-25T16:40:01Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40212695314",
+    "task_id": "GA4-SETUP-20261025-R3",
+    "task_sha256": "f7307f50ffbd80e3641c94127da9f2de94afe4bac37eb416857ac17006f0d79f"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-05ba177b1d42e9fb-fecfa71f41a7ef25",
+  "request_path": "tasks/requests/GA4-SETUP-20261025-R3.json",
+  "resource_locks": [
+    "PATH_SCOPE:05ba177b1d42e9fb"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
