@@ -15,8 +15,9 @@ HOME = (b'<html><link rel="stylesheet" href="ua.css?v=1"><img src="/video/a.webp
 FILES = {p.HOME: HOME, 'https://www.uaart.com.ua/video/ua.css?v=1': b'.a{background:url("img/d.png")}',
          'https://www.uaart.com.ua/video/a.webp': b'A', 'https://www.uaart.com.ua/video/b.webp': b'B',
          'https://www.uaart.com.ua/video/c.webp': b'C', 'https://www.uaart.com.ua/video/img/d.png': b'D',
-         'https://www.uaart.com.ua/video/m.js': b'fetch("order/models.json")',
-         'https://www.uaart.com.ua/video/order/models.json': b'{}'}
+         'https://www.uaart.com.ua/video/m.js': b'fetch("order/models.json");import {x} from "./p.js?v=1"',
+         'https://www.uaart.com.ua/video/order/models.json': b'{}',
+         'https://www.uaart.com.ua/video/p.js?v=1': b'export const x=1'}
 
 
 def fake(url):

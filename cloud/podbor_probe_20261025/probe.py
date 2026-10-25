@@ -16,7 +16,7 @@ import urllib.parse
 import urllib.request
 
 PACKAGE = 'cloud/podbor_probe_20261025'
-TASKS = ('PODBOR-PROBE-20261025',)
+TASKS = ('PODBOR-PROBE-20261025', 'PODBOR-PROBE-20261025-R2')
 ROOT = Path(__file__).resolve().parents[2]
 HOME = 'https://www.uaart.com.ua/video/podbor.html?strana=korea&lang=uk'
 ORIGIN = 'https://www.uaart.com.ua'
@@ -26,7 +26,7 @@ MAX_FILE = 4 * 1024 * 1024
 MAX_TOTAL = 24 * 1024 * 1024
 REFS = re.compile(r'''(?:href|src)\s*=\s*["']([^"'#]+)["']|srcset\s*=\s*["']([^"']+)["']''', re.I)
 CSS_REFS = re.compile(r'''url\(\s*["']?([^"')]+)["']?\s*\)''', re.I)
-JS_REFS = re.compile(r'''["'`]([^"'`\s]+\.(?:json|js|css))["'`]''', re.I)
+JS_REFS = re.compile(r'''["'`]([^"'`\s]+\.(?:json|js|css)(?:\?[^"'`\s]*)?)["'`]''', re.I)
 KEEP = re.compile(r'\.(css|js|json|webp|png|jpe?g|svg|gif|ico|woff2?)$', re.I)
 
 
@@ -131,7 +131,7 @@ def execute(env, *, root=None, fetch=get):
     root = ROOT if root is None else Path(root)
     request_sha, run_id = validate_identity(env, root)
     task = env['UAART_TASK_ID']
-    evidence = PACKAGE + '/live_podbor.json'
+    evidence = PACKAGE + ('/live_podbor.json' if task == TASKS[0] else '/live_podbor_r2.json')
     write(root, evidence, dump({'task_id': task, 'run_id': run_id, 'http_methods': ['GET'], 'remote_write_count': 0,
                                 **collect(fetch)}))
     receipt = {'task_id': task, 'status': 'FINISHED', 'task_class': 'STANDARD', 'target_environment': 'shadow',
