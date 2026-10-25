@@ -16,7 +16,9 @@ import urllib.parse
 import urllib.request
 
 PACKAGE = 'cloud/podbor_probe_20261025'
-TASKS = ('PODBOR-PROBE-20261025', 'PODBOR-PROBE-20261025-R2')
+TASKS = ('PODBOR-PROBE-20261025', 'PODBOR-PROBE-20261025-R2', 'PODBOR-PROBE-20261025-R3')
+# R3: the public order bootstrap the page loads; its per-session CSRF token is dropped.
+BOOTSTRAP = 'https://www.uaart.com.ua/api/orders/bootstrap'
 ROOT = Path(__file__).resolve().parents[2]
 HOME = 'https://www.uaart.com.ua/video/podbor.html?strana=korea&lang=uk'
 ORIGIN = 'https://www.uaart.com.ua'
@@ -101,6 +103,15 @@ def collect(fetch=get):
     return {'home': HOME, 'files': files, 'total_bytes': total}
 
 
+def bootstrap(fetch=get):
+    status, kind, body = fetch(BOOTSTRAP)
+    if status != 200:
+        raise ProbeError('BOOTSTRAP_UNAVAILABLE')
+    value = json.loads(body)
+    value.pop('csrf', None)
+    return value
+
+
 def validate_identity(env, root):
     task = env.get('UAART_TASK_ID')
     if task not in TASKS or env.get('UAART_RECEIPT_PATH') != 'state/receipts/%s.json' % task \
@@ -131,9 +142,10 @@ def execute(env, *, root=None, fetch=get):
     root = ROOT if root is None else Path(root)
     request_sha, run_id = validate_identity(env, root)
     task = env['UAART_TASK_ID']
-    evidence = PACKAGE + ('/live_podbor.json' if task == TASKS[0] else '/live_podbor_r2.json')
+    evidence = PACKAGE + {TASKS[0]: '/live_podbor.json', TASKS[1]: '/live_podbor_r2.json'}.get(task, '/live_podbor_r3.json')
+    extra = {'bootstrap': bootstrap(fetch)} if task == TASKS[2] else {}
     write(root, evidence, dump({'task_id': task, 'run_id': run_id, 'http_methods': ['GET'], 'remote_write_count': 0,
-                                **collect(fetch)}))
+                                **collect(fetch), **extra}))
     receipt = {'task_id': task, 'status': 'FINISHED', 'task_class': 'STANDARD', 'target_environment': 'shadow',
                'live_source_environment': 'production', 'tests': 'PASS', 'tests_scope': 'READ_ONLY_PROBE',
                'unexpected_changes': 0, 'rollback_ready': True, 'rollback_ready_scope': 'NO_REMOTE_WRITES',
