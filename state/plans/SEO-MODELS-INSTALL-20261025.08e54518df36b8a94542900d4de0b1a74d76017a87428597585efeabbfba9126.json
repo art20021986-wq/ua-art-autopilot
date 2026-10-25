@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-MODELS-INSTALL-20261025.08e54518df36b8a94542900d4de0b1a74d76017a87428597585efeabbfba9126.json",
+  "autostart_ledger_sha256": "2362c139fd1f5f33275ff6b90cd554515bc50989bca6fbc75eaa9dd914ac095c",
+  "autostart_source_commit": "0726b58cf804b69c6f7f9dd9f455f95ecad5c795",
+  "created_at": "2026-10-25T10:43:39Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40185893256",
+    "task_id": "SEO-MODELS-INSTALL-20261025",
+    "task_sha256": "08e54518df36b8a94542900d4de0b1a74d76017a87428597585efeabbfba9126"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-e89b81d00494abd1-9248e3d94acc6c46",
+  "request_path": "tasks/requests/SEO-MODELS-INSTALL-20261025.json",
+  "resource_locks": [
+    "PATH_SCOPE:e89b81d00494abd1"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
