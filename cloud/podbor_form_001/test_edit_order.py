@@ -12,7 +12,8 @@ HERE = Path(__file__).resolve().parent
 LIVE = json.loads((HERE.parent/'podbor_probe_20261025/live_podbor_r3.json').read_text())['files']
 URLS = {edit_order.PAGE: 'https://www.uaart.com.ua/video/podbor.html?strana=korea&lang=uk',
         edit_order.SCRIPT: 'https://www.uaart.com.ua/video/order/order.js?v=20261025.1',
-        edit_order.STYLE: 'https://www.uaart.com.ua/video/order/order.css?v=20260927.10'}
+        edit_order.STYLE: 'https://www.uaart.com.ua/video/order/order.css?v=20260927.10',
+        edit_order.STRINGS: 'https://www.uaart.com.ua/video/order/order-strings.json'}
 SOURCE = {name: base64.b64decode(LIVE[url]['b64']) for name, url in URLS.items()}
 
 
@@ -33,6 +34,12 @@ class EditTests(unittest.TestCase):
         self.assertNotIn('scrollIntoView', open_form)
         self.assertIn('scrollIntoView', select)
         self.assertEqual(script.count('openDefaultForm();'), 4)
+
+    def test_ukrainian_button_text(self):
+        strings = json.loads(edit_order.build(edit_order.STRINGS, SOURCE[edit_order.STRINGS]))
+        self.assertEqual([strings[lang]['other_choose'] for lang in ('uk', 'ru')], ['Обрати інше авто', 'Выбрать другой автомобиль'])
+        page = edit_order.build(edit_order.PAGE, SOURCE[edit_order.PAGE]).decode()
+        self.assertIn('data-label="other_choose">Обрати інше авто</button>', page)
 
     def test_refuses_changed_files(self):
         for name in edit_order.EDITS:
