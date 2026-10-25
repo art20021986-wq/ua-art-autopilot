@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/GA4-TAG-PROBE-20261025.a9db5cc13aa8d1f41431f3bb3e4da2688ea8c5f007c583f332e07ebc308ef981.json",
+  "autostart_ledger_sha256": "645251891f24fa8d713ceb449e0f3adee9abec5a551af96915173f525a40a175",
+  "autostart_source_commit": "23f38a5a0f659dd2c0da3b4f2bd4e6726fd36203",
+  "created_at": "2026-10-25T15:26:44Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40206318101",
+    "task_id": "GA4-TAG-PROBE-20261025",
+    "task_sha256": "a9db5cc13aa8d1f41431f3bb3e4da2688ea8c5f007c583f332e07ebc308ef981"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-b3ce0f267e838e4e-54cdebd5ba073fa3",
+  "request_path": "tasks/requests/GA4-TAG-PROBE-20261025.json",
+  "resource_locks": [
+    "PATH_SCOPE:b3ce0f267e838e4e"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
