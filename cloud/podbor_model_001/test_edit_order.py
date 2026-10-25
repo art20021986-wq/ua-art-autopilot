@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""The live order page files (PODBOR-PROBE-20261025-R3 copy) change only in the planned fragments."""
+"""The order page files after PODBOR-FORM-001 (probe R3 copy + its edits) change only in the planned fragments."""
 import base64
+import importlib.util
 import json
 from pathlib import Path
 import shutil
@@ -16,7 +17,12 @@ LIVE = json.loads((HERE.parent/'podbor_probe_20261025/live_podbor_r3.json').read
 URLS = {edit_order.PAGE: 'https://www.uaart.com.ua/video/podbor.html?strana=korea&lang=uk',
         edit_order.SCRIPT: 'https://www.uaart.com.ua/video/order/order.js?v=20261025.1',
         edit_order.STATE: 'https://www.uaart.com.ua/video/order/order-state.js'}
-SOURCE = {name: base64.b64decode(LIVE[url]['b64']) for name, url in URLS.items()}
+_spec = importlib.util.spec_from_file_location('form_edit', HERE.parent/'podbor_form_001/edit_order.py')
+FORM = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(FORM)
+# The live files once PODBOR-FORM-001 is installed.
+SOURCE = {name: (FORM.build(name, base64.b64decode(LIVE[url]['b64'])) if name in FORM.EDITS
+                 else base64.b64decode(LIVE[url]['b64'])) for name, url in URLS.items()}
 
 
 class EditTests(unittest.TestCase):

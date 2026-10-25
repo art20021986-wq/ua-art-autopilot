@@ -1,6 +1,7 @@
 """Order page: a link with ?model=<key> opens the form with that model chosen (PODBOR-MODEL-001).
 
 Owner request 2026-10-25: the «Підібрати» button of a model page chooses that model.
+Built on top of PODBOR-FORM-001 (order.js?v=20261025.2), which is installed first.
 order-state.js gets the pure modelFromUrl (only a model of the chosen country counts);
 order.js chooses it after the first render, exactly as a click on the model would, and
 an explicit model link wins over an older unsent draft, as a country link already does.
@@ -16,7 +17,7 @@ VERSION = '20261025.3'
 
 EDITS = {
     PAGE: (
-        ('order/order.js?v=20261025.1', 'order/order.js?v=' + VERSION),
+        ('order/order.js?v=20261025.2', 'order/order.js?v=' + VERSION),
     ),
     SCRIPT: (
         ("import {languages, fromUrl} from './order-state.js';",
