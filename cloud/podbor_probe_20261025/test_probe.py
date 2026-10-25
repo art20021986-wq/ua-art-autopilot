@@ -36,6 +36,12 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(set(files), set(FILES))
         self.assertEqual(base64.b64decode(files['https://www.uaart.com.ua/video/img/d.png']['b64']), b'D')
 
+    def test_bootstrap_drops_csrf(self):
+        def fetch(url):
+            self.assertEqual(url, p.BOOTSTRAP)
+            return 200, 'application/json', b'{"csrf": "secret", "catalog": {"version": 1}}'
+        self.assertEqual(p.bootstrap(fetch), {'catalog': {'version': 1}})
+
     def test_execute(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
