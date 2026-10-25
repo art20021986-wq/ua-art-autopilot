@@ -7,21 +7,23 @@
   "created_at": "2026-10-25T09:16:52Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-25T09:16:52Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-25T09:17:32Z",
+  "heartbeat_at": "2026-10-25T09:17:32Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40179938106",
     "task_id": "PODBOR-PROBE-20261025",
     "task_sha256": "1535d5d6093513d9906f55fa425d78f6218732e4272161c6ea52f3b7ba6ef985"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-59ceb7cc44f149a6-faf335f4780d7004",
   "receipt_path": "state/receipts/PODBOR-PROBE-20261025.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "f41308871d77ee9669770f70c669c764257d44e4115cdc23b8fc72df4a606410",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/PODBOR-PROBE-20261025.json",
   "request_sha256": "1535d5d6093513d9906f55fa425d78f6218732e4272161c6ea52f3b7ba6ef985",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "4e67239ef7eececa95df2263f23bcec34a42438e",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91452719104,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 40.947
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-25T09:16:52Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "156b8e879be6801356798ca8c76de4e70f66b115fcb50e78ef3819916ca14efe",
+    "file_sha256": {
+      "cloud/podbor_probe_20261025/test_probe.py": "8d1003ca88c77274543cf48a73da490fde5608db7ecfa7c441d785a18c4abc48"
+    }
+  },
+  "updated_at": "2026-10-25T09:17:32Z"
 }
