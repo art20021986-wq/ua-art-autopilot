@@ -1,0 +1,40 @@
+{
+  "analytics_writes": [
+    "data_stream_created",
+    "retention_14_months"
+  ],
+  "mode": "probe",
+  "property": {
+    "currencyCode": "UAH",
+    "displayName": "UA ART",
+    "http": 200,
+    "industryCategory": "AUTOMOTIVE",
+    "name": "properties/560695713",
+    "serviceLevel": "GOOGLE_ANALYTICS_STANDARD",
+    "timeZone": "Europe/Kiev"
+  },
+  "remote_write_count": 0,
+  "retention": {
+    "eventDataRetention": "FOURTEEN_MONTHS",
+    "http": 200
+  },
+  "run_id": "40204312432",
+  "safe_to_stop": true,
+  "service_account": "uaart-autopilot@uaart-autopilot.iam.gserviceaccount.com",
+  "status": "PASS",
+  "stream": {
+    "defaultUri": "https://www.uaart.com.ua",
+    "displayName": "Сайт www.uaart.com.ua",
+    "measurementId": "G-6SRBQK6GY4",
+    "name": "properties/560695713/dataStreams/16200654661"
+  },
+  "task_id": "GA4-SETUP-20261025-R2",
+  "visible_properties": [
+    {
+      "account": "accounts/413410456",
+      "account_name": "UA ART",
+      "property": "properties/560695713",
+      "property_name": "UA ART"
+    }
+  ]
+}
