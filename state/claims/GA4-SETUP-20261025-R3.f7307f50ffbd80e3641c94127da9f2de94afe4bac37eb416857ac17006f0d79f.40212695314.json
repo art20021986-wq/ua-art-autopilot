@@ -7,21 +7,23 @@
   "created_at": "2026-10-25T16:40:01Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-25T16:40:01Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-25T16:44:54Z",
+  "heartbeat_at": "2026-10-25T16:44:54Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40212695314",
     "task_id": "GA4-SETUP-20261025-R3",
     "task_sha256": "f7307f50ffbd80e3641c94127da9f2de94afe4bac37eb416857ac17006f0d79f"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-05ba177b1d42e9fb-fecfa71f41a7ef25",
   "receipt_path": "state/receipts/GA4-SETUP-20261025-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "20f7dfbeb0dc614cc77e80e2fcd144f7fc49fc459eba95b8b6cb95273d2bd38b",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/GA4-SETUP-20261025-R3.json",
   "request_sha256": "f7307f50ffbd80e3641c94127da9f2de94afe4bac37eb416857ac17006f0d79f",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "f527bde3b75855f97d96be6e983d5b91889099da",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91439800320,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.955
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-25T16:40:01Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "e720e698bb79f7aa4895ce4eb90e95e8ecc6242fe29a66a81c92bc3dd032c172",
+    "file_sha256": {
+      "cloud/ga4_setup_001/analytics_remote.py": "6f521bd5c8501b5ff32a095c4a58132445e53963ee36c528c2d00a8c906046ab",
+      "cloud/ga4_setup_001/bootstrap.py": "954b18aaac7e64eff58e4eb8ebfb6c327cd55ddf99e318373dfd67d41b2f9694",
+      "cloud/ga4_setup_001/make_request.py": "77113f76ea1212e9d33ac39dfaf614fb27ced927dffba895c97c2e5e58be52ec",
+      "cloud/ga4_setup_001/test_analytics_setup.py": "d0b2b022b5e72b57c276852a88cc8393610037574f04e2cc04fcdb7e90ea9364",
+      "cloud/ga4_setup_001/transport.py": "c7d4675d9cead8d7423d1fe5a8503980e59d1193e9fc2008b858e419871a2584"
+    }
+  },
+  "updated_at": "2026-10-25T16:44:54Z"
 }
