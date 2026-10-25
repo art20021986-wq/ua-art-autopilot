@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "5cfb77d1ce7348d912f61e84f8d34b4abbaa3f731e6351c1b388d62deae8790f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-25T15:31:06Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-25T15:32:37Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "40207006199",
     "task_id": "SEO-LANDINGS-INSTALL-20261025-R3",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-40207006199-76a7cfde1cebf8d6",
   "production_transaction_path": "state/transactions/SEO-LANDINGS-INSTALL-20261025-R3.76a7cfde1cebf8d68c58ec62828aef831e3ff0b5720784a3e5d695ca35280dd5.40207006199.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-c794a9302e3b2072-c632456c93d6f173",
   "receipt_path": "state/receipts/SEO-LANDINGS-INSTALL-20261025-R3.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/seo_landings_002/ua_seo_landings.py": "b0c5d5ee6e26833c732aedf715073787c8675e8b831284e3ef1d25e18f3d10a7"
     }
   },
-  "updated_at": "2026-10-25T15:31:06Z"
+  "updated_at": "2026-10-25T15:32:37Z"
 }
