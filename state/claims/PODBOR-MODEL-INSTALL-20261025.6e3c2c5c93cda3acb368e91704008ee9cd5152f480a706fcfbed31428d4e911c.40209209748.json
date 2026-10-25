@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PODBOR-MODEL-INSTALL-20261025.6e3c2c5c93cda3acb368e91704008ee9cd5152f480a706fcfbed31428d4e911c.json",
+  "autostart_ledger_sha256": "46f76d75a89ff886048292654761b79b708eb873e9fefe9d8d7e447503b0a427",
+  "autostart_source_commit": "d3f34283c6c6288ae82623be94b84aa9fe220b1d",
+  "created_at": "2026-10-25T15:56:07Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-25T15:56:07Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "40209209748",
+    "task_id": "PODBOR-MODEL-INSTALL-20261025",
+    "task_sha256": "6e3c2c5c93cda3acb368e91704008ee9cd5152f480a706fcfbed31428d4e911c"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-96589272f9700bd7-71be8384270822ab",
+  "receipt_path": "state/receipts/PODBOR-MODEL-INSTALL-20261025.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/PODBOR-MODEL-INSTALL-20261025.json",
+  "request_sha256": "6e3c2c5c93cda3acb368e91704008ee9cd5152f480a706fcfbed31428d4e911c",
+  "resource_locks": [
+    "PATH_SCOPE:96589272f9700bd7"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "a18ce97655ed8de55b0bcce15510e0e3f7fa0b39",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-25T15:56:07Z"
+}
