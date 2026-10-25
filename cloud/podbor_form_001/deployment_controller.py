@@ -18,6 +18,7 @@ import edit_order
 EXPECTED = {'/video/podbor.html': edit_order.CHECK_PAGE,
             '/video/order/order.js': edit_order.CHECK_SCRIPT,
             '/video/order/order.css': edit_order.CHECK_STYLE,
+            '/video/order/order-strings.json': edit_order.CHECK_STRINGS,
             '/video/katalog.html': ''}
 
 
