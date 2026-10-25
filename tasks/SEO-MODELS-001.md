@@ -10,3 +10,14 @@
 
 Пакет `cloud/seo_models_001` (установка/бэкап/откат как у GSC-GROWTH-001). Пункт 1 (тег Google) ждёт аккаунта Google (пункт 3).
 Отложенный пакет `cloud/price_page_001` собран на старой версии ua_seo_landings.py — при его установке нужна пересборка.
+
+## Итог 2026-10-25
+INSTALLED_LIVE_VERIFIED: CRITICAL run 40185893256 FINISHED. Backup PASS, crm_unchanged, protected unchanged, бот 266084 running,
+публичные проверки 10/10 PASS (4 новые страницы uk/ru, хабы, страница заказа, карта сайта). Карта отправлена в Google (HTTP 204)
+и IndexNow (24 адреса). Откат: тот же пакет, фаза rollback.
+
+## Пункт 1 (тег Google + заявки) — ждёт владельца
+Нужен Google Analytics 4 (ресурс) с доступом «Редактор» для служебного аккаунта
+uaart-autopilot@uaart-autopilot.iam.gserviceaccount.com и аккаунт Google Ads. Дальше Claude: поток и ключевые события через
+Admin API, отдельный модуль тега на сайте (события: форма подбора, Telegram/Viber/WhatsApp/телефон), связь GA4 ↔ Ads.
+Перед этим — проба только на чтение: где сервер добавляет на страницы /ua/a.js (в известных исходниках не найдено).
