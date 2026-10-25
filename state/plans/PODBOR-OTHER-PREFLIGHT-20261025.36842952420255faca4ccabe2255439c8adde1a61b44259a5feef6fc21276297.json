@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PODBOR-OTHER-PREFLIGHT-20261025.36842952420255faca4ccabe2255439c8adde1a61b44259a5feef6fc21276297.json",
+  "autostart_ledger_sha256": "1d150f89618e3e268cdec5f1d1b0284e76ae8cb8dfc96432f92a02ec487ea9e2",
+  "autostart_source_commit": "6b2141664b8b83ac6b9ee72490c239f135f209f8",
+  "created_at": "2026-10-25T09:21:05Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40180220571",
+    "task_id": "PODBOR-OTHER-PREFLIGHT-20261025",
+    "task_sha256": "36842952420255faca4ccabe2255439c8adde1a61b44259a5feef6fc21276297"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-e39d582d0fd8a8b2-eb0a0a6de4024da1",
+  "request_path": "tasks/requests/PODBOR-OTHER-PREFLIGHT-20261025.json",
+  "resource_locks": [
+    "PATH_SCOPE:e39d582d0fd8a8b2"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
