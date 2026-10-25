@@ -1,0 +1,22 @@
+{
+  "backup_started": false,
+  "claim_before_sha256": "7c32ffca3bcc807437e160b2131f57a86e47a3c93c100cf2ca3bce6b42d4d209",
+  "claim_status_before": {
+    "critical_gate_status": "PENDING",
+    "package_compile_status": "PENDING",
+    "storage_preflight_status": "PENDING",
+    "task_execution_status": "BLOCKED_ROOT_CAUSE"
+  },
+  "error": "STORAGE_PROBE_STALE_OR_FUTURE",
+  "failed_step": "execute / critical / prepare: storage_preflight",
+  "halt_archive": "state/halt_history/SEO-LANDINGS-INSTALL-20261025.40197385684/halt.json",
+  "owner_statement": "Разрешаю снять аварийную остановку SEO-LANDINGS-INSTALL-20261025",
+  "precedent": "state/reconciliations/SEO-DAILY-PODBOR-CANONICAL-20260921.35552076762.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "production_transaction_prepared": false,
+  "recorded_at": "2026-10-25T15:17:40.835090+00:00",
+  "run_id": "40197385684",
+  "site_or_crm_written": false,
+  "task_id": "SEO-LANDINGS-INSTALL-20261025",
+  "workflow_conclusion": "failure"
+}
