@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/GA4-SETUP-20261025.5119cab2b5ba032fa66f1cd7cedbe871182fb2cc51c5fcbc79cf62f39fb2c08b.json",
+  "autostart_ledger_sha256": "5e9d6436aef98aa6a26d4dc1dfa3753e0198653c5b7e69a0f7a98f4a8375c359",
+  "autostart_source_commit": "6f9e5924e4ea6bab79ce5ade79ce82f25b0965f2",
+  "created_at": "2026-10-25T13:11:44Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-25T13:11:44Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "40195603126",
+    "task_id": "GA4-SETUP-20261025",
+    "task_sha256": "5119cab2b5ba032fa66f1cd7cedbe871182fb2cc51c5fcbc79cf62f39fb2c08b"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-05ba177b1d42e9fb-fecfa71f41a7ef25",
+  "receipt_path": "state/receipts/GA4-SETUP-20261025.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/GA4-SETUP-20261025.json",
+  "request_sha256": "5119cab2b5ba032fa66f1cd7cedbe871182fb2cc51c5fcbc79cf62f39fb2c08b",
+  "resource_locks": [
+    "PATH_SCOPE:05ba177b1d42e9fb"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "9bbcd81e4a8336a1213a051d8b415ef95c855f31",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-25T13:11:44Z"
+}
