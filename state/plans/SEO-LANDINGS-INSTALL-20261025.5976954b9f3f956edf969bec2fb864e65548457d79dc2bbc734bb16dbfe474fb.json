@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-LANDINGS-INSTALL-20261025.5976954b9f3f956edf969bec2fb864e65548457d79dc2bbc734bb16dbfe474fb.json",
+  "autostart_ledger_sha256": "e886bd0780778dedadfefecd5048f8326da974e23d63a3268542d895f2ef15e8",
+  "autostart_source_commit": "840fad7a75241a06e1eb4f9d83b25d1618817abf",
+  "created_at": "2026-10-25T13:24:25Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40197385684",
+    "task_id": "SEO-LANDINGS-INSTALL-20261025",
+    "task_sha256": "5976954b9f3f956edf969bec2fb864e65548457d79dc2bbc734bb16dbfe474fb"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-c794a9302e3b2072-c632456c93d6f173",
+  "request_path": "tasks/requests/SEO-LANDINGS-INSTALL-20261025.json",
+  "resource_locks": [
+    "PATH_SCOPE:c794a9302e3b2072"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
