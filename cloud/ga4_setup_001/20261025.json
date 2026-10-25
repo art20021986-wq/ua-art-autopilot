@@ -1,0 +1,18 @@
+{
+  "detail": {
+    "enable_attempt": {
+      "error": "{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Permission denied to enable service [analyticsadmin.googleapis.com]\\nHelp Token: Ad9DraA8gznKavfx97Vw6chFWiI0vXHDzpfyjHw44HVSNdvjtdrWIQFpMPYtSFbMNmdv3Oti5QXxSIqhi9bILBRKI3tSfvT_qDuwJJiq9oS0C3Cx\",\n    \"status\": \"PERMISSION_DENIED\",\n    \"details\": [\n    ",
+      "http": 403
+    },
+    "error": "{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Google Analytics Admin API has not been used in project 374430388402 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/analyticsadmin.googleapis.com/overview?project=374430388402 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.\",\n    \"status\": \"PERMISSION_DENIED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"SERVICE_DISABLED\",\n        \"domain\": \"googleapis.com\",\n        \"met"
+  },
+  "error": "ADMIN_API_HTTP_403",
+  "mode": "probe",
+  "project": "uaart-autopilot",
+  "remote_write_count": 0,
+  "run_id": "40195603126",
+  "safe_to_stop": true,
+  "service_account": "uaart-autopilot@uaart-autopilot.iam.gserviceaccount.com",
+  "status": "FAIL",
+  "task_id": "GA4-SETUP-20261025"
+}
