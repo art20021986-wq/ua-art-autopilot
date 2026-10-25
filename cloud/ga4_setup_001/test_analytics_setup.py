@@ -100,9 +100,12 @@ class RemoteTests(unittest.TestCase):
             ('GET', 'accountSummaries'): self.SUMMARY, ('GET', PROP): (200, {'timeZone': 'Europe/Kiev'}),
             ('GET', '/dataStreams'): (200, {}), ('POST', '/dataStreams'): (200, created),
             ('GET', '/dataRetentionSettings'): (200, {'eventDataRetention': 'TWO_MONTHS'}),
-            ('PATCH', 'eventDataRetention'): (200, {'eventDataRetention': 'FOURTEEN_MONTHS'})})
+            ('PATCH', 'eventDataRetention'): (200, {'eventDataRetention': 'FOURTEEN_MONTHS'}),
+            ('GET', '/keyEvents'): (200, {'keyEvents': [{'eventName': 'purchase'}]}), ('POST', '/keyEvents'): (200, {})})
         self.assertEqual((value['status'], value['stream']['measurementId']), ('PASS', 'G-XYZ789'))
-        self.assertEqual(value['analytics_writes'], ['data_stream_created', 'retention_14_months'])
+        self.assertEqual(value['analytics_writes'], ['data_stream_created', 'retention_14_months',
+                                                     'key_event_generate_lead', 'key_event_contact'])
+        self.assertEqual(calls[-1][2], {'eventName': 'contact', 'countingMethod': 'ONCE_PER_EVENT'})
         self.assertEqual(calls[3][2], {'type': 'WEB_DATA_STREAM', 'displayName': remote.STREAM_NAME,
                                        'webStreamData': {'defaultUri': 'https://www.uaart.com.ua'}})
 
@@ -112,7 +115,8 @@ class RemoteTests(unittest.TestCase):
         value, calls = self.run_report({
             ('GET', 'accountSummaries'): self.SUMMARY, ('GET', PROP): (200, {}),
             ('GET', '/dataStreams'): (200, {'dataStreams': [stream]}),
-            ('GET', '/dataRetentionSettings'): (200, {'eventDataRetention': 'FOURTEEN_MONTHS'})})
+            ('GET', '/dataRetentionSettings'): (200, {'eventDataRetention': 'FOURTEEN_MONTHS'}),
+            ('GET', '/keyEvents'): (200, {'keyEvents': [{'eventName': 'generate_lead'}, {'eventName': 'contact'}]})})
         self.assertEqual((value['status'], value['analytics_writes']), ('PASS', []))
         self.assertFalse([c for c in calls if c[0] != 'GET'])
 
