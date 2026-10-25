@@ -18,8 +18,14 @@ HOME = Path('/home/Carix')
 ROOTS = (HOME, Path('/var/www'))
 PUBLIC = HOME/'video'
 MARKERS = ('UA-ANALIT', '/ua/a.js', '/ua/a/e', 'mcf-izmer', 'googletagmanager', 'gtag(', 'Content-Security-Policy')
+# R2: which modules build or write which public pages.
+WRITERS = ('ua_seo_metadata', 'ua_seo_index', 'obrabotat_obshuyu', '_install_catalog', 'index.html', 'podbor.html',
+           'info.html', 'sravnenie.html')
+MODULES = ('ua_seo_metadata.py', 'ua_seo_index.py', 'ua_seo_landings.py', 'publish_transaction_guard.py',
+           'publikaciya.py', 'master_card.py', 'stranica.py', 'ua_crm_public_sync.py', 'analitika_wsgi.py',
+           'analitika_yadro.py', 'ua_site_counters.py')
 SERVES = re.compile(r'''['"]/ua/a\.js|/ua/a/e['"]|route\(\s*['"]/ua''')
-MAX_SOURCE = 400 * 1024
+MAX_SOURCE = 400 * 1024  # larger files are searched only when listed in MODULES
 MAX_FULL = 6
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
@@ -54,18 +60,18 @@ def search():
             raw = path.read_bytes()
         except OSError:
             continue
-        if len(raw) > MAX_SOURCE:
+        if len(raw) > MAX_SOURCE and path.name not in MODULES:
             continue
         text = raw.decode('utf-8', 'replace')
-        if not any(marker in text for marker in MARKERS):
+        if not any(marker in text for marker in MARKERS + WRITERS):
             continue
         lines = text.splitlines()
         found = []
         for number, line in enumerate(lines):
-            if any(marker in line for marker in MARKERS):
+            if any(marker in line for marker in MARKERS + WRITERS):
                 found.append({'line': number + 1, 'context': [sanitized_line(item)
-                                                            for item in lines[max(0, number - 4):number + 5]]})
-        hits[str(path)] = {'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw), 'matches': found[:40]}
+                                                            for item in lines[max(0, number - 1):number + 2]]})
+        hits[str(path)] = {'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw), 'matches': found[:60]}
         if SERVES.search(text) and len(full) < MAX_FULL:
             full[str(path)] = '\n'.join(sanitized_line(item) for item in lines)
     return hits, full
@@ -87,9 +93,18 @@ def pages():
     return {**counts, 'without_a_js': without[:300]}
 
 
+def modules():
+    found = {}
+    for name in MODULES:
+        path = HOME/name
+        found[name] = hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+    return found
+
+
 def report():
     hits, full = search()
-    return {'status': 'PASS', 'source_hits': hits, 'serving_sources': full, 'public_pages': pages()}
+    return {'status': 'PASS', 'source_hits': hits, 'serving_sources': full, 'public_pages': pages(),
+            'module_sha256': modules()}
 
 
 def main():
