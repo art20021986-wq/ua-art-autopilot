@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "a543b4a1ec70905af833f1c5d81a68e24633049319f434a54e9e18279c1a2a83",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-25T08:11:33Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-25T08:14:09Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "40175521006",
     "task_id": "HOME-TEXT-INSTALL-20261025",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-40175521006-39d02cbdf24bab78",
   "production_transaction_path": "state/transactions/HOME-TEXT-INSTALL-20261025.39d02cbdf24bab78a3762d10633fd455f547627b5d956b37f853a4a1591f91e7.40175521006.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-TEXT-INSTALL-20261025.json",
   "receipt_validation_status": "PENDING",
@@ -85,5 +85,5 @@
       "cloud/home_text_001/test_edit_home.py": "1e92a79dfec030159d8cca2867e8370db6784a91a5d7470838dcabb11dbfe5b1"
     }
   },
-  "updated_at": "2026-10-25T08:11:33Z"
+  "updated_at": "2026-10-25T08:14:09Z"
 }
