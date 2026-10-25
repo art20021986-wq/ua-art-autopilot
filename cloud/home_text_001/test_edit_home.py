@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The installed home page (HOME-LAYOUT-001 result) loses only the Kyiv binding of two labels."""
+"""The installed home page (HOME-LAYOUT-001 result) changes only in the four approved labels."""
 import base64
 import json
 from pathlib import Path
@@ -18,7 +18,7 @@ INSTALLED = build_home.build(base64.b64decode(LIVE['files'][LIVE['home']]['b64']
 
 
 class EditTests(unittest.TestCase):
-    def test_only_two_labels_change(self):
+    def test_only_planned_labels_change(self):
         after = edit_home.build(INSTALLED)
         restored = after
         for old, new in edit_home.EDITS:
@@ -28,6 +28,7 @@ class EditTests(unittest.TestCase):
         hero = after[after.index(b'<section class="hero ua-order-first"'):after.index(b'</h1>')].decode()
         for word in ('Києв', 'КИЇВ', 'Киев', 'КИЕВ', 'კიევ'):
             self.assertNotIn(word, hero)
+        self.assertIn('В Україні та Грузії, з супроводом</small>'.encode(), after)
 
     def test_refuses_unknown_page(self):
         with self.assertRaisesRegex(ValueError, 'HOME_LABEL_NOT_UNIQUE'):
