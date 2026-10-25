@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "ab4f7d724ca01e1dcc12a2d31c13797950e85a0423bb071042f9870d6ac8bc6a",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-25T12:57:32Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-10-25T13:11:13Z",
+  "heartbeat_at": "2026-10-25T13:11:13Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "40194737352",
     "task_id": "PODBOR-FORM-INSTALL-20261025",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 693.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 285.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-40194737352-31d23cb85de1a5dd",
   "production_transaction_path": "state/transactions/PODBOR-FORM-INSTALL-20261025.31d23cb85de1a5ddc7782e094b0f98e6c83ba1bcc9a41cb21df18edf489af09d.40194737352.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-957006e8007bf6ed-edad59686033ee7a",
   "receipt_path": "state/receipts/PODBOR-FORM-INSTALL-20261025.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "c78caec4113fa58e54f7f797b80adf9a4c09c78404d8a1a41604d3ef46a92f07",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/PODBOR-FORM-INSTALL-20261025.json",
   "request_sha256": "31d23cb85de1a5ddc7782e094b0f98e6c83ba1bcc9a41cb21df18edf489af09d",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "9c3f2fd2f939b8a89083b73c7e6ce2fb311615616c2b6455da7b9348f836af83",
     "file_sha256": {
@@ -85,5 +108,5 @@
       "cloud/podbor_form_001/test_edit_order.py": "bab22673d66c90d3a5c7e51d4a6f614a929d06045db510bc32a969d6d257d747"
     }
   },
-  "updated_at": "2026-10-25T12:57:32Z"
+  "updated_at": "2026-10-25T13:11:13Z"
 }
