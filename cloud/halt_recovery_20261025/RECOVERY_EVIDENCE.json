@@ -1,0 +1,52 @@
+{
+  "after_clear_mode_validation": {
+    "allow_halt_for_recovery": false,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "authorization_scope": "Archive the SEO-LANDINGS-INSTALL-20261025 halt (storage preflight refused a stale probe before any production write); preserve all protection policies, Gate B, backup and operator data",
+  "base_main": "89b7ed5df1aa56c3083c4d3b7ccd49316407dfe9",
+  "before_clear_mode_validation": {
+    "allow_halt_for_recovery": true,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "before_error": "STORAGE_PROBE_STALE_OR_FUTURE at storage preflight (probe measured at preview 2026-10-25 ~12:47Z; install 13:24Z exceeded MAX_STORAGE_PROBE_AGE_SECONDS=1800)",
+  "claim_archive": "state/halt_history/SEO-LANDINGS-INSTALL-20261025.40197385684/claim.before.json",
+  "contract": "OWNER-AUTHORIZED-REPOSITORY-HALT-RECOVERY-EVIDENCE-1",
+  "credentials_read_or_changed": false,
+  "execution_mode_bytes_changed": false,
+  "existing_launch_markers_replayed": false,
+  "halt_archive": "state/halt_history/SEO-LANDINGS-INSTALL-20261025.40197385684/halt.json",
+  "halt_sha256": "7797d2bc5f74ccaa9b8c199bd253ba38d1455dafbb8a5bc3e3fc283a38b68092",
+  "historical_halt": {
+    "halted_at": "2026-10-25T13:25:29Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "CRITICAL Production pipeline failed; GitHub Actions run 40197385684; rollback reserved false; rollback performed false",
+    "request_path": "tasks/requests/SEO-LANDINGS-INSTALL-20261025.json",
+    "request_sha256": "5976954b9f3f956edf969bec2fb864e65548457d79dc2bbc734bb16dbfe474fb",
+    "run_id": "40197385684",
+    "status": "EMERGENCY_HALT",
+    "task_id": "SEO-LANDINGS-INSTALL-20261025"
+  },
+  "owner_statement": "Разрешаю снять аварийную остановку SEO-LANDINGS-INSTALL-20261025",
+  "precedent": "cloud/seo_halt_recovery_20261011/RECOVERY_EVIDENCE.json",
+  "production_launch_created": false,
+  "production_transaction_opened": false,
+  "production_transaction_validation": {
+    "after": {
+      "has_pending": false,
+      "pending_count": 0,
+      "status": null
+    },
+    "before": {
+      "has_pending": false,
+      "pending_count": 0,
+      "status": null
+    }
+  },
+  "recorded_at": "2026-10-25T14:48:39+00:00",
+  "required_production_gates_weakened": false,
+  "runtime_code_changed": false,
+  "site_or_crm_written": false
+}
