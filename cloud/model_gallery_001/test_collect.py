@@ -13,7 +13,7 @@ import collect as c  # noqa: E402
 
 c.PAUSE = 0
 
-MAIN = 'File:0_Kia_K5_(DL3)_0.jpg'
+MAIN = 'File:0 Kia K5 (DL3) 0.jpg'
 CATS = {MAIN: ['Category:Kia K5 (DL3) in Seoul', 'Category:Cars in Seoul'],
         'Category:Kia K5 (DL3) in Seoul': ['Category:Kia K5 (DL3)']}
 SUBCATS = {'Category:Kia K5 (DL3)': ['Category:Interior of Kia K5 (DL3)', 'Category:Kia K5 (DL3) GT']}
@@ -45,6 +45,14 @@ class CollectTests(unittest.TestCase):
     def test_scope(self):
         with self.assertRaises(c.CollectError):
             c.get('https://www.example.com/x')
+
+    def test_main_title_with_underscores(self):
+        old = c.MODELS
+        c.MODELS = {'kia-k5': ('korea', MAIN.replace(' ', '_'), 'K5')}
+        try:
+            self.assertEqual(c.model(fake, 'kia-k5')['main']['title'], MAIN)
+        finally:
+            c.MODELS = old
 
     def test_follow_stays_on_model(self):
         cats = c.follow(fake, MAIN, 'K5')

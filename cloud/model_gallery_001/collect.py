@@ -19,11 +19,12 @@ import urllib.parse
 import urllib.request
 
 PACKAGE = 'cloud/model_gallery_001'
-TASKS = ('MODEL-GALLERY-COLLECT-20261026',)
+# R2: Commons page titles use spaces; HTTP errors other than 404 stop the run with their code.
+TASKS = ('MODEL-GALLERY-COLLECT-20261026', 'MODEL-GALLERY-COLLECT-20261026-R2')
 ROOT = Path(__file__).resolve().parents[2]
 API = 'https://commons.wikimedia.org/w/api.php'
 HOSTS = ('commons.wikimedia.org', 'upload.wikimedia.org')
-AGENT = 'UA-ART-autopilot/1.0 (https://www.uaart.com.ua/) python-urllib'
+AGENT = 'UA-ART-autopilot/1.0 (https://www.uaart.com.ua/)'
 # key -> (group, main Commons file, pattern every followed category name must contain)
 MODELS = {
     'lexus-rx-350': ('canada', 'File:LEXUS_RX_350_(AL10)_China.jpg', 'RX'),
@@ -93,8 +94,10 @@ def get(url):
                 return response.read(8 * 1024 * 1024)
         except urllib.error.HTTPError as error:
             error.close()
-            if error.code not in (429, 500, 502, 503, 504):
+            if error.code == 404:
                 return b''
+            if error.code not in (429, 500, 502, 503, 504):
+                raise CollectError('HTTP_%d' % error.code) from None
         except (urllib.error.URLError, TimeoutError, OSError):
             pass
     return b''
@@ -104,6 +107,11 @@ def api(fetch, **params):
     params.update(format='json', formatversion='2', maxlag='5')
     body = fetch(API + '?' + urllib.parse.urlencode(params))
     return json.loads(body) if body else {}
+
+
+def canonical(title):
+    """The page title as the API returns it: spaces, not underscores."""
+    return title.replace('_', ' ')
 
 
 def categories(fetch, title):
@@ -169,6 +177,7 @@ def with_thumb(fetch, item):
 
 def model(fetch, key):
     _, main, word = MODELS[key]
+    main = canonical(main)
     main_info = info(fetch, [main], MAIN_THUMB).get(main)
     if not main_info:
         raise CollectError('MAIN_MISSING:' + key)
