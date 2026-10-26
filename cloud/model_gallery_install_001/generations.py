@@ -1,7 +1,6 @@
-"""Generation line of each model card (MODEL-GALLERY-001), read from the current main photo of the model.
+"""Generation line of each model card (MODEL-GALLERY-001): the generation its gallery photos show.
 
-key -> (generation number, model code or None, first year). A card that is a category, not a model,
-names the car on its photo instead.
+key -> (generation number, model code or None, first year). Tucson and Santa Fe: official Hyundai press pages.
 """
 GENERATIONS = {
     'audi-q5': (1, '8R', 2008),
@@ -13,7 +12,7 @@ GENERATIONS = {
     'ford-fusion-fusion-hybrid': (2, None, 2012),
     'hyundai-santa-fe': (5, 'MX5', 2023),
     'hyundai-sonata': (8, 'DN8', 2019),
-    'hyundai-tucson': (4, 'NX4', 2020),
+    'hyundai-tucson': (5, None, 2026),
     'kia-k5': (3, 'DL3', 2019),
     'kia-sportage': (5, 'NQ5', 2021),
     'lexus-rx-350': (3, 'AL10', 2008),
@@ -39,16 +38,11 @@ GENERATIONS = {
     'volkswagen-tiguan': (3, None, 2023),
     'zeekr-001': (1, None, 2021),
 }
-PHOTO_OF = {'classics-1980-1990': ('Mercedes-Benz W124', '1984–1997')}
 UK_ORDINAL = {1: '1-ше', 2: '2-ге', 3: '3-тє', 4: '4-те', 5: '5-те', 6: '6-те', 7: '7-ме', 8: '8-ме'}
 
 
 def line(key):
     """The generation line in uk, ru and ka."""
-    if key in PHOTO_OF:
-        car, years = PHOTO_OF[key]
-        return {'uk': 'на фото — %s, %s' % (car, years), 'ru': 'на фото — %s, %s' % (car, years),
-                'ka': 'ფოტოზე — %s, %s' % (car, years)}
     number, code, year = GENERATIONS[key]
     code = ' (%s)' % code if code else ''
     return {'uk': '%s покоління%s, з %d р.' % (UK_ORDINAL[number], code, year),

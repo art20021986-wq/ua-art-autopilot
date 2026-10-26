@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Build the embedded release assets (run from the repository root; needs Pillow, only here, not on the server).
 
-Reads the picked photos fetched from Wikimedia Commons (cloud/model_gallery_001/photos_<group>.json), the live
-main photo sizes (cloud/podbor_probe_20261025/live_podbor_r3.json) and the page sources in site/, and writes:
+Reads the official press photos picked in official_picks.py (cloud/model_gallery_official_001/candidates_<key>.json),
+the photos fetched from Wikimedia Commons for the other models (cloud/model_gallery_001/photos_<group>.json), the
+live main photo sizes (cloud/podbor_probe_20261025/live_podbor_r3.json) and the page sources in site/, and writes:
 - photos_<letter>.py: the new photos as 640 px wide WebP (base64), each module under the 1 MB bundle limit;
 - gallery_assets.py: gallery.js, gallery.css and model-gallery.json (generation line and photo list of each model).
 """
@@ -14,9 +15,13 @@ from pathlib import Path
 import string
 
 import generations
+from official_picks import PICKS as OFFICIAL
 
 HERE = Path(__file__).resolve().parent
 FETCHED = 'cloud/model_gallery_001/photos_*.json'
+OFFICIAL_FETCHED = 'cloud/model_gallery_official_001/candidates_%s.json'
+# The owner left this card as it is (no gallery, no generation line).
+UNCHANGED = ('classics-1980-1990',)
 LIVE = 'cloud/podbor_probe_20261025/live_podbor_r3.json'
 MEDIA = 'video/order/'
 WIDTH = 640
@@ -53,23 +58,41 @@ def module(name, doc, values, extra=''):
     (HERE/name).write_text('\n'.join(lines) + '\n')
 
 
+def add(photos, items, key, data, meta):
+    data, (width, height) = webp(data)
+    relative = 'media/%s-%d.webp' % (key, len(items) + 1)
+    photos[MEDIA + relative] = data
+    items.append({'path': relative, 'width': width, 'height': height, **meta})
+
+
+def official(key, photos):
+    """The official press photos of one car, in the picked order."""
+    fetched = {photo['url']: photo for photo in json.load(open(OFFICIAL_FETCHED % key))['photos']}
+    items = []
+    for url in OFFICIAL[key]:
+        add(photos, items, key, base64.b64decode(fetched[url]['b64']), {'source': url})
+    return items
+
+
+def commons(key, views, main, photos):
+    """The current main photo, then the Commons photos of the same generation."""
+    items = [{'path': main['path'], 'width': main['width'], 'height': main['height']}]
+    for view in ('exterior', 'interior'):
+        for photo in views[view]:
+            add(photos, items, key, base64.b64decode(photo['b64']),
+                {'source': photo['page'], 'author': photo['artist'], 'license': photo['license'],
+                 'license_url': photo['license_url']})
+    return items
+
+
 def build():
     mains = main_photos()
     gallery, photos = {}, {}
     fetched = {}
     for path in sorted(glob.glob(FETCHED)):
         fetched.update(json.load(open(path))['models'])
-    for key in sorted(fetched):
-        main = mains[key]
-        items = [{'path': main['path'], 'width': main['width'], 'height': main['height']}]
-        for view in ('exterior', 'interior'):
-            for photo in fetched[key][view]:
-                data, (width, height) = webp(base64.b64decode(photo['b64']))
-                relative = 'media/%s-%d.webp' % (key, len(items) + 1)
-                photos[MEDIA + relative] = data
-                items.append({'path': relative, 'width': width, 'height': height, 'source': photo['page'],
-                              'author': photo['artist'], 'license': photo['license'],
-                              'license_url': photo['license_url']})
+    for key in sorted(set(fetched) - set(UNCHANGED)):
+        items = official(key, photos) if key in OFFICIAL else commons(key, fetched[key], mains[key], photos)
         gallery[key] = {'generation': generations.line(key), 'photos': items}
     for old in HERE.glob('photos_*.py'):
         old.unlink()

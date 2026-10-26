@@ -37,3 +37,7 @@
 Классика: показывать автомобиль с 2001 года (модель уточнить у владельца).
 Пакет на Commons (cloud/model_gallery_install_001) не ставится; переиспользуются листалка, правки страницы и механизм установки.
 Шаг 1: чтение пресс-сайтов (MODEL-GALLERY-DISCOVER-20261026, cloud/model_gallery_official_001).
+- Официальные сайты: DISCOVER + CANDIDATES. Фото одной машины (4 снаружи, 4 салона, багажник) получены для Hyundai Tucson
+  (новое 5-е поколение, 2026, пресс-сайт hyundai.news) и Santa Fe (5-е, 2023). Lexus: хранилище фото не отдало файлы;
+  Nissan Rogue: серии нет; Toyota, Ford, Mercedes, Tesla — 403; Kia, VW, Audi, BMW, Subaru, BYD — галереи через JS.
+- Владелец: «Смешанно, ставить сейчас» — Tucson и Santa Fe официальные, остальные Commons, классика без изменений.
