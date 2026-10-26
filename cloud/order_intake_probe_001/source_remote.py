@@ -21,13 +21,15 @@ APP_DIRS = (HOME,)
 SKIP = ('site-packages', '__pycache__', '/.', '/runs/', 'backup', '/inbox')
 MAX_DEPTH = 3
 MAX_FILES = 4000
+# R4: the live order package (found by R3), every module returned in full, sanitized.
+PACKAGE = HOME/'ua_order'
 MARKERS = ('/api/orders', 'api/orders', 'ua_order_request', 'orders/submit', 'consent_version', 'card_presets',
            'order_requests', 'handoff')
 # Modules that define the order routes or validate the request are returned in full.
 DEFINES = re.compile(r'''api/orders|ua_order_request''')
 MAX_SOURCE = 400 * 1024
 MAX_FULL = 8
-SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\s*[\'"]?\s*[:=]'
+SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
 LONG_NUMBER = re.compile(r'(?<!\d)\+?\d[\d\s()-]{8,}\d(?!\d)')
 URL = re.compile(r'https?://[^\s\'"<>)]+')
@@ -81,7 +83,9 @@ def report():
         hits[str(path)] = {'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw), 'matches': found[:60]}
         if DEFINES.search(text) and len(full) < MAX_FULL:
             full[str(path)] = '\n'.join(sanitized_line(item) for item in lines)
-    return {'status': 'PASS', 'source_hits': hits, 'order_sources': full}
+    package = {path.name: '\n'.join(sanitized_line(item) for item in path.read_text(encoding='utf-8', errors='replace').splitlines())
+               for path in sorted(PACKAGE.glob('*.py')) if path.is_file() and not path.is_symlink()}
+    return {'status': 'PASS', 'source_hits': hits, 'order_sources': full, 'package_sources': package}
 
 
 def main():

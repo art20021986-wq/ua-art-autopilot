@@ -69,7 +69,10 @@ class RemoteTests(unittest.TestCase):
             (home / 'other.py').write_text('print(1)\n')
             (home / 'mysite' / 'api').mkdir(parents=True)
             (home / 'mysite' / 'api' / 'orders.py').write_text("ROUTE = '/api/orders/bootstrap'\n")
-            with patch.object(remote, 'ROOTS', (home,)), patch.object(remote, 'APP_DIRS', (home / 'mysite',)):
+            (home / 'ua_order').mkdir()
+            (home / 'ua_order' / 'web.py').write_text("SECRET_KEY = 'x'\nPATH = '/api/orders/submit'\n")
+            with patch.object(remote, 'ROOTS', (home,)), patch.object(remote, 'APP_DIRS', (home / 'mysite',)), \
+                 patch.object(remote, 'PACKAGE', home / 'ua_order'):
                 value = remote.report()
         self.assertEqual(sorted(Path(p).name for p in value['source_hits']), ['helper.py', 'orders.py', 'orders_api.py'])
         self.assertEqual(sorted(Path(p).name for p in value['order_sources']), ['orders.py', 'orders_api.py'])
@@ -78,6 +81,7 @@ class RemoteTests(unittest.TestCase):
         self.assertNotIn('abc', full)
         self.assertIn('[URL]', full)
         self.assertIn('[N]', full)
+        self.assertEqual(value['package_sources'], {'web.py': "[REDACTED]\nPATH = '/api/orders/submit'"})
 
 
 if __name__ == '__main__':
