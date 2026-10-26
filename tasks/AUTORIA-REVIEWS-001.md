@@ -29,3 +29,6 @@ https://auto.ria.com/uk/dealers/yua-art-kompani/3356/ — «ЮА АРТ КОМП
 - `autoria_logo.py` → video/brand/autoria-logo.svg (новый файл).
 - Механизм установки (бэкап, пауза бота, откат, проверки) — без изменений из home_layout_001; `make_release.py` — как в
   ga4_tag_001. Тесты: 7 (блок) + 22 (установка).
+
+## Результат
+INSTALLED_LIVE_VERIFIED 2026-10-26: превью R2 run 40287513653 PASS, установка CRITICAL run 40288064931 FINISHED (см. cloud/latest_status.md).
