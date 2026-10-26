@@ -43,8 +43,14 @@ def fake(url):
 
 class CollectTests(unittest.TestCase):
     def test_scope(self):
-        with self.assertRaises(c.CollectError):
-            c.get('https://www.example.com/x')
+        for url in ('https://www.example.com/x', 'https://evilwikimedia.org/x', 'http://upload.wikimedia.org/x'):
+            with self.assertRaises(c.CollectError):
+                c.get(url)
+
+    def test_unreadable_thumb_skipped(self):
+        def fail(url):
+            raise c.CollectError('HTTP_403')
+        self.assertIsNone(c.with_thumb(fail, {'thumb': 'https://upload.wikimedia.org/x'}))
 
     def test_main_title_with_underscores(self):
         old = c.MODELS
