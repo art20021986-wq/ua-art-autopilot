@@ -7,21 +7,23 @@
   "created_at": "2026-10-26T05:45:33Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-26T05:45:33Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-26T05:56:20Z",
+  "heartbeat_at": "2026-10-26T05:56:20Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40274522765",
     "task_id": "MODEL-GALLERY-COLLECT-20261026-R3",
     "task_sha256": "4d45928238f6e3c849b32c1a171bfd11dd5e98deb72a6bce995ec95d0818b8cd"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-6b955c6e8eb8ecc9-0da5eae9f3d3b631",
   "receipt_path": "state/receipts/MODEL-GALLERY-COLLECT-20261026-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "2dbdddf37aad1ec9a83824f3ee3dc9da84bdd8014cf7a25742c9084e1f859604",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MODEL-GALLERY-COLLECT-20261026-R3.json",
   "request_sha256": "4d45928238f6e3c849b32c1a171bfd11dd5e98deb72a6bce995ec95d0818b8cd",
   "resource_locks": [
@@ -29,8 +31,24 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "19ae2d6f3aa0b221353cb2a9c0a655fe14f4a5a8",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91324080128,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 41.03
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-26T05:45:33Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "b1c4ee793c83c03c3c4e0992587dc3c6ac4074c5b1eb9b5554a98b912125f3a7",
+    "file_sha256": {
+      "cloud/model_gallery_001/make_request.py": "e18e23053b8ea2a95b6c6f536670203d83a06d1468665a01755622768fe9e74d",
+      "cloud/model_gallery_001/test_collect.py": "ac5b01c445567348445f0c79640e8056ab1800b5368945b8cc10808d51a06081"
+    }
+  },
+  "updated_at": "2026-10-26T05:56:20Z"
 }

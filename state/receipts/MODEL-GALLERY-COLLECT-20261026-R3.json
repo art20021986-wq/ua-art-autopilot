@@ -1,0 +1,24 @@
+{
+ "evidence_path": [
+  "cloud/model_gallery_001/candidates_canada.json",
+  "cloud/model_gallery_001/candidates_china.json",
+  "cloud/model_gallery_001/candidates_europe.json",
+  "cloud/model_gallery_001/candidates_georgia.json",
+  "cloud/model_gallery_001/candidates_japan.json",
+  "cloud/model_gallery_001/candidates_korea.json",
+  "cloud/model_gallery_001/candidates_usa.json"
+ ],
+ "live_source_environment": "wikimedia_commons",
+ "production_required": false,
+ "request_sha256": "4d45928238f6e3c849b32c1a171bfd11dd5e98deb72a6bce995ec95d0818b8cd",
+ "rollback_ready": true,
+ "rollback_ready_scope": "NO_REMOTE_WRITES",
+ "run_id": "40274522765",
+ "status": "FINISHED",
+ "target_environment": "shadow",
+ "task_class": "STANDARD",
+ "task_id": "MODEL-GALLERY-COLLECT-20261026-R3",
+ "tests": "PASS",
+ "tests_scope": "READ_ONLY_PROBE",
+ "unexpected_changes": 0
+}
