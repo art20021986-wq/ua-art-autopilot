@@ -16,9 +16,11 @@ import resource
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
 ROOTS = (HOME, Path('/var/www'))
-# R2: the web app's own source directory (PythonAnywhere webapp source_directory), searched recursively.
-APP_DIRS = (HOME/'mysite',)
-SKIP = ('site-packages', '__pycache__', '/.')
+# R2/R3: all source directories under the home directory, up to MAX_DEPTH levels, without libraries and copies.
+APP_DIRS = (HOME,)
+SKIP = ('site-packages', '__pycache__', '/.', '/runs/', 'backup', '/inbox')
+MAX_DEPTH = 3
+MAX_FILES = 4000
 MARKERS = ('/api/orders', 'api/orders', 'ua_order_request', 'orders/submit', 'consent_version', 'card_presets',
            'order_requests', 'handoff')
 # Modules that define the order routes or validate the request are returned in full.
@@ -48,9 +50,16 @@ def sources():
         for path in entries:
             if path.suffix == '.py' and path.is_file() and not path.is_symlink():
                 yield path
+    count = 0
     for root in APP_DIRS:
         for path in sorted(root.rglob('*.py')):
-            if path.is_file() and not path.is_symlink() and not any(part in str(path) for part in SKIP):
+            depth = len(path.relative_to(root).parts) - 1
+            if not 1 <= depth <= MAX_DEPTH or any(part in str(path) for part in SKIP):
+                continue
+            if path.is_file() and not path.is_symlink():
+                count += 1
+                if count > MAX_FILES:
+                    return
                 yield path
 
 
