@@ -4,13 +4,15 @@ Owner request 2026-10-26. order.js adds the card button (model, country and titl
 the short enquiry itself is the shared quick-lead.js / quick-lead.css form, here in a <dialog> inside
 the order root, so the page's own language switch translates its [data-label] texts from
 order-strings.json. Asset versions are raised so browsers load the new files. Each original fragment
-must occur exactly once and an applied fragment is refused.
+must occur exactly once and an applied fragment is refused. The page edit does not depend on the
+order.js version a parallel release (MODEL-GALLERY) may set: the version is replaced whatever it is.
 """
+import re
 
 PAGE = 'video/podbor.html'
 SCRIPT = 'video/order/order.js'
 STRINGS = 'video/order/order-strings.json'
-VERSION = '20261026.1'
+VERSION = '20261026.5'  # distinct from MODEL-GALLERY-001 (20261026.1)
 ASSET_VERSION = '20261026.2'  # quick-lead.js / quick-lead.css, as ua_seo_quick_form.ASSET_VERSION
 
 DIALOG = ('      <dialog class="ua-quick-dialog" id="quick-lead-dialog">'
@@ -57,10 +59,10 @@ def _strings(lang):
 
 EDITS = {
     PAGE: (
-        ('<script type="module" src="order/order.js?v=20261025.3"></script>',
-         '<script type="module" src="order/order.js?v=%s"></script>'
+        ('<link rel="stylesheet" href="order/order.css?v=20261025.2">',
+         '<link rel="stylesheet" href="order/order.css?v=20261025.2">'
          '<link rel="stylesheet" href="order/quick-lead.css?v=%s">'
-         '<script src="order/quick-lead.js?v=%s" defer></script>' % (VERSION, ASSET_VERSION, ASSET_VERSION)),
+         '<script src="order/quick-lead.js?v=%s" defer></script>' % (ASSET_VERSION, ASSET_VERSION)),
         ('      <div id="models" class="models"></div>\n',
          '      <div id="models" class="models"></div>\n' + DIALOG),
     ),
@@ -73,6 +75,7 @@ EDITS = {
     ),
     STRINGS: tuple(_strings(lang) for lang in ('uk', 'ru', 'ka')),
 }
+SCRIPT_VERSION = re.compile(r'order/order\.js\?v=[0-9.]+')
 # Public proof that each file is live.
 CHECK_PAGE = 'id="quick-lead-dialog"'
 CHECK_SCRIPT = "quickLeadModel:model.key"
@@ -85,4 +88,9 @@ def build(name, source):
         if text.count(old) != 1 or new in text:
             raise ValueError('ORDER_FRAGMENT_NOT_UNIQUE:' + name)
         text = text.replace(old, new)
+    if name == PAGE:
+        current = SCRIPT_VERSION.findall(text)
+        if len(current) != 1 or current[0] == 'order/order.js?v=' + VERSION:
+            raise ValueError('ORDER_SCRIPT_VERSION:' + name)
+        text = SCRIPT_VERSION.sub('order/order.js?v=' + VERSION, text)
     return text.encode('utf-8')

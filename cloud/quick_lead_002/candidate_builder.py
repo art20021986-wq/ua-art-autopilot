@@ -1,4 +1,4 @@
-"""Build the QUICK-LEAD-002 candidate from the exact installed sources (after QUICK-LEAD-001 and PODBOR-MODEL-001)."""
+"""Build the QUICK-LEAD-002 candidate from the exact installed sources (after QUICK-LEAD-001, PODBOR-MODEL-001, GA4-TAG-001)."""
 import hashlib
 from pathlib import Path
 
@@ -12,7 +12,7 @@ SOURCE_SHA256 = {
     'ua_seo_quick_form.py': 'c1c918410bd302efcd8f618e000de61afdb808321248d193b70ab060a6d47284',
     'video/order/quick-lead.js': 'f10803afd275e58d7403256e007809cb0fd91f17da61866efc2cbd8c2f647e2a',
     'video/order/quick-lead.css': '65d07fc3213330bbb6f8352dfe609d8e5311767da4d69f8379a8f500c8a19641',
-    'video/podbor.html': 'c21fe439ba7ca14e28dbf6759dc3b51b08a3f8c161c868552480aa701b1345f5',
+    'video/podbor.html': '9576701c7eb9255c370698572172d52836ad89764713b57268357c419811af7b',
     'video/order/order.js': 'b650398b1d381c31d2cef9a83f6702ed7082da03b354c8ba12e8a851660ce893',
     'video/order/order-strings.json': 'f9a997d3a31b09a131973777bf005780724bc76d141687c1d0b7b21ea5a7a80d',
 }

@@ -37,9 +37,10 @@ def load(path, name):
 
 
 def live_order_files():
-    """The order page files as installed by PODBOR-FORM-001 and PODBOR-MODEL-001 (probe R3 + their edits)."""
+    """The order page files as installed: probe R3 + PODBOR-FORM-001, PODBOR-MODEL-001 edits + GA4-TAG-001 tag."""
     form = load(HERE.parent/'podbor_form_001/edit_order.py', 'form_edit')
     model = load(HERE.parent/'podbor_model_001/edit_order.py', 'model_edit')
+    tag = load(HERE.parent/'ga4_tag_001/ua_google_tag.py', 'google_tag')
     urls = {edit_order.PAGE: 'https://www.uaart.com.ua/video/podbor.html?strana=korea&lang=uk',
             edit_order.SCRIPT: 'https://www.uaart.com.ua/video/order/order.js?v=20261025.1',
             edit_order.STRINGS: 'https://www.uaart.com.ua/video/order/order-strings.json'}
@@ -49,7 +50,7 @@ def live_order_files():
         for edit in (form, model):
             if name in edit.EDITS:
                 value = edit.build(name, value)
-        files[name] = value
+        files[name] = tag.apply(value.decode()).encode() if name == edit_order.PAGE else value
     return files
 
 
@@ -127,9 +128,22 @@ class OrderPageTests(unittest.TestCase):
             restored = after.decode()
             for old, new in edit_order.EDITS[name]:
                 restored = restored.replace(new, old)
+            if name == edit_order.PAGE:
+                restored = restored.replace('order/order.js?v=' + edit_order.VERSION, 'order/order.js?v=20261025.3')
             self.assertEqual(restored.encode(), self.live[name])
             with self.assertRaises(ValueError):
                 edit_order.build(name, after)
+
+    def test_page_edit_independent_of_the_gallery_release(self):
+        gallery = load(HERE.parent/'model_gallery_install_001/edit_order.py', 'gallery_edit')
+        after_gallery = gallery.build(edit_order.PAGE, self.live[edit_order.PAGE])
+        both = edit_order.build(edit_order.PAGE, after_gallery).decode()
+        self.assertEqual(both.count('order/order.js?v=' + edit_order.VERSION), 1)
+        self.assertIn('order/gallery.css', both)
+        self.assertIn('id="quick-lead-dialog"', both)
+        script = edit_order.build(edit_order.SCRIPT, gallery.build(edit_order.SCRIPT, self.live[edit_order.SCRIPT])).decode()
+        self.assertIn('import {gallery}', script)
+        self.assertIn('info.append(offer,button)', script)
 
     def test_card_button_before_calculate(self):
         script = self.built[edit_order.SCRIPT].decode()

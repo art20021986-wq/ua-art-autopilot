@@ -14,7 +14,7 @@ HERE = Path(__file__).resolve().parent
 PREVIOUS = {'ua_order/quick.py': 'quick_lead_001', 'ua_seo_quick_form.py': 'quick_lead_001',
             'video/order/quick-lead.js': 'quick_lead_001', 'video/order/quick-lead.css': 'quick_lead_001',
             'ua_seo_landings.py': 'quick_lead_001', 'ua_order/contract.py': 'quick_lead_001',
-            'ua_order/crm.py': 'quick_lead_001', 'video/podbor.html': 'podbor_model_001',
+            'ua_order/crm.py': 'quick_lead_001', 'video/podbor.html': 'ga4_tag_001',
             'video/order/order.js': 'podbor_model_001', 'video/order/order-strings.json': 'podbor_form_001',
             'ua_seo_order_models.py': 'seo_models_001', 'ua_seo_index.py': 'ga4_tag_001',
             'ua_google_tag.py': 'ga4_tag_001', 'ua_google_sitemap.py': 'gsc_growth_001',
