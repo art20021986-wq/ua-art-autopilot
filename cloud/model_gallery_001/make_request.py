@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Write tasks/requests/MODEL-GALLERY-<KIND>-<suffix>.json and its launch marker (run from the repository root).
 
-Usage: python3 cloud/model_gallery_001/make_request.py request collect|search 20261026   # after merge to main:
-       python3 cloud/model_gallery_001/make_request.py launch collect|search 20261026
+Usage: python3 cloud/model_gallery_001/make_request.py request collect|search|fetch 20261026   # after merge to main:
+       python3 cloud/model_gallery_001/make_request.py launch collect|search|fetch 20261026
 """
 import datetime
 import hashlib
@@ -16,9 +16,11 @@ KINDS = {
                 'starting from each model\'s current main photo file and its categories'),
     'search': ('MODEL-GALLERY-SEARCH-', 'search.py', 'search_',
                'file searches by model name and generation for interior and rear photos'),
+    'fetch': ('MODEL-GALLERY-FETCH-', 'fetch.py', 'photos_',
+              'download 960 px wide of the photos picked by eye (picks.py), licence checked again'),
 }
-MODULES = ['collect.py', 'search.py', 'make_request.py']
-TESTS = [P + 'test_collect.py', P + 'test_search.py']
+MODULES = ['collect.py', 'search.py', 'fetch.py', 'make_request.py', 'picks.py']
+TESTS = [P + 'test_collect.py', P + 'test_search.py', P + 'test_fetch.py']
 GROUPS = ('canada', 'china', 'europe', 'georgia', 'japan', 'korea', 'usa')
 
 
