@@ -5,11 +5,11 @@ The monthly refresh changes only this file. Review texts are verbatim, in the la
 """
 DEALER_URL = 'https://auto.ria.com/uk/dealers/yua-art-kompani/3356/'
 
-# (number, ru label, uk label)
+# (number, ru label, uk label, ka label); ka «AUTO.RIA‑ზე» uses a non-breaking hyphen (U+2011).
 STATS = (
-    ('5+', 'лет на AUTO.RIA', 'років на AUTO.RIA'),
-    ('132', 'проданных авто', 'проданих авто'),
-    ('18', 'отзывов покупателей', 'відгуків покупців'),
+    ('5+', 'лет на AUTO.RIA', 'років на AUTO.RIA', 'წელი AUTO.RIA‑ზე'),
+    ('132', 'проданных авто', 'проданих авто', 'გაყიდული ავტომობილი'),
+    ('18', 'отзывов покупателей', 'відгуків покупців', 'მყიდველის შეფასება'),
 )
 
 # (author, date, stars, verbatim text)

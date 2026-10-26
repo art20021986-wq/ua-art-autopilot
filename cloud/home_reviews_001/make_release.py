@@ -5,7 +5,8 @@ Usage: python3 cloud/home_reviews_001/make_release.py preview [SUFFIX]   # PR, m
        python3 cloud/home_reviews_001/make_release.py launch TASK_ID
        python3 cloud/home_reviews_001/make_release.py install [SUFFIX]   # right after the preview: writes gate, manifest,
                                                                    # owner approval, storage probe, request and launch
-The owner approved the block in chat on 2026-10-26 («Ок размещай на сайте») after the mock-up and texts.
+Owner approvals in chat, 2026-10-26: release 1 «Ок размещай на сайте» (block, badge, logo); release 2 «Ок 1.2»
+(Georgian texts, «autoria_click» Analytics event). Task names come from release_constants.py.
 """
 import datetime
 import hashlib
@@ -17,8 +18,11 @@ sys.path.insert(0, 'automation')
 import autostart_intake  # noqa: E402
 import control_plane as cp  # noqa: E402
 
+sys.path.insert(0, 'cloud/home_reviews_001')
+from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
+
 P = 'cloud/home_reviews_001/'
-DEPENDENCIES = [P + n for n in ('autoria_logo.py', 'candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
+DEPENDENCIES = [P + n for n in ('autoria_click.py', 'autoria_logo.py', 'candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py', 'edit_home.py',
                                 'make_release.py', 'release_constants.py', 'reviews_block.py', 'reviews_data.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_edit_home.py')]
@@ -63,13 +67,14 @@ def execution(task, production):
 
 
 def preview(suffix):
-    task = 'HOME-REVIEWS-PREFLIGHT-20261026' + suffix
+    task = PREVIEW_TASK + suffix
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of the home reviews release (owner approval 2026-10-26): reads the live '
-                            'video/index.html, builds the candidate (AUTO.RIA reviews block after the «5 кроків» section, '
-                            'footer badge, new video/brand/autoria-logo.svg) and measures storage. No application source, '
-                            'CRM, HTML, media or bot state changes.',
+             'description': 'Preview of home reviews release 2 (owner «Ок 1.2», 2026-10-26): reads the live '
+                            'video/index.html and video/brand/autoria-logo.svg, builds the candidate (the installed AUTO.RIA '
+                            'reviews block, footer badge and CSS replaced in place: Georgian texts, «autoria_click» '
+                            'Analytics event) and measures storage. No application source, CRM, HTML, media or bot state '
+                            'changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
              'title': 'Preview home reviews release'}
@@ -89,7 +94,7 @@ def launch(task, now=None, production=False):
 
 
 def install(suffix):
-    task = 'HOME-REVIEWS-INSTALL-20261026' + suffix
+    task = INSTALL_TASK + suffix
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
     plan = json.load(open(P + 'deployment_plan.json'))
     preview_value = json.load(open(P + 'deployment_preview.json'))
@@ -125,12 +130,12 @@ def install(suffix):
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved («Ок размещай на сайте», 2026-10-26) AUTORIA-REVIEWS-001 install: in '
-                              'video/index.html the AUTO.RIA reviews block (5+ years, 132 sold, 18 reviews, 3 verbatim '
-                              'reviews, button to the dealer page) is inserted after the «5 кроків» section, a «Ми на '
-                              'AUTO.RIA» badge in the footer and its CSS before </head>; new video/brand/autoria-logo.svg; '
-                              'every other byte stays as is. No CRM or car card change. Existing backup, bot pause, writer '
-                              'locks, data-preservation, rollback and public health checks are kept.',
+               'description': 'Owner approved («Ок 1.2», 2026-10-26) AUTORIA-REVIEWS-001 release 2: in '
+                              'video/index.html the installed AUTO.RIA reviews block, footer badge and their CSS are '
+                              'replaced in place by the same block with Georgian texts (data-ka) and the «autoria_click» '
+                              'Analytics event (placement reviews_block / footer_badge) on its two links; every other byte '
+                              'stays as is; the logo file is unchanged. No CRM or car card change. Existing backup, bot '
+                              'pause, writer locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/katalog.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
