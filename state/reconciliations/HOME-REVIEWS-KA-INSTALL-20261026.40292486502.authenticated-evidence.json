@@ -1,0 +1,28 @@
+{
+  "backup_receipt": "state/receipts/HOME-REVIEWS-KA-INSTALL-20261026-BACKUP.json",
+  "backup_started": true,
+  "claim_before_sha256": "95cd35bd8f4936412386c2afbc5fe0ef0e859ce36aef27240d2330d24e9cc233",
+  "claim_status_before": {
+    "critical_gate_status": "PASS_PRODUCTION",
+    "package_compile_status": "PASS",
+    "production_transaction_status": "ROLLED_BACK",
+    "task_execution_status": "ROLLED_BACK"
+  },
+  "crm_unchanged": true,
+  "error": "NETWORK_TimeoutError",
+  "failed_step": "execute / critical / controller_production: upload_package (bundle upload to PythonAnywhere)",
+  "halt_archive": "state/halt_history/HOME-REVIEWS-KA-INSTALL-20261026.40292486502/halt.json",
+  "live_verify": "PASS",
+  "owner_statement": "Разрешаю снять аварийную остановку HOME-REVIEWS-KA-INSTALL-20261026",
+  "precedent": "state/reconciliations/SEO-LANDINGS-INSTALL-20261025.40197385684.authenticated-evidence.json",
+  "production_transaction_closed_at": "2026-10-26T08:54:54Z",
+  "production_transaction_status": "ROLLED_BACK",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-10-26T15:18:39.401811+00:00",
+  "rollback_receipt": "state/receipts/HOME-REVIEWS-KA-INSTALL-20261026-ROLLBACK.json",
+  "rollback_status": "ROLLED_BACK",
+  "run_id": "40292486502",
+  "site_state_after": "release 1 (video/index.html 7e1b3f29), restored and verified by the rollback",
+  "task_id": "HOME-REVIEWS-KA-INSTALL-20261026",
+  "workflow_conclusion": "failure"
+}

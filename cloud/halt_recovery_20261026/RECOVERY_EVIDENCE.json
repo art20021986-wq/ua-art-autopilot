@@ -1,0 +1,40 @@
+{
+  "after_clear_mode_validation": {
+    "allow_halt_for_recovery": false,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "authorization_scope": "Archive the HOME-REVIEWS-KA-INSTALL-20261026 halt (bundle upload timed out after backup; verified rollback restored release 1); preserve all protection policies, Gate B, backup and operator data",
+  "before_clear_mode_validation": {
+    "allow_halt_for_recovery": true,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "before_error": "NETWORK_TimeoutError at upload_package; backup PASS; rollback PASS, live_verify PASS, crm_unchanged",
+  "claim_archive": "state/halt_history/HOME-REVIEWS-KA-INSTALL-20261026.40292486502/claim.before.json",
+  "contract": "OWNER-AUTHORIZED-REPOSITORY-HALT-RECOVERY-EVIDENCE-1",
+  "credentials_read_or_changed": false,
+  "execution_mode_bytes_changed": false,
+  "existing_launch_markers_replayed": false,
+  "halt_archive": "state/halt_history/HOME-REVIEWS-KA-INSTALL-20261026.40292486502/halt.json",
+  "halt_sha256": "e3fa4752d00380f53d319a88e487dcd12f5ef8e42223af0988506abac573cce4",
+  "historical_halt": {
+    "halted_at": "2026-10-26T08:54:54Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "CRITICAL Production pipeline failed; GitHub Actions run 40292486502; rollback reserved true; rollback performed true",
+    "request_path": "tasks/requests/HOME-REVIEWS-KA-INSTALL-20261026.json",
+    "request_sha256": "ab2d9713abd61a01564c0024b3100a4ce38e9d247e20fd0a881d3f706543d525",
+    "run_id": "40292486502",
+    "status": "EMERGENCY_HALT",
+    "task_id": "HOME-REVIEWS-KA-INSTALL-20261026"
+  },
+  "owner_statement": "Разрешаю снять аварийную остановку HOME-REVIEWS-KA-INSTALL-20261026",
+  "precedent": "cloud/halt_recovery_20261025/RECOVERY_EVIDENCE.json",
+  "production_launch_created": false,
+  "production_transaction_opened": false,
+  "reconciliation_evidence": "state/reconciliations/HOME-REVIEWS-KA-INSTALL-20261026.40292486502.authenticated-evidence.json",
+  "recorded_at": "2026-10-26T15:18:39.401811+00:00",
+  "required_production_gates_weakened": false,
+  "runtime_code_changed": false,
+  "site_or_crm_written": false
+}
