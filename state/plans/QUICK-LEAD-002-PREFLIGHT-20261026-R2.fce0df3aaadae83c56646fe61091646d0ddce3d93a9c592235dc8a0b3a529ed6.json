@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/QUICK-LEAD-002-PREFLIGHT-20261026-R2.fce0df3aaadae83c56646fe61091646d0ddce3d93a9c592235dc8a0b3a529ed6.json",
+  "autostart_ledger_sha256": "ede7fd9e388ab7b7b13cb72272a3571fb735b602b967d0bba196f10d3bbd8d5d",
+  "autostart_source_commit": "c69dd88cb9475454ab6f26a1116283f174e80f07",
+  "created_at": "2026-10-26T07:30:45Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40286126728",
+    "task_id": "QUICK-LEAD-002-PREFLIGHT-20261026-R2",
+    "task_sha256": "fce0df3aaadae83c56646fe61091646d0ddce3d93a9c592235dc8a0b3a529ed6"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-5efcca6e855fe4d8-a08e4aebb09afb86",
+  "request_path": "tasks/requests/QUICK-LEAD-002-PREFLIGHT-20261026-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:5efcca6e855fe4d8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
