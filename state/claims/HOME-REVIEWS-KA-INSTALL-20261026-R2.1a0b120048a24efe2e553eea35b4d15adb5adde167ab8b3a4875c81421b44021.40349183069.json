@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "052ef01f8f8d5ef1037523c9d539b4fb1ea9158043b8c63fd512c59445176636",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-26T15:29:22Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-26T15:34:10Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "40349183069",
     "task_id": "HOME-REVIEWS-KA-INSTALL-20261026-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-40349183069-1a0b120048a24efe",
   "production_transaction_path": "state/transactions/HOME-REVIEWS-KA-INSTALL-20261026-R2.1a0b120048a24efe2e553eea35b4d15adb5adde167ab8b3a4875c81421b44021.40349183069.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-REVIEWS-KA-INSTALL-20261026-R2.json",
   "receipt_validation_status": "PENDING",
@@ -90,5 +90,5 @@
       "cloud/home_reviews_001/test_edit_home.py": "7b5f4fc9549af406f283011451b1cb0f4d17b7dca2198b3933061a57925557d2"
     }
   },
-  "updated_at": "2026-10-26T15:29:22Z"
+  "updated_at": "2026-10-26T15:34:10Z"
 }
