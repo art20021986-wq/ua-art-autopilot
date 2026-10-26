@@ -35,6 +35,7 @@ def request(kind, day):
     task = prefix + day
     controller = P + controller
     dependencies = [P + name for name in MODULES if P + name != controller]
+    stem = 'photos2_' if kind == 'fetch' and day.endswith('-R2') else stem
     evidence = [P + stem + '%s.json' % group for group in GROUPS]
     value = {
         'ai_requested': False, 'changed_paths': evidence, 'complexity': 1, 'control_plane_version': 'TASK107-R2',

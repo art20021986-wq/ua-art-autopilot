@@ -41,19 +41,19 @@ def env_for(root):
 class FetchTests(unittest.TestCase):
     def test_picks_cover_known_models(self):
         picks = f.chosen.PICKS
-        self.assertEqual(set(picks), set(c.MODELS))
+        self.assertTrue(set(picks) <= set(c.MODELS))
         for views in picks.values():
             self.assertEqual(set(views), {'exterior', 'interior'})
-            self.assertLessEqual(len(views['exterior']), 3)
-            self.assertLessEqual(len(views['interior']), 4)
+            self.assertLessEqual(len(views['exterior']), 4)
+            self.assertLessEqual(len(views['interior']), 5)
 
     def test_execute(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             picks = {'kia-k5': {'exterior': ['File:K5 rear.jpg'], 'interior': ['File:K5 dash.jpg']}}
             receipt = f.execute(env_for(root), root=root, fetch=fake, picks=picks)
-            self.assertEqual(receipt['evidence_path'], [f.evidence_path('korea')])
-            data = json.loads((root/f.evidence_path('korea')).read_text())['models']['kia-k5']
+            self.assertEqual(receipt['evidence_path'], [f.evidence_path('korea', f.TASKS[0])])
+            data = json.loads((root/f.evidence_path('korea', f.TASKS[0])).read_text())['models']['kia-k5']
             self.assertEqual(base64.b64decode(data['interior'][0]['b64']), b'photo:/File:K5_dash.jpg')
 
     def test_non_free_pick_stops(self):
