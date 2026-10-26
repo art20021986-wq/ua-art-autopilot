@@ -29,7 +29,7 @@ MARKERS = ('/api/orders', 'api/orders', 'ua_order_request', 'orders/submit', 'co
 DEFINES = re.compile(r'''api/orders|ua_order_request''')
 MAX_SOURCE = 400 * 1024
 MAX_FULL = 8
-SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\s*[\'"]?\s*[:=]'
+SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
 LONG_NUMBER = re.compile(r'(?<!\d)\+?\d[\d\s()-]{8,}\d(?!\d)')
 URL = re.compile(r'https?://[^\s\'"<>)]+')
