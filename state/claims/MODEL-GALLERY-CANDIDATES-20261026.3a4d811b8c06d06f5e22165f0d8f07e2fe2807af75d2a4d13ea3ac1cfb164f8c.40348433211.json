@@ -7,21 +7,23 @@
   "created_at": "2026-10-26T15:25:12Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-26T15:25:12Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-26T15:27:25Z",
+  "heartbeat_at": "2026-10-26T15:27:25Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40348433211",
     "task_id": "MODEL-GALLERY-CANDIDATES-20261026",
     "task_sha256": "3a4d811b8c06d06f5e22165f0d8f07e2fe2807af75d2a4d13ea3ac1cfb164f8c"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-9bb6560e92b542da-8a40296685c5a51a",
   "receipt_path": "state/receipts/MODEL-GALLERY-CANDIDATES-20261026.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "51344f1e3a33cb18da8b1f6d2d443e0ddae708d8f23dc7d6d88ce46a86c07528",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MODEL-GALLERY-CANDIDATES-20261026.json",
   "request_sha256": "3a4d811b8c06d06f5e22165f0d8f07e2fe2807af75d2a4d13ea3ac1cfb164f8c",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "cd3d6a036bccfd96269db0cfb7c71f75f9be4a6f",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91068645376,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 41.195
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-26T15:25:12Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "d5768d3d4cd94f48d7a6d88c1005638c1ba9a77c6781a72c6a0e483d7161bae8",
+    "file_sha256": {
+      "cloud/model_gallery_official_001/discover.py": "3c85c146d68cfa1f5e6fc290eac5b1f6119a817ffbaebaff2640393ce8886586",
+      "cloud/model_gallery_official_001/make_request.py": "07b5d42e1215944c75e4e477bb8fdc3d5dbb3a0f71b0cd638f4544ca32201bff",
+      "cloud/model_gallery_official_001/sources.py": "b20bffee6582e094110bfee34f95bfb29c5a0fbd43cde298a0133bd78ee1e7ad",
+      "cloud/model_gallery_official_001/test_candidates.py": "24317c0842a2582a92663a0df92c07d059ce34207903a600e2b874047935df56",
+      "cloud/model_gallery_official_001/test_discover.py": "f8dddae5a1076ebb5492a232ad27ad819e79a774e81a236e4674e4177ac0d9f5"
+    }
+  },
+  "updated_at": "2026-10-26T15:27:25Z"
 }

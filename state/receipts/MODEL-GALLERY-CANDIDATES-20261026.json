@@ -1,0 +1,23 @@
+{
+ "evidence_path": [
+  "cloud/model_gallery_official_001/candidates_hyundai-santa-fe.json",
+  "cloud/model_gallery_official_001/candidates_hyundai-tucson.json",
+  "cloud/model_gallery_official_001/candidates_lexus-rx-350.json",
+  "cloud/model_gallery_official_001/candidates_lexus-rx-500.json",
+  "cloud/model_gallery_official_001/candidates_lexus-tx.json",
+  "cloud/model_gallery_official_001/candidates_nissan-rogue.json"
+ ],
+ "live_source_environment": "manufacturer_sites",
+ "production_required": false,
+ "request_sha256": "3a4d811b8c06d06f5e22165f0d8f07e2fe2807af75d2a4d13ea3ac1cfb164f8c",
+ "rollback_ready": true,
+ "rollback_ready_scope": "NO_REMOTE_WRITES",
+ "run_id": "40348433211",
+ "status": "FINISHED",
+ "target_environment": "shadow",
+ "task_class": "STANDARD",
+ "task_id": "MODEL-GALLERY-CANDIDATES-20261026",
+ "tests": "PASS",
+ "tests_scope": "READ_ONLY_PROBE",
+ "unexpected_changes": 0
+}
