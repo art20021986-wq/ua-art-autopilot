@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Write tasks/requests/MODEL-GALLERY-<KIND>-<suffix>.json and its launch marker (run from the repository root).
 
-Usage: python3 cloud/model_gallery_official_001/make_request.py request discover 20261026   # after merge to main:
-       python3 cloud/model_gallery_official_001/make_request.py launch discover 20261026
+Usage: python3 cloud/model_gallery_official_001/make_request.py request discover|candidates 20261026   # after merge to main:
+       python3 cloud/model_gallery_official_001/make_request.py launch discover|candidates 20261026
 """
 import datetime
 import hashlib
@@ -15,9 +15,12 @@ KINDS = {
     'discover': ('MODEL-GALLERY-DISCOVER-', 'discover.py', 'discover_',
                  'bounded crawl of the manufacturers\' official press and model pages for each model\'s photo gallery '
                  '(pages and image addresses only, no image download)'),
+    'candidates': ('MODEL-GALLERY-CANDIDATES-', 'candidates.py', 'candidates_',
+                   'download of the official photo series listed in sources.py (manufacturers\' image stores only) and '
+                   'the text of their press pages'),
 }
-MODULES = ['discover.py', 'make_request.py']
-TESTS = [P + 'test_discover.py']
+MODULES = ['discover.py', 'candidates.py', 'sources.py', 'make_request.py']
+TESTS = [P + 'test_discover.py', P + 'test_candidates.py']
 GROUPS = ('canada', 'china', 'europe', 'georgia', 'japan', 'korea', 'usa')
 
 
@@ -30,7 +33,10 @@ def request(kind, day):
     task = prefix + day
     controller = P + controller
     dependencies = [P + name for name in MODULES if P + name != controller]
-    evidence = [P + stem + '%s.json' % group for group in GROUPS]
+    sys.path.insert(0, P)
+    from sources import SOURCES
+    names = sorted(SOURCES) if kind == 'candidates' else GROUPS
+    evidence = [P + stem + '%s.json' % name for name in names]
     value = {
         'ai_requested': False, 'changed_paths': evidence, 'complexity': 1, 'control_plane_version': 'TASK107-R2',
         'description': 'Read-only photo candidates for the order page model gallery (owner request 2026-10-26): GET of the '
