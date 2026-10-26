@@ -1,15 +1,15 @@
 """Markup of the home page AUTO.RIA reviews block and footer badge (AUTORIA-REVIEWS-001).
 
 Owner-approved 2026-10-26. Pure functions of reviews_data: no page parsing here. Texts carry data-ru/data-uk
-for the home language switch (Georgian falls back to Ukrainian there); reviews stay verbatim in Ukrainian.
+/data-ka for the home language switch; reviews stay verbatim in Ukrainian. Clicks are counted by autoria_click.
 """
 from html import escape
 
+import autoria_click
 import reviews_data as data
 
 MARK = 'ua-autoria-reviews-001'
 LOGO = '/video/brand/autoria-logo.svg'
-LINK = 'href="%s" target="_blank" rel="noopener noreferrer"' % escape(data.DEALER_URL)
 
 CSS = '''<style id="%s">
 .ua-reviews p{margin:0}
@@ -38,8 +38,13 @@ CSS = '''<style id="%s">
 </style>''' % MARK
 
 
-def _attrs(ru, uk):
-    return 'data-ru="%s" data-uk="%s">%s' % (escape(ru), escape(uk), escape(uk))
+def _attrs(ru, uk, ka):
+    return 'data-ru="%s" data-uk="%s" data-ka="%s">%s' % (escape(ru), escape(uk), escape(ka), escape(uk))
+
+
+def _link(placement):
+    return 'href="%s" target="_blank" rel="noopener noreferrer" %s="%s"' % (
+        escape(data.DEALER_URL), autoria_click.ATTRIBUTE, placement)
 
 
 def _logo(height):
@@ -54,21 +59,28 @@ def _review(author, date, stars, text):
 
 
 def block():
-    stats = ''.join('<li><b>%s</b><span %s</span></li>' % (escape(number), _attrs(ru, uk)) for number, ru, uk in data.STATS)
+    stats = ''.join('<li><b>%s</b><span %s</span></li>' % (escape(number), _attrs(ru, uk, ka)) for number, ru, uk, ka in data.STATS)
     reviews = ''.join(_review(*review) for review in data.REVIEWS)
     return ('<section class="ua-reviews section-frame" id="vidguky">'
             '<span class="section-kicker" %s</span><h2 %s</h2><p class="ua-reviews-lead" %s</p>'
             '<ul class="ua-reviews-stats">%s</ul><div class="ua-reviews-list">%s</div>'
-            '<a class="ua-reviews-button" %s><span %s</span>%s</a><p class="ua-reviews-note" %s</p></section>'
-            % (_attrs('ОТЗЫВЫ И ИСТОРИЯ ПРОДАЖ', 'ВІДГУКИ ТА ІСТОРІЯ ПРОДАЖІВ'),
-               _attrs('Проверьте нас на AUTO.RIA', 'Перевірте нас на AUTO.RIA'),
+            '<a class="ua-reviews-button" %s><span %s</span>%s</a><p class="ua-reviews-note" %s</p>%s</section>'
+            % (_attrs('ОТЗЫВЫ И ИСТОРИЯ ПРОДАЖ', 'ВІДГУКИ ТА ІСТОРІЯ ПРОДАЖІВ', 'შეფასებები და გაყიდვების ისტორია'),
+               _attrs('Проверьте нас на AUTO.RIA', 'Перевірте нас на AUTO.RIA', 'შეგვამოწმეთ AUTO.RIA‑ზე'),
                _attrs('Отзывы там оставляют покупатели, мы не можем их изменить или удалить. '
                       'Там же — все авто, которые мы уже продали.',
                       'Відгуки там залишають покупці, ми не можемо їх змінити чи видалити. '
-                      'Там же — всі авто, які ми вже продали.'),
-               stats, reviews, LINK, _attrs('Все отзывы и проданные авто', 'Усі відгуки та продані авто'), _logo(30),
-               _attrs('Откроется наша страница на AUTO.RIA', 'Відкриється наша сторінка на AUTO.RIA')))
+                      'Там же — всі авто, які ми вже продали.',
+                      'შეფასებებს იქ მყიდველები ტოვებენ, ჩვენ მათ ვერ შევცვლით და ვერ წავშლით. '
+                      'იქვეა ყველა ავტომობილი, რომელიც უკვე გავყიდეთ.'),
+               stats, reviews, _link(autoria_click.BLOCK),
+               _attrs('Все отзывы и проданные авто', 'Усі відгуки та продані авто', 'ყველა შეფასება და გაყიდული ავტომობილი'),
+               _logo(30),
+               _attrs('Откроется наша страница на AUTO.RIA', 'Відкриється наша сторінка на AUTO.RIA',
+                      'გაიხსნება ჩვენი გვერდი AUTO.RIA‑ზე'),
+               autoria_click.SCRIPT))
 
 
 def badge():
-    return '<a class="ua-autoria-badge" %s><span %s</span>%s</a>' % (LINK, _attrs('Мы на', 'Ми на'), _logo(26))
+    return '<a class="ua-autoria-badge" %s><span %s</span>%s</a>' % (
+        _link(autoria_click.BADGE), _attrs('Мы на', 'Ми на', 'გვიპოვეთ'), _logo(26))
