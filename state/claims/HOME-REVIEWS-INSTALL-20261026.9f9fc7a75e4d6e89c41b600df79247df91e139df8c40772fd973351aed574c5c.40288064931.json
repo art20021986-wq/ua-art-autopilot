@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "0aedb771b1a84f0a9187aa7089d88ef452c3c1457165ca910252e1849e7e1b25",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-26T07:53:19Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-10-26T08:06:58Z",
+  "heartbeat_at": "2026-10-26T08:06:58Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "40288064931",
     "task_id": "HOME-REVIEWS-INSTALL-20261026",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 651.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 179.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-40288064931-9f9fc7a75e4d6e89",
   "production_transaction_path": "state/transactions/HOME-REVIEWS-INSTALL-20261026.9f9fc7a75e4d6e89c41b600df79247df91e139df8c40772fd973351aed574c5c.40288064931.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-REVIEWS-INSTALL-20261026.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "6aad3ee12fb301548474c683703afe69d7b53f2b577de85d448cfb8fbebeed07",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-REVIEWS-INSTALL-20261026.json",
   "request_sha256": "9f9fc7a75e4d6e89c41b600df79247df91e139df8c40772fd973351aed574c5c",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "dba1cee2b630a7585bdaf21592c589bd3d61bb6b218337164f6f66d72adbf0cf",
     "file_sha256": {
@@ -89,5 +112,5 @@
       "cloud/home_reviews_001/test_edit_home.py": "fc46824a04503262109283ed479492ed4f35de5facc3649dfbc444111fd792fb"
     }
   },
-  "updated_at": "2026-10-26T07:53:19Z"
+  "updated_at": "2026-10-26T08:06:58Z"
 }
