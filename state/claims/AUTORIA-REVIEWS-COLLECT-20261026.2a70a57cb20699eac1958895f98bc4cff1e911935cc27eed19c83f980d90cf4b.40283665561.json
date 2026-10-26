@@ -7,21 +7,23 @@
   "created_at": "2026-10-26T07:06:30Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-26T07:06:30Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-26T07:07:38Z",
+  "heartbeat_at": "2026-10-26T07:07:38Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40283665561",
     "task_id": "AUTORIA-REVIEWS-COLLECT-20261026",
     "task_sha256": "2a70a57cb20699eac1958895f98bc4cff1e911935cc27eed19c83f980d90cf4b"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-97383a4e3349a576-03020877cbc4966f",
   "receipt_path": "state/receipts/AUTORIA-REVIEWS-COLLECT-20261026.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "382408352e9c74ecbbef9c589e08eeae1024c6eb78109b6cf857a112d1965934",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AUTORIA-REVIEWS-COLLECT-20261026.json",
   "request_sha256": "2a70a57cb20699eac1958895f98bc4cff1e911935cc27eed19c83f980d90cf4b",
   "resource_locks": [
@@ -29,8 +31,24 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "ff8a407927b1b57b3b3fe62adced6d6d05f138b3",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91265265664,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 41.068
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-26T07:06:30Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "d9d6ccd888926cd95a15039f4eae2f8f4c9b9e60fe2abb1e674cdf9565cf8b50",
+    "file_sha256": {
+      "cloud/autoria_reviews_001/make_request.py": "775c177b0f43e6d62abb82853f8095b3caf3e9a1014de2394ba117c5d5d645b6",
+      "cloud/autoria_reviews_001/test_collect.py": "b9e9a97abde29bf1c01d442d49061ce3d2839f89a62badefc338b2b53e2f34d8"
+    }
+  },
+  "updated_at": "2026-10-26T07:07:38Z"
 }
