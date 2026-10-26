@@ -1,0 +1,2204 @@
+{
+  "mode": "probe",
+  "order_sources": {
+    "/home/Carix/client_order_inbox_20260927/ua_order/host.py": "\"\"\"Small composition root called by the four explicitly patched host files.\"\"\"\nfrom functools import lru_cache\nimport logging\n\nfrom . import bindings, runtime\nfrom .contract import Invalid, decode\nfrom .web import WebAdapter, mount\n\nUNAVAILABLE = object()\nlog = logging.getLogger(__name__)\n\n\n@lru_cache(maxsize=1)\ndef current():\n    try:\n        return runtime.load()\n    except Exception as exc:\n        # Isolate this optional feature from inventory and the existing bots.\n        # Details belong in the release preflight, never expose secrets to users.\n        log.error('Order feature unavailable; configuration check failed (%s)', type(exc).__name__)\n        return UNAVAILABLE\n\n\ndef customer_label():\n    return 'Подобрать авто под заказ' if current() else 'Подобрать под заказ из Кореи'\n\n\ndef register_customer(app):\n    loaded = current()\n    if loaded is UNAVAILABLE:\n        return _unavailable_customer(app)\n    return bindings.customer(app, loaded) if loaded else None\n\n\ndef crm_folder(staff, allowed_roles):\n    loaded = current()\n    return bindings.folder_button(staff, allowed_roles) if loaded is not None and loaded is not UNAVAILABLE else []\n\n\ndef register_team(app, *, who, db):\n    loaded = current()\n    if loaded is None or loaded is UNAVAILABLE:\n        return None\n    return bindings.team(\n        app, loaded, who=who, allowed_roles=(db.ROLE_OWNER, db.ROLE_ADMIN, db.ROLE_MANAGER),\n        recipients=lambda: bindings.manager_recipients(db),\n    )\n\n\ndef mount_application(application):\n    loaded = current()\n    if loaded is None:\n        return application\n    if loaded is UNAVAILABLE:\n        def unavailable(env, start_response):\n            body = b'{\"error\":\"temporarily_unavailable\"}'\n            start_response('503 Service Unavailable', [\n                ('Content-Type', 'application/json; charset=utf-8'),\n                ('Cache-Control', 'no-store'), ('Content-Length', str(len(body))),\n            ])\n            return [body]\n        return mount(application, unavailable)\n    adapter = WebAdapter(\n        loaded.service, loaded.sessions, origin=loaded.origin,\n        consent_text=loaded.consent_text, allow_request=loaded.allow_request,\n[REDACTED]\n    )\n    return mount(application, adapter)\n\n\ndef _unavailable_customer(app):\n    from telegram.ext import ApplicationHandlerStop, CallbackQueryHandler, CommandHandler, MessageHandler, filters\n\n    async def unavailable(update, context):\n        message = update.effective_message\n        if message and message.web_app_data:\n            try:\n                payload = decode(message.web_app_data.data.encode())\n            except Invalid:\n                return\n            if payload.get('t') != 'podbor' and payload.get('schema_version') != 'ua_order_request.v1':\n                return\n        text = 'Підбір тимчасово недоступний. Спробуйте пізніше.'\n        if update.callback_query:\n            await update.callback_query.answer(text, show_alert=True)\n        elif message:\n            await message.reply_text(text)\n        raise ApplicationHandlerStop\n\n    group = bindings.first_group(app)\n    app.add_handler(CommandHandler('order', unavailable), group=group)\n    app.add_handler(CallbackQueryHandler(unavailable,\n        pattern=bindings.CUSTOMER_ENTRY + r'|^order:open$|^ord:'), group=group)\n    app.add_handler(MessageHandler(filters.Regex(r'^/start(?:@\\w+)? (?:z_|or_)'), unavailable), group=group)\n    app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, unavailable), group=group)\n    return unavailable",
+    "/home/Carix/client_order_inbox_20260927/ua_order/telegram.py": "\"\"\"Adapters for the project's existing python-telegram-bot applications.\n\nNo bot is created here. Registration is explicit; the host supplies existing\nstaff authorization, rate limiting, media root and the approved consent text.\n\"\"\"\nimport asyncio\nimport copy\nfrom pathlib import Path\nimport re\nimport sqlite3\n\nfrom . import bot_flow, crm, legacy\nfrom .contract import Conflict, Invalid, decode\nfrom .storage import NotFound, StorageUnavailable\nfrom .service import Principal\n\n\ndef _markup(rows):\n    from telegram import InlineKeyboardButton, InlineKeyboardMarkup\n    return InlineKeyboardMarkup([[InlineKeyboardButton(label,callback_data=data) for label,data in row] for row in rows])\n\n\nasync def _menu(bot, chat, context, key, view, *, html=False):\n    from telegram.error import BadRequest\n    options=dict(chat_id=chat, text=view['text'], reply_markup=_markup(view['buttons']),\n                 parse_mode='HTML' if html else None)\n    message_id=context.user_data.get(key)\n    if message_id:\n        try:\n            await bot.edit_message_text(message_id=message_id,**options)\n            return\n        except BadRequest as exc:\n            reason=str(exc).lower()\n            if 'message is not modified' in reason:\n                return\n            if 'message to edit not found' not in reason:\n                raise\n    message=await bot.send_message(**options)\n    context.user_data[key]=message.message_id\n\n\nclass CustomerAdapter:\n    def __init__(self, service, strings, consent_text, *, media_root, allow_update,\n                 menu_callback=None):\n        self.service, self.strings, self.consent_text=service, strings, consent_text\n        self.media_root=Path(media_root).resolve()\n        self.allow_update=allow_update\n        self.menu_callback=menu_callback\n        if not callable(allow_update): raise ValueError('A rate limiter is required')\n\n    def _actor(self, update, context):\n        if not update.effective_user or not update.effective_chat or update.effective_chat.type != 'private':\n            raise Invalid('private_chat')\n        return Principal(f'telegram:{update.effective_user.id}', 'telegram_bot',\n                         f'{context.bot.id}:{update.update_id}')\n\n    async def show(self, update, context):\n        state=context.user_data['order_flow']\n        view=bot_flow.view(state,self.service.catalog,self.strings,self.consent_text)\n        if self.menu_callback:\n            label={'uk':'До головного меню','ru':'В главное меню','ka':'მთავარ მენიუში'}[state['data']['lang']]\n            view['buttons'].append([(label,self.menu_callback)])\n        await _menu(context.bot,update.effective_chat.id,context,'order_menu_id',view)\n        old=context.user_data.get('order_photo_id')\n        selected=view['photo']\n        if selected == context.user_data.get('order_photo_path'):\n            return\n        if old:\n            from telegram.error import BadRequest\n            try: await context.bot.delete_message(update.effective_chat.id,old)\n            except BadRequest as exc:\n                if 'message to delete not found' not in str(exc).lower(): raise\n            context.user_data.pop('order_photo_id',None)\n            context.user_data.pop('order_photo_path',None)\n        if selected:\n            path=(self.media_root/selected).resolve()\n            if not path.is_relative_to(self.media_root) or not path.is_file():\n                return  # The menu remains usable; deployment checks missing media.\n            cache=context.bot_data.setdefault('order_photo_cache',{})\n            model=self.service.catalog.model(state['data']['purchase_country_code'],state['data']['model'])\n            media=model['media']\n            caption=f'{media[\"alt\"][state[\"data\"][\"lang\"]]}\\n{media[\"artist\"]} · {media[\"license\"]}\\n{media[\"source\"]}'\n            if selected in cache:\n                message=await context.bot.send_photo(update.effective_chat.id,cache[selected],caption=caption)\n            else:\n                with path.open('rb') as photo:\n                    message=await context.bot.send_photo(update.effective_chat.id,photo,caption=caption)\n                cache[selected]=message.photo[-1].file_id\n            context.user_data['order_photo_id']=message.message_id\n            context.user_data['order_photo_path']=selected\n\n    async def start(self, update, context):\n        from telegram.ext import ApplicationHandlerStop\n        self._actor(update,context)\n        if update.callback_query:\n            await update.callback_query.answer()\n        if not self.allow_update(update): raise ApplicationHandlerStop\n        context.user_data.pop('podbor',None)\n        text='' if update.callback_query else (update.effective_message.text or '')\n        value=text.split(maxsplit=1)[1] if ' ' in text else ''\n        data=None\n        try:\n            if value.startswith('or_'):\n                data=await asyncio.to_thread(self.service.repository.redeem_draft,value[3:],f'telegram:{update.effective_user.id}')\n            elif value:\n                data=legacy.deep_link(value)\n            state=bot_flow.create(self.service.catalog,data=data)\n            if data:\n                state['step']='review' if value.startswith('or_') else 'models'\n            context.user_data['order_flow']=state\n            await self.show(update,context)\n        except NotFound:\n            await update.effective_message.reply_text(self.strings['uk']['stale'])\n        raise ApplicationHandlerStop\n\n    async def callback(self, update, context):\n        from telegram.ext import ApplicationHandlerStop\n        query=update.callback_query\n        actor=self._actor(update,context)\n        await query.answer()  # Acknowledge before database work or network photos.\n        state=context.user_data.get('order_flow')\n        parts=query.data.split(':',4)\n        if not state or len(parts)!=5 or parts[1]!=state['nonce'] or parts[2]!=str(state['revision']):\n            receipt=None\n            if len(parts)==5:\n                try:\n                    receipt=await asyncio.to_thread(self.service.repository.receipt_for_owner,parts[1],actor.owner)\n                except NotFound: pass\n            reply=f'{self.strings[\"uk\"][\"saved\"]}: {receipt[\"number\"]}' if receipt else self.strings['uk']['stale']\n            await context.bot.send_message(update.effective_chat.id,reply)\n            raise ApplicationHandlerStop\n        if not self.allow_update(update): raise ApplicationHandlerStop\n        try:\n            if parts[3]=='submit':\n                if state['step']!='review': raise Invalid('step')\n                if not state['receipt']:\n                    payload=copy.deepcopy(state['data'])\n                    payload['consent']={'accepted':True,'version':self.service.consent_version}\n                    state['receipt']=await asyncio.to_thread(self.service.submit,payload,actor)\n            else:\n                bot_flow.transition(state,parts[3],parts[4],self.service.catalog)\n            await self.show(update,context)\n        except (Invalid,Conflict,sqlite3.Error,StorageUnavailable):\n            await context.bot.send_message(update.effective_chat.id,self.strings[state['data']['lang']]['invalid'])\n        raise ApplicationHandlerStop\n\n    async def message(self, update, context):\n        from telegram.ext import ApplicationHandlerStop\n        state=context.user_data.get('order_flow')\n        if not state or state['receipt']: return\n        self._actor(update,context)\n        if not self.allow_update(update): raise ApplicationHandlerStop\n        try:\n            bot_flow.enter_text(state,update.effective_message.text or '')\n            await self.show(update,context)\n        except Invalid:\n            await update.effective_message.reply_text(self.strings[state['data']['lang']]['invalid'])\n        raise ApplicationHandlerStop\n\n    async def webapp(self, update, context):\n        from telegram.ext import ApplicationHandlerStop\n        actor=self._actor(update,context)\n        try:\n            payload=decode(update.effective_message.web_app_data.data.encode())\n            if payload.get('t')!='podbor' and payload.get('schema_version')!='ua_order_request.v1':\n                return\n            if not self.allow_update(update): raise ApplicationHandlerStop\n            if payload.get('t')=='podbor':\n                state=bot_flow.create(self.service.catalog,data=legacy.draft(payload,self.service.catalog))\n                state['step']='delivery_country' if state['data']['model'] or state['data']['other_model'] else 'models'\n            else:\n                state=bot_flow.create(self.service.catalog,data=payload)\n                state['receipt']=await asyncio.to_thread(self.service.submit,payload,actor)\n            context.user_data['order_flow']=state\n            await self.show(update,context)\n        except (Invalid,Conflict,sqlite3.Error,StorageUnavailable):\n            await update.effective_message.reply_text(self.strings['uk']['invalid'])\n        raise ApplicationHandlerStop\n\n    async def clear(self, update, context):\n        context.user_data.pop('order_flow',None)\n\n    def register(self, app, *, group, entry_pattern=None, exit_pattern=None,\n                 exit_commands=('start','cancel')):\n        from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler, filters\n        if app.concurrent_updates > 1:\n            raise ValueError('Bind to sequential updates or add the host per-user queue first')\n        if group in app.handlers:\n            raise ValueError('The host must reserve an unused handler group')\n        app.add_handler(CommandHandler('order',self.start),group=group)\n        app.add_handler(CallbackQueryHandler(self.start,pattern=r'^order:open$'),group=group)\n        if entry_pattern:\n            app.add_handler(CallbackQueryHandler(self.start,pattern=entry_pattern),group=group)\n        app.add_handler(MessageHandler(filters.Regex(r'^/start(?:@\\w+)? (?:z_|or_)'),self.start),group=group)\n        app.add_handler(CallbackQueryHandler(self.callback,pattern=r'^ord:'),group=group)\n        app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA,self.webapp),group=group)\n        app.add_handler(CommandHandler(exit_commands,self.clear),group=group)\n        if exit_pattern:\n            # Clear only our state, then let the existing host screen handle it.\n            app.add_handler(CallbackQueryHandler(self.clear,pattern=exit_pattern),group=group)\n        app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND,self.message),group=group)\n\n\nclass CRMAdapter:\n    def __init__(self, repository, catalog, *, authorize):\n        self.repository,self.catalog,self.authorize=repository,catalog,authorize\n\n    async def callback(self,update,context):\n        from telegram.ext import ApplicationHandlerStop\n        query=update.callback_query\n        # The live CRM role function is injected and consulted on every action.\n        if not self.authorize(update):\n            await query.answer('Недостаточно прав',show_alert=True)\n            raise ApplicationHandlerStop\n        await query.answer()\n        value=query.data\n        try:\n            if re.fullmatch(r'orders:list(?::[1-9][0-9]{0,17})?',value):\n                before=int(value.rsplit(':',1)[1]) if value.count(':')==2 else None\n                view=await asyncio.to_thread(crm.list_view,self.repository,self.catalog,before=before)\n            elif re.fullmatch(r'orders:open:[1-9][0-9]{0,17}',value):\n                row=await asyncio.to_thread(self.repository.detail,int(value.rsplit(':',1)[1]))\n                view=crm.detail_view(row,self.catalog)\n            else: raise NotFound()\n        except NotFound:\n            view={'text':'Заявка не найдена','buttons':[[('К заявкам','orders:list')]]}\n        await _menu(context.bot,update.effective_chat.id,context,'order_crm_menu_id',view,html=True)\n        raise ApplicationHandlerStop\n\n    def register(self,app,*,group):\n        from telegram.ext import CallbackQueryHandler\n        if group in app.handlers: raise ValueError('Reserve an unused handler group')\n        app.add_handler(CallbackQueryHandler(self.callback,pattern=r'^orders:'),group=group)",
+    "/home/Carix/ua_order/bot_flow.py": "\"\"\"Pure customer conversation: reusable with the existing Telegram library.\"\"\"\nfrom uuid import uuid4\nfrom copy import deepcopy\nfrom . import preference_summary\nfrom .preferences import directory\n\nfrom .catalog import COUNTRIES, LANGUAGES\nfrom .contract import Invalid, SCHEMA, text\n\nTEXT_STEPS = ('other_model', 'delivery_country', 'delivery_city', 'customer_name', 'contact', 'comment')\n\n\ndef create(catalog, *, data=None):\n    initial = dict(schema_version=SCHEMA, request_id=str(uuid4()), config_version=catalog.version,\n                   purchase_country_code='', model='', other_model='',\n                   budget={'code':'undecided','currency':'USD'}, vehicle_type='any',\n                   delivery_country='', delivery_city='', customer_name='', contact={},\n                   comment='', lang='uk', source_path='/telegram')\n    if data and data.get('schema_version') == 'ua_order_request.v2':\n        initial = deepcopy(data)\n    else:\n        initial.update(data or {})\n    # The request UUID lets the server recover an already committed receipt\n    # after a bot restart. It is never used as authorization on its own.\n    return dict(nonce=initial['request_id'], revision=0, step='country', data=initial, receipt=None)\n\n\ndef callback(state, action, value=''):\n    return f'ord:{state[\"nonce\"]}:{state[\"revision\"]}:{action}:{value}'\n\n\ndef transition(state, action, value, catalog):\n    data, step = state['data'], state['step']\n    if state['receipt']:\n        return\n    if data.get('schema_version') == 'ua_order_request.v2':\n        if action == 'lang' and value in LANGUAGES: data['lang'] = value\n        elif action == 'edit' and step == 'review': state['step'] = 'edit_web'\n        elif action == 'back' and step == 'edit_web': state['step'] = 'review'\n        else: raise Invalid('callback')\n        state['revision'] += 1\n        return\n    if action == 'lang' and value in LANGUAGES:\n        data['lang'] = value\n    elif action == 'country' and step == 'country' and value in COUNTRIES:\n        if value != data['purchase_country_code']:\n            data['model'] = ''\n        data['purchase_country_code'], state['step'] = value, 'models'\n    elif action == 'model' and step == 'models' and value in ('0','1','2','3','4'):\n        model = catalog.country(data['purchase_country_code'])['models'][int(value)]\n        data['model'], data['other_model'], state['step'] = model['key'], '', 'photo'\n    elif action == 'other' and step == 'models':\n        data['model'], state['step'] = '', 'other_model'\n    elif action == 'select' and step == 'photo':\n        state['step'] = 'budget'\n    elif action == 'budget' and step == 'budget' and value in catalog.choices('budgets'):\n        data['budget']['code'], state['step'] = value, 'vehicle_type'\n    elif action == 'type' and step == 'vehicle_type' and value in catalog.choices('vehicle_types'):\n        data['vehicle_type'], state['step'] = value, 'delivery_country'\n    elif action == 'skip' and step == 'comment':\n        data['comment'], state['step'] = '', 'review'\n    elif action == 'back':\n        state['step'] = {'models':'country','photo':'models','other_model':'models','budget':'models',\n                         'vehicle_type':'budget','delivery_country':'vehicle_type','delivery_city':'delivery_country',\n                         'customer_name':'delivery_city','contact':'customer_name','comment':'contact','review':'comment'}.get(step,'country')\n    elif action == 'edit' and step == 'review':\n        state['step'] = 'country'\n    else:\n        raise Invalid('callback')\n    state['revision'] += 1\n\n\ndef enter_text(state, value):\n    step, data = state['step'], state['data']\n    if step not in TEXT_STEPS or state['receipt']:\n        raise Invalid('step')\n    if step == 'contact':\n        contact = text(value, 'contact', 5, 80)\n        data['contact'] = {'telegram':contact} if contact.startswith('@') else {'phone':contact}\n    else:\n        maximum = 2000 if step == 'comment' else (120 if step == 'other_model' else 80)\n        data[step] = text(value, step, 0 if step == 'comment' else 2, maximum)\n    state['step'] = {'other_model':'budget','delivery_country':'delivery_city','delivery_city':'customer_name',\n                     'customer_name':'contact','contact':'comment','comment':'review'}[step]\n    state['revision'] += 1\n\n\ndef view(state, catalog, strings, consent_text):\n    data, step = state['data'], state['step']\n    lang = data['lang']; t = strings[lang]\n    rows, photo = [], None\n    def button(label, action, value=''):\n        return (label, callback(state,action,value))\n    if state['receipt']:\n        return dict(text=f'{t[\"saved\"]}: {state[\"receipt\"][\"number\"]}', buttons=[], photo=None)\n    if data.get('schema_version') == 'ua_order_request.v2':\n        labels = directory()['labels'][lang]\n        if step == 'edit_web':\n            title = labels['edit_web_help']\n            rows = [[(labels['edit_web'], f'https://www.uaart.com.ua/video/podbor.html?lang={lang}')], [button(t['back'],'back')]]\n        else:\n            title = t['review']+'\\n'+'\\n'.join(f'{k}: {v}' for k,v in preference_summary.pairs(data,catalog,lang))+'\\n\\n'+consent_text[lang]\n            rows = [[button(t['confirm'],'submit')],[button(t['edit'],'edit')]]\n        rows.append([button(label,'lang',code) for label,code in (('UA','uk'),('RU','ru'),('GE','ka'))])\n        return dict(text=title,parts=preference_summary.split_text(title),buttons=rows,photo=None)\n    if step == 'country':\n        title = t['choose_country']\n        buttons=[button(catalog.country(c)['name'][lang],'country',c) for c in COUNTRIES]\n        rows = [buttons[i:i+2] for i in range(0,8,2)]\n    elif step == 'models':\n        title = t['choose_model'] + ' · ' + catalog.country(data['purchase_country_code'])['name'][lang]\n        rows = [[button(m['labels'][lang],'model',str(i))] for i,m in enumerate(catalog.country(data['purchase_country_code'])['models'])]\n        rows.append([button(t['other'],'other')])\n    elif step == 'photo':\n        model = catalog.model(data['purchase_country_code'],data['model'])\n        title = model['labels'][lang] + ' · ' + t['under_order']\n        if model['media']['approval'] == 'approved':\n            photo = model['media']['path']\n        if not photo:\n            title += '\\n' + t['media_pending']\n        rows = [[button(t['select'],'select')]]\n    elif step in ('budget','vehicle_type'):\n        title=t[step]\n        options = catalog.choices('budgets' if step=='budget' else 'vehicle_types')\n        rows=[[button(labels[lang],'budget' if step=='budget' else 'type',code)] for code,labels in options.items()]\n    elif step == 'review':\n        model = catalog.model(data['purchase_country_code'],data['model']) if data['model'] else None\n        pairs=[('country',catalog.country(data['purchase_country_code'])['name'][lang]),\n               ('model',model['labels'][lang] if model else data['other_model']),\n               ('budget',catalog.choices('budgets')[data['budget']['code']][lang]),\n               ('vehicle_type',catalog.choices('vehicle_types')[data['vehicle_type']][lang]),\n               ('delivery_country',data['delivery_country']),('delivery_city',data['delivery_city']),\n               ('customer_name',data['customer_name']),('contact',', '.join(data['contact'].values())),('comment',data['comment'])]\n        title=t['review']+'\\n'+'\\n'.join(f'{t[k]}: {v}' for k,v in pairs if v)+'\\n\\n'+consent_text[lang]\n        rows=[[button(t['confirm'],'submit')],[button(t['edit'],'edit')]]\n    else:\n        title = t['other'] if step == 'other_model' else t[step]\n        if step == 'comment': rows.append([button(t['skip'],'skip')])\n    if step != 'country': rows.append([button(t['back'],'back')])\n    rows.append([button(label,'lang',code) for label,code in (('UA','uk'),('RU','ru'),('GE','ka'))])\n    return dict(text=title,buttons=rows,photo=photo)",
+    "/home/Carix/ua_order/contract.py": "\"\"\"Transport-independent validation; only the server supplies identity and time.\"\"\"\nimport hashlib\nimport json\nimport re\nimport unicodedata\nfrom uuid import UUID\n\nfrom .catalog import COUNTRIES, LANGUAGES\n\nSCHEMA = 'ua_order_request.v1'\nMAX_BYTES = 32 * 1024\nFIELDS = frozenset(('schema_version', 'request_id', 'config_version',\n                   'purchase_country_code', 'model', 'other_model', 'budget',\n                   'vehicle_type', 'delivery_country', 'delivery_city',\n                   'customer_name', 'contact', 'comment', 'lang', 'source_path', 'consent'))\n\n\nclass Invalid(ValueError):\n    def __init__(self, field):\n        self.field = field\n        super().__init__(field)\n\n\nclass Conflict(ValueError):\n    pass\n\n\ndef text(value, field, minimum=0, maximum=80):\n    if not isinstance(value, str):\n        raise Invalid(field)\n    value = unicodedata.normalize('NFC', value).strip()\n    if not minimum <= len(value) <= maximum or any(\n            unicodedata.category(c) in ('Cc', 'Cs') and c not in '\\n\\t' for c in value):\n        raise Invalid(field)\n    return value\n\n\ndef decode(raw):\n    if len(raw) > MAX_BYTES:\n        raise Invalid('body_size')\n    def unique(pairs):\n        result = {}\n        for k, v in pairs:\n            if k in result:\n                raise Invalid('duplicate_field')\n            result[k] = v\n        return result\n    try:\n        data = json.loads(raw, object_pairs_hook=unique,\n                          parse_constant=lambda _: (_ for _ in ()).throw(Invalid('json')))\n    except (ValueError, UnicodeError, RecursionError) as exc:\n        raise Invalid('json') from exc\n    if not isinstance(data, dict):\n        raise Invalid('json')\n    return data\n\n\ndef normalize(data, catalog, consent_version, *, verified_contact=False):\n    if isinstance(data, dict) and data.get('schema_version') == 'ua_order_request.v2':\n        from .preferences import normalize as normalize_preferences\n        return normalize_preferences(data, catalog, consent_version)\n    if not isinstance(data, dict) or set(data) - FIELDS:\n        raise Invalid('fields')\n    if data.get('schema_version') != SCHEMA:\n        raise Invalid('schema_version')\n    try:\n        request_id = str(UUID(data.get('request_id', '')))\n    except (ValueError, AttributeError, TypeError) as exc:\n        raise Invalid('request_id') from exc\n    if data.get('config_version') != catalog.version:\n        raise Invalid('config_version')\n    country = data.get('purchase_country_code')\n    lang = data.get('lang', 'uk')\n    if country not in COUNTRIES:\n        raise Invalid('purchase_country_code')\n    if lang not in LANGUAGES:\n        raise Invalid('lang')\n    model = text(data.get('model', ''), 'model', maximum=120)\n    other = text(data.get('other_model', ''), 'other_model', maximum=120)\n    if bool(model) == bool(other) or (model and not catalog.model(country, model)):\n        raise Invalid('model')\n    if other and len(other) < 2:\n        raise Invalid('other_model')\n    budget = data.get('budget')\n    if not isinstance(budget, dict) or set(budget) != {'code', 'currency'}:\n        raise Invalid('budget')\n    if not isinstance(budget['code'], str) or budget['code'] not in catalog.choices('budgets') or budget['currency'] != 'USD':\n        raise Invalid('budget')\n    if not isinstance(data.get('vehicle_type'), str) or data.get('vehicle_type') not in catalog.choices('vehicle_types'):\n        raise Invalid('vehicle_type')\n    contact = data.get('contact')\n    if not isinstance(contact, dict) or set(contact) - {'phone', 'whatsapp', 'telegram'}:\n        raise Invalid('contact')\n    clean_contact = {}\n    for key, raw in contact.items():\n        value = text(raw, 'contact', maximum=80)\n        if not value:\n            continue\n        if key in ('phone', 'whatsapp'):\n            if not re.fullmatch(r'\\+?[0-9 ()-]+', value):\n                raise Invalid('contact')\n            value = re.sub(r'[ ()-]', '', value)\n            if not re.fullmatch(r'\\+?[0-9]{7,15}', value):\n                raise Invalid('contact')\n        else:\n            value = value.removeprefix('@')\n            if not re.fullmatch(r'[a-zA-Z][a-zA-Z0-9_]{4,31}', value):\n                raise Invalid('contact')\n            value = value.lower()\n        clean_contact[key] = value\n    if not clean_contact and not verified_contact:\n        raise Invalid('contact')\n    consent = data.get('consent')\n    if (not consent_version or not isinstance(consent, dict)\n            or type(consent.get('accepted')) is not bool\n            or consent != {'accepted': True, 'version': consent_version}):\n        raise Invalid('consent')\n    # A path contains neither contact details, query strings nor an external URL.\n    source_path = data.get('source_path', '/video/podbor.html')\n    if source_path not in ('/podbor.html', '/site/podbor.html', '/video/podbor.html', '/telegram'):\n        raise Invalid('source_path')\n    return dict(schema_version=SCHEMA, request_id=request_id, config_version=catalog.version,\n                purchase_country_code=country, model=model, other_model=other,\n                budget=dict(budget), vehicle_type=data['vehicle_type'],\n                delivery_country=text(data.get('delivery_country'), 'delivery_country', 2),\n                delivery_city=text(data.get('delivery_city'), 'delivery_city', 2),\n                customer_name=text(data.get('customer_name'), 'customer_name', 2),\n                contact=clean_contact, comment=text(data.get('comment', ''), 'comment', maximum=2000),\n                lang=lang, source_path=source_path, consent=dict(data['consent']))\n\n\ndef encoded(data):\n    return json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(',', ':'))\n\n\ndef digest(data):\n    return hashlib.sha256(encoded(data).encode()).hexdigest()",
+    "/home/Carix/ua_order/crm.py": "\"\"\"A flat folder view; the adapter must authorize each open/refresh action.\"\"\"\nfrom html import escape\nfrom . import preference_summary\n\nFOLDER_LABEL = '📁 Авто под заказ'\n\n\ndef list_view(repository, catalog, *, before=None, menu_callback='menu'):\n    rows, cursor = repository.list_requests(before=before)\n    buttons = []\n    for row in rows:\n        data = row['data']\n        country = preference_summary.country_label(data, catalog)\n        # Telegram inline labels are plain text, never HTML.\n        name = ' '.join(data['customer_name'].split())\n        buttons.append([(f'{name[:45]} · {country}', f'orders:open:{row[\"id\"]}')])\n    if cursor:\n        buttons.append([('Далее →', f'orders:list:{cursor}')])\n    buttons.append([('Обновить', 'orders:list'), ('В меню', menu_callback)])\n    return {'text': 'Авто под заказ' if rows else 'Пока нет заявок', 'buttons': buttons}\n\n\ndef detail_view(row, catalog):\n    data = row['data']\n    if data.get('schema_version') == 'ua_order_request.v2':\n        return preference_summary.detail(row, catalog)\n    country = preference_summary.country_label(data, catalog)\n    model = catalog.model(data['purchase_country_code'], data['model']) if data['model'] else None\n    fields = [('Заявка', row['number']), ('Клиент', data['customer_name']),\n              ('Страна подбора', country), ('Модель', model['labels']['ru'] if model else data['other_model']),\n              ('Бюджет', catalog.choices('budgets')[data['budget']['code']]['ru']),\n              ('Тип', catalog.choices('vehicle_types')[data['vehicle_type']]['ru']),\n              ('Доставка', f'{data[\"delivery_country\"]}, {data[\"delivery_city\"]}')]\n    fields.extend((key, value) for key, value in data['contact'].items())\n    if row['telegram_user_id']:\n        fields.append(('Telegram ID', row['telegram_user_id']))\n    fields.append(('Пожелания', data['comment']))\n    return {'text': '\\n'.join(f'<b>{escape(key)}:</b> {escape(value)}' for key, value in fields if value),\n            'buttons': [[('К заявкам', 'orders:list')]]}",
+    "/home/Carix/ua_order/host.py": "\"\"\"Explicit composition for customer intake, the owner inbox and the website.\"\"\"\nfrom functools import lru_cache\nimport logging\n\nfrom . import bindings, runtime\nfrom .contract import Invalid, decode\nfrom .web import WebAdapter, mount\n\nUNAVAILABLE = object()\nlog = logging.getLogger(__name__)\n\n\n@lru_cache(maxsize=1)\ndef current():\n    try:\n        return runtime.load()\n    except Exception as exc:\n        # Isolate this optional feature from inventory and the existing bots.\n        # Details belong in the release preflight, never expose secrets to users.\n        log.error('Order feature unavailable; configuration check failed (%s)', type(exc).__name__)\n        return UNAVAILABLE\n\n\ndef customer_label():\n    return 'Подобрать авто под заказ' if current() else 'Подобрать под заказ из Кореи'\n\n\ndef register_customer(app, *, owner_id):\n    loaded = current()\n    if loaded is UNAVAILABLE:\n        return _unavailable_customer(app)\n    if loaded is None:\n        return None\n    adapter = bindings.customer(app, loaded)\n    bindings.owner_inbox(app, loaded, owner_id=owner_id)\n    return adapter\n\n\ndef mount_application(application):\n    loaded = current()\n    if loaded is None:\n        return application\n    if loaded is UNAVAILABLE:\n        def unavailable(env, start_response):\n            body = b'{\"error\":\"temporarily_unavailable\"}'\n            start_response('503 Service Unavailable', [\n                ('Content-Type', 'application/json; charset=utf-8'),\n                ('Cache-Control', 'no-store'), ('Content-Length', str(len(body))),\n            ])\n            return [body]\n        return mount(application, unavailable)\n    adapter = WebAdapter(\n        loaded.service, loaded.sessions, origin=loaded.origin,\n        consent_text=loaded.consent_text, allow_request=loaded.allow_request,\n[REDACTED]\n    )\n    return mount(application, adapter)\n\n\ndef _unavailable_customer(app):\n    from telegram.ext import ApplicationHandlerStop, CallbackQueryHandler, CommandHandler, MessageHandler, filters\n\n    async def unavailable(update, context):\n        message = update.effective_message\n        if message and message.web_app_data:\n            try:\n                payload = decode(message.web_app_data.data.encode())\n            except Invalid:\n                return\n            if payload.get('t') != 'podbor' and payload.get('schema_version') not in ('ua_order_request.v1', 'ua_order_request.v2'):\n                return\n        text = 'Підбір тимчасово недоступний. Спробуйте пізніше.'\n        if update.callback_query:\n            await update.callback_query.answer(text, show_alert=True)\n        elif message:\n            await message.reply_text(text)\n        raise ApplicationHandlerStop\n\n    group = bindings.first_group(app)\n    app.add_handler(CommandHandler('order', unavailable), group=group)\n    app.add_handler(CallbackQueryHandler(unavailable,\n        pattern=bindings.CUSTOMER_ENTRY + r'|^order:open$|^ord:'), group=group)\n    app.add_handler(MessageHandler(filters.Regex(r'^/start(?:@\\w+)? (?:z_|or_)'), unavailable), group=group)\n    app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, unavailable), group=group)\n    return unavailable",
+    "/home/Carix/ua_order/preferences.py": "\"\"\"Versioned preference catalogue and v2 validation; v1 enquiries stay readable.\"\"\"\nfrom datetime import datetime, timezone\nfrom decimal import Decimal, InvalidOperation\nfrom functools import lru_cache\nimport json\nfrom pathlib import Path\nimport re\nfrom uuid import UUID\n\nfrom .catalog import COUNTRIES, LANGUAGES\nfrom .contract import Invalid, text\n\nSCHEMA = 'ua_order_request.v2'\nCRITERIA = ('purchase_country_code', 'make', 'models', 'budget', 'vehicle_type',\n            'year', 'mileage', 'fuel', 'drive', 'engine', 'colours', 'purchase_timing')\nFIELDS = frozenset(('schema_version', 'request_id', 'config_version', 'preferences_version',\n    'purchase_country_code', 'purchase_country_other', 'make', 'make_other', 'model_mode',\n    'models', 'other_model', 'budget', 'vehicle_type', 'delivery_country', 'delivery_city',\n    'customer_name', 'contact', 'year', 'mileage', 'comment', 'preferences', 'lang', 'source_path', 'consent'))\n\n\n@lru_cache(maxsize=1)\ndef directory():\n    return json.loads(Path(__file__).with_name('preferences.json').read_text(encoding='utf-8'))\n\n\ndef export():\n    return dict(directory(), current_year=datetime.now(timezone.utc).year)\n\n\ndef pack(values):\n    \"\"\"Store new criteria once; keep the pre-existing comment field in place.\"\"\"\n    fields = directory()['preference_fields']\n    return {**{k:v for k,v in values.items() if k not in (*fields, 'priority')},\n            'preferences': {'schema_version': 1,\n                'criteria': {key:values[key] for key in fields}, 'priority': values['priority']}}\n\n\ndef form_values(data):\n    \"\"\"Read-only projection for shared validation and human-readable summaries.\"\"\"\n    preferences = data['preferences']\n    return {**{k:v for k,v in data.items() if k != 'preferences'},\n            **preferences['criteria'], 'priority': preferences['priority']}\n\n\ndef choice(value, values, field):\n    if not isinstance(value, str) or value not in values:\n        raise Invalid(field)\n    return value\n\n\ndef record(value, keys, field):\n    if not isinstance(value, dict) or set(value) != set(keys):\n        raise Invalid(field)\n    return value\n\n\ndef integer(value, field, minimum=0, maximum=5_000_000):\n    if isinstance(value, str):\n        value = value.strip()\n        # One consistent thousands separator; never infer a missing multiplier.\n        if not re.fullmatch(r'[0-9]+|[0-9]{1,3}([ .,\\u00a0\\u202f])[0-9]{3}(?:\\1[0-9]{3})*', value):\n            raise Invalid(field)\n        value = int(re.sub(r'[ .,\\u00a0\\u202f]', '', value))\n    if type(value) is not int or not minimum <= value <= maximum:\n        raise Invalid(field)\n    return value\n\n\ndef litres(value, field):\n    if type(value) not in (str, int, float) or not re.fullmatch(r'[0-9]{1,2}(?:[.,][0-9]{1,2})?', str(value).strip()):\n        raise Invalid(field)\n    try:\n        result = Decimal(str(value).strip().replace(',', '.'))\n    except InvalidOperation as exc:\n        raise Invalid(field) from exc\n    if not 0 < result <= 20:\n        raise Invalid(field)\n    return float(result)\n\n\ndef interval(value, field, convert, *, allow_any=False):\n    record(value, ('from', 'to', 'any') if allow_any else ('from', 'to'), field)\n    if allow_any and type(value['any']) is not bool:\n        raise Invalid(field)\n    if allow_any and value['any']:\n        if value['from'] is not None or value['to'] is not None:\n            raise Invalid(field)\n        return dict(value)\n    result = {bound: None if value[bound] is None else convert(value[bound], field) for bound in ('from', 'to')}\n    if all(x is None for x in result.values()) or (all(x is not None for x in result.values()) and result['from'] > result['to']):\n        raise Invalid(field)\n    if allow_any:\n        result['any'] = False\n    return result\n\n\ndef multiple(value, field, options):\n    if value is None or value == []:\n        return None\n    if not isinstance(value, list) or len(value) > len(options):\n        raise Invalid(field)\n    values = [choice(x, options, field) for x in value]\n    if len(set(values)) != len(values) or ('any' in values and len(values) != 1):\n        raise Invalid(field)\n    # Stable ordering makes retries and equality independent of click order.\n    return [x for x in options if x in values]\n\n\ndef normalize(data, catalog, consent_version):\n    if not isinstance(data, dict) or set(data) != FIELDS or data.get('schema_version') != SCHEMA:\n        raise Invalid('fields')\n    config = directory()\n    preferences = record(data['preferences'], ('schema_version', 'criteria', 'priority'), 'preferences')\n    if type(preferences['schema_version']) is not int or preferences['schema_version'] != 1:\n        raise Invalid('preferences')\n    record(preferences['criteria'], config['preference_fields'], 'preferences')\n    data = form_values(data)\n    if data['config_version'] != catalog.version or data['preferences_version'] != config['version']:\n        raise Invalid('config_version')\n    try:\n        request_id = str(UUID(data['request_id']))\n    except (ValueError, AttributeError, TypeError) as exc:\n        raise Invalid('request_id') from exc\n    result = dict(data, request_id=request_id)\n    result['lang'] = choice(data['lang'], LANGUAGES, 'lang')\n    result['source_path'] = choice(data['source_path'], ('/podbor.html','/site/podbor.html','/video/podbor.html','/telegram'), 'source_path')\n    if not consent_version or type(data['consent']) is not dict or data['consent'] != {'accepted': True, 'version': consent_version} or data['consent']['accepted'] is not True:\n        raise Invalid('consent')\n    country = choice(data['purchase_country_code'], (*COUNTRIES, 'other', 'help'), 'purchase_country_code')\n    result['purchase_country_other'] = text(data['purchase_country_other'], 'purchase_country_other', 2 if country == 'other' else 0, 120)\n    if country != 'other' and result['purchase_country_other']:\n        raise Invalid('purchase_country_other')\n    make = choice(data['make'], (*config['makes'], 'other', 'help'), 'make')\n    result['make_other'] = text(data['make_other'], 'make_other', 2 if make == 'other' else 0, 120)\n    if make != 'other' and result['make_other']:\n        raise Invalid('make_other')\n    mode = choice(data['model_mode'], ('selected', 'any', 'other', 'help'), 'models')\n    models = data['models']\n    if not isinstance(models, list) or len(models) > 100:\n        raise Invalid('models')\n    if mode == 'selected':\n        if make not in config['makes'] or not models:\n            raise Invalid('models')\n        result['models'] = multiple(models, 'models', config['makes'][make]['models'])\n    elif models:\n        raise Invalid('models')\n    if (make == 'help') != (mode == 'help'):\n        raise Invalid('models')\n    result['other_model'] = text(data['other_model'], 'other_model', 2 if mode == 'other' else 0, 120)\n    if mode != 'other' and result['other_model']:\n        raise Invalid('other_model')\n    budget = record(data['budget'], ('mode', 'max', 'currency'), 'budget')\n    choice(budget['currency'], ('USD',), 'budget')\n    choice(budget['mode'], ('limit', 'help'), 'budget')\n    result['budget'] = dict(budget)\n    if budget['mode'] == 'limit':\n        result['budget']['max'] = integer(budget['max'], 'budget', 1, 1_000_000_000)\n    elif budget['max'] is not None:\n        raise Invalid('budget')\n    result['vehicle_type'] = choice(data['vehicle_type'], config['options']['vehicle_type'], 'vehicle_type')\n    destination = choice(data['delivery_country'], config['options']['delivery_country'], 'delivery_country')\n    city = record(data['delivery_city'], ('code','other'), 'delivery_city')\n    choice(city['code'], (*config['cities'][destination], 'other'), 'delivery_city')\n    result['delivery_city'] = dict(code=city['code'], other=text(city['other'], 'delivery_city', 2 if city['code']=='other' else 0, 120))\n    if city['code'] != 'other' and city['other']:\n        raise Invalid('delivery_city')\n    result['customer_name'] = text(data['customer_name'], 'customer_name', 2, 80)\n    contact = record(data['contact'], ('method','value'), 'contact')\n    method = choice(contact['method'], config['options']['contact_method'], 'contact')\n    value = text(contact['value'], 'contact', 5, 80)\n    if method == 'telegram' and value.startswith('@'):\n        if not re.fullmatch(r'@[a-zA-Z][a-zA-Z0-9_]{4,31}', value):\n            raise Invalid('contact')\n        value = value.lower()\n    else:\n        if not re.fullmatch(r'\\+[0-9 ()-]+', value):\n            raise Invalid('contact')\n        value = re.sub(r'[ ()-]', '', value)\n        if not re.fullmatch(r'\\+[1-9][0-9]{6,14}', value):\n            raise Invalid('contact')\n    result['contact'] = dict(method=method, value=value)\n    result['year'] = interval(data['year'], 'year', lambda v,f:integer(v,f,1900,datetime.now(timezone.utc).year), allow_any=True)\n    mileage = record(data['mileage'], ('max','any'), 'mileage')\n    if type(mileage['any']) is not bool or (mileage['any'] and mileage['max'] is not None):\n        raise Invalid('mileage')\n    result['mileage'] = dict(any=mileage['any'], max=None if mileage['any'] else integer(mileage['max'], 'mileage'))\n    for field in ('fuel', 'drive', 'colours'):\n        result[field] = multiple(data[field], field, config['options'][field])\n    result['engine'] = None if data['engine'] is None else interval(data['engine'], 'engine', litres)\n    result['colour_other'] = text(data['colour_other'], 'colour_other', maximum=120)\n    if 'other' not in (result['colours'] or []) and result['colour_other']:\n        raise Invalid('colour_other')\n    result['purchase_timing'] = None if data['purchase_timing'] is None else choice(data['purchase_timing'], config['options']['purchase_timing'], 'purchase_timing')\n    result['comment'] = text(data['comment'], 'comment', maximum=3000)\n    priority = data['priority']\n    if not isinstance(priority, dict) or set(priority) - set(CRITERIA):\n        raise Invalid('priority')\n    result['priority'] = {k:choice(v, ('preferred','required_for_search'), 'priority') for k,v in priority.items()}\n    for field in CRITERIA:\n        if result[field] is None or result[field] in ('help','any') or result[field] == ['any']:\n            result['priority'].pop(field, None)\n        elif field in ('year','mileage') and result[field]['any']:\n            result['priority'].pop(field, None)\n        elif field == 'budget' and result[field]['mode']=='help':\n            result['priority'].pop(field, None)\n        elif field == 'models' and mode in ('help','any'):\n            result['priority'].pop(field, None)\n        else:\n            result['priority'].setdefault(field, 'preferred')\n    return pack(result)",
+    "/home/Carix/ua_order/telegram.py": "\"\"\"Adapters for the project's existing python-telegram-bot applications.\n\nNo bot is created here. Registration is explicit; the host supplies existing\nstaff authorization, rate limiting, media root and the approved consent text.\n\"\"\"\nimport asyncio\nimport copy\nfrom pathlib import Path\nimport re\nimport sqlite3\n\nfrom . import bot_flow, crm, legacy\nfrom .contract import Conflict, Invalid, decode\nfrom .storage import NotFound, StorageUnavailable\nfrom .service import Principal\n\n\ndef _markup(rows):\n    from telegram import InlineKeyboardButton, InlineKeyboardMarkup\n    return InlineKeyboardMarkup([[InlineKeyboardButton(label,**({'url':data} if data.startswith('https://www.uaart.com.ua/video/podbor.html?') else {'callback_data':data})) for label,data in row] for row in rows])\n\n\nasync def _menu(bot, chat, context, key, view, *, html=False):\n    from telegram.error import BadRequest\n    parts = view.get('parts', [view['text']])\n    previous = context.user_data.get(key+'_parts') or ([context.user_data[key]] if context.user_data.get(key) else [])\n    message_ids = []\n    for index, text in enumerate(parts):\n        options=dict(chat_id=chat, text=text,\n                     reply_markup=_markup(view['buttons']) if index==len(parts)-1 else None,\n                     parse_mode='HTML' if html else None)\n        message_id=previous[index] if index<len(previous) else None\n        if message_id:\n            try:\n                await bot.edit_message_text(message_id=message_id,**options)\n                message_ids.append(message_id)\n                continue\n            except BadRequest as exc:\n                reason=str(exc).lower()\n                if 'message is not modified' in reason:\n                    message_ids.append(message_id)\n                    continue\n                if 'message to edit not found' not in reason: raise\n        message=await bot.send_message(**options)\n        message_ids.append(message.message_id)\n        # Retain partial progress if a later part needs a network retry.\n        context.user_data[key+'_parts']=message_ids+previous[len(message_ids):]\n    for old in previous[len(parts):]:\n        try: await bot.delete_message(chat_id=chat,message_id=old)\n        except BadRequest as exc:\n            if 'message to delete not found' not in str(exc).lower(): raise\n    context.user_data[key]=message_ids[0]\n    context.user_data[key+'_parts']=message_ids\n\n\nclass CustomerAdapter:\n    def __init__(self, service, strings, consent_text, *, media_root, allow_update,\n                 menu_callback=None):\n        self.service, self.strings, self.consent_text=service, strings, consent_text\n        self.media_root=Path(media_root).resolve()\n        self.allow_update=allow_update\n        self.menu_callback=menu_callback\n        if not callable(allow_update): raise ValueError('A rate limiter is required')\n\n    def _actor(self, update, context):\n        if not update.effective_user or not update.effective_chat or update.effective_chat.type != 'private':\n            raise Invalid('private_chat')\n        return Principal(f'telegram:{update.effective_user.id}', 'telegram_bot',\n                         f'{context.bot.id}:{update.update_id}')\n\n    async def show(self, update, context):\n        state=context.user_data['order_flow']\n        view=bot_flow.view(state,self.service.catalog,self.strings,self.consent_text)\n        if self.menu_callback:\n            label={'uk':'До головного меню','ru':'В главное меню','ka':'მთავარ მენიუში'}[state['data']['lang']]\n            view['buttons'].append([(label,self.menu_callback)])\n        await _menu(context.bot,update.effective_chat.id,context,'order_menu_id',view)\n        old=context.user_data.get('order_photo_id')\n        selected=view['photo']\n        if selected == context.user_data.get('order_photo_path'):\n            return\n        if old:\n            from telegram.error import BadRequest\n            try: await context.bot.delete_message(update.effective_chat.id,old)\n            except BadRequest as exc:\n                if 'message to delete not found' not in str(exc).lower(): raise\n            context.user_data.pop('order_photo_id',None)\n            context.user_data.pop('order_photo_path',None)\n        if selected:\n            path=(self.media_root/selected).resolve()\n            if not path.is_relative_to(self.media_root) or not path.is_file():\n                return  # The menu remains usable; deployment checks missing media.\n            cache=context.bot_data.setdefault('order_photo_cache',{})\n            model=self.service.catalog.model(state['data']['purchase_country_code'],state['data']['model'])\n            media=model['media']\n            caption=f'{media[\"alt\"][state[\"data\"][\"lang\"]]}\\n{media[\"artist\"]} · {media[\"license\"]}\\n{media[\"source\"]}'\n            if selected in cache:\n                message=await context.bot.send_photo(update.effective_chat.id,cache[selected],caption=caption)\n            else:\n                with path.open('rb') as photo:\n                    message=await context.bot.send_photo(update.effective_chat.id,photo,caption=caption)\n                cache[selected]=message.photo[-1].file_id\n            context.user_data['order_photo_id']=message.message_id\n            context.user_data['order_photo_path']=selected\n\n    async def start(self, update, context):\n        from telegram.ext import ApplicationHandlerStop\n        self._actor(update,context)\n        if update.callback_query:\n            await update.callback_query.answer()\n        if not self.allow_update(update): raise ApplicationHandlerStop\n        context.user_data.pop('podbor',None)\n        text='' if update.callback_query else (update.effective_message.text or '')\n        value=text.split(maxsplit=1)[1] if ' ' in text else ''\n        data=None\n        try:\n            if value.startswith('or_'):\n                data=await asyncio.to_thread(self.service.repository.redeem_draft,value[3:],f'telegram:{update.effective_user.id}')\n            elif value:\n                data=legacy.deep_link(value)\n            state=bot_flow.create(self.service.catalog,data=data)\n            if data:\n                state['step']='review' if value.startswith('or_') else 'models'\n            context.user_data['order_flow']=state\n            await self.show(update,context)\n        except NotFound:\n            await update.effective_message.reply_text(self.strings['uk']['stale'])\n        raise ApplicationHandlerStop\n\n    async def callback(self, update, context):\n        from telegram.ext import ApplicationHandlerStop\n        query=update.callback_query\n        actor=self._actor(update,context)\n        await query.answer()  # Acknowledge before database work or network photos.\n        state=context.user_data.get('order_flow')\n        parts=query.data.split(':',4)\n        if not state or len(parts)!=5 or parts[1]!=state['nonce'] or parts[2]!=str(state['revision']):\n            receipt=None\n            if len(parts)==5:\n                try:\n                    receipt=await asyncio.to_thread(self.service.repository.receipt_for_owner,parts[1],actor.owner)\n                except NotFound: pass\n            reply=f'{self.strings[\"uk\"][\"saved\"]}: {receipt[\"number\"]}' if receipt else self.strings['uk']['stale']\n            await context.bot.send_message(update.effective_chat.id,reply)\n            raise ApplicationHandlerStop\n        if not self.allow_update(update): raise ApplicationHandlerStop\n        try:\n            if parts[3]=='submit':\n                if state['step']!='review': raise Invalid('step')\n                if not state['receipt']:\n                    payload=copy.deepcopy(state['data'])\n                    payload['consent']={'accepted':True,'version':self.service.consent_version}\n                    state['receipt']=await asyncio.to_thread(self.service.submit,payload,actor)\n            else:\n                bot_flow.transition(state,parts[3],parts[4],self.service.catalog)\n            await self.show(update,context)\n        except (Invalid,Conflict,sqlite3.Error,StorageUnavailable):\n            await context.bot.send_message(update.effective_chat.id,self.strings[state['data']['lang']]['invalid'])\n        raise ApplicationHandlerStop\n\n    async def message(self, update, context):\n        from telegram.ext import ApplicationHandlerStop\n        state=context.user_data.get('order_flow')\n        if not state or state['receipt']: return\n        self._actor(update,context)\n        if not self.allow_update(update): raise ApplicationHandlerStop\n        try:\n            bot_flow.enter_text(state,update.effective_message.text or '')\n            await self.show(update,context)\n        except Invalid:\n            await update.effective_message.reply_text(self.strings[state['data']['lang']]['invalid'])\n        raise ApplicationHandlerStop\n\n    async def webapp(self, update, context):\n        from telegram.ext import ApplicationHandlerStop\n        actor=self._actor(update,context)\n        try:\n            payload=decode(update.effective_message.web_app_data.data.encode())\n            if payload.get('t')!='podbor' and payload.get('schema_version') not in ('ua_order_request.v1','ua_order_request.v2'):\n                return\n            if not self.allow_update(update): raise ApplicationHandlerStop\n            if payload.get('t')=='podbor':\n                state=bot_flow.create(self.service.catalog,data=legacy.draft(payload,self.service.catalog))\n                state['step']='delivery_country' if state['data']['model'] or state['data']['other_model'] else 'models'\n            else:\n                state=bot_flow.create(self.service.catalog,data=payload)\n                state['receipt']=await asyncio.to_thread(self.service.submit,payload,actor)\n            context.user_data['order_flow']=state\n            await self.show(update,context)\n        except (Invalid,Conflict,sqlite3.Error,StorageUnavailable):\n            await update.effective_message.reply_text(self.strings['uk']['invalid'])\n        raise ApplicationHandlerStop\n\n    async def clear(self, update, context):\n        context.user_data.pop('order_flow',None)\n\n    def register(self, app, *, group, entry_pattern=None, exit_pattern=None,\n                 exit_commands=('start','cancel')):\n        from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler, filters\n        if app.concurrent_updates > 1:\n            raise ValueError('Bind to sequential updates or add the host per-user queue first')\n        if group in app.handlers:\n            raise ValueError('The host must reserve an unused handler group')\n        app.add_handler(CommandHandler('order',self.start),group=group)\n        app.add_handler(CallbackQueryHandler(self.start,pattern=r'^order:open$'),group=group)\n        if entry_pattern:\n            app.add_handler(CallbackQueryHandler(self.start,pattern=entry_pattern),group=group)\n        app.add_handler(MessageHandler(filters.Regex(r'^/start(?:@\\w+)? (?:z_|or_)'),self.start),group=group)\n        app.add_handler(CallbackQueryHandler(self.callback,pattern=r'^ord:'),group=group)\n        app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA,self.webapp),group=group)\n        app.add_handler(CommandHandler(exit_commands,self.clear),group=group)\n        if exit_pattern:\n            # Clear only our state, then let the existing host screen handle it.\n            app.add_handler(CallbackQueryHandler(self.clear,pattern=exit_pattern),group=group)\n        app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND,self.message),group=group)\n\n\nclass CRMAdapter:\n    def __init__(self, repository, catalog, *, authorize, menu_callback='menu'):\n        self.repository,self.catalog,self.authorize=repository,catalog,authorize\n        self.menu_callback=menu_callback\n\n    async def callback(self,update,context):\n        from telegram.ext import ApplicationHandlerStop\n        query=update.callback_query\n        # The host's authorization is checked before every database read.\n        if not self.authorize(update):\n            await query.answer('Недостаточно прав',show_alert=True)\n            raise ApplicationHandlerStop\n        await query.answer()\n        value=query.data\n        try:\n            if re.fullmatch(r'orders:list(?::[1-9][0-9]{0,17})?',value):\n                before=int(value.rsplit(':',1)[1]) if value.count(':')==2 else None\n                view=await asyncio.to_thread(crm.list_view,self.repository,self.catalog,\n                                             before=before,menu_callback=self.menu_callback)\n            elif re.fullmatch(r'orders:open:[1-9][0-9]{0,17}',value):\n                row=await asyncio.to_thread(self.repository.detail,int(value.rsplit(':',1)[1]))\n                view=crm.detail_view(row,self.catalog)\n            else: raise NotFound()\n        except NotFound:\n            view={'text':'Заявка не найдена','buttons':[[('К заявкам','orders:list')]]}\n        await _menu(context.bot,update.effective_chat.id,context,'order_crm_menu_id',view,html=True)\n        raise ApplicationHandlerStop\n\n    def register(self,app,*,group):\n        from telegram.ext import CallbackQueryHandler\n        if group in app.handlers: raise ValueError('Reserve an unused handler group')\n        app.add_handler(CallbackQueryHandler(self.callback,pattern=r'^orders:'),group=group)"
+  },
+  "remote_write_count": 0,
+  "run_id": "40263770753",
+  "safe_to_stop": true,
+  "source_hits": {
+    "/home/Carix/archive/old_versions/v181.py": {
+      "bytes": 8081,
+      "matches": [
+        {
+          "context": [
+            "",
+            "    put_manifest = koren + \"handoff/ASSET_MANIFEST.csv\"",
+            "    if put_manifest in imena:"
+          ],
+          "line": 70
+        }
+      ],
+      "sha256": "276dcc040c245b239bddbccb6322d2e6eae578e9ab3fdb612048fa9dd8d52e52"
+    },
+    "/home/Carix/autopilot_inbox/cloud/task_060/ai_intake_patch.py": {
+      "bytes": 4468,
+      "matches": [
+        {
+          "context": [
+            "        \"preview_text\": str,    # ready-to-send CRM preview (only if ok)",
+            "        \"route_to_staff\": False # ALWAYS False -- staff handoff is forbidden",
+            "      }"
+          ],
+          "line": 97
+        }
+      ],
+      "sha256": "0b9b5e8d9f75cfbe8f706aecd5a0bdee998665786ce731220f7cb2b7363195cf"
+    },
+    "/home/Carix/autopilot_inbox/cloud/task_060/patch_installer.py": {
+      "bytes": 8492,
+      "matches": [
+        {
+          "context": [
+            "        \"rollback_performed\": False, \"already_applied\": False,",
+            "        \"token_cost_per_photo\": 0, \"staff_handoff_removed\": False,",
+            "        \"files\": {}, \"backup_path\": None,"
+          ],
+          "line": 137
+        },
+        {
+          "context": [
+            "                raise InstallError(\"ALREADY_APPLIED_OCR_DRIFT\")",
+            "            receipt.update(status=\"PASS\", already_applied=True, staff_handoff_removed=True)",
+            "            return receipt"
+          ],
+          "line": 159
+        },
+        {
+          "context": [
+            "        receipt.update(",
+            "            status=\"PASS\", production_write=True, staff_handoff_removed=True,",
+            "            files={"
+          ],
+          "line": 187
+        }
+      ],
+      "sha256": "a8a1eca5ff8f99bfabf86e69f1942177223851be5243f3b5617e77f95e7e15d4"
+    },
+    "/home/Carix/autopilot_inbox/cloud/task_060/patch_payload.py": {
+      "bytes": 6741,
+      "matches": [
+        {
+          "context": [
+            "INTAKE_SOURCE = r'''async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):",
+            "    \"\"\"Owner intake is processed by AI only; no staff handoff.\"\"\"",
+            "    staff = who(update)"
+          ],
+          "line": 19
+        }
+      ],
+      "sha256": "b68200a358ec21bc042b50014898109e66cbd766a4f6fe9a0242566b7a9b2454"
+    },
+    "/home/Carix/autopilot_inbox/cloud/task_061/patch_installer.py": {
+      "bytes": 10383,
+      "matches": [
+        {
+          "context": [
+            "        \"photo_ai_tokens\": 0, \"text_ai_tokens\": 0,",
+            "        \"staff_handoff_removed\": False, \"auto_open_draft\": False,",
+            "        \"ua0009_publication_performed\": False, \"ua0009_readonly_check\": None,"
+          ],
+          "line": 176
+        },
+        {
+          "context": [
+            "                status=\"PASS\", already_applied=True,",
+            "                staff_handoff_removed=True, auto_open_draft=True,",
+            "            )"
+          ],
+          "line": 205
+        },
+        {
+          "context": [
+            "            status=\"PASS\", production_write=True,",
+            "            staff_handoff_removed=True, auto_open_draft=True,",
+            "            files={"
+          ],
+          "line": 241
+        }
+      ],
+      "sha256": "7f1fc3ccb143064681cf5469a917a347612f3094fbcdee17ddf1db8b07d60ae9"
+    },
+    "/home/Carix/cars_ui.py": {
+      "bytes": 208358,
+      "matches": [
+        {
+          "context": [
+            "",
+            "# UA-ART-LEGACY-EMERGENCY-SPEC-20260910: automatic queue handoff only.",
+            "_ua_emergency_spec_tasks = set()"
+          ],
+          "line": 4043
+        }
+      ],
+      "sha256": "19adbff34be18402897ca4b54889c9361bcdd261f329218e147b72f8031f9ad6"
+    },
+    "/home/Carix/client_order_inbox_20260927/team_bot.py": {
+      "bytes": 65626,
+      "matches": [
+        {
+          "context": [
+            "async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):",
+            "    \"\"\"Owner intake is processed by AI only; no staff handoff.\"\"\"",
+            "    staff = who(update)"
+          ],
+          "line": 284
+        }
+      ],
+      "sha256": "09b789a06f91a9a2b50dfb591e40298e6d524a6b303de5509da4c2938a6758b9"
+    },
+    "/home/Carix/client_order_inbox_20260927/ua_order/host.py": {
+      "bytes": 3642,
+      "matches": [
+        {
+          "context": [
+            "                return",
+            "            if payload.get('t') != 'podbor' and payload.get('schema_version') != 'ua_order_request.v1':",
+            "                return"
+          ],
+          "line": 81
+        }
+      ],
+      "sha256": "469058d52dc0191d216339c2b6fd618ca5e169571e3b47acf4749ddf5547bde0"
+    },
+    "/home/Carix/client_order_inbox_20260927/ua_order/telegram.py": {
+      "bytes": 12245,
+      "matches": [
+        {
+          "context": [
+            "                    payload=copy.deepcopy(state['data'])",
+            "                    payload['consent']={'accepted':True,'version':self.service.consent_version}",
+            "                    state['receipt']=await asyncio.to_thread(self.service.submit,payload,actor)"
+          ],
+          "line": 138
+        },
+        {
+          "context": [
+            "            payload=decode(update.effective_message.web_app_data.data.encode())",
+            "            if payload.get('t')!='podbor' and payload.get('schema_version')!='ua_order_request.v1':",
+            "                return"
+          ],
+          "line": 165
+        }
+      ],
+      "sha256": "e57e3f5d2f6182293dbdd1870889ac5ee4b6f2f5ff42863a07f11cf480d180be"
+    },
+    "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/code_handoff_v2.py": {
+      "bytes": 24787,
+      "matches": [
+        {
+          "context": [
+            "#!/usr/bin/env python3",
+            "\"\"\"In-process, fail-closed complete17 code handoff. No CLI or application import.",
+            ""
+          ],
+          "line": 2
+        },
+        {
+          "context": [
+            "        self.directory = _directory(lease.directory)",
+            "        self.transaction = self.directory / 'code-handoff'",
+            "        self.journal_path = self.transaction / 'journal.jsonl'"
+          ],
+          "line": 162
+        }
+      ],
+      "sha256": "08e013756a1ffe89043904efeb878d1d7318d67cdb5c628573f3b26cb454fc55"
+    },
+    "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/handoff_v2_server_gate.py": {
+      "bytes": 11395,
+      "matches": [
+        {
+          "context": [
+            "",
+            "STAGE = Path(\"/home/Carix/code_handoff_v2_gate_20260909\")",
+            "BUNDLE_FILES = {"
+          ],
+          "line": 33
+        },
+        {
+          "context": [
+            "BUNDLE_FILES = {",
+            "    \"server_fence.py\", \"code_handoff_v2.py\", \"test_code_handoff_v2.py\", \"handoff_v2_server_gate.py\",",
+            "}"
+          ],
+          "line": 35
+        },
+        {
+          "context": [
+            "        raise RuntimeError(\"BUNDLE_FILE_SHA\")",
+            "    if set(manifest.get(\"test_counts\", {})) != {\"test_code_handoff_v2.py\"}:",
+            "        raise RuntimeError(\"BUNDLE_TEST_COUNT_SCHEMA\")"
+          ],
+          "line": 85
+        },
+        {
+          "context": [
+            "    suite = unittest.TestSuite()",
+            "    suite.addTests(unittest.TestLoader().discover(str(bundle), pattern=\"test_code_handoff_v2.py\"))",
+            "    expected = sum(manifest[\"test_counts\"].values())"
+          ],
+          "line": 164
+        },
+        {
+          "context": [
+            "    output.mkdir(mode=0o700)",
+            "    child = subprocess.run([sys.executable, \"-I\", \"-B\", str(bundle / \"handoff_v2_server_gate.py\"), \"--child\", str(output)],",
+            "        cwd=bundle, env={\"PATH\": \"/usr/bin:/bin\", \"PYTHONDONTWRITEBYTECODE\": \"1\"},"
+          ],
+          "line": 209
+        }
+      ],
+      "sha256": "3e4407e6c6980ae87daace9e9c7cca96e700a8579cd0f11db91d0797c7f05995"
+    },
+    "/home/Carix/code_handoff_v2_gate_20260909/bundle-v2/test_code_handoff_v2.py": {
+      "bytes": 13351,
+      "matches": [
+        {
+          "context": [
+            "from unittest.mock import patch",
+            "import code_handoff_v2 as h",
+            "import server_fence as sf"
+          ],
+          "line": 11
+        }
+      ],
+      "sha256": "c16251f23fd956b95b0dc81f98e69e1a70eac96f6eaa5c347f1598f3e304c367"
+    },
+    "/home/Carix/code_handoff_v3_gate_20260909/bundle-v3/code_handoff_v3.py": {
+      "bytes": 26533,
+      "matches": [
+        {
+          "context": [
+            "#!/usr/bin/env python3",
+            "\"\"\"In-process, fail-closed complete17 code handoff. No CLI or application import.",
+            ""
+          ],
+          "line": 2
+        },
+        {
+          "context": [
+            "        self.directory = _directory(lease.directory)",
+            "        self.transaction = self.directory / 'code-handoff'",
+            "        self.journal_path = self.transaction / 'journal.jsonl'"
+          ],
+          "line": 162
+        }
+      ],
+      "sha256": "200ca169be01cb12bf6cdaa8425acdb2279e1bfc6fd9306d51300148043f9ed1"
+    },
+    "/home/Carix/code_handoff_v3_gate_20260909/bundle-v3/handoff_v3_server_gate.py": {
+      "bytes": 11395,
+      "matches": [
+        {
+          "context": [
+            "",
+            "STAGE = Path(\"/home/Carix/code_handoff_v3_gate_20260909\")",
+            "BUNDLE_FILES = {"
+          ],
+          "line": 33
+        },
+        {
+          "context": [
+            "BUNDLE_FILES = {",
+            "    \"server_fence.py\", \"code_handoff_v3.py\", \"test_code_handoff_v3.py\", \"handoff_v3_server_gate.py\",",
+            "}"
+          ],
+          "line": 35
+        },
+        {
+          "context": [
+            "        raise RuntimeError(\"BUNDLE_FILE_SHA\")",
+            "    if set(manifest.get(\"test_counts\", {})) != {\"test_code_handoff_v3.py\"}:",
+            "        raise RuntimeError(\"BUNDLE_TEST_COUNT_SCHEMA\")"
+          ],
+          "line": 85
+        },
+        {
+          "context": [
+            "    suite = unittest.TestSuite()",
+            "    suite.addTests(unittest.TestLoader().discover(str(bundle), pattern=\"test_code_handoff_v3.py\"))",
+            "    expected = sum(manifest[\"test_counts\"].values())"
+          ],
+          "line": 164
+        },
+        {
+          "context": [
+            "    output.mkdir(mode=0o700)",
+            "    child = subprocess.run([sys.executable, \"-I\", \"-B\", str(bundle / \"handoff_v3_server_gate.py\"), \"--child\", str(output)],",
+            "        cwd=bundle, env={\"PATH\": \"/usr/bin:/bin\", \"PYTHONDONTWRITEBYTECODE\": \"1\"},"
+          ],
+          "line": 209
+        }
+      ],
+      "sha256": "2a2d2b5462edb280e134d94598bae12255608ed761033ef725cbde1c658cec85"
+    },
+    "/home/Carix/code_handoff_v3_gate_20260909/bundle-v3/test_code_handoff_v3.py": {
+      "bytes": 16488,
+      "matches": [
+        {
+          "context": [
+            "from unittest.mock import patch",
+            "import code_handoff_v3 as h",
+            "import server_fence as sf"
+          ],
+          "line": 11
+        }
+      ],
+      "sha256": "e24b11ae630b976c9cd794893172035ead72510dd8a8b530fc5b317963b208f7"
+    },
+    "/home/Carix/order_qa_33f3623/cloud/order_eight_countries_001/deploy.py": {
+      "bytes": 8330,
+      "matches": [
+        {
+          "context": [
+            "BASE = Path('/home/Carix')",
+            "STATE = BASE/'order_requests'",
+            "MODULE = BASE/'ua_order'"
+          ],
+          "line": 23
+        },
+        {
+          "context": [
+            "    # This is not represented as a separate company privacy policy.",
+            "    settings.update(enabled=True, consent_version='ua-order-contact-20260927-v1',",
+            "                    consent_text={lang: strings[lang]['consent'] for lang in ('uk','ru','ka')})"
+          ],
+          "line": 82
+        },
+        {
+          "context": [
+            "                    'consent_source': 'existing localized strings.json consent labels',",
+            "                    'consent_version': settings['consent_version']}",
+            "        write_json(backup/'deployment.json', manifest)"
+          ],
+          "line": 94
+        },
+        {
+          "context": [
+            "                                ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))",
+            "                private = staging/'order_requests'",
+            "                private.mkdir(mode=0o700)"
+          ],
+          "line": 110
+        }
+      ],
+      "sha256": "4d748e1915b73488cb9b819c8ca9237014ac67ce6b08fc81b0d8ff4610d8e0dc"
+    },
+    "/home/Carix/order_qa_33f3623/cloud/order_eight_countries_001/release_check.py": {
+      "bytes": 6470,
+      "matches": [
+        {
+          "context": [
+            "    feature_paths = {str(path): path.exists() for path in (",
+            "        Path('/home/Carix/ua_order'), Path('/home/Carix/order_requests'),",
+            "        Path('/home/Carix/video/order'))}"
+          ],
+          "line": 68
+        }
+      ],
+      "sha256": "1ae0ff9be03b71762528f53fc9eb80da5579d562ef84017b1817f9129ef30ffa"
+    },
+    "/home/Carix/order_qa_33f3623/cloud/task_060/ai_intake_patch.py": {
+      "bytes": 4468,
+      "matches": [
+        {
+          "context": [
+            "        \"preview_text\": str,    # ready-to-send CRM preview (only if ok)",
+            "        \"route_to_staff\": False # ALWAYS False -- staff handoff is forbidden",
+            "      }"
+          ],
+          "line": 97
+        }
+      ],
+      "sha256": "0b9b5e8d9f75cfbe8f706aecd5a0bdee998665786ce731220f7cb2b7363195cf"
+    },
+    "/home/Carix/order_qa_33f3623/cloud/task_060/install_controller.py": {
+      "bytes": 12524,
+      "matches": [
+        {
+          "context": [
+            "            raise ControllerError(\"SAFETY_MARKER_INVALID:\" + key)",
+            "    if value.get(\"staff_handoff_removed\") is not True or value.get(\"token_cost_per_photo\") != 0:",
+            "        raise ControllerError(\"FUNCTIONAL_MARKER_INVALID\")"
+          ],
+          "line": 188
+        },
+        {
+          "context": [
+            "            \"TASK_ID: task_060\\nROUND: 2\\nCLAUDE_STATUS: DONE\\n\"",
+            "            \"CURRENT_ACTION: Token-free local OCR installed; staff handoff removed; bot restarted.\\n\"",
+            "            \"FILES_CREATED: cloud/task_060/evidence/install.json, cloud/task_060/INSTALL_REPORT.md\\n\""
+          ],
+          "line": 210
+        }
+      ],
+      "sha256": "5064fcd94b318f931d4c8217fca72ddc18e000e6a2c26ec19fbdcdbd81f1e65a"
+    },
+    "/home/Carix/order_qa_33f3623/cloud/task_060/patch_installer.py": {
+      "bytes": 8492,
+      "matches": [
+        {
+          "context": [
+            "        \"rollback_performed\": False, \"already_applied\": False,",
+            "        \"token_cost_per_photo\": 0, \"staff_handoff_removed\": False,",
+            "        \"files\": {}, \"backup_path\": None,"
+          ],
+          "line": 137
+        },
+        {
+          "context": [
+            "                raise InstallError(\"ALREADY_APPLIED_OCR_DRIFT\")",
+            "            receipt.update(status=\"PASS\", already_applied=True, staff_handoff_removed=True)",
+            "            return receipt"
+          ],
+          "line": 159
+        },
+        {
+          "context": [
+            "        receipt.update(",
+            "            status=\"PASS\", production_write=True, staff_handoff_removed=True,",
+            "            files={"
+          ],
+          "line": 187
+        }
+      ],
+      "sha256": "a8a1eca5ff8f99bfabf86e69f1942177223851be5243f3b5617e77f95e7e15d4"
+    },
+    "/home/Carix/order_qa_33f3623/cloud/task_060/patch_payload.py": {
+      "bytes": 6741,
+      "matches": [
+        {
+          "context": [
+            "INTAKE_SOURCE = r'''async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):",
+            "    \"\"\"Owner intake is processed by AI only; no staff handoff.\"\"\"",
+            "    staff = who(update)"
+          ],
+          "line": 19
+        }
+      ],
+      "sha256": "b68200a358ec21bc042b50014898109e66cbd766a4f6fe9a0242566b7a9b2454"
+    },
+    "/home/Carix/order_qa_33f3623/cloud/task_061/install_controller.py": {
+      "bytes": 13404,
+      "matches": [
+        {
+          "context": [
+            "        raise ControllerError(\"TOKEN_MARKER_INVALID\")",
+            "    if value.get(\"staff_handoff_removed\") is not True or value.get(\"auto_open_draft\") is not True:",
+            "        raise ControllerError(\"FUNCTIONAL_MARKER_INVALID\")"
+          ],
+          "line": 220
+        }
+      ],
+      "sha256": "0341cf3c41e0cc544f8d813dead1147dcd8585bfd834e442bae55e267388ae19"
+    },
+    "/home/Carix/order_qa_33f3623/cloud/task_061/patch_installer.py": {
+      "bytes": 10383,
+      "matches": [
+        {
+          "context": [
+            "        \"photo_ai_tokens\": 0, \"text_ai_tokens\": 0,",
+            "        \"staff_handoff_removed\": False, \"auto_open_draft\": False,",
+            "        \"ua0009_publication_performed\": False, \"ua0009_readonly_check\": None,"
+          ],
+          "line": 176
+        },
+        {
+          "context": [
+            "                status=\"PASS\", already_applied=True,",
+            "                staff_handoff_removed=True, auto_open_draft=True,",
+            "            )"
+          ],
+          "line": 205
+        },
+        {
+          "context": [
+            "            status=\"PASS\", production_write=True,",
+            "            staff_handoff_removed=True, auto_open_draft=True,",
+            "            files={"
+          ],
+          "line": 241
+        }
+      ],
+      "sha256": "7f1fc3ccb143064681cf5469a917a347612f3094fbcdee17ddf1db8b07d60ae9"
+    },
+    "/home/Carix/order_qa_33f3623/cloud/task_105_fast_pipeline_phase0/phase0_audit.py": {
+      "bytes": 33205,
+      "matches": [
+        {
+          "context": [
+            "        \"Transport durability\": (\"transport\", \"pythonanywhere\", \"remote\"),",
+            "        \"API/model contract\": (\"sonnet\", \"api\", \"evidence handoff\", \"receipt\"),",
+            "        \"Repeated version launches\": (\" v3\", \" v4\", \" v5\", \" v6\", \" v7\", \" v8\"),"
+          ],
+          "line": 358
+        }
+      ],
+      "sha256": "63c13f4732fee20dd6e5f3ac1c2230ebb876c39f4a23d63304df7f42a3a818c3"
+    },
+    "/home/Carix/order_qa_33f3623/cloud/ua0002_delete_probe/controller.py": {
+      "bytes": 20612,
+      "matches": [
+        {
+          "context": [
+            "    '_lock_fd', 'authority_scope', 'recovery_scope', 'current_row', 'row_sha',",
+            "    '_paths', 'retire_lists', 'handoff_spec_once', 'transition_operation',",
+            "    'catalog_snapshot', 'patch_home', 'patch_catalog', 'sobrat_katalog',"
+          ],
+          "line": 56
+        }
+      ],
+      "sha256": "f43d488892e676e57659580972eba9583b80b30408a7e226d68cb1d96164d844"
+    },
+    "/home/Carix/order_qa_33f3623/cloud/ua0002_delete_probe2/controller.py": {
+      "bytes": 22583,
+      "matches": [
+        {
+          "context": [
+            "    '_lock_fd', 'authority_scope', 'recovery_scope', 'current_row', 'row_sha',",
+            "    '_paths', 'retire_lists', 'handoff_spec_once', 'transition_operation',",
+            "    'catalog_snapshot', 'patch_home', 'patch_catalog', 'sobrat_katalog',"
+          ],
+          "line": 49
+        }
+      ],
+      "sha256": "53fe145aea0a26908df8605f6d502bb6d30e10b59cbb812b3f9735334081be1e"
+    },
+    "/home/Carix/order_release_check_20260927T1209/sources/team_bot.py": {
+      "bytes": 65247,
+      "matches": [
+        {
+          "context": [
+            "async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):",
+            "    \"\"\"Owner intake is processed by AI only; no staff handoff.\"\"\"",
+            "    staff = who(update)"
+          ],
+          "line": 279
+        }
+      ],
+      "sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+    },
+    "/home/Carix/order_release_check_20260927T1226_install/sources/team_bot.py": {
+      "bytes": 65247,
+      "matches": [
+        {
+          "context": [
+            "async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):",
+            "    \"\"\"Owner intake is processed by AI only; no staff handoff.\"\"\"",
+            "    staff = who(update)"
+          ],
+          "line": 279
+        }
+      ],
+      "sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+    },
+    "/home/Carix/order_route_inspect.py": {
+      "bytes": 1872,
+      "matches": [
+        {
+          "context": [
+            "def inspect(cursor):",
+            "    cursor.execute('SELECT COUNT(*) AS count FROM order_requests')",
+            "    print('REQUESTS', cursor.fetchone())"
+          ],
+          "line": 32
+        },
+        {
+          "context": [
+            "    print('REQUESTS', cursor.fetchone())",
+            "    cursor.execute('SELECT id, request_id, created_at FROM order_requests ORDER BY id LIMIT 1')",
+            "    print('FIRST', cursor.fetchone())"
+          ],
+          "line": 34
+        }
+      ],
+      "sha256": "147326f4372443dbe4fc86bfe8b8b4231c0c6aa46f9a5c1704811063e1f71c18"
+    },
+    "/home/Carix/order_ui_78cebee/cloud/order_eight_countries_001/deploy.py": {
+      "bytes": 8330,
+      "matches": [
+        {
+          "context": [
+            "BASE = Path('/home/Carix')",
+            "STATE = BASE/'order_requests'",
+            "MODULE = BASE/'ua_order'"
+          ],
+          "line": 23
+        },
+        {
+          "context": [
+            "    # This is not represented as a separate company privacy policy.",
+            "    settings.update(enabled=True, consent_version='ua-order-contact-20260927-v1',",
+            "                    consent_text={lang: strings[lang]['consent'] for lang in ('uk','ru','ka')})"
+          ],
+          "line": 82
+        },
+        {
+          "context": [
+            "                    'consent_source': 'existing localized strings.json consent labels',",
+            "                    'consent_version': settings['consent_version']}",
+            "        write_json(backup/'deployment.json', manifest)"
+          ],
+          "line": 94
+        },
+        {
+          "context": [
+            "                                ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))",
+            "                private = staging/'order_requests'",
+            "                private.mkdir(mode=0o700)"
+          ],
+          "line": 110
+        }
+      ],
+      "sha256": "4d748e1915b73488cb9b819c8ca9237014ac67ce6b08fc81b0d8ff4610d8e0dc"
+    },
+    "/home/Carix/order_ui_78cebee/cloud/order_eight_countries_001/release_check.py": {
+      "bytes": 6470,
+      "matches": [
+        {
+          "context": [
+            "    feature_paths = {str(path): path.exists() for path in (",
+            "        Path('/home/Carix/ua_order'), Path('/home/Carix/order_requests'),",
+            "        Path('/home/Carix/video/order'))}"
+          ],
+          "line": 68
+        }
+      ],
+      "sha256": "1ae0ff9be03b71762528f53fc9eb80da5579d562ef84017b1817f9129ef30ffa"
+    },
+    "/home/Carix/order_ui_78cebee/cloud/task_060/ai_intake_patch.py": {
+      "bytes": 4468,
+      "matches": [
+        {
+          "context": [
+            "        \"preview_text\": str,    # ready-to-send CRM preview (only if ok)",
+            "        \"route_to_staff\": False # ALWAYS False -- staff handoff is forbidden",
+            "      }"
+          ],
+          "line": 97
+        }
+      ],
+      "sha256": "0b9b5e8d9f75cfbe8f706aecd5a0bdee998665786ce731220f7cb2b7363195cf"
+    },
+    "/home/Carix/order_ui_78cebee/cloud/task_060/install_controller.py": {
+      "bytes": 12524,
+      "matches": [
+        {
+          "context": [
+            "            raise ControllerError(\"SAFETY_MARKER_INVALID:\" + key)",
+            "    if value.get(\"staff_handoff_removed\") is not True or value.get(\"token_cost_per_photo\") != 0:",
+            "        raise ControllerError(\"FUNCTIONAL_MARKER_INVALID\")"
+          ],
+          "line": 188
+        },
+        {
+          "context": [
+            "            \"TASK_ID: task_060\\nROUND: 2\\nCLAUDE_STATUS: DONE\\n\"",
+            "            \"CURRENT_ACTION: Token-free local OCR installed; staff handoff removed; bot restarted.\\n\"",
+            "            \"FILES_CREATED: cloud/task_060/evidence/install.json, cloud/task_060/INSTALL_REPORT.md\\n\""
+          ],
+          "line": 210
+        }
+      ],
+      "sha256": "5064fcd94b318f931d4c8217fca72ddc18e000e6a2c26ec19fbdcdbd81f1e65a"
+    },
+    "/home/Carix/order_ui_78cebee/cloud/task_060/patch_installer.py": {
+      "bytes": 8492,
+      "matches": [
+        {
+          "context": [
+            "        \"rollback_performed\": False, \"already_applied\": False,",
+            "        \"token_cost_per_photo\": 0, \"staff_handoff_removed\": False,",
+            "        \"files\": {}, \"backup_path\": None,"
+          ],
+          "line": 137
+        },
+        {
+          "context": [
+            "                raise InstallError(\"ALREADY_APPLIED_OCR_DRIFT\")",
+            "            receipt.update(status=\"PASS\", already_applied=True, staff_handoff_removed=True)",
+            "            return receipt"
+          ],
+          "line": 159
+        },
+        {
+          "context": [
+            "        receipt.update(",
+            "            status=\"PASS\", production_write=True, staff_handoff_removed=True,",
+            "            files={"
+          ],
+          "line": 187
+        }
+      ],
+      "sha256": "a8a1eca5ff8f99bfabf86e69f1942177223851be5243f3b5617e77f95e7e15d4"
+    },
+    "/home/Carix/order_ui_78cebee/cloud/task_060/patch_payload.py": {
+      "bytes": 6741,
+      "matches": [
+        {
+          "context": [
+            "INTAKE_SOURCE = r'''async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):",
+            "    \"\"\"Owner intake is processed by AI only; no staff handoff.\"\"\"",
+            "    staff = who(update)"
+          ],
+          "line": 19
+        }
+      ],
+      "sha256": "b68200a358ec21bc042b50014898109e66cbd766a4f6fe9a0242566b7a9b2454"
+    },
+    "/home/Carix/order_ui_78cebee/cloud/task_061/install_controller.py": {
+      "bytes": 13404,
+      "matches": [
+        {
+          "context": [
+            "        raise ControllerError(\"TOKEN_MARKER_INVALID\")",
+            "    if value.get(\"staff_handoff_removed\") is not True or value.get(\"auto_open_draft\") is not True:",
+            "        raise ControllerError(\"FUNCTIONAL_MARKER_INVALID\")"
+          ],
+          "line": 220
+        }
+      ],
+      "sha256": "0341cf3c41e0cc544f8d813dead1147dcd8585bfd834e442bae55e267388ae19"
+    },
+    "/home/Carix/order_ui_78cebee/cloud/task_061/patch_installer.py": {
+      "bytes": 10383,
+      "matches": [
+        {
+          "context": [
+            "        \"photo_ai_tokens\": 0, \"text_ai_tokens\": 0,",
+            "        \"staff_handoff_removed\": False, \"auto_open_draft\": False,",
+            "        \"ua0009_publication_performed\": False, \"ua0009_readonly_check\": None,"
+          ],
+          "line": 176
+        },
+        {
+          "context": [
+            "                status=\"PASS\", already_applied=True,",
+            "                staff_handoff_removed=True, auto_open_draft=True,",
+            "            )"
+          ],
+          "line": 205
+        },
+        {
+          "context": [
+            "            status=\"PASS\", production_write=True,",
+            "            staff_handoff_removed=True, auto_open_draft=True,",
+            "            files={"
+          ],
+          "line": 241
+        }
+      ],
+      "sha256": "7f1fc3ccb143064681cf5469a917a347612f3094fbcdee17ddf1db8b07d60ae9"
+    },
+    "/home/Carix/order_ui_78cebee/cloud/task_105_fast_pipeline_phase0/phase0_audit.py": {
+      "bytes": 33205,
+      "matches": [
+        {
+          "context": [
+            "        \"Transport durability\": (\"transport\", \"pythonanywhere\", \"remote\"),",
+            "        \"API/model contract\": (\"sonnet\", \"api\", \"evidence handoff\", \"receipt\"),",
+            "        \"Repeated version launches\": (\" v3\", \" v4\", \" v5\", \" v6\", \" v7\", \" v8\"),"
+          ],
+          "line": 358
+        }
+      ],
+      "sha256": "63c13f4732fee20dd6e5f3ac1c2230ebb876c39f4a23d63304df7f42a3a818c3"
+    },
+    "/home/Carix/order_ui_78cebee/cloud/ua0002_delete_probe/controller.py": {
+      "bytes": 20612,
+      "matches": [
+        {
+          "context": [
+            "    '_lock_fd', 'authority_scope', 'recovery_scope', 'current_row', 'row_sha',",
+            "    '_paths', 'retire_lists', 'handoff_spec_once', 'transition_operation',",
+            "    'catalog_snapshot', 'patch_home', 'patch_catalog', 'sobrat_katalog',"
+          ],
+          "line": 56
+        }
+      ],
+      "sha256": "f43d488892e676e57659580972eba9583b80b30408a7e226d68cb1d96164d844"
+    },
+    "/home/Carix/order_ui_78cebee/cloud/ua0002_delete_probe2/controller.py": {
+      "bytes": 22583,
+      "matches": [
+        {
+          "context": [
+            "    '_lock_fd', 'authority_scope', 'recovery_scope', 'current_row', 'row_sha',",
+            "    '_paths', 'retire_lists', 'handoff_spec_once', 'transition_operation',",
+            "    'catalog_snapshot', 'patch_home', 'patch_catalog', 'sobrat_katalog',"
+          ],
+          "line": 49
+        }
+      ],
+      "sha256": "53fe145aea0a26908df8605f6d502bb6d30e10b59cbb812b3f9735334081be1e"
+    },
+    "/home/Carix/spec_emergency_20260910_r1/candidate/cars_ui.py": {
+      "bytes": 189544,
+      "matches": [
+        {
+          "context": [
+            "",
+            "# UA-ART-LEGACY-EMERGENCY-SPEC-20260910: automatic queue handoff only.",
+            "_ua_emergency_spec_tasks = set()"
+          ],
+          "line": 3999
+        }
+      ],
+      "sha256": "2c79fffff4cad8a23cb3f8992190ff03c17210655ddd374e9548d6e88563a246"
+    },
+    "/home/Carix/spec_emergency_prepare_20260910_r1.py": {
+      "bytes": 8029,
+      "matches": [
+        {
+          "context": [
+            "# publisher invocation and rollback body; add only draft-intent protection and",
+            "# a nonblocking queue handoff following successful first publication.",
+            "active = [n for n in ast.parse(ui).body if isinstance(n, ast.AsyncFunctionDef) and n.name == 'toggle_publish'][-1]"
+          ],
+          "line": 45
+        },
+        {
+          "context": [
+            "helpers = '''",
+            "# UA-ART-LEGACY-EMERGENCY-SPEC-20260910: automatic queue handoff only.",
+            "_ua_emergency_spec_tasks = set()"
+          ],
+          "line": 79
+        }
+      ],
+      "sha256": "409003e2c33f04d7ee028b25107fa75098a3576ceb377666cf9381a7585e6e8e"
+    },
+    "/home/Carix/spec_gate_b_restore_20260909/current_state_audit.py": {
+      "bytes": 24581,
+      "matches": [
+        {
+          "context": [
+            "def compact_lines(report):",
+            "    \"\"\"Small terminal handoff; full details stay in the sanitized JSON file.\"\"\"",
+            "    lines = [json.dumps({\"status\": \"OK\", \"utc\": report[\"completed_at_utc\"], \"cards\": report[\"crm_rows\"],"
+          ],
+          "line": 374
+        }
+      ],
+      "sha256": "17ea90a3f9945181adeee6db42e1e5168e0b3799fab42cb532c7fd49f97d1c32"
+    },
+    "/home/Carix/spec_gate_b_restore_20260909/current_state_audit_v2.py": {
+      "bytes": 24617,
+      "matches": [
+        {
+          "context": [
+            "def compact_lines(report):",
+            "    \"\"\"Small terminal handoff; full details stay in the sanitized JSON file.\"\"\"",
+            "    lines = [json.dumps({\"status\": \"OK\", \"utc\": report[\"completed_at_utc\"], \"cards\": report[\"crm_rows\"],"
+          ],
+          "line": 374
+        }
+      ],
+      "sha256": "bbd112b84b0cd70b01696f8a7d54ee4ef377f3af8d722199b59df73668145360"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r1/cloud/spec_rebuild10/bootstrap.py": {
+      "bytes": 25682,
+      "matches": [
+        {
+          "context": [
+            "",
+            "    def _handoff(self):",
+            "        require(callable(self.verify_installation) and self.verify_installation(self.receipt) is True"
+          ],
+          "line": 277
+        },
+        {
+          "context": [
+            "    def tick(self):",
+            "        self._handoff()",
+            "        with self._lock:"
+          ],
+          "line": 285
+        },
+        {
+          "context": [
+            "    def start(self):",
+            "        self._handoff()",
+            "        with self._lock:"
+          ],
+          "line": 306
+        },
+        {
+          "context": [
+            "def configure(store_path, rows, plan, readback, worker, *, execute_lifecycle):",
+            "    \"\"\"Explicit controller call only, after authenticated code/data/runtime handoff.",
+            ""
+          ],
+          "line": 324
+        },
+        {
+          "context": [
+            "    require(callable(execute_lifecycle), \"VERIFIED_LOCKED_LIFECYCLE_EXECUTOR_REQUIRED\")",
+            "    worker._handoff()",
+            "    with SpecStore(store_path) as store:"
+          ],
+          "line": 330
+        }
+      ],
+      "sha256": "91ad1d3ae6fe5626a2627401aca002a19bdbd2c3e5e6d5ddfc2920f70129dab7"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r1/cloud/spec_rebuild10/crm_bridge.py": {
+      "bytes": 18504,
+      "matches": [
+        {
+          "context": [
+            "def configure_runtime(bindings: RuntimeBindings) -> None:",
+            "    \"\"\"Called only by the separately reviewed CRM bootstrap after handoff.\"\"\"",
+            "    global _runtime"
+          ],
+          "line": 255
+        }
+      ],
+      "sha256": "49aaece71fcda47186cb613b916cd4116a46c8677d618403b0199b418b1b644b"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r1/cloud/spec_rebuild10/data_install.py": {
+      "bytes": 31822,
+      "matches": [
+        {
+          "context": [
+            "\"\"\"Narrow durable 16-card data handoff under a borrowed, verified FenceLease.",
+            ""
+          ],
+          "line": 1
+        }
+      ],
+      "sha256": "6438fb356520ec5e6ed8f47538e961df62c7adc136de23f8b1f0e74492f5057c"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r1/cloud/spec_rebuild10/prepare_bootstrap.py": {
+      "bytes": 3274,
+      "matches": [
+        {
+          "context": [
+            "",
+            "ENTRYPOINT = '''\"\"\"Called by the reviewed controller after actual verified runtime handoff.\"\"\"",
+            "from spec_rebuild10.bootstrap import (CrmRows, ExactPlan, PublicReadback,"
+          ],
+          "line": 9
+        },
+        {
+          "context": [
+            "    worker = WorkerService(controller.spec_database, rows,",
+            "        controller.provisioned_collectors, controller.runtime_handoff_receipt,",
+            "        controller.verify_runtime_handoff, register=controller.register_existing_supervisor)"
+          ],
+          "line": 22
+        },
+        {
+          "context": [
+            "        controller.provisioned_collectors, controller.runtime_handoff_receipt,",
+            "        controller.verify_runtime_handoff, register=controller.register_existing_supervisor)",
+            "    lifecycle = LockedLifecycle(root=controller.application_root, rows=rows,"
+          ],
+          "line": 23
+        }
+      ],
+      "sha256": "359f55f0efb0bda024feb0d1efba3d7081f8a671f6eedbdc2817e89270f8901d"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r1/cloud/spec_rebuild10/prepare_runtime_package.py": {
+      "bytes": 11478,
+      "matches": [
+        {
+          "context": [
+            "            \"bootstrap_preparer\": sha(entrypoint_source)},",
+            "        \"code_handoff_v4_compatible\": False, \"new_code_installer_available\": False,",
+            "        \"live_preconditions\": \"NOT_OBSERVED_FOR_THIS_NEW_TARGET_SET\","
+          ],
+          "line": 183
+        },
+        {
+          "context": [
+            "    print(json.dumps({key: report[key] for key in (\"status\", \"version\", \"file_count\", \"groups\",",
+            "          \"manifest_sha256\", \"archive_sha256\", \"code_handoff_v4_compatible\")}, indent=2))"
+          ],
+          "line": 225
+        }
+      ],
+      "sha256": "ef84aaacbf1267f47f71ffa8d40deb12e8911fa4e746278155782332248fa5c1"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r1/cloud/spec_rebuild10/worker.py": {
+      "bytes": 13271,
+      "matches": [
+        {
+          "context": [
+            "                verify_installation: Callable[[Mapping[str, Any]], bool], **options) -> SpecWorker:",
+            "    \"\"\"Explicit runtime handoff binding, without starting an old or new daemon.",
+            ""
+          ],
+          "line": 237
+        }
+      ],
+      "sha256": "c375c48401d1a2b62589c0f05e4eaf9698579d391daddc308b079213d1418418"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r2/cloud/spec_rebuild10/bootstrap.py": {
+      "bytes": 25682,
+      "matches": [
+        {
+          "context": [
+            "",
+            "    def _handoff(self):",
+            "        require(callable(self.verify_installation) and self.verify_installation(self.receipt) is True"
+          ],
+          "line": 277
+        },
+        {
+          "context": [
+            "    def tick(self):",
+            "        self._handoff()",
+            "        with self._lock:"
+          ],
+          "line": 285
+        },
+        {
+          "context": [
+            "    def start(self):",
+            "        self._handoff()",
+            "        with self._lock:"
+          ],
+          "line": 306
+        },
+        {
+          "context": [
+            "def configure(store_path, rows, plan, readback, worker, *, execute_lifecycle):",
+            "    \"\"\"Explicit controller call only, after authenticated code/data/runtime handoff.",
+            ""
+          ],
+          "line": 324
+        },
+        {
+          "context": [
+            "    require(callable(execute_lifecycle), \"VERIFIED_LOCKED_LIFECYCLE_EXECUTOR_REQUIRED\")",
+            "    worker._handoff()",
+            "    with SpecStore(store_path) as store:"
+          ],
+          "line": 330
+        }
+      ],
+      "sha256": "91ad1d3ae6fe5626a2627401aca002a19bdbd2c3e5e6d5ddfc2920f70129dab7"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r2/cloud/spec_rebuild10/crm_bridge.py": {
+      "bytes": 18504,
+      "matches": [
+        {
+          "context": [
+            "def configure_runtime(bindings: RuntimeBindings) -> None:",
+            "    \"\"\"Called only by the separately reviewed CRM bootstrap after handoff.\"\"\"",
+            "    global _runtime"
+          ],
+          "line": 255
+        }
+      ],
+      "sha256": "49aaece71fcda47186cb613b916cd4116a46c8677d618403b0199b418b1b644b"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r2/cloud/spec_rebuild10/data_install.py": {
+      "bytes": 32125,
+      "matches": [
+        {
+          "context": [
+            "\"\"\"Narrow durable 16-card data handoff under a borrowed, verified FenceLease.",
+            ""
+          ],
+          "line": 1
+        }
+      ],
+      "sha256": "72c7f6a26725bcb2170da2207c753e441eb11baa8f1be2b1be139d3c947e1173"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r2/cloud/spec_rebuild10/prepare_bootstrap.py": {
+      "bytes": 3274,
+      "matches": [
+        {
+          "context": [
+            "",
+            "ENTRYPOINT = '''\"\"\"Called by the reviewed controller after actual verified runtime handoff.\"\"\"",
+            "from spec_rebuild10.bootstrap import (CrmRows, ExactPlan, PublicReadback,"
+          ],
+          "line": 9
+        },
+        {
+          "context": [
+            "    worker = WorkerService(controller.spec_database, rows,",
+            "        controller.provisioned_collectors, controller.runtime_handoff_receipt,",
+            "        controller.verify_runtime_handoff, register=controller.register_existing_supervisor)"
+          ],
+          "line": 22
+        },
+        {
+          "context": [
+            "        controller.provisioned_collectors, controller.runtime_handoff_receipt,",
+            "        controller.verify_runtime_handoff, register=controller.register_existing_supervisor)",
+            "    lifecycle = LockedLifecycle(root=controller.application_root, rows=rows,"
+          ],
+          "line": 23
+        }
+      ],
+      "sha256": "359f55f0efb0bda024feb0d1efba3d7081f8a671f6eedbdc2817e89270f8901d"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r2/cloud/spec_rebuild10/prepare_runtime_package.py": {
+      "bytes": 11478,
+      "matches": [
+        {
+          "context": [
+            "            \"bootstrap_preparer\": sha(entrypoint_source)},",
+            "        \"code_handoff_v4_compatible\": False, \"new_code_installer_available\": False,",
+            "        \"live_preconditions\": \"NOT_OBSERVED_FOR_THIS_NEW_TARGET_SET\","
+          ],
+          "line": 183
+        },
+        {
+          "context": [
+            "    print(json.dumps({key: report[key] for key in (\"status\", \"version\", \"file_count\", \"groups\",",
+            "          \"manifest_sha256\", \"archive_sha256\", \"code_handoff_v4_compatible\")}, indent=2))"
+          ],
+          "line": 225
+        }
+      ],
+      "sha256": "ef84aaacbf1267f47f71ffa8d40deb12e8911fa4e746278155782332248fa5c1"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r2/cloud/spec_rebuild10/worker.py": {
+      "bytes": 13271,
+      "matches": [
+        {
+          "context": [
+            "                verify_installation: Callable[[Mapping[str, Any]], bool], **options) -> SpecWorker:",
+            "    \"\"\"Explicit runtime handoff binding, without starting an old or new daemon.",
+            ""
+          ],
+          "line": 237
+        }
+      ],
+      "sha256": "c375c48401d1a2b62589c0f05e4eaf9698579d391daddc308b079213d1418418"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r3/cloud/spec_rebuild10/bootstrap.py": {
+      "bytes": 25682,
+      "matches": [
+        {
+          "context": [
+            "",
+            "    def _handoff(self):",
+            "        require(callable(self.verify_installation) and self.verify_installation(self.receipt) is True"
+          ],
+          "line": 277
+        },
+        {
+          "context": [
+            "    def tick(self):",
+            "        self._handoff()",
+            "        with self._lock:"
+          ],
+          "line": 285
+        },
+        {
+          "context": [
+            "    def start(self):",
+            "        self._handoff()",
+            "        with self._lock:"
+          ],
+          "line": 306
+        },
+        {
+          "context": [
+            "def configure(store_path, rows, plan, readback, worker, *, execute_lifecycle):",
+            "    \"\"\"Explicit controller call only, after authenticated code/data/runtime handoff.",
+            ""
+          ],
+          "line": 324
+        },
+        {
+          "context": [
+            "    require(callable(execute_lifecycle), \"VERIFIED_LOCKED_LIFECYCLE_EXECUTOR_REQUIRED\")",
+            "    worker._handoff()",
+            "    with SpecStore(store_path) as store:"
+          ],
+          "line": 330
+        }
+      ],
+      "sha256": "91ad1d3ae6fe5626a2627401aca002a19bdbd2c3e5e6d5ddfc2920f70129dab7"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r3/cloud/spec_rebuild10/crm_bridge.py": {
+      "bytes": 18504,
+      "matches": [
+        {
+          "context": [
+            "def configure_runtime(bindings: RuntimeBindings) -> None:",
+            "    \"\"\"Called only by the separately reviewed CRM bootstrap after handoff.\"\"\"",
+            "    global _runtime"
+          ],
+          "line": 255
+        }
+      ],
+      "sha256": "49aaece71fcda47186cb613b916cd4116a46c8677d618403b0199b418b1b644b"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r3/cloud/spec_rebuild10/data_install.py": {
+      "bytes": 32125,
+      "matches": [
+        {
+          "context": [
+            "\"\"\"Narrow durable 16-card data handoff under a borrowed, verified FenceLease.",
+            ""
+          ],
+          "line": 1
+        }
+      ],
+      "sha256": "72c7f6a26725bcb2170da2207c753e441eb11baa8f1be2b1be139d3c947e1173"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r3/cloud/spec_rebuild10/prepare_bootstrap.py": {
+      "bytes": 3274,
+      "matches": [
+        {
+          "context": [
+            "",
+            "ENTRYPOINT = '''\"\"\"Called by the reviewed controller after actual verified runtime handoff.\"\"\"",
+            "from spec_rebuild10.bootstrap import (CrmRows, ExactPlan, PublicReadback,"
+          ],
+          "line": 9
+        },
+        {
+          "context": [
+            "    worker = WorkerService(controller.spec_database, rows,",
+            "        controller.provisioned_collectors, controller.runtime_handoff_receipt,",
+            "        controller.verify_runtime_handoff, register=controller.register_existing_supervisor)"
+          ],
+          "line": 22
+        },
+        {
+          "context": [
+            "        controller.provisioned_collectors, controller.runtime_handoff_receipt,",
+            "        controller.verify_runtime_handoff, register=controller.register_existing_supervisor)",
+            "    lifecycle = LockedLifecycle(root=controller.application_root, rows=rows,"
+          ],
+          "line": 23
+        }
+      ],
+      "sha256": "359f55f0efb0bda024feb0d1efba3d7081f8a671f6eedbdc2817e89270f8901d"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r3/cloud/spec_rebuild10/prepare_runtime_package.py": {
+      "bytes": 11478,
+      "matches": [
+        {
+          "context": [
+            "            \"bootstrap_preparer\": sha(entrypoint_source)},",
+            "        \"code_handoff_v4_compatible\": False, \"new_code_installer_available\": False,",
+            "        \"live_preconditions\": \"NOT_OBSERVED_FOR_THIS_NEW_TARGET_SET\","
+          ],
+          "line": 183
+        },
+        {
+          "context": [
+            "    print(json.dumps({key: report[key] for key in (\"status\", \"version\", \"file_count\", \"groups\",",
+            "          \"manifest_sha256\", \"archive_sha256\", \"code_handoff_v4_compatible\")}, indent=2))"
+          ],
+          "line": 225
+        }
+      ],
+      "sha256": "ef84aaacbf1267f47f71ffa8d40deb12e8911fa4e746278155782332248fa5c1"
+    },
+    "/home/Carix/spec_rebuild10_stage_20260909_r3/cloud/spec_rebuild10/worker.py": {
+      "bytes": 13271,
+      "matches": [
+        {
+          "context": [
+            "                verify_installation: Callable[[Mapping[str, Any]], bool], **options) -> SpecWorker:",
+            "    \"\"\"Explicit runtime handoff binding, without starting an old or new daemon.",
+            ""
+          ],
+          "line": 237
+        }
+      ],
+      "sha256": "c375c48401d1a2b62589c0f05e4eaf9698579d391daddc308b079213d1418418"
+    },
+    "/home/Carix/spec_release_20260928/cloud/task_060/ai_intake_patch.py": {
+      "bytes": 4468,
+      "matches": [
+        {
+          "context": [
+            "        \"preview_text\": str,    # ready-to-send CRM preview (only if ok)",
+            "        \"route_to_staff\": False # ALWAYS False -- staff handoff is forbidden",
+            "      }"
+          ],
+          "line": 97
+        }
+      ],
+      "sha256": "0b9b5e8d9f75cfbe8f706aecd5a0bdee998665786ce731220f7cb2b7363195cf"
+    },
+    "/home/Carix/spec_release_20260928/cloud/task_060/install_controller.py": {
+      "bytes": 12524,
+      "matches": [
+        {
+          "context": [
+            "            raise ControllerError(\"SAFETY_MARKER_INVALID:\" + key)",
+            "    if value.get(\"staff_handoff_removed\") is not True or value.get(\"token_cost_per_photo\") != 0:",
+            "        raise ControllerError(\"FUNCTIONAL_MARKER_INVALID\")"
+          ],
+          "line": 188
+        },
+        {
+          "context": [
+            "            \"TASK_ID: task_060\\nROUND: 2\\nCLAUDE_STATUS: DONE\\n\"",
+            "            \"CURRENT_ACTION: Token-free local OCR installed; staff handoff removed; bot restarted.\\n\"",
+            "            \"FILES_CREATED: cloud/task_060/evidence/install.json, cloud/task_060/INSTALL_REPORT.md\\n\""
+          ],
+          "line": 210
+        }
+      ],
+      "sha256": "5064fcd94b318f931d4c8217fca72ddc18e000e6a2c26ec19fbdcdbd81f1e65a"
+    },
+    "/home/Carix/spec_release_20260928/cloud/task_060/patch_installer.py": {
+      "bytes": 8492,
+      "matches": [
+        {
+          "context": [
+            "        \"rollback_performed\": False, \"already_applied\": False,",
+            "        \"token_cost_per_photo\": 0, \"staff_handoff_removed\": False,",
+            "        \"files\": {}, \"backup_path\": None,"
+          ],
+          "line": 137
+        },
+        {
+          "context": [
+            "                raise InstallError(\"ALREADY_APPLIED_OCR_DRIFT\")",
+            "            receipt.update(status=\"PASS\", already_applied=True, staff_handoff_removed=True)",
+            "            return receipt"
+          ],
+          "line": 159
+        },
+        {
+          "context": [
+            "        receipt.update(",
+            "            status=\"PASS\", production_write=True, staff_handoff_removed=True,",
+            "            files={"
+          ],
+          "line": 187
+        }
+      ],
+      "sha256": "a8a1eca5ff8f99bfabf86e69f1942177223851be5243f3b5617e77f95e7e15d4"
+    },
+    "/home/Carix/spec_release_20260928/cloud/task_060/patch_payload.py": {
+      "bytes": 6741,
+      "matches": [
+        {
+          "context": [
+            "INTAKE_SOURCE = r'''async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):",
+            "    \"\"\"Owner intake is processed by AI only; no staff handoff.\"\"\"",
+            "    staff = who(update)"
+          ],
+          "line": 19
+        }
+      ],
+      "sha256": "b68200a358ec21bc042b50014898109e66cbd766a4f6fe9a0242566b7a9b2454"
+    },
+    "/home/Carix/spec_release_20260928/cloud/task_061/install_controller.py": {
+      "bytes": 13404,
+      "matches": [
+        {
+          "context": [
+            "        raise ControllerError(\"TOKEN_MARKER_INVALID\")",
+            "    if value.get(\"staff_handoff_removed\") is not True or value.get(\"auto_open_draft\") is not True:",
+            "        raise ControllerError(\"FUNCTIONAL_MARKER_INVALID\")"
+          ],
+          "line": 220
+        }
+      ],
+      "sha256": "0341cf3c41e0cc544f8d813dead1147dcd8585bfd834e442bae55e267388ae19"
+    },
+    "/home/Carix/spec_release_20260928/cloud/task_061/patch_installer.py": {
+      "bytes": 10383,
+      "matches": [
+        {
+          "context": [
+            "        \"photo_ai_tokens\": 0, \"text_ai_tokens\": 0,",
+            "        \"staff_handoff_removed\": False, \"auto_open_draft\": False,",
+            "        \"ua0009_publication_performed\": False, \"ua0009_readonly_check\": None,"
+          ],
+          "line": 176
+        },
+        {
+          "context": [
+            "                status=\"PASS\", already_applied=True,",
+            "                staff_handoff_removed=True, auto_open_draft=True,",
+            "            )"
+          ],
+          "line": 205
+        },
+        {
+          "context": [
+            "            status=\"PASS\", production_write=True,",
+            "            staff_handoff_removed=True, auto_open_draft=True,",
+            "            files={"
+          ],
+          "line": 241
+        }
+      ],
+      "sha256": "7f1fc3ccb143064681cf5469a917a347612f3094fbcdee17ddf1db8b07d60ae9"
+    },
+    "/home/Carix/spec_release_20260928/cloud/task_105_fast_pipeline_phase0/phase0_audit.py": {
+      "bytes": 33205,
+      "matches": [
+        {
+          "context": [
+            "        \"Transport durability\": (\"transport\", \"pythonanywhere\", \"remote\"),",
+            "        \"API/model contract\": (\"sonnet\", \"api\", \"evidence handoff\", \"receipt\"),",
+            "        \"Repeated version launches\": (\" v3\", \" v4\", \" v5\", \" v6\", \" v7\", \" v8\"),"
+          ],
+          "line": 358
+        }
+      ],
+      "sha256": "63c13f4732fee20dd6e5f3ac1c2230ebb876c39f4a23d63304df7f42a3a818c3"
+    },
+    "/home/Carix/spec_release_20260928/cloud/ua0002_delete_probe/controller.py": {
+      "bytes": 20612,
+      "matches": [
+        {
+          "context": [
+            "    '_lock_fd', 'authority_scope', 'recovery_scope', 'current_row', 'row_sha',",
+            "    '_paths', 'retire_lists', 'handoff_spec_once', 'transition_operation',",
+            "    'catalog_snapshot', 'patch_home', 'patch_catalog', 'sobrat_katalog',"
+          ],
+          "line": 56
+        }
+      ],
+      "sha256": "f43d488892e676e57659580972eba9583b80b30408a7e226d68cb1d96164d844"
+    },
+    "/home/Carix/spec_release_20260928/cloud/ua0002_delete_probe2/controller.py": {
+      "bytes": 22583,
+      "matches": [
+        {
+          "context": [
+            "    '_lock_fd', 'authority_scope', 'recovery_scope', 'current_row', 'row_sha',",
+            "    '_paths', 'retire_lists', 'handoff_spec_once', 'transition_operation',",
+            "    'catalog_snapshot', 'patch_home', 'patch_catalog', 'sobrat_katalog',"
+          ],
+          "line": 49
+        }
+      ],
+      "sha256": "53fe145aea0a26908df8605f6d502bb6d30e10b59cbb812b3f9735334081be1e"
+    },
+    "/home/Carix/team_bot.py": {
+      "bytes": 65247,
+      "matches": [
+        {
+          "context": [
+            "async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):",
+            "    \"\"\"Owner intake is processed by AI only; no staff handoff.\"\"\"",
+            "    staff = who(update)"
+          ],
+          "line": 279
+        }
+      ],
+      "sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+    },
+    "/home/Carix/ua_google_tag.py": {
+      "bytes": 2222,
+      "matches": [
+        {
+          "context": [
+            "document.addEventListener('click',function(e){var t=e.target;if(!t||!t.closest)return;",
+            "if(t.closest('#ua-order #handoff')){lead('generate_lead','order_telegram');return;}",
+            "var a=t.closest('a[href]');var m=a?contact(a.getAttribute('href')):'';if(m)lead('contact',m);},true);"
+          ],
+          "line": 18
+        }
+      ],
+      "sha256": "f5f0a30489d20d7f7d973c27bd31e583e9827fb5a6d1e24a97fb35d1e6a3b6d4"
+    },
+    "/home/Carix/ua_order/bot_flow.py": {
+      "bytes": 7888,
+      "matches": [
+        {
+          "context": [
+            "                   comment='', lang='uk', source_path='/telegram')",
+            "    if data and data.get('schema_version') == 'ua_order_request.v2':",
+            "        initial = deepcopy(data)"
+          ],
+          "line": 19
+        },
+        {
+          "context": [
+            "        return",
+            "    if data.get('schema_version') == 'ua_order_request.v2':",
+            "        if action == 'lang' and value in LANGUAGES: data['lang'] = value"
+          ],
+          "line": 36
+        },
+        {
+          "context": [
+            "        return dict(text=f'{t[\"saved\"]}: {state[\"receipt\"][\"number\"]}', buttons=[], photo=None)",
+            "    if data.get('schema_version') == 'ua_order_request.v2':",
+            "        labels = directory()['labels'][lang]"
+          ],
+          "line": 96
+        }
+      ],
+      "sha256": "e0c4d6a96159e4aabb25f3800f932ce2372c29584ac393d203aa8363b428095a"
+    },
+    "/home/Carix/ua_order/contract.py": {
+      "bytes": 5788,
+      "matches": [
+        {
+          "context": [
+            "",
+            "SCHEMA = 'ua_order_request.v1'",
+            "MAX_BYTES = 32 * 1024"
+          ],
+          "line": 10
+        },
+        {
+          "context": [
+            "",
+            "def normalize(data, catalog, consent_version, *, verified_contact=False):",
+            "    if isinstance(data, dict) and data.get('schema_version') == 'ua_order_request.v2':"
+          ],
+          "line": 58
+        },
+        {
+          "context": [
+            "def normalize(data, catalog, consent_version, *, verified_contact=False):",
+            "    if isinstance(data, dict) and data.get('schema_version') == 'ua_order_request.v2':",
+            "        from .preferences import normalize as normalize_preferences"
+          ],
+          "line": 59
+        },
+        {
+          "context": [
+            "        from .preferences import normalize as normalize_preferences",
+            "        return normalize_preferences(data, catalog, consent_version)",
+            "    if not isinstance(data, dict) or set(data) - FIELDS:"
+          ],
+          "line": 61
+        },
+        {
+          "context": [
+            "    consent = data.get('consent')",
+            "    if (not consent_version or not isinstance(consent, dict)",
+            "            or type(consent.get('accepted')) is not bool"
+          ],
+          "line": 114
+        },
+        {
+          "context": [
+            "            or type(consent.get('accepted')) is not bool",
+            "            or consent != {'accepted': True, 'version': consent_version}):",
+            "        raise Invalid('consent')"
+          ],
+          "line": 116
+        }
+      ],
+      "sha256": "717bd987500aebc3ff187635078fabe24bdc6446aac6a7d632c632933dcc201b"
+    },
+    "/home/Carix/ua_order/crm.py": {
+      "bytes": 2163,
+      "matches": [
+        {
+          "context": [
+            "    data = row['data']",
+            "    if data.get('schema_version') == 'ua_order_request.v2':",
+            "        return preference_summary.detail(row, catalog)"
+          ],
+          "line": 25
+        }
+      ],
+      "sha256": "f3d04a0814ab23aebd228e83bd44cf5c96eba8a1f8c4775d7d6c7744be074566"
+    },
+    "/home/Carix/ua_order/host.py": {
+      "bytes": 3295,
+      "matches": [
+        {
+          "context": [
+            "                return",
+            "            if payload.get('t') != 'podbor' and payload.get('schema_version') not in ('ua_order_request.v1', 'ua_order_request.v2'):",
+            "                return"
+          ],
+          "line": 70
+        }
+      ],
+      "sha256": "652a8889513469f22fa3ed2c34c4e07bfc68a1f3d0d90c2c55eb13171982e6b2"
+    },
+    "/home/Carix/ua_order/mysql_repository.py": {
+      "bytes": 10132,
+      "matches": [
+        {
+          "context": [
+            "            request_id, now = data['request_id'], int(self.clock())",
+            "            cursor.execute('''INSERT INTO order_requests",
+            "                (request_id,owner,payload_hash,payload,channel,created_at)"
+          ],
+          "line": 92
+        },
+        {
+          "context": [
+            "                           (request_id, owner, payload_hash, encoded(data), channel, now))",
+            "            cursor.execute('SELECT * FROM order_requests WHERE request_id=%s FOR UPDATE', (request_id,))",
+            "            row = cursor.fetchone()"
+          ],
+          "line": 97
+        },
+        {
+          "context": [
+            "    def receipt_for_owner(self, request_id, owner):",
+            "        return self._one('SELECT * FROM order_requests WHERE request_id=%s AND owner=%s',",
+            "                         (request_id, owner), receipt)"
+          ],
+          "line": 122
+        },
+        {
+          "context": [
+            "    def detail(self, row_id):",
+            "        return self._one('SELECT * FROM order_requests WHERE id=%s', (row_id,), detail)",
+            ""
+          ],
+          "line": 126
+        },
+        {
+          "context": [
+            "    def notification_data(self, request_id):",
+            "        return self._one('SELECT * FROM order_requests WHERE request_id=%s', (request_id,), detail)",
+            ""
+          ],
+          "line": 129
+        },
+        {
+          "context": [
+            "        def fetch(cursor):",
+            "            cursor.execute('SELECT * FROM order_requests WHERE id < %s ORDER BY id DESC LIMIT %s',",
+            "                           (before if before is not None else [N], limit + 1))"
+          ],
+          "line": 135
+        }
+      ],
+      "sha256": "21419a04be798df84f6ec210a9086cc1b01d9fa0d76b7e6811d707ec14d6fe9a"
+    },
+    "/home/Carix/ua_order/mysql_schema.py": {
+      "bytes": 2523,
+      "matches": [
+        {
+          "context": [
+            "TABLES = {",
+            "    'order_schema', 'order_requests', 'order_events', 'order_outbox',",
+            "    'order_drafts', 'order_notification_receipts',"
+          ],
+          "line": 3
+        },
+        {
+          "context": [
+            "DDL = (",
+            "    '''CREATE TABLE order_requests (",
+            "        id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+          ],
+          "line": 7
+        },
+        {
+          "context": [
+            "        request_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,",
+            "        FOREIGN KEY (request_id) REFERENCES order_requests(request_id)",
+            "    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin''',"
+          ],
+          "line": 17
+        },
+        {
+          "context": [
+            "        INDEX order_outbox_due (state, available_at),",
+            "        FOREIGN KEY (request_id) REFERENCES order_requests(request_id)",
+            "    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin''',"
+          ],
+          "line": 25
+        },
+        {
+          "context": [
+            "        PRIMARY KEY (request_id, recipient),",
+            "        FOREIGN KEY (request_id) REFERENCES order_requests(request_id)",
+            "    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin''',"
+          ],
+          "line": 38
+        }
+      ],
+      "sha256": "fdb9a81ac4e44586549db08aaa570bdc19799176493e1d8ac5cc6195f96847d4"
+    },
+    "/home/Carix/ua_order/preferences.py": {
+      "bytes": 10639,
+      "matches": [
+        {
+          "context": [
+            "",
+            "SCHEMA = 'ua_order_request.v2'",
+            "CRITERIA = ('purchase_country_code', 'make', 'models', 'budget', 'vehicle_type',"
+          ],
+          "line": 13
+        },
+        {
+          "context": [
+            "",
+            "def normalize(data, catalog, consent_version):",
+            "    if not isinstance(data, dict) or set(data) != FIELDS or data.get('schema_version') != SCHEMA:"
+          ],
+          "line": 110
+        },
+        {
+          "context": [
+            "    result['source_path'] = choice(data['source_path'], ('/podbor.html','/site/podbor.html','/video/podbor.html','/telegram'), 'source_path')",
+            "    if not consent_version or type(data['consent']) is not dict or data['consent'] != {'accepted': True, 'version': consent_version} or data['consent']['accepted'] is not True:",
+            "        raise Invalid('consent')"
+          ],
+          "line": 128
+        }
+      ],
+      "sha256": "f06fbf7356d6a8f286c283b63155f6ddbd16461af99109fd088df16e2b298ef9"
+    },
+    "/home/Carix/ua_order/repository.py": {
+      "bytes": 9555,
+      "matches": [
+        {
+          "context": [
+            "DDL = '''",
+            "CREATE TABLE IF NOT EXISTS order_requests (",
+            " id INTEGER PRIMARY KEY AUTOINCREMENT,"
+          ],
+          "line": 16
+        },
+        {
+          "context": [
+            "CREATE TABLE IF NOT EXISTS order_events (",
+            " event TEXT PRIMARY KEY, request_id TEXT NOT NULL REFERENCES order_requests(request_id));",
+            "CREATE TABLE IF NOT EXISTS order_outbox ("
+          ],
+          "line": 22
+        },
+        {
+          "context": [
+            "CREATE TABLE IF NOT EXISTS order_outbox (",
+            " id INTEGER PRIMARY KEY, request_id TEXT NOT NULL UNIQUE REFERENCES order_requests(request_id),",
+            " state TEXT NOT NULL DEFAULT 'pending', attempts INTEGER NOT NULL DEFAULT 0,"
+          ],
+          "line": 24
+        },
+        {
+          "context": [
+            "CREATE TABLE IF NOT EXISTS order_notification_receipts (",
+            " request_id TEXT NOT NULL REFERENCES order_requests(request_id),",
+            " recipient INTEGER NOT NULL, sent_at INTEGER NOT NULL,"
+          ],
+          "line": 32
+        },
+        {
+          "context": [
+            "        self.clock = clock",
+            "        if self.path.name != 'order_requests.db':",
+            "            raise ValueError('An explicit isolated order_requests.db path is required')"
+          ],
+          "line": 42
+        },
+        {
+          "context": [
+            "        if self.path.name != 'order_requests.db':",
+            "            raise ValueError('An explicit isolated order_requests.db path is required')",
+            ""
+          ],
+          "line": 43
+        },
+        {
+          "context": [
+            "        with self.connection(write=True) as db:",
+            "            row = db.execute('SELECT * FROM order_requests WHERE request_id=?',",
+            "                             (data['request_id'],)).fetchone()"
+          ],
+          "line": 91
+        },
+        {
+          "context": [
+            "            else:",
+            "                db.execute('INSERT INTO order_requests(request_id,owner,payload_hash,payload,channel,created_at) VALUES (?,?,?,?,?,?)',",
+            "                           (data['request_id'], owner, payload_hash, encoded(data), channel, int(self.clock())))"
+          ],
+          "line": 100
+        },
+        {
+          "context": [
+            "                           (data['request_id'], int(self.clock())))",
+            "                row = db.execute('SELECT * FROM order_requests WHERE request_id=?', (data['request_id'],)).fetchone()",
+            "            if event and not replay:"
+          ],
+          "line": 104
+        },
+        {
+          "context": [
+            "        with self.connection() as db:",
+            "            row = db.execute('SELECT * FROM order_requests WHERE request_id=? AND owner=?',",
+            "                             (request_id, owner)).fetchone()"
+          ],
+          "line": 112
+        },
+        {
+          "context": [
+            "        with self.connection() as db:",
+            "            rows = db.execute('SELECT * FROM order_requests WHERE id < ? ORDER BY id DESC LIMIT ?',",
+            "                              (before if before is not None else [N], limit + 1)).fetchall()"
+          ],
+          "line": 122
+        },
+        {
+          "context": [
+            "        with self.connection() as db:",
+            "            row = db.execute('SELECT * FROM order_requests WHERE id=?', (row_id,)).fetchone()",
+            "            if not row:"
+          ],
+          "line": 131
+        },
+        {
+          "context": [
+            "        with self.connection() as db:",
+            "            row=db.execute('SELECT * FROM order_requests WHERE request_id=?',(request_id,)).fetchone()",
+            "            if not row: raise NotFound()"
+          ],
+          "line": 138
+        }
+      ],
+      "sha256": "6b8d3e76b8603c1813d75ee22a9af5da2a8da61dd5662dddfb4c06f6b9237b6e"
+    },
+    "/home/Carix/ua_order/runtime.py": {
+      "bytes": 5317,
+      "matches": [
+        {
+          "context": [
+            "",
+            "DEFAULT_SETTINGS = Path('/home/Carix/order_requests/settings.json')",
+            "NETWORK_FILESYSTEMS = {'nfs', 'nfs4', 'cifs', 'smbfs', 'ceph', 'glusterfs', '9p'}"
+          ],
+          "line": 13
+        },
+        {
+          "context": [
+            "        raise ValueError('The approved company consent is required in three languages')",
+            "    version = settings.get('consent_version')",
+            "    if not isinstance(version, str) or not version.strip():"
+          ],
+          "line": 78
+        },
+        {
+          "context": [
+            "    else:",
+            "        database = path.parent / 'order_requests.db'",
+            "        require_local_storage(database)"
+          ],
+          "line": 92
+        },
+        {
+          "context": [
+            "            tables = {row[0] for row in db.execute(\"SELECT name FROM sqlite_master WHERE type='table'\")}",
+            "            if not {'order_requests', 'order_events', 'order_outbox', 'order_drafts',",
+            "                    'order_notification_receipts'} <= tables:"
+          ],
+          "line": 101
+        }
+      ],
+      "sha256": "3feddee6dfd90b10c814e6435364119f5e8d32bf12b24bb11966418870046d5d"
+    },
+    "/home/Carix/ua_order/service.py": {
+      "bytes": 1733,
+      "matches": [
+        {
+          "context": [
+            "class OrderService:",
+            "    def __init__(self, catalog, repository, consent_version):",
+            "        if not consent_version:"
+          ],
+          "line": 25
+        },
+        {
+          "context": [
+            "    def __init__(self, catalog, repository, consent_version):",
+            "        if not consent_version:",
+            "            raise ValueError('The existing company consent text must be configured')"
+          ],
+          "line": 26
+        },
+        {
+          "context": [
+            "        self.catalog, self.repository = catalog, repository",
+            "        self.consent_version = consent_version",
+            ""
+          ],
+          "line": 29
+        },
+        {
+          "context": [
+            "    def normalize(self, payload, principal):",
+            "        return normalize(payload, self.catalog, self.consent_version,",
+            "                         verified_contact=principal.owner.startswith('telegram:'))"
+          ],
+          "line": 32
+        },
+        {
+          "context": [
+            "",
+            "    def handoff(self, payload, principal):",
+            "        data = self.normalize(payload, principal)"
+          ],
+          "line": 40
+        }
+      ],
+      "sha256": "f43edb3a72657b70ceecea7a35e70b917e5b804c6d54a2aa2ef6d20a5c5df12a"
+    },
+    "/home/Carix/ua_order/telegram.py": {
+      "bytes": 13395,
+      "matches": [
+        {
+          "context": [
+            "                    payload=copy.deepcopy(state['data'])",
+            "                    payload['consent']={'accepted':True,'version':self.service.consent_version}",
+            "                    state['receipt']=await asyncio.to_thread(self.service.submit,payload,actor)"
+          ],
+          "line": 152
+        },
+        {
+          "context": [
+            "            payload=decode(update.effective_message.web_app_data.data.encode())",
+            "            if payload.get('t')!='podbor' and payload.get('schema_version') not in ('ua_order_request.v1','ua_order_request.v2'):",
+            "                return"
+          ],
+          "line": 179
+        }
+      ],
+      "sha256": "fbc99a1d3ec585abcd3af3cc1ec6fe8ca5927ffd3540e0f73f54b3436e545d41"
+    },
+    "/home/Carix/ua_order/web.py": {
+      "bytes": 6411,
+      "matches": [
+        {
+          "context": [
+            "            path, method = env.get('PATH_INFO', ''), env.get('REQUEST_METHOD', '')",
+            "            if path == '/api/orders/bootstrap' and method == 'GET':",
+            "                cookie = self._cookie(env)"
+          ],
+          "line": 53
+        },
+        {
+          "context": [
+            "                result = dict(catalog=self.service.catalog.export(), preferences=preference_catalog(), csrf=self.sessions.csrf(cookie),",
+            "                              consent_version=self.service.consent_version, consent_text=self.consent_text)",
+            "            elif path == '/api/orders/receipt' and method == 'GET':"
+          ],
+          "line": 61
+        },
+        {
+          "context": [
+            "                              consent_version=self.service.consent_version, consent_text=self.consent_text)",
+            "            elif path == '/api/orders/receipt' and method == 'GET':",
+            "                principal = self._principal(env)"
+          ],
+          "line": 62
+        },
+        {
+          "context": [
+            "                result = self.service.repository.receipt_for_owner(request_ids[0], principal.owner)",
+            "            elif path in ('/api/orders/submit', '/api/orders/handoff') and method == 'POST':",
+            "                if env.get('HTTP_ORIGIN') != self.origin:"
+          ],
+          "line": 72
+        },
+        {
+          "context": [
+            "                    else:",
+            "[REDACTED]",
+            "                        result = {'url': f'[URL]'}"
+          ],
+          "line": 94
+        },
+        {
+          "context": [
+            "    def wrapped(env,start_response):",
+            "        if env.get('PATH_INFO','').startswith('/api/orders/'):",
+            "            return order_adapter(env,start_response)"
+          ],
+          "line": 119
+        }
+      ],
+      "sha256": "0ce58b36a3d2d3e12af19775624a15d1c401b36a44652848011b2c2d17c0edab"
+    },
+    "/home/Carix/uaart_bridge_prereload.py": {
+      "bytes": 4372,
+      "matches": [
+        {
+          "context": [
+            "    if mod.HANDOFF_MARKER!=\"[CLAUDE->PYTHON]\":",
+            "        raise RuntimeError(\"handoff marker mismatch\")",
+            "    say(\"PASS\",\"repository/ref/handoff gate exact\")"
+          ],
+          "line": 88
+        },
+        {
+          "context": [
+            "        raise RuntimeError(\"handoff marker mismatch\")",
+            "    say(\"PASS\",\"repository/ref/handoff gate exact\")",
+            ""
+          ],
+          "line": 89
+        }
+      ],
+      "sha256": "2aaa13274a805bb512099af09b9c2f9beb5cd0d9f1e69dc38a538995d1a2182e"
+    },
+    "/home/Carix/uaart_bridge_selftest.py": {
+      "bytes": 16343,
+      "matches": [
+        {
+          "context": [
+            "        (\"allowed ref\", getattr(mod, \"ALLOWED_REF\", None), \"refs/heads/main\"),",
+            "        (\"handoff marker\", getattr(mod, \"HANDOFF_MARKER\", None), \"[CLAUDE->PYTHON]\"),",
+            "        (\"POST path\", getattr(mod, \"PATH_POST\", None), \"/uaart-bridge\"),"
+          ],
+          "line": 225
+        },
+        {
+          "context": [
+            "",
+            "        # 14. Missing Claude handoff marker",
+            "        no_marker = json.loads(json.dumps(good_payload))"
+          ],
+          "line": 344
+        },
+        {
+          "context": [
+            "        )",
+            "        if expect_status(\"missing handoff marker ignored\", resp, \"202\"):",
+            "            js = resp.get(\"json\") or {}"
+          ],
+          "line": 356
+        },
+        {
+          "context": [
+            "            js = resp.get(\"json\") or {}",
+            "            if js.get(\"queued\") is False and js.get(\"reason\") == \"handoff_marker_missing\":",
+            "                line(\"PASS\", \"ordinary commit not queued\", js)"
+          ],
+          "line": 358
+        },
+        {
+          "context": [
+            "",
+            "        # 15. Valid handoff",
+            "        resp = call_wsgi("
+          ],
+          "line": 363
+        },
+        {
+          "context": [
+            "        )",
+            "        valid_ok = expect_status(\"valid Claude->Python handoff accepted\", resp, \"202\")",
+            "        if valid_ok:"
+          ],
+          "line": 376
+        },
+        {
+          "context": [
+            "            if js.get(\"queued\") is True and js.get(\"queue_file\"):",
+            "                line(\"PASS\", \"valid handoff queued\", js.get(\"queue_file\"))",
+            "            else:"
+          ],
+          "line": 380
+        },
+        {
+          "context": [
+            "            else:",
+            "                line(\"FAIL\", \"valid handoff queued\", js)",
+            ""
+          ],
+          "line": 382
+        }
+      ],
+      "sha256": "e82dbe9104c02df586971845f34fe7ba078e42f4a2dc601d551d2b5c93cbb31d"
+    },
+    "/home/Carix/uaart_bridge_wsgi.py": {
+      "bytes": 14363,
+      "matches": [
+        {
+          "context": [
+            "2) authenticates it with a shared secret;",
+            "3) validates repository / branch / handoff marker;",
+            "4) writes one JSON job into its own isolated queue directory;"
+          ],
+          "line": 18
+        },
+        {
+          "context": [
+            "- Only the configured GitHub repository and main branch are accepted.",
+            "- Only commits containing the handoff marker are queued.",
+            "- Request size is limited."
+          ],
+          "line": 26
+        },
+        {
+          "context": [
+            "",
+            "# Claude -> Python handoff must be explicit in commit text.",
+            "HANDOFF_MARKER = os.environ.get("
+          ],
+          "line": 65
+        },
+        {
+          "context": [
+            "    # Also support a normalized Make envelope.",
+            "    for key in (\"message\", \"commit_message\", \"handoff\"):",
+            "        if payload.get(key):"
+          ],
+          "line": 213
+        },
+        {
+          "context": [
+            "",
+            "def _has_handoff_marker(payload):",
+            "    if not HANDOFF_MARKER:"
+          ],
+          "line": 220
+        },
+        {
+          "context": [
+            "        \"allowed_ref\": ALLOWED_REF,",
+            "        \"handoff_marker\": HANDOFF_MARKER,",
+            "        \"queue_count\": queue_count,"
+          ],
+          "line": 289
+        },
+        {
+          "context": [
+            "",
+            "    if not _has_handoff_marker(payload):",
+            "        return _json_response("
+          ],
+          "line": 411
+        },
+        {
+          "context": [
+            "                \"queued\": False,",
+            "                \"reason\": \"handoff_marker_missing\",",
+            "                \"required_marker\": HANDOFF_MARKER,"
+          ],
+          "line": 418
+        }
+      ],
+      "sha256": "b0c93d88d67e8c285c1bffb40bd6f2e40c2779af7a01cebd6beab4beda685150"
+    },
+    "/home/Carix/uploads/ua0002_job/visibility_lifecycle.py": {
+      "bytes": 28287,
+      "matches": [
+        {
+          "context": [
+            "",
+            "def handoff_spec_once(binding, result, schedule):",
+            "    \"\"\"Preserve the existing async spec handoff without replaying unknown enqueue."
+          ],
+          "line": 518
+        },
+        {
+          "context": [
+            "def handoff_spec_once(binding, result, schedule):",
+            "    \"\"\"Preserve the existing async spec handoff without replaying unknown enqueue.",
+            ""
+          ],
+          "line": 519
+        }
+      ],
+      "sha256": "b77424a8e8dbd84f688a65a66dfdcd914276315fe67f1d4c6cb0247929d7b037"
+    }
+  },
+  "status": "PASS",
+  "task_id": "ORDER-INTAKE-PROBE-20261026-R3"
+}

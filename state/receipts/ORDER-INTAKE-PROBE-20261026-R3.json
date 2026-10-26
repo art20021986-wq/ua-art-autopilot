@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/order_intake_probe_001/20261026-R3.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "4b8e1118dca644024e4f180667baeb731fb9a9280cf0341fc83a138ce973e677",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "40263770753",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ORDER-INTAKE-PROBE-20261026-R3",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}
