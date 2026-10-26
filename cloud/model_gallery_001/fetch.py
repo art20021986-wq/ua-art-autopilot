@@ -2,7 +2,7 @@
 """Read-only download of the picked gallery photos (MODEL-GALLERY-001), 960 px wide from Wikimedia Commons.
 
 picks.py names, per model, the Commons files chosen by eye from the collected candidates
-(exterior views besides the current main photo, then interior views). Each file's
+(exterior views, then interior views and the trunk; R2: 2018–2023 cars only). Each file's
 licence is checked again; one JSON per country group keeps the photo (base64) with author and licence.
 """
 import base64
@@ -12,12 +12,13 @@ from pathlib import Path
 import collect
 import picks as chosen
 
-TASKS = ('MODEL-GALLERY-FETCH-20261026',)
+TASKS = ('MODEL-GALLERY-FETCH-20261026', 'MODEL-GALLERY-FETCH-20261026-R2')
 WIDTH = 960
 
 
-def evidence_path(group):
-    return '%s/photos_%s.json' % (collect.PACKAGE, group)
+def evidence_path(group, task=TASKS[-1]):
+    # R2 writes next to the first run's files, never over them.
+    return '%s/%s_%s.json' % (collect.PACKAGE, 'photos2' if task.endswith('-R2') else 'photos', group)
 
 
 def photos(fetch, titles):
@@ -42,7 +43,7 @@ def execute(env, *, root=None, fetch=collect.get, picks=None):
     for group in groups:
         found = {key: {kind: photos(fetch, titles) for kind, titles in views.items()}
                  for key, views in picks.items() if collect.MODELS[key][0] == group}
-        collect.write(root, evidence_path(group), collect.dump({'task_id': env['UAART_TASK_ID'], 'run_id': run_id,
+        collect.write(root, evidence_path(group, env['UAART_TASK_ID']), collect.dump({'task_id': env['UAART_TASK_ID'], 'run_id': run_id,
                                                                 'http_methods': ['GET'], 'remote_write_count': 0,
                                                                 'models': found}))
     receipt = {'task_id': env['UAART_TASK_ID'], 'status': 'FINISHED', 'task_class': 'STANDARD',
@@ -50,7 +51,7 @@ def execute(env, *, root=None, fetch=collect.get, picks=None):
                'tests_scope': 'READ_ONLY_PROBE', 'unexpected_changes': 0, 'rollback_ready': True,
                'rollback_ready_scope': 'NO_REMOTE_WRITES', 'production_required': False,
                'request_sha256': request_sha, 'run_id': run_id,
-               'evidence_path': [evidence_path(group) for group in groups]}
+               'evidence_path': [evidence_path(group, env['UAART_TASK_ID']) for group in groups]}
     collect.write(root, env['UAART_RECEIPT_PATH'], collect.dump(receipt))
     return receipt
 
