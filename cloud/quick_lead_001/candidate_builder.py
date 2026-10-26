@@ -3,7 +3,8 @@ import hashlib
 from pathlib import Path
 
 import edit_intake
-from release_constants import NEW_FILES, REPLACED_FILES
+import quick_assets
+from release_constants import ASSETS, NEW_FILES, REPLACED_FILES
 
 HERE = Path(__file__).resolve().parent
 SOURCE_SHA256 = {
@@ -34,4 +35,5 @@ def build(source, dependencies):
             raise ValueError('INPUT_HASH:' + name)
     result = {target: (HERE / name).read_bytes() for target, name in {**NEW_FILES, **REPLACED_FILES}.items()}
     result.update({name: edit_intake.build(name, source[name]) for name in edit_intake.EDITS})
+    result.update({name: getattr(quick_assets, attribute).encode('utf-8') for name, attribute in ASSETS.items()})
     return result

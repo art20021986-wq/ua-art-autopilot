@@ -33,7 +33,7 @@ def main():
         raise ValueError('PACKAGE_PATH')
     with zipfile.ZipFile(archive) as bundle:
         for item in bundle.infolist():
-            if (not re.fullmatch(r'[a-z_]+\.(?:py|sql|js|css)', item.filename)
+            if (not re.fullmatch(r'[a-z_]+\.(?:py|sql)', item.filename)
                     or item.file_size > 1048576):
                 raise ValueError('BUNDLE_ENTRY')
             target = package / item.filename
