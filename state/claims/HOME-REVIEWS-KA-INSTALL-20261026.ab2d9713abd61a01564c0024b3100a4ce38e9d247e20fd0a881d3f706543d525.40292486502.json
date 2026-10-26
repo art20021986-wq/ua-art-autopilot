@@ -17,6 +17,15 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "ea83a4d83cd40f07"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-10-26T15:18:39.401811+00:00",
+      "class": "ROLLED_BACK_VERIFIED",
+      "evidence_path": "state/reconciliations/HOME-REVIEWS-KA-INSTALL-20261026.40292486502.authenticated-evidence.json",
+      "message": "Bundle upload to PythonAnywhere timed out (NETWORK_TimeoutError) after the backup; rollback restored release 1 and was verified. Owner-authorized halt recovery; retried as HOME-REVIEWS-KA-INSTALL-20261026-R2.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-10-26T08:44:18Z",
@@ -101,5 +110,5 @@
       "cloud/home_reviews_001/test_edit_home.py": "7b5f4fc9549af406f283011451b1cb0f4d17b7dca2198b3933061a57925557d2"
     }
   },
-  "updated_at": "2026-10-26T08:54:54Z"
+  "updated_at": "2026-10-26T15:18:39.401811+00:00"
 }
