@@ -7,21 +7,23 @@
   "created_at": "2026-10-26T07:30:45Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-26T07:30:45Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-26T07:34:45Z",
+  "heartbeat_at": "2026-10-26T07:34:45Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40286126728",
     "task_id": "QUICK-LEAD-002-PREFLIGHT-20261026-R2",
     "task_sha256": "fce0df3aaadae83c56646fe61091646d0ddce3d93a9c592235dc8a0b3a529ed6"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-5efcca6e855fe4d8-a08e4aebb09afb86",
   "receipt_path": "state/receipts/QUICK-LEAD-002-PREFLIGHT-20261026-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "d6ec611eac0c68f87934e2835def8c438b30e6936539966829ffc46d15880c81",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/QUICK-LEAD-002-PREFLIGHT-20261026-R2.json",
   "request_sha256": "fce0df3aaadae83c56646fe61091646d0ddce3d93a9c592235dc8a0b3a529ed6",
   "resource_locks": [
@@ -29,8 +31,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "207edffa3562cbaf2ef23f7301484984acf22afc",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91107328000,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.17
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-26T07:30:45Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "eb169c7dcec9cf7fb5e4af39af8e79df6844edbabbb249d3e1970ab04f7a2594",
+    "file_sha256": {
+      "cloud/quick_lead_002/candidate_builder.py": "8cc7780ca1c979fa14947f8dad11a0a55818de39b9dbd4962c78d6ddb16be002",
+      "cloud/quick_lead_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/quick_lead_002/deployment_bootstrap.py": "a614adae40a1622aa74c67b1d145336d5be20aefb661d43b01d181a863589c91",
+      "cloud/quick_lead_002/deployment_remote.py": "0c9bec9b1032f2a6efe27654beccf0db0ac03a7eac28cd6547823f512532a60c",
+      "cloud/quick_lead_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/quick_lead_002/deployment_transport.py": "06202259041092c683689729ace1b7e31ed747c55d38a747100872715b983125",
+      "cloud/quick_lead_002/edit_order.py": "51d32620b0c9eefafb70120f112d02cde1160e5facd84e148dc93328b215c573",
+      "cloud/quick_lead_002/quick.py": "6848e71a06eb3c97da72e0cdda20e0f77c5b5e87e3300c11e31ed3146857856b",
+      "cloud/quick_lead_002/quick_assets.py": "bed159b01c63daa1466c45c795bd971ac237ad3f397992aff9d1170105189909",
+      "cloud/quick_lead_002/release_constants.py": "d96c72e1936ab39b6ff3bede864333fa31ed61914d706d9bf8b4c240cba087f7",
+      "cloud/quick_lead_002/test_deployment.py": "6ab1f6bd45e04a9b24a0e5e61fea85d7959decb0b8a53f972e8295a22a9babf2",
+      "cloud/quick_lead_002/test_order_offer.py": "ae12dbdf8759fdd6a96e1740bf22300a69a0999652c2b5cf9fedc4380e088100",
+      "cloud/quick_lead_002/test_release.py": "0b282472235471e29cf8ae42037573e41aa3acee32a7e2eb621a0ebd6ed338c0",
+      "cloud/quick_lead_002/ua_seo_quick_form.py": "79931a94f9a72d3af43c8e5858d2a1eb981ae518f4fcd95b593097f8f55690b6"
+    }
+  },
+  "updated_at": "2026-10-26T07:34:45Z"
 }
