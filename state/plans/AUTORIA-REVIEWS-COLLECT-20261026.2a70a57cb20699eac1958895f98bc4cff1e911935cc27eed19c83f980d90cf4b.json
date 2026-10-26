@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUTORIA-REVIEWS-COLLECT-20261026.2a70a57cb20699eac1958895f98bc4cff1e911935cc27eed19c83f980d90cf4b.json",
+  "autostart_ledger_sha256": "ac0ee31eb86adab39dff84d2793659a59f124b50ef3973ba2d6d7d7e9017f44d",
+  "autostart_source_commit": "229392d5c0a7ea86a50db5066c1787e201998248",
+  "created_at": "2026-10-26T07:06:30Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40283665561",
+    "task_id": "AUTORIA-REVIEWS-COLLECT-20261026",
+    "task_sha256": "2a70a57cb20699eac1958895f98bc4cff1e911935cc27eed19c83f980d90cf4b"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-97383a4e3349a576-03020877cbc4966f",
+  "request_path": "tasks/requests/AUTORIA-REVIEWS-COLLECT-20261026.json",
+  "resource_locks": [
+    "READ_ONLY:97383a4e3349a576"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
