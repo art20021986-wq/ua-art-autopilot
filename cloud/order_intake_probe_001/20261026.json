@@ -1,0 +1,259 @@
+{
+  "mode": "probe",
+  "order_sources": {},
+  "remote_write_count": 0,
+  "run_id": "40262725346",
+  "safe_to_stop": true,
+  "source_hits": {
+    "/home/Carix/cars_ui.py": {
+      "bytes": 208358,
+      "matches": [
+        {
+          "context": [
+            "",
+            "# UA-ART-LEGACY-EMERGENCY-SPEC-20260910: automatic queue handoff only.",
+            "_ua_emergency_spec_tasks = set()"
+          ],
+          "line": 4043
+        }
+      ],
+      "sha256": "19adbff34be18402897ca4b54889c9361bcdd261f329218e147b72f8031f9ad6"
+    },
+    "/home/Carix/order_route_inspect.py": {
+      "bytes": 1872,
+      "matches": [
+        {
+          "context": [
+            "def inspect(cursor):",
+            "    cursor.execute('SELECT COUNT(*) AS count FROM order_requests')",
+            "    print('REQUESTS', cursor.fetchone())"
+          ],
+          "line": 32
+        },
+        {
+          "context": [
+            "    print('REQUESTS', cursor.fetchone())",
+            "    cursor.execute('SELECT id, request_id, created_at FROM order_requests ORDER BY id LIMIT 1')",
+            "    print('FIRST', cursor.fetchone())"
+          ],
+          "line": 34
+        }
+      ],
+      "sha256": "147326f4372443dbe4fc86bfe8b8b4231c0c6aa46f9a5c1704811063e1f71c18"
+    },
+    "/home/Carix/spec_emergency_prepare_20260910_r1.py": {
+      "bytes": 8029,
+      "matches": [
+        {
+          "context": [
+            "# publisher invocation and rollback body; add only draft-intent protection and",
+            "# a nonblocking queue handoff following successful first publication.",
+            "active = [n for n in ast.parse(ui).body if isinstance(n, ast.AsyncFunctionDef) and n.name == 'toggle_publish'][-1]"
+          ],
+          "line": 45
+        },
+        {
+          "context": [
+            "helpers = '''",
+            "# UA-ART-LEGACY-EMERGENCY-SPEC-20260910: automatic queue handoff only.",
+            "_ua_emergency_spec_tasks = set()"
+          ],
+          "line": 79
+        }
+      ],
+      "sha256": "409003e2c33f04d7ee028b25107fa75098a3576ceb377666cf9381a7585e6e8e"
+    },
+    "/home/Carix/team_bot.py": {
+      "bytes": 65247,
+      "matches": [
+        {
+          "context": [
+            "async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):",
+            "    \"\"\"Owner intake is processed by AI only; no staff handoff.\"\"\"",
+            "    staff = who(update)"
+          ],
+          "line": 279
+        }
+      ],
+      "sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+    },
+    "/home/Carix/ua_google_tag.py": {
+      "bytes": 2222,
+      "matches": [
+        {
+          "context": [
+            "document.addEventListener('click',function(e){var t=e.target;if(!t||!t.closest)return;",
+            "if(t.closest('#ua-order #handoff')){lead('generate_lead','order_telegram');return;}",
+            "var a=t.closest('a[href]');var m=a?contact(a.getAttribute('href')):'';if(m)lead('contact',m);},true);"
+          ],
+          "line": 18
+        }
+      ],
+      "sha256": "f5f0a30489d20d7f7d973c27bd31e583e9827fb5a6d1e24a97fb35d1e6a3b6d4"
+    },
+    "/home/Carix/uaart_bridge_prereload.py": {
+      "bytes": 4372,
+      "matches": [
+        {
+          "context": [
+            "    if mod.HANDOFF_MARKER!=\"[CLAUDE->PYTHON]\":",
+            "        raise RuntimeError(\"handoff marker mismatch\")",
+            "    say(\"PASS\",\"repository/ref/handoff gate exact\")"
+          ],
+          "line": 88
+        },
+        {
+          "context": [
+            "        raise RuntimeError(\"handoff marker mismatch\")",
+            "    say(\"PASS\",\"repository/ref/handoff gate exact\")",
+            ""
+          ],
+          "line": 89
+        }
+      ],
+      "sha256": "2aaa13274a805bb512099af09b9c2f9beb5cd0d9f1e69dc38a538995d1a2182e"
+    },
+    "/home/Carix/uaart_bridge_selftest.py": {
+      "bytes": 16343,
+      "matches": [
+        {
+          "context": [
+            "        (\"allowed ref\", getattr(mod, \"ALLOWED_REF\", None), \"refs/heads/main\"),",
+            "        (\"handoff marker\", getattr(mod, \"HANDOFF_MARKER\", None), \"[CLAUDE->PYTHON]\"),",
+            "        (\"POST path\", getattr(mod, \"PATH_POST\", None), \"/uaart-bridge\"),"
+          ],
+          "line": 225
+        },
+        {
+          "context": [
+            "",
+            "        # 14. Missing Claude handoff marker",
+            "        no_marker = json.loads(json.dumps(good_payload))"
+          ],
+          "line": 344
+        },
+        {
+          "context": [
+            "        )",
+            "        if expect_status(\"missing handoff marker ignored\", resp, \"202\"):",
+            "            js = resp.get(\"json\") or {}"
+          ],
+          "line": 356
+        },
+        {
+          "context": [
+            "            js = resp.get(\"json\") or {}",
+            "            if js.get(\"queued\") is False and js.get(\"reason\") == \"handoff_marker_missing\":",
+            "                line(\"PASS\", \"ordinary commit not queued\", js)"
+          ],
+          "line": 358
+        },
+        {
+          "context": [
+            "",
+            "        # 15. Valid handoff",
+            "        resp = call_wsgi("
+          ],
+          "line": 363
+        },
+        {
+          "context": [
+            "        )",
+            "        valid_ok = expect_status(\"valid Claude->Python handoff accepted\", resp, \"202\")",
+            "        if valid_ok:"
+          ],
+          "line": 376
+        },
+        {
+          "context": [
+            "            if js.get(\"queued\") is True and js.get(\"queue_file\"):",
+            "                line(\"PASS\", \"valid handoff queued\", js.get(\"queue_file\"))",
+            "            else:"
+          ],
+          "line": 380
+        },
+        {
+          "context": [
+            "            else:",
+            "                line(\"FAIL\", \"valid handoff queued\", js)",
+            ""
+          ],
+          "line": 382
+        }
+      ],
+      "sha256": "e82dbe9104c02df586971845f34fe7ba078e42f4a2dc601d551d2b5c93cbb31d"
+    },
+    "/home/Carix/uaart_bridge_wsgi.py": {
+      "bytes": 14363,
+      "matches": [
+        {
+          "context": [
+            "2) authenticates it with a shared secret;",
+            "3) validates repository / branch / handoff marker;",
+            "4) writes one JSON job into its own isolated queue directory;"
+          ],
+          "line": 18
+        },
+        {
+          "context": [
+            "- Only the configured GitHub repository and main branch are accepted.",
+            "- Only commits containing the handoff marker are queued.",
+            "- Request size is limited."
+          ],
+          "line": 26
+        },
+        {
+          "context": [
+            "",
+            "# Claude -> Python handoff must be explicit in commit text.",
+            "HANDOFF_MARKER = os.environ.get("
+          ],
+          "line": 65
+        },
+        {
+          "context": [
+            "    # Also support a normalized Make envelope.",
+            "    for key in (\"message\", \"commit_message\", \"handoff\"):",
+            "        if payload.get(key):"
+          ],
+          "line": 213
+        },
+        {
+          "context": [
+            "",
+            "def _has_handoff_marker(payload):",
+            "    if not HANDOFF_MARKER:"
+          ],
+          "line": 220
+        },
+        {
+          "context": [
+            "        \"allowed_ref\": ALLOWED_REF,",
+            "        \"handoff_marker\": HANDOFF_MARKER,",
+            "        \"queue_count\": queue_count,"
+          ],
+          "line": 289
+        },
+        {
+          "context": [
+            "",
+            "    if not _has_handoff_marker(payload):",
+            "        return _json_response("
+          ],
+          "line": 411
+        },
+        {
+          "context": [
+            "                \"queued\": False,",
+            "                \"reason\": \"handoff_marker_missing\",",
+            "                \"required_marker\": HANDOFF_MARKER,"
+          ],
+          "line": 418
+        }
+      ],
+      "sha256": "b0c93d88d67e8c285c1bffb40bd6f2e40c2779af7a01cebd6beab4beda685150"
+    }
+  },
+  "status": "PASS",
+  "task_id": "ORDER-INTAKE-PROBE-20261026"
+}
