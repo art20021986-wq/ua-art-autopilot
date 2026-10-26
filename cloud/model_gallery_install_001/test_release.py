@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+"""Release-specific checks: the candidate built from the live order-page files (PODBOR-MODEL-001 state)."""
+import json
+from pathlib import Path
+import unittest
+
+import candidate_builder
+import edit_order
+import gallery_assets
+import generations
+
+HERE = Path(__file__).resolve().parent
+LIVE = {edit_order.PAGE: 'podbor.html', edit_order.SCRIPT: 'order.js', edit_order.STRINGS: 'order-strings.json'}
+SOURCE = {name: (HERE/'fixtures'/file).read_bytes() for name, file in LIVE.items()}
+DATA = json.loads(gallery_assets.FILES['video/order/model-gallery.json'])
+
+
+class ReleaseTests(unittest.TestCase):
+    def test_planned_files(self):
+        result = candidate_builder.build(SOURCE, {})
+        photos = candidate_builder.photos()
+        self.assertEqual(set(result), set(LIVE) | set(gallery_assets.FILES) | set(photos))
+        self.assertIn(edit_order.CHECK_PAGE.encode(), result[edit_order.PAGE])
+        self.assertIn(edit_order.CHECK_SCRIPT.encode(), result[edit_order.SCRIPT])
+        self.assertIn(edit_order.CHECK_STRINGS.encode(), result[edit_order.STRINGS])
+        for lang in ('uk', 'ru', 'ka'):
+            self.assertEqual(len(json.loads(result[edit_order.STRINGS])[lang]['photo_prev']) > 0, True)
+        for name, value in photos.items():
+            self.assertTrue(name.startswith('video/order/media/') and name.endswith('.webp'), name)
+            self.assertEqual(value[8:12], b'WEBP', name)
+
+    def test_gallery_data_matches_photos(self):
+        photos = candidate_builder.photos()
+        for key, model in DATA['models'].items():
+            self.assertEqual(set(model['generation']), {'uk', 'ru', 'ka'})
+            self.assertEqual(model['photos'][0]['path'], 'media/%s.jpg' % key)
+            self.assertLessEqual(len(model['photos']), 8)
+            for photo in model['photos'][1:]:
+                self.assertIn('video/order/' + photo['path'], photos)
+                self.assertTrue(photo['license'] and photo['source'].startswith('https://commons.wikimedia.org/'))
+        self.assertEqual(set(DATA['models']), set(generations.GENERATIONS) | set(generations.PHOTO_OF))
+
+    def test_generation_line(self):
+        self.assertEqual(generations.line('kia-k5'), {'uk': '3-тє покоління (DL3), з 2019 р.',
+                                                      'ru': '3-е поколение (DL3), с 2019 г.',
+                                                      'ka': 'მე-3 თაობა (DL3), 2019 წლიდან'})
+
+    def test_applied_or_changed_source_is_refused(self):
+        result = candidate_builder.build(SOURCE, {})
+        with self.assertRaises(ValueError):
+            edit_order.build(edit_order.SCRIPT, result[edit_order.SCRIPT])
+        with self.assertRaises(ValueError):
+            edit_order.build(edit_order.PAGE, SOURCE[edit_order.PAGE].replace(b'20261025.3', b'20261025.4'))
+
+    def test_bundle_modules_fit(self):
+        for path in HERE.glob('*.py'):
+            self.assertLessEqual(path.stat().st_size, 1048576, path.name)
+
+
+if __name__ == '__main__':
+    unittest.main()
