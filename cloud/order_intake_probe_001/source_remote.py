@@ -21,6 +21,8 @@ APP_DIRS = (HOME,)
 SKIP = ('site-packages', '__pycache__', '/.', '/runs/', 'backup', '/inbox')
 MAX_DEPTH = 3
 MAX_FILES = 4000
+# R4: the live order package (found by R3), every module returned in full, sanitized.
+PACKAGE = HOME/'ua_order'
 MARKERS = ('/api/orders', 'api/orders', 'ua_order_request', 'orders/submit', 'consent_version', 'card_presets',
            'order_requests', 'handoff')
 # Modules that define the order routes or validate the request are returned in full.
@@ -81,7 +83,9 @@ def report():
         hits[str(path)] = {'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw), 'matches': found[:60]}
         if DEFINES.search(text) and len(full) < MAX_FULL:
             full[str(path)] = '\n'.join(sanitized_line(item) for item in lines)
-    return {'status': 'PASS', 'source_hits': hits, 'order_sources': full}
+    package = {path.name: '\n'.join(sanitized_line(item) for item in path.read_text(encoding='utf-8', errors='replace').splitlines())
+               for path in sorted(PACKAGE.glob('*.py')) if path.is_file() and not path.is_symlink()}
+    return {'status': 'PASS', 'source_hits': hits, 'order_sources': full, 'package_sources': package}
 
 
 def main():
