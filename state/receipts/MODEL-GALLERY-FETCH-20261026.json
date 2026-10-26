@@ -1,0 +1,24 @@
+{
+ "evidence_path": [
+  "cloud/model_gallery_001/photos_canada.json",
+  "cloud/model_gallery_001/photos_china.json",
+  "cloud/model_gallery_001/photos_europe.json",
+  "cloud/model_gallery_001/photos_georgia.json",
+  "cloud/model_gallery_001/photos_japan.json",
+  "cloud/model_gallery_001/photos_korea.json",
+  "cloud/model_gallery_001/photos_usa.json"
+ ],
+ "live_source_environment": "wikimedia_commons",
+ "production_required": false,
+ "request_sha256": "0ea8e09e52ba8fb569d7503bb26edeaa42039126561ad36f002b286be86c19cf",
+ "rollback_ready": true,
+ "rollback_ready_scope": "NO_REMOTE_WRITES",
+ "run_id": "40284030578",
+ "status": "FINISHED",
+ "target_environment": "shadow",
+ "task_class": "STANDARD",
+ "task_id": "MODEL-GALLERY-FETCH-20261026",
+ "tests": "PASS",
+ "tests_scope": "READ_ONLY_PROBE",
+ "unexpected_changes": 0
+}
