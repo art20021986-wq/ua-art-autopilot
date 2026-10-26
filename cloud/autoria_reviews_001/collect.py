@@ -21,13 +21,17 @@ import urllib.request
 import urllib.robotparser
 
 PACKAGE = 'cloud/autoria_reviews_001'
-TASKS = ('AUTORIA-REVIEWS-COLLECT-20261026',)
+# R2: the listings page is rendered by script and links no profile; follow the owner's ads, whose seller
+# block links the dealer page; generic index pages (/uk/dealers/, /uk/reviews/) are not followed.
+TASKS = ('AUTORIA-REVIEWS-COLLECT-20261026', 'AUTORIA-REVIEWS-COLLECT-20261026-R2')
 ROOT = Path(__file__).resolve().parents[2]
 SELLER = '1980296'
 START = 'https://auto.ria.com/uk/search/?user_id=%s&custom=3&abroad=0' % SELLER
 ROBOTS = 'https://auto.ria.com/robots.txt'
 AGENT = 'UA-ART-autopilot/1.0 (+https://www.uaart.com.ua/)'
-PROFILE = re.compile(r'/(dealer|autosalon|salon|seller|user|users|reviews|vidguky|otzyvy|company)s?[/-]', re.I)
+PROFILE = re.compile(r'/(dealer|autosalon|salon|seller|user|company)s?/[^/?#]+', re.I)
+AD = re.compile(r'^/uk/auto_[a-z0-9_]+\.html$')
+MAX_ADS = 2
 LOGO = re.compile(r'logo', re.I)
 MAX_PROFILES = 6
 MAX_LOGOS = 4
@@ -116,15 +120,15 @@ def read_page(fetch, robots, url):
             'html_gz_b64': base64.b64encode(gzip.compress(body, mtime=0)).decode()}
 
 
-def profile_links(page):
-    """Seller-profile links on the listings page: auto.ria.com, not a search, naming the seller or a profile path."""
+def page_links(page, pattern, limit):
+    """auto.ria.com links of a page whose path matches pattern (seller profile or the owner's ad), searches excluded."""
     found = []
     for link in page.get('links', []):
         href = link['href'].split('#')[0]
         path = urllib.parse.urlsplit(href).path
-        if in_scope(href) and '/search' not in path and (SELLER in href or PROFILE.search(path)) and href != page['url']:
+        if in_scope(href) and '/search' not in path and pattern.search(path) and href != page['url']:
             found.append(href)
-    return list(dict.fromkeys(found))[:MAX_PROFILES]
+    return list(dict.fromkeys(found))[:limit]
 
 
 def logos(fetch, pages):
@@ -152,8 +156,10 @@ def load_robots(fetch):
 def snapshot(fetch):
     robots, robots_status = load_robots(fetch)
     start = read_page(fetch, robots, START)
-    profiles = [read_page(fetch, robots, url) for url in profile_links(start)]
-    pages = [start] + profiles
+    ads = [read_page(fetch, robots, url) for url in page_links(start, AD, MAX_ADS)]
+    wanted = [url for page in [start] + ads for url in page_links(page, PROFILE, MAX_PROFILES)]
+    profiles = [read_page(fetch, robots, url) for url in list(dict.fromkeys(wanted))[:MAX_PROFILES]]
+    pages = [start] + ads + profiles
     return {'robots_status': robots_status, 'pages': pages, 'logos': logos(fetch, pages)}
 
 
