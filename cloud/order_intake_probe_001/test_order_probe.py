@@ -67,10 +67,12 @@ class RemoteTests(unittest.TestCase):
                                                 "    phone = '+380 99 222 20 02'\nx = 'https://evil.example/p'\n")
             (home / 'helper.py').write_text("print('handoff')\n")
             (home / 'other.py').write_text('print(1)\n')
-            with patch.object(remote, 'ROOTS', (home,)):
+            (home / 'mysite' / 'api').mkdir(parents=True)
+            (home / 'mysite' / 'api' / 'orders.py').write_text("ROUTE = '/api/orders/bootstrap'\n")
+            with patch.object(remote, 'ROOTS', (home,)), patch.object(remote, 'APP_DIRS', (home / 'mysite',)):
                 value = remote.report()
-        self.assertEqual(sorted(Path(p).name for p in value['source_hits']), ['helper.py', 'orders_api.py'])
-        self.assertEqual([Path(p).name for p in value['order_sources']], ['orders_api.py'])
+        self.assertEqual(sorted(Path(p).name for p in value['source_hits']), ['helper.py', 'orders.py', 'orders_api.py'])
+        self.assertEqual(sorted(Path(p).name for p in value['order_sources']), ['orders.py', 'orders_api.py'])
         full = value['order_sources'][str(home / 'orders_api.py')]
         self.assertIn('[REDACTED]', full)
         self.assertNotIn('abc', full)
