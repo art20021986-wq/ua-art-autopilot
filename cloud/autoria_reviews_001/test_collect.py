@@ -13,14 +13,16 @@ import collect as c  # noqa: E402
 
 c.PAUSE = 0
 
-PROFILE = 'https://auto.ria.com/uk/dealer/ua-art-1980296/'
+PROFILE = 'https://auto.ria.com/uk/dealers/kyiv/ua-art-1234.html'
+AD = 'https://auto.ria.com/uk/auto_kia_k5_40465055.html'
 LISTINGS = ('<html><head><script type="application/ld+json">{"@type":"ItemList"}</script><style>.x{}</style></head><body>'
             '<img class="logo" src="https://css.riastatic.com/img/logo.svg" alt="AUTO.RIA">'
-            '<a href="/uk/dealer/ua-art-1980296/">UA ART</a><a href="/uk/search/?page=2">2</a>'
+            '<a href="/uk/auto_kia_k5_40465055.html">K5</a><a href="/uk/dealers/">all</a><a href="/uk/search/?page=2">2</a>'
             '<a href="https://example.com/x">x</a><p>Продано  12 авто</p><script>var a=1</script></body></html>')
 PAGES = {
     c.ROBOTS: (200, b'User-agent: *\nDisallow: /private/\n'),
     c.START: (200, LISTINGS.encode()),
+    AD: (200, '<a href="/uk/dealers/kyiv/ua-art-1234.html">UA ART</a>'.encode()),
     PROFILE: (200, '<p>На AUTO.RIA 6 років</p><p>Відгук: все чудово</p>'.encode()),
     'https://css.riastatic.com/img/logo.svg': (200, b'<svg/>'),
 }
@@ -40,7 +42,8 @@ class CollectTests(unittest.TestCase):
 
     def test_snapshot(self):
         found = c.snapshot(fake)
-        start, profile = found['pages']
+        start, ad, profile = found['pages']
+        self.assertEqual(ad['url'], AD)
         self.assertEqual(found['robots_status'], 200)
         self.assertEqual(profile['url'], PROFILE)
         self.assertIn('Продано 12 авто', start['text'])
@@ -72,7 +75,7 @@ class CollectTests(unittest.TestCase):
             self.assertEqual(receipt['status'], 'FINISHED')
             evidence = json.loads((root/c.evidence_path(task)).read_text())
             self.assertEqual(evidence['remote_write_count'], 0)
-            self.assertEqual(len(evidence['pages']), 2)
+            self.assertEqual(len(evidence['pages']), 3)
             with self.assertRaises(c.CollectError):
                 c.execute({**env, 'UAART_TASK_ID': 'OTHER'}, root=root, fetch=fake)
 
