@@ -155,7 +155,7 @@ class OrderPageTests(unittest.TestCase):
         for lang, texts in edit_order.TEXTS.items():
             for key, value in texts.items():
                 self.assertEqual(strings[lang][key], value)
-        self.assertEqual(strings['uk']['quick_offer'], 'Отримати пропозицію в месенджері')
+        self.assertEqual(strings['uk']['quick_offer'], 'Отримати пропозицію від UA ART в месенджері')
 
     def test_dialog_uses_the_shared_form_contract(self):
         page = self.built[edit_order.PAGE].decode()
