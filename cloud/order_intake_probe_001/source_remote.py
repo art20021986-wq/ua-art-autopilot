@@ -16,6 +16,9 @@ import resource
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
 ROOTS = (HOME, Path('/var/www'))
+# R2: the web app's own source directory (PythonAnywhere webapp source_directory), searched recursively.
+APP_DIRS = (HOME/'mysite',)
+SKIP = ('site-packages', '__pycache__', '/.')
 MARKERS = ('/api/orders', 'api/orders', 'ua_order_request', 'orders/submit', 'consent_version', 'card_presets',
            'order_requests', 'handoff')
 # Modules that define the order routes or validate the request are returned in full.
@@ -44,6 +47,10 @@ def sources():
             continue
         for path in entries:
             if path.suffix == '.py' and path.is_file() and not path.is_symlink():
+                yield path
+    for root in APP_DIRS:
+        for path in sorted(root.rglob('*.py')):
+            if path.is_file() and not path.is_symlink() and not any(part in str(path) for part in SKIP):
                 yield path
 
 
