@@ -148,7 +148,7 @@ def upload_package(api):
     output = io.BytesIO()
     with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as archive:
         for path in sorted(HERE.iterdir()):
-            if path.is_file() and path.suffix in ('.py', '.sql', '.js', '.css'):
+            if path.is_file() and path.suffix in ('.py', '.sql'):
                 entry = zipfile.ZipInfo(path.name, date_time=(2026, 1, 1, 0, 0, 0))
                 entry.compress_type = zipfile.ZIP_DEFLATED
                 archive.writestr(entry, path.read_bytes())
