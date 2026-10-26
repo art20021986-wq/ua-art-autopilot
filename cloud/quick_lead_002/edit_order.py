@@ -1,6 +1,7 @@
 """Order page: «get an offer in a messenger» above «calculate» on every model card (QUICK-LEAD-002).
 
-Owner request 2026-10-26. order.js adds the card button (model, country and title as data attributes);
+Owner request 2026-10-26 («Да 2»: «Отримати пропозицію від UA ART в месенджері»).
+order.js adds the card button (model, country and title as data attributes);
 the short enquiry itself is the shared quick-lead.js / quick-lead.css form, here in a <dialog> inside
 the order root, so the page's own language switch translates its [data-label] texts from
 order-strings.json. Asset versions are raised so browsers load the new files. Each original fragment
@@ -22,7 +23,7 @@ DIALOG = ('      <dialog class="ua-quick-dialog" id="quick-lead-dialog">'
           '<input name="customer_name" autocomplete="name" required minlength="2" maxlength="80"></label>'
           '<label><span data-label="quick_phone">Телефон</span>'
           '<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="30"></label>'
-          '<button type="submit" data-label="quick_offer">Отримати пропозицію в месенджері</button>'
+          '<button type="submit" data-label="quick_offer">Отримати пропозицію від UA ART в месенджері</button>'
           '<p class="note" data-label="quick_note">Менеджер напише вам у Viber або Telegram.</p>'
           '<p class="consent" data-consent>Натискаючи кнопку, ви погоджуєтесь на обробку персональних даних.</p></div>'
           '<p class="status" data-status role="status" hidden></p>'
@@ -32,17 +33,17 @@ DIALOG = ('      <dialog class="ua-quick-dialog" id="quick-lead-dialog">'
           '<button type="button" class="ua-quick-close" data-quick-close data-label="quick_close">Закрити</button>'
           '</form></dialog>\n')
 TEXTS = {
-    'uk': {'quick_offer': 'Отримати пропозицію в месенджері', 'quick_title': 'Отримати пропозицію на',
+    'uk': {'quick_offer': 'Отримати пропозицію від UA ART в месенджері', 'quick_title': 'Отримати пропозицію на',
            'quick_name': "Ім'я", 'quick_phone': 'Телефон', 'quick_note': 'Менеджер напише вам у Viber або Telegram.',
            'quick_ok': 'Дякуємо! Заявку {number} прийнято. Менеджер напише вам у Viber або Telegram.',
            'quick_error': 'Не вдалося надіслати заявку. Зателефонуйте нам: +380 99 222 20 02.',
            'quick_bad_phone': 'Перевірте номер телефону.', 'quick_bad_name': "Вкажіть ім'я.", 'quick_close': 'Закрити'},
-    'ru': {'quick_offer': 'Получить предложение в мессенджере', 'quick_title': 'Получить предложение на',
+    'ru': {'quick_offer': 'Получить предложение от UA ART в мессенджере', 'quick_title': 'Получить предложение на',
            'quick_name': 'Имя', 'quick_phone': 'Телефон', 'quick_note': 'Менеджер напишет вам в Viber или Telegram.',
            'quick_ok': 'Спасибо! Заявка {number} принята. Менеджер напишет вам в Viber или Telegram.',
            'quick_error': 'Не удалось отправить заявку. Позвоните нам: +380 99 222 20 02.',
            'quick_bad_phone': 'Проверьте номер телефона.', 'quick_bad_name': 'Укажите имя.', 'quick_close': 'Закрыть'},
-    'ka': {'quick_offer': 'შეთავაზების მიღება მესენჯერში', 'quick_title': 'შეთავაზების მიღება:',
+    'ka': {'quick_offer': 'UA ART-ისგან შეთავაზების მიღება მესენჯერში', 'quick_title': 'შეთავაზების მიღება:',
            'quick_name': 'სახელი', 'quick_phone': 'ტელეფონი', 'quick_note': 'მენეჯერი მოგწერთ Viber-ში ან Telegram-ში.',
            'quick_ok': 'გმადლობთ! განაცხადი {number} მიღებულია. მენეჯერი მოგწერთ Viber-ში ან Telegram-ში.',
            'quick_error': 'განაცხადის გაგზავნა ვერ მოხერხდა. დაგვირეკეთ: +380 99 222 20 02.',
@@ -79,7 +80,7 @@ SCRIPT_VERSION = re.compile(r'order/order\.js\?v=[0-9.]+')
 # Public proof that each file is live.
 CHECK_PAGE = 'id="quick-lead-dialog"'
 CHECK_SCRIPT = "quickLeadModel:model.key"
-CHECK_STRINGS = '"quick_offer": "Отримати пропозицію в месенджері"'
+CHECK_STRINGS = '"quick_offer": "Отримати пропозицію від UA ART в месенджері"'
 
 
 def build(name, source):

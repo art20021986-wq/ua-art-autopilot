@@ -18,7 +18,7 @@ from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 # Public evidence of each change: path -> text the page must contain.
 EXPECTED = {'/video/podbor.html': 'id="quick-lead-dialog"',
             '/video/order/order.js': "quickLeadModel:model.key",
-            '/video/order/order-strings.json': '"quick_offer": "Отримати пропозицію в месенджері"',
+            '/video/order/order-strings.json': '"quick_offer": "Отримати пропозицію від UA ART в месенджері"',
             '/video/order/quick-lead.js': '[data-quick-lead-model]',
             '/video/seo/ua/kia-k5-koreya-kyiv.html': 'data-msg="ok"',
             '/video/index.html': '',
