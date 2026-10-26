@@ -1,7 +1,8 @@
 """One-time Google Analytics setup on the server, where the service account key lives.
 
 Finds the owner's «UA ART» property the service account was given, creates the web data stream for the site
-when it is missing and sets event data retention to 14 months. Nothing else is written; the key never leaves
+when it is missing, sets event data retention to 14 months, marks the site leads as key events and registers the
+event parameters reports need as custom dimensions. Nothing else is written; the key never leaves
 the server. If the Analytics Admin API is off in the service account's project, it tries to turn it on once.
 """
 import argparse
@@ -25,6 +26,9 @@ SITE = 'https://www.uaart.com.ua'
 STREAM_NAME = 'Сайт www.uaart.com.ua'
 # R3: leads the site tag sends (ua_google_tag.py), counted as key events.
 KEY_EVENTS = ('generate_lead', 'contact')
+# R4 (owner «Да», 2026-10-26): «placement» of the autoria_click event (home page AUTO.RIA links) as a report dimension.
+CUSTOM_DIMENSIONS = ({'parameterName': 'placement', 'displayName': 'AUTO RIA click placement', 'scope': 'EVENT',
+                      'description': 'Where the AUTO.RIA link was clicked: reviews_block or footer_badge'},)
 
 
 def token(key):
@@ -114,6 +118,20 @@ def report():
                 writes.append('key_event_' + name)
         else:
             result['key_events'][name] = 'exists' if name in names else status
+    status, existing = call(bearer, ADMIN + prop + '/customDimensions')
+    names = {item.get('parameterName') for item in existing.get('customDimensions', [])} if status == 200 else set()
+    result['custom_dimensions'] = {'http': status}
+    for dimension in CUSTOM_DIMENSIONS:
+        name = dimension['parameterName']
+        if status == 200 and name not in names:
+            created_status, created = call(bearer, ADMIN + prop + '/customDimensions', dimension)
+            result['custom_dimensions'][name] = created_status
+            if created_status == 200:
+                writes.append('custom_dimension_' + name)
+            else:
+                result['custom_dimensions'][name + '_error'] = created.get('error', '')[:300]
+        else:
+            result['custom_dimensions'][name] = 'exists' if name in names else status
     measurement = result['stream']['measurementId'] or ''
     return {'status': 'PASS' if re.fullmatch(r'G-[A-Z0-9]+', measurement) else 'FAIL', 'analytics_writes': writes, **result}
 

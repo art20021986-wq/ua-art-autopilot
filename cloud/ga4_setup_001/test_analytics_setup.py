@@ -101,11 +101,16 @@ class RemoteTests(unittest.TestCase):
             ('GET', '/dataStreams'): (200, {}), ('POST', '/dataStreams'): (200, created),
             ('GET', '/dataRetentionSettings'): (200, {'eventDataRetention': 'TWO_MONTHS'}),
             ('PATCH', 'eventDataRetention'): (200, {'eventDataRetention': 'FOURTEEN_MONTHS'}),
-            ('GET', '/keyEvents'): (200, {'keyEvents': [{'eventName': 'purchase'}]}), ('POST', '/keyEvents'): (200, {})})
+            ('GET', '/keyEvents'): (200, {'keyEvents': [{'eventName': 'purchase'}]}), ('POST', '/keyEvents'): (200, {}),
+            ('GET', '/customDimensions'): (200, {'customDimensions': [{'parameterName': 'other'}]}),
+            ('POST', '/customDimensions'): (200, {})})
         self.assertEqual((value['status'], value['stream']['measurementId']), ('PASS', 'G-XYZ789'))
         self.assertEqual(value['analytics_writes'], ['data_stream_created', 'retention_14_months',
-                                                     'key_event_generate_lead', 'key_event_contact'])
-        self.assertEqual(calls[-1][2], {'eventName': 'contact', 'countingMethod': 'ONCE_PER_EVENT'})
+                                                     'key_event_generate_lead', 'key_event_contact',
+                                                     'custom_dimension_placement'])
+        self.assertEqual(calls[-3][2], {'eventName': 'contact', 'countingMethod': 'ONCE_PER_EVENT'})
+        self.assertEqual(calls[-1][2], {'parameterName': 'placement', 'displayName': 'AUTO RIA click placement',
+                                        'scope': 'EVENT', 'description': remote.CUSTOM_DIMENSIONS[0]['description']})
         self.assertEqual(calls[3][2], {'type': 'WEB_DATA_STREAM', 'displayName': remote.STREAM_NAME,
                                        'webStreamData': {'defaultUri': 'https://www.uaart.com.ua'}})
 
@@ -116,9 +121,23 @@ class RemoteTests(unittest.TestCase):
             ('GET', 'accountSummaries'): self.SUMMARY, ('GET', PROP): (200, {}),
             ('GET', '/dataStreams'): (200, {'dataStreams': [stream]}),
             ('GET', '/dataRetentionSettings'): (200, {'eventDataRetention': 'FOURTEEN_MONTHS'}),
-            ('GET', '/keyEvents'): (200, {'keyEvents': [{'eventName': 'generate_lead'}, {'eventName': 'contact'}]})})
+            ('GET', '/keyEvents'): (200, {'keyEvents': [{'eventName': 'generate_lead'}, {'eventName': 'contact'}]}),
+            ('GET', '/customDimensions'): (200, {'customDimensions': [{'parameterName': 'placement'}]})})
         self.assertEqual((value['status'], value['analytics_writes']), ('PASS', []))
+        self.assertEqual(value['custom_dimensions'], {'http': 200, 'placement': 'exists'})
         self.assertFalse([c for c in calls if c[0] != 'GET'])
+
+    def test_refused_dimension_is_reported(self):
+        stream = {'type': 'WEB_DATA_STREAM', 'webStreamData': {'defaultUri': remote.SITE, 'measurementId': 'G-XYZ789'}}
+        value, _ = self.run_report({
+            ('GET', 'accountSummaries'): self.SUMMARY, ('GET', PROP): (200, {}),
+            ('GET', '/dataStreams'): (200, {'dataStreams': [stream]}),
+            ('GET', '/dataRetentionSettings'): (200, {'eventDataRetention': 'FOURTEEN_MONTHS'}),
+            ('GET', '/keyEvents'): (200, {'keyEvents': [{'eventName': 'generate_lead'}, {'eventName': 'contact'}]}),
+            ('GET', '/customDimensions'): (200, {}), ('POST', '/customDimensions'): (400, {'error': 'INVALID_ARGUMENT'})})
+        self.assertEqual(value['analytics_writes'], [])
+        self.assertEqual(value['custom_dimensions']['placement'], 400)
+        self.assertIn('INVALID_ARGUMENT', value['custom_dimensions']['placement_error'])
 
     def test_no_access_writes_nothing(self):
         value, calls = self.run_report({('GET', 'accountSummaries'): (200, {})})
