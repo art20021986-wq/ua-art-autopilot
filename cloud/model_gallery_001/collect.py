@@ -20,10 +20,10 @@ import urllib.request
 
 PACKAGE = 'cloud/model_gallery_001'
 # R2: Commons page titles use spaces; HTTP errors other than 404 stop the run with their code.
-TASKS = ('MODEL-GALLERY-COLLECT-20261026', 'MODEL-GALLERY-COLLECT-20261026-R2')
+# R3: any https host under wikimedia.org; a candidate whose thumbnail cannot be read is skipped.
+TASKS = ('MODEL-GALLERY-COLLECT-20261026', 'MODEL-GALLERY-COLLECT-20261026-R2', 'MODEL-GALLERY-COLLECT-20261026-R3')
 ROOT = Path(__file__).resolve().parents[2]
 API = 'https://commons.wikimedia.org/w/api.php'
-HOSTS = ('commons.wikimedia.org', 'upload.wikimedia.org')
 AGENT = 'UA-ART-autopilot/1.0 (https://www.uaart.com.ua/)'
 # key -> (group, main Commons file, pattern every followed category name must contain)
 MODELS = {
@@ -84,8 +84,9 @@ def sha(data):
 
 
 def get(url):
-    if urllib.parse.urlsplit(url).netloc not in HOSTS or not url.startswith('https://'):
-        raise CollectError('URL_OUTSIDE_SCOPE')
+    host = urllib.parse.urlsplit(url).netloc
+    if not url.startswith('https://') or not (host == 'wikimedia.org' or host.endswith('.wikimedia.org')):
+        raise CollectError('URL_OUTSIDE_SCOPE:' + host)
     request = urllib.request.Request(url, headers={'User-Agent': AGENT})
     for attempt in range(3):
         time.sleep(PAUSE * (1 + 4 * attempt))
@@ -171,7 +172,10 @@ def bucket(item, via):
 
 
 def with_thumb(fetch, item):
-    data = fetch(item['thumb'])
+    try:
+        data = fetch(item['thumb'])
+    except CollectError:
+        return None
     return {**item, 'thumb_sha256': sha(data), 'thumb_b64': base64.b64encode(data).decode()} if data else None
 
 
