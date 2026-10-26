@@ -7,21 +7,23 @@
   "created_at": "2026-10-26T08:28:37Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-26T08:28:37Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-26T08:38:41Z",
+  "heartbeat_at": "2026-10-26T08:38:41Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40292347692",
     "task_id": "MODEL-GALLERY-DISCOVER-20261026",
     "task_sha256": "5f421cc838b65f5ca235025f9b1143b081d721ecf429c91b480485a681159670"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-9afdabc446089517-67dfca3e00b48021",
   "receipt_path": "state/receipts/MODEL-GALLERY-DISCOVER-20261026.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "79c84dfc09c411003fe55197aaa40f235e6b06882cb034fde8f68a4b49621fc5",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MODEL-GALLERY-DISCOVER-20261026.json",
   "request_sha256": "5f421cc838b65f5ca235025f9b1143b081d721ecf429c91b480485a681159670",
   "resource_locks": [
@@ -29,8 +31,24 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "e70ca3e489d1b4fc9ca377b5c965c65f2d8a6b2b",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91103711232,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 41.172
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-26T08:28:37Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "313faf94f1cecb25ed1e1029b4d215a1b4a3798b0e530d8e835b41975cf05cf3",
+    "file_sha256": {
+      "cloud/model_gallery_official_001/make_request.py": "510f1da58fbfd9c960966ae164a8f526f16ca874fd9c8b1f28384c2eb9be7c95",
+      "cloud/model_gallery_official_001/test_discover.py": "f8dddae5a1076ebb5492a232ad27ad819e79a774e81a236e4674e4177ac0d9f5"
+    }
+  },
+  "updated_at": "2026-10-26T08:38:41Z"
 }

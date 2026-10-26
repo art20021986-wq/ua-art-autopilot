@@ -1,0 +1,24 @@
+{
+ "evidence_path": [
+  "cloud/model_gallery_official_001/discover_canada.json",
+  "cloud/model_gallery_official_001/discover_china.json",
+  "cloud/model_gallery_official_001/discover_europe.json",
+  "cloud/model_gallery_official_001/discover_georgia.json",
+  "cloud/model_gallery_official_001/discover_japan.json",
+  "cloud/model_gallery_official_001/discover_korea.json",
+  "cloud/model_gallery_official_001/discover_usa.json"
+ ],
+ "live_source_environment": "manufacturer_sites",
+ "production_required": false,
+ "request_sha256": "5f421cc838b65f5ca235025f9b1143b081d721ecf429c91b480485a681159670",
+ "rollback_ready": true,
+ "rollback_ready_scope": "NO_REMOTE_WRITES",
+ "run_id": "40292347692",
+ "status": "FINISHED",
+ "target_environment": "shadow",
+ "task_class": "STANDARD",
+ "task_id": "MODEL-GALLERY-DISCOVER-20261026",
+ "tests": "PASS",
+ "tests_scope": "READ_ONLY_PROBE",
+ "unexpected_changes": 0
+}
