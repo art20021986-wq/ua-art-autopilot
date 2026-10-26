@@ -19,3 +19,13 @@
 2. Отбор фото глазами, таблица поколений — в этом файле и `cloud/model_gallery_001/README.md`.
 3. Пакет установки + превью; владельцу 1–2 строки, ждать «да».
 4. CRITICAL-установка через автопилот, проверка до/после.
+
+## Ход 2026-10-26
+- Чтение Commons: COLLECT R3 (категории основного фото) + SEARCH (поиск салона и вида сзади), FETCH (выбранные фото 960 px).
+  Первые запуски COLLECT: R1 — имена файлов с «_» вместо пробелов, R2 — адрес картинки на другом сервере wikimedia.org.
+- Отбор глазами: `cloud/model_gallery_001/picks.py` — 199 новых фото, у каждой модели основное + до 3 снаружи + до 4 салона,
+  только то же поколение. Салона мало/нет на Commons: Lexus RX 350, Lexus TX, Renault Mégane, VW Jetta (0);
+  BMW X3, Škoda Octavia, Toyota Aqua, Tacoma ×2, Zeekr 001 (1); Lexus RX 500h, BYD Seal, Ford Escape, Forester (2).
+- Поколения: `cloud/model_gallery_install_001/generations.py`.
+- Пакет установки `cloud/model_gallery_install_001` (механизм HOME-LAYOUT-001: бэкап, пауза бота, откат, проверка).
+  Фото — WebP 640 px, всего ~7 МБ. Превью: MODEL-GALLERY-PREFLIGHT-20261026. Установка — только после «да» владельца.
