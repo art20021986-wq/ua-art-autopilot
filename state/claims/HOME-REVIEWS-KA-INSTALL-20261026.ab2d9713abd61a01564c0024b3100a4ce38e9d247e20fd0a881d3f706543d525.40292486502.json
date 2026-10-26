@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "12986efd17de9db8f0ac884ff3773b961b93b4ad6c9573f4e502bf35f15c09df",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "STOP_AFTER_VERIFIED_ROLLBACK",
+      "at": "2026-10-26T08:54:54Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 40292486502",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "ea83a4d83cd40f07"
+    }
+  ],
   "heartbeat_at": "2026-10-26T08:44:18Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -43,7 +54,7 @@
   "production_required": true,
   "production_transaction_id": "tx-40292486502-ab2d9713abd61a01",
   "production_transaction_path": "state/transactions/HOME-REVIEWS-KA-INSTALL-20261026.ab2d9713abd61a01564c0024b3100a4ce38e9d247e20fd0a881d3f706543d525.40292486502.json",
-  "production_transaction_status": "ROLLING_BACK",
+  "production_transaction_status": "ROLLED_BACK",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-REVIEWS-KA-INSTALL-20261026.json",
   "receipt_validation_status": "PENDING",
@@ -69,7 +80,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "ROLLED_BACK",
   "trusted_package": {
     "controller_sha256": "dba1cee2b630a7585bdaf21592c589bd3d61bb6b218337164f6f66d72adbf0cf",
     "file_sha256": {
@@ -90,5 +101,5 @@
       "cloud/home_reviews_001/test_edit_home.py": "7b5f4fc9549af406f283011451b1cb0f4d17b7dca2198b3933061a57925557d2"
     }
   },
-  "updated_at": "2026-10-26T08:45:31Z"
+  "updated_at": "2026-10-26T08:54:54Z"
 }
