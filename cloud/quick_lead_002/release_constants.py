@@ -1,5 +1,5 @@
 """Order page model-card offer release (QUICK-LEAD-002); no private source in this package."""
-PREVIEW_TASK = 'QUICK-LEAD-002-PREFLIGHT-20261026-R3'
+PREVIEW_TASK = 'QUICK-LEAD-002-PREFLIGHT-20261026-R4'
 INSTALL_TASK = 'QUICK-LEAD-002-INSTALL-20261026'
 PACKAGE = 'cloud/quick_lead_002'
 # Installed path -> file of this package.
