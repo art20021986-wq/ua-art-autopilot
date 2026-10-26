@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-REVIEWS-KA-INSTALL-20261026-R2.1a0b120048a24efe2e553eea35b4d15adb5adde167ab8b3a4875c81421b44021.json",
+  "autostart_ledger_sha256": "c075c89c0396e3d4c9efe8617d4e8b30f56b7eb1cc58ad030c8d1b48ca60695b",
+  "autostart_source_commit": "756ecb013117df6d7194be9021e3d91626aa8eed",
+  "created_at": "2026-10-26T15:28:09Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-26T15:28:09Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "40349183069",
+    "task_id": "HOME-REVIEWS-KA-INSTALL-20261026-R2",
+    "task_sha256": "1a0b120048a24efe2e553eea35b4d15adb5adde167ab8b3a4875c81421b44021"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "homepage-68ed6564ebea221c",
+  "receipt_path": "state/receipts/HOME-REVIEWS-KA-INSTALL-20261026-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/HOME-REVIEWS-KA-INSTALL-20261026-R2.json",
+  "request_sha256": "1a0b120048a24efe2e553eea35b4d15adb5adde167ab8b3a4875c81421b44021",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "d0df0cf198b39c63eb3b1419e5c6e9c65a6b59a8",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-26T15:28:09Z"
+}
