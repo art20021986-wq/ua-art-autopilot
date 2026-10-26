@@ -1,0 +1,24 @@
+{
+ "evidence_path": [
+  "cloud/model_gallery_001/years_canada.json",
+  "cloud/model_gallery_001/years_china.json",
+  "cloud/model_gallery_001/years_europe.json",
+  "cloud/model_gallery_001/years_georgia.json",
+  "cloud/model_gallery_001/years_japan.json",
+  "cloud/model_gallery_001/years_korea.json",
+  "cloud/model_gallery_001/years_usa.json"
+ ],
+ "live_source_environment": "wikimedia_commons",
+ "production_required": false,
+ "request_sha256": "87d2780f1e6356ce07d666356b62ab548a9247bbe98f4d07eb88c62b88533895",
+ "rollback_ready": true,
+ "rollback_ready_scope": "NO_REMOTE_WRITES",
+ "run_id": "40350667048",
+ "status": "FINISHED",
+ "target_environment": "shadow",
+ "task_class": "STANDARD",
+ "task_id": "MODEL-GALLERY-YEARS-20261026",
+ "tests": "PASS",
+ "tests_scope": "READ_ONLY_PROBE",
+ "unexpected_changes": 0
+}
