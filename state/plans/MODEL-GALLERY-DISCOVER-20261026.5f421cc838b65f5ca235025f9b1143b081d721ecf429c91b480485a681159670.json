@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/MODEL-GALLERY-DISCOVER-20261026.5f421cc838b65f5ca235025f9b1143b081d721ecf429c91b480485a681159670.json",
+  "autostart_ledger_sha256": "7bc25d8fd2319dbe5a3cddcda13224a8a3e4498e64cafd4673da247e67f17973",
+  "autostart_source_commit": "899233b03f414d83fe601d63b75f4003bab7931d",
+  "created_at": "2026-10-26T08:28:37Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40292347692",
+    "task_id": "MODEL-GALLERY-DISCOVER-20261026",
+    "task_sha256": "5f421cc838b65f5ca235025f9b1143b081d721ecf429c91b480485a681159670"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-9afdabc446089517-67dfca3e00b48021",
+  "request_path": "tasks/requests/MODEL-GALLERY-DISCOVER-20261026.json",
+  "resource_locks": [
+    "READ_ONLY:9afdabc446089517"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
