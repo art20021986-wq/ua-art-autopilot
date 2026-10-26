@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "f7fbb04d021536b6e68a53bcda74c1252a734c95708e6b373a441090aedf23c1",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-26T23:42:35Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-26T23:46:12Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "40421320849",
     "task_id": "QUICK-LEAD-002-INSTALL-20261026",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-40421320849-b7bde54b1aa2a58e",
   "production_transaction_path": "state/transactions/QUICK-LEAD-002-INSTALL-20261026.b7bde54b1aa2a58ed7c6edf41c346d7e8adb3b1d6d36e2f489cf72cb505fb692.40421320849.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-0d345873e4f489a3-c21959143185d0a0",
   "receipt_path": "state/receipts/QUICK-LEAD-002-INSTALL-20261026.json",
   "receipt_validation_status": "PENDING",
@@ -89,5 +89,5 @@
       "cloud/quick_lead_002/ua_seo_quick_form.py": "79931a94f9a72d3af43c8e5858d2a1eb981ae518f4fcd95b593097f8f55690b6"
     }
   },
-  "updated_at": "2026-10-26T23:42:35Z"
+  "updated_at": "2026-10-26T23:46:12Z"
 }
