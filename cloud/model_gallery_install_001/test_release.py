@@ -8,6 +8,7 @@ import candidate_builder
 import edit_order
 import gallery_assets
 import generations
+from official_picks import PICKS as OFFICIAL
 
 HERE = Path(__file__).resolve().parent
 LIVE = {edit_order.PAGE: 'podbor.html', edit_order.SCRIPT: 'order.js', edit_order.STRINGS: 'order-strings.json'}
@@ -31,14 +32,21 @@ class ReleaseTests(unittest.TestCase):
 
     def test_gallery_data_matches_photos(self):
         photos = candidate_builder.photos()
+        self.assertEqual(set(DATA['models']), set(generations.GENERATIONS))
+        self.assertNotIn('classics-1980-1990', DATA['models'])
         for key, model in DATA['models'].items():
             self.assertEqual(set(model['generation']), {'uk', 'ru', 'ka'})
-            self.assertEqual(model['photos'][0]['path'], 'media/%s.jpg' % key)
-            self.assertLessEqual(len(model['photos']), 8)
-            for photo in model['photos'][1:]:
-                self.assertIn('video/order/' + photo['path'], photos)
-                self.assertTrue(photo['license'] and photo['source'].startswith('https://commons.wikimedia.org/'))
-        self.assertEqual(set(DATA['models']), set(generations.GENERATIONS) | set(generations.PHOTO_OF))
+            items = model['photos']
+            if key in OFFICIAL:
+                self.assertEqual([item['source'] for item in items], OFFICIAL[key])
+                self.assertEqual(len(items), 9)
+            else:
+                self.assertEqual(items[0]['path'], 'media/%s.jpg' % key)
+                self.assertLessEqual(len(items), 8)
+                self.assertTrue(all(item['license'] and item['source'].startswith('https://commons.wikimedia.org/')
+                                    for item in items[1:]))
+            new = items if key in OFFICIAL else items[1:]
+            self.assertTrue(all('video/order/' + item['path'] in photos for item in new))
 
     def test_generation_line(self):
         self.assertEqual(generations.line('kia-k5'), {'uk': '3-тє покоління (DL3), з 2019 р.',
