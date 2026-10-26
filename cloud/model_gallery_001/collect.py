@@ -204,9 +204,9 @@ def model(fetch, key):
     return {'main': with_thumb(fetch, main_info), 'categories': cats, 'pool_size': len(via), 'candidates': taken}
 
 
-def validate_identity(env, root):
+def validate_identity(env, root, tasks=TASKS):
     task = env.get('UAART_TASK_ID')
-    if task not in TASKS or env.get('UAART_RECEIPT_PATH') != 'state/receipts/%s.json' % task \
+    if task not in tasks or env.get('UAART_RECEIPT_PATH') != 'state/receipts/%s.json' % task \
             or env.get('UAART_REQUEST_PATH') != 'tasks/requests/%s.json' % task:
         raise CollectError('IDENTITY')
     request = root/env['UAART_REQUEST_PATH']
