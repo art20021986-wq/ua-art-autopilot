@@ -4,6 +4,7 @@ Owner-approved 2026-10-26. Pure functions of reviews_data: no page parsing here.
 /data-ka for the home language switch; reviews stay verbatim in Ukrainian. Clicks are counted by autoria_click.
 Release 3 (owner 2026-10-27): no AUTO.RIA logo; a text mark in AUTO.RIA brand colours and font (Roboto, as on auto.ria.com).
 Release 4: the mark is plain letters on the white button, «AUTO» red and «.RIA» blue, in Roboto from our site.
+Release 5 (owner 2026-10-27): the same mark in one colour, black, with no AUTO.RIA brand colours.
 """
 from html import escape
 
@@ -28,8 +29,7 @@ CSS = '''<style id="%s">
 .ua-review blockquote{margin:0;color:#dce4ef;font-size:14px;line-height:1.5;flex:1}
 .ua-review figcaption{color:#9fb0c4;font-size:12px}
 .ua-reviews-button{margin-top:16px;display:flex;align-items:center;justify-content:center;gap:12px;min-height:56px;padding:8px 16px;border-radius:14px;background:#fff;color:#0d2a4a;font-weight:800;font-size:15px;text-decoration:none}
-.ua-autoria-mark{font:700 20px/1 "UA Roboto",Roboto,Arial,sans-serif;color:#003b56;white-space:nowrap}
-.ua-autoria-mark span:first-child{color:#db5c4c}
+.ua-autoria-mark{font:700 20px/1 "UA Roboto",Roboto,Arial,sans-serif;color:#000;white-space:nowrap}
 .ua-autoria-badge .ua-autoria-mark{font-size:16px}
 .ua-reviews-note{margin-top:8px!important;color:#9fb0c4;font-size:12px;text-align:center}
 .ua-autoria-badge{margin-top:16px;display:inline-flex;align-items:center;gap:10px;padding:7px 12px;border-radius:10px;background:#fff;color:#0d2a4a;font-size:13px;font-weight:700;text-decoration:none}
@@ -53,7 +53,7 @@ def _link(placement):
 
 
 # Not a [data-ru] node: the language switch leaves it as is.
-MARK_HTML = '<span class="ua-autoria-mark"><span>AUTO</span><span>.RIA</span></span>'
+MARK_HTML = '<span class="ua-autoria-mark">AUTO.RIA</span>'
 
 
 def _review(author, date, stars, text):
