@@ -1,0 +1,24 @@
+{
+ "evidence_path": [
+  "cloud/model_gallery_001/angles_canada.json",
+  "cloud/model_gallery_001/angles_china.json",
+  "cloud/model_gallery_001/angles_europe.json",
+  "cloud/model_gallery_001/angles_georgia.json",
+  "cloud/model_gallery_001/angles_japan.json",
+  "cloud/model_gallery_001/angles_korea.json",
+  "cloud/model_gallery_001/angles_usa.json"
+ ],
+ "live_source_environment": "wikimedia_commons",
+ "production_required": false,
+ "request_sha256": "4f46b8c4e99555671c10127298c664d6b4e17530beb8cfe8c1a1d98643e595a1",
+ "rollback_ready": true,
+ "rollback_ready_scope": "NO_REMOTE_WRITES",
+ "run_id": "40447956798",
+ "status": "FINISHED",
+ "target_environment": "shadow",
+ "task_class": "STANDARD",
+ "task_id": "MODEL-GALLERY-ANGLES-20261027",
+ "tests": "PASS",
+ "tests_scope": "READ_ONLY_PROBE",
+ "unexpected_changes": 0
+}
