@@ -45,3 +45,6 @@
   2024–2026 или до 2018: пересбор (YEARS-20261026, cloud/model_gallery_001/years.py — год модели в имени файла или,
   для поколения с 2018+, дата съёмки 2018–2023). Официальный Tucson 2026 и Santa Fe MX5 (2024 м.г.) выпадают.
   Lexus TX и Tacoma Trailhunter в 2018–2023 не выпускались — карточки без галереи (как классика).
+
+## Итог 2026-10-27
+INSTALLED_LIVE_VERIFIED: CRITICAL run 40440368360 FINISHED, backup PASS, crm_unchanged, бот running, публичные проверки 8/8 PASS.
