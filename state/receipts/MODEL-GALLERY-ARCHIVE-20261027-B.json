@@ -1,0 +1,31 @@
+{
+ "evidence_path": [
+  "cloud/model_gallery_official_001/archive_audi-q5.json",
+  "cloud/model_gallery_official_001/archive_ford-fusion-fusion-hybrid.json",
+  "cloud/model_gallery_official_001/archive_mercedes-benz-b-class.json",
+  "cloud/model_gallery_official_001/archive_nissan-note.json",
+  "cloud/model_gallery_official_001/archive_renault-megane.json",
+  "cloud/model_gallery_official_001/archive_skoda-octavia.json",
+  "cloud/model_gallery_official_001/archive_subaru-forester.json",
+  "cloud/model_gallery_official_001/archive_toyota-aqua.json",
+  "cloud/model_gallery_official_001/archive_toyota-camry.json",
+  "cloud/model_gallery_official_001/archive_toyota-prius.json",
+  "cloud/model_gallery_official_001/archive_toyota-rav4-rav4-hybrid.json",
+  "cloud/model_gallery_official_001/archive_volkswagen-golf.json",
+  "cloud/model_gallery_official_001/archive_volkswagen-jetta.json",
+  "cloud/model_gallery_official_001/archive_volkswagen-tiguan.json"
+ ],
+ "live_source_environment": "manufacturer_sites",
+ "production_required": false,
+ "request_sha256": "a8ddc7c1958b9e3d353c41a00d68f1d065a55fef75afd3d93487a9546f746b5e",
+ "rollback_ready": true,
+ "rollback_ready_scope": "NO_REMOTE_WRITES",
+ "run_id": "40452184533",
+ "status": "FINISHED",
+ "target_environment": "shadow",
+ "task_class": "STANDARD",
+ "task_id": "MODEL-GALLERY-ARCHIVE-20261027-B",
+ "tests": "PASS",
+ "tests_scope": "READ_ONLY_PROBE",
+ "unexpected_changes": 0
+}

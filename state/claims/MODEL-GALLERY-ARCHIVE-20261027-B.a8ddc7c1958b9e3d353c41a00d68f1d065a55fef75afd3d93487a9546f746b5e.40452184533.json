@@ -7,21 +7,23 @@
   "created_at": "2026-10-27T04:58:03Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-27T04:58:03Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-27T05:14:48Z",
+  "heartbeat_at": "2026-10-27T05:14:48Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40452184533",
     "task_id": "MODEL-GALLERY-ARCHIVE-20261027-B",
     "task_sha256": "a8ddc7c1958b9e3d353c41a00d68f1d065a55fef75afd3d93487a9546f746b5e"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-707c68ba0721078b-8c6b706884dbe243",
   "receipt_path": "state/receipts/MODEL-GALLERY-ARCHIVE-20261027-B.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "20d0885d65b958a009a0d2a43e13b7ea6e5ae6f0b48b41f418a25e8a5d47406f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MODEL-GALLERY-ARCHIVE-20261027-B.json",
   "request_sha256": "a8ddc7c1958b9e3d353c41a00d68f1d065a55fef75afd3d93487a9546f746b5e",
   "resource_locks": [
@@ -29,8 +31,29 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "d32a7c9ff3a9e4aafb84b800d067ba6ba121642b",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91940990976,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 40.632
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-27T04:58:03Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "8e680fbe28a2febda91ddc865f20602eb6270e2431aba07338002c486892b8df",
+    "file_sha256": {
+      "cloud/model_gallery_official_001/candidates.py": "d2c2a7fe61dd7a540e3f0dc9967e433bc7f4e0dac3b60e8d14e751f4a87299d5",
+      "cloud/model_gallery_official_001/discover.py": "ba551379d4a843894b68b49fd579fc26ae75e8a449cb9c8b2ce5a3f7b2a19433",
+      "cloud/model_gallery_official_001/make_request.py": "51d0130b502e414d24ca9ca78894864c19214722ab230e471748fe1b1d243702",
+      "cloud/model_gallery_official_001/sources.py": "b20bffee6582e094110bfee34f95bfb29c5a0fbd43cde298a0133bd78ee1e7ad",
+      "cloud/model_gallery_official_001/test_archive.py": "11eb71f09688c3cfe7d307db56d0ea3450df4c5e8301a183396d12d300121e76",
+      "cloud/model_gallery_official_001/test_candidates.py": "24317c0842a2582a92663a0df92c07d059ce34207903a600e2b874047935df56",
+      "cloud/model_gallery_official_001/test_discover.py": "f8dddae5a1076ebb5492a232ad27ad819e79a774e81a236e4674e4177ac0d9f5"
+    }
+  },
+  "updated_at": "2026-10-27T05:14:48Z"
 }
