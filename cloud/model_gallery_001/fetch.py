@@ -2,7 +2,7 @@
 """Read-only download of the picked gallery photos (MODEL-GALLERY-001), 960 px wide from Wikimedia Commons.
 
 picks.py names, per model, the Commons files chosen by eye from the collected candidates
-(exterior views, then interior views and the trunk; R2: 2018–2023 cars only). Each file's
+(per view; R2: 2018–2023 cars only; 20261027: one photo per owner's view). Each file's
 licence is checked again; one JSON per country group keeps the photo (base64) with author and licence.
 """
 import base64
@@ -12,13 +12,16 @@ from pathlib import Path
 import collect
 import picks as chosen
 
-TASKS = ('MODEL-GALLERY-FETCH-20261026', 'MODEL-GALLERY-FETCH-20261026-R2')
+TASKS = ('MODEL-GALLERY-FETCH-20261026', 'MODEL-GALLERY-FETCH-20261026-R2', 'MODEL-GALLERY-FETCH-20261027')
 WIDTH = 960
 
 
+# Each run writes its own files, never over an earlier run's: photos, photos2 (2018–2023), photos3 (owner's views).
+STEMS = dict(zip(TASKS, ('photos', 'photos2', 'photos3')))
+
+
 def evidence_path(group, task=TASKS[-1]):
-    # R2 writes next to the first run's files, never over them.
-    return '%s/%s_%s.json' % (collect.PACKAGE, 'photos2' if task.endswith('-R2') else 'photos', group)
+    return '%s/%s_%s.json' % (collect.PACKAGE, STEMS[task], group)
 
 
 def photos(fetch, titles):
