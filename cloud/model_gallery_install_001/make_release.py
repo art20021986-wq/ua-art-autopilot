@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Write the MODEL-GALLERY preview request, then (after the preview) the install request set (run from the repo root).
 
-Usage: python3 cloud/model_gallery_install_001/make_release.py preview [SUFFIX]   # PR, merge, then: launch preview
+Usage: python3 cloud/model_gallery_install_001/make_release.py preview   # PR, merge, then: launch preview
        python3 cloud/model_gallery_install_001/make_release.py launch TASK_ID
-       python3 cloud/model_gallery_install_001/make_release.py install [SUFFIX]   # right after the preview: writes gate, manifest,
+       python3 cloud/model_gallery_install_001/make_release.py install   # right after the preview: writes gate, manifest,
                                                                    # owner approval, storage probe, request and launch
 The install request is written only after the owner says «да» in chat to the previewed gallery.
 """
@@ -20,6 +20,7 @@ import control_plane as cp  # noqa: E402
 
 P = 'cloud/model_gallery_install_001/'
 import gallery_assets  # noqa: E402
+from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py', 'edit_order.py',
@@ -69,8 +70,8 @@ def execution(task, production):
     return value
 
 
-def preview(suffix):
-    task = 'MODEL-GALLERY-PREFLIGHT-20261026' + suffix
+def preview():
+    task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Preview of the order page model gallery (owner request 2026-10-26): reads the live '
@@ -96,8 +97,8 @@ def launch(task, now=None, production=False):
                  json.dumps(value, indent=2, sort_keys=True) + '\n'), value
 
 
-def install(suffix):
-    task = 'MODEL-GALLERY-INSTALL-20261026' + suffix
+def install():
+    task = INSTALL_TASK
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
     plan = json.load(open(P + 'deployment_plan.json'))
     preview_value = json.load(open(P + 'deployment_preview.json'))
@@ -170,8 +171,8 @@ def launch_values(task, now):
 if __name__ == '__main__':
     action = sys.argv[1]
     if action == 'preview':
-        print(preview(sys.argv[2] if len(sys.argv) > 2 else ''))
+        print(preview())
     elif action == 'launch':
         print(launch(sys.argv[2])[0])
     else:
-        print(install(sys.argv[2] if len(sys.argv) > 2 else ''))
+        print(install())
