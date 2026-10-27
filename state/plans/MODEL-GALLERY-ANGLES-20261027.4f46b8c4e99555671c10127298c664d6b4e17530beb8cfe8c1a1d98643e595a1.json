@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/MODEL-GALLERY-ANGLES-20261027.4f46b8c4e99555671c10127298c664d6b4e17530beb8cfe8c1a1d98643e595a1.json",
+  "autostart_ledger_sha256": "42eec199725aa58d937397eecce2084f8cac9a9c39eafbac39c9bc6f17f4f340",
+  "autostart_source_commit": "cc8d88d1f9505e51f60cc56459e55eee16799e30",
+  "created_at": "2026-10-27T04:08:26Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40447956798",
+    "task_id": "MODEL-GALLERY-ANGLES-20261027",
+    "task_sha256": "4f46b8c4e99555671c10127298c664d6b4e17530beb8cfe8c1a1d98643e595a1"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-ff0f6b113dbf8c68-cb0c6d868ed00d02",
+  "request_path": "tasks/requests/MODEL-GALLERY-ANGLES-20261027.json",
+  "resource_locks": [
+    "READ_ONLY:ff0f6b113dbf8c68"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
