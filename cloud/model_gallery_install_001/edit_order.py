@@ -3,7 +3,7 @@
 Owner request 2026-10-26. New files (gallery.js, gallery.css, model-gallery.json, photos) come from
 this package; the existing files get only these small edits. order.js loads model-gallery.json next
 to its strings; when it is missing or fails, the model cards stay exactly as before. A model with
-gallery data shows the photo switcher and its generation under the name. Built on top of the live
+gallery data shows the photo switcher, its generation after the name and no «under order» tag. Built on top of the live
 PODBOR-MODEL-001 files; the order.js version on the page is replaced whatever it is (another release may
 have raised it), so browsers load the new module. Each original fragment must occur exactly once and
 an applied fragment is refused.
@@ -45,9 +45,11 @@ EDITS = {
          "      labels:{gallery:t('gallery'),prev:t('photo_prev'),next:t('photo_next')}}));\n"
          "    else if(model.media.approval==='approved' && model.media.path) {\n"),
         ("    info.append(node('h3',model.labels[state.lang]),node('span',t('under_order'),'tag'));\n",
-         "    info.append(node('h3',model.labels[state.lang]));\n"
-         "    if(extra) info.append(node('span',extra.generation[state.lang],'generation'));\n"
-         "    info.append(node('span',t('under_order'),'tag'));\n"),
+         "    // A card with gallery data: the generation continues the name; «under order» is the page title already.\n"
+         "    const title=node('h3',model.labels[state.lang]);\n"
+         "    if(extra) title.append(' ',node('span',extra.generation[state.lang],'generation'));\n"
+         "    info.append(title);\n"
+         "    if(!extra) info.append(node('span',t('under_order'),'tag'));\n"),
         ("  const [bootstrap,strings]=await Promise.all([fetch('/api/orders/bootstrap',{credentials:'same-origin'}),"
          "fetch(new URL('order-strings.json'+new URL(import.meta.url).search,assets)),pageReady]);\n",
          "  // Gallery data is optional: without it the model cards keep their single photo.\n"
