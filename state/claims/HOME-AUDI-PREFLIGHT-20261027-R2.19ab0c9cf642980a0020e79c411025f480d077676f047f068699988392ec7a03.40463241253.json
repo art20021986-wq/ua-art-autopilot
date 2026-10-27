@@ -7,21 +7,23 @@
   "created_at": "2026-10-27T06:49:14Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-27T06:49:14Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-27T06:52:28Z",
+  "heartbeat_at": "2026-10-27T06:52:28Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40463241253",
     "task_id": "HOME-AUDI-PREFLIGHT-20261027-R2",
     "task_sha256": "19ab0c9cf642980a0020e79c411025f480d077676f047f068699988392ec7a03"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-131e42097fd8fe71-abd6886979652339",
   "receipt_path": "state/receipts/HOME-AUDI-PREFLIGHT-20261027-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b1402da3b76b7ed43d739c02de5d4db6622de3f4391c16db74592c1cb584da49",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-AUDI-PREFLIGHT-20261027-R2.json",
   "request_sha256": "19ab0c9cf642980a0020e79c411025f480d077676f047f068699988392ec7a03",
   "resource_locks": [
@@ -29,8 +31,34 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "7277fa5a5b7c484350abcf3ccce461160f1c3d42",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 90500587520,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.562
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-27T06:49:14Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "e30bd444cdeaca0df1a725ee15de8ea6218baff9296c3f56dd6e6d30e6122ada",
+    "file_sha256": {
+      "cloud/home_audi_001/audi_photo.py": "5aa316a981a1248ac81a171f15024d82f2224fec5c22098c1eaff986b932392f",
+      "cloud/home_audi_001/candidate_builder.py": "d6ba574e1b0996f95e6171d91f6e48d3372fb7d0b326fb5c0f244756834df59c",
+      "cloud/home_audi_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_audi_001/deployment_bootstrap.py": "a510af3079477d05cb04430a319cc23ae7eb62fb986bce7e6758071179dab68b",
+      "cloud/home_audi_001/deployment_remote.py": "2a035946bf529eca457f57dd27357cca5a7afd15ba0dd286a0d318238a81f0bd",
+      "cloud/home_audi_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_audi_001/deployment_transport.py": "4086cd446a88811748a89222f2c2229c706ccaed235348e7830dc6563a93cfeb",
+      "cloud/home_audi_001/edit_home.py": "489ab1ec62ebb1ea3a5052f3adc5f0251c8bb5d59e3757b3f57c08ce11505db7",
+      "cloud/home_audi_001/make_release.py": "4cee10974c6264e1bd16fb566c6bec9aff532613b1f2f4c406c9a7e5340106e6",
+      "cloud/home_audi_001/release_constants.py": "0b1d4e69ac4d30ea5fac0ba64a2220c97712f9d1b1ea838166f27675f6304198",
+      "cloud/home_audi_001/test_deployment.py": "48d4f59edb92b9ebefdd89d22f714223551722f71666709b34c86789b30ca8ee",
+      "cloud/home_audi_001/test_edit_home.py": "76bc3df13d627b1b04cf8e70eae8d74d94921d10412549f7d91aa9f71f6341d2"
+    }
+  },
+  "updated_at": "2026-10-27T06:52:28Z"
 }
