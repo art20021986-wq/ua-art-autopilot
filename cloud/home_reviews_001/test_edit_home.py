@@ -6,12 +6,11 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import autoria_click  # noqa: E402
-import autoria_logo  # noqa: E402
 import candidate_builder  # noqa: E402
 import edit_home  # noqa: E402
 import reviews_block  # noqa: E402
 import reviews_data  # noqa: E402
-from release_constants import HOME, LOGO  # noqa: E402
+from release_constants import HOME  # noqa: E402
 
 STEPS = '<section class="ua-how section-frame"><h2>5 кроків</h2><ol><li>1</li></ol></section>'
 PAGE = ('<html><head><title>x</title></head><body><main>%s<section id="stages"></section></main>'
@@ -38,7 +37,7 @@ class EditHomeTests(unittest.TestCase):
 
     def test_block_after_steps_badge_before_signature_css_in_head(self):
         text = self.result
-        self.assertEqual(text.count(edit_home.CHECK), 1)
+        self.assertEqual(text.count(edit_home.CHECK), 2)  # button and badge
         css = '<style id="%s">' % reviews_block.MARK
         self.assertLess(text.index(STEPS), text.index('class="ua-reviews'))
         self.assertLess(text.index('class="ua-reviews'), text.index('id="stages"'))
@@ -71,7 +70,9 @@ class EditHomeTests(unittest.TestCase):
         self.assertTrue(block.endswith(autoria_click.SCRIPT + '</section>'))
         self.assertIn('Перевірте нас на AUTO.RIA', block)
         self.assertIn('Проверьте нас на AUTO.RIA', block)
-        self.assertIn('src="/%s"' % LOGO, block)
+        self.assertNotIn('<img', block + reviews_block.badge())
+        self.assertEqual(block.count(reviews_block.MARK_HTML), 1)
+        self.assertEqual(reviews_block.badge().count(reviews_block.MARK_HTML), 1)
 
     def test_every_translated_node_has_georgian(self):
         for markup in (reviews_block.block(), reviews_block.badge()):
@@ -108,11 +109,7 @@ class EditHomeTests(unittest.TestCase):
 
     def test_candidate(self):
         result = candidate_builder.build({HOME: PAGE}, {})
-        self.assertEqual(sorted(result), sorted([HOME, LOGO]))
-        self.assertEqual(result[LOGO], autoria_logo.SVG.encode())
-        self.assertTrue(result[LOGO].startswith(b'<svg') and result[LOGO].endswith(b'</svg>'))
-        live = candidate_builder.build({HOME: result[HOME], LOGO: result[LOGO]}, {})
-        self.assertEqual(live, {HOME: result[HOME]})
+        self.assertEqual(result, {HOME: edit_home.build(PAGE)})
 
 
 if __name__ == '__main__':

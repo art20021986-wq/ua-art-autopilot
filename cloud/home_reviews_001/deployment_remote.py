@@ -1,4 +1,4 @@
-"""Bounded home reviews release (reviews block on the home page + AUTO.RIA logo file); preserve live data and pending requests."""
+"""Bounded home reviews release (AUTO.RIA reviews block on the home page); preserve live data and pending requests."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -114,7 +114,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'HOME-REVIEWS-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'AUTO.RIA reviews block and footer badge on video/index.html, new video/brand/autoria-logo.svg',
+            'site_scope':'AUTO.RIA reviews block and footer badge on video/index.html',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan

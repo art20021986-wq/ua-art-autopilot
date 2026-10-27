@@ -6,7 +6,7 @@ Usage: python3 cloud/home_reviews_001/make_release.py preview [SUFFIX]   # PR, m
        python3 cloud/home_reviews_001/make_release.py install [SUFFIX]   # right after the preview: writes gate, manifest,
                                                                    # owner approval, storage probe, request and launch
 Owner approvals in chat, 2026-10-26: release 1 «Ок размещай на сайте» (block, badge, logo); release 2 «Ок 1.2»
-(Georgian texts, «autoria_click» Analytics event). Task names come from release_constants.py.
+(Georgian texts, «autoria_click» Analytics event); 2026-10-27 release 3: no logo, text mark in AUTO.RIA brand style. Task names come from release_constants.py.
 """
 import datetime
 import hashlib
@@ -22,7 +22,7 @@ sys.path.insert(0, 'cloud/home_reviews_001')
 from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 P = 'cloud/home_reviews_001/'
-DEPENDENCIES = [P + n for n in ('autoria_click.py', 'autoria_logo.py', 'candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
+DEPENDENCIES = [P + n for n in ('autoria_click.py', 'candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py', 'edit_home.py',
                                 'make_release.py', 'release_constants.py', 'reviews_block.py', 'reviews_data.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_edit_home.py')]
@@ -70,10 +70,10 @@ def preview(suffix):
     task = PREVIEW_TASK + suffix
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of home reviews release 2 (owner «Ок 1.2», 2026-10-26): reads the live '
-                            'video/index.html and video/brand/autoria-logo.svg, builds the candidate (the installed AUTO.RIA '
-                            'reviews block, footer badge and CSS replaced in place: Georgian texts, «autoria_click» '
-                            'Analytics event) and measures storage. No application source, CRM, HTML, media or bot state '
+             'description': 'Preview of home reviews release 3 (owner request 2026-10-27): reads the live '
+                            'video/index.html, builds the candidate (the installed AUTO.RIA reviews block, footer badge '
+                            'and CSS replaced in place: the AUTO.RIA logo image replaced by a text mark in AUTO.RIA brand '
+                            'colours and font) and measures storage. No application source, CRM, HTML, media or bot state '
                             'changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
@@ -130,11 +130,11 @@ def install(suffix):
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved («Ок 1.2», 2026-10-26) AUTORIA-REVIEWS-001 release 2: in '
+               'description': 'Owner approved (2026-10-27) AUTORIA-REVIEWS-001 release 3: in '
                               'video/index.html the installed AUTO.RIA reviews block, footer badge and their CSS are '
-                              'replaced in place by the same block with Georgian texts (data-ka) and the «autoria_click» '
-                              'Analytics event (placement reviews_block / footer_badge) on its two links; every other byte '
-                              'stays as is; the logo file is unchanged. No CRM or car card change. Existing backup, bot '
+                              'replaced in place; the only difference is the AUTO.RIA logo image in the button and the '
+                              'badge, replaced by a text mark «AUTO.RIA» in AUTO.RIA brand colours and font; every other '
+                              'byte stays as is; video/brand/autoria-logo.svg is not touched. No CRM or car card change. Existing backup, bot '
                               'pause, writer locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/katalog.html'],
