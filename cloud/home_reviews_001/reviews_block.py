@@ -5,17 +5,17 @@ Owner-approved 2026-10-26. Pure functions of reviews_data: no page parsing here.
 Release 3 (owner 2026-10-27): no AUTO.RIA logo; a text mark in AUTO.RIA brand colours and font (Roboto, as on auto.ria.com).
 Release 4: the mark is plain letters on the white button, «AUTO» red and «.RIA» blue, in Roboto from our site.
 Release 5 (owner 2026-10-27): the same mark in one colour, black, with no AUTO.RIA brand colours.
+Release 6 (owner 2026-10-27): «AUTO.RIA» is plain text in the site's own design: site font, gold text and thin gold
+frame on the button and badge, no white plate and no Roboto.
 """
 from html import escape
 
 import autoria_click
 import reviews_data as data
-from release_constants import FONT
 
 MARK = 'ua-autoria-reviews-001'
 
 CSS = '''<style id="%s">
-@font-face{font-family:"UA Roboto";font-style:normal;font-weight:700;font-display:swap;src:url(/%s) format("woff2")}
 .ua-reviews p{margin:0}
 .ua-reviews h2{margin:6px 0 8px}
 .ua-reviews-lead{color:var(--muted);font-size:15px;line-height:1.5;max-width:720px}
@@ -28,11 +28,10 @@ CSS = '''<style id="%s">
 .ua-review-stars{color:var(--gold);letter-spacing:2px}
 .ua-review blockquote{margin:0;color:#dce4ef;font-size:14px;line-height:1.5;flex:1}
 .ua-review figcaption{color:#9fb0c4;font-size:12px}
-.ua-reviews-button{margin-top:16px;display:flex;align-items:center;justify-content:center;gap:12px;min-height:56px;padding:8px 16px;border-radius:14px;background:#fff;color:#0d2a4a;font-weight:800;font-size:15px;text-decoration:none}
-.ua-autoria-mark{font:700 20px/1 "UA Roboto",Roboto,Arial,sans-serif;color:#000;white-space:nowrap}
-.ua-autoria-badge .ua-autoria-mark{font-size:16px}
+.ua-reviews-button{margin-top:16px;display:flex;align-items:center;justify-content:center;gap:12px;min-height:56px;padding:8px 16px;border:1px solid var(--gold);border-radius:14px;color:var(--gold);font-weight:800;font-size:15px;text-decoration:none}
+.ua-autoria-mark{white-space:nowrap}
 .ua-reviews-note{margin-top:8px!important;color:#9fb0c4;font-size:12px;text-align:center}
-.ua-autoria-badge{margin-top:16px;display:inline-flex;align-items:center;gap:10px;padding:7px 12px;border-radius:10px;background:#fff;color:#0d2a4a;font-size:13px;font-weight:700;text-decoration:none}
+.ua-autoria-badge{margin-top:16px;display:inline-flex;align-items:center;gap:10px;padding:7px 12px;border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-size:13px;font-weight:700;text-decoration:none}
 @media (max-width:700px){
 .ua-reviews-stats{gap:8px}
 .ua-reviews-stats b{font-size:22px}
@@ -40,7 +39,7 @@ CSS = '''<style id="%s">
 .ua-reviews-list{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;margin-right:-16px;padding-right:16px}
 .ua-review{flex:0 0 84%%;scroll-snap-align:start}
 }
-</style>''' % (MARK, FONT)
+</style>''' % MARK
 
 
 def _attrs(ru, uk, ka):

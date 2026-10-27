@@ -12,11 +12,10 @@ from deployment_transport import API, HERE, INBOX, canonical, sha, upload_packag
 import edit_home
 
 ROOT = HERE.parents[1]
-from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE, FONT
+from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 
 # Public evidence of each change: path -> text the page must contain.
 EXPECTED = {'/video/index.html': edit_home.CHECK,
-            '/' + FONT: 'wOF2',
             '/video/katalog.html': ''}
 
 
