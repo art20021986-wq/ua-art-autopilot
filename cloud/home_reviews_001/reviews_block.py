@@ -2,6 +2,7 @@
 
 Owner-approved 2026-10-26. Pure functions of reviews_data: no page parsing here. Texts carry data-ru/data-uk
 /data-ka for the home language switch; reviews stay verbatim in Ukrainian. Clicks are counted by autoria_click.
+Release 3 (owner 2026-10-27): no AUTO.RIA logo; a text mark in AUTO.RIA brand colours and font (Roboto, as on auto.ria.com).
 """
 from html import escape
 
@@ -9,7 +10,6 @@ import autoria_click
 import reviews_data as data
 
 MARK = 'ua-autoria-reviews-001'
-LOGO = '/video/brand/autoria-logo.svg'
 
 CSS = '''<style id="%s">
 .ua-reviews p{margin:0}
@@ -25,7 +25,11 @@ CSS = '''<style id="%s">
 .ua-review blockquote{margin:0;color:#dce4ef;font-size:14px;line-height:1.5;flex:1}
 .ua-review figcaption{color:#9fb0c4;font-size:12px}
 .ua-reviews-button{margin-top:16px;display:flex;align-items:center;justify-content:center;gap:12px;min-height:56px;padding:8px 16px;border-radius:14px;background:#fff;color:#0d2a4a;font-weight:800;font-size:15px;text-decoration:none}
-.ua-reviews-button img,.ua-autoria-badge img{display:block;height:30px;width:auto}
+.ua-autoria-mark{display:inline-flex;border-radius:6px;overflow:hidden;color:#fff;font:700 16px/1 Roboto,Arial,sans-serif}
+.ua-autoria-mark span{padding:7px 8px}
+.ua-autoria-mark span:first-child{background:#db5c4c}
+.ua-autoria-mark span+span{background:#003b56}
+.ua-autoria-badge .ua-autoria-mark{font-size:14px}
 .ua-reviews-note{margin-top:8px!important;color:#9fb0c4;font-size:12px;text-align:center}
 .ua-autoria-badge{margin-top:16px;display:inline-flex;align-items:center;gap:10px;padding:7px 12px;border-radius:10px;background:#fff;color:#0d2a4a;font-size:13px;font-weight:700;text-decoration:none}
 @media (max-width:700px){
@@ -47,9 +51,8 @@ def _link(placement):
         escape(data.DEALER_URL), autoria_click.ATTRIBUTE, placement)
 
 
-def _logo(height):
-    return '<img src="%s" alt="AUTO.RIA" width="%d" height="%d" loading="lazy" decoding="async">' % (
-        LOGO, round(height * 135 / 40), height)
+# Not a [data-ru] node: the language switch leaves it as is.
+MARK_HTML = '<span class="ua-autoria-mark"><span>AUTO</span><span>.RIA</span></span>'
 
 
 def _review(author, date, stars, text):
@@ -75,7 +78,7 @@ def block():
                       'იქვეა ყველა ავტომობილი, რომელიც უკვე გავყიდეთ.'),
                stats, reviews, _link(autoria_click.BLOCK),
                _attrs('Все отзывы и проданные авто', 'Усі відгуки та продані авто', 'ყველა შეფასება და გაყიდული ავტომობილი'),
-               _logo(30),
+               MARK_HTML,
                _attrs('Откроется наша страница на AUTO.RIA', 'Відкриється наша сторінка на AUTO.RIA',
                       'გაიხსნება ჩვენი გვერდი AUTO.RIA‑ზე'),
                autoria_click.SCRIPT))
@@ -83,4 +86,4 @@ def block():
 
 def badge():
     return '<a class="ua-autoria-badge" %s><span %s</span>%s</a>' % (
-        _link(autoria_click.BADGE), _attrs('Мы на', 'Ми на', 'გვიპოვეთ'), _logo(26))
+        _link(autoria_click.BADGE), _attrs('Мы на', 'Ми на', 'გვიპოვეთ'), MARK_HTML)

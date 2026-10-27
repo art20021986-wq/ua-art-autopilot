@@ -233,7 +233,7 @@ class TransportTests(unittest.TestCase):
 
 class PublicVerificationTests(unittest.TestCase):
     def response(self,request,timeout):
-        response=BytesIO(('<html>'+'x'*300+controller.edit_home.CHECK+' <svg</html>').encode())
+        response=BytesIO(('<html>'+'x'*300+controller.edit_home.CHECK+'</html>').encode())
         response.url=request.full_url;response.status=200
         return response
 
@@ -241,7 +241,7 @@ class PublicVerificationTests(unittest.TestCase):
         with patch.object(controller.urllib.request,'urlopen',side_effect=self.response) as fetch:
             result=controller.public_verify(None,'a'*64,'b'*64,{})
         self.assertEqual(result,{path:'PASS' for path in controller.EXPECTED})
-        self.assertEqual(fetch.call_count,3)
+        self.assertEqual(fetch.call_count,2)
 
     def test_missing_change_is_not_success(self):
         def old(request,timeout):
