@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import hashlib
 from html.parser import HTMLParser
 from pathlib import Path
 import sys
@@ -10,7 +11,8 @@ import candidate_builder  # noqa: E402
 import edit_home  # noqa: E402
 import reviews_block  # noqa: E402
 import reviews_data  # noqa: E402
-from release_constants import HOME  # noqa: E402
+from release_constants import FONT, HOME  # noqa: E402
+import roboto_font  # noqa: E402
 
 STEPS = '<section class="ua-how section-frame"><h2>5 кроків</h2><ol><li>1</li></ol></section>'
 PAGE = ('<html><head><title>x</title></head><body><main>%s<section id="stages"></section></main>'
@@ -109,7 +111,16 @@ class EditHomeTests(unittest.TestCase):
 
     def test_candidate(self):
         result = candidate_builder.build({HOME: PAGE}, {})
-        self.assertEqual(result, {HOME: edit_home.build(PAGE)})
+        self.assertEqual(result, {HOME: edit_home.build(PAGE), FONT: roboto_font.WOFF2})
+        self.assertEqual(hashlib.sha256(result[FONT]).hexdigest(), roboto_font.SHA256)
+        self.assertTrue(result[FONT].startswith(b'wOF2'))
+        live = candidate_builder.build({HOME: result[HOME], FONT: result[FONT]}, {})
+        self.assertEqual(live, {HOME: result[HOME]})
+
+    def test_font_is_ours(self):
+        self.assertIn('src:url(/%s) format("woff2")' % FONT, reviews_block.CSS)
+        self.assertIn('"UA Roboto"', reviews_block.CSS)
+        self.assertNotIn('//', reviews_block.CSS.replace('url(/', ''))
 
 
 if __name__ == '__main__':

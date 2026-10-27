@@ -114,7 +114,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'HOME-REVIEWS-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'AUTO.RIA reviews block and footer badge on video/index.html',
+            'site_scope':'AUTO.RIA reviews block and footer badge on video/index.html, new video/brand/roboto-700.woff2',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
