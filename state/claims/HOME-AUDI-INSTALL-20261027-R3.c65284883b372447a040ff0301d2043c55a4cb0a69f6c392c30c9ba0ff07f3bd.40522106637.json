@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "fa9aa5811c7b9b86b6c2ff2502721bf296ed3b52c36782cb3f4943ec8e69b4c7",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-27T14:39:20Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-10-27T14:55:14Z",
+  "heartbeat_at": "2026-10-27T14:55:14Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "40522106637",
     "task_id": "HOME-AUDI-INSTALL-20261027-R3",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 634.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 158.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-40522106637-c65284883b372447",
   "production_transaction_path": "state/transactions/HOME-AUDI-INSTALL-20261027-R3.c65284883b372447a040ff0301d2043c55a4cb0a69f6c392c30c9ba0ff07f3bd.40522106637.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-AUDI-INSTALL-20261027-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "427fc5f758b3992100ae421ffa91399d6df102cf87ad24554c8088409514af11",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-AUDI-INSTALL-20261027-R3.json",
   "request_sha256": "c65284883b372447a040ff0301d2043c55a4cb0a69f6c392c30c9ba0ff07f3bd",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "e30bd444cdeaca0df1a725ee15de8ea6218baff9296c3f56dd6e6d30e6122ada",
     "file_sha256": {
@@ -87,5 +110,5 @@
       "cloud/home_audi_001/test_edit_home.py": "76bc3df13d627b1b04cf8e70eae8d74d94921d10412549f7d91aa9f71f6341d2"
     }
   },
-  "updated_at": "2026-10-27T14:39:20Z"
+  "updated_at": "2026-10-27T14:55:14Z"
 }
