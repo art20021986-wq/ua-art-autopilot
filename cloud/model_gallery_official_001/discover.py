@@ -95,14 +95,16 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def official(url):
+def official(url, hosts=None):
+    """True for an https address on one of the start pages' hosts (BRANDS, or the given hosts)."""
     host = urllib.parse.urlsplit(url).netloc.lower()
-    hosts = {urllib.parse.urlsplit(seed).netloc.lower() for seeds in BRANDS.values() for seed in seeds}
+    if hosts is None:
+        hosts = {urllib.parse.urlsplit(seed).netloc.lower() for seeds in BRANDS.values() for seed in seeds}
     return url.startswith('https://') and host in hosts
 
 
-def get(url):
-    if not official(url):
+def get(url, hosts=None):
+    if not official(url, hosts):
         raise DiscoverError('URL_OUTSIDE_SCOPE')
     request = urllib.request.Request(url, headers={'User-Agent': AGENT, 'Accept': 'text/html,*/*'})
     time.sleep(PAUSE)
@@ -169,14 +171,14 @@ def names_model(text, words):
     return any(all(has(word) for word in group) for group in words)
 
 
-def crawl(fetch, key):
+def crawl(fetch, key, seeds=None, hosts=None, max_pages=MAX_PAGES):
     _, brand, words = MODELS[key]
-    queue = [(url, 0) for url in BRANDS[brand]]
+    queue = [(url, 0) for url in (BRANDS[brand] if seeds is None else seeds)]
     seen, pages, images = set(), [], {}
-    while queue and len(pages) < MAX_PAGES:
+    while queue and len(pages) < max_pages:
         url, depth = queue.pop(0)
         url = url.split('#')[0]
-        if url in seen or not official(url):
+        if url in seen or not official(url, hosts):
             continue
         seen.add(url)
         status, final, body = fetch(url)
@@ -193,7 +195,7 @@ def crawl(fetch, key):
                 images[image] = {'url': image, 'alt': ' '.join(alt.split())[:200], 'page': url}
         model_page = depth > 0 or names_model(url, words)
         for link, text in page.links:
-            if not official(link) or link in seen:
+            if not official(link, hosts) or link in seen:
                 continue
             if names_model(link + ' ' + text, words) or (model_page and GALLERY.search(link + ' ' + text)):
                 queue.append((link, depth + 1))

@@ -48,3 +48,9 @@
 
 ## Итог 2026-10-27
 INSTALLED_LIVE_VERIFIED: CRITICAL run 40440368360 FINISHED, backup PASS, crm_unchanged, бот running, публичные проверки 8/8 PASS.
+
+## Ракурсы (владелец 2026-10-27)
+8 фото на модель строго по ракурсам (машины могут быть разные): спереди слева 3/4, спереди справа 3/4, сзади слева 3/4,
+сзади справа 3/4; торпеда со стороны водителя, со стороны пассажира, задний ряд, багажник. Только 2018–2023.
+Широкий аудит официальных сайтов разных стран: MODEL-GALLERY-ARCHIVE-20261027-A/-B (cloud/model_gallery_official_001/archive.py);
+поиск по ракурсам на Commons: MODEL-GALLERY-ANGLES-20261027 (cloud/model_gallery_001/angles.py).

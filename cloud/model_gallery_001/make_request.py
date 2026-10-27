@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Write tasks/requests/MODEL-GALLERY-<KIND>-<suffix>.json and its launch marker (run from the repository root).
 
-Usage: python3 cloud/model_gallery_001/make_request.py request collect|search|years|fetch 20261026   # after merge to main:
-       python3 cloud/model_gallery_001/make_request.py launch collect|search|years|fetch 20261026
+Usage: python3 cloud/model_gallery_001/make_request.py request collect|search|years|angles|fetch 20261026   # after merge to main:
+       python3 cloud/model_gallery_001/make_request.py launch collect|search|years|angles|fetch 20261026
 """
 import datetime
 import hashlib
@@ -18,11 +18,14 @@ KINDS = {
                'file searches by model name and generation for interior and rear photos'),
     'years': ('MODEL-GALLERY-YEARS-', 'years.py', 'years_',
               'file searches for exterior, interior and trunk photos of 2018-2023 cars only'),
+    'angles': ('MODEL-GALLERY-ANGLES-', 'angles.py', 'angles_',
+               'file searches per owner view (front/rear 3/4 left and right, dashboard driver and passenger side, '
+               'rear seats, boot) for 2018-2023 cars only'),
     'fetch': ('MODEL-GALLERY-FETCH-', 'fetch.py', 'photos_',
               'download 960 px wide of the photos picked by eye (picks.py), licence checked again'),
 }
-MODULES = ['collect.py', 'search.py', 'years.py', 'fetch.py', 'make_request.py', 'picks.py']
-TESTS = [P + 'test_collect.py', P + 'test_search.py', P + 'test_years.py', P + 'test_fetch.py']
+MODULES = ['collect.py', 'search.py', 'years.py', 'angles.py', 'fetch.py', 'make_request.py', 'picks.py']
+TESTS = [P + 'test_collect.py', P + 'test_search.py', P + 'test_years.py', P + 'test_angles.py', P + 'test_fetch.py']
 GROUPS = ('canada', 'china', 'europe', 'georgia', 'japan', 'korea', 'usa')
 
 
@@ -45,7 +48,7 @@ def request(kind, day):
         'execution': {'controller_path': controller, 'controller_sha256': sha(controller), 'dependency_paths': dependencies,
                       'evidence_paths': evidence + ['state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in TESTS + dependencies}, 'production_required': False,
-                      'receipt_path': 'state/receipts/%s.json' % task, 'test_paths': TESTS, 'timeout_seconds': 2400},
+                      'receipt_path': 'state/receipts/%s.json' % task, 'test_paths': TESTS, 'timeout_seconds': 3600 if kind == 'angles' else 2400},
         'production_required': False, 'read_only': True, 'requested_min_class': 'STANDARD',
         'storage_required_bytes': 268435456, 'task_id': task, 'title': 'Model gallery photo candidates'}
     path = 'tasks/requests/%s.json' % task

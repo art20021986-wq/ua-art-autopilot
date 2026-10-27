@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Write tasks/requests/MODEL-GALLERY-<KIND>-<suffix>.json and its launch marker (run from the repository root).
 
-Usage: python3 cloud/model_gallery_official_001/make_request.py request discover|candidates 20261026   # after merge to main:
-       python3 cloud/model_gallery_official_001/make_request.py launch discover|candidates 20261026
+Usage: python3 cloud/model_gallery_official_001/make_request.py request discover|candidates|archive 20261026   # after merge to main:
+       python3 cloud/model_gallery_official_001/make_request.py launch discover|candidates|archive 20261026
 """
 import datetime
 import hashlib
@@ -18,9 +18,12 @@ KINDS = {
     'candidates': ('MODEL-GALLERY-CANDIDATES-', 'candidates.py', 'candidates_',
                    'download of the official photo series listed in sources.py (manufacturers\' image stores only) and '
                    'the text of their press pages'),
+    'archive': ('MODEL-GALLERY-ARCHIVE-', 'archive.py', 'archive_',
+                'bounded crawl of the brands\' press and model archives in several countries for 2018-2023 photos, '
+                'download of the matching photos from the brands\' image hosts'),
 }
-MODULES = ['discover.py', 'candidates.py', 'sources.py', 'make_request.py']
-TESTS = [P + 'test_discover.py', P + 'test_candidates.py']
+MODULES = ['discover.py', 'candidates.py', 'sources.py', 'archive.py', 'make_request.py']
+TESTS = [P + 'test_discover.py', P + 'test_candidates.py', P + 'test_archive.py']
 GROUPS = ('canada', 'china', 'europe', 'georgia', 'japan', 'korea', 'usa')
 
 
@@ -35,7 +38,8 @@ def request(kind, day):
     dependencies = [P + name for name in MODULES if P + name != controller]
     sys.path.insert(0, P)
     from sources import SOURCES
-    names = sorted(SOURCES) if kind == 'candidates' else GROUPS
+    import archive
+    names = sorted(SOURCES) if kind == 'candidates' else archive.part_keys(day[-1]) if kind == 'archive' else GROUPS
     evidence = [P + stem + '%s.json' % name for name in names]
     value = {
         'ai_requested': False, 'changed_paths': evidence, 'complexity': 1, 'control_plane_version': 'TASK107-R2',
@@ -45,7 +49,7 @@ def request(kind, day):
         'execution': {'controller_path': controller, 'controller_sha256': sha(controller), 'dependency_paths': dependencies,
                       'evidence_paths': evidence + ['state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in TESTS + dependencies}, 'production_required': False,
-                      'receipt_path': 'state/receipts/%s.json' % task, 'test_paths': TESTS, 'timeout_seconds': 3000},
+                      'receipt_path': 'state/receipts/%s.json' % task, 'test_paths': TESTS, 'timeout_seconds': 3600},
         'production_required': False, 'read_only': True, 'requested_min_class': 'STANDARD',
         'storage_required_bytes': 268435456, 'task_id': task, 'title': 'Model gallery photo candidates'}
     path = 'tasks/requests/%s.json' % task
