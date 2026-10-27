@@ -61,3 +61,4 @@ INSTALLED_LIVE_VERIFIED: CRITICAL run 40440368360 FINISHED, backup PASS, crm_unc
   order-strings.json не трогается; gallery.js/css и model-gallery.json заменяются с резервной копией;
   имена фото с хешем содержимого — браузеры не покажут старые фото из кэша.
 - Задачи: MODEL-GALLERY-PREFLIGHT-20261027-R6 → MODEL-GALLERY-INSTALL-20261027-R6.
+- Итог R6: установлено, run 40463769102 FINISHED, публичные проверки 8/8, бэкап есть, CRM не менялась.
