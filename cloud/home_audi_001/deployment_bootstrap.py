@@ -9,6 +9,8 @@ import sys
 import zipfile
 
 BASE = Path('/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin')
+# audi_photo.py carries the owner photo unchanged (1.5 MB JPEG = 2.0 MB as base64), above the usual 1 MiB.
+ENTRY_LIMIT = 4 * 1024 * 1024
 
 
 def main():
@@ -34,7 +36,7 @@ def main():
     with zipfile.ZipFile(archive) as bundle:
         for item in bundle.infolist():
             if (not re.fullmatch(r'[a-z_]+\.(?:py|sql)', item.filename)
-                    or item.file_size > 1048576):
+                    or item.file_size > ENTRY_LIMIT):
                 raise ValueError('BUNDLE_ENTRY')
             target = package / item.filename
             payload = bundle.read(item)
