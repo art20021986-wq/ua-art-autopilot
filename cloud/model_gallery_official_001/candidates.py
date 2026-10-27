@@ -33,7 +33,7 @@ def allowed(url):
     return url.startswith('https://') and host in IMAGE_HOSTS
 
 
-def get_image(url, fetch):
+def get_image(url, fetch, allowed=allowed):
     if not allowed(url):
         raise discover.DiscoverError('IMAGE_OUTSIDE_SCOPE')
     variants = [url + RENDITION, url] if urllib.parse.urlsplit(url).netloc == 'www.hyundai.news' else [url]
