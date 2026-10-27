@@ -52,3 +52,5 @@ INSTALLED_LIVE_VERIFIED 2026-10-26: превью R2 run 40287513653 PASS, уст
 - `autoria_logo.py` удалён; `candidate_builder.py` пишет только video/index.html. Файл video/brand/autoria-logo.svg
   на сервере не трогается (на него больше нет ссылок).
 - Публичная проверка: на главной есть `class="ua-autoria-mark"`. Задачи — HOME-REVIEWS-MARK-*-20261027.
+
+Релиз 3: INSTALLED_LIVE_VERIFIED 2026-10-27, превью run 40451565072 PASS, установка run 40453428621 FINISHED.
