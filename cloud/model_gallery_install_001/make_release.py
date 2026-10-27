@@ -5,7 +5,7 @@ Usage: python3 cloud/model_gallery_install_001/make_release.py preview   # PR, m
        python3 cloud/model_gallery_install_001/make_release.py launch TASK_ID
        python3 cloud/model_gallery_install_001/make_release.py install   # right after the preview: writes gate, manifest,
                                                                    # owner approval, storage probe, request and launch
-The install request is written only after the owner says «да» in chat to the previewed gallery.
+Owner in chat 2026-10-27: «запускаю свой предложенный вариант, последний, он мне нравится» (preview R5 layout).
 """
 import datetime
 import hashlib
