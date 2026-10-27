@@ -129,9 +129,9 @@ def install(suffix):
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved («Разрешаю, делай самостоятельно», 2026-10-26) HOME-AUDI-001: in '
+               'description': 'Owner approved («ок, размещаю на сайт», 2026-10-27, after the centred preview) HOME-AUDI-001: in '
                               'video/index.html the first-screen picture (Kia K5) is replaced by the owner Audi photo, '
-                              'new file video/order/audi_owner.jpg byte for byte as sent, shown whole (one small CSS '
+                              'new file video/order/audi_owner.jpg (owner photo cropped around the car, centred), shown whole (one small CSS '
                               'block); every other byte stays as is. No CRM or car card change. Existing backup, bot '
                               'pause, writer locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
