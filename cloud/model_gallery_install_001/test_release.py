@@ -8,7 +8,6 @@ import candidate_builder
 import edit_order
 import gallery_assets
 import generations
-from official_picks import PICKS as OFFICIAL
 
 HERE = Path(__file__).resolve().parent
 LIVE = {edit_order.PAGE: 'podbor.html', edit_order.SCRIPT: 'order.js', edit_order.STRINGS: 'order-strings.json'}
@@ -33,20 +32,14 @@ class ReleaseTests(unittest.TestCase):
     def test_gallery_data_matches_photos(self):
         photos = candidate_builder.photos()
         self.assertEqual(set(DATA['models']), set(generations.GENERATIONS))
-        self.assertNotIn('classics-1980-1990', DATA['models'])
+        for key in ('classics-1980-1990', 'lexus-tx', 'toyota-tacoma-trailhunter'):
+            self.assertNotIn(key, DATA['models'])
         for key, model in DATA['models'].items():
             self.assertEqual(set(model['generation']), {'uk', 'ru', 'ka'})
-            items = model['photos']
-            if key in OFFICIAL:
-                self.assertEqual([item['source'] for item in items], OFFICIAL[key])
-                self.assertEqual(len(items), 9)
-            else:
-                self.assertEqual(items[0]['path'], 'media/%s.jpg' % key)
-                self.assertLessEqual(len(items), 8)
-                self.assertTrue(all(item['license'] and item['source'].startswith('https://commons.wikimedia.org/')
-                                    for item in items[1:]))
-            new = items if key in OFFICIAL else items[1:]
-            self.assertTrue(all('video/order/' + item['path'] in photos for item in new))
+            self.assertTrue(1 <= len(model['photos']) <= 9, key)
+            for item in model['photos']:
+                self.assertIn('video/order/' + item['path'], photos)
+                self.assertTrue(item['license'] and item['source'].startswith('https://commons.wikimedia.org/'))
 
     def test_generation_line(self):
         self.assertEqual(generations.line('kia-k5'), {'uk': '3-тє покоління (DL3), з 2019 р.',
@@ -57,8 +50,11 @@ class ReleaseTests(unittest.TestCase):
         result = candidate_builder.build(SOURCE, {})
         with self.assertRaises(ValueError):
             edit_order.build(edit_order.SCRIPT, result[edit_order.SCRIPT])
+        # Another release may have raised the order.js version: the gallery still applies.
+        raised = SOURCE[edit_order.PAGE].replace(b'20261025.3', b'20261026.5')
+        self.assertIn(edit_order.CHECK_PAGE.encode(), edit_order.build(edit_order.PAGE, raised))
         with self.assertRaises(ValueError):
-            edit_order.build(edit_order.PAGE, SOURCE[edit_order.PAGE].replace(b'20261025.3', b'20261025.4'))
+            edit_order.build(edit_order.PAGE, result[edit_order.PAGE])
 
     def test_bundle_modules_fit(self):
         for path in HERE.glob('*.py'):

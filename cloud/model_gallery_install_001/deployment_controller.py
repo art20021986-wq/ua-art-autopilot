@@ -14,8 +14,8 @@ ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 
 # Public evidence of each change: path -> text the page must contain.
-EXPECTED = {'/video/podbor.html': 'order/gallery.css?v=20261026.1',
-            '/video/order/order.js': "import {gallery} from './gallery.js?v=20261026.1';",
+EXPECTED = {'/video/podbor.html': 'order/gallery.css?v=20261026.9',
+            '/video/order/order.js': "import {gallery} from './gallery.js?v=20261026.9';",
             '/video/order/order-strings.json': '"photo_next": "Наступне фото"',
             '/video/order/gallery.js': 'export function gallery(',
             '/video/order/gallery.css': '.ua-order .gallery-next',

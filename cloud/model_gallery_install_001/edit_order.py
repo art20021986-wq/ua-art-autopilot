@@ -4,11 +4,14 @@ Owner request 2026-10-26. New files (gallery.js, gallery.css, model-gallery.json
 this package; the existing files get only these small edits. order.js loads model-gallery.json next
 to its strings; when it is missing or fails, the model cards stay exactly as before. A model with
 gallery data shows the photo switcher and its generation under the name. Built on top of the live
-PODBOR-MODEL-001 files (order.js?v=20261025.3). Each original fragment must occur exactly once and
+PODBOR-MODEL-001 files; the order.js version on the page is replaced whatever it is (another release may
+have raised it), so browsers load the new module. Each original fragment must occur exactly once and
 an applied fragment is refused.
 """
 
-VERSION = '20261026.1'
+import re
+
+VERSION = '20261026.9'
 PAGE = 'video/podbor.html'
 SCRIPT = 'video/order/order.js'
 STRINGS = 'video/order/order-strings.json'
@@ -27,7 +30,6 @@ EDITS = {
         ('<link rel="stylesheet" href="order/order.css?v=20261025.2">',
          '<link rel="stylesheet" href="order/order.css?v=20261025.2">'
          '<link rel="stylesheet" href="order/gallery.css?v=' + VERSION + '">'),
-        ('order/order.js?v=20261025.3', 'order/order.js?v=' + VERSION),
     ),
     SCRIPT: (
         ("import {PreferenceForm} from './preferences-form.js?v=20260927.10';\n",
@@ -64,8 +66,16 @@ CHECK_SCRIPT = "import {gallery} from './gallery.js?v=" + VERSION + "';"
 CHECK_STRINGS = '"photo_next": "Наступне фото"'
 
 
+# The page's order.js version, set by pattern: exactly one module script tag.
+SCRIPT_TAG = re.compile(r'order/order\.js\?v=[0-9.]+')
+
+
 def build(name, source):
     text = source.decode('utf-8')
+    if name == PAGE:
+        if len(SCRIPT_TAG.findall(text)) != 1 or 'order/order.js?v=' + VERSION in text:
+            raise ValueError('ORDER_FRAGMENT_NOT_UNIQUE:' + name)
+        text = SCRIPT_TAG.sub('order/order.js?v=' + VERSION, text)
     for old, new in EDITS[name]:
         if text.count(old) != 1 or new in text:
             raise ValueError('ORDER_FRAGMENT_NOT_UNIQUE:' + name)

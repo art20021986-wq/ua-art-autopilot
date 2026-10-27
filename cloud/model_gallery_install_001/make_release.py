@@ -23,8 +23,7 @@ import gallery_assets  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py', 'edit_order.py',
-                                'gallery_assets.py', 'generations.py', 'make_assets.py', 'make_release.py', 'official_picks.py',
-                                'release_constants.py')]
+                                'gallery_assets.py', 'generations.py', 'make_assets.py', 'make_release.py', 'release_constants.py')]
 DEPENDENCIES += [P + name + '.py' for name in gallery_assets.PHOTO_MODULES]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
@@ -76,8 +75,8 @@ def preview(suffix):
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Preview of the order page model gallery (owner request 2026-10-26): reads the live '
                             'video/podbor.html, video/order/order.js and order-strings.json, builds the candidate (photo '
-                            'switcher with yellow arrows, generation line, official photos of one car for Tucson and Santa Fe, '
-                            'Commons photos for the other models; the classics card unchanged) and measures storage. '
+                            'switcher with yellow arrows, generation line, Commons photos of 2018-2023 cars; Lexus TX, Tacoma '
+                            'Trailhunter and the classics card unchanged) and measures storage. '
                             'No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
@@ -135,11 +134,11 @@ def install(suffix):
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner approved MODEL-GALLERY-001 install: order page model cards get a photo switcher '
-                              '(yellow arrows, left/right half of the photo) and a generation line; Hyundai Tucson and Santa Fe get '
-                              '9 official press photos of one car, the other models up to 8 Commons photos of the same '
-                              'generation; the classics card unchanged. video/podbor.html, video/order/order.js and '
-                              'order-strings.json edited; new gallery.js, gallery.css, model-gallery.json and 196 photos in '
-                              'video/order/media. Existing main photos unchanged. No CRM change. Existing backup, bot pause, writer locks, data-preservation, '
+                              '(yellow arrows, left/right half of the photo) and a generation line; photos are Commons photos of '
+                              '2018-2023 cars only (up to 4 exterior, 4 interior and the trunk); Lexus TX, Tacoma Trailhunter and '
+                              'the classics card unchanged. video/podbor.html, video/order/order.js and order-strings.json '
+                              'edited; new gallery.js, gallery.css, model-gallery.json and gallery photos in video/order/media. '
+                              'Existing main photo files unchanged. No CRM change. Existing backup, bot pause, writer locks, data-preservation, '
                               'rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/katalog.html'],
