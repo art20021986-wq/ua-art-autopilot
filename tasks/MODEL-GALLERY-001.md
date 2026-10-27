@@ -54,3 +54,10 @@ INSTALLED_LIVE_VERIFIED: CRITICAL run 40440368360 FINISHED, backup PASS, crm_unc
 сзади справа 3/4; торпеда со стороны водителя, со стороны пассажира, задний ряд, багажник. Только 2018–2023.
 Широкий аудит официальных сайтов разных стран: MODEL-GALLERY-ARCHIVE-20261027-A/-B (cloud/model_gallery_official_001/archive.py);
 поиск по ракурсам на Commons: MODEL-GALLERY-ANGLES-20261027 (cloud/model_gallery_001/angles.py).
+
+## Релиз R6 (владелец «Да» 2026-10-27 на листы превью 8 ракурсов)
+- Фото: 169 снимков Commons по 8 ракурсам владельца (cloud/model_gallery_001/photos4_*), пропуски не подменяются.
+- Поверх установленной галереи: в podbor.html и order.js меняется только версия ресурсов (20261027.1);
+  order-strings.json не трогается; gallery.js/css и model-gallery.json заменяются с резервной копией;
+  имена фото с хешем содержимого — браузеры не покажут старые фото из кэша.
+- Задачи: MODEL-GALLERY-PREFLIGHT-20261027-R6 → MODEL-GALLERY-INSTALL-20261027-R6.

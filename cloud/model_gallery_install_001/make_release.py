@@ -5,7 +5,8 @@ Usage: python3 cloud/model_gallery_install_001/make_release.py preview   # PR, m
        python3 cloud/model_gallery_install_001/make_release.py launch TASK_ID
        python3 cloud/model_gallery_install_001/make_release.py install   # right after the preview: writes gate, manifest,
                                                                    # owner approval, storage probe, request and launch
-Owner in chat 2026-10-27: «запускаю свой предложенный вариант, последний, он мне нравится» (preview R5 layout).
+Owner in chat 2026-10-27: «запускаю свой предложенный вариант, последний, он мне нравится» (preview R5 layout);
+release R6 (owner «Да» to the 8-view preview sheets): new photos in the owner's 8 views over the installed gallery.
 """
 import datetime
 import hashlib
@@ -77,7 +78,8 @@ def preview():
              'description': 'Preview of the order page model gallery (owner request 2026-10-26): reads the live '
                             'video/podbor.html, video/order/order.js and order-strings.json, builds the candidate (photo '
                             'switcher with yellow arrows, generation line, Commons photos of 2018-2023 cars; Lexus TX, Tacoma '
-                            'Trailhunter and the classics card unchanged) and measures storage. '
+                            'Trailhunter and the classics card unchanged; over an installed gallery only the asset versions are raised) '
+                            'and measures storage. '
                             'No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
@@ -136,9 +138,11 @@ def install():
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner approved MODEL-GALLERY-001 install: order page model cards get a photo switcher '
                               '(yellow arrows, left/right half of the photo) and a generation line; photos are Commons photos of '
-                              '2018-2023 cars only (up to 4 exterior, 4 interior and the trunk); Lexus TX, Tacoma Trailhunter and '
-                              'the classics card unchanged. video/podbor.html, video/order/order.js and order-strings.json '
-                              'edited; new gallery.js, gallery.css, model-gallery.json and gallery photos in video/order/media. '
+                              '2018-2023 cars only, up to 8 in the owner\'s views (front left/right, rear left/right, dashboard from the '
+                              'driver/passenger side, rear seats, boot; a missing view is skipped); Lexus TX, Tacoma Trailhunter and '
+                              'the classics card unchanged. Over the installed gallery: video/podbor.html and video/order/order.js '
+                              'get the new asset version only; gallery.js, gallery.css, model-gallery.json replaced; new gallery photos '
+                              '(content-hashed names) in video/order/media. '
                               'Existing main photo files unchanged. No CRM change. Existing backup, bot pause, writer locks, data-preservation, '
                               'rollback and public health checks are kept.',
                'execution': execution(task, True),

@@ -14,13 +14,13 @@ ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 
 # Public evidence of each change: path -> text the page must contain.
-EXPECTED = {'/video/podbor.html': 'order/gallery.css?v=20261026.9',
-            '/video/order/order.js': "import {gallery} from './gallery.js?v=20261026.9';",
+EXPECTED = {'/video/podbor.html': 'order/gallery.css?v=20261027.1',
+            '/video/order/order.js': "import {gallery} from './gallery.js?v=20261027.1';",
             '/video/order/order-strings.json': '"photo_next": "Наступне фото"',
             '/video/order/gallery.js': 'export function gallery(',
             '/video/order/gallery.css': '.ua-order .gallery-next',
-            '/video/order/model-gallery.json': '"generation"',
-            '/video/order/media/kia-k5-2.webp': 'WEBP',
+            '/video/order/model-gallery.json': '"version": "20261027.1"',
+            '/video/order/media/kia-k5-2-717239e3.webp': 'WEBP',
             '/video/katalog.html': ''}
 
 

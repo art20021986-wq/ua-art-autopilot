@@ -59,6 +59,15 @@ class ReleaseTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             edit_order.build(edit_order.PAGE, result[edit_order.PAGE])
 
+    def test_installed_gallery_gets_new_versions_only(self):
+        # The live files after the earlier gallery release (20261026.9): only the asset versions change.
+        built = candidate_builder.build(SOURCE, {})
+        earlier = {name: built[name].replace(edit_order.VERSION.encode(), b'20261026.9') for name in LIVE}
+        result = candidate_builder.build(earlier, {})
+        self.assertNotIn(edit_order.STRINGS, result)
+        for name in (edit_order.PAGE, edit_order.SCRIPT):
+            self.assertEqual(result[name], built[name], name)
+
     def test_bundle_modules_fit(self):
         for path in HERE.glob('*.py'):
             self.assertLessEqual(path.stat().st_size, 1048576, path.name)
