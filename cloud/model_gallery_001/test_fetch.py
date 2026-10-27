@@ -10,6 +10,7 @@ import urllib.parse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import collect as c  # noqa: E402
+import angles  # noqa: E402
 import fetch as f  # noqa: E402
 
 c.PAUSE = 0
@@ -42,10 +43,10 @@ class FetchTests(unittest.TestCase):
     def test_picks_cover_known_models(self):
         picks = f.chosen.PICKS
         self.assertTrue(set(picks) <= set(c.MODELS))
+        order = [view for view, _ in angles.VIEWS]
         for views in picks.values():
-            self.assertEqual(set(views), {'exterior', 'interior'})
-            self.assertLessEqual(len(views['exterior']), 4)
-            self.assertLessEqual(len(views['interior']), 5)
+            self.assertEqual(list(views), [view for view in order if view in views])
+            self.assertTrue(all(len(titles) == 1 for titles in views.values()))
 
     def test_execute(self):
         with tempfile.TemporaryDirectory() as tmp:
