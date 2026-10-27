@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-REVIEWS-BLACK-INSTALL-20261027.82f718272e977703b29f8f35a28a1f33357d5421548d924960da851b4c4e88f6.json",
+  "autostart_ledger_sha256": "d707c05149c78602cf4c4b7950056f219b80b488fb422da518acd3099c7ac699",
+  "autostart_source_commit": "41c38f9208e98c31f7fec189e937f5af91eba87f",
+  "created_at": "2026-10-27T06:27:21Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40461072458",
+    "task_id": "HOME-REVIEWS-BLACK-INSTALL-20261027",
+    "task_sha256": "82f718272e977703b29f8f35a28a1f33357d5421548d924960da851b4c4e88f6"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "homepage-68ed6564ebea221c",
+  "request_path": "tasks/requests/HOME-REVIEWS-BLACK-INSTALL-20261027.json",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
