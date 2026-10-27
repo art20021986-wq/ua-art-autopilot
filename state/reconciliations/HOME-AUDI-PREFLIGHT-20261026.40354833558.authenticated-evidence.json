@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "f3eaee0bc84885ee055656cd203f278650574977fb34d47ef16709bde3b9f8e9",
+  "error": "BUNDLE_ENTRY (remote bootstrap rejected audi_photo.py, 2.0 MB, above its 1 MiB entry limit) -> no remote receipt -> controller deadline",
+  "failed_step": "execute / standard / execute: remote bootstrap unpack, before deployment_remote.py",
+  "precedent": "state/reconciliations/QUICK-LEAD-002-PREFLIGHT-20261026.40284801718.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-10-27T06:42:52.977089+00:00",
+  "remote_mode": "preview (source-only, never started; writes nothing to the site or CRM)",
+  "retry": "HOME-AUDI-PREFLIGHT-20261027 (bootstrap ENTRY_LIMIT 4 MiB, task names from release_constants.py only)",
+  "run_id": "40354833558",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "HOME-AUDI-PREFLIGHT-20261026"
+}
