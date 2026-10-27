@@ -94,7 +94,9 @@ function models() {
     const info=node('div',undefined,'model-info');
     info.append(node('h3',model.labels[state.lang]),node('span',t('under_order'),'tag'));
     const button=node('button',t('calculate'));button.type='button';button.addEventListener('click',()=>selectModel(model.key));
-    info.append(button);article.append(media,info);return article;
+    const offer=node('button',t('quick_offer'),'quick-offer');offer.type='button';
+    Object.assign(offer.dataset,{quickLeadModel:model.key,quickLeadCountry:state.country,quickLeadTitle:model.labels[state.lang]});
+    info.append(offer,button);article.append(media,info);return article;
   }));
 }
 function renderSelection() {

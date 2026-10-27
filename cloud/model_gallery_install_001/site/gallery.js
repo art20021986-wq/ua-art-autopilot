@@ -1,5 +1,6 @@
 // Photo switcher of one model card (MODEL-GALLERY-001): the left and right halves of the photo are
-// buttons with yellow arrows; each shows the previous or next photo, wrapping around.
+// buttons with yellow arrows; each shows the previous or next photo, wrapping around. A small
+// counter («3 / 9») shows the position; screen readers get it from the photo's alt text.
 export function gallery(photos, {base, alt, labels, lazy}) {
   const box=document.createElement('div');
   box.className='gallery';
@@ -8,6 +9,8 @@ export function gallery(photos, {base, alt, labels, lazy}) {
   box.setAttribute('aria-label',alt);
   const img=document.createElement('img');
   img.decoding='async';img.loading=lazy?'lazy':'eager';
+  const count=document.createElement('span');
+  count.className='gallery-count';count.setAttribute('aria-hidden','true');
   let index=0;
   const url=i=>new URL(photos[i].path,base);
   function show(next) {
@@ -15,14 +18,17 @@ export function gallery(photos, {base, alt, labels, lazy}) {
     const photo=photos[index];
     img.src=url(index);img.width=photo.width;img.height=photo.height;
     img.alt=`${alt} — ${index+1}/${photos.length}`;
+    count.textContent=`${index+1} / ${photos.length}`;
   }
   show(0);
   box.append(img);
   if(photos.length<2) return box;
+  box.append(count);
   for(const [step,side,label] of [[-1,'prev',labels.prev],[1,'next',labels.next]]) {
     const button=document.createElement('button');
     button.type='button';button.className=`gallery-${side}`;button.setAttribute('aria-label',label);
     button.addEventListener('click',()=>{
+      img.classList.remove('gallery-in');void img.offsetWidth;img.classList.add('gallery-in');
       show(index+step);
       new Image().src=url((index+step+photos.length)%photos.length);
     });

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Release-specific checks: the candidate built from the live order-page files (PODBOR-MODEL-001 state)."""
+"""Release-specific checks: the candidate built from the live order-page files (after QUICK-LEAD-002)."""
 import json
 from pathlib import Path
 import unittest
@@ -51,7 +51,7 @@ class ReleaseTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             edit_order.build(edit_order.SCRIPT, result[edit_order.SCRIPT])
         # Another release may have raised the order.js version: the gallery still applies.
-        raised = SOURCE[edit_order.PAGE].replace(b'20261025.3', b'20261026.5')
+        raised = SOURCE[edit_order.PAGE].replace(b'20261026.5', b'20261026.7')
         self.assertIn(edit_order.CHECK_PAGE.encode(), edit_order.build(edit_order.PAGE, raised))
         with self.assertRaises(ValueError):
             edit_order.build(edit_order.PAGE, result[edit_order.PAGE])
