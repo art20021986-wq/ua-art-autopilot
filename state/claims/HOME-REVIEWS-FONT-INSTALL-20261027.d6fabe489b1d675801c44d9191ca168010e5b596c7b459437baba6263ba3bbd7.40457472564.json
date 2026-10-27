@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "926937f8ea3cca471977595814e110b503d2eed2a1631fee39fd06b746cf50ee",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-27T05:57:42Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-10-27T06:11:38Z",
+  "heartbeat_at": "2026-10-27T06:11:38Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "40457472564",
     "task_id": "HOME-REVIEWS-FONT-INSTALL-20261027",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 422.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 74.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-40457472564-d6fabe489b1d6758",
   "production_transaction_path": "state/transactions/HOME-REVIEWS-FONT-INSTALL-20261027.d6fabe489b1d675801c44d9191ca168010e5b596c7b459437baba6263ba3bbd7.40457472564.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-REVIEWS-FONT-INSTALL-20261027.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "ec706924b3e6d5851ecf54c443fba6b2d4786aa7008ae3cc7310d806cc11700f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-REVIEWS-FONT-INSTALL-20261027.json",
   "request_sha256": "d6fabe489b1d675801c44d9191ca168010e5b596c7b459437baba6263ba3bbd7",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "9c5d546db7b1d0fe8a78badaf0d4f84b5efc375e3021bd77a9f42f2033060a84",
     "file_sha256": {
@@ -90,5 +113,5 @@
       "cloud/home_reviews_001/test_edit_home.py": "3a2c6e727312ee7c97f34c1d8a1055cfde9c5b55177c7c860352da1ad989ad3f"
     }
   },
-  "updated_at": "2026-10-27T05:57:42Z"
+  "updated_at": "2026-10-27T06:11:38Z"
 }
