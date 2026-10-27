@@ -62,3 +62,5 @@ INSTALLED_LIVE_VERIFIED 2026-10-26: превью R2 run 40287513653 PASS, уст
   @fontsource/roboto 5.3.0 без изменений, SIL OFL 1.1, лицензия в roboto_ofl.txt). Имя «UA Roboto», font-display:swap.
 - `roboto_font.py` — файл шрифта (как раньше логотип, в пакете только .py); `candidate_builder.py` пишет его, если на
   сервере его нет или он другой. Публичная проверка: шрифт отдаётся (wOF2). Задачи — HOME-REVIEWS-FONT-*-20261027.
+
+Релиз 4: INSTALLED_LIVE_VERIFIED 2026-10-27, превью run 40456672700 PASS, установка run 40457472564 FINISHED.
