@@ -6,12 +6,13 @@ to its strings; when it is missing or fails, the model cards stay exactly as bef
 gallery data shows the photo switcher, its generation after the name and no «under order» tag. Built on top of the live
 PODBOR-MODEL-001 files; the order.js version on the page is replaced whatever it is (another release may
 have raised it), so browsers load the new module. Each original fragment must occur exactly once and
-an applied fragment is refused.
+an applied fragment is refused. On files that already carry an earlier gallery release only the asset
+versions are raised (new photos, owner 2026-10-27); the strings stay as they are.
 """
 
 import re
 
-VERSION = '20261026.9'
+VERSION = '20261027.1'
 PAGE = 'video/podbor.html'
 SCRIPT = 'video/order/order.js'
 STRINGS = 'video/order/order-strings.json'
@@ -70,6 +71,9 @@ CHECK_STRINGS = '"photo_next": "Наступне фото"'
 
 # The page's order.js version, set by pattern: exactly one module script tag.
 SCRIPT_TAG = re.compile(r'order/order\.js\?v=[0-9.]+')
+# An earlier gallery release: its marker in each file and its asset version tags.
+APPLIED = {PAGE: 'order/gallery.css?v=', SCRIPT: "import {gallery} from './gallery.js?v=", STRINGS: '"photo_next": '}
+GALLERY_TAG = re.compile(r'(order/gallery\.css|\./gallery\.js)\?v=[0-9.]+')
 
 
 def build(name, source):
@@ -78,6 +82,12 @@ def build(name, source):
         if len(SCRIPT_TAG.findall(text)) != 1 or 'order/order.js?v=' + VERSION in text:
             raise ValueError('ORDER_FRAGMENT_NOT_UNIQUE:' + name)
         text = SCRIPT_TAG.sub('order/order.js?v=' + VERSION, text)
+    if APPLIED[name] in text:
+        if name != STRINGS:
+            if len(GALLERY_TAG.findall(text)) != 1 or GALLERY_TAG.search(text).group(0).endswith('?v=' + VERSION):
+                raise ValueError('ORDER_FRAGMENT_NOT_UNIQUE:' + name)
+            text = GALLERY_TAG.sub(lambda match: match.group(1) + '?v=' + VERSION, text)
+        return text.encode('utf-8')
     for old, new in EDITS[name]:
         if text.count(old) != 1 or new in text:
             raise ValueError('ORDER_FRAGMENT_NOT_UNIQUE:' + name)

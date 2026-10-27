@@ -132,6 +132,25 @@ class RecoveryTests(unittest.TestCase):
         pages = remote.protected_data({'files': {'video/index.html': {}}})['pages_and_pending_ledger']
         self.assertEqual(list(pages), ['video/katalog.html'])
 
+    def test_rerelease_replaces_own_files_with_backup(self):
+        # The live state after an earlier gallery release: the page files exist, the strings stay as they are.
+        import candidate_builder, edit_order
+        from test_release import SOURCE
+        built = candidate_builder.build(SOURCE, {})
+        for name in ('start_safe.py', 'run_all.py', 'team_bot.py', 'lead_bot.py', 'db.py', 'publication_fence.py',
+                     'ua_public_freshness.py', 'ua_site_counters.py', 'catalog_design_guard.py', 'cars_schema.py',
+                     'stranica.py', 'master_card.py', 'publish_transaction_guard.py', 'ua_seo_metadata.py',
+                     'ua_seo_sitemap.py', 'ua_seo_catalog.py'):
+            remote.atomic(self.root/name, b'protected')
+        for name in edit_order.EDITS:
+            remote.atomic(self.root/name, built[name].replace(edit_order.VERSION.encode(), b'20261026.9'), 0o644)
+        remote.atomic(self.root/'video/order/gallery.js', b'earlier gallery', 0o644)
+        plan = remote.prepare(self.root/'plan')
+        self.assertNotIn(edit_order.STRINGS, plan['files'])
+        self.assertEqual(plan['files']['video/order/gallery.js']['before'], sha(b'earlier gallery'))
+        self.assertEqual((self.root/'plan/before/video/order/gallery.js').read_bytes(), b'earlier gallery')
+        self.assertIsNone(plan['files']['video/order/gallery.css']['before'])
+
     def test_atomic_write_rejects_symlink_on_read(self):
         (self.root/'alias.py').symlink_to(self.root/'db.py')
         with self.assertRaises(remote.DeploymentError):

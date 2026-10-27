@@ -19,7 +19,7 @@ import tempfile
 import time
 
 from deployment_transport import API, canonical, sha
-from candidate_builder import SOURCE_FILES, DEPENDENCY_SHA256, build
+from candidate_builder import OWN_FILES, SOURCE_FILES, DEPENDENCY_SHA256, build
 
 ROOT = Path('/home/Carix')
 HERE = Path(__file__).resolve().parent
@@ -92,6 +92,7 @@ def prepare(directory):
     source = {name: read(ROOT/name) for name in SOURCE_FILES}
     dependencies = {name: read(ROOT/name) for name in DEPENDENCY_SHA256}
     candidate = build(source, dependencies)
+    source.update({name: read(ROOT/name) for name in OWN_FILES if (ROOT/name).exists() or (ROOT/name).is_symlink()})
     protected_names = set(DEPENDENCY_SHA256) | {
         'start_safe.py','run_all.py','team_bot.py','lead_bot.py','db.py',
         'publication_fence.py','ua_public_freshness.py',
@@ -114,7 +115,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'MODEL-GALLERY-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'order page model gallery: video/podbor.html, video/order/order.js and order-strings.json edited; new gallery.js, gallery.css, model-gallery.json and gallery photos in video/order/media',
+            'site_scope':'order page model gallery: video/podbor.html, video/order/order.js and order-strings.json edited (only asset versions over an earlier gallery release); gallery.js, gallery.css, model-gallery.json and gallery photos in video/order/media',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
