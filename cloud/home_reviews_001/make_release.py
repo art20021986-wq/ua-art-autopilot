@@ -7,7 +7,7 @@ Usage: python3 cloud/home_reviews_001/make_release.py preview [SUFFIX]   # PR, m
                                                                    # owner approval, storage probe, request and launch
 Owner approvals in chat, 2026-10-26: release 1 «Ок размещай на сайте» (block, badge, logo); release 2 «Ок 1.2»
 (Georgian texts, «autoria_click» Analytics event); 2026-10-27 release 3: no logo, text mark in AUTO.RIA brand style;
-release 4 (owner «Да, конечно, сделай, чтобы везде шрифт был одинаковый» + white background): Roboto from our site; release 5 (owner «сделай шрифт такой же, чёрным цветом, без их синего и красного, на белом фоне»): one black colour. Task names come from release_constants.py.
+release 4 (owner «Да, конечно, сделай, чтобы везде шрифт был одинаковый» + white background): Roboto from our site; release 5 (owner «сделай шрифт такой же, чёрным цветом, без их синего и красного, на белом фоне»): one black colour; release 6 (owner: «Мы на AUTO.RIA» plain text in our own design, «Да, обе плашки»): site font, gold, thin frame. Task names come from release_constants.py.
 """
 import datetime
 import hashlib
@@ -25,7 +25,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 P = 'cloud/home_reviews_001/'
 DEPENDENCIES = [P + n for n in ('autoria_click.py', 'candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py', 'edit_home.py',
-                                'make_release.py', 'release_constants.py', 'reviews_block.py', 'reviews_data.py', 'roboto_font.py')]
+                                'make_release.py', 'release_constants.py', 'reviews_block.py', 'reviews_data.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_edit_home.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 # Live data the install must not touch, besides the source files pinned in the plan.
@@ -71,10 +71,10 @@ def preview(suffix):
     task = PREVIEW_TASK + suffix
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of home reviews release 5 (owner request 2026-10-27): reads the live '
+             'description': 'Preview of home reviews release 6 (owner request 2026-10-27): reads the live '
                             'video/index.html, builds the candidate (the installed AUTO.RIA reviews block, footer badge '
-                            'and CSS replaced in place: the text mark «AUTO.RIA» in one colour, black, on white, in '
-                            'the same Roboto from video/brand/roboto-700.woff2) and measures storage. No application source, CRM, HTML, media or bot state '
+                            'and CSS replaced in place: «AUTO.RIA» as plain text in the site design, site font, gold '
+                            'text and thin gold frame, no white plate, no Roboto) and measures storage. No application source, CRM, HTML, media or bot state '
                             'changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
@@ -131,10 +131,10 @@ def install(suffix):
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved (2026-10-27) AUTORIA-REVIEWS-001 release 5: in '
+               'description': 'Owner approved (2026-10-27) AUTORIA-REVIEWS-001 release 6: in '
                               'video/index.html the installed AUTO.RIA reviews block, footer badge and their CSS are '
-                              'replaced in place; the only difference is the text mark «AUTO.RIA»: one black colour '
-                              'instead of red «AUTO» and blue «.RIA», same Roboto Bold and white button and badge; '
+                              'replaced in place; the only difference is the button and badge style: plain text in the '
+                              'site font, gold text and thin gold frame instead of the white plate and Roboto; '
                               'every other byte stays as is. No CRM or car card change. Existing backup, bot '
                               'pause, writer locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
