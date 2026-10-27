@@ -19,9 +19,8 @@ PAGE = ('<html><head><title>UA ART</title><style id="ua-home-layout-001">.x{}</s
 
 class EditHomeTests(unittest.TestCase):
     def test_photo_is_owner_file_byte_for_byte(self):
-        # SHA-256 of the file the owner sent in chat, 2026-10-26.
-        self.assertEqual(hashlib.sha256(audi_photo.JPEG).hexdigest(),
-                         '70ec4fe01b4029e06ab7e8f45cb9f31697db39fbbb9eaaba1a575e2cbe821dcf')
+        # Owner photo cropped around the car (x 338..2094), approved in chat 2026-10-27.
+        self.assertEqual(hashlib.sha256(audi_photo.JPEG).hexdigest(), '849696a5ff0ebfd5e8cf101492ccb54fff39cc4bdeb69711b57206c1a52a9cec')
 
     def test_only_first_screen_picture_and_css_change(self):
         result = edit_home.build(PAGE.encode()).decode()
@@ -36,8 +35,8 @@ class EditHomeTests(unittest.TestCase):
 
     def test_photo_shown_whole(self):
         self.assertIn('object-fit:contain', edit_home.CSS)
-        self.assertIn('aspect-ratio:2576/1190', edit_home.CSS)
-        self.assertIn('width="2576" height="1190"', edit_home.PICTURE_HTML)
+        self.assertIn('aspect-ratio:1756/1190', edit_home.CSS)
+        self.assertIn('width="1756" height="1190"', edit_home.PICTURE_HTML)
 
     def test_second_release_replaces_in_place(self):
         once = edit_home.build(PAGE.encode())

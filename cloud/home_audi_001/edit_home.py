@@ -18,11 +18,11 @@ PICTURE = re.compile(r'<picture>.*?</picture>', re.S)
 HEAD = re.compile(r'(?=</head\s*>)', re.I)
 CSS_BLOCK = re.compile(r'<style id="%s">.*?</style>' % MARK, re.S)
 
-PICTURE_HTML = ('<picture><img src="%s" alt="Audi — UA ART COMPANY, Київ" width="2576" height="1190" '
+PICTURE_HTML = ('<picture><img src="%s" alt="Audi — UA ART COMPANY, Київ" width="1756" height="1190" '
                 'fetchpriority="high" decoding="async"></picture>' % URL)
 CSS = ('<style id="%s">'
        '.ua-order-first>picture img{object-fit:contain;object-position:center}'
-       '@media (max-width:700px){.ua-order-first>picture{aspect-ratio:2576/1190}}'
+       '@media (max-width:700px){.ua-order-first>picture{aspect-ratio:1756/1190}}'
        '</style>' % MARK)
 
 
