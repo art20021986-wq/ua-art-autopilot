@@ -4,8 +4,8 @@ from release_constants import FONT, HOME
 import roboto_font
 
 # The home page changes with every catalog publication; it is pinned by the plan instead.
-# The font file is new in release 4: add FONT here once it is live, as was done for the logo in release 2.
-SOURCE_FILES = (HOME,)
+# The font file is live since HOME-REVIEWS-FONT-INSTALL-20261027 and is written again only if it differs.
+SOURCE_FILES = (HOME, FONT)
 DEPENDENCY_SHA256 = {}
 
 
