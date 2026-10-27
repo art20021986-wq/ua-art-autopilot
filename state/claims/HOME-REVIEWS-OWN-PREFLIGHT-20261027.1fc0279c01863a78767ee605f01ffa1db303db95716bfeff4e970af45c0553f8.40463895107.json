@@ -7,21 +7,23 @@
   "created_at": "2026-10-27T07:14:53Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-27T07:14:53Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-27T07:20:08Z",
+  "heartbeat_at": "2026-10-27T07:20:08Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40463895107",
     "task_id": "HOME-REVIEWS-OWN-PREFLIGHT-20261027",
     "task_sha256": "1fc0279c01863a78767ee605f01ffa1db303db95716bfeff4e970af45c0553f8"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-7cc972291ceb906e-aa5d19f674df7461",
   "receipt_path": "state/receipts/HOME-REVIEWS-OWN-PREFLIGHT-20261027.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "ac80abcdd0200e943e3ce6a7334b159891ec5b8fc9bd6c6c8d525de134feb2f1",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-REVIEWS-OWN-PREFLIGHT-20261027.json",
   "request_sha256": "1fc0279c01863a78767ee605f01ffa1db303db95716bfeff4e970af45c0553f8",
   "resource_locks": [
@@ -29,8 +31,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "1a155e059c5b80f15b5f37dbaa0421ea6b5dd9c8",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91755225088,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.752
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-27T07:14:53Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "7ae7c1e0843e2e3a5f8ece7c340fd7ead07f774dfbcd10ab8e0411499ee7d0e1",
+    "file_sha256": {
+      "cloud/home_reviews_001/autoria_click.py": "7e7895ef860611bd59aace6ace767f2c229e9ebeb3d008b45ec43245133293b6",
+      "cloud/home_reviews_001/candidate_builder.py": "15bf271794021f6eb65bd3d430fc569341fdb04ebaec4a1f9975781125ab0c51",
+      "cloud/home_reviews_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_reviews_001/deployment_bootstrap.py": "c5770ffe84de4064875f78c8ede7ea93236aca3bcc9ee0f9ce8283d445889674",
+      "cloud/home_reviews_001/deployment_remote.py": "c7a194820bc62c13ab054c077ab118d12c3484a7cf23e75344f5d83ca7d731de",
+      "cloud/home_reviews_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_reviews_001/deployment_transport.py": "fdb26254ef62f9bb3c867c3d739412c6a1caeb5ddc625cd1da60c814f840e541",
+      "cloud/home_reviews_001/edit_home.py": "d4563f9c85ca6d90c74f83b16289ee8a8cc789ece1fb4f7b7fba4a989a99e7c4",
+      "cloud/home_reviews_001/make_release.py": "8de61aabef1e597b62ca8f89166559c7249d65656878b6006245a61545aee1cc",
+      "cloud/home_reviews_001/release_constants.py": "e870d296e5178707eafcbc7b263e3e929a06b2c22a8b5e71a8ceda1597c4e647",
+      "cloud/home_reviews_001/reviews_block.py": "ea410691db4dfffbc3273dbef2437e994b23a5bee933e3de42a0d3f4a8c41054",
+      "cloud/home_reviews_001/reviews_data.py": "eb5dc93f32aa88799e37ffb7ad0d5cfea78b7e93f02ca693bb3c4b22797b88f8",
+      "cloud/home_reviews_001/test_deployment.py": "45713ef4f7b2b6a12898585e8b1cf1df4cfae38d0212d402027c0ac82f478cb6",
+      "cloud/home_reviews_001/test_edit_home.py": "2a15386521b64cc4172d1d6a4d828f5364b98a4c3465b4995e1d81c875a15a13"
+    }
+  },
+  "updated_at": "2026-10-27T07:20:08Z"
 }
