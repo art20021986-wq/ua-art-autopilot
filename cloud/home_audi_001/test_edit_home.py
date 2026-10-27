@@ -1,8 +1,10 @@
 import hashlib
+from pathlib import Path
 import unittest
 
 import audi_photo
 import candidate_builder
+import deployment_bootstrap
 import edit_home
 from release_constants import HOME, PHOTO
 
@@ -52,6 +54,10 @@ class EditHomeTests(unittest.TestCase):
         self.assertEqual(set(result), {HOME, PHOTO})
         self.assertEqual(result[PHOTO], audi_photo.JPEG)
         self.assertIn(edit_home.CHECK.encode(), result[HOME])
+
+    def test_every_package_file_fits_the_bootstrap_limit(self):
+        for path in Path(__file__).resolve().parent.glob('*.py'):
+            self.assertLessEqual(path.stat().st_size, deployment_bootstrap.ENTRY_LIMIT, path.name)
 
 
 if __name__ == '__main__':
