@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "cd0a5916d42e118b5071e919fab7c9bce8b27311cc1af10da1444421e1700062",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-27T02:52:44Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-10-27T03:09:38Z",
+  "heartbeat_at": "2026-10-27T03:09:38Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "40440368360",
     "task_id": "MODEL-GALLERY-INSTALL-20261027-R5",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 433.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 97.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-40440368360-ed65cbc4140b3736",
   "production_transaction_path": "state/transactions/MODEL-GALLERY-INSTALL-20261027-R5.ed65cbc4140b37366c741608f7f861173d0f841ceef1c0b7b502874777a6c939.40440368360.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "card-ua-0001-8f2842788d414633",
   "receipt_path": "state/receipts/MODEL-GALLERY-INSTALL-20261027-R5.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "314c67ec553dc64941b9dc833ae51171ef1e58b81afe3d59c6520a7413c77454",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MODEL-GALLERY-INSTALL-20261027-R5.json",
   "request_sha256": "ed65cbc4140b37366c741608f7f861173d0f841ceef1c0b7b502874777a6c939",
   "resource_locks": [
@@ -74,7 +97,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "1ffb2e05e63dcf363e166144f34122d646132221f9321858380d5de47439ba46",
     "file_sha256": {
@@ -108,5 +131,5 @@
       "cloud/model_gallery_install_001/test_release.py": "baf77e52f8d929ed6811a43b84d104fa93880d99a1e4d68d5637fcba0eeee3f2"
     }
   },
-  "updated_at": "2026-10-27T02:52:44Z"
+  "updated_at": "2026-10-27T03:09:38Z"
 }
