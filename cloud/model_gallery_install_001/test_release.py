@@ -8,6 +8,7 @@ import candidate_builder
 import edit_order
 import gallery_assets
 import generations
+import make_assets
 
 HERE = Path(__file__).resolve().parent
 LIVE = {edit_order.PAGE: 'podbor.html', edit_order.SCRIPT: 'order.js', edit_order.STRINGS: 'order-strings.json'}
@@ -36,7 +37,9 @@ class ReleaseTests(unittest.TestCase):
             self.assertNotIn(key, DATA['models'])
         for key, model in DATA['models'].items():
             self.assertEqual(set(model['generation']), {'uk', 'ru', 'ka'})
-            self.assertTrue(1 <= len(model['photos']) <= 9, key)
+            self.assertTrue(1 <= len(model['photos']) <= 8, key)
+            order = [make_assets.VIEWS.index(item['view']) for item in model['photos']]
+            self.assertEqual(order, sorted(set(order)), key)
             for item in model['photos']:
                 self.assertIn('video/order/' + item['path'], photos)
                 self.assertTrue(item['license'] and item['source'].startswith('https://commons.wikimedia.org/'))

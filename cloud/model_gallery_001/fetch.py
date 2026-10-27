@@ -12,12 +12,14 @@ from pathlib import Path
 import collect
 import picks as chosen
 
-TASKS = ('MODEL-GALLERY-FETCH-20261026', 'MODEL-GALLERY-FETCH-20261026-R2', 'MODEL-GALLERY-FETCH-20261027')
+TASKS = ('MODEL-GALLERY-FETCH-20261026', 'MODEL-GALLERY-FETCH-20261026-R2', 'MODEL-GALLERY-FETCH-20261027',
+         'MODEL-GALLERY-FETCH-20261027-R2')
 WIDTH = 960
 
 
-# Each run writes its own files, never over an earlier run's: photos, photos2 (2018–2023), photos3 (owner's views).
-STEMS = dict(zip(TASKS, ('photos', 'photos2', 'photos3')))
+# Each run writes its own files, never over an earlier run's: photos, photos2 (2018–2023), photos3 (owner's views),
+# photos4 (views with the side checked).
+STEMS = dict(zip(TASKS, ('photos', 'photos2', 'photos3', 'photos4')))
 
 
 def evidence_path(group, task=TASKS[-1]):

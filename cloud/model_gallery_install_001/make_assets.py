@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the embedded release assets (run from the repository root; needs Pillow, only here, not on the server).
 
-Reads the Commons photos of 2018–2023 cars fetched for the gallery (cloud/model_gallery_001/photos2_<group>.json)
+Reads the Commons photos of 2018–2023 cars fetched for the gallery, one per owner's view (cloud/model_gallery_001/photos4_<group>.json)
 and the page sources in site/, and writes:
 - photos_<letter>.py: the new photos as 640 px wide WebP (base64), each module under the 1 MB bundle limit;
 - gallery_assets.py: gallery.js, gallery.css and model-gallery.json (generation line and photo list of each model).
@@ -16,7 +16,9 @@ import string
 import generations
 
 HERE = Path(__file__).resolve().parent
-FETCHED = 'cloud/model_gallery_001/photos2_*.json'
+FETCHED = 'cloud/model_gallery_001/photos4_*.json'
+# The owner's view order (2026-10-27); a view without a photo is skipped.
+VIEWS = ('front_left', 'front_right', 'rear_left', 'rear_right', 'dash_driver', 'dash_passenger', 'rear_seats', 'boot')
 MEDIA = 'video/order/'
 WIDTH = 640
 QUALITY = 70
@@ -55,12 +57,12 @@ def add(photos, items, key, data, meta):
 
 
 def commons(key, views, photos):
-    """The Commons photos of one model: exterior views, then interior views and the trunk."""
+    """The Commons photos of one model in the owner's view order."""
     items = []
-    for view in ('exterior', 'interior'):
-        for photo in views[view]:
+    for view in VIEWS:
+        for photo in views.get(view, ()):
             add(photos, items, key, base64.b64decode(photo['b64']),
-                {'source': photo['page'], 'author': photo['artist'], 'license': photo['license'],
+                {'view': view, 'source': photo['page'], 'author': photo['artist'], 'license': photo['license'],
                  'license_url': photo['license_url']})
     return items
 
