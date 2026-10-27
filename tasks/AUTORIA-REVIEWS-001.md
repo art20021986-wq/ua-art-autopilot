@@ -76,3 +76,5 @@ INSTALLED_LIVE_VERIFIED 2026-10-26: превью R2 run 40287513653 PASS, уст
   автомобили»), без белой плашки и без Roboto. Ссылка на страницу UA ART на AUTO.RIA и счётчик кликов без изменений.
 - Шрифт убран из пакета (`roboto_font.py`, `roboto_ofl.txt`); файл video/brand/roboto-700.woff2 на сервере не трогается
   (на него больше нет ссылок). Публичные проверки: главная и каталог. Задачи — HOME-REVIEWS-OWN-*-20261027.
+
+Релиз 6: INSTALLED_LIVE_VERIFIED 2026-10-27, превью run 40463895107 PASS, установка run 40466554674 FINISHED.
