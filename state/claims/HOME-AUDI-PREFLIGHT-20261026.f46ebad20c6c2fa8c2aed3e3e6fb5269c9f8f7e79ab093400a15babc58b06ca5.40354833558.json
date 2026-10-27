@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "1e708a1fb595bbc6"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-10-27T06:42:52.977089+00:00",
+      "class": "BUNDLE_ENTRY_LIMIT",
+      "evidence_path": "state/reconciliations/HOME-AUDI-PREFLIGHT-20261026.40354833558.authenticated-evidence.json",
+      "message": "Read-only preview never started on the server (bootstrap rejected the 2.0 MB photo module); nothing written. Retried as HOME-AUDI-PREFLIGHT-20261027.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-10-26T16:03:21Z",
@@ -42,6 +51,6 @@
   "source_commit": "dec0b9847410f215d795e2103191f953d82a490c",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-10-26T16:17:44Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-10-27T06:42:52.977089+00:00"
 }
