@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "43413e56a759c5f6"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-10-27T02:40:40.111842+00:00",
+      "class": "TASK_NAME_MISMATCH",
+      "evidence_path": "state/reconciliations/MODEL-GALLERY-PREFLIGHT-20261026-R3.40424070979.authenticated-evidence.json",
+      "message": "Read-only preview stopped at TASK_IDENTITY before any remote call; nothing written. Owner authorized marking it failed. Retried as MODEL-GALLERY-PREFLIGHT-20261027-R5.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-10-27T00:06:23Z",
@@ -42,6 +51,6 @@
   "source_commit": "9fc8ad7d3bcfec92bcfaa509d62113021e9f04dc",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-10-27T00:07:07Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-10-27T02:40:40.111842+00:00"
 }
