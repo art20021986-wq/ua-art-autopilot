@@ -1,0 +1,60 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/crm_card_sold_001/deployment_plan.json",
+    "cloud/crm_card_sold_001/deployment_preview.json"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Owner 2026-10-28: a car marked «Продано» in the Telegram CRM stays in the site catalog (UA-0020 Audi). Bounded source-only preview in the existing private inbox: build the two-file candidate (cars_ui.py with only mark_sold_ok replaced, new ua_card_sold.py that rebuilds the catalog through the existing publikaciya.obnovit_katalog and restores the card on failure) from exact installed sources, record hashes and disk space. No application source, CRM, HTML, media or bot state changes. 20 CPU seconds cap; no catalog rendering.",
+  "execution": {
+    "controller_path": "cloud/crm_card_sold_001/deployment_controller.py",
+    "controller_sha256": "f65650452da36b96df9e8a741365ce25ee12cdfe62225d1e73fdf9ba4cf89ff6",
+    "dependency_paths": [
+      "cloud/crm_card_sold_001/build_cars_ui.py",
+      "cloud/crm_card_sold_001/candidate_builder.py",
+      "cloud/crm_card_sold_001/deployment_backup.py",
+      "cloud/crm_card_sold_001/deployment_bootstrap.py",
+      "cloud/crm_card_sold_001/deployment_remote.py",
+      "cloud/crm_card_sold_001/deployment_rollback.py",
+      "cloud/crm_card_sold_001/deployment_transport.py",
+      "cloud/crm_card_sold_001/release_constants.py",
+      "cloud/crm_card_sold_001/ua_card_sold.py"
+    ],
+    "evidence_paths": [
+      "cloud/crm_card_sold_001/deployment_plan.json",
+      "cloud/crm_card_sold_001/deployment_preview.json",
+      "state/receipts/CRM-CARD-SOLD-PREFLIGHT-20261028.json"
+    ],
+    "file_sha256": {
+      "cloud/crm_card_sold_001/build_cars_ui.py": "4606c8b1e59bb3de5392191f39176eefeec755e65c9928a5f6e786a87416e226",
+      "cloud/crm_card_sold_001/candidate_builder.py": "bdafd2348a93d963b83b6e2be6c4e3a30131d6ad4e364d9f2eacb00bbabd8b14",
+      "cloud/crm_card_sold_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_card_sold_001/deployment_bootstrap.py": "ad6ca782c85332edeb81657e8149eabea758628748923bf05f9ed4631dc10409",
+      "cloud/crm_card_sold_001/deployment_remote.py": "439fe2d78e3a1eea9356fb33d8f7e468cb757c0d11478432e7ce9cdcd55c9c22",
+      "cloud/crm_card_sold_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_card_sold_001/deployment_transport.py": "e5603b55f59ef43bb768ee2e48212994444cdad44ce3b13c0fdf416006bec9ec",
+      "cloud/crm_card_sold_001/release_constants.py": "d23d1d357061c7bc830bfabb9141c6ad384175b5bbc2cb6ccc3dd74dc6c517a8",
+      "cloud/crm_card_sold_001/ua_card_sold.py": "0e5af2a9d0d8e123b06fcfacbe40a79309cb84ccbb05e892e68ab241ca8e975a",
+      "cloud/crm_card_sold_001/test_build_cars_ui.py": "e68f7ff6a3d4fee6c6708d02d755b3446d81af8a55ca4a7b469911f5e3a1c4c1",
+      "cloud/crm_card_sold_001/test_card_sold.py": "7acd57ce9033c0a7a4509027698ada7768b41f9234c4470a895f05b895c0be70",
+      "cloud/crm_card_sold_001/test_deployment.py": "8448acf7a35cd1eef5fcb99168654ad39647661f6d29f4ca3a0743f50e1d9b29",
+      "cloud/crm_card_sold_001/test_release.py": "92c5e627e019c294d5f3d9cfca4ac40db6ecf856e0e9a680769c349d8734c920"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/CRM-CARD-SOLD-PREFLIGHT-20261028.json",
+    "test_paths": [
+      "cloud/crm_card_sold_001/test_build_cars_ui.py",
+      "cloud/crm_card_sold_001/test_card_sold.py",
+      "cloud/crm_card_sold_001/test_deployment.py",
+      "cloud/crm_card_sold_001/test_release.py"
+    ],
+    "timeout_seconds": 1200
+  },
+  "production_required": false,
+  "read_only": false,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 33554432,
+  "task_id": "CRM-CARD-SOLD-PREFLIGHT-20261028",
+  "title": "Preview two-file Telegram sold repair"
+}
