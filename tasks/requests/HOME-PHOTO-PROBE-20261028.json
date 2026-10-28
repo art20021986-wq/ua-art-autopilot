@@ -1,0 +1,35 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/home_photo_probe_20261028/evidence.json",
+    "cloud/home_photo_probe_20261028/sanitized_sources.txt"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Read-only facts for the CRM button «Фото главной страницы» (HOME-PHOTO-001): fixed GETs of team_bot.py, cars_ui.py menu definitions, crm_photo_intake.py, the home page first screen, the video/order folder listing, the always-on task list and Python package folder names (Pillow/numpy/OpenCV/onnxruntime present or not). No remote writes, no data.",
+  "execution": {
+    "controller_path": "cloud/home_photo_probe_20261028/controller.py",
+    "controller_sha256": "b0936eaaaf983d42ed4685cb64d4a8a944062086e81056ca9d1469eecbae2668",
+    "dependency_paths": [],
+    "evidence_paths": [
+      "cloud/home_photo_probe_20261028/evidence.json",
+      "cloud/home_photo_probe_20261028/sanitized_sources.txt",
+      "state/receipts/HOME-PHOTO-PROBE-20261028.json"
+    ],
+    "file_sha256": {
+      "cloud/home_photo_probe_20261028/test_contract.py": "6ddb294d71827a8ba038c37e03eea034481acc5d71e35d656f2684517b71ca75"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/HOME-PHOTO-PROBE-20261028.json",
+    "test_paths": [
+      "cloud/home_photo_probe_20261028/test_contract.py"
+    ],
+    "timeout_seconds": 600
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 16777216,
+  "task_id": "HOME-PHOTO-PROBE-20261028",
+  "title": "Read-only facts for the home photo CRM button"
+}
