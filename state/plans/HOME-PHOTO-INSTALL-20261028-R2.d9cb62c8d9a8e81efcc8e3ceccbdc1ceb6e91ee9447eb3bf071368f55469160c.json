@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-PHOTO-INSTALL-20261028-R2.d9cb62c8d9a8e81efcc8e3ceccbdc1ceb6e91ee9447eb3bf071368f55469160c.json",
+  "autostart_ledger_sha256": "c6743795d3c9006e7590dbbb5fcbf94fb008c13c05b52f3b702576ea545cd3e1",
+  "autostart_source_commit": "f315f70f455b101bdef733601d13326956d5ab29",
+  "created_at": "2026-10-28T17:17:18Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40733822874",
+    "task_id": "HOME-PHOTO-INSTALL-20261028-R2",
+    "task_sha256": "d9cb62c8d9a8e81efcc8e3ceccbdc1ceb6e91ee9447eb3bf071368f55469160c"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-abe45f8afe56efb2-7c3851164402c33a",
+  "request_path": "tasks/requests/HOME-PHOTO-INSTALL-20261028-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:abe45f8afe56efb2"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
