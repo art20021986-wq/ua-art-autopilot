@@ -13,6 +13,7 @@ import resource
 import shutil
 import sqlite3
 import stat
+import subprocess
 import sys
 import tempfile
 import time
@@ -22,6 +23,7 @@ from candidate_builder import SOURCE_SHA256, DEPENDENCY_SHA256, build
 from release_constants import NEW_MODULE
 
 ROOT = Path('/home/Carix')
+QUOTA_BYTES = 35 * 10**9
 HERE = Path(__file__).resolve().parent
 PAGES = ('video/katalog.html', 'site/katalog.html', 'video/index.html', 'site/index.html')
 PROTECTED = ('start_safe.py', 'run_all.py', 'ua_site_counters.py',
@@ -353,6 +355,31 @@ def repair_catalog():
     return {'catalog_rebuilt': True, 'catalog_matches_crm': True, 'catalog_numbers': numbers}
 
 
+def account_used_bytes():
+    """Bytes counted against the quota: home and /tmp, measured as PythonAnywhere's help does."""
+    result = subprocess.run(['du', '-s', '-B1', str(ROOT), '/tmp'], capture_output=True, text=True,
+                            timeout=600, check=False)
+    sizes = [int(line.split('\t')[0]) for line in result.stdout.splitlines() if line.strip()]
+    if result.returncode != 0 or len(sizes) != 2:
+        raise DeploymentError('ACCOUNT_USAGE:'+result.stderr[-160:])
+    return sum(sizes)
+
+
+def storage_probe():
+    """Space against the account quota; the shared filesystem figure is kept for reference only."""
+    measured_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    used = account_used_bytes()
+    if used > QUOTA_BYTES:
+        raise DeploymentError('ACCOUNT_OVER_QUOTA')
+    shared = shutil.disk_usage(ROOT)
+    return {'target_environment': 'production', 'read_only': True, 'measured_at': measured_at,
+            'total_bytes': QUOTA_BYTES, 'used_bytes': used, 'free_bytes': QUOTA_BYTES-used,
+            'account_quota_measured': True,
+            'measurement_method': 'account quota: du -s -B1 /home/Carix /tmp against the 35.0 GB plan quota',
+            'shared_filesystem': {'total_bytes': shared.total, 'used_bytes': shared.used, 'free_bytes': shared.free,
+                                  'measurement_method': 'shutil.disk_usage(/home/Carix)'}}
+
+
 def main():
     cpu_start = time.process_time()
     parser = argparse.ArgumentParser()
@@ -380,13 +407,7 @@ def main():
             if args.mode == 'preview':
                 plan = prepare(work/'preview')
                 value.update(status='PASS', plan=plan, plan_sha256=sha(canonical(plan)))
-                usage = shutil.disk_usage(ROOT)
-                value['storage_probe'] = {
-                    'target_environment': 'production', 'read_only': True,
-                    'measured_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                    'total_bytes': usage.total, 'used_bytes': usage.used, 'free_bytes': usage.free,
-                    'measurement_method': 'shutil.disk_usage(/home/Carix)',
-                }
+                value['storage_probe'] = storage_probe()
             elif args.mode == 'backup':
                 value.update(backup(args.run, args.plan), status='PASS')
             elif args.mode in ('install', 'rollback'):
