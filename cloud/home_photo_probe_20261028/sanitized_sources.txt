@@ -1,0 +1,1637 @@
+# /home/Carix/team_bot.py:1
+'\nUA Art Company — внутренний бот для сотрудников (Этап 1)\n==============================================================================\nЧТО УМЕЕТ:\n- три роли: владелец, управляющий администратор, менеджер;\n- вход по одноразовому коду вместо возни с Telegram ID;\n- владелец кидает что угодно в свободной форме — текст, фото, видео, голос,\n  документ, контакт, альбом — всё падает в «Необработанное»;\n- менеджер разбирает: создаёт карточку авто или клиента, запрашивает\n  уточнение, помечает дубликатом или неактуальным;\n- администратор проверяет: подтверждает, возвращает на доработку, отклоняет;\n- журнал действий пишет каждое изменение со старым и новым значением;\n- поиск по VIN, модели, телефону, имени.\n\nНАСТРОЙКА:\n- OWNER_ID ниже — ваш Telegram ID (уже подставлен).\n- Токен второго бота положить в файл team_token.txt рядом со скриптом.\n\nЗАПУСК: через run_all.py вместе с клиентским ботом.\n'
+
+# /home/Carix/team_bot.py:22
+import os
+
+# /home/Carix/team_bot.py:23
+import json
+
+# /home/Carix/team_bot.py:24
+import logging
+
+# /home/Carix/team_bot.py:25
+import traceback
+
+# /home/Carix/team_bot.py:26
+from datetime import datetime, timedelta
+
+# /home/Carix/team_bot.py:28
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, BotCommand
+
+# /home/Carix/team_bot.py:34
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, ContextTypes, ConversationHandler, filters
+
+# /home/Carix/team_bot.py:44
+import db
+
+# /home/Carix/team_bot.py:45
+import ai
+
+# /home/Carix/team_bot.py:46
+import cars_ui
+
+# /home/Carix/team_bot.py:47
+import ai_filter
+
+# /home/Carix/team_bot.py:48
+import assistant
+
+# /home/Carix/team_bot.py:50
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# /home/Carix/team_bot.py:51
+TEAM_TOKEN_FILE = os.path.join(BASE_DIR, 'team_token.txt')
+
+# /home/Carix/team_bot.py:54
+OWNER_ID = int(os.environ.get('OWNER_ID', '397376186'))
+
+# /home/Carix/team_bot.py:58
+PUBLISH_WITHOUT_APPROVAL = False
+
+# /home/Carix/team_bot.py:61
+def read_team_token() -> str:
+    env = os.environ.get('TEAM_BOT_TOKEN', '').strip()
+    if env:
+        return env
+    if os.path.exists(TEAM_TOKEN_FILE):
+        with open(TEAM_TOKEN_FILE, 'r', encoding='utf-8') as f:
+            return f.read().strip()
+    return ''
+
+# /home/Carix/team_bot.py:74
+def who(update: Update):
+    """Возвращает запись сотрудника или None. Владелец создаётся сам."""
+    user = update.effective_user
+    if user.id == OWNER_ID:
+        db.ensure_owner(user.id, user.full_name, user.username or '')
+    staff = db.get_staff(user.id)
+    if staff and (not staff['active']):
+        return None
+    return staff
+
+# /home/Carix/team_bot.py:85
+def is_owner(staff) -> bool:
+    return staff and staff['role'] == db.ROLE_OWNER
+
+# /home/Carix/team_bot.py:89
+def is_admin_or_owner(staff) -> bool:
+    return staff and staff['role'] in (db.ROLE_OWNER, db.ROLE_ADMIN)
+
+# /home/Carix/team_bot.py:93
+def is_manager(staff) -> bool:
+    return staff and staff['role'] == db.ROLE_MANAGER
+
+# /home/Carix/team_bot.py:100
+def main_menu(staff) -> InlineKeyboardMarkup:
+    role = staff['role']
+    rows = []
+    new_count = db.count_inbox([db.ST_NEW, db.ST_ASSIGNED, db.ST_RETURNED])
+    review_count = len(db.list_cards('cars', db.ST_ON_REVIEW)) + len(db.list_cards('clients', db.ST_ON_REVIEW))
+    if role in (db.ROLE_MANAGER, db.ROLE_ADMIN, db.ROLE_OWNER):
+        label = f'📥 Необработанное ({new_count})' if new_count else '📥 Необработанное'
+        rows.append([InlineKeyboardButton(label, callback_data='inbox_list')])
+    if role in (db.ROLE_ADMIN, db.ROLE_OWNER):
+        label = f'🔍 На проверке ({review_count})' if review_count else '🔍 На проверке'
+        rows.append([InlineKeyboardButton(label, callback_data='review_list')])
+    rows.append([InlineKeyboardButton('🚗 Автомобили', callback_data='cards_cars'), InlineKeyboardButton('👤 Клиенты', callback_data='cards_clients')])
+    rows.append([InlineKeyboardButton('🔎 Поиск', callback_data='search_start')])
+    if role in (db.ROLE_ADMIN, db.ROLE_OWNER):
+        rows.append([InlineKeyboardButton('📊 Сводка', callback_data='stats')])
+    if is_owner(staff):
+        rows.append([InlineKeyboardButton('👥 Сотрудники', callback_data='staff_list')])
+    rows.append([InlineKeyboardButton('📋 Журнал действий', callback_data='audit_list')])
+    if role in (db.ROLE_ADMIN, db.ROLE_OWNER) and ai.enabled():
+        if ai.is_stopped():
+            rows.append([InlineKeyboardButton('▶️ Включить ИИ', callback_data='ai_resume')])
+        else:
+            rows.append([InlineKeyboardButton('🛑 Остановить ИИ', callback_data='ai_stop')])
+    return InlineKeyboardMarkup(rows)
+
+# /home/Carix/team_bot.py:137
+async def ai_stop_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Останавливает ИИ, но не трогает доступ к базе, карточкам и журналу."""
+    query = update.callback_query
+    staff = who(update)
+    if not is_admin_or_owner(staff):
+        await query.answer('Недостаточно прав', show_alert=True)
+        return
+    await query.answer('ИИ остановлен')
+    ai.set_stopped(True, staff.get('full_name') or staff['user_id'])
+    db.log_action(staff['user_id'], 'ai_stop', 'system', None, 'ai', 'on', 'off')
+    context.user_data.pop('ai_draft', None)
+    await query.message.reply_text('🛑 <b>ИИ остановлен.</b>\n\nНовые сообщения будут просто складываться в «Необработанное» без разбора. Незавершённые черновики отброшены, исходные записи целы.\n\nДоступ к базе, карточкам, поиску и журналу работает как обычно.', parse_mode='HTML', reply_markup=main_menu(staff))
+    for uid in set(db.staff_ids_by_role(db.ROLE_OWNER) + db.staff_ids_by_role(db.ROLE_ADMIN)):
+        if uid == staff['user_id']:
+            continue
+        try:
+            await context.bot.send_message(uid, f"🛑 ИИ остановлен: {staff.get('full_name') or staff['user_id']}")
+        except Exception:
+            pass
+
+# /home/Carix/team_bot.py:171
+async def ai_resume_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    staff = who(update)
+    if not is_admin_or_owner(staff):
+        await query.answer('Недостаточно прав', show_alert=True)
+        return
+    await query.answer('ИИ включён')
+    ai.set_stopped(False)
+    db.log_action(staff['user_id'], 'ai_resume', 'system', None, 'ai', 'off', 'on')
+    await query.message.reply_text('▶️ ИИ снова в работе.', reply_markup=main_menu(staff))
+
+# /home/Carix/team_bot.py:186
+def back_btn(target='menu'):
+    return InlineKeyboardButton('⬅️ Назад', callback_data=target)
+
+# /home/Carix/team_bot.py:190
+async def show_menu(update: Update, context: ContextTypes.DEFAULT_TYPE, staff, text=None):
+    import time as _v184_time
+    _v184_now = _v184_time.monotonic()
+    _v184_last = float(context.chat_data.get('_ua_menu_last_sent', 0.0) or 0.0)
+    if _v184_now - _v184_last < 4.0:
+        return
+    context.chat_data['_ua_menu_last_sent'] = _v184_now
+    msg = update.effective_message
+    header = text or f"{db.ROLE_LABELS.get(staff['role'], staff['role'])}\nЗдравствуйте, {staff.get('full_name') or 'коллега'}!"
+    if is_owner(staff):
+        header += '\n\nОтправьте текст, фото, скриншот, голосовое или документ. ИИ сам распознает только поля CRM и покажет предпросмотр.'
+    await msg.reply_text(cars_ui.menu_header(header), parse_mode='HTML', reply_markup=cars_ui.with_stats_button(main_menu(staff)))
+
+# /home/Carix/team_bot.py:214
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    staff = who(update)
+    if staff:
+        await show_menu(update, context, staff)
+        return
+    await update.message.reply_text('Это внутренний бот UA Art Company LLC.\n\nДоступ только для сотрудников. Отправьте код приглашения, который вам выдал руководитель (шесть символов, например A1B2C3).')
+
+# /home/Carix/team_bot.py:226
+async def try_invite_code(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
+    """Незарегистрированный пользователь прислал текст — пробуем как код."""
+    user = update.effective_user
+    text = (update.message.text or '').strip()
+    if len(text) > 12:
+        return False
+    role = db.use_invite(text, user.id, user.full_name, user.username or '')
+    if not role:
+        return False
+    staff = db.get_staff(user.id)
+    await update.message.reply_text(f'✅ Доступ открыт.\nВаша роль: {db.ROLE_LABELS.get(role, role)}')
+    await show_menu(update, context, staff)
+    for oid in db.staff_ids_by_role(db.ROLE_OWNER):
+        try:
+            await context.bot.send_message(oid, f"👤 Новый сотрудник в системе:\n{user.full_name} (@{user.username or 'без username'})\nРоль: {db.ROLE_LABELS.get(role, role)}")
+        except Exception:
+            pass
+    return True
+
+# /home/Carix/team_bot.py:257
+def detect_kind(msg) -> tuple:
+    """Определяем тип вложения и достаём file_id."""
+    if msg.photo:
+        return ('photo', msg.photo[-1].file_id)
+    if msg.video:
+        return ('video', msg.video.file_id)
+    if msg.voice:
+        return ('voice', msg.voice.file_id)
+    if msg.audio:
+        return ('audio', msg.audio.file_id)
+    if msg.document:
+        return ('document', msg.document.file_id)
+    if msg.video_note:
+        return ('video_note', msg.video_note.file_id)
+    if msg.contact:
+        return ('contact', None)
+    if msg.location:
+        return ('location', None)
+    return ('text', None)
+
+# /home/Carix/team_bot.py:278
+async def intake(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Owner intake is processed by AI only; no staff handoff."""
+    staff = who(update)
+    msg = update.message
+    if not staff:
+        if msg.text and await try_invite_code(update, context):
+            return
+        await msg.reply_text('Нет доступа. Отправьте код приглашения или обратитесь к руководителю.')
+        return
+    if not is_owner(staff) and msg.text:
+        await do_search(update, context, msg.text)
+        return
+    if not is_owner(staff):
+        await msg.reply_text('Входящую информацию в систему добавляет владелец.')
+        return
+    kind, file_id = detect_kind(msg)
+    text = msg.text or msg.caption
+    if msg.contact:
+        text = f'Контакт: {msg.contact.first_name} {msg.contact.phone_number}'
+    inbox_id = db.add_inbox(from_user_id=staff['user_id'], kind=kind, text=text, file_id=file_id, media_group=msg.media_group_id, tg_chat_id=msg.chat_id, tg_message_id=msg.message_id)
+    await run_ai_draft(update, context, inbox_id, kind, text, file_id)
+
+# /home/Carix/team_bot.py:319
+async def run_ai_draft(update, context, inbox_id, kind, text, file_id):
+    """Open a schema-closed CRM draft from photo, text, or voice."""
+    import asyncio
+    import time
+    import ai_fast_schema as fast
+    import local_ocr
+    msg = update.message
+    if ai.is_stopped():
+        await msg.reply_text('🛑 ИИ остановлен. Включите ИИ в главном меню.')
+        return
+    started = time.monotonic()
+    hard_deadline = started + 15.0
+    data = {}
+    thinking = None
+    allowed = fast.car_fields(ai_filter)
+
+    async def download_bytes(fid):
+        tg_file = await context.bot.get_file(fid)
+        return bytes(await tg_file.download_as_bytearray())
+    if kind in ('voice', 'audio', 'video_note') and file_id:
+        thinking = await msg.reply_text('🎤 ИИ распознаёт голосовое...')
+        if not ai.voice_enabled():
+            await thinking.edit_text('🎤 Расшифровка голоса не настроена.')
+            return
+        try:
+            remaining = max(0.1, hard_deadline - time.monotonic())
+            audio = await asyncio.wait_for(download_bytes(file_id), timeout=min(3.0, remaining))
+            import crm_voice_watchdog as _v178_voice
+            _v184_voice = msg.voice or msg.audio or msg.video_note
+            _v184_filename = 'voice.ogg' if msg.voice else 'audio.mp3' if msg.audio else 'video_note.mp4'
+            _v184_result = await _v178_voice.transcribe_with_restart(audio, _v184_filename, getattr(_v184_voice, 'duration', 0))
+            text = _v184_result.text if _v184_result.ok else ''
+            if not _v184_result.ok:
+                logging.warning('AI voice worker failed inbox=%s attempts=%s restarts=%s error=%s', inbox_id, _v184_result.attempts, _v184_result.restarted_workers, _v184_result.error)
+        except asyncio.TimeoutError:
+            text = ''
+            logging.warning('AI voice hard timeout inbox=%s', inbox_id)
+        except Exception as exc:
+            text = ''
+            logging.error('Voice recognition failed inbox=%s error=%s', inbox_id, exc)
+        if text:
+            data.update(local_ocr.fields_from_text(text, allowed))
+            data.update(fast.fast_text_data(text, ai_filter))
+    elif kind in ('photo', 'document') and file_id:
+        if kind == 'document':
+            mime = msg.document.mime_type or '' if msg.document else ''
+            if not mime.startswith('image/'):
+                await msg.reply_text('📎 Нужен файл-изображение.')
+                return
+        if msg.media_group_id:
+            marker = 'ai_mg_%s' % msg.media_group_id
+            if context.chat_data.get(marker):
+                return
+            context.chat_data[marker] = True
+        thinking = await msg.reply_text('🖼 ИИ распознаёт, до 15 секунд...')
+        try:
+            remaining = max(0.1, hard_deadline - time.monotonic())
+            image = await asyncio.wait_for(download_bytes(file_id), timeout=remaining)
+            remaining = max(0.5, hard_deadline - time.monotonic())
+            image_data = await asyncio.wait_for(asyncio.to_thread(local_ocr.fields_from_image, image, allowed, remaining), timeout=remaining)
+            data.update(image_data)
+            if (text or '').strip():
+                data.update(local_ocr.fields_from_text(text, allowed))
+                data.update(fast.fast_text_data(text, ai_filter))
+        except asyncio.TimeoutError:
+            data = {}
+            logging.warning('Local OCR hard timeout inbox=%s', inbox_id)
+        except Exception as exc:
+            data = {}
+            logging.error('Local OCR failed inbox=%s error=%s', inbox_id, exc)
+    elif (text or '').strip():
+        thinking = await msg.reply_text('🧠 ИИ распознаёт, до 15 секунд...')
+        data.update(local_ocr.fields_from_text(text, allowed))
+        data.update(fast.fast_text_data(text, ai_filter))
+    if data:
+        parsed = fast.parsed_from_data(data)
+        data = fast.clean_car(parsed, ai_filter, '')
+    if data:
+        parsed = fast.parsed_from_data(data)
+        context.user_data['ai_draft'] = {'inbox_id': inbox_id, 'parsed': parsed, 'clean_data': data, 'source_text': '', 'review': None}
+        rows = [[InlineKeyboardButton('✅ Сохранить карточку', callback_data='ai_ok')], [InlineKeyboardButton('✏️ Дополнить', callback_data='ai_edit'), InlineKeyboardButton('❌ Отменить', callback_data='ai_no')]]
+        elapsed = time.monotonic() - started
+        if thinking is None:
+            thinking = await msg.reply_text('🧠 ИИ распознаёт, до 15 секунд...')
+        await thinking.edit_text('✅ Новая карточка открыта\n\n' + ai_filter.render(data) + '\n\n⏱ %.1f с · локально · 0 AI-токенов' % elapsed, parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+        return
+    if thinking is None:
+        thinking = await msg.reply_text('🧠 ИИ распознаёт, до 15 секунд...')
+    await thinking.edit_text('Поля CRM не распознаны. Пришлите более чёткое фото, текст или голос.')
+
+# /home/Carix/team_bot.py:456
+async def _pomoshnik(update, context, thinking, text):
+    """Возвращает True, если помощник ответил."""
+    if not text or not text.strip():
+        return False
+    try:
+        if not assistant.enabled():
+            return False
+        card = None
+        posl = context.user_data.get('car_last')
+        if posl:
+            try:
+                card = db.get_card('cars', posl)
+            except Exception:
+                card = None
+        otvet = assistant.ask(text, card)
+        if not otvet:
+            return False
+        context.user_data['ai_otvet'] = otvet
+        knopki = []
+        if card and card.get('id'):
+            cid = int(card['id'])
+            knopki.append([InlineKeyboardButton('📝 Добавить в описание', callback_data='car_saveai:%d' % cid)])
+            knopki.append([InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)])
+        await thinking.edit_text(assistant.clean_html(otvet)[:3900], parse_mode='HTML', disable_web_page_preview=True, reply_markup=InlineKeyboardMarkup(knopki) if knopki else None)
+        return True
+    except Exception as e:
+        logging.warning('Помощник: %s', e)
+        return False
+
+# /home/Carix/team_bot.py:495
+def collect_media(inbox_id: int):
+    """Собирает фото и видео записи. Альбом приходит несколькими
+    сообщениями — их надо взять все, а не только первое."""
+    zapis = db.get_inbox(inbox_id)
+    if not zapis:
+        return ([], [])
+    foto, video = ([], [])
+
+    def _dobavit(row):
+        if not row.get('file_id'):
+            return
+        if row['kind'] == 'photo' and row['file_id'] not in foto:
+            foto.append(row['file_id'])
+        elif row['kind'] in ('video', 'video_note') and row['file_id'] not in video:
+            video.append(row['file_id'])
+    _dobavit(zapis)
+    if zapis.get('media_group'):
+        with db.connect() as c:
+            rows = c.execute('SELECT * FROM inbox WHERE media_group=? ORDER BY id', (zapis['media_group'],)).fetchall()
+        for row in rows:
+            _dobavit(dict(row))
+    return (foto, video)
+
+# /home/Carix/team_bot.py:527
+async def ai_save(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    import ai_fast_schema as fast
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    draft = context.user_data.get('ai_draft')
+    if not draft or not staff:
+        await query.message.reply_text('Черновик потерялся. Отправьте сообщение заново.')
+        return
+    parsed = draft.get('parsed') or {}
+    table = 'cars' if parsed.get('type') == 'car' else 'clients'
+    actor = staff['user_id']
+    if table == 'cars':
+        data = {key: value for key, value in (draft.get('clean_data') or {}).items() if key in fast.car_fields(ai_filter)}
+        if not data:
+            await query.message.reply_text('Нет полей автомобиля для сохранения.')
+            return
+        card_id, number, new_card = ai_filter.store(data, actor, draft.get('inbox_id'), card_id=None)
+        if not card_id:
+            await query.message.reply_text('Для новой карточки нужен VIN.')
+            return
+        db.set_card_review('cars', card_id, db.ST_APPROVED_OWNER, actor, publish=True)
+        db.add_comment('cars', card_id, actor, 'Создано распознаванием из входящего #%s; сохранены только поля CRM.' % draft.get('inbox_id'))
+    else:
+        allowed = set(getattr(db, 'CLIENT_FIELDS', ()))
+        data = {key: value for key, value in (draft.get('clean_data') or {}).items() if key in allowed}
+        card_id = db.create_card('clients', data, actor)
+        db.link_inbox_card(draft.get('inbox_id'), 'clients', card_id, actor)
+        db.set_inbox_status(draft.get('inbox_id'), db.ST_APPROVED_OWNER, actor)
+    card = db.get_card(table, card_id)
+    note = '\nОпубликовано в клиентском каталоге.' if table == 'cars' else ''
+    await query.message.edit_reply_markup(reply_markup=None)
+    await query.message.reply_text('✅ Сохранено: %s%s' % (db.card_title(table, card), note), reply_markup=main_menu(staff))
+    context.user_data.pop('ai_draft', None)
+
+# /home/Carix/team_bot.py:579
+AI_FIX = 50
+
+# /home/Carix/team_bot.py:582
+async def ai_edit_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    if not context.user_data.get('ai_draft'):
+        return ConversationHandler.END
+    await query.message.reply_text('Напишите, что поправить.\n\nНапример: «цена не закупочная, а итоговая» или «год 2020, не 2021».\nОтменить — /cancel')
+    return AI_FIX
+
+# /home/Carix/team_bot.py:595
+async def ai_edit_apply(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    draft = context.user_data.get('ai_draft')
+    if not draft:
+        return ConversationHandler.END
+    correction = update.message.text
+    thinking = await update.message.reply_text('🧠 Исправляю...')
+    parsed = ai.parse_message(draft['source_text'], correction=correction, previous=draft['parsed'])
+    if not parsed:
+        await thinking.edit_text('Не получилось. Попробуйте сформулировать иначе.')
+        return AI_FIX
+    draft['parsed'] = parsed
+    draft.setdefault('corrections', []).append(correction)
+    issues = ai.validate(parsed)
+    await thinking.edit_text(ai_filter.render_from(parsed, issues), parse_mode='HTML')
+    proverka = ai.review(draft['source_text'], parsed, corrections=draft['corrections'])
+    draft['review'] = proverka
+    if await ai_filter.autosave(update, context, thinking, draft['inbox_id'], parsed):
+        return ConversationHandler.END
+    rows = []
+    if parsed.get('type') in ('car', 'client'):
+        rows.append([InlineKeyboardButton('✅ Сохранить', callback_data='ai_ok')])
+    rows.append([InlineKeyboardButton('✏️ Поправить ещё', callback_data='ai_edit'), InlineKeyboardButton('❌ Не то', callback_data='ai_no')])
+    await thinking.edit_text(ai_filter.render_from(parsed, issues), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+    return ConversationHandler.END
+
+# /home/Carix/team_bot.py:632
+async def ai_edit_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text('Исправление отменено.')
+    return ConversationHandler.END
+
+# /home/Carix/team_bot.py:637
+async def ai_reject(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer('Черновик отброшен')
+    staff = who(update)
+    draft = context.user_data.pop('ai_draft', None)
+    if draft and staff:
+        db.log_action(staff['user_id'], 'ai_reject', 'inbox', draft['inbox_id'])
+    await query.message.edit_reply_markup(reply_markup=None)
+    await query.message.reply_text('Хорошо, черновик отброшен. Исходная запись осталась в «Необработанном» — её можно разобрать вручную.')
+
+# /home/Carix/team_bot.py:651
+async def notify_managers(context, inbox_id, kind, text):
+    managers = db.staff_ids_by_role(db.ROLE_MANAGER)
+    if not managers:
+        for oid in db.staff_ids_by_role(db.ROLE_OWNER):
+            try:
+                await context.bot.send_message(oid, f'⚠️ Запись #{inbox_id} сохранена, но менеджеров в системе нет. Добавьте менеджера через «👥 Сотрудники».')
+            except Exception:
+                pass
+        return
+    preview = (text or f'[{kind}]')[:200]
+    for mid in managers:
+        try:
+            await context.bot.send_message(mid, f'📥 <b>Новая информация от владельца</b>\n\nЗапись #{inbox_id}\n{preview}', parse_mode='HTML', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Открыть', callback_data=f'inbox_open:{inbox_id}')]]))
+        except Exception as e:
+            logging.warning(f'Не доставлено менеджеру {mid}: {e}')
+
+# /home/Carix/team_bot.py:684
+async def inbox_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    if not staff:
+        return
+    items = db.list_inbox([db.ST_NEW, db.ST_ASSIGNED, db.ST_IN_WORK, db.ST_RETURNED, db.ST_NEED_INFO], limit=15)
+    if not items:
+        await query.message.reply_text('Необработанного нет — всё разобрано. 👍', reply_markup=InlineKeyboardMarkup([[back_btn()]]))
+        return
+    rows = []
+    for it in items:
+        preview = (it['text'] or f"[{it['kind']}]")[:35]
+        mark = '🆕' if it['status'] == db.ST_NEW else '⚙️'
+        rows.append([InlineKeyboardButton(f"{mark} #{it['id']} {preview}", callback_data=f"inbox_open:{it['id']}")])
+    rows.append([back_btn()])
+    await query.message.reply_text(f'📥 <b>Необработанное — {len(items)}</b>', parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+
+# /home/Carix/team_bot.py:710
+async def inbox_open(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    if not staff:
+        return
+    inbox_id = int(query.data.split(':')[1])
+    item = db.get_inbox(inbox_id)
+    if not item:
+        await query.message.reply_text('Запись не найдена.')
+        return
+    if item['status'] == db.ST_NEW and is_manager(staff):
+        db.set_inbox_status(inbox_id, db.ST_ASSIGNED, staff['user_id'], assigned_to=staff['user_id'])
+        item = db.get_inbox(inbox_id)
+    chat_id = query.message.chat_id
+    try:
+        if item['file_id']:
+            sender = {'photo': context.bot.send_photo, 'video': context.bot.send_video, 'voice': context.bot.send_voice, 'audio': context.bot.send_audio, 'document': context.bot.send_document, 'video_note': context.bot.send_video_note}.get(item['kind'])
+            if sender:
+                await sender(chat_id, item['file_id'])
+    except Exception as e:
+        logging.warning(f'Не удалось показать вложение записи {inbox_id}: {e}')
+    when = (item['created_at'] or '')[:16].replace('T', ' ')
+    body = f"📄 <b>Запись #{inbox_id}</b>\nСтатус: {db.STATUS_LABELS.get(item['status'], item['status'])}\nПолучено: {when}\n\n{item['text'] or '(без текста)'}"
+    rows = [[InlineKeyboardButton('🚗 Создать карточку авто', callback_data=f'mk_car:{inbox_id}')], [InlineKeyboardButton('👤 Создать карточку клиента', callback_data=f'mk_client:{inbox_id}')], [InlineKeyboardButton('❓ Запросить уточнение', callback_data=f'inbox_ask:{inbox_id}')], [InlineKeyboardButton('🗂 Дубликат', callback_data=f'inbox_dup:{inbox_id}'), InlineKeyboardButton('🚫 Неактуально', callback_data=f'inbox_skip:{inbox_id}')], [back_btn('inbox_list')]]
+    await query.message.reply_text(body, parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+
+# /home/Carix/team_bot.py:765
+async def inbox_dup(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer('Отмечено дубликатом')
+    staff = who(update)
+    inbox_id = int(query.data.split(':')[1])
+    db.set_inbox_status(inbox_id, db.ST_ARCHIVED, staff['user_id'])
+    db.add_comment('inbox', inbox_id, staff['user_id'], 'Отмечено как дубликат')
+    await query.message.reply_text(f'🗂 Запись #{inbox_id} отправлена в архив как дубликат.')
+
+# /home/Carix/team_bot.py:775
+async def inbox_skip(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer('Отмечено неактуальным')
+    staff = who(update)
+    inbox_id = int(query.data.split(':')[1])
+    db.set_inbox_status(inbox_id, db.ST_ARCHIVED, staff['user_id'])
+    db.add_comment('inbox', inbox_id, staff['user_id'], 'Отмечено как неактуальное')
+    await query.message.reply_text(f'🚫 Запись #{inbox_id} отправлена в архив.')
+
+# /home/Carix/team_bot.py:788
+CARD_STEP = 1
+
+# /home/Carix/team_bot.py:791
+CAR_STEPS = [('brand', 'Марка? (например: Kia)'), ('model', 'Модель? (например: K5)'), ('year', 'Год выпуска?'), ('color', 'Цвет?'), ('mileage', 'Пробег?'), ('price_buy', 'Цена покупки в Корее?'), ('vin', 'VIN-код? (или «-» если неизвестен)'), ('condition', 'Состояние, комплектация, ДТП — одним сообщением (или «-»)')]
+
+# /home/Carix/team_bot.py:802
+CLIENT_STEPS = [('name', 'Имя клиента?'), ('phone', 'Телефон? (или «-»)'), ('telegram', 'Telegram / WhatsApp? (или «-»)'), ('car_interest', 'Какой автомобиль интересует?'), ('budget', 'Бюджет? (или «-»)'), ('source', 'Источник обращения? (Instagram, OLX, рекомендация...)'), ('wishes', 'Пожелания и комментарии (или «-»)')]
+
+# /home/Carix/team_bot.py:813
+async def mk_card_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    if not staff:
+        return ConversationHandler.END
+    kind, inbox_id = query.data.split(':')
+    inbox_id = int(inbox_id)
+    table = 'cars' if kind == 'mk_car' else 'clients'
+    steps = CAR_STEPS if table == 'cars' else CLIENT_STEPS
+    context.user_data['card'] = {'table': table, 'inbox_id': inbox_id, 'step': 0, 'data': {}, 'steps': steps}
+    db.set_inbox_status(inbox_id, db.ST_IN_WORK, staff['user_id'])
+    title = '🚗 Новая карточка авто' if table == 'cars' else '👤 Новая карточка клиента'
+    await query.message.reply_text(f'{title}\n\nШаг 1 из {len(steps)} — {steps[0][1]}\n\nОтправьте /cancel, чтобы отменить.')
+    return CARD_STEP
+
+# /home/Carix/team_bot.py:837
+async def mk_card_step(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    st = context.user_data.get('card')
+    if not st:
+        return ConversationHandler.END
+    staff = who(update)
+    value = (update.message.text or '').strip()
+    field, _ = st['steps'][st['step']]
+    st['data'][field] = None if value == '-' else value
+    st['step'] += 1
+    if st['step'] < len(st['steps']):
+        _, prompt = st['steps'][st['step']]
+        await update.message.reply_text(f"Шаг {st['step'] + 1} из {len(st['steps'])} — {prompt}")
+        return CARD_STEP
+    table = st['table']
+    card_id = db.create_card(table, st['data'], staff['user_id'])
+    db.link_inbox_card(st['inbox_id'], table, card_id, staff['user_id'])
+    db.set_inbox_status(st['inbox_id'], db.ST_ON_REVIEW, staff['user_id'])
+    card = db.get_card(table, card_id)
+    await update.message.reply_text(f'✅ Карточка создана: {db.card_title(table, card)}\nСтатус: {db.STATUS_LABELS[db.ST_ON_REVIEW]}\n\nАдминистратор получил уведомление.', reply_markup=main_menu(staff))
+    await notify_admins_review(context, table, card_id, staff)
+    context.user_data.pop('card', None)
+    return ConversationHandler.END
+
+# /home/Carix/team_bot.py:872
+async def mk_card_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data.pop('card', None)
+    staff = who(update)
+    await update.message.reply_text('Создание карточки отменено.', reply_markup=main_menu(staff) if staff else None)
+    return ConversationHandler.END
+
+# /home/Carix/team_bot.py:880
+async def notify_admins_review(context, table, card_id, author):
+    card = db.get_card(table, card_id)
+    targets = db.staff_ids_by_role(db.ROLE_ADMIN) + db.staff_ids_by_role(db.ROLE_OWNER)
+    for uid in set(targets):
+        try:
+            await context.bot.send_message(uid, f"🔍 <b>Новая карточка на проверку</b>\n\n{db.card_title(table, card)}\nСоздал: {author.get('full_name') or author['user_id']}", parse_mode='HTML', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Открыть', callback_data=f'card_open:{table}:{card_id}')]]))
+        except Exception as e:
+            logging.warning(f'Не доставлено админу {uid}: {e}')
+
+# /home/Carix/team_bot.py:902
+CAR_LABELS = {'brand': 'Марка', 'model': 'Модель', 'year': 'Год', 'vin': 'VIN', 'fuel': 'Топливо', 'engine': 'Двигатель', 'color': 'Цвет', 'mileage': 'Пробег', 'trim': 'Комплектация', 'condition': 'Состояние', 'accidents': 'ДТП', 'auction_link': 'Аукцион', 'price_buy': 'Цена покупки', 'price_extra': 'Доп. расходы', 'price_ship': 'Доставка', 'price_customs': 'Растаможка', 'price_total': 'Итого', 'stage': 'Этап'}
+
+# /home/Carix/team_bot.py:910
+CLIENT_LABELS = {'name': 'Имя', 'phone': 'Телефон', 'telegram': 'Telegram', 'whatsapp': 'WhatsApp', 'car_interest': 'Интересует', 'budget': 'Бюджет', 'wishes': 'Пожелания', 'source': 'Источник', 'prepayment': 'Предоплата', 'stage': 'Этап', 'next_contact': 'Следующий контакт'}
+
+# /home/Carix/team_bot.py:918
+def render_card(table, card) -> str:
+    labels = CAR_LABELS if table == 'cars' else CLIENT_LABELS
+    lines = [f'<b>{db.card_title(table, card)}</b>', f"Статус: {db.STATUS_LABELS.get(card['review_status'], card['review_status'])}"]
+    if table == 'cars':
+        lines.append('Публикация в каталоге: ' + ('да' if card.get('published') else 'нет'))
+    lines.append('')
+    for f, lab in labels.items():
+        v = card.get(f)
+        if v:
+            lines.append(f'<b>{lab}:</b> {v}')
+    return '\n'.join(lines)
+
+# /home/Carix/team_bot.py:932
+async def card_open(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    if not staff:
+        return
+    _, table, card_id = query.data.split(':')
+    card_id = int(card_id)
+    card = db.get_card(table, card_id)
+    if not card:
+        await query.message.reply_text('Карточка не найдена.')
+        return
+    rows = []
+    if is_admin_or_owner(staff) and card['review_status'] == db.ST_ON_REVIEW:
+        rows.append([InlineKeyboardButton('✅ Подтвердить', callback_data=f'card_ok:{table}:{card_id}')])
+        rows.append([InlineKeyboardButton('↩️ Вернуть на доработку', callback_data=f'card_back:{table}:{card_id}')])
+        rows.append([InlineKeyboardButton('❌ Отклонить', callback_data=f'card_no:{table}:{card_id}')])
+    rows.append([InlineKeyboardButton('📋 История изменений', callback_data=f'card_log:{table}:{card_id}')])
+    rows.append([back_btn()])
+    await query.message.reply_text(render_card(table, card), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+
+# /home/Carix/team_bot.py:960
+async def card_review_action(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    staff = who(update)
+    if not is_admin_or_owner(staff):
+        await query.answer('Недостаточно прав', show_alert=True)
+        return
+    action, table, card_id = query.data.split(':')
+    card_id = int(card_id)
+    card = db.get_card(table, card_id)
+    if action == 'card_ok':
+        status = db.ST_APPROVED_OWNER if is_owner(staff) else db.ST_APPROVED_ADMIN
+        publish = True if table == 'cars' else None
+        db.set_card_review(table, card_id, status, staff['user_id'], publish=publish)
+        await query.answer('Подтверждено')
+        note = '\nКарточка опубликована в клиентском каталоге.' if table == 'cars' else ''
+        await query.message.reply_text(f'✅ {db.card_title(table, card)} — подтверждено.{note}')
+        target = card.get('created_by')
+    elif action == 'card_back':
+        db.set_card_review(table, card_id, db.ST_RETURNED, staff['user_id'], publish=False)
+        await query.answer('Возвращено')
+        await query.message.reply_text(f'↩️ {db.card_title(table, card)} возвращена менеджеру на доработку.')
+        target = card.get('created_by')
+    else:
+        db.set_card_review(table, card_id, db.ST_REJECTED, staff['user_id'], publish=False)
+        await query.answer('Отклонено')
+        await query.message.reply_text(f'❌ {db.card_title(table, card)} отклонена.')
+        target = card.get('created_by')
+    if target:
+        try:
+            await context.bot.send_message(target, f"{db.STATUS_LABELS[db.get_card(table, card_id)['review_status']]}\n{db.card_title(table, card)}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Открыть', callback_data=f'card_open:{table}:{card_id}')]]))
+        except Exception:
+            pass
+
+# /home/Carix/team_bot.py:1007
+async def card_log(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    _, table, card_id = query.data.split(':')
+    entries = db.get_audit(table, int(card_id), limit=20)
+    if not entries:
+        await query.message.reply_text('История пуста.')
+        return
+    lines = ['📋 <b>История изменений</b>', '']
+    for e in entries:
+        when = (e['created_at'] or '')[:16].replace('T', ' ')
+        actor = db.get_staff(e['actor_id']) or {}
+        name = actor.get('full_name') or e['actor_id']
+        if e['field'] and e['old_value'] is not None:
+            lines.append(f"{when} — {name}: {e['field']}: {e['old_value']} → {e['new_value']}")
+        elif e['field']:
+            lines.append(f"{when} — {name}: {e['field']} = {e['new_value']}")
+        else:
+            lines.append(f"{when} — {name}: {e['action']}")
+    await query.message.reply_text('\n'.join(lines), parse_mode='HTML')
+
+# /home/Carix/team_bot.py:1029
+async def cards_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    if not staff:
+        return
+    table = 'cars' if query.data == 'cards_cars' else 'clients'
+    cards = db.list_cards(table, limit=20)
+    if not cards:
+        await query.message.reply_text('Пока пусто.', reply_markup=InlineKeyboardMarkup([[back_btn()]]))
+        return
+    rows = [[InlineKeyboardButton(db.card_title(table, c), callback_data=f"card_open:{table}:{c['id']}")] for c in cards]
+    rows.append([back_btn()])
+    title = '🚗 Автомобили' if table == 'cars' else '👤 Клиенты'
+    await query.message.reply_text(f'<b>{title}</b>', parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+
+# /home/Carix/team_bot.py:1050
+async def review_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    if not is_admin_or_owner(staff):
+        return
+    rows = []
+    for table in ('cars', 'clients'):
+        for c in db.list_cards(table, db.ST_ON_REVIEW, limit=15):
+            icon = '🚗' if table == 'cars' else '👤'
+            rows.append([InlineKeyboardButton(f'{icon} {db.card_title(table, c)}', callback_data=f"card_open:{table}:{c['id']}")])
+    if not rows:
+        await query.message.reply_text('На проверке ничего нет. 👍', reply_markup=InlineKeyboardMarkup([[back_btn()]]))
+        return
+    rows.append([back_btn()])
+    await query.message.reply_text('🔍 <b>На проверке</b>', parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+
+# /home/Carix/team_bot.py:1076
+async def staff_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    if not is_owner(staff):
+        return
+    people = db.list_staff()
+    lines = ['👥 <b>Сотрудники</b>', '']
+    rows = []
+    for p in people:
+        mark = '' if p['active'] else ' (заблокирован)'
+        lines.append(f"{db.ROLE_LABELS.get(p['role'], p['role'])} — {p['full_name'] or p['user_id']}{mark}")
+        if p['role'] != db.ROLE_OWNER:
+            label = '🔓 Разблокировать' if not p['active'] else '🔒 Заблокировать'
+            rows.append([InlineKeyboardButton(f"{label}: {p['full_name'] or p['user_id']}", callback_data=f"staff_toggle:{p['user_id']}")])
+    open_codes = db.list_open_invites()
+    if open_codes:
+        lines.append('')
+        lines.append('<b>Неиспользованные коды:</b>')
+        for i in open_codes[:5]:
+            lines.append(f"<code>{i['code']}</code> — {db.ROLE_LABELS.get(i['role'], i['role'])}")
+    rows.append([InlineKeyboardButton('➕ Добавить администратора', callback_data=f'invite:{db.ROLE_ADMIN}')])
+    rows.append([InlineKeyboardButton('➕ Добавить менеджера', callback_data=f'invite:{db.ROLE_MANAGER}')])
+    rows.append([back_btn()])
+    await query.message.reply_text('\n'.join(lines), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+
+# /home/Carix/team_bot.py:1111
+async def invite_create(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    if not is_owner(staff):
+        return
+    role = query.data.split(':')[1]
+    code = db.create_invite(role, staff['user_id'])
+    bot_username = (await context.bot.get_me()).username
+    await query.message.reply_text(f'Код для роли «{db.ROLE_LABELS.get(role, role)}»:\n\n<code>{code}</code>\n\nПерешлите сотруднику это сообщение:\n\n«Открой @{bot_username}, нажми Start и отправь код {code}»\n\nКод одноразовый.', parse_mode='HTML')
+
+# /home/Carix/team_bot.py:1130
+async def staff_toggle(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    staff = who(update)
+    if not is_owner(staff):
+        await query.answer('Недостаточно прав', show_alert=True)
+        return
+    uid = int(query.data.split(':')[1])
+    target = db.get_staff(uid)
+    if not target or target['role'] == db.ROLE_OWNER:
+        await query.answer('Нельзя', show_alert=True)
+        return
+    db.set_staff_active(uid, not target['active'], staff['user_id'])
+    await query.answer('Готово')
+    await query.message.reply_text(f"{('🔓 Разблокирован' if not target['active'] else '🔒 Заблокирован')}: {target['full_name'] or uid}")
+
+# /home/Carix/team_bot.py:1152
+async def search_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    await query.message.reply_text('🔎 Отправьте, что искать: VIN, модель, телефон или имя клиента.')
+
+# /home/Carix/team_bot.py:1160
+async def do_search(update: Update, context: ContextTypes.DEFAULT_TYPE, text: str):
+    staff = who(update)
+    res = db.search(text)
+    rows, lines = ([], [])
+    if res['cars']:
+        lines.append(f"🚗 Найдено авто: {len(res['cars'])}")
+        for c in res['cars'][:10]:
+            rows.append([InlineKeyboardButton(f"🚗 {db.card_title('cars', c)}", callback_data=f"card_open:cars:{c['id']}")])
+    if res['clients']:
+        lines.append(f"👤 Найдено клиентов: {len(res['clients'])}")
+        for c in res['clients'][:10]:
+            rows.append([InlineKeyboardButton(f"👤 {db.card_title('clients', c)}", callback_data=f"card_open:clients:{c['id']}")])
+    if not rows:
+        await update.message.reply_text(f'По запросу «{text}» ничего не найдено.', reply_markup=main_menu(staff))
+        return
+    rows.append([back_btn()])
+    await update.message.reply_text('\n'.join(lines), reply_markup=InlineKeyboardMarkup(rows))
+
+# /home/Carix/team_bot.py:1185
+async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    if not is_admin_or_owner(staff):
+        return
+    s = db.stats_summary()
+    await query.message.reply_text(f"📊 <b>Сводка</b>\n\nНеобработанных записей: <b>{s['inbox_new']}</b>\nВ работе у менеджера: <b>{s['inbox_work']}</b>\nЖдут проверки: <b>{s['on_review']}</b>\n\nВсего автомобилей: {s['cars_total']}\nВсего клиентов: {s['clients_total']}\nАктивных сотрудников: {s['staff_active']}", parse_mode='HTML', reply_markup=InlineKeyboardMarkup([[back_btn()]]))
+
+# /home/Carix/team_bot.py:1204
+async def audit_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    if not staff:
+        return
+    entries = db.get_audit(limit=25)
+    if not entries:
+        await query.message.reply_text('Журнал пуст.')
+        return
+    lines = ['📋 <b>Журнал действий</b>', '']
+    for e in entries:
+        when = (e['created_at'] or '')[11:16]
+        actor = db.get_staff(e['actor_id']) or {}
+        name = (actor.get('full_name') or str(e['actor_id']))[:18]
+        where = f"{e['entity_type']}#{e['entity_id']}" if e['entity_type'] else ''
+        if e['old_value'] is not None and e['new_value'] is not None:
+            lines.append(f"{when} {name}: {where} {e['old_value']} → {e['new_value']}")
+        else:
+            lines.append(f"{when} {name}: {e['action']} {where}")
+    await query.message.reply_text('\n'.join(lines), parse_mode='HTML', reply_markup=InlineKeyboardMarkup([[back_btn()]]))
+
+# /home/Carix/team_bot.py:1228
+async def menu_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    context.user_data.pop('car_last', None)
+    context.user_data.pop('car_voice_active', None)
+    context.user_data.pop('voice_undo', None)
+    staff = who(update)
+    if staff:
+        await show_menu(update, context, staff)
+
+# /home/Carix/team_bot.py:1240
+async def inbox_ask(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Менеджер просит владельца уточнить — вопрос уходит владельцу."""
+    query = update.callback_query
+    await query.answer()
+    staff = who(update)
+    inbox_id = int(query.data.split(':')[1])
+    db.set_inbox_status(inbox_id, db.ST_NEED_INFO, staff['user_id'])
+    for oid in db.staff_ids_by_role(db.ROLE_OWNER):
+        try:
+            await context.bot.send_message(oid, f"❓ <b>Менеджер просит уточнить по записи #{inbox_id}</b>\n\n{(db.get_inbox(inbox_id) or {}).get('text') or ''}\n\nОтветьте сообщением — оно попадёт в систему как новая запись.", parse_mode='HTML')
+        except Exception:
+            pass
+    await query.message.reply_text(f'❓ Запрос уточнения по записи #{inbox_id} отправлен владельцу.')
+
+# /home/Carix/team_bot.py:1261
+async def error_handler(update, context):
+    """Раньше ошибка внутреннего бота уходила только в лог, который
+    никто не читает — теперь о ней узнаёт владелец."""
+    logging.error('Ошибка в team_bot:', exc_info=context.error)
+    tb = ''.join(traceback.format_exception(None, context.error, context.error.__traceback__))
+    for uid in db.staff_ids_by_role(db.ROLE_OWNER):
+        try:
+            await context.bot.send_message(uid, f'⚠️ <b>Сбой во внутреннем боте</b>\n\n<code>{tb[-1000:]}</code>', parse_mode='HTML')
+        except Exception:
+            pass
+
+# /home/Carix/team_bot.py:1279
+def vvodnye_text():
+    """Базовые вводные компании. Бот присылает их при запуске и выдаёт
+    вместо молчания, когда не может ответить по существу."""
+    L = ['<b>ВВОДНЫЕ · UA ART COMPANY</b>', '']
+    L.append('<b>Условия</b>')
+    L.append('· подбор и фиксация цены — бесплатно')
+    L.append('· аванс 500 $ для выхода на аукцион, входит в стоимость авто')
+    L.append('· оплата: 50% по договору, 50% когда авто в Грузии')
+    L.append('· в стоимость входит подбор, договор, выкуп на аукционе,')
+    L.append('  доставка, растаможка, доставка до Киева и сертификат')
+    L.append('')
+    L.append('<b>Сроки</b>')
+    L.append('· под заказ с аукциона — 85–90 дней целиком')
+    L.append('· путь: Корея → море → Поти/Батуми → Украина')
+    L.append('· из Грузии в Украину — 14 дней со дня отметки выезда')
+    L.append('')
+    L.append('<b>Контакты</b>')
+    L.append('· Киев, ул. Победы 20')
+    L.append('· [N]')
+    L.append('')
+    L.append('<b>Правила карточки</b>')
+    L.append('· ведётся только по-русски')
+    L.append('· новая карточка заводится только при наличии VIN')
+    L.append('· что не разобрано уверенно — поле остаётся пустым')
+    try:
+        L.append('')
+        L.append('Машин в базе: %d' % len(db.list_cards('cars')))
+    except Exception:
+        pass
+    try:
+        L.append('ИИ: %s · голос: %s' % ('остановлен' if ai.is_stopped() else 'работает', 'работает' if ai.voice_enabled() else 'не настроен'))
+    except Exception:
+        pass
+    return '\n'.join(L)
+
+# /home/Carix/team_bot.py:1317
+async def vvodnye_job(context: ContextTypes.DEFAULT_TYPE):
+    """После запуска бот сам присылает владельцу текущие вводные."""
+    import fcntl as _v184_fcntl
+    import os as _v184_os
+    import time as _v184_time
+    _v184_state = '/home/Carix/.team_bot_start_notice'
+    _v184_lock = '/home/Carix/.team_bot_start_notice.lock'
+    try:
+        with open(_v184_lock, 'a+', encoding='utf-8') as _v184_guard:
+            _v184_fcntl.flock(_v184_guard.fileno(), _v184_fcntl.LOCK_EX)
+            try:
+                with open(_v184_state, 'r', encoding='utf-8') as _v184_handle:
+                    _v184_last = int((_v184_handle.read() or '0').strip())
+            except (FileNotFoundError, ValueError):
+                _v184_last = 0
+            _v184_now = int(_v184_time.time())
+            if _v184_now - _v184_last < 600:
+                logging.info('Повторное стартовое уведомление подавлено.')
+                return
+            _v184_temp = '%s.tmp.%d' % (_v184_state, _v184_os.getpid())
+            with open(_v184_temp, 'w', encoding='utf-8') as _v184_handle:
+                _v184_handle.write(str(_v184_now))
+                _v184_handle.flush()
+                _v184_os.fsync(_v184_handle.fileno())
+            _v184_os.replace(_v184_temp, _v184_state)
+    except Exception as e:
+        logging.warning('Стартовое уведомление подавлено: защитный шлюз недоступен: %s', e)
+        return
+    try:
+        ids = db.staff_ids_by_role(db.ROLE_OWNER)
+    except Exception as e:
+        logging.warning('владелец не найден: %s', e)
+        return
+    for uid in ids or []:
+        try:
+            await context.bot.send_message(uid, '🟢 <b>Бот запущен и готов к работе.</b>\n\n' + vvodnye_text(), parse_mode='HTML')
+        except Exception as e:
+            logging.warning('вводные не отправились %s: %s', uid, e)
+
+# /home/Carix/team_bot.py:1362
+async def backup_job(context: ContextTypes.DEFAULT_TYPE):
+    """Ежедневная копия базы. Без неё единственный файл crm.db —
+    единственная точка отказа."""
+    put = db.make_backup()
+    if put:
+        logging.info(f'Резервная копия готова: {put}')
+
+# /home/Carix/team_bot.py:1370
+async def post_init(application):
+    db.init_db()
+    logging.info('ИИ-разбор: %s | расшифровка голосовых: %s', 'включён' if ai.enabled() else 'ВЫКЛЮЧЕН (нет anthropic_key.txt)', 'включена' if ai.voice_enabled() else 'выключена (нет openai_key.txt)')
+    await application.bot.set_my_commands([BotCommand('start', 'Меню'), BotCommand('cancel', 'Отменить текущее действие')])
+    logging.info('team_bot готов.')
+
+# /home/Carix/team_bot.py:1386
+logging.getLogger('apscheduler.executors.default').setLevel(logging.WARNING)
+
+# /home/Carix/team_bot.py:1468
+def main():
+    logging.basicConfig(format='%(asctime)s [%(levelname)s] %(message)s', level=logging.INFO)
+    app = build_application()
+    if app:
+        print('Внутренний бот запущен.')
+        app.run_polling(drop_pending_updates=False)
+
+# /home/Carix/team_bot.py:1478
+if __name__ == '__main__':
+    main()
+
+
+# /home/Carix/cars_ui.py:308
+def is_owner(staff):
+    return bool(staff) and staff.get('role') == db.ROLE_OWNER
+
+# /home/Carix/cars_ui.py:490
+def card_kb(card, staff):
+    cid = card['id']
+    rows = [[InlineKeyboardButton('Редактировать данные', callback_data='car_edit:%d' % cid), InlineKeyboardButton('Фото и видео', callback_data='car_media:%d' % cid)], [InlineKeyboardButton('🚚 Доставка и этапы', callback_data='car_stage:%d' % cid)], [InlineKeyboardButton('Комплексная диагностика', callback_data='car_cond:%d' % cid)]]
+    klient = client_of(card)
+    rows.append([InlineKeyboardButton('Покупатель' if klient else 'Оформить за клиентом', callback_data='car_client:%d' % cid)])
+    rows.append([InlineKeyboardButton('Разместить объявление', callback_data='car_ad:%d' % cid)])
+    rows.append([InlineKeyboardButton('Продано', callback_data='car_sold:%d' % cid)])
+    if card.get('published'):
+        rows.append([InlineKeyboardButton('Скрыть от клиентов', callback_data='car_hide:%d' % cid)])
+    rows.append([InlineKeyboardButton('Удалить', callback_data='car_del:%d' % cid)])
+    rows.append([InlineKeyboardButton('← Все автомобили', callback_data='cards_cars')])
+    return InlineKeyboardMarkup(rows)
+
+# /home/Carix/cars_ui.py:560
+async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    drop_wait(context)
+    context.user_data.pop('car_last', None)
+    context.user_data.pop('car_voice_active', None)
+    context.user_data.pop('voice_undo', None)
+    staff = db.get_staff(q.from_user.id)
+    try:
+        cards = db.list_cards('cars', limit=30)
+    except Exception as e:
+        log.warning('Список машин: %s', e)
+        return
+    if not cards:
+        await q.message.reply_text('Автомобилей пока нет. Откройте явное создание новой карточки.', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Назад', callback_data='menu')]]))
+        raise ApplicationHandlerStop
+    lines = ['<b>Автомобили</b>', 'Нажмите на машину — откроется карточка для правки.', '']
+    rows = []
+    for card in cards:
+        card = card_of(card['id']) or card
+        nomer = card.get('auto_number') or '#%d' % card['id']
+        name = ' '.join((str(x) for x in (card.get('brand'), card.get('model'), card.get('year')) if x)) or 'без названия'
+        miss = S.missing_required(card)
+        sostoyanie = 'черновик, не хватает %d' % len(miss) if miss else 'заполнена'
+        etap = S.status_label(card.get('status')) if card.get('status') else 'этап не задан'
+        lines.append(_ua082_title_html(card))
+        lines.append('   %s · %s' % (etap, sostoyanie))
+        rows.append([InlineKeyboardButton(_ua082_title_button(card), callback_data='car_open:%d' % card['id'])])
+    rows.append([InlineKeyboardButton('← Назад', callback_data='menu')])
+    await q.message.reply_text('\n'.join(lines), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:626
+async def edit_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    drop_wait(context)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    rows, buf = ([], [])
+    for key, label in EDITABLE:
+        buf.append(InlineKeyboardButton(label, callback_data='car_setf:%d:%s' % (cid, key)))
+        if len(buf) == 2:
+            rows.append(buf)
+            buf = []
+    if buf:
+        rows.append(buf)
+    rows.append([InlineKeyboardButton('← К карточке', callback_data='car_open:%d' % cid)])
+    await q.message.reply_text('Что меняем?\n%s' % (card.get('auto_number') or db.card_title('cars', card)), reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:845
+async def media_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    drop_wait(context)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    photos = photos_of(card)
+    vids = videos_of(card)
+    gor = sum((1 for v in vids if v.get('tag') == 'гориз'))
+    ver = sum((1 for v in vids if v.get('tag') == 'вертик'))
+    text = ['<b>Фото и видео</b>', card.get('auto_number') or '', '', 'Фото: %d из %d' % (len(photos), S.PHOTO_LIMIT), 'Заглавная — передняя часть авто, за ней VIN и одометр.', '', 'Видео: %d из %d' % (len(vids), VIDEO_LIMIT)]
+    if vids:
+        text.append('горизонтальных %d · вертикальных %d' % (gor, ver))
+    rows = [[InlineKeyboardButton('Показать фото', callback_data='car_gal:%d:0' % cid), InlineKeyboardButton('Показать видео', callback_data='car_vid:%d:0' % cid)], [InlineKeyboardButton('Добавить фото', callback_data='car_add:%d:photos' % cid), InlineKeyboardButton('Добавить видео', callback_data='car_add:%d:videos' % cid)], [InlineKeyboardButton('Удалить все фото', callback_data='car_rmvse:%d' % cid), InlineKeyboardButton('Удалить все видео', callback_data='car_vidvse:%d' % cid)], [InlineKeyboardButton('Скрыть от клиента', callback_data='car_hide:%d' % cid)], [InlineKeyboardButton('Исходники · архив', callback_data='car_arch:%d' % cid)], [InlineKeyboardButton('← К карточке', callback_data='car_open:%d' % cid)]]
+    await q.message.reply_text('\n'.join(text), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:957
+async def photo_remove_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Выбор кадра для удаления по номеру."""
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    photos = photos_of(card)
+    if not photos:
+        await q.message.reply_text('Фото нет.')
+        raise ApplicationHandlerStop
+    rows, buf = ([], [])
+    for i in range(len(photos)):
+        buf.append(InlineKeyboardButton(str(i + 1), callback_data='car_rmpok:%d:%d' % (cid, i)))
+        if len(buf) == 5:
+            rows.append(buf)
+            buf = []
+    if buf:
+        rows.append(buf)
+    rows.append([InlineKeyboardButton('Удалить ВСЕ фото', callback_data='car_rmvse:%d' % cid)])
+    rows.append([InlineKeyboardButton('← Назад', callback_data='car_gal:%d:0' % cid)])
+    await q.message.reply_text('Какой кадр убрать? Номера идут в том же порядке, что и в галерее.\nПервый — заглавный.', reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1138
+async def condition_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    import asyncio as _v168_asyncio
+    import crm_online_guard as _v168_guard
+    q = update.callback_query
+    cid = int(q.data.split(':')[-1])
+    token, started = await _v168_guard.safe_callback_answer(q, 'crm_condition', cid)
+    try:
+        drop_wait(context)
+        card = card_of(cid)
+        if not card:
+            await q.message.reply_text('Карточка не найдена.')
+            _v168_guard.finish_operation(token, 'missing_card')
+            raise ApplicationHandlerStop
+        diag_opis = (card.get('diag_text') or '').strip()
+        text = ['<b>Комплексная диагностика</b>', card.get('auto_number') or '', '', diag_opis or 'Описание пока не заполнено.', '', 'Фото проверки: %d из 50' % len(jload(card.get('condition_photos'))), 'Видео проверки: %d из 10' % len(jload(card.get('condition_videos'))), '', 'Ссылка OBD: %s' % (card.get('diag_link') or 'нет')]
+        rows = [[InlineKeyboardButton('Описание', callback_data='car_setf:%d:diag_text' % cid)], [InlineKeyboardButton('Показать фото проверки', callback_data='car_dgal:%d' % cid), InlineKeyboardButton('Показать видео проверки', callback_data='car_dvid:%d' % cid)], [InlineKeyboardButton('Добавить фото', callback_data='car_add:%d:condition_photos' % cid), InlineKeyboardButton('Добавить видео', callback_data='car_add:%d:condition_videos' % cid)], [InlineKeyboardButton('Ссылка OBD', callback_data='car_setf:%d:diag_link' % cid)], [InlineKeyboardButton('Удалить все фото проверки', callback_data='diag_ask:%d:condition_photos' % cid)], [InlineKeyboardButton('Удалить все видео проверки', callback_data='diag_ask:%d:condition_videos' % cid)], [InlineKeyboardButton('← К карточке', callback_data='car_open:%d' % cid)]]
+        send_task = _v168_asyncio.create_task(q.message.reply_text('\n'.join(text), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows), disable_web_page_preview=True))
+        try:
+            await _v168_asyncio.wait_for(_v168_asyncio.shield(send_task), timeout=_v168_guard.remaining(started))
+            _v168_guard.finish_operation(token, 'ok')
+        except _v168_asyncio.TimeoutError:
+            _v168_guard.finish_operation(token, 'deferred', 'telegram_send')
+        raise ApplicationHandlerStop
+    except ApplicationHandlerStop:
+        raise
+    except Exception as exc:
+        _v168_guard.finish_operation(token, 'error', type(exc).__name__)
+        log.exception('condition route failed card=%s', cid)
+        try:
+            await q.message.reply_text('Не удалось открыть диагностику. Повторите нажатие.')
+        finally:
+            raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1195
+async def stage_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    from ua_delivery_status import CHOICES, public_status
+    import asyncio as _v168_asyncio
+    import crm_online_guard as _v168_guard
+    q = update.callback_query
+    cid = int(q.data.split(':')[-1])
+    token, started = await _v168_guard.safe_callback_answer(q, 'crm_delivery', cid)
+    try:
+        drop_wait(context)
+        card = card_of(cid)
+        if not card:
+            await q.message.reply_text('Карточка не найдена.')
+            _v168_guard.finish_operation(token, 'missing_card')
+            raise ApplicationHandlerStop
+        stage = S.stage_of(card.get('status'))
+        lines = ['🚚 Доставка и этапы', card.get('auto_number') or '#%d' % cid, '', 'Сейчас: %s' % S.status_label(card.get('status')), 'Этап %d из 4: %s' % (stage, dict(S.STAGES).get(stage, '—')) if stage else 'Скрыт из каталога']
+        if card.get('sea_container'):
+            lines.append('Контейнер: %s' % card['sea_container'])
+        if card.get('sea_date_out'):
+            lines.append('Дата отправления: %s' % str(card['sea_date_out'])[:10])
+        left, eta = eta_of(card)
+        if stage >= 4:
+            lines.append('Выдача: автомобиль в Киеве')
+        elif left is not None:
+            lines.append('До выдачи в Киеве: %d дней · %s' % (left, eta.strftime('%d.%m.%Y')))
+        else:
+            lines.append('Срок: уточняется')
+        rows = []
+        for number, _name in S.STAGES:
+            pair = [InlineKeyboardButton(('• ' if public_status(card.get('status')) == code else '') + label, callback_data='car_setstage:%d:%s' % (cid, code)) for code, _stored, stage_no, label in CHOICES if stage_no == number]
+            for index in range(0, len(pair), 2):
+                rows.append(pair[index:index + 2])
+        rows.append([InlineKeyboardButton('📦 Контейнер, даты и сроки', callback_data='cont_menu:%d' % cid)])
+        rows.append([InlineKeyboardButton('← К карточке', callback_data='car_open:%d' % cid)])
+        send_task = _v168_asyncio.create_task(q.message.reply_text('\n'.join(lines), reply_markup=InlineKeyboardMarkup(rows)))
+        try:
+            await _v168_asyncio.wait_for(_v168_asyncio.shield(send_task), timeout=_v168_guard.remaining(started))
+            _v168_guard.finish_operation(token, 'ok')
+        except _v168_asyncio.TimeoutError:
+            _v168_guard.finish_operation(token, 'deferred', 'telegram_send')
+        raise ApplicationHandlerStop
+    except ApplicationHandlerStop:
+        raise
+    except Exception as exc:
+        _v168_guard.finish_operation(token, 'error', type(exc).__name__)
+        log.exception('delivery route failed card=%s', cid)
+        try:
+            await q.message.reply_text('Не удалось открыть доставку. Повторите нажатие.')
+        finally:
+            raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1261
+async def stage_set(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    from ua_delivery_status import storage_status
+    q = update.callback_query
+    await _v168_ack(q)
+    drop_wait(context)
+    try:
+        _, raw_id, requested = q.data.split(':', 2)
+        cid = int(raw_id)
+    except (AttributeError, TypeError, ValueError):
+        await q.message.reply_text('Некорректная кнопка этапа. Откройте карточку заново.')
+        raise ApplicationHandlerStop
+    code = storage_status(requested)
+    card_before = card_of(cid)
+    if not card_before:
+        await q.message.reply_text('Карточка не найдена.')
+        raise ApplicationHandlerStop
+    set_field(cid, 'status', code, q.from_user.id)
+    if code == 'ge_waiting' and (not card_before.get('ge_arrived')):
+        set_field(cid, 'ge_arrived', _date.today().isoformat(), q.from_user.id)
+    card = card_of(cid)
+    saved = card.get('status')
+    if saved != code:
+        await q.message.reply_text('Не удалось сохранить этап. Сейчас в карточке: %s' % S.status_label(saved), reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)]]))
+        raise ApplicationHandlerStop
+    _ua004_sync_note = await _ua004_sync_current_stage(card)
+    lines = [card.get('auto_number') or '#%d' % cid, 'Этап сохранён: %s' % S.status_label(saved)]
+    if _ua004_sync_note:
+        lines.append(_ua004_sync_note)
+    left, eta = eta_of(card)
+    if left is not None:
+        lines.append('До выдачи в Киеве: %d дней · %s' % (left, eta.strftime('%d.%m.%Y')))
+    rows = [[InlineKeyboardButton('🚚 Доставка и этапы', callback_data='car_stage:%d' % cid)], [InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)]]
+    await q.message.reply_text('\n'.join(lines), reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1316
+async def price_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    drop_wait(context)
+    staff = db.get_staff(q.from_user.id)
+    if not is_owner(staff):
+        await _v168_ack(q, 'Только для владельца', show_alert=True)
+        raise ApplicationHandlerStop
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    hist = price_history(card)
+    lines = ['<b>Цена по этапам</b>', card.get('auto_number') or '', '']
+    for n, name in S.STAGES:
+        val = hist.get(str(n))
+        lines.append('%d · %s: <b>%s</b>' % (n, name, S.money(_int(val)) if val else 'не задана'))
+    lines.append('')
+    lines.append('Текущая цена: <b>%s</b>' % S.money(_int(card.get('price_uah'))))
+    lines.append('В договоре цена фиксируется в гривне, оплата по курсу НБУ на день платежа.')
+    rows = [[InlineKeyboardButton('Задать цену этапа', callback_data='car_setf:%d:price_uah' % cid)], [InlineKeyboardButton('← К карточке', callback_data='car_open:%d' % cid)]]
+    await q.message.reply_text('\n'.join(lines), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1548
+async def client_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    drop_wait(context)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    klient = client_of(card)
+    nomer = card.get('auto_number') or '#%d' % cid
+    if not klient:
+        try:
+            client_id = db.create_card('clients', {'car_interest': nomer}, q.from_user.id)
+            set_field(cid, 'client_id', client_id, q.from_user.id)
+        except Exception as e:
+            log.warning('Не создал карточку клиента: %s', e)
+            raise ApplicationHandlerStop
+        card = card_of(cid)
+        klient = client_of(card)
+    lines = ['<b>Покупатель</b>', '%s · %s' % (nomer, ' '.join((str(x) for x in (card.get('brand'), card.get('model')) if x))), '']
+    for key, label in CLIENT_FIELDS:
+        lines.append('%s: %s' % (label, klient.get(key) or '—'))
+    lines.append('')
+    lines.append('<i>Эти данные видите и правите вы и менеджер. Когда клиент оформляет авто сам, они попадают сюда же.</i>')
+    rows, buf = ([], [])
+    for key, label in CLIENT_FIELDS:
+        buf.append(InlineKeyboardButton(label, callback_data='car_setc:%d:%s' % (cid, key)))
+        if len(buf) == 2:
+            rows.append(buf)
+            buf = []
+    if buf:
+        rows.append(buf)
+    rows.append([InlineKeyboardButton('Отвязать покупателя', callback_data='car_unclient:%d' % cid)])
+    rows.append([InlineKeyboardButton('← Вернуться к карточке', callback_data='car_open:%d' % cid)])
+    await q.message.reply_text('\n'.join(lines), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1666
+async def mark_sold(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    card = card_of(cid)
+    klient = client_of(card)
+    rows = [[InlineKeyboardButton('Да, продана', callback_data='car_soldok:%d' % cid)]]
+    if not klient:
+        rows.insert(0, [InlineKeyboardButton('Сначала оформить за клиентом', callback_data='car_client:%d' % cid)])
+    rows.append([InlineKeyboardButton('← Отмена', callback_data='car_open:%d' % cid)])
+    await q.message.reply_text('Отметить %s как проданную?\nОна пропадёт из каталога, но карточка и все данные останутся.' % (card.get('auto_number') or 'машину'), reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1714
+async def delete_ok(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    cid = int(q.data.split(':')[-1])
+    import asyncio as _ua_delete_asyncio
+    import publikaciya as _ua_delete_publisher
+    import ua_card_delete as _ua_card_delete
+    try:
+        result = await _ua_delete_asyncio.to_thread(_ua_card_delete.delete_card, cid, q.from_user.id, db=db, publisher=_ua_delete_publisher)
+        text = result.text
+        if result.deleted:
+            context.user_data.pop('car_last', None)
+    except Exception as e:
+        log.exception('Не удалил карточку %s', cid)
+        text = 'Не получилось удалить: %s' % e
+    await q.message.reply_text(text, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Все автомобили', callback_data='cards_cars')]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1774
+def menu_header(text):
+    """Строка аналитики и предупреждение об ИИ над главным меню."""
+    parts = []
+    line = stats_line()
+    if line:
+        parts.append(line)
+    warn = ai_warning()
+    if warn:
+        parts.append(warn)
+    parts.append(text or '')
+    return '\n\n'.join((p for p in parts if p))
+
+# /home/Carix/cars_ui.py:1788
+HIDE = {'inbox_list', 'audit_list', 'ai_stop', 'ai_resume', 'search_start'}
+
+# /home/Carix/cars_ui.py:1791
+MORE = {'review_list', 'stats', 'staff_list', 'cards_clients'}
+
+# /home/Carix/cars_ui.py:1794
+def with_stats_button(markup):
+    """Главное меню владельца: только рабочие кнопки, без «Ещё» и его разделов."""
+    try:
+        rows = list(markup.inline_keyboard)
+    except Exception:
+        return markup
+    clean = []
+    for row in rows:
+        keep = [b for b in row if getattr(b, 'callback_data', None) not in HIDE and getattr(b, 'callback_data', None) not in MORE]
+        if keep:
+            clean.append(keep)
+    return InlineKeyboardMarkup(clean)
+
+# /home/Carix/cars_ui.py:1810
+async def more_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Скрытое меню: то, что нужно не каждый день."""
+    q = update.callback_query
+    await _v168_ack(q)
+    rows = [[InlineKeyboardButton('Клиенты', callback_data='cards_clients')], [InlineKeyboardButton('Заявки из бота', callback_data='crm_leads')], [InlineKeyboardButton('На проверке', callback_data='review_list')], [InlineKeyboardButton('Сводка по базе', callback_data='stats')], [InlineKeyboardButton('Сотрудники', callback_data='staff_list')], [InlineKeyboardButton('Поиск', callback_data='search_start')], [InlineKeyboardButton('← Назад', callback_data='menu')]]
+    await q.message.reply_text('<b>Ещё</b>', parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1828
+async def clients_screen(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Раздел «Клиенты»: сами клиенты, поиск и заявки из бота."""
+    q = update.callback_query
+    await _v168_ack(q)
+    try:
+        spisok = db.list_cards('clients', limit=20)
+    except Exception as e:
+        log.warning('Клиенты: %s', e)
+        spisok = []
+    lines = ['<b>Клиенты</b>']
+    rows = []
+    if spisok:
+        for k in spisok:
+            imya = k.get('name') or 'без имени'
+            tel = k.get('phone') or ''
+            podpis = '%s%s' % (imya, ' · ' + tel if tel else '')
+            rows.append([InlineKeyboardButton(podpis[:40], callback_data='card_open:clients:%d' % k['id'])])
+    else:
+        lines.append('Пока пусто. Клиент появится, когда оформите машину за покупателем.')
+    rows.append([InlineKeyboardButton('Поиск клиента', callback_data='search_start')])
+    rows.append([InlineKeyboardButton('Заявки из бота', callback_data='crm_leads')])
+    rows.append([InlineKeyboardButton('← Назад', callback_data='menu')])
+    await q.message.reply_text('\n'.join(lines), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:1858
+async def crm_leads(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Заявки, оставленные в клиентском боте."""
+    q = update.callback_query
+    await _v168_ack(q)
+    try:
+        import visits
+        lidy = visits.all_leads()
+    except Exception as e:
+        lidy = []
+        log.warning('Заявки: %s', e)
+    if not lidy:
+        text = '<b>Заявки из бота</b>\n\nПока ни одной. Появятся здесь сами, как только клиент оставит заявку в каталоге или закажет подбор.'
+    else:
+        L = ['<b>Заявки из бота</b> — всего %d' % len(lidy), '']
+        for l in lidy[:15]:
+            kto = '@%s' % l['username'] if l.get('username') else l.get('name', '')
+            L.append('%s %s — %s' % (l.get('date', '')[5:], l.get('time', ''), kto))
+            L.append('   %s · %s' % (l.get('kind', ''), l.get('source', '')))
+        text = '\n'.join(L)
+    await q.message.reply_text(text, parse_mode='HTML', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Отчёт по клиентам', callback_data='crm_stats')], [InlineKeyboardButton('← Назад', callback_data='menu')]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:3320
+def register(app):
+    ensure_columns()
+    _v168_start_guard(app, 'crm_bot')
+    try:
+        import ai_filter
+        ai_filter.register(app)
+    except Exception as e:
+        log.warning('ai_filter не подключён: %s', e)
+    try:
+        import photo_hide
+        photo_hide.register(app)
+    except Exception as e:
+        log.warning('photo_hide не подключён: %s', e)
+    g = -1
+    app.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, catch_message), group=g)
+    app.add_handler(CallbackQueryHandler(voice_undo, pattern='^car_vundo:'), group=g)
+    app.add_handler(CallbackQueryHandler(open_card, pattern='^card_open:cars:'), group=g)
+    app.add_handler(CallbackQueryHandler(open_card, pattern='^car_open:'), group=g)
+    app.add_handler(CallbackQueryHandler(clear_field, pattern='^car_clr:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_clear, pattern='^diag_clr:'), group=g)
+    app.add_handler(CallbackQueryHandler(cars_list, pattern='^cards_cars$'), group=g)
+    app.add_handler(CallbackQueryHandler(cars_list, pattern='^cars_cards$'), group=g)
+    app.add_handler(CallbackQueryHandler(edit_menu, pattern='^car_edit:'), group=g)
+    app.add_handler(CallbackQueryHandler(edit_ask, pattern='^car_setf:'), group=g)
+    app.add_handler(CallbackQueryHandler(media_screen, pattern='^car_media:'), group=g)
+    app.add_handler(CallbackQueryHandler(video_remove_all, pattern='^car_vidvseok:'), group=g)
+    app.add_handler(CallbackQueryHandler(video_remove_all_ask, pattern='^car_vidvse:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_photo_show, pattern='^car_dgal:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_video_show, pattern='^car_dvid:'), group=g)
+    app.add_handler(CallbackQueryHandler(gallery, pattern='^car_gal:'), group=g)
+    app.add_handler(CallbackQueryHandler(video_gallery, pattern='^car_vid:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove_menu, pattern='^car_rmphoto:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove, pattern='^car_rmpok:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove_all_ask, pattern='^car_rmvse:'), group=g)
+    app.add_handler(CallbackQueryHandler(photo_remove_all, pattern='^car_rmvse2:'), group=g)
+    app.add_handler(CallbackQueryHandler(add_media_start, pattern='^car_add:'), group=g)
+    app.add_handler(CallbackQueryHandler(condition_screen, pattern='^car_cond:'), group=g)
+    app.add_handler(CallbackQueryHandler(diag_clear_ask, pattern='^diag_ask:'), group=g)
+    app.add_handler(CallbackQueryHandler(stage_menu, pattern='^car_stage:'), group=g)
+    app.add_handler(CallbackQueryHandler(stage_set, pattern='^car_setstage:'), group=g)
+    app.add_handler(CallbackQueryHandler(price_screen, pattern='^car_price:'), group=g)
+    app.add_handler(CallbackQueryHandler(keep_price, pattern='^car_keepprice:'), group=g)
+    app.add_handler(CallbackQueryHandler(save_ai_text, pattern='^car_saveai:'), group=g)
+    app.add_handler(CallbackQueryHandler(preview, pattern='^car_preview:'), group=g)
+    app.add_handler(CallbackQueryHandler(preview_demo, pattern='^car_demo:'), group=g)
+    app.add_handler(CallbackQueryHandler(ad_screen, pattern='^car_ad:'), group=g)
+    app.add_handler(CallbackQueryHandler(client_screen, pattern='^car_client:'), group=g)
+    app.add_handler(CallbackQueryHandler(client_ask, pattern='^car_setc:'), group=g)
+    app.add_handler(CallbackQueryHandler(client_unlink, pattern='^car_unclient:'), group=g)
+    app.add_handler(CallbackQueryHandler(_ua_oneclick_legacy_publish, pattern='^car_pub:'), group=g)
+    app.add_handler(CallbackQueryHandler(toggle_publish, pattern='^car_hide:'), group=g)
+    app.add_handler(CallbackQueryHandler(mark_sold, pattern='^car_sold:'), group=g)
+    app.add_handler(CallbackQueryHandler(mark_sold_ok, pattern='^car_soldok:'), group=g)
+    app.add_handler(CallbackQueryHandler(delete_ask, pattern='^car_del:'), group=g)
+    app.add_handler(CallbackQueryHandler(delete_ok, pattern='^car_delok:'), group=g)
+    app.add_handler(CallbackQueryHandler(crm_stats, pattern='^crm_stats$'), group=g)
+    app.add_handler(CallbackQueryHandler(clients_screen, pattern='^cards_clients$'), group=g)
+    app.add_handler(CallbackQueryHandler(crm_leads, pattern='^crm_leads$'), group=g)
+    app.add_handler(CallbackQueryHandler(more_screen, pattern='^crm_more$'), group=g)
+    app.add_handler(CallbackQueryHandler(optimize_screen, pattern='^crm_optimize$'), group=g)
+    app.add_handler(CallbackQueryHandler(svodka_screen, pattern='^crm_svodka$'), group=g)
+    app.add_handler(CallbackQueryHandler(crm_stats_week, pattern='^crm_stats_week$'), group=g)
+    try:
+        import konteyner
+        konteyner.register(app, -2)
+    except Exception as e:
+        log.warning('konteyner не подключён: %s', e)
+    log.info('cars_ui подключён')
+
+# /home/Carix/cars_ui.py:3763
+def card_kb(card, staff):
+    markup = _UA099_BASE_CARD_KB(card, staff)
+    rows = []
+    for row in markup.inline_keyboard:
+        clean = [button for button in row if 'carhistory.kr' not in str(getattr(button, 'url', '') or '').lower()]
+        if clean:
+            rows.append(clean)
+    cid = int(card['id'])
+    spec_row = [InlineKeyboardButton('📐 Дополнительная спецификация', callback_data='car_spec:%d' % cid)]
+    if not any((any((str(getattr(button, 'callback_data', '') or '').startswith('car_spec:') for button in row)) for row in rows)):
+        position = next((index + 1 for index, row in enumerate(rows) if any((str(getattr(button, 'callback_data', '') or '').startswith('car_cond:') for button in row))), min(3, len(rows)))
+        rows.insert(position, spec_row)
+    return InlineKeyboardMarkup(rows)
+
+# /home/Carix/cars_ui.py:3781
+async def _ua099_require_staff(update):
+    q = update.callback_query
+    await _v168_ack(q)
+    staff = db.get_staff(q.from_user.id)
+    if not staff:
+        await q.message.reply_text('Доступ к CRM не разрешён.')
+        raise ApplicationHandlerStop
+    return (q, staff)
+
+# /home/Carix/cars_ui.py:3964
+def register(app):
+    _UA099_BASE_REGISTER(app)
+    group = -3
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, additional_spec_edit_message), group=group)
+    app.add_handler(CallbackQueryHandler(additional_spec_screen, pattern='^car_spec:\\d+$'), group=group)
+    app.add_handler(CallbackQueryHandler(additional_spec_item, pattern='^car_spec_item:\\d+:\\d+$'), group=group)
+    app.add_handler(CallbackQueryHandler(additional_spec_visibility, pattern='^car_spec_vis:\\d+:\\d+$'), group=group)
+    app.add_handler(CallbackQueryHandler(additional_spec_edit, pattern='^car_spec_edit:\\d+:\\d+$'), group=group)
+    app.add_handler(CallbackQueryHandler(additional_spec_category, pattern='^car_spec_cat:\\d+:\\d+$'), group=group)
+    app.add_handler(CallbackQueryHandler(additional_spec_set_category, pattern='^car_spec_setcat:\\d+:\\d+:[a-z_]+$'), group=group)
+    app.add_handler(CallbackQueryHandler(additional_spec_publish, pattern='^car_spec_publish:\\d+$'), group=group)
+
+# /home/Carix/cars_ui.py:4021
+def register(app):
+    _UA110_BASE_REGISTER(app)
+    _ua110_vin_service.start_worker()
+    app.add_handler(CallbackQueryHandler(_ua110_refresh_spec, pattern='^car_spec_refresh:\\d+$'), group=-4)
+
+# /home/Carix/cars_ui.py:4036
+def register(app):
+    _UA117_BASE_REGISTER(app)
+    app.add_handler(CallbackQueryHandler(_ua117_block_removed_stage, pattern='^car_setstage:'), group=-100)
+
+# /home/Carix/cars_ui.py:4103
+async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await _v168_ack(q)
+    staff = db.get_staff(q.from_user.id)
+    if not staff:
+        await q.message.reply_text('Доступ только для сотрудников.')
+        raise ApplicationHandlerStop
+    drop_wait(context)
+    context.user_data.pop('car_last', None)
+    context.user_data.pop('car_voice_active', None)
+    context.user_data.pop('voice_undo', None)
+    try:
+        cards = db.list_cards('cars', limit=-1)
+        groups = _ua122_partition(cards, _ua122_catalog_ids())
+        data = str(q.data or '')
+        if data in ('cards_cars', 'cars_cards'):
+            rows = [[InlineKeyboardButton('%s · %d' % (title, len(groups[key])), callback_data='ua122_cars:%s:0' % key)] for key, title in _UA122_LABELS.items()]
+            rows.append([InlineKeyboardButton('← Назад', callback_data='menu')])
+            await q.message.reply_text('Автомобили\nВыберите папку.', reply_markup=InlineKeyboardMarkup(rows))
+            raise ApplicationHandlerStop
+        parts = data.split(':')
+        if len(parts) != 3 or parts[0] != 'ua122_cars' or parts[1] not in _UA122_LABELS or (not parts[2].isascii()) or (not parts[2].isdigit()) or (len(parts[2]) > 9):
+            raise ValueError('Invalid folder callback')
+        folder = parts[1]
+        selected = groups[folder]
+        last = max(0, (len(selected) - 1) // _UA122_PAGE_SIZE)
+        page = min(int(parts[2]), last)
+        lines = ['<b>%s · %d</b>' % (_UA122_LABELS[folder], len(selected))]
+        rows = []
+        if not selected:
+            lines.append('В этой папке пока нет автомобилей.')
+        for original in selected[page * _UA122_PAGE_SIZE:(page + 1) * _UA122_PAGE_SIZE]:
+            card = card_of(original['id']) or original
+            miss = S.missing_required(card)
+            state = 'черновик, не хватает %d' % len(miss) if miss else 'заполнена'
+            stage = S.status_label(card.get('status')) if card.get('status') else 'этап не задан'
+            lines.extend([_ua082_title_html(card), '   %s · %s' % (stage, state)])
+            rows.append([InlineKeyboardButton(_ua082_title_button(card), callback_data='car_open:%d' % card['id'])])
+        nav = []
+        if page:
+            nav.append(InlineKeyboardButton('←', callback_data='ua122_cars:%s:%d' % (folder, page - 1)))
+        if page < last:
+            nav.append(InlineKeyboardButton('→', callback_data='ua122_cars:%s:%d' % (folder, page + 1)))
+        if nav:
+            lines.append('Страница %d из %d' % (page + 1, last + 1))
+            rows.append(nav)
+        rows.append([InlineKeyboardButton('← Автомобили', callback_data='cards_cars')])
+        await q.message.reply_text('\n'.join(lines), parse_mode='HTML', reply_markup=InlineKeyboardMarkup(rows))
+    except ApplicationHandlerStop:
+        raise
+    except Exception:
+        log.exception('Не удалось прочитать папки автомобилей')
+        await q.message.reply_text('Не удалось обновить список. Повторите открытие раздела.', reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('← Автомобили', callback_data='cards_cars')]]))
+    raise ApplicationHandlerStop
+
+# /home/Carix/cars_ui.py:4169
+def card_kb(card, staff):
+    markup = _UA122_BASE_CARD_KB(card, staff)
+    try:
+        folder = 'catalog' if card.get('auto_number') in _ua122_catalog_ids() else 'unpublished'
+    except Exception:
+        return markup
+    return InlineKeyboardMarkup([[InlineKeyboardButton('← ' + _UA122_LABELS[folder], callback_data='ua122_cars:%s:0' % folder) if getattr(button, 'callback_data', None) in ('cards_cars', 'cars_cards') else button for button in row] for row in markup.inline_keyboard])
+
+# /home/Carix/cars_ui.py:4184
+def register(app):
+    _UA122_BASE_REGISTER(app)
+    app.add_handler(CallbackQueryHandler(cars_list, pattern='^ua122_cars:(?:catalog|unpublished):[0-9]{1,9}$'), group=-1)
+
+# /home/Carix/cars_ui.py:4239
+def register(app):
+    _UA004_BASE_REGISTER(app)
+    if app.job_queue is None:
+        log.error('UA004: existing CRM job queue unavailable; direct stage sync remains active')
+        return
+    if not app.job_queue.get_jobs_by_name('ua-stage-catalog-sync-004'):
+        app.job_queue.run_repeating(_ua004_stage_reconcile_job, interval=15, first=3, name='ua-stage-catalog-sync-004', job_kwargs={'max_instances': 1, 'coalesce': True})
+
+# /home/Carix/cars_ui.py:4270
+def register(app):
+    _ua_sync_previous_register(app)
+    from ua_crm_public_sync import start
+    start()
+
+# /home/Carix/cars_ui.py:4376
+def register(app):
+    if app.job_queue is None:
+        raise RuntimeError('Publication receipt JobQueue is required')
+    _ua_oneclick_previous_register(app)
+    if not app.job_queue.get_jobs_by_name('oneclick-publication-receipts'):
+        app.job_queue.run_repeating(_ua_oneclick_receipts, interval=5, first=2, name='oneclick-publication-receipts', job_kwargs={'max_instances': 1, 'coalesce': True})

@@ -1,0 +1,21 @@
+{
+  "deletion_performed": false,
+  "evidence_path": "cloud/home_photo_probe_20261028/evidence.json",
+  "finished_at": "2026-10-28T12:30:46Z",
+  "live_source_environment": "production",
+  "production_required": false,
+  "request_sha256": "411f050f2b64be8fc3283440ba2c0e3701b21e8954821f5498251bfe888333bf",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_REMOTE_WRITES",
+  "run_id": "40687976679",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "HOME-PHOTO-PROBE-20261028",
+  "tests": "PASS",
+  "tests_scope": "FIXED_GET_SCOPE_AND_SAFE_EVIDENCE_ONLY",
+  "unavailable_endpoints": [
+    "files/path/home/Carix/crm_photo_intake.py"
+  ],
+  "unexpected_changes": 0
+}

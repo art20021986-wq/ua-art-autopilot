@@ -1,0 +1,995 @@
+{
+  "always_on": [
+    {
+      "command": "python3.10 /home/Carix/start_safe.py",
+      "enabled": true,
+      "id": 266084,
+      "state": "Running"
+    },
+    {
+      "command": "python3.10 -I /home/Carix/uaart_connection_monitor.py --watch --interval 300 --evidence /home/Carix/uaart-monitor/latest.json",
+      "enabled": true,
+      "id": 270984,
+      "state": "Running"
+    }
+  ],
+  "completion_meaning": "READ_ONLY_DIAGNOSIS_ONLY",
+  "endpoint_status": {
+    "always_on/": {
+      "bytes": 794,
+      "sha256": "f2657e129621dc42428755e4d07a24c31205bb6a36e3fc8bd8277b1bdeee988a",
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/.local/lib/": {
+      "entries": 2,
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/.local/lib/python3.10/": {
+      "entries": 1,
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/.local/lib/python3.10/site-packages/": {
+      "entries": 14,
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/.local/lib/python3.13/": {
+      "entries": 1,
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/.local/lib/python3.13/site-packages/": {
+      "entries": 10,
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/cars_ui.py": {
+      "bytes": 208358,
+      "sha256": "19adbff34be18402897ca4b54889c9361bcdd261f329218e147b72f8031f9ad6",
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/crm_photo_intake.py": {
+      "error": "HTTP_404",
+      "status": "UNAVAILABLE"
+    },
+    "files/path/home/Carix/team_bot.py": {
+      "bytes": 65247,
+      "sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af",
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/video/index.html": {
+      "bytes": 60736,
+      "sha256": "289b97d2513c2acf3b5088ee9e0df7a20bf0f20be82adb6e0e0874267bff0633",
+      "status": "RECEIVED"
+    },
+    "files/path/home/Carix/video/order/": {
+      "bytes": 2636,
+      "sha256": "3f609634fe7433e8d7cd9401b025f0f2fa99efdd0879634c7ada4ebde282dbd0",
+      "status": "RECEIVED"
+    },
+    "files/path/usr/lib/python3/dist-packages/": {
+      "entries": 94,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/": {
+      "entries": 41,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.10/": {
+      "entries": 1,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.10/dist-packages/": {
+      "entries": 1190,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.11/": {
+      "entries": 206,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.11/site-packages/": {
+      "entries": 1195,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.12/": {
+      "entries": 202,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.12/site-packages/": {
+      "entries": 1272,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.13/": {
+      "entries": 192,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.13/site-packages/": {
+      "entries": 1155,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.7/": {
+      "entries": 206,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.7/site-packages/": {
+      "entries": 34,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.8/": {
+      "entries": 206,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.8/site-packages/": {
+      "entries": 30,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.9/": {
+      "entries": 208,
+      "status": "RECEIVED"
+    },
+    "files/path/usr/local/lib/python3.9/site-packages/": {
+      "entries": 1261,
+      "status": "RECEIVED"
+    }
+  },
+  "finished_at": "2026-10-28T12:30:46Z",
+  "home": {
+    "audi_photo_references": 1,
+    "bytes": 60736,
+    "hero": "<section class=\"hero ua-order-first\"><picture><img src=\"/video/order/audi_owner.jpg\" alt=\"Audi — UA ART COMPANY, Київ\" width=\"1756\" height=\"1190\" fetchpriority=\"high\" decoding=\"async\"></picture><div class=\"ua-order-shade\"></div><div class=\"ua-order-copy\"><h1 class=\"eyebrow\" data-ru=\"АВТО ПОД ЗАКАЗ · УКРАИНА И ГРУЗИЯ\" data-uk=\"АВТО ПІД ЗАМОВЛЕННЯ · УКРАЇНА ТА ГРУЗІЯ\" data-ka=\"ავტომობილი შეკვეთით · საქართველო და უკრაინა\">АВТО ПІД ЗАМОВЛЕННЯ · УКРАЇНА ТА ГРУЗІЯ</h1><p data-ru=\"Подберём автомобиль под ваш бюджет и пожелания — для клиентов со всей Украины и Грузии\" data-uk=\"Підберемо автомобіль під ваш бюджет і побажання — для клієнтів з усієї України та Грузії\" data-ka=\"შეგირჩევთ ავტომობილს თქვენი ბიუჯეტისა და სურვილების შესაბამისად — კლიენტებისთვის მთელი საქართველოდან და უკრაინიდან\">Підберемо автомобіль під ваш бюджет і побажання — для клієнтів з усієї України та Грузії</p><nav class=\"countries-inline ua-order-inline\" aria-label=\"Авто під замовлення\"><a href=\"podbor.html?strana=korea&amp;lang=uk\" data-order-country=\"korea\"><span data-uk=\"Корея\" data-ru=\"Корея\" data-ka=\"კორეა\">Корея</span><img src=\"order/flags/korea.svg\" width=\"54\" height=\"36\" alt=\"\"></a><a href=\"podbor.html?strana=japan&amp;lang=uk\" data-order-country=\"japan\"><span data-uk=\"Японія\" data-ru=\"Япония\" data-ka=\"იაპონია\">Японія</span><img src=\"order/flags/japan.svg\" width=\"54\" height=\"36\" alt=\"\"></a><a href=\"podbor.html?strana=usa&amp;lang=uk\" data-order-country=\"usa\"><span data-uk=\"Америка\" data-ru=\"Америка\" data-ka=\"აშშ\">Америка</span><img src=\"order/flags/usa.svg\" width=\"54\" height=\"36\" alt=\"\"></a><a href=\"podbor.html?strana=europe&amp;lang=uk\" data-order-country=\"europe\"><span data-uk=\"Європа\" data-ru=\"Европа\" data-ka=\"ევროპა\">Європа</span><img src=\"order/flags/europe.svg\" width=\"54\" height=\"36\" alt=\"\"></a><a href=\"podbor.html?strana=china&amp;lang=uk\" data-order-country=\"china\"><span data-uk=\"Китай\" data-ru=\"Китай\" data-ka=\"ჩინეთი\">Китай</span><img src=\"order/flags/china.svg\" width=\"54\" height=\"36\" alt=\"\"></a><a href=\"podbor.html?strana=canada&amp;lang=uk\" data-order-country=\"canada\"><span data-uk=\"Канада\" data-ru=\"Канада\" data-ka=\"კანადა\">Канада</span><img src=\"order/flags/canada.svg\" width=\"54\" height=\"36\" alt=\"\"></a><a href=\"podbor.html?strana=uae&amp;lang=uk\" data-order-country=\"uae\"><span data-uk=\"ОАЕ\" data-ru=\"ОАЭ\" data-ka=\"ემირატები\">ОАЕ</span><img src=\"order/flags/uae.svg\" width=\"54\" height=\"36\" alt=\"\"></a><a href=\"podbor.html?strana=georgia&amp;lang=uk\" data-order-country=\"georgia\"><span data-uk=\"Грузія\" data-ru=\"Грузия\" data-ka=\"საქართველო\">Грузія</span><img src=\"order/flags/georgia.svg\" width=\"54\" height=\"36\" alt=\"\"></a></nav><div class=\"fixed-price\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 2 4 5v6c0 5 3 8 8 11 5-3 8-6 8-11V5z\"/><path d=\"m9 12 2 2 4-5\"/></svg><span data-ru=\"Цена фиксируется в договоре и не меняется\" data-uk=\"Ціна фіксується в договорі та не змінюється\" data-ka=\"ფასი ფიქსირდება ხელშეკრულებაში და არ იცვლება\">Ціна фіксується в договорі та не змінюється</span></div><div class=\"ua-order-actions\"><a class=\"button gold\" href=\"podbor.html\" data-ru=\"Подобрать авто\" data-uk=\"Підібрати авто\" data-ka=\"ავტომობილის შერჩევა\">Підібрати авто</a><a class=\"button ua-write\" href=\"https://t.me/UA_artcompany_LLC_bot\" target=\"_blank\" rel=\"noopener noreferrer\" data-ru=\"Написать в Telegram\" data-uk=\"Написати в Telegram\" data-ka=\"მოგვწერეთ Telegram-ში\">Написати в Telegram</a></div></div></section>",
+    "hero_count": 1,
+    "sha256": "289b97d2513c2acf3b5088ee9e0df7a20bf0f20be82adb6e0e0874267bff0633",
+    "style_ids": [
+      "ua-chat-vid",
+      "mcf-stage-css",
+      "mcf-text-css",
+      "mcf-chat-css",
+      "mcf-photofit-css",
+      "home-ge-typography",
+      "ua-order-country-grid",
+      "ua-home-layout-001",
+      "ua-autoria-reviews-001",
+      "ua-home-audi-001"
+    ]
+  },
+  "http_methods": [
+    "GET"
+  ],
+  "order_dir": {
+    "FLAGS_CREDITS.md": {
+      "type": "file"
+    },
+    "MEDIA_CREDITS.md": {
+      "type": "file"
+    },
+    "audi_owner.jpg": {
+      "type": "file"
+    },
+    "flags": {
+      "type": "directory"
+    },
+    "gallery.css": {
+      "type": "file"
+    },
+    "gallery.js": {
+      "type": "file"
+    },
+    "kia_k5_desktop.webp": {
+      "type": "file"
+    },
+    "kia_k5_mobile.webp": {
+      "type": "file"
+    },
+    "media": {
+      "type": "directory"
+    },
+    "model-gallery.json": {
+      "type": "file"
+    },
+    "order-state.js": {
+      "type": "file"
+    },
+    "order-strings.json": {
+      "type": "file"
+    },
+    "order.css": {
+      "type": "file"
+    },
+    "order.js": {
+      "type": "file"
+    },
+    "podbor.html": {
+      "type": "file"
+    },
+    "preferences-form.js": {
+      "type": "file"
+    },
+    "preferences-state.js": {
+      "type": "file"
+    },
+    "quick-lead.css": {
+      "type": "file"
+    },
+    "quick-lead.js": {
+      "type": "file"
+    }
+  },
+  "packages": {
+    "/home/Carix/.local/lib/python3.10/site-packages/": [
+      "python_telegram_bot-22.8.dist-info",
+      "telegram"
+    ],
+    "/usr/lib/python3/dist-packages/": [
+      "numpy",
+      "numpy-1.21.5.egg-info"
+    ],
+    "/usr/local/lib/python3.10/dist-packages/": [
+      "PIL",
+      "cv2",
+      "opencv_contrib_python_headless-4.10.0.84.dist-info",
+      "opencv_contrib_python_headless.libs",
+      "pillow-10.4.0.dist-info",
+      "pillow.libs",
+      "scikit_image-0.21.0.dist-info",
+      "scipy",
+      "scipy-1.10.1.dist-info",
+      "scipy.libs",
+      "skimage",
+      "torch",
+      "torch-2.3.1+cpu.dist-info"
+    ],
+    "/usr/local/lib/python3.11/site-packages/": [
+      "PIL",
+      "cv2",
+      "numpy",
+      "numpy-2.1.0.dist-info",
+      "numpy.libs",
+      "opencv_contrib_python_headless-4.10.0.84.dist-info",
+      "opencv_contrib_python_headless.libs",
+      "pillow-10.4.0.dist-info",
+      "pillow.libs",
+      "scipy",
+      "scipy-1.14.1.dist-info",
+      "scipy.libs",
+      "torch",
+      "torch-2.3.1+cpu.dist-info"
+    ],
+    "/usr/local/lib/python3.12/site-packages/": [
+      "PIL",
+      "cv2",
+      "numpy",
+      "numpy-2.1.0.dist-info",
+      "numpy.libs",
+      "opencv_contrib_python_headless-4.10.0.84.dist-info",
+      "opencv_contrib_python_headless.libs",
+      "pillow-10.4.0.dist-info",
+      "pillow.libs",
+      "scipy",
+      "scipy-1.14.1.dist-info",
+      "scipy.libs",
+      "torch",
+      "torch-2.3.1+cpu.dist-info"
+    ],
+    "/usr/local/lib/python3.13/site-packages/": [
+      "PIL",
+      "cv2",
+      "numpy",
+      "numpy-2.1.0.dist-info",
+      "numpy.libs",
+      "opencv_contrib_python_headless-4.10.0.84.dist-info",
+      "opencv_contrib_python_headless.libs",
+      "pillow-10.4.0.dist-info",
+      "pillow.libs",
+      "scipy",
+      "scipy-1.14.1.dist-info",
+      "scipy.libs"
+    ],
+    "/usr/local/lib/python3.9/site-packages/": [
+      "PIL",
+      "cv2",
+      "numpy",
+      "numpy-1.26.4.dist-info",
+      "numpy.libs",
+      "opencv_contrib_python_headless-4.10.0.84.dist-info",
+      "opencv_contrib_python_headless.libs",
+      "pillow-10.4.0.dist-info",
+      "pillow.libs",
+      "scikit_image-0.24.0.dist-info",
+      "scipy",
+      "scipy-1.13.1.dist-info",
+      "scipy.libs",
+      "skimage",
+      "torch",
+      "torch-2.3.1+cpu.dist-info"
+    ]
+  },
+  "raw_private_data_persisted": false,
+  "remote_write_count": 0,
+  "request_sha256": "411f050f2b64be8fc3283440ba2c0e3701b21e8954821f5498251bfe888333bf",
+  "run_id": "40687976679",
+  "sanitized_source_excerpts_path": "cloud/home_photo_probe_20261028/sanitized_sources.txt",
+  "source_facts": {
+    "/home/Carix/cars_ui.py": {
+      "bytes": 208358,
+      "definitions": [
+        {
+          "end_line": 309,
+          "excerpt": "EXPORTED",
+          "line": 308,
+          "name": "is_owner"
+        },
+        {
+          "end_line": 511,
+          "excerpt": "EXPORTED",
+          "line": 490,
+          "name": "card_kb"
+        },
+        {
+          "end_line": 597,
+          "excerpt": "EXPORTED",
+          "line": 560,
+          "name": "cars_list"
+        },
+        {
+          "end_line": 644,
+          "excerpt": "EXPORTED",
+          "line": 626,
+          "name": "edit_menu"
+        },
+        {
+          "end_line": 878,
+          "excerpt": "EXPORTED",
+          "line": 845,
+          "name": "media_screen"
+        },
+        {
+          "end_line": 983,
+          "excerpt": "EXPORTED",
+          "line": 957,
+          "name": "photo_remove_menu"
+        },
+        {
+          "end_line": 1186,
+          "excerpt": "EXPORTED",
+          "line": 1138,
+          "name": "condition_screen"
+        },
+        {
+          "end_line": 1251,
+          "excerpt": "EXPORTED",
+          "line": 1195,
+          "name": "stage_menu"
+        },
+        {
+          "end_line": 1309,
+          "excerpt": "EXPORTED",
+          "line": 1261,
+          "name": "stage_set"
+        },
+        {
+          "end_line": 1340,
+          "excerpt": "EXPORTED",
+          "line": 1316,
+          "name": "price_screen"
+        },
+        {
+          "end_line": 1592,
+          "excerpt": "EXPORTED",
+          "line": 1548,
+          "name": "client_screen"
+        },
+        {
+          "end_line": 1681,
+          "excerpt": "EXPORTED",
+          "line": 1666,
+          "name": "mark_sold"
+        },
+        {
+          "end_line": 1731,
+          "excerpt": "EXPORTED",
+          "line": 1714,
+          "name": "delete_ok"
+        },
+        {
+          "end_line": 1784,
+          "excerpt": "EXPORTED",
+          "line": 1774,
+          "name": "menu_header"
+        },
+        {
+          "end_line": 1788,
+          "excerpt": "EXPORTED",
+          "line": 1788,
+          "name": "HIDE"
+        },
+        {
+          "end_line": 1791,
+          "excerpt": "EXPORTED",
+          "line": 1791,
+          "name": "MORE"
+        },
+        {
+          "end_line": 1807,
+          "excerpt": "EXPORTED",
+          "line": 1794,
+          "name": "with_stats_button"
+        },
+        {
+          "end_line": 1825,
+          "excerpt": "EXPORTED",
+          "line": 1810,
+          "name": "more_screen"
+        },
+        {
+          "end_line": 1855,
+          "excerpt": "EXPORTED",
+          "line": 1828,
+          "name": "clients_screen"
+        },
+        {
+          "end_line": 1886,
+          "excerpt": "EXPORTED",
+          "line": 1858,
+          "name": "crm_leads"
+        },
+        {
+          "end_line": 3014,
+          "excerpt": "OMITTED_SENSITIVE",
+          "line": 2681,
+          "name": "catch_message"
+        },
+        {
+          "end_line": 3389,
+          "excerpt": "EXPORTED",
+          "line": 3320,
+          "name": "register"
+        },
+        {
+          "end_line": 3779,
+          "excerpt": "EXPORTED",
+          "line": 3763,
+          "name": "card_kb"
+        },
+        {
+          "end_line": 3788,
+          "excerpt": "EXPORTED",
+          "line": 3781,
+          "name": "_ua099_require_staff"
+        },
+        {
+          "end_line": 3982,
+          "excerpt": "EXPORTED",
+          "line": 3964,
+          "name": "register"
+        },
+        {
+          "end_line": 4026,
+          "excerpt": "EXPORTED",
+          "line": 4021,
+          "name": "register"
+        },
+        {
+          "end_line": 4041,
+          "excerpt": "EXPORTED",
+          "line": 4036,
+          "name": "register"
+        },
+        {
+          "end_line": 4166,
+          "excerpt": "EXPORTED",
+          "line": 4103,
+          "name": "cars_list"
+        },
+        {
+          "end_line": 4181,
+          "excerpt": "EXPORTED",
+          "line": 4169,
+          "name": "card_kb"
+        },
+        {
+          "end_line": 4187,
+          "excerpt": "EXPORTED",
+          "line": 4184,
+          "name": "register"
+        },
+        {
+          "end_line": 4247,
+          "excerpt": "EXPORTED",
+          "line": 4239,
+          "name": "register"
+        },
+        {
+          "end_line": 4273,
+          "excerpt": "EXPORTED",
+          "line": 4270,
+          "name": "register"
+        },
+        {
+          "end_line": 4382,
+          "excerpt": "EXPORTED",
+          "line": 4376,
+          "name": "register"
+        }
+      ],
+      "path": "/home/Carix/cars_ui.py",
+      "sha256": "19adbff34be18402897ca4b54889c9361bcdd261f329218e147b72f8031f9ad6"
+    },
+    "/home/Carix/team_bot.py": {
+      "bytes": 65247,
+      "definitions": [
+        {
+          "end_line": 20,
+          "excerpt": "EXPORTED",
+          "line": 1,
+          "name": "Expr"
+        },
+        {
+          "end_line": 22,
+          "excerpt": "EXPORTED",
+          "line": 22,
+          "name": "Import"
+        },
+        {
+          "end_line": 23,
+          "excerpt": "EXPORTED",
+          "line": 23,
+          "name": "Import"
+        },
+        {
+          "end_line": 24,
+          "excerpt": "EXPORTED",
+          "line": 24,
+          "name": "Import"
+        },
+        {
+          "end_line": 25,
+          "excerpt": "EXPORTED",
+          "line": 25,
+          "name": "Import"
+        },
+        {
+          "end_line": 26,
+          "excerpt": "EXPORTED",
+          "line": 26,
+          "name": "ImportFrom"
+        },
+        {
+          "end_line": 33,
+          "excerpt": "EXPORTED",
+          "line": 28,
+          "name": "ImportFrom"
+        },
+        {
+          "end_line": 42,
+          "excerpt": "EXPORTED",
+          "line": 34,
+          "name": "ImportFrom"
+        },
+        {
+          "end_line": 44,
+          "excerpt": "EXPORTED",
+          "line": 44,
+          "name": "Import"
+        },
+        {
+          "end_line": 45,
+          "excerpt": "EXPORTED",
+          "line": 45,
+          "name": "Import"
+        },
+        {
+          "end_line": 46,
+          "excerpt": "EXPORTED",
+          "line": 46,
+          "name": "Import"
+        },
+        {
+          "end_line": 47,
+          "excerpt": "EXPORTED",
+          "line": 47,
+          "name": "Import"
+        },
+        {
+          "end_line": 48,
+          "excerpt": "EXPORTED",
+          "line": 48,
+          "name": "Import"
+        },
+        {
+          "end_line": 50,
+          "excerpt": "EXPORTED",
+          "line": 50,
+          "name": "BASE_DIR"
+        },
+        {
+          "end_line": 51,
+          "excerpt": "EXPORTED",
+          "line": 51,
+          "name": "TEAM_TOKEN_FILE"
+        },
+        {
+          "end_line": 54,
+          "excerpt": "EXPORTED",
+          "line": 54,
+          "name": "OWNER_ID"
+        },
+        {
+          "end_line": 58,
+          "excerpt": "EXPORTED",
+          "line": 58,
+          "name": "PUBLISH_WITHOUT_APPROVAL"
+        },
+        {
+          "end_line": 68,
+          "excerpt": "EXPORTED",
+          "line": 61,
+          "name": "read_team_token"
+        },
+        {
+          "end_line": 82,
+          "excerpt": "EXPORTED",
+          "line": 74,
+          "name": "who"
+        },
+        {
+          "end_line": 86,
+          "excerpt": "EXPORTED",
+          "line": 85,
+          "name": "is_owner"
+        },
+        {
+          "end_line": 90,
+          "excerpt": "EXPORTED",
+          "line": 89,
+          "name": "is_admin_or_owner"
+        },
+        {
+          "end_line": 94,
+          "excerpt": "EXPORTED",
+          "line": 93,
+          "name": "is_manager"
+        },
+        {
+          "end_line": 134,
+          "excerpt": "EXPORTED",
+          "line": 100,
+          "name": "main_menu"
+        },
+        {
+          "end_line": 168,
+          "excerpt": "EXPORTED",
+          "line": 137,
+          "name": "ai_stop_cb"
+        },
+        {
+          "end_line": 183,
+          "excerpt": "EXPORTED",
+          "line": 171,
+          "name": "ai_resume_cb"
+        },
+        {
+          "end_line": 187,
+          "excerpt": "EXPORTED",
+          "line": 186,
+          "name": "back_btn"
+        },
+        {
+          "end_line": 207,
+          "excerpt": "EXPORTED",
+          "line": 190,
+          "name": "show_menu"
+        },
+        {
+          "end_line": 223,
+          "excerpt": "EXPORTED",
+          "line": 214,
+          "name": "start"
+        },
+        {
+          "end_line": 251,
+          "excerpt": "EXPORTED",
+          "line": 226,
+          "name": "try_invite_code"
+        },
+        {
+          "end_line": 275,
+          "excerpt": "EXPORTED",
+          "line": 257,
+          "name": "detect_kind"
+        },
+        {
+          "end_line": 312,
+          "excerpt": "EXPORTED",
+          "line": 278,
+          "name": "intake"
+        },
+        {
+          "end_line": 446,
+          "excerpt": "EXPORTED",
+          "line": 319,
+          "name": "run_ai_draft"
+        },
+        {
+          "end_line": 492,
+          "excerpt": "EXPORTED",
+          "line": 456,
+          "name": "_pomoshnik"
+        },
+        {
+          "end_line": 524,
+          "excerpt": "EXPORTED",
+          "line": 495,
+          "name": "collect_media"
+        },
+        {
+          "end_line": 575,
+          "excerpt": "EXPORTED",
+          "line": 527,
+          "name": "ai_save"
+        },
+        {
+          "end_line": 579,
+          "excerpt": "EXPORTED",
+          "line": 579,
+          "name": "AI_FIX"
+        },
+        {
+          "end_line": 592,
+          "excerpt": "EXPORTED",
+          "line": 582,
+          "name": "ai_edit_start"
+        },
+        {
+          "end_line": 629,
+          "excerpt": "EXPORTED",
+          "line": 595,
+          "name": "ai_edit_apply"
+        },
+        {
+          "end_line": 634,
+          "excerpt": "EXPORTED",
+          "line": 632,
+          "name": "ai_edit_cancel"
+        },
+        {
+          "end_line": 648,
+          "excerpt": "EXPORTED",
+          "line": 637,
+          "name": "ai_reject"
+        },
+        {
+          "end_line": 678,
+          "excerpt": "EXPORTED",
+          "line": 651,
+          "name": "notify_managers"
+        },
+        {
+          "end_line": 707,
+          "excerpt": "EXPORTED",
+          "line": 684,
+          "name": "inbox_list"
+        },
+        {
+          "end_line": 762,
+          "excerpt": "EXPORTED",
+          "line": 710,
+          "name": "inbox_open"
+        },
+        {
+          "end_line": 772,
+          "excerpt": "EXPORTED",
+          "line": 765,
+          "name": "inbox_dup"
+        },
+        {
+          "end_line": 782,
+          "excerpt": "EXPORTED",
+          "line": 775,
+          "name": "inbox_skip"
+        },
+        {
+          "end_line": 788,
+          "excerpt": "EXPORTED",
+          "line": 788,
+          "name": "CARD_STEP"
+        },
+        {
+          "end_line": 800,
+          "excerpt": "EXPORTED",
+          "line": 791,
+          "name": "CAR_STEPS"
+        },
+        {
+          "end_line": 810,
+          "excerpt": "EXPORTED",
+          "line": 802,
+          "name": "CLIENT_STEPS"
+        },
+        {
+          "end_line": 834,
+          "excerpt": "EXPORTED",
+          "line": 813,
+          "name": "mk_card_start"
+        },
+        {
+          "end_line": 869,
+          "excerpt": "EXPORTED",
+          "line": 837,
+          "name": "mk_card_step"
+        },
+        {
+          "end_line": 877,
+          "excerpt": "EXPORTED",
+          "line": 872,
+          "name": "mk_card_cancel"
+        },
+        {
+          "end_line": 896,
+          "excerpt": "EXPORTED",
+          "line": 880,
+          "name": "notify_admins_review"
+        },
+        {
+          "end_line": 909,
+          "excerpt": "EXPORTED",
+          "line": 902,
+          "name": "CAR_LABELS"
+        },
+        {
+          "end_line": 915,
+          "excerpt": "EXPORTED",
+          "line": 910,
+          "name": "CLIENT_LABELS"
+        },
+        {
+          "end_line": 929,
+          "excerpt": "EXPORTED",
+          "line": 918,
+          "name": "render_card"
+        },
+        {
+          "end_line": 957,
+          "excerpt": "EXPORTED",
+          "line": 932,
+          "name": "card_open"
+        },
+        {
+          "end_line": 1004,
+          "excerpt": "EXPORTED",
+          "line": 960,
+          "name": "card_review_action"
+        },
+        {
+          "end_line": 1026,
+          "excerpt": "EXPORTED",
+          "line": 1007,
+          "name": "card_log"
+        },
+        {
+          "end_line": 1047,
+          "excerpt": "EXPORTED",
+          "line": 1029,
+          "name": "cards_list"
+        },
+        {
+          "end_line": 1070,
+          "excerpt": "EXPORTED",
+          "line": 1050,
+          "name": "review_list"
+        },
+        {
+          "end_line": 1108,
+          "excerpt": "EXPORTED",
+          "line": 1076,
+          "name": "staff_list"
+        },
+        {
+          "end_line": 1127,
+          "excerpt": "EXPORTED",
+          "line": 1111,
+          "name": "invite_create"
+        },
+        {
+          "end_line": 1146,
+          "excerpt": "EXPORTED",
+          "line": 1130,
+          "name": "staff_toggle"
+        },
+        {
+          "end_line": 1157,
+          "excerpt": "EXPORTED",
+          "line": 1152,
+          "name": "search_start"
+        },
+        {
+          "end_line": 1182,
+          "excerpt": "EXPORTED",
+          "line": 1160,
+          "name": "do_search"
+        },
+        {
+          "end_line": 1201,
+          "excerpt": "EXPORTED",
+          "line": 1185,
+          "name": "stats"
+        },
+        {
+          "end_line": 1225,
+          "excerpt": "EXPORTED",
+          "line": 1204,
+          "name": "audit_list"
+        },
+        {
+          "end_line": 1236,
+          "excerpt": "EXPORTED",
+          "line": 1228,
+          "name": "menu_cb"
+        },
+        {
+          "end_line": 1258,
+          "excerpt": "EXPORTED",
+          "line": 1240,
+          "name": "inbox_ask"
+        },
+        {
+          "end_line": 1276,
+          "excerpt": "EXPORTED",
+          "line": 1261,
+          "name": "error_handler"
+        },
+        {
+          "end_line": 1314,
+          "excerpt": "EXPORTED",
+          "line": 1279,
+          "name": "vvodnye_text"
+        },
+        {
+          "end_line": 1359,
+          "excerpt": "EXPORTED",
+          "line": 1317,
+          "name": "vvodnye_job"
+        },
+        {
+          "end_line": 1367,
+          "excerpt": "EXPORTED",
+          "line": 1362,
+          "name": "backup_job"
+        },
+        {
+          "end_line": 1379,
+          "excerpt": "EXPORTED",
+          "line": 1370,
+          "name": "post_init"
+        },
+        {
+          "end_line": 1386,
+          "excerpt": "EXPORTED",
+          "line": 1386,
+          "name": "Expr"
+        },
+        {
+          "end_line": 1465,
+          "excerpt": "OMITTED_SENSITIVE",
+          "line": 1389,
+          "name": "build_application"
+        },
+        {
+          "end_line": 1475,
+          "excerpt": "EXPORTED",
+          "line": 1468,
+          "name": "main"
+        },
+        {
+          "end_line": 1479,
+          "excerpt": "EXPORTED",
+          "line": 1478,
+          "name": "If"
+        }
+      ],
+      "path": "/home/Carix/team_bot.py",
+      "sha256": "aebe2c091fdf1f19a8a011784dd70e2d648dc04607ec64374e4ff9f402e995af"
+    }
+  },
+  "started_at": "2026-10-28T12:29:44Z",
+  "task_id": "HOME-PHOTO-PROBE-20261028",
+  "unavailable_endpoints": [
+    "files/path/home/Carix/crm_photo_intake.py"
+  ]
+}
