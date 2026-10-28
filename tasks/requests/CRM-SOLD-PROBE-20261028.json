@@ -1,0 +1,35 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/crm_sold_probe_20261028/evidence.json",
+    "cloud/crm_sold_probe_20261028/sanitized_sources.txt"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Read-only diagnosis of the Telegram sold action (owner 2026-10-28: marked an Audi as sold in the CRM, it stayed in the site catalog): fixed GETs of the sold handlers in cars_ui.py and db.py, the catalog publisher modules, the server video/katalog.html (car numbers only), the bot log (sold/catalog lines, numbers masked) and a transient read-only CRM copy (car status rows and status audit rows without people columns). No remote writes, no data.",
+  "execution": {
+    "controller_path": "cloud/crm_sold_probe_20261028/controller.py",
+    "controller_sha256": "eb0dc13f927f0940a082ea153f753bfd71a0d353c7bf0e54d37be8caaeda932b",
+    "dependency_paths": [],
+    "evidence_paths": [
+      "cloud/crm_sold_probe_20261028/evidence.json",
+      "cloud/crm_sold_probe_20261028/sanitized_sources.txt",
+      "state/receipts/CRM-SOLD-PROBE-20261028.json"
+    ],
+    "file_sha256": {
+      "cloud/crm_sold_probe_20261028/test_contract.py": "319f6dbfaff8c06674b3b490423a2740f811dad2e1b9688bfe30be760925fa07"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/CRM-SOLD-PROBE-20261028.json",
+    "test_paths": [
+      "cloud/crm_sold_probe_20261028/test_contract.py"
+    ],
+    "timeout_seconds": 600
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 268435456,
+  "task_id": "CRM-SOLD-PROBE-20261028",
+  "title": "Read-only diagnosis of the Telegram sold action"
+}
