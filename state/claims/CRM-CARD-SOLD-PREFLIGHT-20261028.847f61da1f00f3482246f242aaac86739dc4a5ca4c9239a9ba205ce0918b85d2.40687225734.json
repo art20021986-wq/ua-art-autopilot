@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-CARD-SOLD-PREFLIGHT-20261028.847f61da1f00f3482246f242aaac86739dc4a5ca4c9239a9ba205ce0918b85d2.json",
+  "autostart_ledger_sha256": "a4b723a100aed2487f13330966ef43e3aa38bd96ffcb5adf1bca7ff035e292e7",
+  "autostart_source_commit": "3730f0aa8ff38de3db32a5a8f8ff773f79a7ae29",
+  "created_at": "2026-10-28T12:23:24Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-28T12:23:24Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "40687225734",
+    "task_id": "CRM-CARD-SOLD-PREFLIGHT-20261028",
+    "task_sha256": "847f61da1f00f3482246f242aaac86739dc4a5ca4c9239a9ba205ce0918b85d2"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/CRM-CARD-SOLD-PREFLIGHT-20261028.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CRM-CARD-SOLD-PREFLIGHT-20261028.json",
+  "request_sha256": "847f61da1f00f3482246f242aaac86739dc4a5ca4c9239a9ba205ce0918b85d2",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "1f805d8361efeb699e4ac2ccfbfbf42d16fe1680",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-28T12:23:24Z"
+}
