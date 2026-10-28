@@ -11,8 +11,8 @@ import ast
 import hashlib
 import sys
 
-# Installed source observed by HOME-PHOTO-PROBE-20261028.
-EXPECTED_SHA256 = '19adbff34be18402897ca4b54889c9361bcdd261f329218e147b72f8031f9ad6'
+# Installed source after CRM-CARD-SOLD-INSTALL-20261028 (its plan: 19adbff3 -> 0e529a92).
+EXPECTED_SHA256 = '0e529a9292203737f22d0137dface8f9cd3c2ba94e466847967f8aba21e7719a'
 MARK = '# HOME-PHOTO-001'
 
 BLOCK = '''

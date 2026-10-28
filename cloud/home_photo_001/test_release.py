@@ -79,7 +79,7 @@ class BuildTests(unittest.TestCase):
 
     def test_builder_pins_inputs(self):
         self.assertEqual(candidate_builder.SOURCE_SHA256['cars_ui.py'],
-                         '19adbff34be18402897ca4b54889c9361bcdd261f329218e147b72f8031f9ad6')
+                         '0e529a9292203737f22d0137dface8f9cd3c2ba94e466847967f8aba21e7719a')
         with self.assertRaises(ValueError):
             candidate_builder.build({'cars_ui.py': b'other'}, {})
 
