@@ -2,8 +2,11 @@
 """Release-specific checks: exact inputs, the appended cars_ui hook, the pinned model."""
 import ast
 import hashlib
+import importlib.util
 from io import BytesIO
+from pathlib import Path
 import sys
+import tempfile
 import types
 import unittest
 from unittest.mock import patch
@@ -21,6 +24,17 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def load_built():
+    """The built cars_ui.py as a module (a temporary file, imported like the bot imports it)."""
+    with tempfile.TemporaryDirectory() as temp:
+        path = Path(temp) / 'cars_ui_built.py'
+        path.write_bytes(build_cars_ui.build(SOURCE, expected=sha(SOURCE)))
+        spec = importlib.util.spec_from_file_location('cars_ui_built', path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    return module
+
+
 class BuildTests(unittest.TestCase):
     def test_appends_hook_and_keeps_source(self):
         out = build_cars_ui.build(SOURCE, expected=sha(SOURCE))
@@ -32,11 +46,10 @@ class BuildTests(unittest.TestCase):
         calls = []
         bot = types.SimpleNamespace(with_button=lambda original, menu: ('button', original, menu),
                                     register=lambda app: app.append('photo'))
-        namespace = {}
         with patch.dict(sys.modules, {'db': types.ModuleType('db'), 'ua_home_photo_bot': bot}):
-            exec(build_cars_ui.build(SOURCE, expected=sha(SOURCE)), namespace)
-            self.assertEqual(namespace['with_stats_button']('menu'), ('button', 'menu', ('filtered', 'menu')))
-            namespace['register'](calls)
+            built = load_built()
+            self.assertEqual(built.with_stats_button('menu'), ('button', 'menu', ('filtered', 'menu')))
+            built.register(calls)
         self.assertEqual(calls, ['base', 'photo'])
 
     def test_hook_failure_keeps_the_crm_menu(self):
@@ -45,13 +58,12 @@ class BuildTests(unittest.TestCase):
             def warning(self, *args):
                 self.warnings.append(args)
         broken = types.SimpleNamespace(with_button=lambda *a: 1 / 0, register=lambda app: 1 / 0)
-        namespace = {}
         with patch.dict(sys.modules, {'db': types.ModuleType('db'), 'ua_home_photo_bot': broken}):
-            exec(build_cars_ui.build(SOURCE, expected=sha(SOURCE)), namespace)
-            namespace['log'] = Log()
-            self.assertEqual(namespace['with_stats_button']('menu'), ('filtered', 'menu'))
+            built = load_built()
+            built.log = Log()
+            self.assertEqual(built.with_stats_button('menu'), ('filtered', 'menu'))
             apps = []
-            namespace['register'](apps)
+            built.register(apps)
         self.assertEqual(apps, ['base'])
         self.assertEqual(len(Log.warnings), 2)
 
