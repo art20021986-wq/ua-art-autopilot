@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-CARD-SOLD-INSTALL-20261028.ff6ad121faa52ef2112450cb3785ed97e4e102809f15c97c251dcf214d0ddcc5.json",
+  "autostart_ledger_sha256": "93e10c288e871841f631d3c60f1630a20c791dd538e9104bf494b67ffaa8e726",
+  "autostart_source_commit": "68999e20994faa7e396a44c810997f8532623a4a",
+  "created_at": "2026-10-28T16:34:52Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40726678429",
+    "task_id": "CRM-CARD-SOLD-INSTALL-20261028",
+    "task_sha256": "ff6ad121faa52ef2112450cb3785ed97e4e102809f15c97c251dcf214d0ddcc5"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-296a7e96583720b8-6016d35a7016a402",
+  "request_path": "tasks/requests/CRM-CARD-SOLD-INSTALL-20261028.json",
+  "resource_locks": [
+    "PATH_SCOPE:296a7e96583720b8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
