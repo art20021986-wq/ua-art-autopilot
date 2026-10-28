@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-PHOTO-PROBE-20261028.411f050f2b64be8fc3283440ba2c0e3701b21e8954821f5498251bfe888333bf.json",
+  "autostart_ledger_sha256": "6e7eb18e35c57c227afcecfcd1f865224f25cf01aab0cb58b6306211ed7acfb9",
+  "autostart_source_commit": "96c9abace71b8eab0ab137e5319678fb944e6f7f",
+  "created_at": "2026-10-28T12:29:13Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "40687976679",
+    "task_id": "HOME-PHOTO-PROBE-20261028",
+    "task_sha256": "411f050f2b64be8fc3283440ba2c0e3701b21e8954821f5498251bfe888333bf"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-12638c4842110523-c48c92a480a925f6",
+  "request_path": "tasks/requests/HOME-PHOTO-PROBE-20261028.json",
+  "resource_locks": [
+    "READ_ONLY:12638c4842110523"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
