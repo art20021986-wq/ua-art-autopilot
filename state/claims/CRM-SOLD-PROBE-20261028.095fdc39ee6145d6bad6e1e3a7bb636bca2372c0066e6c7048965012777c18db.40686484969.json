@@ -7,21 +7,23 @@
   "created_at": "2026-10-28T12:18:06Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-28T12:18:06Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-28T12:19:12Z",
+  "heartbeat_at": "2026-10-28T12:19:12Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "40686484969",
     "task_id": "CRM-SOLD-PROBE-20261028",
     "task_sha256": "095fdc39ee6145d6bad6e1e3a7bb636bca2372c0066e6c7048965012777c18db"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-11078aa784f1e4b1-a35cc6191f5b77c8",
   "receipt_path": "state/receipts/CRM-SOLD-PROBE-20261028.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "f147ba78438af167f558e0fa6b5cea4f24356f6002d6153f75347f00b0a9a66b",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-SOLD-PROBE-20261028.json",
   "request_sha256": "095fdc39ee6145d6bad6e1e3a7bb636bca2372c0066e6c7048965012777c18db",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "41dd9add864a254c445afed2afe6872d235005db",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91758891008,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 40.749
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-28T12:18:06Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "eb0dc13f927f0940a082ea153f753bfd71a0d353c7bf0e54d37be8caaeda932b",
+    "file_sha256": {
+      "cloud/crm_sold_probe_20261028/test_contract.py": "319f6dbfaff8c06674b3b490423a2740f811dad2e1b9688bfe30be760925fa07"
+    }
+  },
+  "updated_at": "2026-10-28T12:19:12Z"
 }

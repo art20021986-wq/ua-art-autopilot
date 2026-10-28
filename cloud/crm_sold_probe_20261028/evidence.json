@@ -1,0 +1,1891 @@
+{
+  "completion_meaning": "READ_ONLY_DIAGNOSIS_ONLY",
+  "database": {
+    "all_cars": [
+      {
+        "auto_number": "UA-0001",
+        "brand": "Mercedes-Benz",
+        "created_at": "[N]T09:48:02",
+        "id": 7,
+        "model": "E 220",
+        "published": 1,
+        "status": "ge_waiting",
+        "updated_at": "[N]T07:15:16",
+        "year": "2017"
+      },
+      {
+        "auto_number": "UA-0003",
+        "brand": "Kia",
+        "created_at": "[N]T15:06:31",
+        "id": 9,
+        "model": "K5",
+        "published": 1,
+        "status": "kr_bought",
+        "updated_at": "[N]T01:05:56",
+        "year": "2019"
+      },
+      {
+        "auto_number": "UA-0004",
+        "brand": "Kia",
+        "created_at": "[N]T17:10:23",
+        "id": 10,
+        "model": "K5",
+        "published": 1,
+        "status": "kr_bought",
+        "updated_at": "[N]T17:08:45",
+        "year": "2019"
+      },
+      {
+        "auto_number": "UA-0005",
+        "brand": "Mercedes-Benz",
+        "created_at": "[N]T01:48:05",
+        "id": 11,
+        "model": "B-Class",
+        "published": 1,
+        "status": "sea_loaded",
+        "updated_at": "[N]T17:39:40",
+        "year": "2013"
+      },
+      {
+        "auto_number": "UA-0006",
+        "brand": "Kia",
+        "created_at": "[N]T06:02:10",
+        "id": 12,
+        "model": "K5",
+        "published": 1,
+        "status": "sea_loaded",
+        "updated_at": "[N]T19:50:42",
+        "year": "2019"
+      },
+      {
+        "auto_number": "UA-0007",
+        "brand": "Mercedes-Benz",
+        "created_at": "[N]T15:37:04",
+        "id": 13,
+        "model": "B-Class",
+        "published": 1,
+        "status": "ua_arrived",
+        "updated_at": "[N]T11:49:54",
+        "year": "2011"
+      },
+      {
+        "auto_number": "UA-0009",
+        "brand": "Kia",
+        "created_at": "[N]T10:59:37",
+        "id": 15,
+        "model": "K5",
+        "published": 1,
+        "status": "ge_waiting",
+        "updated_at": "[N]T12:39:24",
+        "year": "2018"
+      },
+      {
+        "auto_number": "UA-0010",
+        "brand": "Kia",
+        "created_at": "[N]T06:24:57",
+        "id": 16,
+        "model": "K5",
+        "published": 1,
+        "status": "ge_waiting",
+        "updated_at": "[N]T06:28:09",
+        "year": "2018"
+      },
+      {
+        "auto_number": "UA-0011",
+        "brand": "Hyundai",
+        "created_at": "[N]T08:28:16",
+        "id": 18,
+        "model": "SONATA",
+        "published": 1,
+        "status": "ge_waiting",
+        "updated_at": "[N]T12:11:43",
+        "year": "2018"
+      },
+      {
+        "auto_number": "UA-0012",
+        "brand": "Kia",
+        "created_at": "[N]T06:11:52",
+        "id": 19,
+        "model": "K5",
+        "published": 1,
+        "status": "ge_waiting",
+        "updated_at": "[N]T12:58:45",
+        "year": "2018"
+      },
+      {
+        "auto_number": "UA-0013",
+        "brand": "Mercedes-Benz",
+        "created_at": "[N]T06:48:54",
+        "id": 20,
+        "model": "Б-КЛАССА",
+        "published": 1,
+        "status": "sea_loaded",
+        "updated_at": "[N]T07:14:07",
+        "year": "2015"
+      },
+      {
+        "auto_number": "UA-0014",
+        "brand": "Kia",
+        "created_at": "[N]T08:55:29",
+        "id": 21,
+        "model": "K5",
+        "published": 1,
+        "status": "sea_loaded",
+        "updated_at": "[N]T03:10:45",
+        "year": "2016"
+      },
+      {
+        "auto_number": "UA-0015",
+        "brand": "Hyundai",
+        "created_at": "[N]T11:26:37",
+        "id": 22,
+        "model": "SONATA",
+        "published": 1,
+        "status": "kr_bought",
+        "updated_at": "[N]T17:33:19",
+        "year": "2018"
+      },
+      {
+        "auto_number": "UA-0016",
+        "brand": "Kia",
+        "created_at": "[N]T12:00:20",
+        "id": 25,
+        "model": "К5",
+        "published": 1,
+        "status": "kr_bought",
+        "updated_at": "[N]T14:31:03",
+        "year": "2016"
+      },
+      {
+        "auto_number": "UA-0017",
+        "brand": "Audi",
+        "created_at": "[N]T08:12:07",
+        "id": 26,
+        "model": "A6",
+        "published": 1,
+        "status": "ua_arrived",
+        "updated_at": "[N]T04:30:29",
+        "year": "2015"
+      },
+      {
+        "auto_number": "UA-0018",
+        "brand": "Kia",
+        "created_at": "[N]T16:46:42",
+        "id": 28,
+        "model": "K5",
+        "published": 1,
+        "status": "ua_arrived",
+        "updated_at": "[N]T09:06:19",
+        "year": "2023"
+      },
+      {
+        "auto_number": "UA-0020",
+        "brand": "Audi",
+        "created_at": "[N]T12:47:40",
+        "id": 30,
+        "model": "А6",
+        "published": 0,
+        "status": "hidden",
+        "updated_at": "[N]T12:09:28",
+        "year": "2016"
+      },
+      {
+        "auto_number": "UA-0021",
+        "brand": "HYUNDAI",
+        "created_at": "[N]T13:23:24",
+        "id": 31,
+        "model": "Sonata",
+        "published": 1,
+        "status": "sea_loaded",
+        "updated_at": "[N]T05:10:17",
+        "year": "2022"
+      },
+      {
+        "auto_number": "UA-0022",
+        "brand": "Kia",
+        "created_at": "[N]T05:16:46",
+        "id": 32,
+        "model": "K5",
+        "published": 1,
+        "status": "sea_loaded",
+        "updated_at": "[N]T08:54:59",
+        "year": "2020"
+      },
+      {
+        "auto_number": "UA-0023",
+        "brand": "Kia",
+        "created_at": "[N]T08:30:35",
+        "id": 33,
+        "model": "K5",
+        "published": 1,
+        "status": "sea_loaded",
+        "updated_at": "[N]T08:45:03",
+        "year": "2021"
+      }
+    ],
+    "cars_schema": "CREATE TABLE cars (\n            id            INTEGER PRIMARY KEY AUTOINCREMENT,\n            brand         TEXT,\n            model         TEXT,\n            year          TEXT,\n            vin           TEXT,\n            fuel          TEXT,\n            engine        TEXT,\n            color         TEXT,\n            mileage       TEXT,\n            trim          TEXT,\n            condition     TEXT,\n            accidents     TEXT,\n            auction_link  TEXT,\n            price_buy     TEXT,\n            price_extra   TEXT,\n            price_ship    TEXT,\n            price_customs TEXT,\n            price_total   TEXT,\n            stage         TEXT,               -- этап доставки\n            photos        TEXT,               -- JSON-список file_id\n            videos        TEXT,\n            docs          TEXT,\n            responsible   INTEGER,\n            review_status TEXT NOT NULL,      -- статус согласования\n            published     INTEGER NOT NULL DEFAULT 0,  -- виден ли в клиентском боте\n            created_by    INTEGER,\n            approved_by   INTEGER,\n            created_at    TEXT NOT NULL,\n            updated_at    TEXT\n        , client_id INTEGER, publish_pending INTEGER DEFAULT 0, video_h TEXT, video_v TEXT, auto_number TEXT, engine_cc INTEGER, gearbox TEXT, drive TEXT, mileage_km INTEGER, condition_text TEXT, condition_photos TEXT, condition_videos TEXT, diag_report TEXT, diag_link TEXT, kr_buy_date TEXT, kr_parking TEXT, sea_container TEXT, sea_port_from TEXT, sea_date_out TEXT, ge_port TEXT, ge_arrived TEXT, ge_released TEXT, days_to_kyiv TEXT, ua_delivered TEXT, ua_handed TEXT, cost_purchase INTEGER, cost_fees INTEGER, cost_logistics INTEGER, cost_total TEXT, price_uah INTEGER, nbu_rate TEXT, status TEXT, owner_user TEXT, history TEXT, price_history TEXT, cover_photo TEXT, eta_manual TEXT, description TEXT, hidden_photos TEXT, diag_text TEXT, ge_to_kyiv_at TEXT, price_georgia INTEGER)",
+    "foreign_keys": [],
+    "quick_check": [
+      "ok"
+    ],
+    "status_actions": [
+      {
+        "rows": [],
+        "table": "additional_specification_audit"
+      },
+      {
+        "rows": [
+          {
+            "action": "card_edit",
+            "created_at": "[N]T12:09:28",
+            "entity_id": 30,
+            "entity_type": "cars",
+            "field": "published",
+            "id": 2373,
+            "new_value": "0",
+            "old_value": "1"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T12:09:28",
+            "entity_id": 30,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2372,
+            "new_value": "hidden",
+            "old_value": "ua_arrived"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T04:29:28",
+            "entity_id": 26,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2365,
+            "new_value": "ua_arrived",
+            "old_value": "ge_waiting"
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T04:38:37",
+            "entity_id": 182,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 2359,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T04:25:38",
+            "entity_id": 181,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 2358,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T04:24:56",
+            "entity_id": 180,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 2357,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T08:54:59",
+            "entity_id": 32,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2327,
+            "new_value": "sea_loaded",
+            "old_value": "ua_arrived"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T08:45:03",
+            "entity_id": 33,
+            "entity_type": "cars",
+            "field": "published",
+            "id": 2326,
+            "new_value": "1",
+            "old_value": "0"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T08:33:33",
+            "entity_id": 33,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2283,
+            "new_value": "sea_loaded",
+            "old_value": null
+          },
+          {
+            "action": "inbox_status",
+            "created_at": "[N]T08:30:36",
+            "entity_id": 179,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 2276,
+            "new_value": "approved_owner",
+            "old_value": "new"
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T08:28:46",
+            "entity_id": 179,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 2264,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T07:18:14",
+            "entity_id": 30,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2263,
+            "new_value": "ua_arrived",
+            "old_value": "archive"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T05:10:21",
+            "entity_id": 31,
+            "entity_type": "cars",
+            "field": "published",
+            "id": 2262,
+            "new_value": "1",
+            "old_value": "0"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T05:03:23",
+            "entity_id": 31,
+            "entity_type": "cars",
+            "field": "published",
+            "id": 2261,
+            "new_value": "0",
+            "old_value": "1"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T04:45:04",
+            "entity_id": 31,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2258,
+            "new_value": "sea_loaded",
+            "old_value": "sea_loaded"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T04:43:28",
+            "entity_id": 31,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2257,
+            "new_value": "sea_loaded",
+            "old_value": "sea_loaded"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T04:40:26",
+            "entity_id": 31,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2256,
+            "new_value": "sea_loaded",
+            "old_value": "sea_loaded"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T04:39:51",
+            "entity_id": 31,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2255,
+            "new_value": "sea_loaded",
+            "old_value": "archive"
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T16:49:33",
+            "entity_id": 178,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 2164,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T16:41:20",
+            "entity_id": 32,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2160,
+            "new_value": "ua_arrived",
+            "old_value": "kr_bought"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T09:46:14",
+            "entity_id": 31,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2086,
+            "new_value": "archive",
+            "old_value": "ge_waiting"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T00:41:24",
+            "entity_id": 30,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2083,
+            "new_value": "archive",
+            "old_value": "sold_transit"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T00:40:43",
+            "entity_id": 30,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2082,
+            "new_value": "sold_transit",
+            "old_value": "ua_arrived"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T08:33:21",
+            "entity_id": 32,
+            "entity_type": "cars",
+            "field": "published",
+            "id": 2016,
+            "new_value": "0",
+            "old_value": "1"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T08:33:12",
+            "entity_id": 32,
+            "entity_type": "cars",
+            "field": "published",
+            "id": 2015,
+            "new_value": "1",
+            "old_value": "0"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T08:33:02",
+            "entity_id": 32,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 2014,
+            "new_value": "kr_bought",
+            "old_value": null
+          },
+          {
+            "action": "inbox_status",
+            "created_at": "[N]T05:17:49",
+            "entity_id": 177,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1970,
+            "new_value": "approved_owner",
+            "old_value": "new"
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T05:16:35",
+            "entity_id": 177,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1964,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T05:12:25",
+            "entity_id": 176,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1963,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T05:09:27",
+            "entity_id": 175,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1962,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T05:05:44",
+            "entity_id": 174,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1961,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T05:04:28",
+            "entity_id": 173,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1960,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T13:32:28",
+            "entity_id": 31,
+            "entity_type": "cars",
+            "field": "published",
+            "id": 1916,
+            "new_value": "1",
+            "old_value": "0"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T13:27:31",
+            "entity_id": 31,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1911,
+            "new_value": "ge_waiting",
+            "old_value": "sold_transit"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T13:26:55",
+            "entity_id": 31,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1910,
+            "new_value": "sold_transit",
+            "old_value": null
+          },
+          {
+            "action": "inbox_status",
+            "created_at": "[N]T13:23:25",
+            "entity_id": 172,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1902,
+            "new_value": "approved_owner",
+            "old_value": "new"
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T13:23:11",
+            "entity_id": 172,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1892,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T13:07:43",
+            "entity_id": 26,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1887,
+            "new_value": "ge_waiting",
+            "old_value": "ua_arrived"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T13:06:44",
+            "entity_id": 30,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1886,
+            "new_value": "ua_arrived",
+            "old_value": "kr_bought"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T13:06:38",
+            "entity_id": 30,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1885,
+            "new_value": "kr_bought",
+            "old_value": "ge_waiting"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T12:55:10",
+            "entity_id": 30,
+            "entity_type": "cars",
+            "field": "published",
+            "id": 1824,
+            "new_value": "1",
+            "old_value": "0"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T12:50:33",
+            "entity_id": 30,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1820,
+            "new_value": "ge_waiting",
+            "old_value": null
+          },
+          {
+            "action": "inbox_status",
+            "created_at": "[N]T12:47:41",
+            "entity_id": 171,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1813,
+            "new_value": "approved_owner",
+            "old_value": "new"
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T12:47:24",
+            "entity_id": 171,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1801,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "inbox_status",
+            "created_at": "[N]T11:52:31",
+            "entity_id": 170,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1800,
+            "new_value": "approved_owner",
+            "old_value": "new"
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T11:51:56",
+            "entity_id": 170,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1796,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T09:41:05",
+            "entity_id": 29,
+            "entity_type": "cars",
+            "field": "published",
+            "id": 1792,
+            "new_value": "1",
+            "old_value": "0"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T09:38:41",
+            "entity_id": 29,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1790,
+            "new_value": "ua_arrived",
+            "old_value": null
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T12:25:37",
+            "entity_id": 16,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1782,
+            "new_value": "ge_waiting",
+            "old_value": "sea_loaded"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T12:24:56",
+            "entity_id": 18,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1780,
+            "new_value": "ge_waiting",
+            "old_value": "sea_loaded"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T12:23:27",
+            "entity_id": 15,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1778,
+            "new_value": "ge_waiting",
+            "old_value": "sea_loaded"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T12:21:15",
+            "entity_id": 19,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1776,
+            "new_value": "ge_waiting",
+            "old_value": "sea_transit"
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T07:50:07",
+            "entity_id": 169,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1774,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T07:49:19",
+            "entity_id": 168,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1772,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T07:47:44",
+            "entity_id": 167,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1770,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "inbox_status",
+            "created_at": "[N]T07:41:55",
+            "entity_id": 166,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1738,
+            "new_value": "approved_owner",
+            "old_value": "new"
+          },
+          {
+            "action": "inbox_create",
+            "created_at": "[N]T07:41:32",
+            "entity_id": 166,
+            "entity_type": "inbox",
+            "field": "status",
+            "id": 1726,
+            "new_value": "new",
+            "old_value": null
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T07:23:37",
+            "entity_id": 28,
+            "entity_type": "cars",
+            "field": "published",
+            "id": 1723,
+            "new_value": "1",
+            "old_value": "0"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T07:23:28",
+            "entity_id": 28,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1722,
+            "new_value": "ua_arrived",
+            "old_value": "ge_to_kyiv"
+          },
+          {
+            "action": "card_edit",
+            "created_at": "[N]T07:21:16",
+            "entity_id": 26,
+            "entity_type": "cars",
+            "field": "status",
+            "id": 1721,
+            "new_value": "ua_arrived",
+            "old_value": "ua_arrived"
+          }
+        ],
+        "table": "audit"
+      }
+    ],
+    "tables": {
+      "additional_specification": {
+        "columns": [
+          "id",
+          "car_uid",
+          "field_key",
+          "field_value",
+          "normalized_value",
+          "source",
+          "source_url",
+          "confidence",
+          "is_price_field",
+          "created_at"
+        ],
+        "rows": 12
+      },
+      "additional_specification_audit": {
+        "columns": [
+          "id",
+          "car_uid",
+          "field_key",
+          "action",
+          "old_value",
+          "new_value",
+          "actor_id",
+          "changed_at"
+        ],
+        "rows": 0
+      },
+      "additional_specification_import_runs": {
+        "columns": [
+          "run_id",
+          "source_contract",
+          "started_at",
+          "finished_at",
+          "status",
+          "inserted_count",
+          "processed_uids_json"
+        ],
+        "rows": 1
+      },
+      "additional_specification_meta": {
+        "columns": [
+          "car_uid",
+          "field_key",
+          "label_ru",
+          "category",
+          "unit",
+          "evidence_count",
+          "source_domains_json",
+          "verification_status",
+          "model_match_score",
+          "is_manual",
+          "is_visible",
+          "updated_at"
+        ],
+        "rows": 12
+      },
+      "additional_specification_rejections": {
+        "columns": [
+          "id",
+          "car_uid",
+          "field_key",
+          "reason",
+          "rejected_at"
+        ],
+        "rows": 9
+      },
+      "audit": {
+        "columns": [
+          "id",
+          "actor_id",
+          "action",
+          "entity_type",
+          "entity_id",
+          "field",
+          "old_value",
+          "new_value",
+          "created_at"
+        ],
+        "rows": 2367
+      },
+      "cars": {
+        "columns": [
+          "id",
+          "brand",
+          "model",
+          "year",
+          "vin",
+          "fuel",
+          "engine",
+          "color",
+          "mileage",
+          "trim",
+          "condition",
+          "accidents",
+          "auction_link",
+          "price_buy",
+          "price_extra",
+          "price_ship",
+          "price_customs",
+          "price_total",
+          "stage",
+          "photos",
+          "videos",
+          "docs",
+          "responsible",
+          "review_status",
+          "published",
+          "created_by",
+          "approved_by",
+          "created_at",
+          "updated_at",
+          "client_id",
+          "publish_pending",
+          "video_h",
+          "video_v",
+          "auto_number",
+          "engine_cc",
+          "gearbox",
+          "drive",
+          "mileage_km",
+          "condition_text",
+          "condition_photos",
+          "condition_videos",
+          "diag_report",
+          "diag_link",
+          "kr_buy_date",
+          "kr_parking",
+          "sea_container",
+          "sea_port_from",
+          "sea_date_out",
+          "ge_port",
+          "ge_arrived",
+          "ge_released",
+          "days_to_kyiv",
+          "ua_delivered",
+          "ua_handed",
+          "cost_purchase",
+          "cost_fees",
+          "cost_logistics",
+          "cost_total",
+          "price_uah",
+          "nbu_rate",
+          "status",
+          "owner_user",
+          "history",
+          "price_history",
+          "cover_photo",
+          "eta_manual",
+          "description",
+          "hidden_photos",
+          "diag_text",
+          "ge_to_kyiv_at",
+          "price_georgia"
+        ],
+        "rows": 20
+      },
+      "clients": {
+        "columns": [
+          "id",
+          "name",
+          "phone",
+          "telegram",
+          "whatsapp",
+          "car_interest",
+          "budget",
+          "wishes",
+          "source",
+          "prepayment",
+          "stage",
+          "responsible",
+          "next_contact",
+          "review_status",
+          "created_by",
+          "approved_by",
+          "created_at",
+          "updated_at",
+          "tg_user_id"
+        ],
+        "rows": 5
+      },
+      "comments": {
+        "columns": [
+          "id",
+          "entity_type",
+          "entity_id",
+          "author_id",
+          "text",
+          "file_id",
+          "created_at"
+        ],
+        "rows": 2
+      },
+      "inbox": {
+        "columns": [
+          "id",
+          "from_user_id",
+          "kind",
+          "text",
+          "file_id",
+          "media_group",
+          "tg_chat_id",
+          "tg_message_id",
+          "status",
+          "assigned_to",
+          "card_type",
+          "card_id",
+          "created_at",
+          "updated_at"
+        ],
+        "rows": 182
+      },
+      "invites": {
+        "columns": [
+          "code",
+          "role",
+          "created_by",
+          "created_at",
+          "used_by",
+          "used_at"
+        ],
+        "rows": 2
+      },
+      "media": {
+        "columns": [
+          "id",
+          "car_id",
+          "auto_number",
+          "vid",
+          "file_id",
+          "source_bot_id",
+          "razmer",
+          "mime",
+          "put",
+          "summa",
+          "status",
+          "tag",
+          "poryadok",
+          "kogda",
+          "kto",
+          "primechanie"
+        ],
+        "rows": 983
+      },
+      "ns_video": {
+        "columns": [
+          "nomer",
+          "file_id",
+          "msg_id"
+        ],
+        "rows": 1
+      },
+      "price_denylist": {
+        "columns": [
+          "denylist_key"
+        ],
+        "rows": 12
+      },
+      "primary_field_registry": {
+        "columns": [
+          "car_uid",
+          "field_key",
+          "normalized_value"
+        ],
+        "rows": 174
+      },
+      "sqlite_sequence": {
+        "columns": [
+          "name",
+          "seq"
+        ],
+        "rows": 8
+      },
+      "staff": {
+        "columns": [
+          "user_id",
+          "full_name",
+          "username",
+          "role",
+          "active",
+          "added_by",
+          "added_at",
+          "note"
+        ],
+        "rows": 1
+      }
+    },
+    "triggers": [
+      {
+        "name": "media_st_v",
+        "sql": "CREATE TRIGGER media_st_v BEFORE INSERT ON media WHEN NEW.status NOT IN ('pending','ready','rejected','quarantine') BEGIN SELECT RAISE(ABORT,'недопустимый статус'); END",
+        "table": "media"
+      },
+      {
+        "name": "media_st_p",
+        "sql": "CREATE TRIGGER media_st_p BEFORE UPDATE ON media WHEN NEW.status NOT IN ('pending','ready','rejected','quarantine') BEGIN SELECT RAISE(ABORT,'недопустимый статус'); END",
+        "table": "media"
+      },
+      {
+        "name": "media_vid_v",
+        "sql": "CREATE TRIGGER media_vid_v BEFORE INSERT ON media WHEN NEW.vid NOT IN ('foto','video','diag_foto','diag_video','diag_dok') BEGIN SELECT RAISE(ABORT,'недопустимый вид'); END",
+        "table": "media"
+      },
+      {
+        "name": "media_mash",
+        "sql": "CREATE TRIGGER media_mash BEFORE INSERT ON media WHEN (SELECT COUNT(*) FROM cars WHERE id=NEW.car_id)=0 BEGIN SELECT RAISE(ABORT,'нет такой машины'); END",
+        "table": "media"
+      }
+    ]
+  },
+  "finished_at": "2026-10-28T12:18:44Z",
+  "http_methods": [
+    "GET"
+  ],
+  "log": {
+    "bytes": 6403,
+    "first_line_ts": "Oct 28 11:12:[N]:12:13,522 ",
+    "lines": [
+      "1: Oct 28 11:12:[N]:12:13,522 ERROR telegram.ext.Updater: Exception happened while polling for updates.",
+      "2: Oct 28 11:12:13 Traceback (most recent call last):",
+      "3: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpx/_transports/default.py\", line 72, in map_httpcore_exceptions",
+      "4: Oct 28 11:12:13     yield",
+      "5: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpx/_transports/default.py\", line 377, in handle_async_request",
+      "6: Oct 28 11:12:13     resp = await self._pool.handle_async_request(req)",
+      "7: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/connection_pool.py\", line 256, in handle_async_request",
+      "8: Oct 28 11:12:13     raise exc from None",
+      "9: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/connection_pool.py\", line 236, in handle_async_request",
+      "10: Oct 28 11:12:13     response = await connection.handle_async_request(",
+      "11: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/connection.py\", line 103, in handle_async_request",
+      "12: Oct 28 11:12:13     return await self._connection.handle_async_request(request)",
+      "13: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_async/http11.py\", line 136, in handle_async_request",
+      "22: Oct 28 11:12:13     with map_exceptions(exc_map):",
+      "23: Oct 28 11:12:13   File \"/usr/lib/python3.10/contextlib.py\", line 153, in __exit__",
+      "24: Oct 28 11:12:13     self.gen.throw(typ, value, traceback)",
+      "25: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpcore/_exceptions.py\", line 14, in map_exceptions",
+      "26: Oct 28 11:12:13     raise to_exc(exc) from exc",
+      "27: Oct 28 11:12:13 httpcore.ReadError",
+      "28: Oct 28 11:12:13 The above exception was the direct cause of the following exception:",
+      "29: Oct 28 11:12:13 Traceback (most recent call last):",
+      "30: Oct 28 11:12:13   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/request/_httpxrequest.py\", line 279, in do_request",
+      "31: Oct 28 11:12:13     res = await self._client.request(",
+      "32: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpx/_client.py\", line 1585, in request",
+      "33: Oct 28 11:12:13     return await self.send(request, auth=auth, follow_redirects=follow_redirects)",
+      "34: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpx/_client.py\", line 1674, in send",
+      "35: Oct 28 11:12:13     response = await self._send_handling_auth(",
+      "36: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpx/_client.py\", line 1702, in _send_handling_auth",
+      "37: Oct 28 11:12:13     response = await self._send_handling_redirects(",
+      "38: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpx/_client.py\", line 1739, in _send_handling_redirects",
+      "39: Oct 28 11:12:13     response = await self._send_single_request(request)",
+      "40: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpx/_client.py\", line 1776, in _send_single_request",
+      "43: Oct 28 11:12:13     with map_httpcore_exceptions():",
+      "44: Oct 28 11:12:13   File \"/usr/lib/python3.10/contextlib.py\", line 153, in __exit__",
+      "45: Oct 28 11:12:13     self.gen.throw(typ, value, traceback)",
+      "46: Oct 28 11:12:13   File \"/usr/local/lib/python3.10/dist-packages/httpx/_transports/default.py\", line 89, in map_httpcore_exceptions",
+      "47: Oct 28 11:12:13     raise mapped_exc(message) from exc",
+      "48: Oct 28 11:12:13 httpx.ReadError",
+      "49: Oct 28 11:12:13 The above exception was the direct cause of the following exception:",
+      "50: Oct 28 11:12:13 Traceback (most recent call last):",
+      "51: Oct 28 11:12:13   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/ext/_utils/networkloop.py\", line 161, in network_retry_loop",
+      "52: Oct 28 11:12:13     await do_action()",
+      "53: Oct 28 11:12:13   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/ext/_utils/networkloop.py\", line 154, in do_action",
+      "54: Oct 28 11:12:13     action_cb_task.result()",
+      "55: Oct 28 11:12:13   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/ext/_updater.py\", line 340, in polling_action_cb",
+      "56: Oct 28 11:12:13     updates = await self.bot.get_updates(",
+      "57: Oct 28 11:12:13   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/ext/_extbot.py\", line 680, in get_updates",
+      "58: Oct 28 11:12:13     updates = await super().get_updates(",
+      "59: Oct 28 11:12:13   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/_bot.py\", line 4767, in get_updates",
+      "60: Oct 28 11:12:13     await self._post(",
+      "61: Oct 28 11:12:13   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/_bot.py\", line 712, in _post",
+      "70: Oct 28 11:12:13     code, payload = await self.do_request(",
+      "71: Oct 28 11:12:13   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/request/_httpxrequest.py\", line 303, in do_request",
+      "72: Oct 28 11:12:13     raise NetworkError(f\"httpx.{err.__class__.__name__}: {err}\") from err",
+      "73: Oct 28 11:12:13 telegram.error.NetworkError: httpx.ReadError: ",
+      "74: Oct 28 12:09:[N]:09:22,937 WARNING card_render: CRM media batch timeout"
+    ],
+    "matched_lines_exported": 56,
+    "total_lines": 74
+  },
+  "path_status": {
+    "/home/Carix/cars_ui.py": {
+      "bytes": 208358,
+      "sha256": "19adbff34be18402897ca4b54889c9361bcdd261f329218e147b72f8031f9ad6",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/crm.db": {
+      "bytes": 6791168,
+      "sha256": "c25aa83a4ce676ca6df20d3b8e0a7acfb4c049e46ce10795d6f9bcb9866d6e68",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/db.py": {
+      "bytes": 35214,
+      "sha256": "af7624cbcf227b865ac98c68462ad6da8d18223881bba836f2f9a8669cf1dab7",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/publikaciya.py": {
+      "bytes": 25009,
+      "sha256": "1771351a32f33f02a8bd6dd51f58f87525e1f8243f0dd3441f4c3e52dfa75ef5",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/publish_transaction_guard.py": {
+      "bytes": 33481,
+      "sha256": "4b36b2f06f2b3582705b341e67f8361818890922133f3cf2e2a3ace935ec9b95",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/ua_card_delete.py": {
+      "bytes": 1905,
+      "sha256": "e50663be0c846293f15bfdb9485c7c4e059071668fc350b606371ff59df4e2f5",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/ua_crm_public_sync.py": {
+      "bytes": 8200,
+      "sha256": "25a824be411598566fb837de190c3e6a0057962bbfe7ee1d6dcf90a0ff2027cd",
+      "status": "RECEIVED"
+    },
+    "/home/Carix/video/katalog.html": {
+      "bytes": 86089,
+      "sha256": "7843d4de3eaf28c724bb58dcca4bd19d228f918f26c652da708e19e4129d7642",
+      "status": "RECEIVED"
+    },
+    "/var/log/alwayson-log-266084.log": {
+      "bytes": 6403,
+      "sha256": "3525ef5875cb5bea017f24a4683926c98dfa8d1c9bd9b9bf3c2e1715284245c6",
+      "status": "RECEIVED"
+    }
+  },
+  "raw_private_data_persisted": false,
+  "remote_write_count": 0,
+  "request_sha256": "095fdc39ee6145d6bad6e1e3a7bb636bca2372c0066e6c7048965012777c18db",
+  "run_id": "40686484969",
+  "sanitized_source_excerpts_path": "cloud/crm_sold_probe_20261028/sanitized_sources.txt",
+  "server_catalog": {
+    "bytes": 86089,
+    "car_numbers": [
+      "UA-0001",
+      "UA-0003",
+      "UA-0004",
+      "UA-0005",
+      "UA-0006",
+      "UA-0007",
+      "UA-0009",
+      "UA-0010",
+      "UA-0011",
+      "UA-0012",
+      "UA-0013",
+      "UA-0014",
+      "UA-0015",
+      "UA-0016",
+      "UA-0017",
+      "UA-0018",
+      "UA-0020",
+      "UA-0021",
+      "UA-0022",
+      "UA-0023"
+    ]
+  },
+  "source_facts": {
+    "/home/Carix/cars_ui.py": {
+      "bytes": 208358,
+      "definitions": [
+        {
+          "end_line": 243,
+          "excerpt": "EXPORTED",
+          "line": 235,
+          "name": "card_of"
+        },
+        {
+          "end_line": 289,
+          "excerpt": "EXPORTED",
+          "line": 285,
+          "name": "set_field"
+        },
+        {
+          "end_line": 511,
+          "excerpt": "EXPORTED",
+          "line": 490,
+          "name": "card_kb"
+        },
+        {
+          "end_line": 1663,
+          "excerpt": "EXPORTED",
+          "line": 1629,
+          "name": "toggle_publish"
+        },
+        {
+          "end_line": 1681,
+          "excerpt": "EXPORTED",
+          "line": 1666,
+          "name": "mark_sold"
+        },
+        {
+          "end_line": 1694,
+          "excerpt": "EXPORTED",
+          "line": 1684,
+          "name": "mark_sold_ok"
+        },
+        {
+          "end_line": 1731,
+          "excerpt": "EXPORTED",
+          "line": 1714,
+          "name": "delete_ok"
+        },
+        {
+          "end_line": 2251,
+          "excerpt": "EXPORTED",
+          "line": 2232,
+          "name": "_v168_ack"
+        },
+        {
+          "end_line": 3389,
+          "excerpt": "EXPORTED",
+          "line": 3320,
+          "name": "register"
+        },
+        {
+          "end_line": 3742,
+          "excerpt": "EXPORTED",
+          "line": 3679,
+          "name": "toggle_publish"
+        },
+        {
+          "end_line": 3779,
+          "excerpt": "EXPORTED",
+          "line": 3763,
+          "name": "card_kb"
+        },
+        {
+          "end_line": 3788,
+          "excerpt": "EXPORTED",
+          "line": 3781,
+          "name": "_ua099_require_staff"
+        },
+        {
+          "end_line": 3794,
+          "excerpt": "EXPORTED",
+          "line": 3790,
+          "name": "_ua099_card"
+        },
+        {
+          "end_line": 4181,
+          "excerpt": "EXPORTED",
+          "line": 4169,
+          "name": "card_kb"
+        }
+      ],
+      "path": "/home/Carix/cars_ui.py",
+      "sha256": "19adbff34be18402897ca4b54889c9361bcdd261f329218e147b72f8031f9ad6"
+    },
+    "/home/Carix/db.py": {
+      "bytes": 35214,
+      "definitions": [
+        {
+          "end_line": 327,
+          "excerpt": "EXPORTED",
+          "line": 315,
+          "name": "connect"
+        },
+        {
+          "end_line": 497,
+          "excerpt": "EXPORTED",
+          "line": 486,
+          "name": "log_action"
+        },
+        {
+          "end_line": 719,
+          "excerpt": "EXPORTED",
+          "line": 716,
+          "name": "get_card"
+        },
+        {
+          "end_line": 753,
+          "excerpt": "EXPORTED",
+          "line": 735,
+          "name": "update_card_field"
+        }
+      ],
+      "path": "/home/Carix/db.py",
+      "sha256": "af7624cbcf227b865ac98c68462ad6da8d18223881bba836f2f9a8669cf1dab7"
+    },
+    "/home/Carix/publikaciya.py": {
+      "bytes": 25009,
+      "definitions": [
+        {
+          "end_line": 28,
+          "excerpt": "EXPORTED",
+          "line": 20,
+          "name": "_sha"
+        },
+        {
+          "end_line": 34,
+          "excerpt": "EXPORTED",
+          "line": 31,
+          "name": "_sha_teksta"
+        },
+        {
+          "end_line": 42,
+          "excerpt": "EXPORTED",
+          "line": 37,
+          "name": "_chitat"
+        },
+        {
+          "end_line": 51,
+          "excerpt": "EXPORTED",
+          "line": 45,
+          "name": "_zhurnal"
+        },
+        {
+          "end_line": 66,
+          "excerpt": "EXPORTED",
+          "line": 54,
+          "name": "_kartochki"
+        },
+        {
+          "end_line": 106,
+          "excerpt": "EXPORTED",
+          "line": 70,
+          "name": "proverit"
+        },
+        {
+          "end_line": 135,
+          "excerpt": "EXPORTED",
+          "line": 109,
+          "name": "_master"
+        },
+        {
+          "end_line": 150,
+          "excerpt": "EXPORTED",
+          "line": 138,
+          "name": "_zapisat_atomarno"
+        },
+        {
+          "end_line": 224,
+          "excerpt": "EXPORTED",
+          "line": 153,
+          "name": "opublikovat"
+        },
+        {
+          "end_line": 234,
+          "excerpt": "EXPORTED",
+          "line": 227,
+          "name": "_otkat"
+        },
+        {
+          "end_line": 311,
+          "excerpt": "EXPORTED",
+          "line": 302,
+          "name": "_ua9_waiting_text"
+        },
+        {
+          "end_line": 336,
+          "excerpt": "EXPORTED",
+          "line": 313,
+          "name": "_master"
+        },
+        {
+          "end_line": 343,
+          "excerpt": "EXPORTED",
+          "line": 338,
+          "name": "proverit"
+        },
+        {
+          "end_line": 360,
+          "excerpt": "EXPORTED",
+          "line": 345,
+          "name": "_ua9_sobrat_katalog"
+        },
+        {
+          "end_line": 404,
+          "excerpt": "EXPORTED",
+          "line": 362,
+          "name": "ua0009_urgent_probe"
+        },
+        {
+          "end_line": 456,
+          "excerpt": "EXPORTED",
+          "line": 406,
+          "name": "ua0009_urgent_publish"
+        },
+        {
+          "end_line": 489,
+          "excerpt": "EXPORTED",
+          "line": 463,
+          "name": "_master"
+        },
+        {
+          "end_line": 496,
+          "excerpt": "EXPORTED",
+          "line": 494,
+          "name": "opublikovat"
+        },
+        {
+          "end_line": 500,
+          "excerpt": "EXPORTED",
+          "line": 498,
+          "name": "obnovit_katalog"
+        },
+        {
+          "end_line": 519,
+          "excerpt": "EXPORTED",
+          "line": 507,
+          "name": "_zapisat_atomarno"
+        },
+        {
+          "end_line": 533,
+          "excerpt": "EXPORTED",
+          "line": 521,
+          "name": "proverit"
+        },
+        {
+          "end_line": 547,
+          "excerpt": "EXPORTED",
+          "line": 542,
+          "name": "_master"
+        },
+        {
+          "end_line": 560,
+          "excerpt": "EXPORTED",
+          "line": 556,
+          "name": "_ua84_require_uid"
+        },
+        {
+          "end_line": 569,
+          "excerpt": "EXPORTED",
+          "line": 562,
+          "name": "_ua84_model_uid"
+        },
+        {
+          "end_line": 578,
+          "excerpt": "EXPORTED",
+          "line": 572,
+          "name": "_zapisat_atomarno"
+        }
+      ],
+      "path": "/home/Carix/publikaciya.py",
+      "sha256": "1771351a32f33f02a8bd6dd51f58f87525e1f8243f0dd3441f4c3e52dfa75ef5"
+    },
+    "/home/Carix/publish_transaction_guard.py": {
+      "bytes": 33481,
+      "definitions": [
+        {
+          "end_line": 45,
+          "excerpt": "EXPORTED",
+          "line": 44,
+          "name": "PublishError"
+        },
+        {
+          "end_line": 49,
+          "excerpt": "EXPORTED",
+          "line": 48,
+          "name": "_sha"
+        },
+        {
+          "end_line": 56,
+          "excerpt": "EXPORTED",
+          "line": 52,
+          "name": "_read"
+        },
+        {
+          "end_line": 74,
+          "excerpt": "EXPORTED",
+          "line": 59,
+          "name": "_atomic"
+        },
+        {
+          "end_line": 82,
+          "excerpt": "EXPORTED",
+          "line": 77,
+          "name": "_append_log"
+        },
+        {
+          "end_line": 89,
+          "excerpt": "EXPORTED",
+          "line": 85,
+          "name": "_code"
+        },
+        {
+          "end_line": 94,
+          "excerpt": "EXPORTED",
+          "line": 92,
+          "name": "_stage"
+        },
+        {
+          "end_line": 98,
+          "excerpt": "EXPORTED",
+          "line": 97,
+          "name": "_category"
+        },
+        {
+          "end_line": 117,
+          "excerpt": "EXPORTED",
+          "line": 101,
+          "name": "_rows"
+        },
+        {
+          "end_line": 122,
+          "excerpt": "EXPORTED",
+          "line": 120,
+          "name": "_row_map"
+        },
+        {
+          "end_line": 134,
+          "excerpt": "EXPORTED",
+          "line": 125,
+          "name": "_protected_pages"
+        },
+        {
+          "end_line": 151,
+          "excerpt": "EXPORTED",
+          "line": 137,
+          "name": "_matching_paths"
+        },
+        {
+          "end_line": 201,
+          "excerpt": "EXPORTED",
+          "line": 154,
+          "name": "Snapshot"
+        },
+        {
+          "end_line": 223,
+          "excerpt": "EXPORTED",
+          "line": 205,
+          "name": "_exclusive_lock"
+        },
+        {
+          "end_line": 254,
+          "excerpt": "EXPORTED",
+          "line": 226,
+          "name": "_render_diag"
+        },
+        {
+          "end_line": 269,
+          "excerpt": "EXPORTED",
+          "line": 257,
+          "name": "_stage_diags"
+        },
+        {
+          "end_line": 282,
+          "excerpt": "EXPORTED",
+          "line": 272,
+          "name": "_href_counts"
+        },
+        {
+          "end_line": 295,
+          "excerpt": "EXPORTED",
+          "line": 285,
+          "name": "_catalog_card_window"
+        },
+        {
+          "end_line": 334,
+          "excerpt": "EXPORTED",
+          "line": 298,
+          "name": "_validate_catalog"
+        },
+        {
+          "end_line": 362,
+          "excerpt": "EXPORTED",
+          "line": 337,
+          "name": "_validate_primary"
+        },
+        {
+          "end_line": 373,
+          "excerpt": "EXPORTED",
+          "line": 365,
+          "name": "_build_catalog"
+        },
+        {
+          "end_line": 422,
+          "excerpt": "EXPORTED",
+          "line": 376,
+          "name": "_install_catalog"
+        },
+        {
+          "end_line": 459,
+          "excerpt": "EXPORTED",
+          "line": 425,
+          "name": "_verify_bundle"
+        },
+        {
+          "end_line": 466,
+          "excerpt": "EXPORTED",
+          "line": 462,
+          "name": "_call_base"
+        },
+        {
+          "end_line": 536,
+          "excerpt": "EXPORTED",
+          "line": 469,
+          "name": "_publish_locked"
+        },
+        {
+          "end_line": 543,
+          "excerpt": "EXPORTED",
+          "line": 539,
+          "name": "publish_batch"
+        },
+        {
+          "end_line": 550,
+          "excerpt": "EXPORTED",
+          "line": 546,
+          "name": "publish_one"
+        },
+        {
+          "end_line": 572,
+          "excerpt": "EXPORTED",
+          "line": 553,
+          "name": "rebuild_catalog"
+        },
+        {
+          "end_line": 579,
+          "excerpt": "EXPORTED",
+          "line": 575,
+          "name": "verify_bundle"
+        },
+        {
+          "end_line": 599,
+          "excerpt": "EXPORTED",
+          "line": 582,
+          "name": "rollback_backup"
+        },
+        {
+          "end_line": 618,
+          "excerpt": "EXPORTED",
+          "line": 612,
+          "name": "_validate_catalog"
+        },
+        {
+          "end_line": 659,
+          "excerpt": "EXPORTED",
+          "line": 621,
+          "name": "_install_catalog"
+        },
+        {
+          "end_line": 678,
+          "excerpt": "EXPORTED",
+          "line": 669,
+          "name": "_matching_paths"
+        },
+        {
+          "end_line": 738,
+          "excerpt": "EXPORTED",
+          "line": 681,
+          "name": "Snapshot"
+        },
+        {
+          "end_line": 769,
+          "excerpt": "EXPORTED",
+          "line": 749,
+          "name": "Snapshot"
+        },
+        {
+          "end_line": 789,
+          "excerpt": "EXPORTED",
+          "line": 772,
+          "name": "_install_catalog"
+        },
+        {
+          "end_line": 798,
+          "excerpt": "EXPORTED",
+          "line": 796,
+          "name": "_exclusive_lock"
+        },
+        {
+          "end_line": 813,
+          "excerpt": "EXPORTED",
+          "line": 805,
+          "name": "_install_catalog"
+        },
+        {
+          "end_line": 838,
+          "excerpt": "EXPORTED",
+          "line": 821,
+          "name": "_install_catalog"
+        }
+      ],
+      "path": "/home/Carix/publish_transaction_guard.py",
+      "sha256": "4b36b2f06f2b3582705b341e67f8361818890922133f3cf2e2a3ace935ec9b95"
+    },
+    "/home/Carix/ua_card_delete.py": {
+      "bytes": 1905,
+      "definitions": [
+        {
+          "end_line": 15,
+          "excerpt": "EXPORTED",
+          "line": 13,
+          "name": "Result"
+        },
+        {
+          "end_line": 36,
+          "excerpt": "EXPORTED",
+          "line": 18,
+          "name": "delete_card"
+        }
+      ],
+      "path": "/home/Carix/ua_card_delete.py",
+      "sha256": "e50663be0c846293f15bfdb9485c7c4e059071668fc350b606371ff59df4e2f5"
+    },
+    "/home/Carix/ua_crm_public_sync.py": {
+      "bytes": 8200,
+      "definitions": [
+        {
+          "end_line": 46,
+          "excerpt": "EXPORTED",
+          "line": 24,
+          "name": "snapshot"
+        },
+        {
+          "end_line": 60,
+          "excerpt": "EXPORTED",
+          "line": 49,
+          "name": "save_state"
+        },
+        {
+          "end_line": 69,
+          "excerpt": "EXPORTED",
+          "line": 63,
+          "name": "initialize"
+        },
+        {
+          "end_line": 74,
+          "excerpt": "EXPORTED",
+          "line": 72,
+          "name": "notify"
+        },
+        {
+          "end_line": 159,
+          "excerpt": "EXPORTED",
+          "line": 77,
+          "name": "reconcile_once"
+        },
+        {
+          "end_line": 173,
+          "excerpt": "EXPORTED",
+          "line": 162,
+          "name": "_run"
+        },
+        {
+          "end_line": 185,
+          "excerpt": "EXPORTED",
+          "line": 176,
+          "name": "start"
+        }
+      ],
+      "path": "/home/Carix/ua_crm_public_sync.py",
+      "sha256": "25a824be411598566fb837de190c3e6a0057962bbfe7ee1d6dcf90a0ff2027cd"
+    }
+  },
+  "started_at": "2026-10-28T12:18:39Z",
+  "task_id": "CRM-SOLD-PROBE-20261028",
+  "unavailable_paths": []
+}

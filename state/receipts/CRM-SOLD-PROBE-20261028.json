@@ -1,0 +1,19 @@
+{
+  "deletion_performed": false,
+  "evidence_path": "cloud/crm_sold_probe_20261028/evidence.json",
+  "finished_at": "2026-10-28T12:18:44Z",
+  "live_source_environment": "production",
+  "production_required": false,
+  "request_sha256": "095fdc39ee6145d6bad6e1e3a7bb636bca2372c0066e6c7048965012777c18db",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_REMOTE_WRITES",
+  "run_id": "40686484969",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "CRM-SOLD-PROBE-20261028",
+  "tests": "PASS",
+  "tests_scope": "FIXED_GET_SCOPE_AND_SAFE_EVIDENCE_ONLY",
+  "unavailable_paths": [],
+  "unexpected_changes": 0
+}
