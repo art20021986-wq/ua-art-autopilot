@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "73e11dee297f4af2e76f8e71c18fecd78ed4f3b3661c63845614f588954c4d60",
+  "error": "TASK_IDENTITY (controller accepts only PREVIEW_TASK/INSTALL_TASK from release_constants.py; request used suffix -R2)",
+  "failed_step": "execute / standard / execute: deployment_controller.context(), before any upload or remote call",
+  "precedent": "state/reconciliations/HOME-AUDI-PREFLIGHT-20261026.40354833558.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-10-28T12:38:55.209541+00:00",
+  "remote_mode": "preview (source-only, never started; writes nothing to the site or CRM)",
+  "retry": "CRM-CARD-SOLD-PREFLIGHT-20261028-R3 (task name from release_constants.py)",
+  "run_id": "40688042891",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "CRM-CARD-SOLD-PREFLIGHT-20261028-R2"
+}
