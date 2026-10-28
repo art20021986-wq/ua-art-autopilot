@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "babced92bd363642"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-10-28T12:38:55.209541+00:00",
+      "class": "TASK_IDENTITY",
+      "evidence_path": "state/reconciliations/CRM-CARD-SOLD-PREFLIGHT-20261028-R2.40688042891.authenticated-evidence.json",
+      "message": "Controller refused the task name before any remote call; nothing written. Retried as CRM-CARD-SOLD-PREFLIGHT-20261028-R3.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-10-28T12:32:03Z",
@@ -42,6 +51,6 @@
   "source_commit": "128856958be7d25e10dca71f46384953461ec0c8",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-10-28T12:32:52Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-10-28T12:38:55.209541+00:00"
 }
