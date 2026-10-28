@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "1af2efafe43fac4845c810e4f2c19a337e788b645a643f08bcf0d2f89b1610c3",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-28T16:39:19Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-28T16:46:37Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "40726678429",
     "task_id": "CRM-CARD-SOLD-INSTALL-20261028",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-40726678429-ff6ad121faa52ef2",
   "production_transaction_path": "state/transactions/CRM-CARD-SOLD-INSTALL-20261028.ff6ad121faa52ef2112450cb3785ed97e4e102809f15c97c251dcf214d0ddcc5.40726678429.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-296a7e96583720b8-6016d35a7016a402",
   "receipt_path": "state/receipts/CRM-CARD-SOLD-INSTALL-20261028.json",
   "receipt_validation_status": "PENDING",
@@ -89,5 +89,5 @@
       "cloud/crm_card_sold_001/ua_card_sold.py": "0e5af2a9d0d8e123b06fcfacbe40a79309cb84ccbb05e892e68ab241ca8e975a"
     }
   },
-  "updated_at": "2026-10-28T16:39:19Z"
+  "updated_at": "2026-10-28T16:46:37Z"
 }
