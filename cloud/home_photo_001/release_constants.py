@@ -1,5 +1,5 @@
 """CRM button «Фото главной страницы» release (HOME-PHOTO-001); no private source in this package."""
-PREVIEW_TASK = 'HOME-PHOTO-PREFLIGHT-20261028'
+PREVIEW_TASK = 'HOME-PHOTO-PREFLIGHT-20261028-R2'  # R1 refused by the CI contract check (exec in a test), nothing ran
 INSTALL_TASK = 'HOME-PHOTO-INSTALL-20261028'
 PACKAGE = 'cloud/home_photo_001'
 NEW_MODULES = ('ua_home_photo_crop.py', 'ua_home_photo_site.py', 'ua_home_photo_bot.py')
