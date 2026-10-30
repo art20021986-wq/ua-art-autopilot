@@ -1,0 +1,22 @@
+{
+  "backup_started": false,
+  "claim_before_sha256": "cda7db0ae0853d8b0ee3f01c315a132c3b84b0890aca6b8d295fd9d6165ce391",
+  "claim_status_before": {
+    "package_compile_status": "PENDING",
+    "storage_preflight_status": "PENDING",
+    "task_execution_status": "BLOCKED_ROOT_CAUSE"
+  },
+  "error": "REMOTE_PENDING_TRIGGER_279667",
+  "failed_step": "execute / standard / execute: read-only preview controller",
+  "owner_statement": "Почему не изменил фотографию? Измени немедленно.",
+  "precedent": "state/reconciliations/HOME-PHOTO-INSTALL-20261028.40720176915.authenticated-evidence.json",
+  "production_required": false,
+  "production_transaction_opened": false,
+  "production_transaction_prepared": false,
+  "recorded_at": "2026-10-30T08:56:31+00:00",
+  "root_cause": "package bug: transport polled modelgallery-<sha> while the bootstrap unpacks modelcard-<sha>, and w245_assets.py broke the bootstrap entry rule; fixed in PR #493 with tests; the preview trigger was deleted by the transport",
+  "run_id": "41025219459",
+  "site_or_crm_written": false,
+  "task_id": "MODEL-GALLERY-W245-PREFLIGHT-20261030",
+  "workflow_conclusion": "failure"
+}
