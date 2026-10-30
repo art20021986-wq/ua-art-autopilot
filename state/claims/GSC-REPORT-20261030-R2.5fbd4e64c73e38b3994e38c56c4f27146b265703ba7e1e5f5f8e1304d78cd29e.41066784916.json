@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/GSC-REPORT-20261030-R2.5fbd4e64c73e38b3994e38c56c4f27146b265703ba7e1e5f5f8e1304d78cd29e.json",
+  "autostart_ledger_sha256": "c2d0af24dc8b212171030545ccf572bf49b4a378f1e5aa912a277267d234cb84",
+  "autostart_source_commit": "65ad9e613a729708ff2703accdca7757c106e3d6",
+  "created_at": "2026-10-30T13:53:22Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-30T13:53:22Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "41066784916",
+    "task_id": "GSC-REPORT-20261030-R2",
+    "task_sha256": "5fbd4e64c73e38b3994e38c56c4f27146b265703ba7e1e5f5f8e1304d78cd29e"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-d9ce891d7afeb2d6-1b6981d0b5bc1f3c",
+  "receipt_path": "state/receipts/GSC-REPORT-20261030-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/GSC-REPORT-20261030-R2.json",
+  "request_sha256": "5fbd4e64c73e38b3994e38c56c4f27146b265703ba7e1e5f5f8e1304d78cd29e",
+  "resource_locks": [
+    "PATH_SCOPE:d9ce891d7afeb2d6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "5b322d6f93968d01042e3d57a1aaab4052143fa0",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-30T13:53:22Z"
+}
