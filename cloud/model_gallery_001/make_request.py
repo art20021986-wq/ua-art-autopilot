@@ -45,7 +45,7 @@ def request(kind, day):
     dependencies = [P + name for name in MODULES if P + name != controller]
     stem = {'20261026-R2': 'photos2_', '20261027': 'photos3_', '20261027-R2': 'photos4_',
             '20261030': 'photos5_'}.get(day, stem) if kind == 'fetch' else stem
-    stem = {'20261030-R2': 'w245r2_'}.get(day, stem) if kind == 'w245' else stem
+    stem = {'20261030-R2': 'w245r2_', '20261030-R3': 'w245r3_'}.get(day, stem) if kind == 'w245' else stem
     # The W245 search and its fetch cover one Japan card only.
     one_card = kind == 'w245' or stem == 'photos5_'
     evidence = [P + stem + '%s.json' % group for group in (('japan',) if one_card else GROUPS)]

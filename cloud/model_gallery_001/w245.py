@@ -7,6 +7,8 @@ and a file without a year is kept for the pick by eye (facelift look). Same lice
 angles.py; one JSON (w245_japan.json) with candidates per view.
 R2: the view searches found one interior photo and no boot; the interior round reads the Commons categories of
 that photo (and their subcategories) plus German interior and boot searches (w245r2_japan.json, one pool).
+R3: R2 kept nothing (interior photos there are not named so): every usable file of those categories goes to the
+pool for the pick by eye (w245r3_japan.json).
 """
 import os
 from pathlib import Path
@@ -16,18 +18,19 @@ import angles
 import collect
 from search import search
 
-TASKS = ('MODEL-GALLERY-W245-20261030', 'MODEL-GALLERY-W245-20261030-R2')
+TASKS = ('MODEL-GALLERY-W245-20261030', 'MODEL-GALLERY-W245-20261030-R2', 'MODEL-GALLERY-W245-20261030-R3')
 KEY = 'mercedes-benz-b-class'
 NAMES = ('Mercedes-Benz W245 facelift', 'Mercedes-Benz B-Klasse W245', 'Mercedes-Benz B 180 W245',
          'Mercedes-Benz B 200 W245', 'Mercedes-Benz W245')
 FIRST, LAST = 2008, 2011
 PER_VIEW = 20
-EVIDENCE = {TASKS[0]: collect.PACKAGE + '/w245_japan.json', TASKS[1]: collect.PACKAGE + '/w245r2_japan.json'}
+EVIDENCE = {TASKS[0]: collect.PACKAGE + '/w245_japan.json', TASKS[1]: collect.PACKAGE + '/w245r2_japan.json',
+            TASKS[2]: collect.PACKAGE + '/w245r3_japan.json'}
 SEED = 'File:2010 Mercedes-Benz B 200 (W 245 MY11) hatchback (2010-10-16).jpg'
 NAMED = re.compile(r'W ?245|B-Klasse|B-Class', re.I)
 INSIDE = ('Mercedes-Benz W245 Innenraum', 'Mercedes B-Klasse Innenraum', 'Mercedes-Benz W245 Kofferraum',
           'Mercedes B-Klasse Kofferraum', 'Mercedes-Benz W245 interior', 'Mercedes-Benz B-Class W245 interior')
-PER_POOL = 60
+PER_POOL = 120
 YEAR = re.compile(r'(?<!\d)(19\d\d|20\d\d)(?!\d)')
 
 
@@ -59,10 +62,10 @@ def candidates(fetch):
     return found
 
 
-def interior(fetch):
+def interior(fetch, every=False):
     """R2: files of the seed photo's W245 categories and their subcategories, then the German searches.
 
-    A file is kept when its name or its source (category or query) names an interior or boot view.
+    A file is kept when its name or its source (category or query) names an interior or boot view; R3: every file.
     """
     via = {}
     for category in (c for c in collect.categories(fetch, SEED) if NAMED.search(c)):
@@ -76,7 +79,7 @@ def interior(fetch):
     kept = []
     for title, source in via.items():
         item = items.get(title)
-        inside = collect.INTERIOR.search(title) or collect.INTERIOR.search(source)
+        inside = every or collect.INTERIOR.search(title) or collect.INTERIOR.search(source)
         if item and inside and collect.usable(item) and year_ok(item) and len(kept) < PER_POOL:
             thumb = collect.with_thumb(fetch, {**item, 'via': 'w245: ' + source})
             if thumb:
@@ -88,7 +91,7 @@ def execute(env, *, root=None, fetch=collect.get):
     root = collect.ROOT if root is None else Path(root)
     request_sha, run_id = collect.validate_identity(env, root, TASKS)
     task = env['UAART_TASK_ID']
-    found = candidates(fetch) if task == TASKS[0] else interior(fetch)
+    found = candidates(fetch) if task == TASKS[0] else interior(fetch, every=task == TASKS[2])
     collect.write(root, EVIDENCE[task], collect.dump({'task_id': task, 'run_id': run_id,
                                                       'http_methods': ['GET'], 'remote_write_count': 0,
                                                       'models': {KEY: {'candidates': found}}}))
