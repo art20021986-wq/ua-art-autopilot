@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/crm_clients_probe_001/20261030.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "aba92da1fea8118e09ded8ca3a89488fe74a6bfadd7d1183023fac5db1ec2395",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "41039864179",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "CRM-CLIENTS-PROBE-20261030",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}
