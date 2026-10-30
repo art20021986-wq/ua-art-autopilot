@@ -2,8 +2,8 @@
 
 Reads only. The card page generator and the modules that touch card HTML, the sitemap and the language
 script's loader are returned in full, sanitized (credential-like lines redacted, foreign URLs and long numbers
-masked); sample public pages (one card, its diagnostics page, catalogue, home) likewise, and the names and
-sizes of the top-level public pages. Each file's sha256 is kept for a later exact edit.
+masked). R1 read the card generator and sample pages; R2 reads the language script and every
+top-level module line that writes or rebuilds a card page. Each file's sha256 is kept for a later exact edit.
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -16,12 +16,12 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('stranica.py', 'master_card.py', 'konteyner.py', 'publikaciya.py', 'site_ge_inject.py', 'ua_seo_metadata.py',
-        'ua_seo_sitemap.py', 'ua_google_sitemap.py', 'ua_seo_index.py', 'ua_crm_public_sync.py',
-        'publish_transaction_guard.py', 'video/UA-0013.html', 'video/UA-0013-diag.html', 'video/katalog.html',
-        'video/index.html', 'video/sitemap.xml', 'video/robots.txt', 'robots.txt', 'sitemap.xml')
+# R2: every top-level module line that writes or rebuilds a card page (with a little context).
+WRITERS = re.compile(r'sobrat_kartochku|_zapisat_atomarno|_peresobrat|opublikovat\(|perestroit|rebuild|'
+                     r'UA-[0-9{%].*\.html|kod\s*\+\s*["\']\.html|\.html["\']\s*%|write_text\(|os\.replace\(')
+FULL = ('ua-site-languages.js', 'video/ua-site-languages.js')
 PARTIAL = {}
-MAX_SOURCE = 900 * 1024
+MAX_SOURCE = 900 * 1024  # R2: ua-site-languages.js is ~700 KB
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
 LONG_NUMBER = re.compile(r'(?<!\d)\+?\d[\d\s()-]{8,}\d(?!\d)')
@@ -62,8 +62,16 @@ def report(home=None):
         lines = raw.decode('utf-8', 'replace').splitlines()
         files[name] = {'sha256': hashlib.sha256(raw).hexdigest(),
                        'lines': [{'line': n + 1, 'text': sanitized_line(l)} for n, l in enumerate(lines) if pattern.search(l)][:200]}
-    pages = sorted((p.name, p.stat().st_size) for p in (HOME/'video').glob('*.html') if p.is_file() and not p.is_symlink())
-    return {'status': 'PASS', 'files': files, 'public_pages': pages}
+    writers = {}
+    for path in sorted(HOME.glob('*.py')):
+        if not path.is_file() or path.is_symlink() or path.stat().st_size > MAX_SOURCE:
+            continue
+        lines = path.read_text(encoding='utf-8', errors='replace').splitlines()
+        found = [{'line': n + 1, 'context': [sanitized_line(x) for x in lines[max(0, n - 2):n + 3]]}
+                 for n, line in enumerate(lines) if WRITERS.search(line)]
+        if found:
+            writers[path.name] = {'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'matches': found[:80]}
+    return {'status': 'PASS', 'files': files, 'writers': writers}
 
 
 def main():
