@@ -113,7 +113,7 @@ class API:
         for value in (bundle_sha, plan_sha, backup_sha):
             if value and not re.fullmatch(r'[0-9a-f]{64}', value):
                 raise TransportError('RUN_HASH')
-        receipt = INBOX+'/modelgallery-'+bundle_sha+'/runs/'+run_id+'/receipt-'+mode+'.json'
+        receipt = INBOX+'/modelcard-'+bundle_sha+'/runs/'+run_id+'/receipt-'+mode+'.json'
         prior = self.file(receipt, missing=True)
         if prior:
             return json.loads(prior)
@@ -150,6 +150,6 @@ def upload_package(api):
                 archive.writestr(entry, path.read_bytes())
     payload = output.getvalue()
     digest = sha(payload)
-    api.upload(INBOX+'/modelgallery-'+digest+'.zip', payload)
+    api.upload(INBOX+'/modelcard-'+digest+'.zip', payload)
     api.upload(INBOX+'/modelcard_bootstrap.py', (HERE/'deployment_bootstrap.py').read_bytes())
     return digest
