@@ -3,10 +3,12 @@
 
 Owner: 8 photos of different rare cars of 2000–2003, every one with the left-hand drive (important). Each candidate
 model gets a search by name and one by name + interior (the wheel side is seen best inside); a year in the file
-name must be 2000–2003, a file without a year is left to the eye. The wheel side is checked by eye on 640 px
+name must be 2000–2003, a file without a year is left to the eye. The wheel side is checked by eye on the
 thumbnails. Same licence filter and evidence form as w245.py.
 R2: one JSON was over the 16 MB evidence file limit; the models are split into 3 JSON files
 (classics2000_japan_<n>.json).
+R3: R2 still failed the export; thumbnails are 480 px and each file is cut to 15 MB (the last outside photo of
+the model with the most is dropped until it fits).
 """
 import os
 from pathlib import Path
@@ -15,11 +17,13 @@ import re
 import collect
 from search import search
 
-TASKS = ('MODEL-GALLERY-CLASSICS2000-20261030', 'MODEL-GALLERY-CLASSICS2000-20261030-R2')
+TASKS = ('MODEL-GALLERY-CLASSICS2000-20261030', 'MODEL-GALLERY-CLASSICS2000-20261030-R2',
+         'MODEL-GALLERY-CLASSICS2000-20261030-R3')
 PARTS = 3
 EVIDENCE = [collect.PACKAGE + '/classics2000_japan_%d.json' % n for n in range(1, PARTS + 1)]
 FIRST, LAST = 2000, 2003
-THUMB = 640
+THUMB = 480
+MAX_BYTES = 15 * 1024 * 1024
 PER_MODEL = {'outside': 8, 'interior': 4}
 # key -> names searched on Commons
 MODELS = {
@@ -72,15 +76,26 @@ def model(fetch, names):
     return {'candidates': found}
 
 
+def fit(value):
+    """The evidence bytes, with outside photos dropped from the fullest model until the file is under MAX_BYTES."""
+    data = collect.dump(value)
+    while len(data) > MAX_BYTES:
+        fullest = max(value['models'].values(), key=lambda m: len(m['candidates']['outside']))
+        if not fullest['candidates']['outside']:
+            raise collect.CollectError('EVIDENCE_TOO_LARGE')
+        fullest['candidates']['outside'].pop()
+        data = collect.dump(value)
+    return data
+
+
 def execute(env, *, root=None, fetch=collect.get):
     root = collect.ROOT if root is None else Path(root)
     request_sha, run_id = collect.validate_identity(env, root, TASKS)
     keys = list(MODELS)
     for n, path in enumerate(EVIDENCE):
         models = {key: model(fetch, MODELS[key]) for key in keys[n::PARTS]}
-        collect.write(root, path, collect.dump({'task_id': env['UAART_TASK_ID'], 'run_id': run_id,
-                                                'http_methods': ['GET'], 'remote_write_count': 0,
-                                                'models': models}))
+        collect.write(root, path, fit({'task_id': env['UAART_TASK_ID'], 'run_id': run_id,
+                                       'http_methods': ['GET'], 'remote_write_count': 0, 'models': models}))
     receipt = {'task_id': env['UAART_TASK_ID'], 'status': 'FINISHED', 'task_class': 'STANDARD',
                'target_environment': 'shadow', 'live_source_environment': 'wikimedia_commons', 'tests': 'PASS',
                'tests_scope': 'READ_ONLY_PROBE', 'unexpected_changes': 0, 'rollback_ready': True,

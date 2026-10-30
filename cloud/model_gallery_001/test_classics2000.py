@@ -36,10 +36,22 @@ class Classics2000Tests(unittest.TestCase):
         self.assertEqual(titles['interior'], ['File:BMW Z8 2001 interior.jpg'])
         self.assertEqual(titles['outside'], ['File:BMW Z8 (2002) front.jpg', 'File:BMW Z8 front.jpg'])
 
-    def test_thumbs_are_640(self):
+    def test_thumbs_are_480(self):
         urls = []
         classics2000.model(lambda url: urls.append(url) or fake(url), ('BMW Z8',))
-        self.assertTrue(any('iiurlwidth=640' in u for u in urls))
+        self.assertTrue(any('iiurlwidth=480' in u for u in urls))
+
+    def test_fit_drops_outside_photos(self):
+        old, classics2000.MAX_BYTES = classics2000.MAX_BYTES, 2000
+        try:
+            photo = {'thumb_b64': 'x' * 300}
+            value = {'models': {'a': {'candidates': {'outside': [photo] * 5, 'interior': [photo]}},
+                                'b': {'candidates': {'outside': [photo] * 2, 'interior': []}}}}
+            data = classics2000.fit(value)
+            self.assertLessEqual(len(data), 2000)
+            self.assertEqual(len(value['models']['a']['candidates']['interior']), 1)
+        finally:
+            classics2000.MAX_BYTES = old
 
     def test_identity_is_checked(self):
         with self.assertRaises(c.CollectError):
