@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "186ffb67320dfb78df8ab55342927f3fd56ee3bfb5ec874b5e7beff9d0d65f82",
   "autostart_source_commit": "05773d357a242acad1e0a5ae53a9717d46babcdf",
   "created_at": "2026-10-30T13:19:46Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "c40a70503b6e396c3b5e735259732eec9204bcde792099d14eb0290f5c87c8ac",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-30T13:19:46Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-10-30T13:21:03Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "41062129466",
     "task_id": "CATALOG-LABEL-INSTALL-20261030",
     "task_sha256": "5b6e86c5500cadc426afcc23bfa22d2d3e74d39602abd1e7bbf1d9fd5171f990"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 52.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 85.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-41062129466-5b6e86c5500cadc4",
+  "production_transaction_path": "state/transactions/CATALOG-LABEL-INSTALL-20261030.5b6e86c5500cadc426afcc23bfa22d2d3e74d39602abd1e7bbf1d9fd5171f990.41062129466.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/CATALOG-LABEL-INSTALL-20261030.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "ed6aa0ad640c5477b8b7db83f0629cc92c03b309",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 318.328,
+    "allowed": true,
+    "evidence_path": "state/storage/CATALOG-LABEL-INSTALL-20261030.json",
+    "evidence_sha256": "84969e697cd00947a58c367d6564e937e8dce91d2af634fc2859986c9ceb65f8",
+    "free_bytes": 25672551936,
+    "heavy": true,
+    "measured_at": "2026-10-30T13:15:42.575058+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 26.64985161142857
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-30T13:19:46Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "fbce37bae009fa508b48c454b9013420c9e4d6a1f8c2982219642a824e079f8d",
+    "file_sha256": {
+      "cloud/catalog_label_001/candidate_builder.py": "b8f930ea580c631b64fb91c4bf2a12e2dabfeaa33425b541c4b5bf779443c0cb",
+      "cloud/catalog_label_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/catalog_label_001/deployment_bootstrap.py": "35614f102bf32047e6d133b7000147df00940ebe9e13d99b228671b32d9bc5a0",
+      "cloud/catalog_label_001/deployment_remote.py": "ae4ca3ba98cf90e8fe9e0fdf96c07a4d4a0406311be45c038e1a08a29cefd43b",
+      "cloud/catalog_label_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/catalog_label_001/deployment_transport.py": "d35f561ddb584c502336614d7909e48d89ae1326681011ab6de48a39d8eb6828",
+      "cloud/catalog_label_001/label.py": "52c9d1c19e8b832a037b2b24a09c4512639ef42d4f79c2f69e05f052c2b21684",
+      "cloud/catalog_label_001/make_release.py": "f88683e4e9b291f90dd62cdb94ea02483d26f4b7c128266eb550aac74138e4c9",
+      "cloud/catalog_label_001/release_constants.py": "f020131ad6d9b6933ba0b58b6ca10ec3c6b6a52d47f98cfaabc99ce35cfa1ae5",
+      "cloud/catalog_label_001/test_deployment.py": "b1e01ff32307f8bea5902e10bb8cdb63d8c032073e04adb83b0fa856cf2508fb",
+      "cloud/catalog_label_001/test_release.py": "d2115025ea89e81f1754b2ce5f473e8c1d6fd546a97d66b085925a5bf46f343b"
+    }
+  },
+  "updated_at": "2026-10-30T13:21:03Z"
 }
