@@ -7,4 +7,5 @@
 - Данные в order-strings.json: price_<model-key>, запасной price_<country>; order.js показывает строку, когда текст есть;
   вид — отдельный model-price.css. Другие страны без изменений.
 
-Статус: макет показан владельцу (cloud/korea_japan_price_001/preview), ждём «да». На сайте ничего не менялось.
+Владелец: «Да» (2026-10-30). Пакет cloud/korea_japan_price_001 (edit_price.py — тексты и правки, price_assets.py — стиль;
+фикстуры = живые файлы после ADS-READY, хеши сверены). Шаги: preview → install (make_release.py).
