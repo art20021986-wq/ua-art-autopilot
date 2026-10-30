@@ -13,7 +13,7 @@ import re
 
 from transport import API, upload_package
 
-TASK = re.compile(r'GSC-REPORT-(20[0-9]{6})')
+TASK = re.compile(r'GSC-REPORT-(20[0-9]{6}(?:-R[0-9])?)')  # -R<n>: a retry of the same day
 PACKAGE = 'cloud/gsc_report'
 ROOT = Path(__file__).resolve().parents[2]
 SECRET = re.compile(r'-----BEGIN|private_key"')
