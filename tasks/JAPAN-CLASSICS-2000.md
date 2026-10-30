@@ -23,3 +23,4 @@
 - FETCH-20261030-R3 FINISHED: 8 фото 960 px; руль слева проверен на каждом снимке в большом размере. Пакет cloud/model_gallery_classics_001 (копия механизма W245): новая запись classics-1980-1990 в model-gallery.json (8 фото WebP ~380 КБ, пустая строка поколения), версия order.js 20261030.3 на podbor.html. Превью MODEL-GALLERY-CLASSICS-PREFLIGHT-20261030.
 - PREFLIGHT (run 41041288937) PASS: model-gallery.json ae3c4998→8c86f0b9, podbor.html c85e5b76→a192975d, 8 новых фото. Владелец «Ставь» → INSTALL-20261030.
 - INSTALL (run 41042043579) FINISHED: production PASS, live_verify PASS, бэкап PASS, CRM и защищённые файлы не менялись. Осталось: подпись «Раритетное авто» (серверный каталог) — после ADS-READY другой сессии.
+- Подпись: только чтение сервера CATALOG-LABEL-PROBE-20261030 (путь каталога из настроек, строки карточки, другие файлы со старой подписью) — после ADS-READY-INSTALL (FINISHED).
