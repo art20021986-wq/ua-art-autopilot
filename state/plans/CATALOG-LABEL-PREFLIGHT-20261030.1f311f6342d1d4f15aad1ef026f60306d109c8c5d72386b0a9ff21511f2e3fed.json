@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CATALOG-LABEL-PREFLIGHT-20261030.1f311f6342d1d4f15aad1ef026f60306d109c8c5d72386b0a9ff21511f2e3fed.json",
+  "autostart_ledger_sha256": "e379a0ffcb40822062e1c9f2371f9eff66d16702ebc098b912f9357f5f0734a0",
+  "autostart_source_commit": "14543b46fbfbf5d34c5ea4704741d300a4908dd2",
+  "created_at": "2026-10-30T13:12:37Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41061145710",
+    "task_id": "CATALOG-LABEL-PREFLIGHT-20261030",
+    "task_sha256": "1f311f6342d1d4f15aad1ef026f60306d109c8c5d72386b0a9ff21511f2e3fed"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "request_path": "tasks/requests/CATALOG-LABEL-PREFLIGHT-20261030.json",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
