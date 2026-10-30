@@ -12,7 +12,7 @@ import re
 PAGE = 'video/podbor.html'
 SCRIPT = 'video/order/order.js'
 STRINGS = 'video/order/order-strings.json'
-VERSION = '20261030.3'  # order.js; distinct from JAPAN-NOTE (20261030.1) and MODEL-GALLERY-W245 (20261030.2)
+VERSION = '20261030.5'  # order.js; distinct from JAPAN-NOTE (.1), MODEL-GALLERY-W245 (.2) and MODEL-GALLERY-CLASSICS (.3)
 ASSET_VERSION = '20261030.1'  # quick-lead.js / quick-lead.css / attribution.js, as ua_seo_quick_form.ASSET_VERSION
 PRIVACY = '/video/privacy.html'
 
