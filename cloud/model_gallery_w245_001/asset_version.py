@@ -5,7 +5,7 @@ gallery data instead of a cached copy. order.js itself and the other page files 
 """
 import re
 
-VERSION = '20261030.1'
+VERSION = '20261030.2'
 PAGE = 'video/podbor.html'
 SCRIPT_TAG = re.compile(r'order/order\.js\?v=[0-9.]+')
 CHECK_PAGE = 'order/order.js?v=' + VERSION
