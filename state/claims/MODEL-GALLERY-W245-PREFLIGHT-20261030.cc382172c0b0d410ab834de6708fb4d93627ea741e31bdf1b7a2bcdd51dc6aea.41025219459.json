@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "da669588eb61caae"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-10-30T08:56:31+00:00",
+      "class": "ABORTED_BEFORE_PRODUCTION",
+      "evidence_path": "state/reconciliations/MODEL-GALLERY-W245-PREFLIGHT-20261030.41025219459.authenticated-evidence.json",
+      "message": "Read-only preview failed on a package path bug (fixed); no production transaction, backup or site write. Owner-authorized; the preview is retried as MODEL-GALLERY-W245-PREFLIGHT-20261030-R3.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-10-30T08:16:43Z",
@@ -42,6 +51,6 @@
   "source_commit": "ebe6c88c56251c76de6081e119f670ebf66783c5",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-10-30T08:31:01Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-10-30T08:56:31+00:00"
 }
