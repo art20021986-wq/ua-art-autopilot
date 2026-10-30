@@ -4,7 +4,8 @@ Owner request 2026-10-30 («Да»): Japan models are shown with the right-hand 
 left-hand drive by colleagues in Georgia; the classics are bought with the left-hand drive only.
 The note text is data in order-strings.json, keyed note_<country>_<kind>: order.js shows it under a card only
 when such a key exists, so other countries stay as they are. The look is the new model-note.css.
-The order.js version on the page is raised so browsers load the new module and strings.
+The order.js version on the page is raised so browsers load the new module and strings. The fragments do not
+depend on the gallery asset versions, so a later MODEL-GALLERY release and this one apply in either order.
 Each original fragment must occur exactly once and an applied fragment is refused.
 """
 import re
@@ -36,8 +37,8 @@ def _strings(lang):
 
 EDITS = {
     PAGE: (
-        ('<link rel="stylesheet" href="order/gallery.css?v=20261027.1">',
-         '<link rel="stylesheet" href="order/gallery.css?v=20261027.1">'
+        ('<link rel="stylesheet" href="order/order.css?v=20261025.2">',
+         '<link rel="stylesheet" href="order/order.css?v=20261025.2">'
          '<link rel="stylesheet" href="order/model-note.css?v=%s">' % VERSION),
     ),
     SCRIPT: (
