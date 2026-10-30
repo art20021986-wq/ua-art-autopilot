@@ -1,0 +1,20 @@
+{
+ "evidence_path": [
+  "cloud/model_gallery_001/classics2000_japan_1.json",
+  "cloud/model_gallery_001/classics2000_japan_2.json",
+  "cloud/model_gallery_001/classics2000_japan_3.json"
+ ],
+ "live_source_environment": "wikimedia_commons",
+ "production_required": false,
+ "request_sha256": "e27e30874320a084d4045a21eae92fc650e9971b02485f1abbd78409c741b5da",
+ "rollback_ready": true,
+ "rollback_ready_scope": "NO_REMOTE_WRITES",
+ "run_id": "41034411307",
+ "status": "FINISHED",
+ "target_environment": "shadow",
+ "task_class": "STANDARD",
+ "task_id": "MODEL-GALLERY-CLASSICS2000-20261030-R3",
+ "tests": "PASS",
+ "tests_scope": "READ_ONLY_PROBE",
+ "unexpected_changes": 0
+}
