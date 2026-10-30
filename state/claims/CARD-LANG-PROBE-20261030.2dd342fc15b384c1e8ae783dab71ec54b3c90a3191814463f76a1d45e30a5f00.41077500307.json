@@ -7,21 +7,23 @@
   "created_at": "2026-10-30T15:07:15Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-30T15:07:15Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-30T15:12:31Z",
+  "heartbeat_at": "2026-10-30T15:12:31Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41077500307",
     "task_id": "CARD-LANG-PROBE-20261030",
     "task_sha256": "2dd342fc15b384c1e8ae783dab71ec54b3c90a3191814463f76a1d45e30a5f00"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-c7c13a923e184dd8-6f1a5859a605fbbb",
   "receipt_path": "state/receipts/CARD-LANG-PROBE-20261030.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "416ed64f5691ed1ed5f749685865cc0c31b3252b783e9cdd730c7c4833ce448c",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CARD-LANG-PROBE-20261030.json",
   "request_sha256": "2dd342fc15b384c1e8ae783dab71ec54b3c90a3191814463f76a1d45e30a5f00",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "7deca19fba146f75d9c76904032cf85b60b25b9e",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 90580623360,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.51
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-30T15:07:15Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "f8afd6bcdc2f521b7d24c4d175648734a55e809d0257910e1058481eba3e0491",
+    "file_sha256": {
+      "cloud/card_lang_probe_001/bootstrap.py": "fd01531dbd44587bcbb5dd949cfc87961500e0cdc95dd247110e303487e14053",
+      "cloud/card_lang_probe_001/make_request.py": "130970ddcabc975af0e7b327328c1af0743882fd4e37ed9a958dad4a9378ed65",
+      "cloud/card_lang_probe_001/source_remote.py": "7aaac8c9945019a6b9ce511d881c4d399ae75e0d82d068d063b6e746bc2149a6",
+      "cloud/card_lang_probe_001/test_card_probe.py": "7047bcc85c94a2f8db4a9b58870be91aedc170db4c9815643613d8aaacaefc8a",
+      "cloud/card_lang_probe_001/transport.py": "53e37914987cf1ba3dd9568f2392a2dc6c703a9f42d925ff828a44df5f46ef22"
+    }
+  },
+  "updated_at": "2026-10-30T15:12:31Z"
 }
