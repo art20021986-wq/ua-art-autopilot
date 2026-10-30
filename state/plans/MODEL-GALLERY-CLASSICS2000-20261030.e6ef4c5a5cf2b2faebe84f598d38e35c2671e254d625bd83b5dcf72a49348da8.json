@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/MODEL-GALLERY-CLASSICS2000-20261030.e6ef4c5a5cf2b2faebe84f598d38e35c2671e254d625bd83b5dcf72a49348da8.json",
+  "autostart_ledger_sha256": "3e236cd2587f3da298105d8ac8a65d8432987902f6ad875889ee8b3918676e36",
+  "autostart_source_commit": "6747fd88cec754e70bbfb24d9542cc862bbd6ec0",
+  "created_at": "2026-10-30T09:23:10Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41032875749",
+    "task_id": "MODEL-GALLERY-CLASSICS2000-20261030",
+    "task_sha256": "e6ef4c5a5cf2b2faebe84f598d38e35c2671e254d625bd83b5dcf72a49348da8"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-0c261eb8270857b8-15efcf845ea3231b",
+  "request_path": "tasks/requests/MODEL-GALLERY-CLASSICS2000-20261030.json",
+  "resource_locks": [
+    "READ_ONLY:0c261eb8270857b8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
