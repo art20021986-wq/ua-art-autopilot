@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-LANG-INSTALL-20261030.222844b3808ecff0e418533737f0f1cebdf167f9e500b8234ee96b175c4e723a.json",
+  "autostart_ledger_sha256": "eaeff28fe799ac97fc74f995b74569dbd3cf82d155068d22caf24aa0397cdf07",
+  "autostart_source_commit": "a43e2ac0861443eac8ee03941bd9ead2e24286ff",
+  "created_at": "2026-10-30T23:24:03Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41144109820",
+    "task_id": "CARD-LANG-INSTALL-20261030",
+    "task_sha256": "222844b3808ecff0e418533737f0f1cebdf167f9e500b8234ee96b175c4e723a"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-81a7ecd574c1b38a-402dfef4acb45771",
+  "request_path": "tasks/requests/CARD-LANG-INSTALL-20261030.json",
+  "resource_locks": [
+    "PATH_SCOPE:81a7ecd574c1b38a"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-LANG-INSTALL-20261030.222844b3808ecff0e418533737f0f1cebdf167f9e500b8234ee96b175c4e723a.json",
+  "autostart_ledger_sha256": "eaeff28fe799ac97fc74f995b74569dbd3cf82d155068d22caf24aa0397cdf07",
+  "autostart_source_commit": "a43e2ac0861443eac8ee03941bd9ead2e24286ff",
+  "created_at": "2026-10-30T23:24:03Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-30T23:24:03Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "41144109820",
+    "task_id": "CARD-LANG-INSTALL-20261030",
+    "task_sha256": "222844b3808ecff0e418533737f0f1cebdf167f9e500b8234ee96b175c4e723a"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-81a7ecd574c1b38a-402dfef4acb45771",
+  "receipt_path": "state/receipts/CARD-LANG-INSTALL-20261030.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CARD-LANG-INSTALL-20261030.json",
+  "request_sha256": "222844b3808ecff0e418533737f0f1cebdf167f9e500b8234ee96b175c4e723a",
+  "resource_locks": [
+    "PATH_SCOPE:81a7ecd574c1b38a"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "fe7ea9c24199c8cd9a90a2b42c029627d969b3fe",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-30T23:24:03Z"
+}
