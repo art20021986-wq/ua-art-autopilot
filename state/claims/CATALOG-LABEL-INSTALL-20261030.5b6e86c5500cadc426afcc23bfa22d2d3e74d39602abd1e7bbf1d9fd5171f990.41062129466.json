@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "c40a70503b6e396c3b5e735259732eec9204bcde792099d14eb0290f5c87c8ac",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-30T13:21:03Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-30T13:26:04Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41062129466",
     "task_id": "CATALOG-LABEL-INSTALL-20261030",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41062129466-5b6e86c5500cadc4",
   "production_transaction_path": "state/transactions/CATALOG-LABEL-INSTALL-20261030.5b6e86c5500cadc426afcc23bfa22d2d3e74d39602abd1e7bbf1d9fd5171f990.41062129466.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/CATALOG-LABEL-INSTALL-20261030.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/catalog_label_001/test_release.py": "d2115025ea89e81f1754b2ce5f473e8c1d6fd546a97d66b085925a5bf46f343b"
     }
   },
-  "updated_at": "2026-10-30T13:21:03Z"
+  "updated_at": "2026-10-30T13:26:04Z"
 }
