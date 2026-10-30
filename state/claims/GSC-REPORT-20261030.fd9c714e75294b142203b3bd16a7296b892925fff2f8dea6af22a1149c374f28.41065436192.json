@@ -7,21 +7,23 @@
   "created_at": "2026-10-30T13:44:18Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-30T13:44:18Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-30T13:50:28Z",
+  "heartbeat_at": "2026-10-30T13:50:28Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41065436192",
     "task_id": "GSC-REPORT-20261030",
     "task_sha256": "fd9c714e75294b142203b3bd16a7296b892925fff2f8dea6af22a1149c374f28"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-d9ce891d7afeb2d6-1b6981d0b5bc1f3c",
   "receipt_path": "state/receipts/GSC-REPORT-20261030.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "df4ad40b33892fd44d29ec1196d038eca00d23638cb0595797784e7f03d4fccf",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/GSC-REPORT-20261030.json",
   "request_sha256": "fd9c714e75294b142203b3bd16a7296b892925fff2f8dea6af22a1149c374f28",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "4ae7e9e2f565ab1ef49aef3fdc37222ee80bca98",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 90583322624,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.508
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-30T13:44:18Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "fc0fb72db25e2003fa19c6282deb7f5e53f1b5e2eda5277dbb2feab13c0894e4",
+    "file_sha256": {
+      "cloud/gsc_report/bootstrap.py": "b7a3e3da50f3f792546bc95a87a88dd36fa6c3a07329a6d485735ad0de9b95f4",
+      "cloud/gsc_report/gsc_remote.py": "ed12941e88cab8d1eb60260942cff333a7839f00af7f7905e34161ff4177ba91",
+      "cloud/gsc_report/make_request.py": "0bc821bd017dde5f4909289456aae2484effe09bd0b01ab336b451e5405bf0ee",
+      "cloud/gsc_report/test_gsc_report.py": "e6e3a2022231063e3d923e2c8c1985078f0ba7fcdeba9be00304d4d0cc9f220d",
+      "cloud/gsc_report/transport.py": "f63fc4b96f92beceb6c15bce09d80c472d799299f23e45113f8778fdc2baf6aa"
+    }
+  },
+  "updated_at": "2026-10-30T13:50:28Z"
 }

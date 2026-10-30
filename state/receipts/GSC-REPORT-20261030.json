@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/gsc_report/20261030.json",
+  "gsc_status": "FAIL",
+  "live_source_environment": "production",
+  "production_required": false,
+  "request_sha256": "fd9c714e75294b142203b3bd16a7296b892925fff2f8dea6af22a1149c374f28",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "41065436192",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "GSC-REPORT-20261030",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}
