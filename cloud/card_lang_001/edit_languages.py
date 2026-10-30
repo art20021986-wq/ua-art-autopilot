@@ -1,20 +1,26 @@
 """Site language script (video/ua-site-languages.js), CARD-LANG-001.
 
-1. Three gallery phrases of the car card that had no translation: «Повторить», «На весь экран», «Вперёд»
-   (uk, ka; and back to ru), so the Ukrainian card version is complete.
+1. The card phrases that had no Ukrainian (card_texts.UK: gallery buttons, a delivery stage, colours, three CRM
+   descriptions), and the gallery buttons in Georgian and back to Russian, so the Ukrainian card versions are complete.
 2. A page with language versions (both hreflang uk and ru links, the card versions in /video/ua/ and
    /video/ru/) opens in its own language, and UA/RU go to the other version's address; GE stays on the page.
    Pages without such links behave exactly as before.
 Each original fragment must occur exactly once and an applied fragment is refused.
 """
+import json
+
+import card_texts
+
 NAME = 'video/ua-site-languages.js'
-WORDS = {'uk': {'Повторить': 'Повторити', 'На весь экран': 'На весь екран', 'Вперёд': 'Вперед'},
+# Gallery buttons back to Russian, and in Georgian; the Ukrainian additions are card_texts.UK.
+WORDS = {'uk': card_texts.UK,
          'ka': {'Повторить': 'გამეორება', 'На весь экран': 'სრულ ეკრანზე', 'Вперёд': 'წინ'},
          'ru': {'Повторити': 'Повторить', 'На весь екран': 'На весь экран', 'Вперед': 'Вперёд'}}
 
 
 def _entries(lang):
-    return ''.join('"%s":"%s",' % item for item in WORDS[lang].items())
+    return ''.join('%s:%s,' % (json.dumps(k, ensure_ascii=False), json.dumps(v, ensure_ascii=False))
+                   for k, v in WORDS[lang].items())
 
 
 EDITS = tuple(('"%s":{' % lang, '"%s":{%s' % (lang, _entries(lang))) for lang in ('ru', 'uk', 'ka')) + (
