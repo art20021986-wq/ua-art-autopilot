@@ -7,6 +7,8 @@ import urllib.parse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import classics2000  # noqa: E402
+import fetch  # noqa: E402
+import picks_classics2000  # noqa: E402
 import collect as c  # noqa: E402
 
 c.PAUSE = 0
@@ -62,6 +64,15 @@ class Classics2000Tests(unittest.TestCase):
         parts = [keys[n::classics2000.PARTS] for n in range(classics2000.PARTS)]
         self.assertEqual(sorted(k for part in parts for k in part), sorted(keys))
         self.assertEqual(len(classics2000.EVIDENCE), classics2000.PARTS)
+
+    def test_picks_fetch_to_one_japan_file(self):
+        task = 'MODEL-GALLERY-FETCH-20261030-R3'
+        self.assertIs(fetch.TASK_PICKS[task], picks_classics2000.PICKS)
+        self.assertEqual(fetch.evidence_path('japan', task), c.PACKAGE + '/photos7_japan.json')
+        titles = picks_classics2000.PICKS['classics-1980-1990']['gallery']
+        self.assertEqual(c.MODELS['classics-1980-1990'][0], 'japan')
+        self.assertEqual(len(titles), 8)
+        self.assertEqual(len(set(titles)), 8)
 
 
 if __name__ == '__main__':

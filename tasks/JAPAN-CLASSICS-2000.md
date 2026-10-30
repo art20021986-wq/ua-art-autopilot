@@ -19,3 +19,4 @@
 - Отбор глазами: picks_classics2000.py — BMW Z8, Mercedes G 500 2003, Toyota Land Cruiser 100, Ferrari 360,
   Corvette C5, Porsche 911 Turbo 996, Porsche Boxster 986, Audi TT 2000; превью preview_classics2000.jpg.
   Ждём «да» владельца, затем скачивание (FETCH) и пакет установки. На сайт ничего не записано.
+- Владелец «Ставь» (2026-10-30). Шаг: FETCH-20261030-R3 (8 фото 960 px, лицензия ещё раз) → photos7_japan.json. Подпись карточки живёт в серверном каталоге (ua_order, защищённый файл) — отдельный шаг после чтения.
