@@ -7,21 +7,23 @@
   "created_at": "2026-10-30T15:34:16Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-30T15:34:16Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-30T15:37:37Z",
+  "heartbeat_at": "2026-10-30T15:37:37Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41081707109",
     "task_id": "CARD-LANG-PREFLIGHT-20261030",
     "task_sha256": "7628831163c5136e289a878472f61e632e629dd0ce0c39352f025238a5c5ed3c"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-cabe55d53fcba822-dbed90d0c67bfe3e",
   "receipt_path": "state/receipts/CARD-LANG-PREFLIGHT-20261030.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "7a816de2c0c7cde5369feb2a02d9db18d5555e5dbb0f77d5226d0eab0ae940ea",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CARD-LANG-PREFLIGHT-20261030.json",
   "request_sha256": "7628831163c5136e289a878472f61e632e629dd0ce0c39352f025238a5c5ed3c",
   "resource_locks": [
@@ -29,8 +31,39 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "798ac18858c181158687b91b436d9cac15909078",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 90576388096,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.513
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-30T15:34:16Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "7943471f3b6d03bf84a3a393027a9ae1e330ce1e39d1d6535f2e484f48b4b030",
+    "file_sha256": {
+      "cloud/card_lang_001/candidate_builder.py": "2082e2015c85140ac56db490c6534faa0bf283e27f5e0aa99abd601c3a49631b",
+      "cloud/card_lang_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/card_lang_001/deployment_bootstrap.py": "072d81499d145e6436c61a6d22999c3014c219a774741fcc783cb58953ed09c0",
+      "cloud/card_lang_001/deployment_remote.py": "f65e70080270d93a0775388b514bc9affdc0c2b1aca8082e23e9bc8d5b588165",
+      "cloud/card_lang_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/card_lang_001/deployment_transport.py": "03d7ed6f0c2bdcec4bd79495f4f4933b6fcaecea64975e51b73dafc62e920105",
+      "cloud/card_lang_001/edit_cars_ui.py": "58123bba1b8e590bfb946b6d7e257b619fbe653f4755f681308620b372f10505",
+      "cloud/card_lang_001/edit_languages.py": "2fedd57309f9f2bc1651565f6e7d1139ad4436d1704311c17564bb38eeb2e04a",
+      "cloud/card_lang_001/edit_metadata.py": "db100e1b8b701a54fce08cbec221e1116d919eda7c40b1d42794a2bbc26872b3",
+      "cloud/card_lang_001/edit_sitemap.py": "49f2a960fa3b267e4051addaa43ab85ce6cb8196258b69758a57f82da0ad5988",
+      "cloud/card_lang_001/make_release.py": "c46a5d5e4b070842b73f8a57478a875ce109af2e5508f56ac683eb05fed56231",
+      "cloud/card_lang_001/release_constants.py": "ec2d70f61ceb5c9c1929f8fc692460c29e3f4f0dec398a712865d76a85a08207",
+      "cloud/card_lang_001/test_card_lang.py": "b5dd2ca480aeae9acc4e2258a69ea69a05291be5f1f3680f9888d0463cbdf08a",
+      "cloud/card_lang_001/test_deployment.py": "045fabd3d58f92508b02b209ba8d8750a1136f0966167226c754677b56491892",
+      "cloud/card_lang_001/test_release.py": "3790561d44545c0294b54a86d028442cb7827b1bc11ae6d4f2a1257235272dc7",
+      "cloud/card_lang_001/ua_card_lang.py": "dd2deca5d8004b1e3f40e49a2656c440b54d2d159a0affb4770f9f634548921b",
+      "cloud/card_lang_001/ua_card_lang_job.py": "3d93e9e5fe1ac77db698ad8e78260adf4a19f35d319f6a10184c0d5e1378dea8"
+    }
+  },
+  "updated_at": "2026-10-30T15:37:37Z"
 }
