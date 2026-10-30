@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-LANG-PROBE-20261030-R2.6944ac8b5731960ea4ecef6efa8f9201d1f13b2edde7039d0a1dbb22cbcbf74c.json",
+  "autostart_ledger_sha256": "2a6647f36daeec011983f5bf7c2ecaf0a0fc54f3c668d7e5edd97223ac3b2989",
+  "autostart_source_commit": "3d6e5b69e1b929ea47e3075ac7dd7ee0003059f7",
+  "created_at": "2026-10-30T15:17:55Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-30T15:17:55Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "41079171295",
+    "task_id": "CARD-LANG-PROBE-20261030-R2",
+    "task_sha256": "6944ac8b5731960ea4ecef6efa8f9201d1f13b2edde7039d0a1dbb22cbcbf74c"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-c7c13a923e184dd8-6f1a5859a605fbbb",
+  "receipt_path": "state/receipts/CARD-LANG-PROBE-20261030-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CARD-LANG-PROBE-20261030-R2.json",
+  "request_sha256": "6944ac8b5731960ea4ecef6efa8f9201d1f13b2edde7039d0a1dbb22cbcbf74c",
+  "resource_locks": [
+    "PATH_SCOPE:c7c13a923e184dd8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "8df5b94de00c7581d71e75f4d44c33d3b3065e61",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-30T15:17:55Z"
+}
