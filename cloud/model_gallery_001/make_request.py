@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Write tasks/requests/MODEL-GALLERY-<KIND>-<suffix>.json and its launch marker (run from the repository root).
 
-Usage: python3 cloud/model_gallery_001/make_request.py request collect|search|years|angles|w245|fetch 20261026   # after merge:
-       python3 cloud/model_gallery_001/make_request.py launch collect|search|years|angles|w245|fetch 20261026
+Usage: python3 cloud/model_gallery_001/make_request.py request collect|search|years|angles|w245|classics2000|fetch 20261026   # after merge:
+       python3 cloud/model_gallery_001/make_request.py launch collect|search|years|angles|w245|classics2000|fetch 20261026
 """
 import datetime
 import hashlib
@@ -24,12 +24,16 @@ KINDS = {
     'w245': ('MODEL-GALLERY-W245-', 'w245.py', 'w245_',
              'file searches per owner view for the Japan Mercedes-Benz B-Class card as a W245 of 2010-2011 '
              '(facelift 2008-2011 years only)'),
+    'classics2000': ('MODEL-GALLERY-CLASSICS2000-', 'classics2000.py', 'classics2000_',
+                     'file searches for the Japan rare cars of 2000-2003 (left-hand drive picked by eye)'),
     'fetch': ('MODEL-GALLERY-FETCH-', 'fetch.py', 'photos_',
               'download 960 px wide of the photos picked by eye (picks.py), licence checked again'),
 }
-MODULES = ['collect.py', 'search.py', 'years.py', 'angles.py', 'w245.py', 'fetch.py', 'make_request.py', 'picks.py',
+MODULES = ['collect.py', 'search.py', 'years.py', 'angles.py', 'w245.py', 'classics2000.py',
+           'fetch.py', 'make_request.py', 'picks.py',
            'picks_w245.py']
 TESTS = [P + 'test_collect.py', P + 'test_search.py', P + 'test_years.py', P + 'test_angles.py', P + 'test_w245.py',
+         P + 'test_classics2000.py',
          P + 'test_fetch.py']
 GROUPS = ('canada', 'china', 'europe', 'georgia', 'japan', 'korea', 'usa')
 
@@ -47,7 +51,7 @@ def request(kind, day):
             '20261030': 'photos5_', '20261030-R2': 'photos6_'}.get(day, stem) if kind == 'fetch' else stem
     stem = {'20261030-R2': 'w245r2_', '20261030-R3': 'w245r3_'}.get(day, stem) if kind == 'w245' else stem
     # The W245 search and its fetch cover one Japan card only.
-    one_card = kind == 'w245' or stem in ('photos5_', 'photos6_')
+    one_card = kind in ('w245', 'classics2000') or stem in ('photos5_', 'photos6_')
     evidence = [P + stem + '%s.json' % group for group in (('japan',) if one_card else GROUPS)]
     value = {
         'ai_requested': False, 'changed_paths': evidence, 'complexity': 1, 'control_plane_version': 'TASK107-R2',
