@@ -60,22 +60,21 @@ class TransportTests(unittest.TestCase):
 
 
 class RemoteTests(unittest.TestCase):
-    def test_returns_sources_sanitized_and_page_list(self):
+    def test_returns_language_script_and_card_writers(self):
         with tempfile.TemporaryDirectory() as temp:
             home = Path(temp)
-            (home / 'stranica.py').write_text("TOKEN = 'abc'\ndef page():\n    phone = '+380 99 222 20 02'\n"
-                                              "x = 'https://evil.example/p'\n")
             (home / 'video').mkdir()
-            (home / 'video' / 'UA-0013.html').write_text("<html lang='uk'>")
+            (home / 'video' / 'ua-site-languages.js').write_text("var d = 1;")
+            (home / 'publikaciya.py').write_text("TOKEN = 'abc'\ndef _zapisat_atomarno(put, tekst):\n    os.replace(a, b)\n"
+                                                 "x = 1\n")
+            (home / 'other.py').write_text("print(1)\n")
             value = remote.report(home)
-        page = value['files']['stranica.py']['source']
-        self.assertIn('[REDACTED]', page)
-        self.assertNotIn('abc', page)
-        self.assertIn('[URL]', page)
-        self.assertIn('[N]', page)
-        self.assertEqual(value['files']['video/UA-0013.html']['source'], "<html lang='uk'>")
-        self.assertIsNone(value['files']['master_card.py'])
-        self.assertEqual(value['public_pages'], [('UA-0013.html', 16)])
+        self.assertEqual(value['files']['video/ua-site-languages.js']['source'], 'var d = 1;')
+        self.assertIsNone(value['files']['ua-site-languages.js'])
+        self.assertEqual(list(value['writers']), ['publikaciya.py'])
+        lines = [m['line'] for m in value['writers']['publikaciya.py']['matches']]
+        self.assertEqual(lines, [2, 3])
+        self.assertIn('[REDACTED]', value['writers']['publikaciya.py']['matches'][0]['context'][0])
 
 
 if __name__ == '__main__':

@@ -24,9 +24,9 @@ def request(day):
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
         'description': 'Read-only probe before Ukrainian/Russian card URLs (owner request 2026-10-30, SEO item 1). '
                        'Bounded run in the existing private inbox: upload this package, run source_remote.py once in a temporary '
-                       'always-on task (removed after its receipt; never the CRM bot) which only reads the card page generator '
-                       '(stranica.py and its publishing/SEO/sitemap modules), one card, its diagnostics page, the catalogue, the '
-                       'home page, sitemap and robots (sanitized) and lists the names of the public pages. '
+                       'always-on task (removed after its receipt; never the CRM bot) which only reads the site language script '
+                       'and every top-level module line that writes or rebuilds a card page (sanitized, with context). '
+                       'R1 (20261030) read the card generator, one card and its diagnostics page. '
                        'No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
