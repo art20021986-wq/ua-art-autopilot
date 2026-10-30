@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-JAPAN-PRICE-PREFLIGHT-20261031.fc704cf157dd32e407ede7baf42c1e282e1517a3d8c1e9fb7f7ed1d7351f2b61.json",
+  "autostart_ledger_sha256": "eafb56d525111b945a180c3a540aeaa105bb9d781a641ff305954eb8d12bf357",
+  "autostart_source_commit": "99381b6d99d5762c41ce81da01f1868a445c41f0",
+  "created_at": "2026-10-30T23:52:49Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41146895180",
+    "task_id": "KOREA-JAPAN-PRICE-PREFLIGHT-20261031",
+    "task_sha256": "fc704cf157dd32e407ede7baf42c1e282e1517a3d8c1e9fb7f7ed1d7351f2b61"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-eb6f3a84ced432cf-80cd0379f69abd12",
+  "request_path": "tasks/requests/KOREA-JAPAN-PRICE-PREFLIGHT-20261031.json",
+  "resource_locks": [
+    "PATH_SCOPE:eb6f3a84ced432cf"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
