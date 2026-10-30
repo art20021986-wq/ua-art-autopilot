@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-LANG-PREFLIGHT-20261030.7628831163c5136e289a878472f61e632e629dd0ce0c39352f025238a5c5ed3c.json",
+  "autostart_ledger_sha256": "58adfb6108fd5d8610f5c51e67b3ea20ebf0627606bc5b08faa2f502c460d2c4",
+  "autostart_source_commit": "c814b71dc8848ad2b79a1d17a5718836e96f1498",
+  "created_at": "2026-10-30T15:34:16Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41081707109",
+    "task_id": "CARD-LANG-PREFLIGHT-20261030",
+    "task_sha256": "7628831163c5136e289a878472f61e632e629dd0ce0c39352f025238a5c5ed3c"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-cabe55d53fcba822-dbed90d0c67bfe3e",
+  "request_path": "tasks/requests/CARD-LANG-PREFLIGHT-20261030.json",
+  "resource_locks": [
+    "PATH_SCOPE:cabe55d53fcba822"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
