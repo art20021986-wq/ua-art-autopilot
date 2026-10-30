@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/catalog_label_probe_001/20261030.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "6a83f2c327788aee9cd679fcb5d9a0452f2f645b29d734c00dc57abb6f8a9458",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "41059417792",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "CATALOG-LABEL-PROBE-20261030",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}
