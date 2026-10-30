@@ -57,3 +57,8 @@
 ## Источники
 Google Search Central: «Managing multi-regional and multilingual sites», «Tell Google about localized versions
 of your page (hreflang)», «Consolidate duplicate URLs» (developers.google.com/search/docs/specialty/international/…).
+
+## Итог (2026-10-31)
+Установлено: preview R3 run 41143320298 PASS (19/19), CRITICAL CARD-LANG-INSTALL-20261030 FINISHED. 19 карточек × 2 языка,
+карта сайта обновлена (Google 204, IndexNow 57 адресов). Бэкап PASS, CRM без изменений, бот работает, проверки 4/4.
+После установки синхронизация CRM переопубликует карточки (SEO_REVISION) — основной адрес получит canonical на украинскую версию.
