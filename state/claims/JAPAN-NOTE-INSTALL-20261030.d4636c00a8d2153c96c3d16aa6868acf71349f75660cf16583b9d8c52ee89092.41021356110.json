@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "c8874d4b5c28f9dcbb39282fe353371d6ea966e75d5e908249251ea39dd2a278",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-30T07:41:22Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-30T07:46:16Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41021356110",
     "task_id": "JAPAN-NOTE-INSTALL-20261030",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41021356110-d4636c00a8d2153c",
   "production_transaction_path": "state/transactions/JAPAN-NOTE-INSTALL-20261030.d4636c00a8d2153c96c3d16aa6868acf71349f75660cf16583b9d8c52ee89092.41021356110.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-a4c7c01ea3eb5d56-12ec2b20d98f4ae8",
   "receipt_path": "state/receipts/JAPAN-NOTE-INSTALL-20261030.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/japan_note_001/test_release.py": "3033462ed4dc230ef7fd59acf03268644e8bb247a3614b3d5746724c8ba96357"
     }
   },
-  "updated_at": "2026-10-30T07:41:22Z"
+  "updated_at": "2026-10-30T07:46:16Z"
 }
