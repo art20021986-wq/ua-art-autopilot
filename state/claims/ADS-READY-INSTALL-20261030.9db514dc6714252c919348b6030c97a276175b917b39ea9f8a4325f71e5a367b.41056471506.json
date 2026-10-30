@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "781d2411031c69d5f1cf633f76c453a200222cd092d4c442ded01aaed8fbd506",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-30T12:38:10Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-30T12:43:00Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41056471506",
     "task_id": "ADS-READY-INSTALL-20261030",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41056471506-9db514dc6714252c",
   "production_transaction_path": "state/transactions/ADS-READY-INSTALL-20261030.9db514dc6714252c919348b6030c97a276175b917b39ea9f8a4325f71e5a367b.41056471506.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/ADS-READY-INSTALL-20261030.json",
   "receipt_validation_status": "PENDING",
@@ -97,5 +97,5 @@
       "cloud/ads_ready_001/ua_site_leads.py": "ed6aca7dd8fdb8f6dbb47051453e083b14282a2102996a2bcebe992a01b994b4"
     }
   },
-  "updated_at": "2026-10-30T12:38:10Z"
+  "updated_at": "2026-10-30T12:43:00Z"
 }
