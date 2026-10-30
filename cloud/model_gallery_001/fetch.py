@@ -11,15 +11,18 @@ from pathlib import Path
 
 import collect
 import picks as chosen
+import picks_w245
 
 TASKS = ('MODEL-GALLERY-FETCH-20261026', 'MODEL-GALLERY-FETCH-20261026-R2', 'MODEL-GALLERY-FETCH-20261027',
-         'MODEL-GALLERY-FETCH-20261027-R2')
+         'MODEL-GALLERY-FETCH-20261027-R2', 'MODEL-GALLERY-FETCH-20261030')
 WIDTH = 960
 
 
 # Each run writes its own files, never over an earlier run's: photos, photos2 (2018–2023), photos3 (owner's views),
-# photos4 (views with the side checked).
-STEMS = dict(zip(TASKS, ('photos', 'photos2', 'photos3', 'photos4')))
+# photos4 (views with the side checked), photos5 (the Japan B-Class card as W245, owner 2026-10-30).
+STEMS = dict(zip(TASKS, ('photos', 'photos2', 'photos3', 'photos4', 'photos5')))
+# A run that fetches other picks than picks.py.
+TASK_PICKS = {'MODEL-GALLERY-FETCH-20261030': picks_w245.PICKS}
 
 
 def evidence_path(group, task=TASKS[-1]):
@@ -43,7 +46,7 @@ def photos(fetch, titles):
 def execute(env, *, root=None, fetch=collect.get, picks=None):
     root = collect.ROOT if root is None else Path(root)
     request_sha, run_id = collect.validate_identity(env, root, TASKS)
-    picks = chosen.PICKS if picks is None else picks
+    picks = TASK_PICKS.get(env['UAART_TASK_ID'], chosen.PICKS) if picks is None else picks
     groups = sorted({collect.MODELS[key][0] for key in picks})
     for group in groups:
         found = {key: {kind: photos(fetch, titles) for kind, titles in views.items()}

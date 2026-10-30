@@ -42,6 +42,27 @@ class W245Tests(unittest.TestCase):
         self.assertEqual(list(found), ['front_left', 'front_right', 'rear_left', 'rear_right',
                                        'dash_driver', 'dash_passenger', 'rear_seats', 'boot'])
 
+    def test_interior_round(self):
+        def fake2(url):
+            q = dict(urllib.parse.parse_qsl(urllib.parse.urlsplit(url).query))
+            if q.get('prop') == 'categories':
+                return json.dumps({'query': {'pages': [{'categories': [
+                    {'title': 'Category:Mercedes-Benz W245 interior'}, {'title': 'Category:Hatchbacks'}]}]}}).encode()
+            if q.get('list') == 'categorymembers':
+                files = {'Category:Mercedes-Benz W245 interior': ['File:B 200 (2010-10-16) 2.jpg',
+                                                                  'File:2006 B 180 seats.jpg']}
+                titles = files.get(q['cmtitle'], []) if q['cmtype'] == 'file' else []
+                return json.dumps({'query': {'categorymembers': [{'title': t} for t in titles]}}).encode()
+            if q.get('list') == 'search':
+                hits = {'Mercedes B-Klasse Kofferraum': ['File:B-Klasse Kofferraum.jpg', 'File:B-Klasse front.jpg'],
+                        'Mercedes-Benz W245 interior': ['File:B-Klasse front.jpg']}
+                return json.dumps({'query': {'search': [{'title': t} for t in hits.get(q['srsearch'][:-16], [])]}}).encode()
+            return fake(url)
+        titles = [i['title'] for i in w245.interior(fake2)['interior']]
+        # Every interior query hit is kept for the eye; a non-facelift year is not.
+        self.assertEqual(titles, ['File:B 200 (2010-10-16) 2.jpg', 'File:B-Klasse Kofferraum.jpg',
+                                  'File:B-Klasse front.jpg'])
+
     def test_identity_is_bound_to_the_task(self):
         with self.assertRaises(c.CollectError):
             w245.execute({'UAART_TASK_ID': 'MODEL-GALLERY-ANGLES-20261027'}, root='.', fetch=fake)
