@@ -14,3 +14,7 @@
 - Основа — живые файлы после MODEL-GALLERY R6 (`fixtures/`, хеши проверяются тестом).
 - Проверки: test_release 4, test_deployment 23; браузер: телефон и компьютер, uk/ru/ka, Корея/США без надписей
   (`preview/`).
+
+## Итог (2026-10-30)
+Установлено: preview run 41020865872 PASS, CRITICAL run 41021356110 FINISHED. Бэкап PASS, CRM без изменений,
+бот работает, публичные проверки 5/5 PASS. Квитанция: state/receipts/JAPAN-NOTE-INSTALL-20261030.json.
