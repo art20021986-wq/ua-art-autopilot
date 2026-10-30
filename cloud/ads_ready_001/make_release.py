@@ -6,7 +6,8 @@ Usage: python3 cloud/ads_ready_001/make_release.py preview   # PR, merge, then: 
        python3 cloud/ads_ready_001/make_release.py install   # right after the preview: writes gate, manifest,
                                                              # owner approval, storage probe, request and launch
 Owner in chat 2026-10-30: «пункт первый, второй, третий сделай» of ADS-AUDIT-20261030 (ad source in enquiries,
-privacy policy page, model texts: Sonata and K5 gas, Tucson, Sportage, Santa Fe diesel).
+privacy policy page, model texts: Sonata and K5 gas, Tucson, Sportage, Santa Fe diesel) and «Добавить в Клиенты»
+(site enquiries in the CRM bot's «Клиенты»).
 """
 import datetime
 import hashlib
@@ -24,10 +25,10 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py', 'attribution.py',
-                                'attribution_assets.py', 'edit_intake.py', 'edit_landings.py', 'edit_order.py',
+                                'attribution_assets.py', 'edit_cars_ui.py', 'edit_intake.py', 'edit_landings.py', 'edit_order.py',
                                 'make_release.py', 'privacy_page.py', 'quick_assets.py', 'release_constants.py',
-                                'ua_seo_order_models.py', 'ua_seo_quick_form.py')]
-TESTS = [P + n for n in ('test_deployment.py', 'test_release.py')]
+                                'ua_seo_order_models.py', 'ua_seo_quick_form.py', 'ua_site_leads.py')]
+TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_site_leads.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'lead_bot.py',
              'master_card.py', 'publication_fence.py', 'publikaciya.py', 'run_all.py', 'site_ge_inject.py',
@@ -78,7 +79,8 @@ def preview():
              'description': 'Preview of the Google Ads readiness release (owner request 2026-10-30): reads the installed '
                             'order package modules, model texts and landing module, form assets and the live order page, '
                             'builds the candidate (ad source in every site enquiry, privacy policy page and links, model '
-                            'texts: K5/Sonata factory gas, Tucson/Sportage/Santa Fe diesel) and measures storage. '
+                            'texts: K5/Sonata factory gas, Tucson/Sportage/Santa Fe diesel, CRM «Клиенты» → «Заявки с сайта»), runs a read-only '
+                            'smoke in python3.10 (the CRM bot finds the order inbox) and measures storage. '
                             'No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
@@ -142,7 +144,9 @@ def install():
                               'policy page video/privacy.html linked under the order page forms and the model page form; '
                               '(3) model texts and titles: Kia K5 and Hyundai Sonata on factory gas (LPi), Hyundai Tucson, '
                               'Kia Sportage and Hyundai Santa Fe diesel (ua_seo_order_models.py, ua_seo_landings.py), pages '
-                              'refreshed with sitemap and IndexNow. Web app reload with a live intake check. No CRM change. '
+                              'refreshed with sitemap and IndexNow; (4, owner «Добавить в Клиенты») CRM bot «Клиенты» gets «Заявки с сайта»: '
+                              'cars_ui.py one button line and one register block, new ua_site_leads.py registers the order '
+                              'inbox for active owner/admin/manager staff. Web app reload with a live intake check. No CRM data change. '
                               'Existing backup, bot pause, writer locks, data-preservation, rollback and public health checks '
                               'are kept.',
                'execution': execution(task, True),

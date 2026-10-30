@@ -24,10 +24,8 @@ EDITS = {
     CRM: (
         ("def detail_view(row, catalog):\n",
          "def detail_view(row, catalog):\n"
-         "    from .attribution import lines\n"
-         "    view = _detail_view(row, catalog)\n"
-         "    extra = lines(row['data'].get('attribution') or {})\n"
-         "    return {**view, 'text': '\\n'.join([view['text'], *extra])} if extra else view\n"
+         "    from .attribution import with_source\n"
+         "    return with_source(_detail_view(row, catalog), row['data'].get('attribution') or {})\n"
          "\n"
          "\n"
          "def _detail_view(row, catalog):\n"),

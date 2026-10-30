@@ -12,6 +12,7 @@ from unittest.mock import patch
 
 import attribution
 import candidate_builder
+import edit_cars_ui
 import edit_order
 import privacy_page
 
@@ -42,20 +43,33 @@ def live_files():
             'ua_seo_order_models.py': (CLOUD/'seo_models_001'/'ua_seo_order_models.py').read_bytes(),
             'ua_seo_quick_form.py': (CLOUD/'quick_lead_002'/'ua_seo_quick_form.py').read_bytes(),
             'video/order/quick-lead.js': quick.JS.encode(), 'video/order/quick-lead.css': quick.CSS.encode(),
+            'cars_ui.py': CARS_UI,
             **{name: pages[name] for name in candidate_builder.PAGE_FILES}}
+
+
+# cars_ui.py as CRM-CLIENTS-PROBE-20261030 read it: sanitized (credential lines redacted), so its own hash;
+# the probe's hash of the live file is the pin.
+PROBE = json.loads((CLOUD/'crm_clients_probe_001'/'20261030.json').read_text())
+CARS_UI = PROBE['files']['cars_ui.py']['source'].encode() + b'\n'
 
 
 class ReleaseTests(unittest.TestCase):
     def build(self):
         source = live_files()
         fake = {name: b'live ' + name.encode() for name in candidate_builder.DEPENDENCY_SHA256}
-        with patch.dict(candidate_builder.DEPENDENCY_SHA256, {n: hashlib.sha256(v).hexdigest() for n, v in fake.items()}):
+        with patch.dict(candidate_builder.DEPENDENCY_SHA256, {n: hashlib.sha256(v).hexdigest() for n, v in fake.items()}), \
+             patch.dict(candidate_builder.SOURCE_SHA256, {'cars_ui.py': hashlib.sha256(CARS_UI).hexdigest()}):
             return candidate_builder.build(source, fake)
 
     def test_inputs_are_the_installed_files(self):
         source = live_files()
         for name, digest in candidate_builder.SOURCE_SHA256.items():
+            if name == 'cars_ui.py':
+                self.assertEqual(PROBE['files'][name]['sha256'], digest)
+                continue
             self.assertEqual(hashlib.sha256(source[name]).hexdigest(), digest, name)
+        for name in ('db.py', 'ua_order/host.py', 'ua_order/bindings.py', 'ua_order/telegram.py'):
+            self.assertEqual(PROBE['files'][name]['sha256'], candidate_builder.DEPENDENCY_SHA256[name], name)
         # The order page as JAPAN-NOTE-001 left it (its receipt).
         receipt = json.loads((CLOUD.parent/'state/receipts/JAPAN-NOTE-INSTALL-20261030.json').read_text())
         for name in candidate_builder.PAGE_FILES:
@@ -64,12 +78,12 @@ class ReleaseTests(unittest.TestCase):
     def test_planned_files(self):
         result = self.build()
         self.assertEqual(sorted(result), sorted([
-            'ua_order/attribution.py', 'ua_order/contract.py', 'ua_order/crm.py', 'ua_seo_landings.py',
+            'cars_ui.py', 'ua_order/attribution.py', 'ua_order/contract.py', 'ua_order/crm.py', 'ua_seo_landings.py',
             'ua_seo_order_models.py', 'ua_seo_quick_form.py', 'video/order/attribution.js', 'video/order/order-strings.json',
             'video/order/order.js', 'video/order/quick-lead.css', 'video/order/quick-lead.js', 'video/podbor.html',
-            'video/privacy.html']))
+            'ua_site_leads.py', 'video/privacy.html']))
         for name, value in result.items():
-            if name.endswith('.py'):
+            if name.endswith('.py') and name != 'cars_ui.py':  # the probe copy is sanitized; prepare compiles the live one
                 compile(value, name, 'exec')
         json.loads(result[edit_order.STRINGS])
         self.assertIn(edit_order.CHECK_PAGE.encode(), result[edit_order.PAGE])
@@ -79,9 +93,10 @@ class ReleaseTests(unittest.TestCase):
 
     def test_applied_release_is_refused(self):
         result = self.build()
-        for name in candidate_builder.PAGE_FILES + ('ua_order/contract.py', 'ua_order/crm.py', 'ua_seo_landings.py'):
+        for name in candidate_builder.PAGE_FILES + ('ua_order/contract.py', 'ua_order/crm.py', 'ua_seo_landings.py',
+                                                    'cars_ui.py'):
             module = __import__({'ua_order/contract.py': 'edit_intake', 'ua_order/crm.py': 'edit_intake',
-                                 'ua_seo_landings.py': 'edit_landings'}.get(name, 'edit_order'))
+                                 'ua_seo_landings.py': 'edit_landings', 'cars_ui.py': 'edit_cars_ui'}.get(name, 'edit_order'))
             with self.assertRaises(ValueError):
                 module.build(name, result[name])
 
@@ -129,6 +144,21 @@ class ReleaseTests(unittest.TestCase):
             self.assertIn('/video/privacy.html', page, slug)
         tucson = next(v for k, v in pages.items() if k.endswith('hyundai-tucson-koreya-kyiv.html'))
         self.assertNotIn('гібрид', tucson if isinstance(tucson, str) else tucson[0])
+
+    def test_clients_screen_gets_the_site_button(self):
+        cars = self.build()['cars_ui.py'].decode()
+        screen = cars[cars.index('async def clients_screen'):cars.index('async def crm_leads')]
+        self.assertLess(screen.index('ua_site_leads.BUTTON'), screen.index('"Заявки из бота"'))
+        self.assertTrue(cars.rstrip().endswith("log.warning('ua_site_leads не подключён: %s', e)"))
+        self.assertEqual(cars.count(edit_cars_ui.MARK), 2)
+
+    def test_owner_view_with_parts_keeps_the_source(self):
+        view = {'text': 'a', 'parts': ['p1', 'p2'], 'buttons': []}
+        result = attribution.with_source(view, {'gclid': 'Cj0KCQjw_ABC-123'})
+        self.assertEqual(result['parts'], ['p1', 'p2\n<b>Источник:</b> Google Ads'])
+        full = attribution.with_source({'text': 'a', 'parts': ['x' * 3995]}, {'utm_source': 'google'})
+        self.assertEqual(full['parts'], ['x' * 3995, '<b>Источник:</b> google'])
+        self.assertIs(attribution.with_source(view, {}), view)
 
     def test_privacy_page(self):
         page = privacy_page.html()

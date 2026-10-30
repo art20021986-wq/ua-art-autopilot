@@ -1,4 +1,5 @@
-"""Build the ADS-READY-001 candidate: ad source in every site enquiry, privacy policy page, model texts.
+"""Build the ADS-READY-001 candidate: ad source in every site enquiry, privacy policy page, model texts,
+site enquiries in the CRM bot's «Клиенты».
 
 Server modules and form assets are pinned to their installed hashes (after QUICK-LEAD-002). The three
 order-page files are read live and pinned by the preview plan: a parallel gallery release may change
@@ -8,6 +9,7 @@ import hashlib
 import importlib
 from pathlib import Path
 
+import edit_cars_ui
 import edit_intake
 import edit_landings
 import edit_order
@@ -23,6 +25,7 @@ SOURCE_SHA256 = {
     'ua_seo_quick_form.py': '79931a94f9a72d3af43c8e5858d2a1eb981ae518f4fcd95b593097f8f55690b6',
     'video/order/quick-lead.js': 'ced73fc6d1b9e11ac31cac488614a7e3cd4171f9761fcceb9f13cc8cf7314f74',
     'video/order/quick-lead.css': '301c3ab4e38d8086b25f9105e041d3fa877312c0e60d72202a4c8aa9de8aaa45',
+    'cars_ui.py': '779026669f620b57200103f78ea0641a20bd01539bfc98df10209b2d2fbff491',  # after HOME-PHOTO-001
 }
 PAGE_FILES = tuple(edit_order.EDITS)
 SOURCE_FILES = tuple(SOURCE_SHA256) + PAGE_FILES
@@ -38,6 +41,11 @@ DEPENDENCY_SHA256 = {
     'ua_order/service.py': 'f43edb3a72657b70ceecea7a35e70b917e5b804c6d54a2aa2ef6d20a5c5df12a',
     'ua_order/repository.py': '6b8d3e76b8603c1813d75ee22a9af5da2a8da61dd5662dddfb4c06f6b9237b6e',
     'ua_order/preferences.py': 'f06fbf7356d6a8f286c283b63155f6ddbd16461af99109fd088df16e2b298ef9',
+    # ua_site_leads: the staff role (db) and the order package's inbox for the CRM bot.
+    'db.py': 'af7624cbcf227b865ac98c68462ad6da8d18223881bba836f2f9a8669cf1dab7',
+    'ua_order/host.py': '652a8889513469f22fa3ed2c34c4e07bfc68a1f3d0d90c2c55eb13171982e6b2',
+    'ua_order/bindings.py': '569aeea5bb9bcee08bff79855ca9217aa5db1c574c1c10ab3d2703a31c838490',
+    'ua_order/telegram.py': 'fbc99a1d3ec585abcd3af3cc1ec6fe8ca5927ffd3540e0f73f54b3436e545d41',
 }
 PRIVACY = 'video/privacy.html'
 
@@ -54,4 +62,5 @@ def build(source, dependencies):
     result.update({name: edit_intake.build(name, source[name]) for name in edit_intake.EDITS})
     result.update({name: edit_landings.build(name, source[name]) for name in edit_landings.EDITS})
     result.update({name: edit_order.build(name, source[name]) for name in edit_order.EDITS})
+    result[edit_cars_ui.NAME] = edit_cars_ui.build(edit_cars_ui.NAME, source[edit_cars_ui.NAME])
     return result

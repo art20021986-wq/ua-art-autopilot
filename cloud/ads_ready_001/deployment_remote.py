@@ -118,10 +118,43 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'ADS-READY-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'ad source in site enquiries (ua_order attribution, contract/crm hand-off, attribution.js, quick-lead.js, order.js, podbor.html), privacy policy page and links, model texts and titles (ua_seo_order_models, ua_seo_landings) via ua_seo_index.refresh',
+            'site_scope':'ad source in site enquiries (ua_order attribution, contract/crm hand-off, attribution.js, quick-lead.js, order.js, podbor.html), privacy policy page and links, model texts and titles (ua_seo_order_models, ua_seo_landings) via ua_seo_index.refresh; CRM bot «Клиенты» → «Заявки с сайта» (cars_ui, ua_site_leads)',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
+
+
+# Runs in a separate python3.10 (the bots' interpreter) on the candidate files with the live order package:
+# the CRM bot's ua_site_leads must find the order inbox, and the candidate contract and owner view must keep
+# an ad source. Nothing is written; no request is stored.
+SMOKE = r'''
+import json, sys, types
+after, root = sys.argv[1], sys.argv[2]
+sys.path[:0] = [after, root]
+import ua_site_leads
+from ua_order import host
+loaded = host.current()
+available = ua_site_leads.available()
+sys.modules['ua_order.attribution'] = types.ModuleType('ua_order.attribution')
+exec(open(after + '/ua_order/attribution.py').read(), sys.modules['ua_order.attribution'].__dict__)
+from ua_order.attribution import split, with_source
+data, clean = split({'attribution': {'gclid': 'Cj0KCQjwSmokeTest', 'utm_campaign': 'smoke'}})
+view = with_source({'text': 'x', 'buttons': []}, clean)
+print(json.dumps({'site_leads_available': available, 'catalog_version': bool(loaded and loaded.service.catalog.version),
+                  'source_kept': clean == {'gclid': 'Cj0KCQjwSmokeTest', 'utm_campaign': 'smoke'},
+                  'owner_view': 'Google Ads' in view['text']}))
+'''
+
+
+def smoke(directory):
+    result = subprocess.run(['python3.10', '-B', '-c', SMOKE, str(directory/'after'), str(ROOT)],
+                            capture_output=True, text=True, timeout=120, check=False, cwd=str(directory))
+    if result.returncode != 0:
+        raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
+    value = json.loads(result.stdout.strip().splitlines()[-1])
+    if not all(value.values()):
+        raise DeploymentError('SMOKE_RESULT:'+json.dumps(value))
+    return value
 
 
 def verify_files(plan, after):
@@ -404,7 +437,7 @@ def main():
         try:
             if args.mode == 'preview':
                 plan = prepare(work/'preview')
-                value.update(status='PASS', plan=plan, plan_sha256=sha(canonical(plan)))
+                value.update(status='PASS', plan=plan, plan_sha256=sha(canonical(plan)), smoke=smoke(work/'preview'))
                 value['storage_probe'] = storage_probe()
             elif args.mode == 'backup':
                 value.update(backup(args.run, args.plan), status='PASS')
