@@ -13,3 +13,4 @@
 ## Ход
 - 2026-10-30: шаг 1 — запрос MODEL-GALLERY-CLASSICS2000-20261030.
 - Запуск MODEL-GALLERY-CLASSICS2000-20261030 после W245 PREFLIGHT-R3.
+- R1: файл находок больше лимита 16 МБ — R2: те же модели, 3 файла (classics2000_japan_1..3.json).

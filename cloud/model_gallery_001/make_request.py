@@ -51,8 +51,10 @@ def request(kind, day):
             '20261030': 'photos5_', '20261030-R2': 'photos6_'}.get(day, stem) if kind == 'fetch' else stem
     stem = {'20261030-R2': 'w245r2_', '20261030-R3': 'w245r3_'}.get(day, stem) if kind == 'w245' else stem
     # The W245 search and its fetch cover one Japan card only.
-    one_card = kind in ('w245', 'classics2000') or stem in ('photos5_', 'photos6_')
+    one_card = kind == 'w245' or stem in ('photos5_', 'photos6_')
     evidence = [P + stem + '%s.json' % group for group in (('japan',) if one_card else GROUPS)]
+    if kind == 'classics2000':
+        evidence = [P + 'classics2000_japan_%d.json' % n for n in (1, 2, 3)]
     value = {
         'ai_requested': False, 'changed_paths': evidence, 'complexity': 1, 'control_plane_version': 'TASK107-R2',
         'description': 'Read-only photo candidates for the order page model gallery (owner request 2026-10-26): GET of the '

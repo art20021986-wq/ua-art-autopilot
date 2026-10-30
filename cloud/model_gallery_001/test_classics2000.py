@@ -45,6 +45,12 @@ class Classics2000Tests(unittest.TestCase):
         with self.assertRaises(c.CollectError):
             classics2000.execute({'UAART_TASK_ID': 'OTHER'}, root='.', fetch=fake)
 
+    def test_every_model_in_one_part(self):
+        keys = list(classics2000.MODELS)
+        parts = [keys[n::classics2000.PARTS] for n in range(classics2000.PARTS)]
+        self.assertEqual(sorted(k for part in parts for k in part), sorted(keys))
+        self.assertEqual(len(classics2000.EVIDENCE), classics2000.PARTS)
+
 
 if __name__ == '__main__':
     unittest.main()
