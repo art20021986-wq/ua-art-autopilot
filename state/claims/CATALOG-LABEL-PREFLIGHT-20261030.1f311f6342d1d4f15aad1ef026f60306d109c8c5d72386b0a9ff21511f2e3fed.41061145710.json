@@ -7,21 +7,23 @@
   "created_at": "2026-10-30T13:12:37Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-30T13:12:37Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-30T13:16:49Z",
+  "heartbeat_at": "2026-10-30T13:16:49Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41061145710",
     "task_id": "CATALOG-LABEL-PREFLIGHT-20261030",
     "task_sha256": "1f311f6342d1d4f15aad1ef026f60306d109c8c5d72386b0a9ff21511f2e3fed"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/CATALOG-LABEL-PREFLIGHT-20261030.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "a79b35a363a9e99ebfce1f61fcb9210d1c937e1db94c79712975f80dab0194a0",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CATALOG-LABEL-PREFLIGHT-20261030.json",
   "request_sha256": "1f311f6342d1d4f15aad1ef026f60306d109c8c5d72386b0a9ff21511f2e3fed",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "e4bf2fd7877a98e705fc4468e7ff7f242adc7035",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 90583805952,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.508
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-30T13:12:37Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "fbce37bae009fa508b48c454b9013420c9e4d6a1f8c2982219642a824e079f8d",
+    "file_sha256": {
+      "cloud/catalog_label_001/candidate_builder.py": "b8f930ea580c631b64fb91c4bf2a12e2dabfeaa33425b541c4b5bf779443c0cb",
+      "cloud/catalog_label_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/catalog_label_001/deployment_bootstrap.py": "35614f102bf32047e6d133b7000147df00940ebe9e13d99b228671b32d9bc5a0",
+      "cloud/catalog_label_001/deployment_remote.py": "ae4ca3ba98cf90e8fe9e0fdf96c07a4d4a0406311be45c038e1a08a29cefd43b",
+      "cloud/catalog_label_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/catalog_label_001/deployment_transport.py": "d35f561ddb584c502336614d7909e48d89ae1326681011ab6de48a39d8eb6828",
+      "cloud/catalog_label_001/label.py": "52c9d1c19e8b832a037b2b24a09c4512639ef42d4f79c2f69e05f052c2b21684",
+      "cloud/catalog_label_001/make_release.py": "f88683e4e9b291f90dd62cdb94ea02483d26f4b7c128266eb550aac74138e4c9",
+      "cloud/catalog_label_001/release_constants.py": "f020131ad6d9b6933ba0b58b6ca10ec3c6b6a52d47f98cfaabc99ce35cfa1ae5",
+      "cloud/catalog_label_001/test_deployment.py": "b1e01ff32307f8bea5902e10bb8cdb63d8c032073e04adb83b0fa856cf2508fb",
+      "cloud/catalog_label_001/test_release.py": "d2115025ea89e81f1754b2ce5f473e8c1d6fd546a97d66b085925a5bf46f343b"
+    }
+  },
+  "updated_at": "2026-10-30T13:16:49Z"
 }
