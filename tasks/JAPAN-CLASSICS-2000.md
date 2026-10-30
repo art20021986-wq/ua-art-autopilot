@@ -20,3 +20,4 @@
   Corvette C5, Porsche 911 Turbo 996, Porsche Boxster 986, Audi TT 2000; превью preview_classics2000.jpg.
   Ждём «да» владельца, затем скачивание (FETCH) и пакет установки. На сайт ничего не записано.
 - Владелец «Ставь» (2026-10-30). Шаг: FETCH-20261030-R3 (8 фото 960 px, лицензия ещё раз) → photos7_japan.json. Подпись карточки живёт в серверном каталоге (ua_order, защищённый файл) — отдельный шаг после чтения.
+- FETCH-20261030-R3 FINISHED: 8 фото 960 px; руль слева проверен на каждом снимке в большом размере. Пакет cloud/model_gallery_classics_001 (копия механизма W245): новая запись classics-1980-1990 в model-gallery.json (8 фото WebP ~380 КБ, пустая строка поколения), версия order.js 20261030.3 на podbor.html. Превью MODEL-GALLERY-CLASSICS-PREFLIGHT-20261030.
