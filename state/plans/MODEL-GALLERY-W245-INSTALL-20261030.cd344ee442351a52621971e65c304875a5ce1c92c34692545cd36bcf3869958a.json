@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/MODEL-GALLERY-W245-INSTALL-20261030.cd344ee442351a52621971e65c304875a5ce1c92c34692545cd36bcf3869958a.json",
+  "autostart_ledger_sha256": "b5eee7c191f4e7f3465fd459d5ff6a152bbd7ada7394f4c3c0720bf4f7d30593",
+  "autostart_source_commit": "1761277243dbfedf634aa35c4461fea1b0848982",
+  "created_at": "2026-10-30T09:06:00Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41030782805",
+    "task_id": "MODEL-GALLERY-W245-INSTALL-20261030",
+    "task_sha256": "cd344ee442351a52621971e65c304875a5ce1c92c34692545cd36bcf3869958a"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-23c8fed2d4cf6cba-84ba9db1f276781f",
+  "request_path": "tasks/requests/MODEL-GALLERY-W245-INSTALL-20261030.json",
+  "resource_locks": [
+    "PATH_SCOPE:23c8fed2d4cf6cba"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
