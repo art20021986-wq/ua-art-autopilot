@@ -29,3 +29,4 @@
 - Владелец «Да» (2026-10-30) на превью с литыми дисками → PREFLIGHT, затем INSTALL.
 - PREFLIGHT (run 41025219459) FAILED, сайт не затронут: в пакете 'modelgallery-' для архива и квитанции вместо 'modelcard-' и файл w245_assets.py с цифрами (сервер распаковывает только [a-z_]+.py). Исправлено, тест на это добавлен; PREFLIGHT-20261030-R2.
 - PREFLIGHT-R2 не стартовал (RESOURCE_BUSY от незакрытой заявки R1). Владелец «Измени немедленно»: заявка R1 закрыта как FAILED (до production, сайт не тронут), state/reconciliations/…41025219459…; PREFLIGHT-R3.
+- INSTALL-20261030 FINISHED (run 41030782805): live verify PASS, бэкап есть, CRM не менялась, публичные проверки 4/4.
