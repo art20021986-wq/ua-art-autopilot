@@ -135,7 +135,7 @@ video = root + '/video'
 script = open(after + '/video/ua-site-languages.js', encoding='utf-8').read()
 words = ua_card_lang.dictionary(script)
 names = sorted(ua_seo_sitemap.CatalogLinks(open(video + '/katalog.html', encoding='utf-8').read()).names)
-incomplete, bytes_out = {}, 0
+incomplete, review, bytes_out = {}, {}, 0
 for name in names:
     source = open(video + '/' + name, encoding='utf-8').read()
     pages, missing = ua_card_lang.versions(source, name, words, ua_card_lang.revision(source, script))
@@ -143,10 +143,13 @@ for name in names:
         incomplete[name] = missing
     else:
         bytes_out += sum(len(p) for p in pages.values())
+        found = ua_card_lang.suspects(source, ua_card_lang.ukrainian(ua_card_lang.absolute(source), words)[0], words)
+        if found:
+            review[name] = found
     normalized = ua_seo_metadata.normalize(source, video + '/' + name)
     assert ua_seo_metadata.normalize(normalized, video + '/' + name) == normalized, name
 print(json.dumps({'cards': len(names), 'complete': len(names) - len(incomplete), 'incomplete': incomplete,
-                  'versions_bytes': bytes_out}, ensure_ascii=False))
+                  'review': review, 'versions_bytes': bytes_out}, ensure_ascii=False))
 '''
 
 

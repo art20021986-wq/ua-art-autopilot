@@ -173,6 +173,22 @@ def head(source, name, lang):
     return source
 
 
+UKRAINIAN_ONLY = re.compile('[іїєґІЇЄҐ]')
+WORD = re.compile(r'[А-Яа-яЁёІіЇїЄєҐґ]{3,}')
+
+
+def suspects(source, uk, words):
+    """Visible text the Ukrainian version left as it was that reads as Russian (two or more Cyrillic words,
+    no Ukrainian-only letter, not a known Ukrainian phrase): reported for review, never blocking."""
+    known = set(words.values())
+    def visible(page):
+        page = re.sub(r'(?is)<(script|style)\b.*?</\1>', '', page)
+        page = re.sub(r'(?is)<a\b[^>]*\blang="ru"[^>]*>.*?</a>', '', page)  # the bilingual model links
+        return [clean(html.unescape(x)) for x in re.split(r'<[^>]+>', page)]
+    return sorted({a for a, b in zip(visible(source), visible(uk)) if a == b and a not in known
+                   and len(WORD.findall(a)) >= 2 and not UKRAINIAN_ONLY.search(a)})
+
+
 def versions(source, name, words, wanted):
     """({'ua/UA-XXXX.html': uk html, 'ru/UA-XXXX.html': ru html}, []) or (None, the untranslated phrases)."""
     if not CARD.fullmatch(name):

@@ -23,7 +23,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'edit_cars_ui.py', 'edit_languages.py', 'edit_metadata.py', 'edit_sitemap.py',
+                                'card_texts.py', 'edit_cars_ui.py', 'edit_languages.py', 'edit_metadata.py', 'edit_sitemap.py',
                                 'make_release.py', 'release_constants.py', 'ua_card_lang.py', 'ua_card_lang_job.py')]
 TESTS = [P + n for n in ('test_card_lang.py', 'test_deployment.py', 'test_release.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
