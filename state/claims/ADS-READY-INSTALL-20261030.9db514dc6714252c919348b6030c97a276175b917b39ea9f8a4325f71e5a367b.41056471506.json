@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ADS-READY-INSTALL-20261030.9db514dc6714252c919348b6030c97a276175b917b39ea9f8a4325f71e5a367b.json",
+  "autostart_ledger_sha256": "6f9feac78db143285c41d15679e2914b5e4a20ff5121c77b0575ad672aab0584",
+  "autostart_source_commit": "5ab59031246a24d6092183c375b3ba89754121d4",
+  "created_at": "2026-10-30T12:36:51Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-30T12:36:51Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "41056471506",
+    "task_id": "ADS-READY-INSTALL-20261030",
+    "task_sha256": "9db514dc6714252c919348b6030c97a276175b917b39ea9f8a4325f71e5a367b"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/ADS-READY-INSTALL-20261030.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/ADS-READY-INSTALL-20261030.json",
+  "request_sha256": "9db514dc6714252c919348b6030c97a276175b917b39ea9f8a4325f71e5a367b",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "98933fe81452d0868ce2ac0ac77df92284b32b05",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-30T12:36:51Z"
+}
