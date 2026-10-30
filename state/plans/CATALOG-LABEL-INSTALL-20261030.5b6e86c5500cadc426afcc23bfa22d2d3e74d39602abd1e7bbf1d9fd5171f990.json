@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CATALOG-LABEL-INSTALL-20261030.5b6e86c5500cadc426afcc23bfa22d2d3e74d39602abd1e7bbf1d9fd5171f990.json",
+  "autostart_ledger_sha256": "186ffb67320dfb78df8ab55342927f3fd56ee3bfb5ec874b5e7beff9d0d65f82",
+  "autostart_source_commit": "05773d357a242acad1e0a5ae53a9717d46babcdf",
+  "created_at": "2026-10-30T13:19:46Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41062129466",
+    "task_id": "CATALOG-LABEL-INSTALL-20261030",
+    "task_sha256": "5b6e86c5500cadc426afcc23bfa22d2d3e74d39602abd1e7bbf1d9fd5171f990"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "request_path": "tasks/requests/CATALOG-LABEL-INSTALL-20261030.json",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
