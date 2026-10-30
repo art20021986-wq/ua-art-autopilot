@@ -1,0 +1,114 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/JAPAN-NOTE-INSTALL-20261030.d4636c00a8d2153c96c3d16aa6868acf71349f75660cf16583b9d8c52ee89092.json",
+  "autostart_ledger_sha256": "c3ab53837a57c8de7ecb93334c56f23a44d472b77af5dd4f2ae434b7dc32228b",
+  "autostart_source_commit": "259bc673fd2d04c45ce490bed338d73f15a3c1f6",
+  "created_at": "2026-10-30T07:40:04Z",
+  "critical_gate_evidence_sha256": "c8874d4b5c28f9dcbb39282fe353371d6ea966e75d5e908249251ea39dd2a278",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-10-30T08:02:29Z",
+  "heartbeat_at": "2026-10-30T08:02:29Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "41021356110",
+    "task_id": "JAPAN-NOTE-INSTALL-20261030",
+    "task_sha256": "d4636c00a8d2153c96c3d16aa6868acf71349f75660cf16583b9d8c52ee89092"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 548.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 204.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 241.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 203.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-41021356110-d4636c00a8d2153c",
+  "production_transaction_path": "state/transactions/JAPAN-NOTE-INSTALL-20261030.d4636c00a8d2153c96c3d16aa6868acf71349f75660cf16583b9d8c52ee89092.41021356110.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "path_scope-a4c7c01ea3eb5d56-12ec2b20d98f4ae8",
+  "receipt_path": "state/receipts/JAPAN-NOTE-INSTALL-20261030.json",
+  "receipt_sha256": "917af8c1b8934cc81dd36998041aff2b2f943f6bc9a81d0f70263f0e56f772b2",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/JAPAN-NOTE-INSTALL-20261030.json",
+  "request_sha256": "d4636c00a8d2153c96c3d16aa6868acf71349f75660cf16583b9d8c52ee89092",
+  "resource_locks": [
+    "PATH_SCOPE:a4c7c01ea3eb5d56"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "ba126fb9173869a0a4babb9652161dbdaa85f20e",
+  "storage_preflight": {
+    "age_seconds": 253.278,
+    "allowed": true,
+    "evidence_path": "state/storage/JAPAN-NOTE-INSTALL-20261030.json",
+    "evidence_sha256": "855dfdac4f9a26f524fa54d14878d70ca745c35a2e4574586b18f974a9c0dbc4",
+    "free_bytes": 25719922176,
+    "heavy": true,
+    "measured_at": "2026-10-30T07:37:06.479567+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 26.514508068571427
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "b2cb2fe94acfb0b3429c6969e2177de24505488db0974b77170f39ef5d069643",
+    "file_sha256": {
+      "cloud/japan_note_001/candidate_builder.py": "aa3df31e64c135a04c34032fc25199162bf43c58fc5e83bed8f1bd168adef422",
+      "cloud/japan_note_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/japan_note_001/deployment_bootstrap.py": "2f88ff073c4bc35512eaf4254d41beaeff5804544117b7986e25bbf34f231e88",
+      "cloud/japan_note_001/deployment_remote.py": "dae2a49d729cc5ac94dfb5bab837cdf78baf34bbacd2e4cde0fab8842c577622",
+      "cloud/japan_note_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/japan_note_001/deployment_transport.py": "9d188865dc26e459b5003cefae72ebedcd3143c37f8dddee17004dd550c4ed0d",
+      "cloud/japan_note_001/edit_japan.py": "0403195c80b62ce14a7db2a3a6cc0c035872dd39942922ed08c06a6863f0a898",
+      "cloud/japan_note_001/make_release.py": "7275e92f01f3788d89f924b278c47aea19b501479ca485c3e83c835bd78bb51e",
+      "cloud/japan_note_001/note_assets.py": "ed2a9bd5d5fec905db514c26d396aedd3d1a857b44e489ce4cb8ed6f1683f908",
+      "cloud/japan_note_001/release_constants.py": "eef615fbab230d1e7e65e8ceca710f4ca5abc3ada3f962a7560cc1d54071cd32",
+      "cloud/japan_note_001/test_deployment.py": "05aef84bccf184b8ae71c5570fb501c3b087432e3a10d8d7b323d0d5d64bb489",
+      "cloud/japan_note_001/test_release.py": "3033462ed4dc230ef7fd59acf03268644e8bb247a3614b3d5746724c8ba96357"
+    }
+  },
+  "updated_at": "2026-10-30T08:02:29Z"
+}
