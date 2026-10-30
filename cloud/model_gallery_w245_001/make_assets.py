@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build w245_assets.py (run from the repository root; needs Pillow, only here, not on the server).
 
-Reads the W245 photos picked by eye and fetched from Commons (cloud/model_gallery_001/photos5_japan.json, one per
+Reads the W245 photos picked by eye and fetched from Commons (cloud/model_gallery_001/photos6_japan.json, one per
 owner's view) and writes the card's gallery entry (generation line, photo list with author and licence) and the
 photos as 640 px wide WebP, the form of MODEL-GALLERY-001.
 """
@@ -14,7 +14,7 @@ from pathlib import Path
 import card
 
 HERE = Path(__file__).resolve().parent
-FETCHED = 'cloud/model_gallery_001/photos5_japan.json'
+FETCHED = 'cloud/model_gallery_001/photos6_japan.json'
 # The owner's view order (2026-10-27); a view without a photo is skipped.
 VIEWS = ('front_left', 'front_right', 'rear_left', 'rear_right', 'dash_driver', 'dash_passenger', 'rear_seats', 'boot')
 GENERATION = {'uk': '1-ше покоління (W245), 2010–2011 рр.',
