@@ -15,3 +15,7 @@
 - Запуск MODEL-GALLERY-CLASSICS2000-20261030 после W245 PREFLIGHT-R3.
 - R1: файл находок больше лимита 16 МБ — R2: те же модели, 3 файла (classics2000_japan_1..3.json).
 - R2 (run 41033714437) снова не прошёл выгрузку находок; R3: превью 480 px, каждый файл обрезается до 15 МБ.
+- R3 FINISHED (run 41034411307): кандидаты по 18 моделям (classics2000_japan_1..3.json).
+- Отбор глазами: picks_classics2000.py — BMW Z8, Mercedes G 500 2003, Toyota Land Cruiser 100, Ferrari 360,
+  Corvette C5, Porsche 911 Turbo 996, Porsche Boxster 986, Audi TT 2000; превью preview_classics2000.jpg.
+  Ждём «да» владельца, затем скачивание (FETCH) и пакет установки. На сайт ничего не записано.
