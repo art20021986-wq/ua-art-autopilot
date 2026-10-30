@@ -7,21 +7,23 @@
   "created_at": "2026-10-30T10:27:40Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-30T10:27:40Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-30T10:28:49Z",
+  "heartbeat_at": "2026-10-30T10:28:49Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41040760797",
     "task_id": "MODEL-GALLERY-FETCH-20261030-R3",
     "task_sha256": "aa3ffb3f63eaea4792f88607dd6fcd1d5bf0bbc4f3e8af25e8dd36f2c3a1df4e"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-185d0d83629ca302-f8bc6930a43fc8a5",
   "receipt_path": "state/receipts/MODEL-GALLERY-FETCH-20261030-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "d6a8b36b8ebd63cc7ee1fa5a12a49e85e50604af31beeccf72bc27294b17f084",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MODEL-GALLERY-FETCH-20261030-R3.json",
   "request_sha256": "aa3ffb3f63eaea4792f88607dd6fcd1d5bf0bbc4f3e8af25e8dd36f2c3a1df4e",
   "resource_locks": [
@@ -29,8 +31,39 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "459b75ae0ee6744f9e8df724d6b430d2677aae28",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 90586537984,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 41.506
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-30T10:27:40Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "52374bba8ff8e13cb121c57e2cb7a819a41c5cecf8356c787f96f549046bfec9",
+    "file_sha256": {
+      "cloud/model_gallery_001/angles.py": "62e90adb408632b5bcc293d20af2dc9cfd5b4dfbb5782192c55041cbe03bc05b",
+      "cloud/model_gallery_001/classics2000.py": "6b754492e33ae69d57b32d326b878ac3cfd95646c0bb688005b2f5c1e98b393e",
+      "cloud/model_gallery_001/collect.py": "11a7c7d6bb1644c05d0c73948ba32341065559060548ea8d052ae0fbc667227a",
+      "cloud/model_gallery_001/make_request.py": "5b833127695f202c808ef3b661ea59b94d8a94fda7f9c2cbb23d622b5512da7f",
+      "cloud/model_gallery_001/picks.py": "5b33ab07cc35f7b89aa93425cb5b455e9aa8e251b7a077bb0c2acd118cea7e6f",
+      "cloud/model_gallery_001/picks_classics2000.py": "3b7fe3a0502f8ede1a129f5dc12bd39e589659357b8b1f29503937ac818f2f36",
+      "cloud/model_gallery_001/picks_w245.py": "455227aa5dc6f68a025f1ded59520d6270f8a823776baa6aecc4859c17baeaa7",
+      "cloud/model_gallery_001/search.py": "6b0854e07a938744b0f92db50fc6ef31e88408a8a64f1caebc0060dbd83b94a8",
+      "cloud/model_gallery_001/test_angles.py": "93780892a6f3b41bf1b83e28fb420c0d187c654240e358875298a28082aa5213",
+      "cloud/model_gallery_001/test_classics2000.py": "68e12752e6b1505c8e682429b7afb4244568733802b579648d5dbd47989c47a3",
+      "cloud/model_gallery_001/test_collect.py": "ac5b01c445567348445f0c79640e8056ab1800b5368945b8cc10808d51a06081",
+      "cloud/model_gallery_001/test_fetch.py": "1a79d34b91fa47a82e0ef84be2806de0d5629c686abe282446aafa760569ecd7",
+      "cloud/model_gallery_001/test_search.py": "45a72bca8d352dc2d3a4b9e9fe69b2567d02878183936070aed7d1a19fcbe266",
+      "cloud/model_gallery_001/test_w245.py": "7fe066264d24ead384e72f6932b7dca4cd928f1ff87dc11b12a7aef2c873fc8d",
+      "cloud/model_gallery_001/test_years.py": "91bf87b4534afa2cf367efbabcb608770c3a43c4415e368d1996fc387955adc2",
+      "cloud/model_gallery_001/w245.py": "51c9e6f0d2ad3e35dab634323919134d168f1ab534040f5e6f0a037272f4c6a1",
+      "cloud/model_gallery_001/years.py": "d0e2d0bf178825266ee4a4f1d8414bb964693cee213dab536291cb58ae3a0d52"
+    }
+  },
+  "updated_at": "2026-10-30T10:28:49Z"
 }
