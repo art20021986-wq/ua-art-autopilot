@@ -37,8 +37,8 @@ def live_files():
         pages = japan.build({n: (CLOUD/'japan_note_001'/'fixtures'/f).read_bytes() for n, f in names.items()}, {})
     finally:
         sys.path.remove(str(CLOUD/'japan_note_001'))
-    return {'ua_order/contract.py': (HERE/'fixtures'/'ua_order'/'contract.py').read_bytes(),
-            'ua_order/crm.py': (HERE/'fixtures'/'ua_order'/'crm.py').read_bytes(),
+    return {'ua_order/contract.py': (HERE/'fixtures'/'contract.txt').read_bytes(),
+            'ua_order/crm.py': (HERE/'fixtures'/'crm.txt').read_bytes(),
             'ua_seo_landings.py': (CLOUD/'quick_lead_001'/'ua_seo_landings.py').read_bytes(),
             'ua_seo_order_models.py': (CLOUD/'seo_models_001'/'ua_seo_order_models.py').read_bytes(),
             'ua_seo_quick_form.py': (CLOUD/'quick_lead_002'/'ua_seo_quick_form.py').read_bytes(),
