@@ -20,3 +20,7 @@
 - R2: поиск салона/багажника по разделам Commons этого фото и немецким запросам.
 - R2 FINISHED (run 41018767096): 0 — фото салона в этих разделах названы без слова «интерьер»; R3: все фото разделов, отбор глазами.
 - R3 FINISHED: снаружи 2010–2011 найдены; салона кроме места водителя и багажника W245 на Commons нет. Отбор: picks_w245.py (5 фото), FETCH-20261030.
+- FETCH-20261030 FINISHED. Пакет `cloud/model_gallery_w245_001`: asset_version.py (версия order.js на podbor.html),
+  card.py (замена одной записи model-gallery.json), w245_assets.py (запись и 5 фото WebP, ~200 КБ),
+  candidate_builder.py; механизм установки скопирован из model_gallery_install_001 (файлы на сервере с префиксом modelcard).
+  Превью для владельца: preview_w245.jpg. Ждём «да», затем сразу PREFLIGHT → INSTALL (проба места < 30 мин).
