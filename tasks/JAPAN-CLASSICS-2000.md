@@ -25,3 +25,4 @@
 - INSTALL (run 41042043579) FINISHED: production PASS, live_verify PASS, бэкап PASS, CRM и защищённые файлы не менялись. Осталось: подпись «Раритетное авто» (серверный каталог) — после ADS-READY другой сессии.
 - Подпись: только чтение сервера CATALOG-LABEL-PROBE-20261030 (путь каталога из настроек, строки карточки, другие файлы со старой подписью) — после ADS-READY-INSTALL (FINISHED).
 - CATALOG-LABEL-PROBE-20261030 PASS: подпись живёт в /home/Carix/order_requests/country_models.json (версия 2026-09-27.1); других живых файлов со старой подписью нет (только archive/old_scripts). Пакет cloud/catalog_label_001: точечная замена name/labels/alt uk/ru/ka («Раритетне авто» / «Раритетное авто» / «რარიტეტული ავტომობილები»), версия каталога та же, перезапуск сайта, проверка живой подписи. Превью CATALOG-LABEL-PREFLIGHT-20261030.
+- PREFLIGHT (run 41061145710) PASS: country_models.json daac43cc→7092f3de (права 600 сохранены). → CATALOG-LABEL-INSTALL-20261030.
