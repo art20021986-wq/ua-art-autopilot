@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "93ee62070e71595cb30517c51b3dcabf55a6a0a8cc96a822998aa532973dc0c4",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-30T09:11:06Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-10-30T09:20:54Z",
+  "heartbeat_at": "2026-10-30T09:20:54Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "41030782805",
     "task_id": "MODEL-GALLERY-W245-INSTALL-20261030",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 609.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 223.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-41030782805-cd344ee442351a52",
   "production_transaction_path": "state/transactions/MODEL-GALLERY-W245-INSTALL-20261030.cd344ee442351a52621971e65c304875a5ce1c92c34692545cd36bcf3869958a.41030782805.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-23c8fed2d4cf6cba-84ba9db1f276781f",
   "receipt_path": "state/receipts/MODEL-GALLERY-W245-INSTALL-20261030.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "dc42b02004273f1bd69c458b9d9de0a942f58cf8ea27837fb495c0593952f04e",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MODEL-GALLERY-W245-INSTALL-20261030.json",
   "request_sha256": "cd344ee442351a52621971e65c304875a5ce1c92c34692545cd36bcf3869958a",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "594ac38f3a13759a2343b832f62c0f24d50d21227b3c9376b97d4cea1574fbf8",
     "file_sha256": {
@@ -89,5 +112,5 @@
       "cloud/model_gallery_w245_001/test_release.py": "dd7667e647c5f4940c5e8cf88db7d4288c1a94d42fed3877dd6140ac2abf8ad8"
     }
   },
-  "updated_at": "2026-10-30T09:11:06Z"
+  "updated_at": "2026-10-30T09:20:54Z"
 }
