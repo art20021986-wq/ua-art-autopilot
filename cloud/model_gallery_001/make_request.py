@@ -27,7 +27,8 @@ KINDS = {
     'fetch': ('MODEL-GALLERY-FETCH-', 'fetch.py', 'photos_',
               'download 960 px wide of the photos picked by eye (picks.py), licence checked again'),
 }
-MODULES = ['collect.py', 'search.py', 'years.py', 'angles.py', 'w245.py', 'fetch.py', 'make_request.py', 'picks.py']
+MODULES = ['collect.py', 'search.py', 'years.py', 'angles.py', 'w245.py', 'fetch.py', 'make_request.py', 'picks.py',
+           'picks_w245.py']
 TESTS = [P + 'test_collect.py', P + 'test_search.py', P + 'test_years.py', P + 'test_angles.py', P + 'test_w245.py',
          P + 'test_fetch.py']
 GROUPS = ('canada', 'china', 'europe', 'georgia', 'japan', 'korea', 'usa')
@@ -42,9 +43,12 @@ def request(kind, day):
     task = prefix + day
     controller = P + controller
     dependencies = [P + name for name in MODULES if P + name != controller]
-    stem = {'20261026-R2': 'photos2_', '20261027': 'photos3_', '20261027-R2': 'photos4_'}.get(day, stem) if kind == 'fetch' else stem
-    # The W245 search covers one Japan card only.
-    evidence = [P + stem + '%s.json' % group for group in (('japan',) if kind == 'w245' else GROUPS)]
+    stem = {'20261026-R2': 'photos2_', '20261027': 'photos3_', '20261027-R2': 'photos4_',
+            '20261030': 'photos5_'}.get(day, stem) if kind == 'fetch' else stem
+    stem = {'20261030-R2': 'w245r2_'}.get(day, stem) if kind == 'w245' else stem
+    # The W245 search and its fetch cover one Japan card only.
+    one_card = kind == 'w245' or stem == 'photos5_'
+    evidence = [P + stem + '%s.json' % group for group in (('japan',) if one_card else GROUPS)]
     value = {
         'ai_requested': False, 'changed_paths': evidence, 'complexity': 1, 'control_plane_version': 'TASK107-R2',
         'description': 'Read-only photo candidates for the order page model gallery (owner request 2026-10-26): GET of the '
