@@ -2,7 +2,7 @@
 
 Pure data: Russian phrase (as the page shows it, whitespace collapsed) -> Ukrainian. Gallery buttons, a delivery
 stage and colours, and the descriptions written in the CRM for the cards UA-0021, UA-0022, UA-0023
-(found by the CARD-LANG-PREFLIGHT-20261030 coverage report).
+(found by the CARD-LANG-PREFLIGHT-20261030 coverage report and the R2 review list).
 """
 UK = {
     'Повторить': 'Повторити',
@@ -11,6 +11,10 @@ UK = {
     'Прибытие в Киев ожидается со дня на день': 'Прибуття до Києва очікується з дня на день',
     'Черный': 'Чорний',
     'Цвет: чёрный': 'Колір: чорний',
+    'Ориентировочная дата —': 'Орієнтовна дата —',
+    '146 л.с. при 6000 об/мин': '146 к.с. при 6000 об/хв',
+    '19,5 кгс·м при 4200 об/мин': '19,5 кгс·м при 4200 об/хв',
+    'Двигатель: 2.0 л, газ': 'Двигун: 2.0 л, газ',
     'Hyundai Sonata восьмого поколения — современный бизнес-седан, созданный в фирменной дизайнерской концепции '
     'Hyundai Sensuous Sportiness. Низкий силуэт, выразительные линии кузова и динамичные пропорции придают автомобилю '
     'характер элегантного четырёхдверного купе.':
