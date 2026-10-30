@@ -18,7 +18,7 @@ import tempfile
 ORIGIN = 'https://www.uaart.com.ua'
 CARD = re.compile(r'UA-[0-9]{4,}\.html')
 DIRS = {'uk': 'ua', 'ru': 'ru'}
-SOURCE_MARK = 'ua-card-lang-source'  # <meta name=... content=sha256 of the CRM page it was derived from>
+SOURCE_MARK = 'ua-card-lang-source'  # <meta name=... content=revision(): the CRM page and translations it came from>
 SKIP = {'script', 'style', 'code', 'pre', 'textarea'}
 ATTRIBUTES = {'title': 'title', 'aria-label': 'aria', 'placeholder': 'placeholder', 'alt': 'alt', 'content': 'content'}
 META_TEXT = re.compile(r'(?:description|title)$')
@@ -146,16 +146,19 @@ def _attributes_uk(tag, raw, attrs, words, missing):
 
 
 def absolute(source):
-    """Relative links and media of a /video/ page, made absolute for a page one folder deeper."""
+    """Relative links and media of a /video/ page (attributes and the gallery's photo list), made absolute
+    for a page one folder deeper."""
     def fix(match):
         value = match.group(3)
         if re.match(r'^(?:[a-z][a-z0-9+.-]*:|/|#)', value, re.I) or not value:
             return match.group(0)
         return '%s%s/video/%s%s' % (match.group(1), match.group(2), value, match.group(2))
-    return re.sub(r'(\s(?:src|href|poster|data-src)\s*=\s*)(["\'])(.*?)\2', fix, source)
+    source = re.sub(r'(\s(?:src|href|poster|data-src)\s*=\s*)(["\'])(.*?)\2', fix, source)
+    # The card gallery keeps its photo list in a script: 'foto/UA-XXXX/001.jpg'.
+    return re.sub(r'(["\'])foto/', r'\1/video/foto/', source)
 
 
-def head(source, name, lang, words=None):
+def head(source, name, lang):
     """lang on <html>, a self canonical and the hreflang links of both versions."""
     code = name[:-5]
     links = ''.join('<link rel="alternate" hreflang="%s" href="%s/video/%s/%s">' % (l, ORIGIN, DIRS[l], name)
@@ -170,13 +173,90 @@ def head(source, name, lang, words=None):
     return source
 
 
-def versions(source, name, words):
-    """{'ua/UA-XXXX.html': uk html, 'ru/UA-XXXX.html': ru html} or None with the untranslated phrases."""
+def versions(source, name, words, wanted):
+    """({'ua/UA-XXXX.html': uk html, 'ru/UA-XXXX.html': ru html}, []) or (None, the untranslated phrases)."""
     if not CARD.fullmatch(name):
         raise ValueError('CARD_NAME:' + name)
-    mark = '<meta name="%s" content="%s">' % (SOURCE_MARK, hashlib.sha256(source.encode()).hexdigest())
+    mark = '<meta name="%s" content="%s">' % (SOURCE_MARK, wanted)
     base = absolute(source).replace('</head>', mark + '</head>', 1)
     uk, missing = ukrainian(base, words)
     if missing:
         return None, sorted(set(missing))
     return {'%s/%s' % (DIRS['uk'], name): head(uk, name, 'uk'), '%s/%s' % (DIRS['ru'], name): head(base, name, 'ru')}, []
+
+
+def mark_of(page):
+    found = re.search(r'<meta name="%s" content="([0-9a-f]{64})">' % SOURCE_MARK, page)
+    return found and found.group(1)
+
+
+def revision(source, script):
+    """What a derived page was built from: the CRM page and the translations."""
+    return hashlib.sha256(source.encode() + b'\0' + script.encode()).hexdigest()
+
+
+def canonical(name, root):
+    """The canonical URL of a card: its Ukrainian version once it exists, else the card itself."""
+    if (Path(root)/DIRS['uk']/name).is_file() and (Path(root)/DIRS['ru']/name).is_file():
+        return '%s/video/%s/%s' % (ORIGIN, DIRS['uk'], name)
+    return '%s/video/%s' % (ORIGIN, name)
+
+
+def write(path, value):
+    """Atomic public file write; False when the file already holds value."""
+    path = Path(path)
+    if path.is_file() and path.read_bytes() == value:
+        return False
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary = tempfile.mkstemp(prefix='.card-lang-', dir=path.parent)
+    try:
+        with os.fdopen(descriptor, 'wb') as handle:
+            handle.write(value)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(temporary, 0o644)
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+    return True
+
+
+def reconcile(root, published):
+    """Language versions of the published cards (names) under root (/home/Carix/video).
+
+    A version is rebuilt only when its CRM page or the translations changed; versions of cards no longer
+    published are removed. Returns what changed; never raises for one card.
+    """
+    root = Path(root)
+    script = (root/'ua-site-languages.js').read_text(encoding='utf-8')
+    words = dictionary(script)
+    result = {'written': [], 'incomplete': {}, 'removed': [], 'failed': {}}
+    for name in sorted(published):
+        try:
+            source = (root/name).read_text(encoding='utf-8')
+            wanted = revision(source, script)
+            paths = [root/DIRS[lang]/name for lang in ('uk', 'ru')]
+            if all(p.is_file() and mark_of(p.read_text(encoding='utf-8')) == wanted for p in paths):
+                continue
+            pages, missing = versions(source, name, words, wanted)
+            if pages is None:
+                result['incomplete'][name] = missing[:20]
+                continue
+            for relative, page in pages.items():
+                write(root/relative, page.encode('utf-8'))
+            result['written'].append(name)
+        except Exception as error:  # one card never stops the others
+            result['failed'][name] = type(error).__name__ + ':' + str(error)[:160]
+    for lang in ('uk', 'ru'):
+        for path in sorted((root/DIRS[lang]).glob('UA-*.html')):
+            if path.name not in published:
+                path.unlink()
+                result['removed'].append('%s/%s' % (DIRS[lang], path.name))
+    return result
+
+
+def root_of(file_name):
+    """The public folder of a written card: its own folder for a path, else /home/Carix/video."""
+    path = Path(str(file_name))
+    return path.parent if path.is_absolute() else Path('/home/Carix/video')
