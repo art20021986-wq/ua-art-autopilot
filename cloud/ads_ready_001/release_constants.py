@@ -1,6 +1,6 @@
 """Google Ads readiness release (ADS-READY-001); no private source in this package."""
 # One place for the task names: make_release.py writes the requests, the controller accepts only these.
-PREVIEW_TASK = 'ADS-READY-PREFLIGHT-20261030'
+PREVIEW_TASK = 'ADS-READY-PREFLIGHT-20261030-R2'  # R1: order.js version clashed with MODEL-GALLERY-CLASSICS
 INSTALL_TASK = 'ADS-READY-INSTALL-20261030'
 PACKAGE = 'cloud/ads_ready_001'
 # Installed path -> file of this package.
