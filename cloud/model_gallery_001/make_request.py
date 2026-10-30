@@ -31,7 +31,7 @@ KINDS = {
 }
 MODULES = ['collect.py', 'search.py', 'years.py', 'angles.py', 'w245.py', 'classics2000.py',
            'fetch.py', 'make_request.py', 'picks.py',
-           'picks_w245.py']
+           'picks_w245.py', 'picks_classics2000.py']
 TESTS = [P + 'test_collect.py', P + 'test_search.py', P + 'test_years.py', P + 'test_angles.py', P + 'test_w245.py',
          P + 'test_classics2000.py',
          P + 'test_fetch.py']
@@ -48,10 +48,10 @@ def request(kind, day):
     controller = P + controller
     dependencies = [P + name for name in MODULES if P + name != controller]
     stem = {'20261026-R2': 'photos2_', '20261027': 'photos3_', '20261027-R2': 'photos4_',
-            '20261030': 'photos5_', '20261030-R2': 'photos6_'}.get(day, stem) if kind == 'fetch' else stem
+            '20261030': 'photos5_', '20261030-R2': 'photos6_', '20261030-R3': 'photos7_'}.get(day, stem) if kind == 'fetch' else stem
     stem = {'20261030-R2': 'w245r2_', '20261030-R3': 'w245r3_'}.get(day, stem) if kind == 'w245' else stem
     # The W245 search and its fetch cover one Japan card only.
-    one_card = kind == 'w245' or stem in ('photos5_', 'photos6_')
+    one_card = kind == 'w245' or stem in ('photos5_', 'photos6_', 'photos7_')
     evidence = [P + stem + '%s.json' % group for group in (('japan',) if one_card else GROUPS)]
     if kind == 'classics2000':
         evidence = [P + 'classics2000_japan_%d.json' % n for n in (1, 2, 3)]

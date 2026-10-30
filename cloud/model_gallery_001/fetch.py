@@ -11,20 +11,22 @@ from pathlib import Path
 
 import collect
 import picks as chosen
+import picks_classics2000
 import picks_w245
 
 TASKS = ('MODEL-GALLERY-FETCH-20261026', 'MODEL-GALLERY-FETCH-20261026-R2', 'MODEL-GALLERY-FETCH-20261027',
          'MODEL-GALLERY-FETCH-20261027-R2', 'MODEL-GALLERY-FETCH-20261030',
-         'MODEL-GALLERY-FETCH-20261030-R2')
+         'MODEL-GALLERY-FETCH-20261030-R2', 'MODEL-GALLERY-FETCH-20261030-R3')
 WIDTH = 960
 
 
 # Each run writes its own files, never over an earlier run's: photos, photos2 (2018–2023), photos3 (owner's views),
 # photos4 (views with the side checked), photos5 (the Japan B-Class card as W245, owner 2026-10-30), photos6 (W245
-# cars on alloy wheels).
-STEMS = dict(zip(TASKS, ('photos', 'photos2', 'photos3', 'photos4', 'photos5', 'photos6')))
+# cars on alloy wheels), photos7 (the Japan rare-car card, 8 left-hand-drive cars, owner 2026-10-30).
+STEMS = dict(zip(TASKS, ('photos', 'photos2', 'photos3', 'photos4', 'photos5', 'photos6', 'photos7')))
 # A run that fetches other picks than picks.py.
-TASK_PICKS = {'MODEL-GALLERY-FETCH-20261030': picks_w245.PICKS, 'MODEL-GALLERY-FETCH-20261030-R2': picks_w245.PICKS}
+TASK_PICKS = {'MODEL-GALLERY-FETCH-20261030': picks_w245.PICKS, 'MODEL-GALLERY-FETCH-20261030-R2': picks_w245.PICKS,
+              'MODEL-GALLERY-FETCH-20261030-R3': picks_classics2000.PICKS}
 
 
 def evidence_path(group, task=TASKS[-1]):
