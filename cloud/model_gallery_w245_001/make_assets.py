@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build w245_assets.py (run from the repository root; needs Pillow, only here, not on the server).
+"""Build card_assets.py (run from the repository root; needs Pillow, only here, not on the server).
 
 Reads the W245 photos picked by eye and fetched from Commons (cloud/model_gallery_001/photos6_japan.json, one per
 owner's view) and writes the card's gallery entry (generation line, photo list with author and licence) and the
@@ -50,7 +50,7 @@ def build():
              'ENTRY = %r' % {'generation': GENERATION, 'photos': photos}, 'FILES = {']
     for path, text in sorted(files.items()):
         lines += ['    %r: (' % path] + ['        %r' % text[i:i + 100] for i in range(0, len(text), 100)] + ['    ),']
-    (HERE/'w245_assets.py').write_text('\n'.join(lines + ['}']) + '\n')
+    (HERE/'card_assets.py').write_text('\n'.join(lines + ['}']) + '\n')
     return len(photos), sum(len(base64.b64decode(t)) for t in files.values())
 
 

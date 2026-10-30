@@ -15,12 +15,12 @@ from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 
 import asset_version  # noqa: E402
 import card  # noqa: E402
-import w245_assets  # noqa: E402
+import card_assets  # noqa: E402
 
 # Public evidence of each change: path -> text the page must contain.
 EXPECTED = {'/' + asset_version.PAGE: asset_version.CHECK_PAGE,
             '/' + card.DATA: '"version": "%s"' % asset_version.VERSION,
-            '/video/order/' + w245_assets.ENTRY['photos'][0]['path']: 'WEBP',
+            '/video/order/' + card_assets.ENTRY['photos'][0]['path']: 'WEBP',
             '/video/katalog.html': ''}
 
 
