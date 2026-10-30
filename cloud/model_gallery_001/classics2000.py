@@ -4,7 +4,9 @@
 Owner: 8 photos of different rare cars of 2000–2003, every one with the left-hand drive (important). Each candidate
 model gets a search by name and one by name + interior (the wheel side is seen best inside); a year in the file
 name must be 2000–2003, a file without a year is left to the eye. The wheel side is checked by eye on 640 px
-thumbnails. Same licence filter and evidence form as w245.py; one JSON (classics2000_japan.json).
+thumbnails. Same licence filter and evidence form as w245.py.
+R2: one JSON was over the 16 MB evidence file limit; the models are split into 3 JSON files
+(classics2000_japan_<n>.json).
 """
 import os
 from pathlib import Path
@@ -13,8 +15,9 @@ import re
 import collect
 from search import search
 
-TASKS = ('MODEL-GALLERY-CLASSICS2000-20261030',)
-EVIDENCE = collect.PACKAGE + '/classics2000_japan.json'
+TASKS = ('MODEL-GALLERY-CLASSICS2000-20261030', 'MODEL-GALLERY-CLASSICS2000-20261030-R2')
+PARTS = 3
+EVIDENCE = [collect.PACKAGE + '/classics2000_japan_%d.json' % n for n in range(1, PARTS + 1)]
 FIRST, LAST = 2000, 2003
 THUMB = 640
 PER_MODEL = {'outside': 8, 'interior': 4}
@@ -72,15 +75,17 @@ def model(fetch, names):
 def execute(env, *, root=None, fetch=collect.get):
     root = collect.ROOT if root is None else Path(root)
     request_sha, run_id = collect.validate_identity(env, root, TASKS)
-    models = {key: model(fetch, names) for key, names in MODELS.items()}
-    collect.write(root, EVIDENCE, collect.dump({'task_id': env['UAART_TASK_ID'], 'run_id': run_id,
+    keys = list(MODELS)
+    for n, path in enumerate(EVIDENCE):
+        models = {key: model(fetch, MODELS[key]) for key in keys[n::PARTS]}
+        collect.write(root, path, collect.dump({'task_id': env['UAART_TASK_ID'], 'run_id': run_id,
                                                 'http_methods': ['GET'], 'remote_write_count': 0,
                                                 'models': models}))
     receipt = {'task_id': env['UAART_TASK_ID'], 'status': 'FINISHED', 'task_class': 'STANDARD',
                'target_environment': 'shadow', 'live_source_environment': 'wikimedia_commons', 'tests': 'PASS',
                'tests_scope': 'READ_ONLY_PROBE', 'unexpected_changes': 0, 'rollback_ready': True,
                'rollback_ready_scope': 'NO_REMOTE_WRITES', 'production_required': False,
-               'request_sha256': request_sha, 'run_id': run_id, 'evidence_path': [EVIDENCE]}
+               'request_sha256': request_sha, 'run_id': run_id, 'evidence_path': EVIDENCE}
     collect.write(root, env['UAART_RECEIPT_PATH'], collect.dump(receipt))
     return receipt
 
