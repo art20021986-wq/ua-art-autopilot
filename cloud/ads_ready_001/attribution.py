@@ -1,7 +1,8 @@
 """Where a site enquiry came from: the ad click ids and utm tags the page kept from its landing URL.
 
 Installed as ua_order/attribution.py. contract.normalize takes the optional «attribution» object off
-every schema here and keeps the clean values with the request; crm.detail_view shows them to the owner.
+every schema here and keeps the clean values with the request; crm.detail_view shows them to the owner
+(with_source: under the text, and under the last message when a long enquiry is sent in parts).
 Tracking data never costs a lead: an unknown key or a malformed value is dropped, not rejected.
 The click id is kept as sent (case-sensitive) for a later Google Ads conversion import.
 """
@@ -47,3 +48,17 @@ def lines(attribution):
     fields = [('Источник', source(attribution)), ('Кампания', attribution.get('utm_campaign', '')),
               ('Ключ', attribution.get('utm_term', '')), ('Канал', attribution.get('utm_medium', ''))]
     return [f'<b>{escape(key)}:</b> {escape(value)}' for key, value in fields if value]
+
+
+def with_source(view, attribution):
+    """The owner view with the source lines added; a view sent in parts gets them in its last part."""
+    extra = '\n'.join(lines(attribution))
+    if not extra:
+        return view
+    view = {**view, 'text': view['text'] + '\n' + extra}
+    if 'parts' in view:
+        last = view['parts'][-1]
+        # Telegram's 4096 limit: a full last part keeps its size and the source becomes one more message.
+        tail = [last + '\n' + extra] if len(last) + len(extra) < 4000 else [last, extra]
+        view['parts'] = [*view['parts'][:-1], *tail]
+    return view
