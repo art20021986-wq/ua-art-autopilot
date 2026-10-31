@@ -7,21 +7,23 @@
   "created_at": "2026-10-31T01:58:52Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-31T01:58:52Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-31T02:05:01Z",
+  "heartbeat_at": "2026-10-31T02:05:01Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41157757669",
     "task_id": "MAPS-LINK-PREFLIGHT-20261031",
     "task_sha256": "ec9c5d68114e1ec7a1d2ff2a9ac63db7f1a0e5091d1b4d9372a87dc51d1d697b"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-cf49fa916d63544a-1eecc9aa0b50e326",
   "receipt_path": "state/receipts/MAPS-LINK-PREFLIGHT-20261031.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "4d98db864b3be530ad615f77b7b5e7a57a33d77085c9fca27b817d01ee3c2c4a",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MAPS-LINK-PREFLIGHT-20261031.json",
   "request_sha256": "ec9c5d68114e1ec7a1d2ff2a9ac63db7f1a0e5091d1b4d9372a87dc51d1d697b",
   "resource_locks": [
@@ -29,8 +31,32 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "267f190f122f774550b95d4fe138788db8438c45",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 90573799424,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.515
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-31T01:58:52Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "f7d870cfa10f995def25d35bed420b543e7a1997c9d1ea748bd4f1d1989e3d7b",
+    "file_sha256": {
+      "cloud/maps_link_001/candidate_builder.py": "898ee579576d041767c2fd24e043a2c68a90798528d916e48548dea564283484",
+      "cloud/maps_link_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/maps_link_001/deployment_bootstrap.py": "3d34568dcf09908d323d2b0c45a07dc6bdcd3fe7758263a58b5f96df77fb4945",
+      "cloud/maps_link_001/deployment_remote.py": "2b98654e5bb1731928c99c2d7f54f07cfbf6b3380cfa6a8471abff8876ee74ea",
+      "cloud/maps_link_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/maps_link_001/deployment_transport.py": "cd7d4fe5c429493004ce66e651581d09eb4dfa44dbb5e25d71b7c7c444bdf74a",
+      "cloud/maps_link_001/make_release.py": "0b93967db0ff9b429729a9fe83ea937d78093d8b3ab1bee68c4bbf34891ca00d",
+      "cloud/maps_link_001/release_constants.py": "9f65054227597ba7b0fc7fc1d3afb945d0aa11bc3cf52369b7ee9e724c8bf9e7",
+      "cloud/maps_link_001/test_deployment.py": "e0b2c41224b45af2e4b5b5626a3bc556f9609be6bac12b7dc1985a446e86369c",
+      "cloud/maps_link_001/test_release.py": "ef2e40908db2357a091220234321d68226f6a662b3968a7da12952cb4fddf887"
+    }
+  },
+  "updated_at": "2026-10-31T02:05:01Z"
 }
