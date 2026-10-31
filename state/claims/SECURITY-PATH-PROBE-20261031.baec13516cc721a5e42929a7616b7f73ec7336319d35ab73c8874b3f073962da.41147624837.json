@@ -7,21 +7,23 @@
   "created_at": "2026-10-31T00:00:41Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-31T00:00:41Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-10-31T00:01:44Z",
+  "heartbeat_at": "2026-10-31T00:01:44Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41147624837",
     "task_id": "SECURITY-PATH-PROBE-20261031",
     "task_sha256": "baec13516cc721a5e42929a7616b7f73ec7336319d35ab73c8874b3f073962da"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-8c6b0d57b8f345e4-89ac7be66f6b4871",
   "receipt_path": "state/receipts/SECURITY-PATH-PROBE-20261031.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "0b44a0c430168428429f3704d73d26c8da22bd25397d00d92e86fa01be3f7325",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SECURITY-PATH-PROBE-20261031.json",
   "request_sha256": "baec13516cc721a5e42929a7616b7f73ec7336319d35ab73c8874b3f073962da",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "ecd3e736c1f7bf0eb6f432f5336a9da5c761f166",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 90574798848,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 268435456,
+    "status": "PASS",
+    "usage_percent": 41.514
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-31T00:00:41Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "dd505aa1535576ecd0f4ba5b6bfe3e1d657c16edcedcc0edec18247f079e3f02",
+    "file_sha256": {
+      "cloud/security_path_probe_20261031/test_controller.py": "3225403e4f179f949a172cd895d9209ef0312311b0726b9bfc6088a7d6be3633"
+    }
+  },
+  "updated_at": "2026-10-31T00:01:44Z"
 }

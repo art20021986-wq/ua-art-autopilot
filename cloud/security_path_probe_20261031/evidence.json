@@ -1,0 +1,150 @@
+{
+  "database_served": [],
+  "http_methods": [
+    "GET"
+  ],
+  "log_days": 11,
+  "log_lines": 45726,
+  "public": {
+    "/admin": {
+      "bytes": 0,
+      "content_type": "",
+      "http": 404,
+      "sqlite_header": false
+    },
+    "/crm.db": {
+      "bytes": 0,
+      "content_type": "",
+      "http": 404,
+      "sqlite_header": false
+    },
+    "/video/%2e%2e/crm.db": {
+      "bytes": 0,
+      "content_type": "",
+      "http": 404,
+      "sqlite_header": false
+    },
+    "/video/../crm.db": {
+      "bytes": 0,
+      "content_type": "",
+      "http": 404,
+      "sqlite_header": false
+    },
+    "/video/crm.db": {
+      "bytes": 0,
+      "content_type": "",
+      "http": 404,
+      "sqlite_header": false
+    }
+  },
+  "remote_write_count": 0,
+  "run_id": "41147624837",
+  "suspect_count": 13,
+  "suspect_requests": [
+    {
+      "bytes": 340,
+      "client": "meta-externalagent",
+      "day": "28/Oct/2026",
+      "method": "GET",
+      "path": "/admin",
+      "status": 404
+    },
+    {
+      "bytes": 340,
+      "client": "meta-externalagent",
+      "day": "28/Oct/2026",
+      "method": "GET",
+      "path": "/video/../crm.db",
+      "status": 404
+    },
+    {
+      "bytes": 340,
+      "client": "meta-externalagent",
+      "day": "28/Oct/2026",
+      "method": "GET",
+      "path": "/admin",
+      "status": 404
+    },
+    {
+      "bytes": 340,
+      "client": "meta-externalagent",
+      "day": "28/Oct/2026",
+      "method": "GET",
+      "path": "/crm.db",
+      "status": 404
+    },
+    {
+      "bytes": 340,
+      "client": "other",
+      "day": "24/Oct/2026",
+      "method": "GET",
+      "path": "/.git/config",
+      "status": 404
+    },
+    {
+      "bytes": 340,
+      "client": "other",
+      "day": "23/Oct/2026",
+      "method": "GET",
+      "path": "/.git/config",
+      "status": 404
+    },
+    {
+      "bytes": 340,
+      "client": "other",
+      "day": "23/Oct/2026",
+      "method": "GET",
+      "path": "/.git/config",
+      "status": 404
+    },
+    {
+      "bytes": 340,
+      "client": "other",
+      "day": "23/Oct/2026",
+      "method": "GET",
+      "path": "/.git/config",
+      "status": 404
+    },
+    {
+      "bytes": 447,
+      "client": "other",
+      "day": "22/Oct/2026",
+      "method": "GET",
+      "path": "/pathscan-b1d09664562a-nope.env",
+      "status": 404
+    },
+    {
+      "bytes": 447,
+      "client": "other",
+      "day": "22/Oct/2026",
+      "method": "GET",
+      "path": "/.env.txt",
+      "status": 404
+    },
+    {
+      "bytes": 447,
+      "client": "other",
+      "day": "22/Oct/2026",
+      "method": "GET",
+      "path": "/.env.save",
+      "status": 404
+    },
+    {
+      "bytes": 447,
+      "client": "other",
+      "day": "22/Oct/2026",
+      "method": "GET",
+      "path": "/.env.swp",
+      "status": 404
+    },
+    {
+      "bytes": 447,
+      "client": "other",
+      "day": "22/Oct/2026",
+      "method": "GET",
+      "path": "/.git/config",
+      "status": 404
+    }
+  ],
+  "task_id": "SECURITY-PATH-PROBE-20261031"
+}
