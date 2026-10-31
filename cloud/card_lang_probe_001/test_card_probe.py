@@ -60,21 +60,18 @@ class TransportTests(unittest.TestCase):
 
 
 class RemoteTests(unittest.TestCase):
-    def test_returns_language_script_and_card_writers(self):
+    def test_lists_map_links(self):
         with tempfile.TemporaryDirectory() as temp:
             home = Path(temp)
             (home / 'video').mkdir()
-            (home / 'video' / 'ua-site-languages.js').write_text("var d = 1;")
-            (home / 'publikaciya.py').write_text("TOKEN = 'abc'\ndef _zapisat_atomarno(put, tekst):\n    os.replace(a, b)\n"
-                                                 "x = 1\n")
-            (home / 'other.py').write_text("print(1)\n")
+            (home / 'stranica.py').write_text("M = 'https://maps.app.goo.gl/AbC123'\nTOKEN = 'x'\n")
+            (home / 'video' / 'index.html').write_text("<a href='https://maps.app.goo.gl/AbC123'>a</a><a href=\"https://www.google.com/maps/place/X\">b</a>")
+            (home / 'other.py').write_text('print(1)\n')
             value = remote.report(home)
-        self.assertEqual(value['files']['video/ua-site-languages.js']['source'], 'var d = 1;')
-        self.assertIsNone(value['files']['ua-site-languages.js'])
-        self.assertEqual(list(value['writers']), ['publikaciya.py'])
-        lines = [m['line'] for m in value['writers']['publikaciya.py']['matches']]
-        self.assertEqual(lines, [2, 3])
-        self.assertIn('[REDACTED]', value['writers']['publikaciya.py']['matches'][0]['context'][0])
+        self.assertEqual(value['maps'], {'stranica.py': {'https://maps.app.goo.gl/AbC123': 1},
+                                         'video/index.html': {'https://maps.app.goo.gl/AbC123': 1,
+                                                              'https://www.google.com/maps/place/X': 1}})
+        self.assertEqual(value['files'], {})
 
 
 if __name__ == '__main__':
