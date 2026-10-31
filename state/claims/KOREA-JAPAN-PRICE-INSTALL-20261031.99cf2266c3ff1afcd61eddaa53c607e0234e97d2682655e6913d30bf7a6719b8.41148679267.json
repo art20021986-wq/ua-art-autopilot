@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "235c2807f5bdc87fefd7538fdbfed18b145ea3e8024d923a9bc9019590e4d97a",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-31T00:13:12Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-10-31T00:18:01Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41148679267",
     "task_id": "KOREA-JAPAN-PRICE-INSTALL-20261031",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41148679267-99cf2266c3ff1afc",
   "production_transaction_path": "state/transactions/KOREA-JAPAN-PRICE-INSTALL-20261031.99cf2266c3ff1afcd61eddaa53c607e0234e97d2682655e6913d30bf7a6719b8.41148679267.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-8e1228ef554344c9-9120ca157e063a25",
   "receipt_path": "state/receipts/KOREA-JAPAN-PRICE-INSTALL-20261031.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/korea_japan_price_001/test_release.py": "b5666a3b1155e669a2c102fd38e58c62d1601f8790a3e1c3ded57fa675c7b1dd"
     }
   },
-  "updated_at": "2026-10-31T00:13:12Z"
+  "updated_at": "2026-10-31T00:18:01Z"
 }
