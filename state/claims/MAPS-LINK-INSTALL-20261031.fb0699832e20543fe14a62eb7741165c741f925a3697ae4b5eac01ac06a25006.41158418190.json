@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "f733c1bf8e7e0de3664763a30b84b5c7816da4cad253d00d4b9f74951f357514",
   "autostart_source_commit": "088bced9171320a9b71323ec0d7b7aff30d5dc87",
   "created_at": "2026-10-31T02:07:21Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "1481a72e2ed062d3608a16433fcbcd02eea7a2bb1a05bd0f1771a16eba5fe2d9",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-31T02:07:21Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-10-31T02:08:39Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "41158418190",
     "task_id": "MAPS-LINK-INSTALL-20261031",
     "task_sha256": "fb0699832e20543fe14a62eb7741165c741f925a3697ae4b5eac01ac06a25006"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 234.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 201.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-41158418190-fb0699832e20543f",
+  "production_transaction_path": "state/transactions/MAPS-LINK-INSTALL-20261031.fb0699832e20543fe14a62eb7741165c741f925a3697ae4b5eac01ac06a25006.41158418190.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "card-ua-0001-bd5af11a345f8c18",
   "receipt_path": "state/receipts/MAPS-LINK-INSTALL-20261031.json",
   "receipt_validation_status": "PENDING",
@@ -51,8 +76,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "0692bbb6bf46aace1efe98c93904bac6c915a423",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 294.65,
+    "allowed": true,
+    "evidence_path": "state/storage/MAPS-LINK-INSTALL-20261031.json",
+    "evidence_sha256": "07d1c631dd9bf2cebe401a868062770a25e4ba5ab410674e80f70c636183ea24",
+    "free_bytes": 25542249984,
+    "heavy": true,
+    "measured_at": "2026-10-31T02:03:42.786602+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 27.022142902857144
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-10-31T02:07:21Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "f7d870cfa10f995def25d35bed420b543e7a1997c9d1ea748bd4f1d1989e3d7b",
+    "file_sha256": {
+      "cloud/maps_link_001/candidate_builder.py": "898ee579576d041767c2fd24e043a2c68a90798528d916e48548dea564283484",
+      "cloud/maps_link_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/maps_link_001/deployment_bootstrap.py": "3d34568dcf09908d323d2b0c45a07dc6bdcd3fe7758263a58b5f96df77fb4945",
+      "cloud/maps_link_001/deployment_remote.py": "2b98654e5bb1731928c99c2d7f54f07cfbf6b3380cfa6a8471abff8876ee74ea",
+      "cloud/maps_link_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/maps_link_001/deployment_transport.py": "cd7d4fe5c429493004ce66e651581d09eb4dfa44dbb5e25d71b7c7c444bdf74a",
+      "cloud/maps_link_001/make_release.py": "0b93967db0ff9b429729a9fe83ea937d78093d8b3ab1bee68c4bbf34891ca00d",
+      "cloud/maps_link_001/release_constants.py": "9f65054227597ba7b0fc7fc1d3afb945d0aa11bc3cf52369b7ee9e724c8bf9e7",
+      "cloud/maps_link_001/test_deployment.py": "e0b2c41224b45af2e4b5b5626a3bc556f9609be6bac12b7dc1985a446e86369c",
+      "cloud/maps_link_001/test_release.py": "ef2e40908db2357a091220234321d68226f6a662b3968a7da12952cb4fddf887"
+    }
+  },
+  "updated_at": "2026-10-31T02:08:39Z"
 }
