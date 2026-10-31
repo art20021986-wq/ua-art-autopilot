@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "1481a72e2ed062d3608a16433fcbcd02eea7a2bb1a05bd0f1771a16eba5fe2d9",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-10-31T02:14:46Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-10-31T02:27:35Z",
+  "heartbeat_at": "2026-10-31T02:27:35Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "41158418190",
     "task_id": "MAPS-LINK-INSTALL-20261031",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 717.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 226.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-41158418190-fb0699832e20543f",
   "production_transaction_path": "state/transactions/MAPS-LINK-INSTALL-20261031.fb0699832e20543fe14a62eb7741165c741f925a3697ae4b5eac01ac06a25006.41158418190.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "card-ua-0001-bd5af11a345f8c18",
   "receipt_path": "state/receipts/MAPS-LINK-INSTALL-20261031.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "6c03f016c89da975614eb46624d04bdb710bb4b4b4a51ca61d374ad5ee28f9dd",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MAPS-LINK-INSTALL-20261031.json",
   "request_sha256": "fb0699832e20543fe14a62eb7741165c741f925a3697ae4b5eac01ac06a25006",
   "resource_locks": [
@@ -91,7 +114,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "f7d870cfa10f995def25d35bed420b543e7a1997c9d1ea748bd4f1d1989e3d7b",
     "file_sha256": {
@@ -107,5 +130,5 @@
       "cloud/maps_link_001/test_release.py": "ef2e40908db2357a091220234321d68226f6a662b3968a7da12952cb4fddf887"
     }
   },
-  "updated_at": "2026-10-31T02:14:46Z"
+  "updated_at": "2026-10-31T02:27:35Z"
 }
