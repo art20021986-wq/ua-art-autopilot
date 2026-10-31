@@ -2,8 +2,8 @@
 
 Reads only. The card page generator and the modules that touch card HTML, the sitemap and the language
 script's loader are returned in full, sanitized (credential-like lines redacted, foreign URLs and long numbers
-masked). R1 read the card generator and sample pages; R2 reads the language script and every
-top-level module line that writes or rebuilds a card page. Each file's sha256 is kept for a later exact edit.
+masked). R1 read the card generator and sample pages; R2 read the language script and the card
+writers; R3 lists every Google Maps link in the top-level modules and public pages. Each file's sha256 is kept for a later exact edit.
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -16,10 +16,9 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-# R2: every top-level module line that writes or rebuilds a card page (with a little context).
-WRITERS = re.compile(r'sobrat_kartochku|_zapisat_atomarno|_peresobrat|opublikovat\(|perestroit|rebuild|'
-                     r'UA-[0-9{%].*\.html|kod\s*\+\s*["\']\.html|\.html["\']\s*%|write_text\(|os\.replace\(')
-FULL = ('ua-site-languages.js', 'video/ua-site-languages.js')
+FULL = ()
+# R3 (MAPS): every Google Maps link in the top-level modules and public pages (public URLs, not masked).
+MAPS = re.compile(r'https?://(?:maps\.app\.goo\.gl|goo\.gl/maps|(?:www\.)?google\.[a-z.]+/maps|maps\.google\.[a-z.]+)[^\s\'"<>)\\]*')
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024  # R2: ua-site-languages.js is ~700 KB
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -62,16 +61,13 @@ def report(home=None):
         lines = raw.decode('utf-8', 'replace').splitlines()
         files[name] = {'sha256': hashlib.sha256(raw).hexdigest(),
                        'lines': [{'line': n + 1, 'text': sanitized_line(l)} for n, l in enumerate(lines) if pattern.search(l)][:200]}
-    writers = {}
-    for path in sorted(HOME.glob('*.py')):
-        if not path.is_file() or path.is_symlink() or path.stat().st_size > MAX_SOURCE:
-            continue
-        lines = path.read_text(encoding='utf-8', errors='replace').splitlines()
-        found = [{'line': n + 1, 'context': [sanitized_line(x) for x in lines[max(0, n - 2):n + 3]]}
-                 for n, line in enumerate(lines) if WRITERS.search(line)]
-        if found:
-            writers[path.name] = {'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'matches': found[:80]}
-    return {'status': 'PASS', 'files': files, 'writers': writers}
+    maps = {}
+    for path in sorted(list(HOME.glob('*.py')) + list((HOME/'video').glob('*.html')) + list((HOME/'site').glob('*.html'))):
+        if path.is_file() and not path.is_symlink() and path.stat().st_size <= MAX_SOURCE:
+            found = MAPS.findall(path.read_text(encoding='utf-8', errors='replace'))
+            if found:
+                maps[str(path.relative_to(HOME))] = {url: found.count(url) for url in sorted(set(found))}
+    return {'status': 'PASS', 'files': files, 'maps': maps}
 
 
 def main():
