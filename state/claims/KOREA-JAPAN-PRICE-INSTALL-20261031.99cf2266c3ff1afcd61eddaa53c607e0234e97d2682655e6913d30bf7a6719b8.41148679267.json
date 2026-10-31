@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-JAPAN-PRICE-INSTALL-20261031.99cf2266c3ff1afcd61eddaa53c607e0234e97d2682655e6913d30bf7a6719b8.json",
+  "autostart_ledger_sha256": "97aa29af5c90be2779bb85de1d97e46ce39a74db2e4c1eda871fd321df0a563c",
+  "autostart_source_commit": "70ad2f2c8cf4fa8bd6c20467e2f0662a4e0c8961",
+  "created_at": "2026-10-31T00:11:57Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-10-31T00:11:57Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "41148679267",
+    "task_id": "KOREA-JAPAN-PRICE-INSTALL-20261031",
+    "task_sha256": "99cf2266c3ff1afcd61eddaa53c607e0234e97d2682655e6913d30bf7a6719b8"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-8e1228ef554344c9-9120ca157e063a25",
+  "receipt_path": "state/receipts/KOREA-JAPAN-PRICE-INSTALL-20261031.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/KOREA-JAPAN-PRICE-INSTALL-20261031.json",
+  "request_sha256": "99cf2266c3ff1afcd61eddaa53c607e0234e97d2682655e6913d30bf7a6719b8",
+  "resource_locks": [
+    "PATH_SCOPE:8e1228ef554344c9"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "6f354fed032db5882731073f75bc53ce13e50223",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-10-31T00:11:57Z"
+}
