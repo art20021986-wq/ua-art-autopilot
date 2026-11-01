@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SPEED-INSTALL-20261101.a51f333b47a6e7b8774528c81572b4dc0ab0647d65ebc9574de38bae380e8f99.json",
+  "autostart_ledger_sha256": "d4f1d8b74e2f980446470d1f4d431a2c6a30c7287b2ab7a285f4be80d31a405f",
+  "autostart_source_commit": "481991bb2ea35de8dcfe57e692520bd7c726b35c",
+  "created_at": "2026-11-01T14:30:03Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41316386480",
+    "task_id": "SPEED-INSTALL-20261101",
+    "task_sha256": "a51f333b47a6e7b8774528c81572b4dc0ab0647d65ebc9574de38bae380e8f99"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-476fb8ab806c7723-140b48b35ddf1641",
+  "request_path": "tasks/requests/SPEED-INSTALL-20261101.json",
+  "resource_locks": [
+    "PATH_SCOPE:476fb8ab806c7723"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
