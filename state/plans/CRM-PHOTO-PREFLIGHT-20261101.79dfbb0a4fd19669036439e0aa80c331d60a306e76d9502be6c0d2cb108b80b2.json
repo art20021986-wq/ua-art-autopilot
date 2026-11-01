@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-PHOTO-PREFLIGHT-20261101.79dfbb0a4fd19669036439e0aa80c331d60a306e76d9502be6c0d2cb108b80b2.json",
+  "autostart_ledger_sha256": "183a94c4abddd74be44575a264b625f0a14f8d4c7b77544a716c7daafea0bebd",
+  "autostart_source_commit": "ae18bea55626b19e422dc664f4aa259280b34eab",
+  "created_at": "2026-11-01T12:08:50Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41304959041",
+    "task_id": "CRM-PHOTO-PREFLIGHT-20261101",
+    "task_sha256": "79dfbb0a4fd19669036439e0aa80c331d60a306e76d9502be6c0d2cb108b80b2"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/CRM-PHOTO-PREFLIGHT-20261101.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
