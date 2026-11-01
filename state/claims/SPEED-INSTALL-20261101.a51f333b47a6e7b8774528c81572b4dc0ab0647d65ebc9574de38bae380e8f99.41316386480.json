@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "518f9b78faa1fd41e48740b118fc13535f452d26f34e5836a584ce348e81f02a",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "STOP_AFTER_VERIFIED_ROLLBACK",
+      "at": "2026-11-01T14:56:57Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 41316386480",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "14391d67c9257200"
+    }
+  ],
   "heartbeat_at": "2026-11-01T14:36:18Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -43,7 +54,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41316386480-a51f333b47a6e7b8",
   "production_transaction_path": "state/transactions/SPEED-INSTALL-20261101.a51f333b47a6e7b8774528c81572b4dc0ab0647d65ebc9574de38bae380e8f99.41316386480.json",
-  "production_transaction_status": "ROLLING_BACK",
+  "production_transaction_status": "ROLLED_BACK",
   "queue_key": "path_scope-476fb8ab806c7723-140b48b35ddf1641",
   "receipt_path": "state/receipts/SPEED-INSTALL-20261101.json",
   "receipt_validation_status": "PENDING",
@@ -69,7 +80,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "ROLLED_BACK",
   "trusted_package": {
     "controller_sha256": "6538b9d9288c0757803f9bb4d9f71ef5fb957d54efe6f08b9dfaca278b5c794d",
     "file_sha256": {
@@ -87,5 +98,5 @@
       "cloud/speed_001/ua_tg_script.py": "ce14c5e71135fd990fdbed7a3d7934f634c0437c43ee07a592073a727cfaf1b9"
     }
   },
-  "updated_at": "2026-11-01T14:46:54Z"
+  "updated_at": "2026-11-01T14:56:57Z"
 }
