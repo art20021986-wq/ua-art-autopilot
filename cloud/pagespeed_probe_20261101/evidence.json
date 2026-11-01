@@ -1,0 +1,306 @@
+{
+  "environment": {
+    "benchmark_index": 3989,
+    "lighthouse": "13.5.0",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36"
+  },
+  "node": "v24.22.1",
+  "package": "lighthouse@13.5.0",
+  "pages": {
+    "/video/index.html": {
+      "failing": [
+        {
+          "display": "Est savings of 2 KiB",
+          "id": "cache-insight",
+          "score": 50,
+          "title": "Use efficient cache lifetimes"
+        },
+        {
+          "display": "Est savings of 906 KiB",
+          "id": "image-delivery-insight",
+          "score": 0,
+          "title": "Improve image delivery"
+        },
+        {
+          "display": "6.0 s",
+          "id": "interactive",
+          "score": 65,
+          "title": "Time to Interactive"
+        },
+        {
+          "display": "270 ms",
+          "id": "max-potential-fid",
+          "score": 42,
+          "title": "Max Potential First Input Delay"
+        },
+        {
+          "display": "Est savings of 820 ms",
+          "id": "modern-http-insight",
+          "score": 0,
+          "title": "Modern HTTP"
+        },
+        {
+          "display": "",
+          "id": "network-dependency-tree-insight",
+          "score": 0,
+          "title": "Network dependency tree"
+        },
+        {
+          "display": "Est savings of 70 ms",
+          "id": "render-blocking-insight",
+          "score": 0,
+          "title": "Render-blocking requests"
+        },
+        {
+          "display": "Est savings of 3 KiB",
+          "id": "unminified-css",
+          "score": 0,
+          "title": "Minify CSS"
+        },
+        {
+          "display": "Est savings of 70 KiB",
+          "id": "unused-javascript",
+          "score": 50,
+          "title": "Reduce unused JavaScript"
+        }
+      ],
+      "final_url": "https://www.uaart.com.ua/video/index.html",
+      "lcp_element": "<img src=\"/video/order/home-d3bc2918f4b0.jpg\" alt=\"Авто під замовлення — UA ART COMPANY, Київ\" width=\"885\" height=\"590\" fetchpriority=\"high\" decoding=\"async\">",
+      "lcp_parts_ms": {
+        "elementRenderDelay": 33,
+        "resourceLoadDelay": 75,
+        "resourceLoadDuration": 151,
+        "timeToFirstByte": 426
+      },
+      "metrics": {
+        "cls": 0,
+        "fcp_ms": 1125,
+        "lcp_ms": 3228,
+        "si_ms": 2411,
+        "tbt_ms": 118
+      },
+      "performance": 92,
+      "runs_performance": [
+        92,
+        92,
+        86
+      ],
+      "runtime_error": "",
+      "seo": 100
+    },
+    "/video/podbor.html": {
+      "failing": [
+        {
+          "display": "Est savings of 6 KiB",
+          "id": "cache-insight",
+          "score": 50,
+          "title": "Use efficient cache lifetimes"
+        },
+        {
+          "display": "5.2 s",
+          "id": "interactive",
+          "score": 74,
+          "title": "Time to Interactive"
+        },
+        {
+          "display": "130 ms",
+          "id": "max-potential-fid",
+          "score": 89,
+          "title": "Max Potential First Input Delay"
+        },
+        {
+          "display": "Est savings of 900 ms",
+          "id": "modern-http-insight",
+          "score": 0,
+          "title": "Modern HTTP"
+        },
+        {
+          "display": "",
+          "id": "network-dependency-tree-insight",
+          "score": 0,
+          "title": "Network dependency tree"
+        },
+        {
+          "display": "Est savings of 1,350 ms",
+          "id": "render-blocking-insight",
+          "score": 0,
+          "title": "Render-blocking requests"
+        },
+        {
+          "display": "Est savings of 6 KiB",
+          "id": "unminified-javascript",
+          "score": 50,
+          "title": "Minify JavaScript"
+        },
+        {
+          "display": "Est savings of 70 KiB",
+          "id": "unused-javascript",
+          "score": 0,
+          "title": "Reduce unused JavaScript"
+        }
+      ],
+      "final_url": "https://www.uaart.com.ua/video/podbor.html",
+      "lcp_element": "<p id=\"ua-seo-order-intro\" style=\"margin:12px 0;color:inherit\">",
+      "lcp_parts_ms": {
+        "elementRenderDelay": 1207,
+        "timeToFirstByte": 143
+      },
+      "metrics": {
+        "cls": 0,
+        "fcp_ms": 2301,
+        "lcp_ms": 5212,
+        "si_ms": 3294,
+        "tbt_ms": 106
+      },
+      "performance": 77,
+      "runs_performance": [
+        77,
+        76,
+        77
+      ],
+      "runtime_error": "",
+      "seo": 100
+    },
+    "/video/seo/ua/kia-k5-koreya-kyiv.html": {
+      "failing": [
+        {
+          "display": "Est savings of 1,147 KiB",
+          "id": "image-delivery-insight",
+          "score": 50,
+          "title": "Improve image delivery"
+        },
+        {
+          "display": "5.2 s",
+          "id": "interactive",
+          "score": 74,
+          "title": "Time to Interactive"
+        },
+        {
+          "display": "",
+          "id": "modern-http-insight",
+          "score": 50,
+          "title": "Modern HTTP"
+        },
+        {
+          "display": "",
+          "id": "network-dependency-tree-insight",
+          "score": 0,
+          "title": "Network dependency tree"
+        },
+        {
+          "display": "Est savings of 70 KiB",
+          "id": "unused-javascript",
+          "score": 50,
+          "title": "Reduce unused JavaScript"
+        }
+      ],
+      "final_url": "https://www.uaart.com.ua/video/seo/ua/kia-k5-koreya-kyiv.html",
+      "lcp_element": "<p>",
+      "lcp_parts_ms": {
+        "elementRenderDelay": 30,
+        "timeToFirstByte": 109
+      },
+      "metrics": {
+        "cls": 0,
+        "fcp_ms": 796,
+        "lcp_ms": 796,
+        "si_ms": 796,
+        "tbt_ms": 19
+      },
+      "performance": 100,
+      "runs_performance": [
+        100,
+        100,
+        100
+      ],
+      "runtime_error": "",
+      "seo": 100
+    },
+    "/video/ua/UA-0013.html": {
+      "failing": [
+        {
+          "display": "Est savings of 4 KiB",
+          "id": "cache-insight",
+          "score": 50,
+          "title": "Use efficient cache lifetimes"
+        },
+        {
+          "display": "Est savings of 2,543 KiB",
+          "id": "image-delivery-insight",
+          "score": 50,
+          "title": "Improve image delivery"
+        },
+        {
+          "display": "6.5 s",
+          "id": "interactive",
+          "score": 59,
+          "title": "Time to Interactive"
+        },
+        {
+          "display": "Est savings of 300 ms",
+          "id": "modern-http-insight",
+          "score": 0,
+          "title": "Modern HTTP"
+        },
+        {
+          "display": "",
+          "id": "network-dependency-tree-insight",
+          "score": 0,
+          "title": "Network dependency tree"
+        },
+        {
+          "display": "Est savings of 1,290 ms",
+          "id": "render-blocking-insight",
+          "score": 0,
+          "title": "Render-blocking requests"
+        },
+        {
+          "display": "Total size was 3,038 KiB",
+          "id": "total-byte-weight",
+          "score": 50,
+          "title": "Avoid enormous network payloads"
+        },
+        {
+          "display": "Est savings of 6 KiB",
+          "id": "unminified-javascript",
+          "score": 50,
+          "title": "Minify JavaScript"
+        },
+        {
+          "display": "Est savings of 70 KiB",
+          "id": "unused-javascript",
+          "score": 0,
+          "title": "Reduce unused JavaScript"
+        }
+      ],
+      "final_url": "https://www.uaart.com.ua/video/ua/UA-0013.html",
+      "lcp_element": "<img src=\"/video/foto/UA-0013/m/001.jpg\" alt=\"Mercedes-Benz Б-КЛАССА 2015 — фото 1\" loading=\"eager\" fetchpriority=\"high\" decoding=\"async\" draggable=\"false\">",
+      "lcp_parts_ms": {
+        "elementRenderDelay": 1087,
+        "resourceLoadDelay": 8,
+        "resourceLoadDuration": 73,
+        "timeToFirstByte": 169
+      },
+      "metrics": {
+        "cls": 0,
+        "fcp_ms": 2248,
+        "lcp_ms": 4692,
+        "si_ms": 3890,
+        "tbt_ms": 20
+      },
+      "performance": 79,
+      "runs_performance": [
+        70,
+        79,
+        79
+      ],
+      "runtime_error": "",
+      "seo": 100
+    }
+  },
+  "preset": "mobile (Lighthouse default: simulated slow 4G, 4x CPU slowdown)",
+  "remote_write_count": 0,
+  "run_id": "41299299322",
+  "runs_per_page": 3,
+  "task_id": "PAGESPEED-PROBE-20261101"
+}

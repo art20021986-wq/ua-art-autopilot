@@ -7,21 +7,23 @@
   "created_at": "2026-11-01T10:52:42Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-01T10:52:42Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-01T10:56:06Z",
+  "heartbeat_at": "2026-11-01T10:56:06Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41299299322",
     "task_id": "PAGESPEED-PROBE-20261101",
     "task_sha256": "636538356965016d759293a577fa8c6239b1f87d1a1fe15af643ac7f64abfc1e"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "read_only-0fd68b17b5554151-33390834a3521fa9",
   "receipt_path": "state/receipts/PAGESPEED-PROBE-20261101.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "0137c585b600441ae86337feba2c6266a9cdafc681866e141a6a47f021e00e9f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/PAGESPEED-PROBE-20261101.json",
   "request_sha256": "636538356965016d759293a577fa8c6239b1f87d1a1fe15af643ac7f64abfc1e",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "265d24a5b88413d3a96235bed78285fff4d83f0d",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92658638848,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 1073741824,
+    "status": "PASS",
+    "usage_percent": 40.207
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-01T10:52:42Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "f0819b2b3b6a143b411f88b8aa139caf72fcef95fa5949126d0772b21229354c",
+    "file_sha256": {
+      "cloud/pagespeed_probe_20261101/test_controller.py": "db8ba90c960aa23a30c9f47ca101f4252ac47189544af91da33c6882b7dc1e05"
+    }
+  },
+  "updated_at": "2026-11-01T10:56:06Z"
 }
