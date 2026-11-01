@@ -53,7 +53,7 @@ def public_verify(api, bundle, backup_sha, plan):
     results={}
     for path in ('/video/index.html','/video/katalog.html'):
         url='https://www.uaart.com.ua'+path
-        request=urllib.request.Request(url,headers={'Cache-Control':'no-cache','User-Agent':'UAART-VoiceStage-Verify/1'})
+        request=urllib.request.Request(url,headers={'Cache-Control':'no-cache','User-Agent':'UAART-VoiceCmd-Verify/1'})
         with urllib.request.urlopen(request,timeout=30) as response:
             final=urllib.parse.urlsplit(response.url)
             if response.status!=200 or (final.scheme,final.netloc,final.path)!=('https','www.uaart.com.ua',path):

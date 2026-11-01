@@ -1,4 +1,4 @@
-"""Bounded CRM code release (voice delivery stage, CRM-VOICE-STAGE-001); preserve live data and pending requests."""
+"""Bounded CRM code release (CRM by voice, CRM-VOICE-ALL-001); preserve live data and pending requests."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -45,7 +45,7 @@ def read(path):
 
 def atomic(path, value, mode=0o600):
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    descriptor, name = tempfile.mkstemp(dir=path.parent, prefix='.voicestage-')
+    descriptor, name = tempfile.mkstemp(dir=path.parent, prefix='.voicecmd-')
     temporary = Path(name)
     try:
         with os.fdopen(descriptor, 'wb') as handle:
@@ -115,29 +115,33 @@ def prepare(directory):
         atomic(directory/'after'/name,value,mode)
     # A source-only plan stays valid across legitimate operator edits. Actual
     # CRM/page snapshots are captured again under locks at the write boundary.
-    plan = {'schema_version':'CRM-VOICE-STAGE-INSTALL-1','files':files,
+    plan = {'schema_version':'CRM-VOICE-ALL-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':False,
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
 
 
-# Runs in a separate python3.10 (the bot's interpreter) on the candidate files: parses the
-# candidate cars_ui.py and reads stage phrases with voice_stage against the installed
-# ua_delivery_status; nothing is saved.
+# Runs in a separate python3.10 (the bot's interpreter) on the candidate files: parses the candidate
+# cars_ui.py (the functions voice_commands calls must exist) and reads sample phrases with the new
+# modules against the installed ua_delivery_status; nothing is saved.
 SMOKE = r'''
 import ast, json, sys
 after, root = sys.argv[1], sys.argv[2]
 sys.path[:0] = [after, root]
-import voice_stage
+import voice_commands, voice_fields, voice_stage
 tree = ast.parse(open(after + '/cars_ui.py', encoding='utf-8').read())
 names = {node.name for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))}
-phrases = {'Автомобиль находится в Киеве': 'ua_arrived', 'Машина уже в Грузии': 'ge_waiting',
-           'Автомобіль знаходиться у Києві': 'ua_arrived', 'на пароме': 'sea_loaded',
-           'измени коробку на механику': None, 'доставка до Киева через 10 дней': None}
-print(json.dumps({'functions': sorted(names & {'save_stage', 'stage_set', 'catch_message'}),
-                  'phrases': {text: voice_stage.stage_code(text) for text in phrases},
-                  'expected': phrases}, ensure_ascii=False))
+names |= {target.id for node in tree.body if isinstance(node, (ast.Import, ast.ImportFrom, ast.Assign))
+          for target in getattr(node, 'targets', [])  if isinstance(target, ast.Name)}
+names |= {(alias.asname or alias.name) for node in tree.body if isinstance(node, (ast.Import, ast.ImportFrom))
+          for alias in node.names}
+needed = ['S', '_task088_apply_selected_price', 'apply_value', 'card_of', 'catch_message', 'client_of', 'db',
+          'save_stage', 'set_field', 'stage_set']
+print(json.dumps({'missing': sorted(set(needed) - names),
+                  'stage': voice_stage.stage_code('Автомобиль находится в Киеве'),
+                  'fields': voice_fields.parse('цена Грузии 17 500, покупатель Иван, пробег 120 тысяч')},
+                 ensure_ascii=False))
 '''
 
 
@@ -147,7 +151,8 @@ def smoke(directory):
     if result.returncode != 0:
         raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
-    if value['phrases'] != value['expected'] or value['functions'] != ['catch_message', 'save_stage', 'stage_set']:
+    expected_fields = [[['car', 'price_georgia', '17 500'], ['client', 'name', 'Иван']], 'пробег 120 тысяч']
+    if value['missing'] or value['stage'] != 'ua_arrived' or value['fields'] != expected_fields:
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:300])
     return value
 

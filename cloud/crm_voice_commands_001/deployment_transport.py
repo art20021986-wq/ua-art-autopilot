@@ -1,4 +1,4 @@
-"""Bounded PythonAnywhere transport for the CRM voice stage deployment only."""
+"""Bounded PythonAnywhere transport for the CRM voice commands deployment only."""
 import datetime
 import hashlib
 import io
@@ -100,7 +100,7 @@ class API:
     def upload(self, path, payload):
         if not str(path).startswith(INBOX+'/') or '..' in PurePosixPath(path).parts:
             raise TransportError('INBOX_SCOPE')
-        boundary = '----voicestage-'+uuid.uuid4().hex
+        boundary = '----voicecmd-'+uuid.uuid4().hex
         content = ('--'+boundary+'\r\nContent-Disposition: form-data; name="content"; filename="'+PurePosixPath(path).name+'"\r\nContent-Type: application/octet-stream\r\n\r\n').encode()+payload+('\r\n--'+boundary+'--\r\n').encode()
         self.request('POST', 'files/path'+urllib.parse.quote(path, safe='/'), content,
                      'multipart/form-data; boundary='+boundary, (200, 201))
@@ -113,14 +113,14 @@ class API:
         for value in (bundle_sha, plan_sha, backup_sha):
             if value and not re.fullmatch(r'[0-9a-f]{64}', value):
                 raise TransportError('RUN_HASH')
-        receipt = INBOX+'/voicestage-'+bundle_sha+'/runs/'+run_id+'/receipt-'+mode+'.json'
+        receipt = INBOX+'/voicecmd-'+bundle_sha+'/runs/'+run_id+'/receipt-'+mode+'.json'
         prior = self.file(receipt, missing=True)
         if prior:
             return json.loads(prior)
-        args = ['python3.10', INBOX+'/voicestage_bootstrap.py', '--bundle', bundle_sha,
+        args = ['python3.10', INBOX+'/voicecmd_bootstrap.py', '--bundle', bundle_sha,
                 '--run', run_id, '--mode', mode, '--plan', plan_sha, '--backup', backup_sha]
         trigger = self.json('POST', 'always_on/', {'command': shlex.join(args),
-                   'description': 'CRM voice stage '+mode+' '+run_id, 'enabled': 'true'}, (200, 201, 202))
+                   'description': 'CRM voice commands '+mode+' '+run_id, 'enabled': 'true'}, (200, 201, 202))
         trigger_id = trigger.get('id')
         if type(trigger_id) is not int or trigger_id == BOT_ID:
             raise TransportError('TRIGGER_IDENTITY')
@@ -150,6 +150,6 @@ def upload_package(api):
                 archive.writestr(entry, path.read_bytes())
     payload = output.getvalue()
     digest = sha(payload)
-    api.upload(INBOX+'/voicestage-'+digest+'.zip', payload)
-    api.upload(INBOX+'/voicestage_bootstrap.py', (HERE/'deployment_bootstrap.py').read_bytes())
+    api.upload(INBOX+'/voicecmd-'+digest+'.zip', payload)
+    api.upload(INBOX+'/voicecmd_bootstrap.py', (HERE/'deployment_bootstrap.py').read_bytes())
     return digest
