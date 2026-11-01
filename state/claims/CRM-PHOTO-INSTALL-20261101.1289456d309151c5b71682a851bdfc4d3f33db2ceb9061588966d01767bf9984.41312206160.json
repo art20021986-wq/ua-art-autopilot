@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "6f01b30d4f90830916a565ef04b75e3f6842c73a2ba51d877675fb3e0980c998",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-01T13:49:46Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-01T14:04:32Z",
+  "heartbeat_at": "2026-11-01T14:04:32Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "41312206160",
     "task_id": "CRM-PHOTO-INSTALL-20261101",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 437.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 48.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-41312206160-1289456d309151c5",
   "production_transaction_path": "state/transactions/CRM-PHOTO-INSTALL-20261101.1289456d309151c5b71682a851bdfc4d3f33db2ceb9061588966d01767bf9984.41312206160.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-9a05470efa2a1ae0-8ad649ab6a292eed",
   "receipt_path": "state/receipts/CRM-PHOTO-INSTALL-20261101.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "5c7b6461937a80ecf75232b24c6ea7d30ab80eafc4d33e7880e0767d6ef3f85f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-PHOTO-INSTALL-20261101.json",
   "request_sha256": "1289456d309151c5b71682a851bdfc4d3f33db2ceb9061588966d01767bf9984",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
     "file_sha256": {
@@ -90,5 +113,5 @@
       "cloud/crm_photo_card_001/vin_brand.py": "bc09ecd10202e3162b13c93825ee6884c67433afbda9f7060c1b5f433cd87c67"
     }
   },
-  "updated_at": "2026-11-01T13:49:46Z"
+  "updated_at": "2026-11-01T14:04:32Z"
 }
