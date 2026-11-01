@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PAGESPEED-PROBE-20261101-R2.a81fdf32bdced0e0f92b0080b23b4daff5fd8103ff9cfe00dcbcad652ac98c3e.json",
+  "autostart_ledger_sha256": "ea2cbc364da0ba4b0e11f68e8f39f0a2744cb48e4683436da54e9169f663fc6e",
+  "autostart_source_commit": "f40d87754e04ad98219a398798ed128f8cfcf154",
+  "created_at": "2026-11-01T13:38:56Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41312176710",
+    "task_id": "PAGESPEED-PROBE-20261101-R2",
+    "task_sha256": "a81fdf32bdced0e0f92b0080b23b4daff5fd8103ff9cfe00dcbcad652ac98c3e"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "read_only-be00475711aa58bb-904661e8f5baa816",
+  "request_path": "tasks/requests/PAGESPEED-PROBE-20261101-R2.json",
+  "resource_locks": [
+    "READ_ONLY:be00475711aa58bb"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
