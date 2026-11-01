@@ -71,7 +71,9 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(value['maps'], {'stranica.py': {'https://maps.app.goo.gl/AbC123': 1},
                                          'video/index.html': {'https://maps.app.goo.gl/AbC123': 1,
                                                               'https://www.google.com/maps/place/X': 1}})
-        self.assertEqual(value['files'], {})
+        self.assertIn('[REDACTED]', value['files']['stranica.py']['source'])
+        self.assertIsNone(value['files']['ua_media_gallery.py'])
+        self.assertIn('pillow', value['media'])
 
 
 if __name__ == '__main__':

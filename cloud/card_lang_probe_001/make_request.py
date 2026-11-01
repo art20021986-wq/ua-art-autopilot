@@ -22,10 +22,11 @@ def request(day):
     task = 'CARD-LANG-PROBE-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Read-only probe before replacing the Google Maps link (owner «Да» 2026-10-31): bounded run in the '
-                       'existing private inbox (temporary always-on task removed after its receipt; never the CRM bot) '
-                       'that lists every Google Maps link in the top-level modules and public pages. '
-                       'R1/R2 (20261030) read the card generator, pages, language script and card writers. '
+        'description': 'Read-only probe for the speed work (owner «Да» 2026-11-01): bounded run in the existing private '
+                       'inbox (temporary always-on task removed after its receipt; never the CRM bot) that reads the photo '
+                       'gallery, card post-processing, landing, podbor/home/card pages and order.js sources, the bot lines '
+                       'that open pages, and image sizes plus WebP support of the image library. '
+                       'R1-R3 read the card generator, language script, writers and map links. '
                        'No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
