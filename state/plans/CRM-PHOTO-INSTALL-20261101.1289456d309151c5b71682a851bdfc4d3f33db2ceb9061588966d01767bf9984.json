@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-PHOTO-INSTALL-20261101.1289456d309151c5b71682a851bdfc4d3f33db2ceb9061588966d01767bf9984.json",
+  "autostart_ledger_sha256": "4cc6f2707c6a8f0c7044eca6827b06bdba66d1b35036d07730bb2ff9ca639fbb",
+  "autostart_source_commit": "074a337d2f099302850f868471627c1e211a02b9",
+  "created_at": "2026-11-01T13:43:37Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41312206160",
+    "task_id": "CRM-PHOTO-INSTALL-20261101",
+    "task_sha256": "1289456d309151c5b71682a851bdfc4d3f33db2ceb9061588966d01767bf9984"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-9a05470efa2a1ae0-8ad649ab6a292eed",
+  "request_path": "tasks/requests/CRM-PHOTO-INSTALL-20261101.json",
+  "resource_locks": [
+    "PATH_SCOPE:9a05470efa2a1ae0"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
