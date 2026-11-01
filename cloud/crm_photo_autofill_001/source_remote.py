@@ -20,10 +20,11 @@ import subprocess
 import sys
 import time
 
+import sample_image
+
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
 FULL = ('team_bot.py', 'local_ocr.py', 'ai_fast_schema.py', 'ai_filter.py', 'db.py')
-SAMPLE = 'sample_autoria_w245.jpg'
 SAMPLE_VIN = 'WDD2452322J660244'
 LOG = Path('/var/log/alwayson-log-266084.log')
 LOG_TAIL = 4 * 1024 * 1024
@@ -67,11 +68,10 @@ def tesseract():
             'cpu_count': os.cpu_count(), 'load_average': os.getloadavg()}
 
 
-def ocr(sample, home=None):
+def ocr(image, home=None):
     """Run the installed local_ocr exactly as the bot does, then time each pass without the 1.45 s cap."""
     sys.path.insert(0, str(home or HOME))
     import local_ocr
-    image = sample.read_bytes()
     started = time.monotonic()
     text = local_ocr.image_text(image, hard_seconds=14.0)
     live = {'seconds': round(time.monotonic() - started, 2), 'text_chars': len(text),
@@ -137,7 +137,7 @@ def crm(database=None):
 
 def report():
     value = {'status': 'PASS', 'files': sources(), 'tesseract': tesseract()}
-    for key, call in (('ocr', lambda: ocr(HERE / SAMPLE)),
+    for key, call in (('ocr', lambda: ocr(sample_image.JPEG)),
                       ('bot_log', lambda: bot_log(datetime.date.today())),
                       ('crm', crm)):
         try:

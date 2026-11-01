@@ -10,7 +10,7 @@ import json
 import sys
 
 P = 'cloud/crm_photo_autofill_001/'
-DEPENDENCIES = [P + 'source_remote.py', P + 'bootstrap.py', P + 'make_request.py', P + 'transport.py', P + 'sample_autoria_w245.jpg']
+DEPENDENCIES = [P + 'source_remote.py', P + 'bootstrap.py', P + 'make_request.py', P + 'transport.py', P + 'sample_image.py']
 TESTS = [P + 'test_probe.py']
 
 

@@ -59,8 +59,8 @@ class TransportTests(unittest.TestCase):
 
     def test_bundle_names_pass_bootstrap_filter(self):
         for path in HERE.iterdir():
-            if path.suffix in ('.py', '.jpg'):
-                self.assertRegex(path.name, re.compile(r'[a-z0-9_]+\.(?:py|jpg)'))
+            if path.suffix == '.py':
+                self.assertRegex(path.name, re.compile(r'[a-z0-9_]+\.py'))
                 self.assertLess(path.stat().st_size, 1048576)
 
 
@@ -100,7 +100,7 @@ class RemoteTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             (Path(temp) / 'runs').mkdir()
             with patch.object(remote, 'HERE', Path(temp)):
-                value = remote.ocr(HERE / remote.SAMPLE, home='/tmp/w')
+                value = remote.ocr(remote.sample_image.JPEG, home='/tmp/w')
         self.assertTrue(value['live']['vin_in_text'])
         self.assertEqual(len(value['passes']), 9)
 
