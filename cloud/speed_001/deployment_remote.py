@@ -138,7 +138,14 @@ def smoke(directory):
         for preview in re.findall(r'<button[^>]*class="um-thumb"[^>]*><img src="([^"]+)"', html):
             thumbs += 1
             with_copy += copies.copy(preview, 's') is not None
+    tiles = tiles_with_copies = 0
+    for path in sorted((ROOT/'video'/'seo').glob('*/*.html')):
+        for listing in re.findall(r'<ul class="cars">.*?</ul>', read(path).decode('utf-8', 'replace'), re.S):
+            for src in re.findall(r'<img src="([^"]+)"', listing):
+                tiles += 1
+                tiles_with_copies += bool(copies.srcset(src.replace('&amp;', '&')))
     return {'modules': [n for n in names if n.endswith('.py')], 'pages': [n for n in names if n.endswith('.html')],
+            'landing_tiles': tiles, 'landing_tiles_with_copies': tiles_with_copies,
             'cards': len(cards), 'cards_telegram_movable': movable,
             'gallery_thumbs': thumbs, 'gallery_thumbs_with_s_copy': with_copy}
 

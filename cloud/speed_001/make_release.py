@@ -72,7 +72,7 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of the mobile speed release (owner «Да» 2026-11-01): builds the candidate (new '
+             'description': 'Preview R2 of the mobile speed release (owner «Да» 2026-11-01; R1 install rolled back because the model-page photo URLs are full URLs, now recognised): builds the candidate (new '
                             'ua_tg_script.py and ua_photo_copies.py; exact edits to ua_media_gallery.py, ua_seo_landings.py, '
                             'ua_seo_metadata.py and site_ge_inject.py; the order pages with the Telegram script moved before '
                             'its first user), counts what the republished cards will get and measures storage. '

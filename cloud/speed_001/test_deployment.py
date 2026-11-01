@@ -249,7 +249,7 @@ class TransportTests(unittest.TestCase):
 
 class PublicVerificationTests(unittest.TestCase):
     def response(self,request,timeout):
-        body=('<html><head></head><body>'+'x'*300+'<img srcset="/video/foto/UA-0014/s/001.jpg 440w">'
+        body=('<html><head></head><body>'+'x'*300+'<img srcset="https://www.uaart.com.ua/video/foto/UA-0014/s/001.jpg 440w">'
               "<script src='https://telegram.org/js/telegram-web-app.js'></script></body></html>")
         response=BytesIO(body.encode())
         response.url=request.full_url;response.status=200
