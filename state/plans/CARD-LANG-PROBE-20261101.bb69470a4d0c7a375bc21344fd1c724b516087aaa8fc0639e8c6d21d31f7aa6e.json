@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-LANG-PROBE-20261101.bb69470a4d0c7a375bc21344fd1c724b516087aaa8fc0639e8c6d21d31f7aa6e.json",
+  "autostart_ledger_sha256": "eef010733f7afc481eaddd004f0944ed30a28654b2e48c5b6229a112a3ce8e5b",
+  "autostart_source_commit": "0fff71f404a588df768ff3975855f0608271ca8a",
+  "created_at": "2026-11-01T14:06:35Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41314407251",
+    "task_id": "CARD-LANG-PROBE-20261101",
+    "task_sha256": "bb69470a4d0c7a375bc21344fd1c724b516087aaa8fc0639e8c6d21d31f7aa6e"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-c7c13a923e184dd8-6f1a5859a605fbbb",
+  "request_path": "tasks/requests/CARD-LANG-PROBE-20261101.json",
+  "resource_locks": [
+    "PATH_SCOPE:c7c13a923e184dd8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
