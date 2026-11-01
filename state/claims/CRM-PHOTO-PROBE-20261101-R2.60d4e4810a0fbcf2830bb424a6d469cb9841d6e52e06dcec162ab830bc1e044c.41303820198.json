@@ -7,21 +7,23 @@
   "created_at": "2026-11-01T11:53:53Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-01T11:53:53Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-01T11:58:04Z",
+  "heartbeat_at": "2026-11-01T11:58:04Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41303820198",
     "task_id": "CRM-PHOTO-PROBE-20261101-R2",
     "task_sha256": "60d4e4810a0fbcf2830bb424a6d469cb9841d6e52e06dcec162ab830bc1e044c"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-PHOTO-PROBE-20261101-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b518b92f6369b0d9d54538a2a8b809183a19934a7f516b9c1016eb300a56c13d",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-PHOTO-PROBE-20261101-R2.json",
   "request_sha256": "60d4e4810a0fbcf2830bb424a6d469cb9841d6e52e06dcec162ab830bc1e044c",
   "resource_locks": [
@@ -29,8 +31,28 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "f42c00dabb5fac914d1ffebd7587c364e3999e29",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92657819648,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.207
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-01T11:53:53Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "0b303e4274dcc4edc02e76a2de8f1a4b907fbd9ff0b6073c782c820074634b40",
+    "file_sha256": {
+      "cloud/crm_photo_autofill_001/bootstrap.py": "6b4258b3ba80299b4f621f45da1d6cbdcafcc940f36aa658757bf42723ae6e65",
+      "cloud/crm_photo_autofill_001/make_request.py": "a26219d2b17691b717e93706316ff40b6264700c9b48ec2019d7b2b26f4e83ae",
+      "cloud/crm_photo_autofill_001/sample_image.py": "db44fd5eec95d6382ebbc349b470f348659b3ac574d4cd714d09a4415ddadb65",
+      "cloud/crm_photo_autofill_001/source_remote.py": "f1048a2c83fb3e56043623ef687fe80a84d58f4723d5c85f9aa6b91bffae59ba",
+      "cloud/crm_photo_autofill_001/test_probe.py": "035497218971ab4f459417b06711a976068af1e1ced50bd4feed6c1faad58bf4",
+      "cloud/crm_photo_autofill_001/transport.py": "fb5362320c363c9c8e0b321175f12e66f9870cce8200cbc36c04311647a4f7c2"
+    }
+  },
+  "updated_at": "2026-11-01T11:58:04Z"
 }

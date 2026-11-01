@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/crm_photo_autofill_001/probe_20261101-R2.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "60d4e4810a0fbcf2830bb424a6d469cb9841d6e52e06dcec162ab830bc1e044c",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "41303820198",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "CRM-PHOTO-PROBE-20261101-R2",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}
