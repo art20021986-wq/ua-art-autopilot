@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Write the CRM voice stage preview request, then (after the preview) the install request set (run from the repo root).
+"""Write the CRM voice commands preview request, then (after the preview) the install request set (run from the repo root).
 
-Usage: python3 cloud/crm_voice_stage_001/make_release.py preview [SUFFIX]   # PR, merge, then: launch preview
-       python3 cloud/crm_voice_stage_001/make_release.py launch TASK_ID
-       python3 cloud/crm_voice_stage_001/make_release.py install [SUFFIX]   # only after the owner's «да»: writes gate,
+Usage: python3 cloud/crm_voice_commands_001/make_release.py preview [SUFFIX]   # PR, merge, then: launch preview
+       python3 cloud/crm_voice_commands_001/make_release.py launch TASK_ID
+       python3 cloud/crm_voice_commands_001/make_release.py install [SUFFIX]   # only after the owner's «да»: writes gate,
                                                                        # manifest, approval, storage probe, request, launch
 Task names come from release_constants.py.
 """
@@ -17,15 +17,15 @@ sys.path.insert(0, 'automation')
 import autostart_intake  # noqa: E402
 import control_plane as cp  # noqa: E402
 
-sys.path.insert(0, 'cloud/crm_voice_stage_001')
+sys.path.insert(0, 'cloud/crm_voice_commands_001')
 from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
-P = 'cloud/crm_voice_stage_001/'
+P = 'cloud/crm_voice_commands_001/'
 DEPENDENCIES = [P + n for n in ('candidate.py', 'candidate_builder.py', 'deployment_backup.py',
                                 'deployment_bootstrap.py', 'deployment_remote.py', 'deployment_rollback.py',
                                 'deployment_transport.py', 'make_release.py', 'release_constants.py',
-                                'voice_stage.py')]
-TESTS = [P + n for n in ('test_deployment.py', 'test_voice_stage.py')]
+                                'voice_commands.py', 'voice_fields.py', 'voice_stage.py')]
+TESTS = [P + n for n in ('test_deployment.py', 'test_voice_commands.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 # Live data the install must not touch, besides the source files pinned in the plan.
 LIVE_DATA = ['.crm_publish_requests', 'crm.db']
@@ -72,15 +72,16 @@ def preview(suffix):
     task = PREVIEW_TASK + suffix
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Owner 2026-11-01: the voice note «Автомобиль находится в Киеве» was neither recognised '
-                            'nor applied: voice edits know only 11 card fields, not the delivery stage. Bounded preview in '
-                            'the existing private inbox: build the candidate cars_ui.py from the exact installed source '
-                            '(save_stage shared by the stage buttons and voice; voice stage hook; gearbox field name in '
-                            'voice corrections) and the new voice_stage.py, record hashes and account storage, and parse '
-                            'stage phrases once in python3.10. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Owner 2026-11-01: every CRM card value that buttons change must also change by voice '
+                            '(«Автомобиль находится в Киеве» answered «Не распознал поле CRM»). Bounded preview in the existing '
+                            'private inbox: build the candidate cars_ui.py from the exact installed source (save_stage shared '
+                            'by the stage buttons and voice; voice_commands hook before the vehicle-field parser; gearbox field '
+                            'name) and the new voice_fields.py, voice_stage.py, voice_commands.py; record hashes and account '
+                            'storage; parse sample phrases once in python3.10. No application source, CRM, HTML, media or bot '
+                            'state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 134217728, 'task_id': task,
-             'title': 'Preview CRM voice delivery stage'}
+             'title': 'Preview CRM voice commands'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -110,7 +111,7 @@ def install(suffix):
     storage_path = write('state/storage/%s.json' % task, json.dumps(storage, sort_keys=True, separators=(',', ':')))
     operations = [{'action': 'replace' if item['before'] else 'create', 'expected_after_sha256': item['after'],
                    **({'expected_before_sha256': item['before']} if item['before'] else {}),
-                   'path': 'production/voicestage/' + name} for name, item in sorted(plan['files'].items())]
+                   'path': 'production/voicecmd/' + name} for name, item in sorted(plan['files'].items())]
     manifest = {'backup_required': True, 'contract_id': 'UA-ART-CRITICAL-ADAPTER-V1.0', 'crm_write': False,
                 'live_verify_required': True, 'operations': operations, 'pending_requests_preserved': True,
                 'protected_paths': sorted(LIVE_DATA + list(plan['protected'])), 'rollback_required': True, 'site_write': False,
@@ -135,17 +136,18 @@ def install(suffix):
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved (%s) CRM-VOICE-STAGE-001: a voice note naming where the car is («Автомобиль '
-                              'находится в Киеве») saves the delivery stage the way the stage buttons do; voice corrections '
-                              'of the gearbox work. Replace cars_ui.py (save_stage shared by buttons and voice, one voice '
-                              'hook, gearbox field name), add voice_stage.py. No CRM row change by the install. Existing '
-                              'backup, bot pause, writer locks, data-preservation, rollback and public health checks are '
-                              'kept.' % APPROVAL,
+               'description': 'Owner approved (%s) CRM-VOICE-ALL-001: by voice in an open card — named card fields '
+                              '(prices, number, description, container, delivery term, diagnostics), the buyer and the '
+                              'delivery stage, written through the same CRM functions as the buttons; gearbox corrections '
+                              'work. Replace cars_ui.py (save_stage shared by buttons and voice, one voice hook, gearbox field '
+                              'name), add voice_fields.py, voice_stage.py, voice_commands.py. No CRM row change by the install. '
+                              'Existing backup, bot pause, writer locks, data-preservation, rollback and public health checks '
+                              'are kept.' % APPROVAL,
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/katalog.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 67108864, 'task_id': task, 'title': 'Install CRM voice delivery stage'}
+               'storage_required_bytes': 67108864, 'task_id': task, 'title': 'Install CRM voice commands'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),

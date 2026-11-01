@@ -4,10 +4,11 @@
    so «измени коробку …» on a filled gearbox answered «Не распознал поле CRM».
 2. Saving a delivery stage moves from the stage button handler into save_stage(), used by the
    buttons and by voice; the button behaviour and texts stay the same.
-3. A voice note that names where the car is («Автомобиль находится в Киеве») saves the stage
-   through voice_stage before the field parser runs.
+3. Before the vehicle-field parser runs, voice_commands applies what a voice note names: card
+   fields by name (prices, number, description, container, delivery term, diagnostics), the
+   buyer's fields and the delivery stage («Автомобиль находится в Киеве»).
 """
-MARKER = 'CRM-VOICE-STAGE-001'
+MARKER = 'CRM-VOICE-ALL-001'
 
 GEARBOX_OLD = '        "transmission": r"кпп|коробк|трансмис|transmission|automatic|manual|автомат|механик",\n'
 GEARBOX_NEW = ('        "gearbox": r"кпп|коробк|трансмис|transmission|automatic|manual|автомат|механик",'
@@ -61,10 +62,12 @@ STAGE_SET_NEW = '''    card, error, _ua004_sync_note = await save_stage(cid, sto
 '''
 
 VOICE_OLD = '        if card and voice_object:\n'
-VOICE_NEW = VOICE_OLD + '''            import voice_stage  # %s: «автомобиль в Киеве» -> delivery stage
-            if await voice_stage.apply(thinking, card, input_text, user_id, save_stage, S.status_label):
+VOICE_NEW = VOICE_OLD + '''            import voice_commands  # %s: named fields, buyer, delivery stage
+            handled, input_text = await voice_commands.apply(msg, thinking, card, input_text, user_id)
+            if handled:
                 raise ApplicationHandlerStop
 ''' % MARKER
+
 
 EDITS = ((GEARBOX_OLD, GEARBOX_NEW), (SAVE_ANCHOR, SAVE_STAGE + SAVE_ANCHOR),
          (STAGE_SET_OLD, STAGE_SET_NEW), (VOICE_OLD, VOICE_NEW))

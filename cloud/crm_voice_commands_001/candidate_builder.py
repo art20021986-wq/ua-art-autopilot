@@ -9,7 +9,9 @@ HERE = Path(__file__).resolve().parent
 # Installed source read by CRM-VOICE-PROBE-20261101; any drift stops the plan.
 SOURCE_SHA256 = {'cars_ui.py': 'cc5cf2e053781f51cfd5b0c85dea4b23f031912c7e8c99ae66c00bd528819b1f'}
 # Read-only collaborator voice_stage relies on (storage_status), installed by DELIVERY-STATUS.
-DEPENDENCY_SHA256 = {'ua_delivery_status.py': 'c544bc121b7b3b66d45519d5b63ed3687567af7e9d5f7011ae2fb53cc372bdd0'}
+# db.py is reached through cars_ui (create_card, update_card_field for the buyer).
+DEPENDENCY_SHA256 = {'ua_delivery_status.py': 'c544bc121b7b3b66d45519d5b63ed3687567af7e9d5f7011ae2fb53cc372bdd0',
+                     'db.py': 'af7624cbcf227b865ac98c68462ad6da8d18223881bba836f2f9a8669cf1dab7'}
 
 
 def build(source, dependencies):

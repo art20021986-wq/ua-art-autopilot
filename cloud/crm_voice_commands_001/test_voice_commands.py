@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CRM-VOICE-STAGE-001: stage phrases, the voice reply, exact cars_ui.py edits and the stage buttons.
+"""CRM-VOICE-ALL-001: named fields, stage phrases, voice writes, exact cars_ui.py edits, stage buttons.
 
 Functions are taken from the candidate built on the cars_ui.py source read on the server
 (probe CRM-VOICE-PROBE-20261101, checked against its sha256).
@@ -104,28 +104,112 @@ class StagePhraseTests(unittest.TestCase):
                      'пробег 120 тысяч', '', None):
             self.assertIsNone(self.voice.stage_code(text), text)
 
-    def test_apply_saves_through_the_crm_and_answers(self):
-        calls, replies = [], []
+class FieldTests(unittest.TestCase):
+    def setUp(self):
+        self.fields = load('voice_fields', HERE / 'voice_fields.py')
 
-        async def save_stage(card_id, code, actor):
-            calls.append((card_id, code, actor))
-            return {'id': card_id, 'auto_number': 'UA-0024'}, None, 'Этап сохранён в CRM. Обновление сайта поставлено в очередь.'
+    def test_named_fields(self):
+        parse = self.fields.parse
+        self.assertEqual(parse('Измени цену Грузии на 17 500 долларов'),
+                         ([('car', 'price_georgia', '17 500 долларов')], 'Измени'))
+        self.assertEqual(parse('ціна у Грузії 16000')[0], [('car', 'price_georgia', '16000')])
+        self.assertEqual(parse('цена 18500, пробег 120 тысяч'), ([('car', 'price_uah', '18500')], 'пробег 120 тысяч'))
+        self.assertEqual(parse('Описание: без ДТП, один владелец. Цена 19000')[0],
+                         [('car', 'condition_text', 'без ДТП, один владелец'), ('car', 'price_uah', '19000')])
+        self.assertEqual(parse('Покупатель Иван Петров, телефон 0501234567, предоплата 1000 долларов')[0],
+                         [('client', 'name', 'Иван Петров'), ('client', 'phone', '0501234567'),
+                          ('client', 'prepayment', '1000 долларов')])
+        self.assertEqual(parse('контейнер MSCU1234567, машина в Киеве'),
+                         ([('car', 'sea_container', 'MSCU1234567')], 'машина в Киеве'))
+        self.assertEqual(parse('срок доставки 45 дней')[0], [('car', 'eta_days', '45 дней')])
+        self.assertEqual(parse('описание диагностики: двигатель без замечаний')[0],
+                         [('car', 'diag_text', 'двигатель без замечаний')])
+        self.assertEqual(parse('номер авто UA-0030')[0], [('car', 'auto_number', 'UA-0030')])
 
-        class Thinking:
+    def test_unnamed_speech_is_left_alone(self):
+        for text in ('бензин автомат', 'Автомобиль находится в Киеве', 'пробег 120 тысяч',
+                     'клиент хочет забрать в пятницу', ''):
+            self.assertEqual(self.fields.parse(text), ([], text))
+
+
+class VoiceCommandTests(unittest.TestCase):
+    """voice_commands writes through the CRM functions; cars_ui is a recording fake."""
+
+    def setUp(self):
+        self.addCleanup(stubs().stop)
+        for name in ('voice_fields', 'voice_stage'):
+            load(name, HERE / (name + '.py'))
+        self.calls, self.client = [], None
+        test = self
+
+        class Crm(types.ModuleType):
+            S = types.SimpleNamespace(status_label={'ua_arrived': 'В Киеве'}.get)
+
+            def _task088_apply_selected_price(self, card_id, field, value, actor):
+                test.calls.append(('price', field, value))
+                return True, 'Цена Грузии сохранена: 17 500 USD.'
+
+            def apply_value(self, card_id, field, value, actor):
+                test.calls.append(('value', field, value))
+                return True, 'Записано.'
+
+            async def save_stage(self, card_id, code, actor):
+                test.calls.append(('stage', code))
+                return {'id': card_id}, None, 'Этап сохранён в CRM.'
+
+            def card_of(self, card_id):
+                return {'id': card_id, 'client_id': 5 if test.client else None}
+
+            def client_of(self, card):
+                return test.client if card.get('client_id') else None
+
+            def set_field(self, card_id, field, value, actor):
+                test.calls.append(('set', field, value))
+                test.client = {'id': value}
+
+        crm = Crm('cars_ui')
+        crm.db = types.SimpleNamespace(
+            create_card=lambda table, data, actor: test.calls.append(('create', table, data)) or 5,
+            update_card_field=lambda table, row, field, value, actor: test.calls.append((table, row, field, value)))
+        patcher = patch.dict(sys.modules, {'cars_ui': crm})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.commands = load('voice_commands', HERE / 'voice_commands.py')
+
+    def run_note(self, text):
+        sent = []
+
+        class Out:
             async def edit_text(self, text, reply_markup=None):
-                replies.append((text, reply_markup))
+                sent.append(('edit', text))
 
-        done = asyncio.run(self.voice.apply(Thinking(), {'id': 24}, 'Автомобиль находится в Киеве', 7, save_stage,
-                                            lambda code: {'ua_arrived': 'В Киеве'}[code]))
-        self.assertTrue(done)
-        self.assertEqual(calls, [(24, 'ua_arrived', 7)])
-        self.assertTrue(replies[0][0].startswith('✅ UA-0024: этап «В Киеве» сохранён\nЭтап сохранён в CRM.'))
-        self.assertEqual([row[0].callback_data for row in replies[0][1].rows], ['car_stage:24', 'car_open:24'])
+            async def reply_text(self, text, reply_markup=None):
+                sent.append(('reply', text))
 
-    def test_apply_leaves_other_text_to_the_field_parser(self):
-        async def save_stage(*args):
-            raise AssertionError('must not save')
-        self.assertFalse(asyncio.run(self.voice.apply(None, {'id': 1}, 'пробег 120 тысяч', 7, save_stage, str)))
+        result = asyncio.run(self.commands.apply(Out(), Out(), {'id': 24, 'auto_number': 'UA-0024'}, text, 7))
+        return result, sent
+
+    def test_owner_stage_note(self):
+        result, sent = self.run_note('Автомобиль находится в Киеве')
+        self.assertEqual(result, (True, ''))
+        self.assertEqual(self.calls, [('stage', 'ua_arrived')])
+        self.assertEqual(sent, [('edit', 'UA-0024\n• Этап — В Киеве\n  Этап сохранён в CRM.')])
+
+    def test_price_buyer_and_vehicle_rest(self):
+        result, sent = self.run_note('цена Грузии 17 500, покупатель Иван, пробег 120 тысяч')
+        self.assertEqual(result, (False, 'пробег 120 тысяч'))
+        self.assertEqual(self.calls, [('price', 'price_georgia', '17 500'), ('create', 'clients', {'car_interest': 'UA-0024'}),
+                                      ('set', 'client_id', 5), ('clients', 5, 'name', 'Иван')])
+        self.assertEqual(sent, [('reply', 'UA-0024\n• Цена Грузии сохранена: 17 500 USD.\n• Покупатель — Иван')])
+
+    def test_description_shows_value(self):
+        result, sent = self.run_note('описание без ДТП, один владелец')
+        self.assertEqual(self.calls, [('value', 'condition_text', 'без ДТП, один владелец')])
+        self.assertEqual(sent[0][1], 'UA-0024\n• Описание — без ДТП, один владелец')
+
+    def test_plain_vehicle_speech_is_not_taken(self):
+        self.assertEqual(self.run_note('бензин, автомат'), ((False, 'бензин, автомат'), []))
+        self.assertEqual(self.calls, [])
 
 
 class CandidateTests(unittest.TestCase):
@@ -135,7 +219,7 @@ class CandidateTests(unittest.TestCase):
         self.assertEqual(built.count(candidate.MARKER), 3)  # gearbox, save_stage, voice hook
         self.assertNotIn('"transmission": r"кпп', built)
         hook = built.index('        if card and voice_object:\n')
-        self.assertLess(built.index('voice_stage.apply(', hook), built.index('schema_allowed = set(', hook))
+        self.assertLess(built.index('voice_commands.apply(', hook), built.index('schema_allowed = set(', hook))
         with self.assertRaisesRegex(candidate.CandidateError, 'ALREADY_APPLIED'):
             candidate.cars_ui(built)
         with self.assertRaisesRegex(candidate.CandidateError, 'ANCHOR:2'):
