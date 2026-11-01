@@ -2,7 +2,7 @@
 
 Reads only. Returns, sanitized: the voice path sources (cars_ui.py, ai.py, crm_voice_watchdog.py,
 crm_online_guard.py) with sha256 and the sha256 of team_bot.py; today's bot log lines except the
-card-publication retries; today's inbox rows and CRM audit rows as kinds, field names, sizes and
+card-publication retries; today's crm_online_guard events (action, status, seconds); today's inbox rows and CRM audit rows as kinds, field names, sizes and
 times only (no values). Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -20,6 +20,8 @@ HOME = Path('/home/Carix')
 FULL = ('cars_ui.py', 'ai.py', 'crm_voice_watchdog.py', 'crm_online_guard.py')
 HASH_ONLY = ('team_bot.py', 'local_ocr.py', 'ai_fast_schema.py', 'ai_filter.py', 'db.py')
 LOG = Path('/var/log/alwayson-log-266084.log')
+EVENTS = HOME / '.crm_guard_events.jsonl'  # crm_online_guard telemetry: action, status, seconds; no user content
+EVENTS_TAIL = 4 * 1024 * 1024
 LOG_TAIL = 8 * 1024 * 1024
 # The card publisher retries every few seconds; its lines would hide everything else.
 NOISE = re.compile(r'ua_crm_public_sync|BASE_PUBLISH_FAILED|raise RuntimeError\(str\(message\)')
@@ -70,6 +72,26 @@ def bot_log(today, log=None):
     return {'today_lines': len(picked), 'lines': picked[-500:]}
 
 
+def guard_events(today, path=None):
+    path = path or EVENTS
+    if not path.is_file():
+        return None
+    with path.open('rb') as handle:
+        handle.seek(max(0, path.stat().st_size - EVENTS_TAIL))
+        lines = handle.read().decode('utf-8', 'replace').splitlines()
+    picked = []
+    for line in lines:
+        try:
+            item = json.loads(line)
+        except ValueError:
+            continue
+        if isinstance(item, dict) and str(item.get('at', '')).startswith(today.isoformat()) \
+                and 'heartbeat' not in str(item.get('kind', '')) + str(item.get('action', '')):
+            picked.append({key: str(value)[:40] if key == 'at' else sanitized_line(str(value))[:200]
+                           for key, value in item.items()})
+    return picked[-300:]
+
+
 def crm(today, database=None):
     path = database or HOME / 'crm.db'
     con = sqlite3.connect(Path(path).as_uri() + '?mode=ro', uri=True, timeout=5)
@@ -92,7 +114,8 @@ def crm(today, database=None):
 def report():
     today = datetime.datetime.now(datetime.timezone.utc).date()
     value = {'status': 'PASS', 'files': sources()}
-    for key, call in (('bot_log', lambda: bot_log(today)), ('crm', lambda: crm(today))):
+    for key, call in (('bot_log', lambda: bot_log(today)), ('crm', lambda: crm(today)),
+                      ('guard_events', lambda: guard_events(today))):
         try:
             value[key] = call()
         except Exception as error:
