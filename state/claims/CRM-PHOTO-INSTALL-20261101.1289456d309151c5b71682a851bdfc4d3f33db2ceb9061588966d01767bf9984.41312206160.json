@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "6f01b30d4f90830916a565ef04b75e3f6842c73a2ba51d877675fb3e0980c998",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-01T13:44:55Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-01T13:49:46Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41312206160",
     "task_id": "CRM-PHOTO-INSTALL-20261101",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41312206160-1289456d309151c5",
   "production_transaction_path": "state/transactions/CRM-PHOTO-INSTALL-20261101.1289456d309151c5b71682a851bdfc4d3f33db2ceb9061588966d01767bf9984.41312206160.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-9a05470efa2a1ae0-8ad649ab6a292eed",
   "receipt_path": "state/receipts/CRM-PHOTO-INSTALL-20261101.json",
   "receipt_validation_status": "PENDING",
@@ -90,5 +90,5 @@
       "cloud/crm_photo_card_001/vin_brand.py": "bc09ecd10202e3162b13c93825ee6884c67433afbda9f7060c1b5f433cd87c67"
     }
   },
-  "updated_at": "2026-11-01T13:44:55Z"
+  "updated_at": "2026-11-01T13:49:46Z"
 }
