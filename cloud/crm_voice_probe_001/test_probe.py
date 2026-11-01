@@ -89,6 +89,17 @@ class RemoteTests(unittest.TestCase):
                                           'Nov  1 14:05:02 Traceback (most recent call last):',
                                           'Nov  1 14:05:02 KeyError: x', '[REDACTED]'])
 
+    def test_guard_events_today_only(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / 'events.jsonl'
+            path.write_text('{"at": "2026-10-31T10:00:00Z", "action": "crm_voice"}\n'
+                            '{"at": "2026-11-01T14:20:00Z", "kind": "timing", "action": "crm_voice", '
+                            '"status": "empty", "elapsed_seconds": 16.2}\n'
+                            '{"at": "2026-11-01T14:20:01Z", "kind": "heartbeat"}\nnot json\n')
+            value = remote.guard_events(datetime.date(2026, 11, 1), path)
+        self.assertEqual(value, [{'at': '2026-11-01T14:20:00Z', 'kind': 'timing', 'action': 'crm_voice',
+                                  'status': 'empty', 'elapsed_seconds': '16.2'}])
+
     def test_crm_sizes_only(self):
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / 'crm.db'
