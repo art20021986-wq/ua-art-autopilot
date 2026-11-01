@@ -7,7 +7,8 @@ from pathlib import Path
 import re
 
 VIDEO = Path(__file__).resolve().parent / 'video'
-PHOTO = re.compile(r'(?P<prefix>(?:/video/)?)(?P<card>foto/UA-[0-9]{4,})/(?:[ms]/)?(?P<name>[^/?#]+\.jpe?g)')
+# Relative, site-absolute or full-URL forms (the landings use https://www.uaart.com.ua/video/foto/...).
+PHOTO = re.compile(r'(?P<prefix>(?:(?:https://www\.uaart\.com\.ua)?/video/)?)(?P<card>foto/UA-[0-9]{4,})/(?:[ms]/)?(?P<name>[^/?#]+\.jpe?g)')
 WIDTHS = {'s': 440, 'm': 1000}
 
 

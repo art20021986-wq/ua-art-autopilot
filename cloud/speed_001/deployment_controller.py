@@ -23,7 +23,7 @@ def telegram_after_body(body):
 
 
 EXPECTED = {'/video/podbor.html': telegram_after_body,
-            '/video/seo/ua/kia-k5-koreya-kyiv.html': lambda body: 'srcset="/video/foto/' in body,
+            '/video/seo/ua/kia-k5-koreya-kyiv.html': lambda body: re.search(r'srcset="[^"]*/video/foto/UA-[0-9]+/s/', body) is not None,
             '/video/index.html': lambda body: '<body' in body,
             '/video/katalog.html': lambda body: '<body' in body}
 

@@ -48,6 +48,10 @@ class PhotoCopyTests(unittest.TestCase):
                 self.assertEqual(copies.srcset('/video/foto/UA-0013/001.jpg'),
                                  '/video/foto/UA-0013/s/001.jpg 440w, /video/foto/UA-0013/m/001.jpg 1000w')
                 self.assertEqual(copies.srcset('/video/foto/UA-0014/001.jpg'), '')
+                self.assertEqual(copies.srcset('https://www.uaart.com.ua/video/foto/UA-0013/001.jpg'),
+                                 'https://www.uaart.com.ua/video/foto/UA-0013/s/001.jpg 440w, '
+                                 'https://www.uaart.com.ua/video/foto/UA-0013/m/001.jpg 1000w')
+                self.assertIsNone(copies.copy('https://other.example/video/foto/UA-0013/001.jpg', 's'))
 
 
 class BuildTests(unittest.TestCase):
