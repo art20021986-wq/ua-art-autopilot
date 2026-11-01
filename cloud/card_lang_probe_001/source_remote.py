@@ -3,7 +3,7 @@
 Reads only. The card page generator and the modules that touch card HTML, the sitemap and the language
 script's loader are returned in full, sanitized (credential-like lines redacted, foreign URLs and long numbers
 masked). R1 read the card generator and sample pages; R2 read the language script and the card
-writers; R3 lists every Google Maps link in the top-level modules and public pages. Each file's sha256 is kept for a later exact edit.
+writers; R3 lists every Google Maps link in the top-level modules and public pages; R4 reads the files and image sizes for the speed work. Each file's sha256 is kept for a later exact edit.
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -16,10 +16,16 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ()
+# R4 (SPEED, 20261101): gallery, writers' post-processing, landings, podbor/home/card pages, order.js.
+FULL = ('ua_media_gallery.py', 'ua_media_styles.py', 'ua_media_script.py', 'ua_seo_metadata.py', 'ua_seo_landings.py',
+        'site_ge_inject.py', 'publikaciya.py', 'stranica.py', 'video/podbor.html', 'video/index.html',
+        'video/UA-0013.html', 'video/ua/UA-0013.html', 'video/order/order.js')
 # R3 (MAPS): every Google Maps link in the top-level modules and public pages (public URLs, not masked).
 MAPS = re.compile(r'https?://(?:maps\.app\.goo\.gl|goo\.gl/maps|(?:www\.)?google\.[a-z.]+/maps|maps\.google\.[a-z.]+)[^\s\'"<>)\\]*')
-PARTIAL = {}
+PARTIAL = {name: re.compile(r'web_app|WebAppInfo|telegram-web-app') for name in
+           ('client_ui.py', 'lead_bot.py', 'team_bot.py', 'cars_ui.py', 'yadro.py', 'card_html.py')}
+MEDIA = ('video/stage/*.webp', 'video/preview/v4/assets/ai/*.webp', 'video/order/home-*.jpg',
+         'video/foto/UA-0013/*.jpg', 'video/foto/UA-0013/m/001.jpg', 'video/foto/UA-0013/*/001.jpg')
 MAX_SOURCE = 900 * 1024  # R2: ua-site-languages.js is ~700 KB
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
@@ -67,7 +73,27 @@ def report(home=None):
             found = MAPS.findall(path.read_text(encoding='utf-8', errors='replace'))
             if found:
                 maps[str(path.relative_to(HOME))] = {url: found.count(url) for url in sorted(set(found))}
-    return {'status': 'PASS', 'files': files, 'maps': maps}
+    return {'status': 'PASS', 'files': files, 'maps': maps, 'media': media()}
+
+
+def media():
+    """R4: image sizes for the speed work, and whether Pillow on the server can write WebP."""
+    try:
+        from PIL import Image, features
+        webp = bool(features.check('webp'))
+    except Exception as error:
+        return {'pillow': type(error).__name__}
+    sizes = {}
+    for pattern in MEDIA:
+        for path in sorted(HOME.glob(pattern))[:60]:
+            try:
+                with Image.open(path) as image:
+                    sizes[str(path.relative_to(HOME))] = [image.width, image.height, path.stat().st_size]
+            except Exception as error:
+                sizes[str(path.relative_to(HOME))] = type(error).__name__
+    folders = sorted(p.name for p in (HOME/'video/foto/UA-0013').iterdir() if p.is_dir()) if (HOME/'video/foto/UA-0013').is_dir() else []
+    return {'pillow': Image.__version__ if hasattr(Image, '__version__') else 'yes', 'webp': webp,
+            'sizes': sizes, 'card_folders': folders}
 
 
 def main():
