@@ -16,7 +16,7 @@ import re
 import subprocess
 
 PACKAGE = 'cloud/pagespeed_probe_20261101'
-TASKS = ('PAGESPEED-PROBE-20261101',)
+TASKS = ('PAGESPEED-PROBE-20261101', 'PAGESPEED-PROBE-20261101-R2')  # R2: + resource details
 ROOT = Path(__file__).resolve().parents[2]
 SITE = 'https://www.uaart.com.ua'
 PAGES = ('/video/index.html', '/video/seo/ua/kia-k5-koreya-kyiv.html', '/video/ua/UA-0013.html',
@@ -29,6 +29,7 @@ RUN_TIMEOUT = 240
 METRICS = {'first-contentful-paint': 'fcp_ms', 'largest-contentful-paint': 'lcp_ms', 'total-blocking-time': 'tbt_ms',
            'cumulative-layout-shift': 'cls', 'speed-index': 'si_ms'}
 PASS_SCORE = 0.9
+DETAIL_ROWS = 12
 LCP_AUDITS = ('lcp-breakdown-insight', 'largest-contentful-paint-element')
 
 
@@ -66,6 +67,22 @@ def score(value):
     return None if value is None else round(value * 100)
 
 
+def resources(details):
+    """The URL rows of an audit's details (any nesting), largest savings first."""
+    rows, stack = [], [details or {}]
+    while stack:
+        item = stack.pop()
+        if isinstance(item, dict):
+            if isinstance(item.get('url'), str):
+                rows.append({key: item[key] for key in ('url', 'wastedBytes', 'wastedMs', 'totalBytes', 'transferSize')
+                             if isinstance(item.get(key), (int, float, str))})
+            stack.extend(value for value in item.values() if isinstance(value, (dict, list)))
+        elif isinstance(item, list):
+            stack.extend(item)
+    rows.sort(key=lambda row: -(row.get('wastedBytes') or row.get('wastedMs') or row.get('transferSize') or 0))
+    return rows[:DETAIL_ROWS]
+
+
 def reduce(lhr):
     audits = lhr['audits']
     metrics = {}
@@ -78,7 +95,7 @@ def reduce(lhr):
             continue
         if audit.get('score') is not None and audit['score'] < PASS_SCORE:
             failing.append({'id': audit_id, 'title': audit.get('title', ''), 'display': audit.get('displayValue', ''),
-                            'score': score(audit['score'])})
+                            'score': score(audit['score']), 'resources': resources(audit.get('details'))})
     lcp_node, lcp_parts = '', {}
     for audit_id in LCP_AUDITS:  # Lighthouse 13 insight, then the Lighthouse 12 audit
         for item in audits.get(audit_id, {}).get('details', {}).get('items', []):
@@ -146,7 +163,7 @@ def execute(env, *, root=None, run=subprocess.run):
     root = ROOT if root is None else Path(root)
     request_sha, run_id = validate_identity(env, root)
     task = env['UAART_TASK_ID']
-    evidence = PACKAGE + '/evidence.json'
+    evidence = PACKAGE + '/evidence%s.json' % task[len(TASKS[0]):]
     write(root, evidence, dump({'task_id': task, 'run_id': run_id, 'remote_write_count': 0, **collect(run)}))
     receipt = {'task_id': task, 'status': 'FINISHED', 'task_class': 'STANDARD', 'target_environment': 'shadow',
                'live_source_environment': 'production', 'tests': 'PASS', 'tests_scope': 'READ_ONLY_PROBE',

@@ -17,7 +17,10 @@ def report(performance):
             'audits': {'largest-contentful-paint': {'numericValue': 3456.7, 'score': 0.5, 'scoreDisplayMode': 'numeric'},
                        'cumulative-layout-shift': {'numericValue': 0.01234, 'score': 1, 'scoreDisplayMode': 'numeric'},
                        'render-blocking-resources': {'score': 0.3, 'scoreDisplayMode': 'metricSavings',
-                                                     'title': 'Render-blocking', 'displayValue': '600 ms'},
+                                                     'title': 'Render-blocking', 'displayValue': '600 ms',
+                                                     'details': {'type': 'list', 'items': [{'type': 'table', 'items': [
+                                                         {'url': 'https://x/a.css', 'wastedMs': 300},
+                                                         {'url': 'https://x/b.js', 'wastedMs': 500, 'node': {}}]}]}},
                        'meta-description': {'score': 1, 'scoreDisplayMode': 'binary', 'title': 'Meta'},
                        'diagnostics': {'score': None, 'scoreDisplayMode': 'informative'},
                        'largest-contentful-paint-element': {'details': {'type': 'list', 'items': [
@@ -46,6 +49,7 @@ class ProbeTests(unittest.TestCase):
                          (3457, 0.012, None))
         self.assertEqual([item['id'] for item in result['failing']], ['render-blocking-resources'])
         self.assertEqual(result['lcp_element'], '<img src="a.jpg">')
+        self.assertEqual([row['url'] for row in result['failing'][0]['resources']], ['https://x/b.js', 'https://x/a.css'])
 
     def test_execute(self):
         fake = Fake()
@@ -67,6 +71,7 @@ class ProbeTests(unittest.TestCase):
         page = evidence['pages']['/video/index.html']
         self.assertEqual((page['performance'], page['runs_performance']), (60, [40, 90, 60]))
         self.assertEqual(evidence['environment']['lighthouse'], '13.5.0')
+        self.assertEqual(receipt['evidence_path'], c.PACKAGE + '/evidence.json')
 
 
 if __name__ == '__main__':
