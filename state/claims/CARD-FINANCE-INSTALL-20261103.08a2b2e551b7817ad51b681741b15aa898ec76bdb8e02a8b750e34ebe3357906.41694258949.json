@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-FINANCE-INSTALL-20261103.08a2b2e551b7817ad51b681741b15aa898ec76bdb8e02a8b750e34ebe3357906.json",
+  "autostart_ledger_sha256": "b828ee58c7985fa74bb7f19056842898d5862545c4d70bf8cddaab36f68b725d",
+  "autostart_source_commit": "c8007933dd00a5b3823872fff2ff193893e03c3b",
+  "created_at": "2026-11-03T18:34:52Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-03T18:34:52Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "41694258949",
+    "task_id": "CARD-FINANCE-INSTALL-20261103",
+    "task_sha256": "08a2b2e551b7817ad51b681741b15aa898ec76bdb8e02a8b750e34ebe3357906"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-9d07d0cd974004b6-294cc864d053e241",
+  "receipt_path": "state/receipts/CARD-FINANCE-INSTALL-20261103.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CARD-FINANCE-INSTALL-20261103.json",
+  "request_sha256": "08a2b2e551b7817ad51b681741b15aa898ec76bdb8e02a8b750e34ebe3357906",
+  "resource_locks": [
+    "PATH_SCOPE:9d07d0cd974004b6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "077487bacb31943a7b7a1f8d6215e5c26f7b3afb",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-03T18:34:52Z"
+}
