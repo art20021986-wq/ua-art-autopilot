@@ -1,0 +1,40 @@
+{
+  "after_clear_mode_validation": {
+    "allow_halt_for_recovery": false,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "authorization_scope": "Archive the SPEED-INSTALL-20261101 halt (public verification failed after install; verified rollback restored the previous release); preserve all protection policies, Gate B, backup and operator data",
+  "before_clear_mode_validation": {
+    "allow_halt_for_recovery": true,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "before_error": "PUBLIC_CHANGE_MISSING at public_verify; backup PASS; rollback PASS, live_verify PASS, crm_unchanged",
+  "claim_archive": "state/halt_history/SPEED-INSTALL-20261101.41316386480/claim.before.json",
+  "contract": "OWNER-AUTHORIZED-REPOSITORY-HALT-RECOVERY-EVIDENCE-1",
+  "credentials_read_or_changed": false,
+  "execution_mode_bytes_changed": false,
+  "existing_launch_markers_replayed": false,
+  "halt_archive": "state/halt_history/SPEED-INSTALL-20261101.41316386480/halt.json",
+  "halt_sha256": "1ad47a4498381078aec31a823daba8a19adea17142deaa52b6f60fb7b9089e32",
+  "historical_halt": {
+    "halted_at": "2026-11-01T14:56:57Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "CRITICAL Production pipeline failed; GitHub Actions run 41316386480; rollback reserved true; rollback performed true",
+    "request_path": "tasks/requests/SPEED-INSTALL-20261101.json",
+    "request_sha256": "a51f333b47a6e7b8774528c81572b4dc0ab0647d65ebc9574de38bae380e8f99",
+    "run_id": "41316386480",
+    "status": "EMERGENCY_HALT",
+    "task_id": "SPEED-INSTALL-20261101"
+  },
+  "owner_statement": "Сними остановку",
+  "precedent": "cloud/halt_recovery_20261026/RECOVERY_EVIDENCE.json",
+  "production_launch_created": false,
+  "production_transaction_opened": false,
+  "reconciliation_evidence": "state/reconciliations/SPEED-INSTALL-20261101.41316386480.authenticated-evidence.json",
+  "recorded_at": "2026-11-03T12:45:28.436531+00:00",
+  "required_production_gates_weakened": false,
+  "runtime_code_changed": false,
+  "site_or_crm_written": false
+}

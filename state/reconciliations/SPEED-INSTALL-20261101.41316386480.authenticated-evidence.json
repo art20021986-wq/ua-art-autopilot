@@ -1,0 +1,28 @@
+{
+  "backup_receipt": "state/receipts/SPEED-INSTALL-20261101-BACKUP.json",
+  "backup_started": true,
+  "claim_before_sha256": "9b633490aaa4aaa1fe96ce840ac9e7f5747bebaef07842d8fdeb1c079f29f83b",
+  "claim_status_before": {
+    "critical_gate_status": "PASS_PRODUCTION",
+    "package_compile_status": "PASS",
+    "production_transaction_status": "ROLLED_BACK",
+    "task_execution_status": "ROLLED_BACK"
+  },
+  "crm_unchanged": true,
+  "error": "PUBLIC_CHANGE_MISSING:/video/seo/ua/kia-k5-koreya-kyiv.html",
+  "failed_step": "execute / critical / controller_production: public_verify (after install)",
+  "halt_archive": "state/halt_history/SPEED-INSTALL-20261101.41316386480/halt.json",
+  "live_verify": "PASS",
+  "owner_statement": "Сними остановку",
+  "precedent": "state/reconciliations/HOME-REVIEWS-KA-INSTALL-20261026.40292486502.authenticated-evidence.json",
+  "production_transaction_closed_at": "2026-11-01T14:56:56Z",
+  "production_transaction_status": "ROLLED_BACK",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-03T12:45:28.436531+00:00",
+  "rollback_receipt": "state/receipts/SPEED-INSTALL-20261101-ROLLBACK.json",
+  "rollback_status": "ROLLED_BACK",
+  "run_id": "41316386480",
+  "site_state_after": "pre-install release, restored and verified by the rollback",
+  "task_id": "SPEED-INSTALL-20261101",
+  "workflow_conclusion": "failure"
+}

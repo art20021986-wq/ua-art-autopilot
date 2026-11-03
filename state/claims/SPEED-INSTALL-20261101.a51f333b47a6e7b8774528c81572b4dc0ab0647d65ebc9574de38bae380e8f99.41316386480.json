@@ -17,6 +17,15 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "14391d67c9257200"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-03T12:45:28.436531+00:00",
+      "class": "ROLLED_BACK_VERIFIED",
+      "evidence_path": "state/reconciliations/SPEED-INSTALL-20261101.41316386480.authenticated-evidence.json",
+      "message": "Public verification after install did not find the change on /video/seo/ua/kia-k5-koreya-kyiv.html (PUBLIC_CHANGE_MISSING); rollback restored the previous release and was verified. Owner-authorized halt recovery (FINANCE-001 session); the speed install is not done.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-01T14:36:18Z",
@@ -98,5 +107,5 @@
       "cloud/speed_001/ua_tg_script.py": "ce14c5e71135fd990fdbed7a3d7934f634c0437c43ee07a592073a727cfaf1b9"
     }
   },
-  "updated_at": "2026-11-01T14:56:57Z"
+  "updated_at": "2026-11-03T12:45:28.436531+00:00"
 }
