@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-SYNC-FIX-INSTALL-20261103.3d257322d2e1638460cb1e8dfca0ea17455669a1713ae0a3c615804778dcc50b.json",
+  "autostart_ledger_sha256": "76b97f7d71120e66881b9578b2080c3f9e2b866f2bca4e77fdca61db95e0165d",
+  "autostart_source_commit": "459206207c29acd3f80b34a4150fe1a6a30f5ec6",
+  "created_at": "2026-11-03T14:01:44Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41649455750",
+    "task_id": "CARD-SYNC-FIX-INSTALL-20261103",
+    "task_sha256": "3d257322d2e1638460cb1e8dfca0ea17455669a1713ae0a3c615804778dcc50b"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-579929485383cacd-d2fc0ca1a57fde86",
+  "request_path": "tasks/requests/CARD-SYNC-FIX-INSTALL-20261103.json",
+  "resource_locks": [
+    "PATH_SCOPE:579929485383cacd"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
