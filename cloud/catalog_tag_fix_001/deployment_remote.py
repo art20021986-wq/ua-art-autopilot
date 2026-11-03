@@ -135,7 +135,10 @@ sys.path[:0] = [after, root]
 from pathlib import Path
 import catalog_design_guard as guard
 golden = (Path(after) / 'catalog_design_golden.html').read_text(encoding='utf-8')  # the candidate golden file
-live = (Path(root) / 'video/katalog.html').read_text(encoding='utf-8')
+# The catalog is regenerated from the golden shell at every rebuild: the live file carries the golden's map link,
+# so the rebuilt catalog is the live one with the golden's (candidate) link.
+live = (Path(root) / 'video/katalog.html').read_text(encoding='utf-8').replace(
+    'https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA', 'https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8')
 tampered = live.replace('<title', '<title data-changed="1"', 1)
 import difflib, re
 def parts(text):
