@@ -1,0 +1,23 @@
+{
+  "partner_site": {
+    "logo_files": {},
+    "pages": {
+      "/ua": "HTTPError:HTTP Error 403: Forbidden",
+      "/ua/auto-ria": "HTTPError:HTTP Error 403: Forbidden",
+      "/ua/avto-iz-es": "HTTPError:HTTP Error 403: Forbidden",
+      "/ua/leasing": "HTTPError:HTTP Error 403: Forbidden",
+      "/ua/questions/podbor-avto": "HTTPError:HTTP Error 403: Forbidden"
+    },
+    "status": "PASS"
+  },
+  "run_id": "41712050075",
+  "server": {
+    "error": "AttributeError:'NoneType' object has no attribute '__dict__'",
+    "mode": "probe",
+    "remote_write_count": 0,
+    "run_id": "41712050075",
+    "safe_to_stop": true,
+    "status": "FAIL"
+  },
+  "task_id": "FINANCE-PROBE-20261103-R7"
+}
