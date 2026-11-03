@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CATALOG-TAG-FIX-PREFLIGHT-20261103-R2.661deae12195712cc9be75978eb821fb683d666c7f46b7bf9a298947291bb9d3.json",
+  "autostart_ledger_sha256": "7801c0f12d25f7c0c1b7ecd553e6c764d6997fadeea4079442a01cea3a803c4b",
+  "autostart_source_commit": "fcc1ffc257e5a8081b08dd1b251b44fc6891473c",
+  "created_at": "2026-11-03T21:37:01Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41722294984",
+    "task_id": "CATALOG-TAG-FIX-PREFLIGHT-20261103-R2",
+    "task_sha256": "661deae12195712cc9be75978eb821fb683d666c7f46b7bf9a298947291bb9d3"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "request_path": "tasks/requests/CATALOG-TAG-FIX-PREFLIGHT-20261103-R2.json",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
