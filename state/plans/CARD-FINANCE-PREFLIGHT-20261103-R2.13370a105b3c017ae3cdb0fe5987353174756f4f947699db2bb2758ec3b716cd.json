@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-FINANCE-PREFLIGHT-20261103-R2.13370a105b3c017ae3cdb0fe5987353174756f4f947699db2bb2758ec3b716cd.json",
+  "autostart_ledger_sha256": "42d352e9d5b25a39e8d57d87d63e4d46f9a531b3ca07b881ca55e220f3fb9829",
+  "autostart_source_commit": "e0a136b983c16744dfb13253c9a6d9a438f23f69",
+  "created_at": "2026-11-03T18:21:11Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41691383462",
+    "task_id": "CARD-FINANCE-PREFLIGHT-20261103-R2",
+    "task_sha256": "13370a105b3c017ae3cdb0fe5987353174756f4f947699db2bb2758ec3b716cd"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-2f07733d1b4dfbf4-6a98196e02b37ba0",
+  "request_path": "tasks/requests/CARD-FINANCE-PREFLIGHT-20261103-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:2f07733d1b4dfbf4"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
