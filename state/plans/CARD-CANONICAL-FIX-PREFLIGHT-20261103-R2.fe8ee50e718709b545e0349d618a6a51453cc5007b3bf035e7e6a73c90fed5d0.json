@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-CANONICAL-FIX-PREFLIGHT-20261103-R2.fe8ee50e718709b545e0349d618a6a51453cc5007b3bf035e7e6a73c90fed5d0.json",
+  "autostart_ledger_sha256": "7e9c548859a11b943e5271cef67211847ca403c6543b0bef8ece164e36ea0fa6",
+  "autostart_source_commit": "8502558cff4c564504c3698da9dbf7cac1fc46b0",
+  "created_at": "2026-11-03T15:18:14Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41661946960",
+    "task_id": "CARD-CANONICAL-FIX-PREFLIGHT-20261103-R2",
+    "task_sha256": "fe8ee50e718709b545e0349d618a6a51453cc5007b3bf035e7e6a73c90fed5d0"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-0e2956ed97a669be-219bf24b4df514a9",
+  "request_path": "tasks/requests/CARD-CANONICAL-FIX-PREFLIGHT-20261103-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:0e2956ed97a669be"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
