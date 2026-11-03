@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/FINANCE-PROBE-20261103-R6.65f1536fab34fe44a5f06bdbc3720c78684b5d4e4183cf2e42dc26848bac9b51.json",
+  "autostart_ledger_sha256": "a64e099c486fa648121768cad362690a53c600cc8e128e17ebfb86a400d20812",
+  "autostart_source_commit": "7575e208cf1a84f5e626838f8a56195cc946dab0",
+  "created_at": "2026-11-03T20:07:07Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41707680963",
+    "task_id": "FINANCE-PROBE-20261103-R6",
+    "task_sha256": "65f1536fab34fe44a5f06bdbc3720c78684b5d4e4183cf2e42dc26848bac9b51"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-79a47b913223525e-a12cc57169096a8c",
+  "request_path": "tasks/requests/FINANCE-PROBE-20261103-R6.json",
+  "resource_locks": [
+    "PATH_SCOPE:79a47b913223525e"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
