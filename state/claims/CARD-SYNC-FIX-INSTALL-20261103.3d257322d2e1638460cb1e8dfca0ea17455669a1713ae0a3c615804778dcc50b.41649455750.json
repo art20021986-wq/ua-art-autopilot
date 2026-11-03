@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "b15a687670a97001b7719914534bac41b68afc4ba37d82a086f38b95487f87cd",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-03T14:08:10Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-03T14:21:03Z",
+  "heartbeat_at": "2026-11-03T14:21:03Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "41649455750",
     "task_id": "CARD-SYNC-FIX-INSTALL-20261103",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 627.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 168.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-41649455750-3d257322d2e16384",
   "production_transaction_path": "state/transactions/CARD-SYNC-FIX-INSTALL-20261103.3d257322d2e1638460cb1e8dfca0ea17455669a1713ae0a3c615804778dcc50b.41649455750.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-579929485383cacd-d2fc0ca1a57fde86",
   "receipt_path": "state/receipts/CARD-SYNC-FIX-INSTALL-20261103.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "0cf19da1a305f10736396a02fce9e66c0b29605bb8a0b7963b66852cdcdeab07",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CARD-SYNC-FIX-INSTALL-20261103.json",
   "request_sha256": "3d257322d2e1638460cb1e8dfca0ea17455669a1713ae0a3c615804778dcc50b",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "3520e0c3d39df91eb41c166c926ed70bf744dd616665699366297f5cde33d075",
     "file_sha256": {
@@ -86,5 +109,5 @@
       "cloud/card_sync_fix_001/test_release.py": "c9ddc629ca9409f2e7a5a2dbc6d45d88e0bdacafb1728453a09733bbc8ea03b7"
     }
   },
-  "updated_at": "2026-11-03T14:08:10Z"
+  "updated_at": "2026-11-03T14:21:03Z"
 }
