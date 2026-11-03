@@ -25,7 +25,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'edit_catalog_guard.py', 'make_release.py', 'release_constants.py')]
+                                'edit_catalog_guard.py', 'edit_golden.py', 'make_release.py', 'release_constants.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'crm.db', 'db.py', 'lead_bot.py',
