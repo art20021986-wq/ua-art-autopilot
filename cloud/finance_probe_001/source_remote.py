@@ -25,7 +25,9 @@ FULL = ('ua_order/web.py', 'ua_order/repository.py', 'ua_order/mysql_repository.
         'ua_crm_public_sync.py', 'ua_google_tag.py', 'video/order/order-strings.json', 'video/podbor.html',
         # R2: the order page styles the card buttons depend on, and the site's own click analytics.
         'video/order/order.css', 'video/order/gallery.css', 'video/order/quick-lead.css', 'video/order/model-price.css',
-        'analitika_yadro.py', 'analitika_wsgi.py')
+        'analitika_yadro.py', 'analitika_wsgi.py',
+        # R6: the catalog design guard that refuses card publications (TASK090 SHELL_FINGERPRINT_MISMATCH).
+        'catalog_design_guard.py')
 # Large files: only the matching lines (with their numbers) and the hash.
 PARTIAL = {
     'cars_ui.py': re.compile(r'def clients_screen|Заявки с сайта|Заявки из бота|ua_site_leads|cards_clients|^def register'),
@@ -36,7 +38,7 @@ PARTIAL = {
 }
 SYNC_STATE = HOME / '.crm_public_sync_state.json'
 UA115 = re.compile(r'UA115|UNAPPROVED_EXTERNAL_HOST')
-GUARD = re.compile(r'SEO068 canonical')
+GUARD = re.compile(r'SEO068 canonical|TASK090_CATALOG_CONTRACT|SHELL_FINGERPRINT')
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
@@ -121,7 +123,17 @@ def report(home=None, wsgi=None):
         found = lines(path, GUARD, 30)
         if found and found['lines']:
             guard[path.name] = found
-    return {'status': 'PASS', 'files': files, 'order_storage': storage_kind(), 'sync_state': sync_state(),
+    video = HOME / 'video'
+    cards = sorted(p for p in video.glob('UA-*.html') if re.fullmatch(r'UA-[0-9]{4,}\.html', p.name))
+    linked = [p.name for p in cards if 'id="ua-finance-link"' in p.read_text(encoding='utf-8', errors='replace')]
+    shells = {}
+    for name in ('video/katalog.html', 'catalog_design_golden.html'):
+        path = HOME / name
+        if path.is_file():
+            raw = path.read_bytes()
+            shells[name] = {'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw),
+                            'mtime': round(path.stat().st_mtime)}
+    return {'status': 'PASS', 'files': files, 'cards_with_finance_link': linked, 'cards_total': len(cards), 'shells': shells, 'order_storage': storage_kind(), 'sync_state': sync_state(),
             'ua115_sources': ua115, 'guard_sources': guard}
 
 
