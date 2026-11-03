@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "e8ca74a57798652938e2667acdbd84a919b360fcd2d16614815f69e22715bc69",
+  "error": "SMOKE_RESULT (the preview smoke also checked old hashed page copies UA-XXXX-<hash>.html, which are not cards)",
+  "failed_step": "execute / standard / execute: remote preview smoke, after the read-only candidate build",
+  "precedent": "state/reconciliations/CRM-CARD-SOLD-PREFLIGHT-20261028-R2.40688042891.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-03T16:17:18.282044+00:00",
+  "remote_mode": "preview (read-only: builds the candidate in the run folder, writes nothing to the site or CRM)",
+  "retry": "CARD-CANONICAL-FIX-PREFLIGHT-20261103-R3 (smoke on UA-XXXX.html cards only)",
+  "run_id": "41661946960",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "CARD-CANONICAL-FIX-PREFLIGHT-20261103-R2"
+}
