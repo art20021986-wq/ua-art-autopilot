@@ -108,6 +108,7 @@ class RemoteTests(unittest.TestCase):
             (home / 'ua_order/web.py').write_text("X = 1\nTOKEN = 'abc'\n")
             (home / 'order_requests/settings.json').write_text(json.dumps({'storage': 'mysql', 'mysql': {'password': 'p'}}))
             (home / 'ua_crm_public_sync.py').write_text("raise RuntimeError('UA115_UNAPPROVED_EXTERNAL_HOST')\n")
+            (home / 'publish_guard.py').write_text("x = 1\nerrors.append('SEO068 canonical')\n")
             (home / '.crm_public_sync_state.json').write_text(json.dumps({'retries': {'UA-1': 2}, 'revisions': {'a': 1}}))
             (home / 'cars_ui.py').write_text('a\nb\ndef clients_screen():\n    pass\n')
             wsgi = home / 'wsgi.py'
@@ -117,6 +118,7 @@ class RemoteTests(unittest.TestCase):
         self.assertNotIn('"p"', json.dumps(value))
         self.assertIn('[REDACTED]', value['files']['ua_order/web.py']['source'])
         self.assertIn('ua_crm_public_sync.py', value['ua115_sources'])
+        self.assertEqual(len(value['guard_sources']['publish_guard.py']['lines']), 2)
         self.assertIn('retries', value['sync_state'])
         self.assertNotIn('revisions', value['sync_state'])
         self.assertEqual(len(value['files']['cars_ui.py']['lines']), 4)

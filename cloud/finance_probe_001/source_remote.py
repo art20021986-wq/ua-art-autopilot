@@ -36,6 +36,7 @@ PARTIAL = {
 }
 SYNC_STATE = HOME / '.crm_public_sync_state.json'
 UA115 = re.compile(r'UA115|UNAPPROVED_EXTERNAL_HOST')
+GUARD = re.compile(r'SEO068 canonical')
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
@@ -105,8 +106,14 @@ def report(home=None, wsgi=None):
         found = lines(path, UA115, 6)
         if found and found['lines']:
             ua115[path.name] = found
+    # R4: the publication check that refuses a card whose canonical is not /video/UA-XXXX.html (SEO068 canonical).
+    guard = {}
+    for path in sorted(HOME.glob('*.py')):
+        found = lines(path, GUARD, 30)
+        if found and found['lines']:
+            guard[path.name] = found
     return {'status': 'PASS', 'files': files, 'order_storage': storage_kind(), 'sync_state': sync_state(),
-            'ua115_sources': ua115}
+            'ua115_sources': ua115, 'guard_sources': guard}
 
 
 def main():
