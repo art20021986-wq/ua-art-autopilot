@@ -71,6 +71,8 @@ class PageTests(unittest.TestCase):
                       % LINK.replace('&', '&amp;'), html)
         self.assertIn('Розрахувати лізинг', html)
         self.assertIn('alt="ХАПАЙ лізинг"', html)
+        # The flex card must not stretch the logo: it keeps the file's own proportions.
+        self.assertIn('.fin-logo{display:block;align-self:flex-start;width:auto;height:30px', html)
 
     def test_other_pages_unchanged(self):
         names = {k for k in self.pages if 'kred' not in k}

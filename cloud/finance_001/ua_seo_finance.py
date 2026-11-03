@@ -15,7 +15,8 @@ STYLE = (
     '.fin-list{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));margin:0;padding:0;list-style:none}'
     '.fin-card{display:flex;flex-direction:column;gap:12px;padding:20px;border-radius:18px;background:#0f2137;'
     'border:1px solid rgba(240,166,60,.25);box-shadow:0 8px 24px rgba(0,0,0,.25)}'
-    '.fin-logo{display:block;width:auto;height:30px;max-width:100%}'
+    # The card is a flex column, which would stretch the logo across the card: keep its own proportions.
+    '.fin-logo{display:block;align-self:flex-start;width:auto;height:30px;max-width:100%;object-fit:contain}'
     '.fin-card h3{margin:0;font-size:20px}.fin-kind{color:#aebed0;font-size:15px;font-weight:400}'
     '.fin-terms{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}'
     '.fin-terms li{padding:6px 10px;border-radius:10px;background:rgba(76,194,122,.12);border-left:3px solid #4cc27a;'
