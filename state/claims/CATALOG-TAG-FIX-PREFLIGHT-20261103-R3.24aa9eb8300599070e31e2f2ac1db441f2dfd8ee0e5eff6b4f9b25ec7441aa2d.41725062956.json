@@ -7,21 +7,23 @@
   "created_at": "2026-11-03T21:54:18Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-03T21:54:18Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-03T22:05:23Z",
+  "heartbeat_at": "2026-11-03T22:05:23Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41725062956",
     "task_id": "CATALOG-TAG-FIX-PREFLIGHT-20261103-R3",
     "task_sha256": "24aa9eb8300599070e31e2f2ac1db441f2dfd8ee0e5eff6b4f9b25ec7441aa2d"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/CATALOG-TAG-FIX-PREFLIGHT-20261103-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "87d9e41e3239ffc372feb4b238ab29566bf667bb12960a0ca455a178ed9062ef",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CATALOG-TAG-FIX-PREFLIGHT-20261103-R3.json",
   "request_sha256": "24aa9eb8300599070e31e2f2ac1db441f2dfd8ee0e5eff6b4f9b25ec7441aa2d",
   "resource_locks": [
@@ -29,8 +31,34 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "f8a10e9793b873c989e31b73e67a3ce881cbb271",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92643418112,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.217
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-03T21:54:18Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "450da8f978852c968dc2a1e42a2749e230dfede78aeeffd5eef8ce9b7da20bb1",
+    "file_sha256": {
+      "cloud/catalog_tag_fix_001/candidate_builder.py": "5e6731de186585fa56a36c3a3bf316778f083686208944c8d989ebe58ac5563c",
+      "cloud/catalog_tag_fix_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/catalog_tag_fix_001/deployment_bootstrap.py": "294daaac2dbd623f02229fb0cba8d959f58efcc2d89d47c1cb93b8e3776b8987",
+      "cloud/catalog_tag_fix_001/deployment_remote.py": "74bdd794b831c5bdf9d0830362d5a8079f716fe63e8e3acc01fcc8f54a17cdc0",
+      "cloud/catalog_tag_fix_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/catalog_tag_fix_001/deployment_transport.py": "fa2980bdd370fd02fae9fa9859b1c31c53d0a325ee5b6a0322cbb1d4f3dc6b59",
+      "cloud/catalog_tag_fix_001/edit_catalog_guard.py": "cb1db1af81c3a81ff0d760dc3c5985c565fec672957effdb55274e3fa3445d38",
+      "cloud/catalog_tag_fix_001/edit_golden.py": "f9c37827be3bddfc9e8b00f882ccef8ee8452f2a01ceeb779da6efb507567acf",
+      "cloud/catalog_tag_fix_001/make_release.py": "e2017bbd8c59e64d8843e893b5b83614cbd1704e321dd40f56a2fb9181f8ac82",
+      "cloud/catalog_tag_fix_001/release_constants.py": "0bcaa2dd10dea74b9a0bd08e7a6d2f53a8c87543d9b3e498796c5b2b73b844b2",
+      "cloud/catalog_tag_fix_001/test_deployment.py": "272bfeca0f45a280a3208503a10a04bc6c0609f424fb625dd3005e0e33c26bea",
+      "cloud/catalog_tag_fix_001/test_release.py": "657ae877bcf94c54bf35b8090e6311d99b6e47ffb4b4d7d2911c2400a5c8d23e"
+    }
+  },
+  "updated_at": "2026-11-03T22:05:23Z"
 }
