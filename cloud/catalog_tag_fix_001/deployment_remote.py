@@ -28,7 +28,7 @@ HERE = Path(__file__).resolve().parent
 QUOTA_BYTES = 35 * 10**9
 PAGES = ('video/katalog.html', 'site/katalog.html', 'video/index.html', 'site/index.html')
 PROTECTED = ('start_safe.py', 'run_all.py', 'ua_site_counters.py',
-             'publication_fence.py', 'catalog_design_golden.html')
+             'publication_fence.py')
 
 
 class DeploymentError(RuntimeError):
@@ -126,7 +126,7 @@ def prepare(directory):
 
 
 # Runs in a separate python3.10 (the bots' interpreter) with the candidate module first on the path and the live
-# server root: the live catalog's shell now matches the golden file, and a shell with any other change (title) still
+# server root: the live catalog's shell now matches the candidate golden file, and a shell with any other change (title) still
 # does not. Nothing is written.
 SMOKE = r'''
 import json, sys
@@ -134,7 +134,7 @@ after, root = sys.argv[1], sys.argv[2]
 sys.path[:0] = [after, root]
 from pathlib import Path
 import catalog_design_guard as guard
-golden = guard.GOLDEN_PATH.read_text(encoding='utf-8')
+golden = (Path(after) / 'catalog_design_golden.html').read_text(encoding='utf-8')  # the candidate golden file
 live = (Path(root) / 'video/katalog.html').read_text(encoding='utf-8')
 tampered = live.replace('<title', '<title data-changed="1"', 1)
 import difflib, re
