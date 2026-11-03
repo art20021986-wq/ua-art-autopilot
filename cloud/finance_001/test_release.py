@@ -20,7 +20,7 @@ CARS_UI = json.loads((CLOUD / 'crm_clients_probe_001' / '20261030.json').read_te
 
 
 def live():
-    names = {'ua_seo_landings.py': 'ua_seo_landings.py', 'analitika_yadro.py': 'analitika_yadro.py',
+    names = {'ua_seo_landings.py': 'ua_seo_landings.txt', 'analitika_yadro.py': 'analitika_yadro.txt',
              edit_order.PAGE: 'podbor.html', edit_order.SCRIPT: 'order.js', edit_order.STRINGS: 'order-strings.json'}
     source = {name: (FIXTURES / fixture).read_bytes() for name, fixture in names.items()}
     source['cars_ui.py'] = CARS_UI
