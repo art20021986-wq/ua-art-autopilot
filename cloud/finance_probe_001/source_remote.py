@@ -22,7 +22,10 @@ FULL = ('ua_order/web.py', 'ua_order/repository.py', 'ua_order/mysql_repository.
         'ua_order/runtime.py', 'ua_order/host.py', 'ua_order/crm.py', 'ua_order/telegram.py', 'ua_order/bindings.py',
         'ua_order/rate_limit.py', 'ua_site_leads.py', 'ua_seo_landings.py', 'ua_seo_order_models.py',
         'ua_seo_metadata.py', 'ua_seo_sitemap.py', 'ua_seo_schema.py', 'ua_card_lang.py', 'ua_card_lang_job.py',
-        'ua_crm_public_sync.py', 'ua_google_tag.py', 'video/order/order-strings.json', 'video/podbor.html')
+        'ua_crm_public_sync.py', 'ua_google_tag.py', 'video/order/order-strings.json', 'video/podbor.html',
+        # R2: the order page styles the card buttons depend on, and the site's own click analytics.
+        'video/order/order.css', 'video/order/gallery.css', 'video/order/quick-lead.css', 'video/order/model-price.css',
+        'analitika_yadro.py', 'analitika_wsgi.py')
 # Large files: only the matching lines (with their numbers) and the hash.
 PARTIAL = {
     'cars_ui.py': re.compile(r'def clients_screen|Заявки с сайта|Заявки из бота|ua_site_leads|cards_clients|^def register'),
