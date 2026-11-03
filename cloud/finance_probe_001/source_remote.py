@@ -105,6 +105,25 @@ def sync_state():
             'schedule': schedule, 'last_success_ago_seconds': round(now - float(last.get('at') or 0)) if last else None}
 
 
+def shell_diff():
+    """R7: the catalog shell (page outside the card region) of the golden file and of the live catalog, normalized
+    as catalog_design_guard does, split at tags, and their difference (stdlib difflib); read only."""
+    import difflib
+    import importlib.util
+    path = HOME / 'catalog_design_guard.py'
+    if not path.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location('probe_catalog_guard', path)
+    guard = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(guard)
+    def parts(name):
+        text = guard._normalize_shell((HOME / name).read_text(encoding='utf-8', errors='replace'))
+        return [sanitized_line(x)[:300] for x in re.split(r'(?=<)', text) if x.strip()]
+    golden, live = parts('catalog_design_golden.html'), parts('video/katalog.html')
+    lines = list(difflib.unified_diff(golden, live, 'golden', 'katalog', n=1, lineterm=''))
+    return {'golden_parts': len(golden), 'live_parts': len(live), 'diff': lines[:400]}
+
+
 def report(home=None, wsgi=None):
     global HOME, SETTINGS, SYNC_STATE
     if home is not None:
@@ -133,6 +152,7 @@ def report(home=None, wsgi=None):
             raw = path.read_bytes()
             shells[name] = {'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw),
                             'mtime': round(path.stat().st_mtime)}
+    shells['diff'] = shell_diff()
     return {'status': 'PASS', 'files': files, 'cards_with_finance_link': linked, 'cards_total': len(cards), 'shells': shells, 'order_storage': storage_kind(), 'sync_state': sync_state(),
             'ua115_sources': ua115, 'guard_sources': guard}
 
