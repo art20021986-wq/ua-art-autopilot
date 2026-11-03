@@ -91,7 +91,16 @@ def sync_state():
     except Exception as error:
         return type(error).__name__
     keep = {k: v for k, v in value.items() if re.search(r'retr|error|fail|last', k, re.I)}
-    return sanitized_line(json.dumps(keep, ensure_ascii=False, sort_keys=True))[:12000]
+    # R5: when the sync tries each card again (seconds from now) and its current error, unmasked times.
+    import time
+    now = time.time()
+    retry = value.get('retry') or {}
+    schedule = {key: {'count': item.get('count'), 'next_in_seconds': round(float(item.get('after') or 0) - now),
+                      'error': sanitized_line(str(item.get('error', '')))[:220]}
+                for key, item in retry.items() if isinstance(item, dict)}
+    last = value.get('last_success') or {}
+    return {'state': sanitized_line(json.dumps(keep, ensure_ascii=False, sort_keys=True))[:12000],
+            'schedule': schedule, 'last_success_ago_seconds': round(now - float(last.get('at') or 0)) if last else None}
 
 
 def report(home=None, wsgi=None):
