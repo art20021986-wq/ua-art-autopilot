@@ -115,6 +115,8 @@ def shell_diff():
         return None
     spec = importlib.util.spec_from_file_location('probe_catalog_guard', path)
     guard = importlib.util.module_from_spec(spec)
+    import sys
+    sys.modules[spec.name] = guard  # its dataclasses look the module up while it loads
     spec.loader.exec_module(guard)
     def parts(name):
         text = guard._normalize_shell((HOME / name).read_text(encoding='utf-8', errors='replace'))
