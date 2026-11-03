@@ -29,7 +29,9 @@ FULL = ('ua_order/web.py', 'ua_order/repository.py', 'ua_order/mysql_repository.
 # Large files: only the matching lines (with their numbers) and the hash.
 PARTIAL = {
     'cars_ui.py': re.compile(r'def clients_screen|Заявки с сайта|Заявки из бота|ua_site_leads|cards_clients|^def register'),
-    'video/ua-site-languages.js': re.compile(r'Поставити запитання|Задать вопрос|vopros|card_texts'),
+    # R3: how the language script treats per-language pages (/video/ua/, /video/ru/, /video/seo/) and the header.
+    'video/ua-site-languages.js': re.compile(r'Поставити запитання|Задать вопрос|vopros|card_texts|/video/ua/|/video/ru/|seo/|'
+                                             r'shapka|versioned|switcher|data-site-lang|langButtons|function choose'),
     'stranica.py': re.compile(r"id='vopros'|kn_kupit|vtoraya"),
 }
 SYNC_STATE = HOME / '.crm_public_sync_state.json'
@@ -88,7 +90,7 @@ def sync_state():
     except Exception as error:
         return type(error).__name__
     keep = {k: v for k, v in value.items() if re.search(r'retr|error|fail|last', k, re.I)}
-    return sanitized_line(json.dumps(keep, ensure_ascii=False, sort_keys=True))[:6000]
+    return sanitized_line(json.dumps(keep, ensure_ascii=False, sort_keys=True))[:12000]
 
 
 def report(home=None, wsgi=None):
