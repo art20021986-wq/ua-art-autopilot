@@ -1,0 +1,356 @@
+# -*- coding: utf-8 -*-
+# UA-ANALIT-V1  ядро аналитики UA ART (база, приём событий, отчёты)
+import os, io, re, json, time, sqlite3, hashlib
+
+DOM   = "/home/Carix"
+BAZA  = os.path.join(DOM, "analytics.db")
+CRM   = os.path.join(DOM, "crm.db")
+SDVIG_KIEV = 3 * 3600          # сервер UTC -> Киев
+SESSIYA_MIN = 30
+HRANIT_DNEY = 120
+
+def _db():
+    d = sqlite3.connect(BAZA, timeout=10)
+    try:
+        d.execute("PRAGMA journal_mode=WAL")
+        d.execute("PRAGMA synchronous=NORMAL")
+    except Exception:
+        pass
+    return d
+
+def init():
+    d = _db()
+    c = d.cursor()
+    c.execute("CREATE TABLE IF NOT EXISTS visitors(vid TEXT PRIMARY KEY, pervyy INTEGER, posledniy INTEGER, istochnik TEXT)")
+    c.execute("CREATE TABLE IF NOT EXISTS sessions(sid TEXT PRIMARY KEY, vid TEXT, nachalo INTEGER, konec INTEGER, istochnik TEXT, utm_source TEXT, utm_medium TEXT, utm_campaign TEXT, utm_content TEXT, put TEXT)")
+    c.execute("CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT, eid TEXT UNIQUE, sid TEXT, vid TEXT, ts INTEGER, tip TEXT, stranica TEXT, avto TEXT, znachenie TEXT)")
+    c.execute("CREATE TABLE IF NOT EXISTS sutki(den TEXT PRIMARY KEY, svodka TEXT)")
+    c.execute("CREATE INDEX IF NOT EXISTS i_ev_ts ON events(ts)")
+    c.execute("CREATE INDEX IF NOT EXISTS i_ev_sid ON events(sid)")
+    c.execute("CREATE INDEX IF NOT EXISTS i_ev_tip ON events(tip)")
+    c.execute("CREATE INDEX IF NOT EXISTS i_ev_avto ON events(avto)")
+    c.execute("CREATE INDEX IF NOT EXISTS i_ses_nach ON sessions(nachalo)")
+    d.commit()
+    d.close()
+
+# ---------- человеческие названия страниц ----------
+_KESH = {"vremya": 0, "avto": {}}
+
+def _avto_iz_crm():
+    if time.time() - _KESH["vremya"] < 300 and _KESH["avto"]:
+        return _KESH["avto"]
+    d = {}
+    try:
+        con = sqlite3.connect("file:%s?mode=ro" % CRM, uri=True, timeout=5)
+        cur = con.cursor()
+        cur.execute("SELECT auto_number, brand, model, year FROM cars")
+        for kod, marka, model, god in cur.fetchall():
+            if not kod:
+                continue
+            imya = " ".join([str(x) for x in (marka, model, god) if x])
+            d[str(kod).upper()] = imya.strip() or str(kod)
+        con.close()
+    except Exception:
+        pass
+    _KESH["avto"] = d
+    _KESH["vremya"] = time.time()
+    return d
+
+def kod_avto(put):
+    m = re.search(r"(UA-\d{3,5})", put or "", re.I)
+    return m.group(1).upper() if m else ""
+
+def nazvanie_stranicy(put):
+    p = (put or "").split("?")[0].strip().lower()
+    kod = kod_avto(p)
+    if kod:
+        imya = _avto_iz_crm().get(kod, kod)
+        if "-diag" in p:
+            return "Диагностика · " + imya
+        return imya
+    if p.endswith("katalog.html"):
+        return "Каталог"
+    if p.endswith("podbor.html"):
+        return "Авто под заказ"
+    if p.endswith("info.html"):
+        return "Условия и сроки"
+    if p.endswith("index.html") or p in ("", "/", "/video/", "/site/"):
+        return "Главная"
+    return p.rsplit("/", 1)[-1] or "Страница"
+
+# ---------- запись события ----------
+RAZRESHENO = set(["start", "page", "card", "diag", "video", "whatsapp", "telegram",
+                  "phone", "share", "zakaz", "obyavlenie", "zayavka", "cta", "etap"])
+
+def zapisat(dannye):
+    """dannye — словарь от браузера. Возвращает 'ok' / 'dubl' / 'skip'."""
+    tip = str(dannye.get("t", ""))[:20]
+    if tip not in RAZRESHENO:
+        return "skip"
+    vid = re.sub(r"[^a-zA-Z0-9]", "", str(dannye.get("v", "")))[:40]
+    sid = re.sub(r"[^a-zA-Z0-9]", "", str(dannye.get("s", "")))[:40]
+    eid = re.sub(r"[^a-zA-Z0-9]", "", str(dannye.get("e", "")))[:60]
+    if not vid or not sid or not eid:
+        return "skip"
+    put  = str(dannye.get("p", ""))[:300]
+    znch = str(dannye.get("z", ""))[:200]
+    ist  = str(dannye.get("i", ""))[:40] or "Прямой / неизвестный"
+    us   = str(dannye.get("us", ""))[:80]
+    um   = str(dannye.get("um", ""))[:80]
+    uc   = str(dannye.get("uc", ""))[:120]
+    uk   = str(dannye.get("uk", ""))[:120]
+    ts   = int(time.time())
+    avto = kod_avto(put)
+    init()
+    d = _db()
+    c = d.cursor()
+    try:
+        c.execute("INSERT INTO events(eid,sid,vid,ts,tip,stranica,avto,znachenie) VALUES(?,?,?,?,?,?,?,?)",
+                  (eid, sid, vid, ts, tip, put, avto, znch))
+    except sqlite3.IntegrityError:
+        d.close()
+        return "dubl"
+    c.execute("INSERT OR IGNORE INTO visitors(vid,pervyy,posledniy,istochnik) VALUES(?,?,?,?)", (vid, ts, ts, ist))
+    c.execute("UPDATE visitors SET posledniy=? WHERE vid=?", (ts, vid))
+    c.execute("INSERT OR IGNORE INTO sessions(sid,vid,nachalo,konec,istochnik,utm_source,utm_medium,utm_campaign,utm_content,put) VALUES(?,?,?,?,?,?,?,?,?,?)",
+              (sid, vid, ts, ts, ist, us, um, uc, uk, ""))
+    shag = nazvanie_stranicy(put) if tip in ("page", "card", "diag") else _imya_tipa(tip)
+    c.execute("SELECT put FROM sessions WHERE sid=?", (sid,))
+    r = c.fetchone()
+    marshrut = (r[0] if r and r[0] else "")
+    chasti = [x for x in marshrut.split(" > ") if x]
+    if not chasti or chasti[-1] != shag:
+        chasti.append(shag)
+    marshrut = " > ".join(chasti[-12:])
+    c.execute("UPDATE sessions SET konec=?, put=? WHERE sid=?", (ts, marshrut, sid))
+    d.commit()
+    d.close()
+    _uborka()
+    return "ok"
+
+_IMENA_TIPOV = {"whatsapp": "WhatsApp", "telegram": "Telegram", "phone": "Позвонить",
+                "video": "Видео", "share": "Поделиться", "zakaz": "Авто под заказ",
+                "obyavlenie": "Открыть объявление", "zayavka": "Заявка",
+                "diag": "Диагностика", "card": "Карточка", "cta": "Кнопка", "etap": "Этап"}
+
+def _imya_tipa(t):
+    return _IMENA_TIPOV.get(t, t)
+
+_POSLED_UBORKA = [0]
+def _uborka():
+    if time.time() - _POSLED_UBORKA[0] < 6 * 3600:
+        return
+    _POSLED_UBORKA[0] = time.time()
+    try:
+        d = _db()
+        porog = int(time.time()) - HRANIT_DNEY * 86400
+        d.execute("DELETE FROM events WHERE ts<?", (porog,))
+        d.execute("DELETE FROM sessions WHERE konec<?", (porog,))
+        d.commit()
+        d.close()
+    except Exception:
+        pass
+
+# ---------- отчёты ----------
+def _granicy(period):
+    t = time.time() + SDVIG_KIEV
+    den = int(t // 86400)
+    if period == "segodnya":
+        a, b = den * 86400, (den + 1) * 86400
+        imya = "Сегодня"
+    elif period == "vchera":
+        a, b = (den - 1) * 86400, den * 86400
+        imya = "Вчера"
+    elif period == "7":
+        a, b = (den - 6) * 86400, (den + 1) * 86400
+        imya = "7 дней"
+    else:
+        a, b = (den - 29) * 86400, (den + 1) * 86400
+        imya = "30 дней"
+    return a - SDVIG_KIEV, b - SDVIG_KIEV, imya
+
+def _top(spisok, n=8):
+    return sorted(spisok, key=lambda x: -x[1])[:n]
+
+def otchet(period="segodnya"):
+    init()
+    a, b, imya = _granicy(period)
+    d = _db()
+    c = d.cursor()
+    c.execute("SELECT COUNT(DISTINCT vid) FROM events WHERE ts>=? AND ts<?", (a, b))
+    posetiteley = c.fetchone()[0] or 0
+    c.execute("SELECT COUNT(DISTINCT sid) FROM events WHERE ts>=? AND ts<?", (a, b))
+    sessiy = c.fetchone()[0] or 0
+    c.execute("SELECT COUNT(*) FROM events WHERE ts>=? AND ts<? AND tip IN ('page','card','diag')", (a, b))
+    prosmotrov = c.fetchone()[0] or 0
+
+    if not posetiteley:
+        d.close()
+        return "📊 UA ART — АНАЛИТИКА\n%s\n\nДанных за этот период пока нет." % imya
+
+    c.execute("SELECT istochnik, COUNT(DISTINCT sid) FROM sessions WHERE nachalo>=? AND nachalo<? GROUP BY istochnik", (a, b))
+    istochniki = _top(c.fetchall(), 8)
+    c.execute("SELECT utm_source, utm_campaign, COUNT(DISTINCT sid) FROM sessions WHERE nachalo>=? AND nachalo<? AND utm_source<>'' GROUP BY utm_source, utm_campaign", (a, b))
+    utm = _top([("%s / %s" % (x[0], x[1] or "-"), x[2]) for x in c.fetchall()], 6)
+
+    c.execute("SELECT stranica, COUNT(*) FROM events WHERE ts>=? AND ts<? AND tip IN ('page','card','diag') GROUP BY stranica", (a, b))
+    svod = {}
+    for put, n in c.fetchall():
+        im = nazvanie_stranicy(put)
+        svod[im] = svod.get(im, 0) + n
+    stranicy = _top(list(svod.items()), 8)
+
+    c.execute("SELECT tip, COUNT(*) FROM events WHERE ts>=? AND ts<? AND tip NOT IN ('page','start') GROUP BY tip", (a, b))
+    deystviya = _top([(_imya_tipa(t), n) for t, n in c.fetchall()], 10)
+
+    c.execute("SELECT avto, COUNT(*) FROM events WHERE ts>=? AND ts<? AND avto<>'' AND tip IN ('card','diag') GROUP BY avto", (a, b))
+    prosm_avto = dict(c.fetchall())
+    c.execute("SELECT avto, COUNT(*) FROM events WHERE ts>=? AND ts<? AND avto<>'' AND tip IN ('whatsapp','telegram','phone','zayavka') GROUP BY avto", (a, b))
+    kont_avto = dict(c.fetchall())
+    avto_stroki = []
+    for kod, n in _top(list(prosm_avto.items()), 8):
+        avto_stroki.append((_avto_iz_crm().get(kod, kod), n, kont_avto.get(kod, 0)))
+
+    c.execute("SELECT COUNT(DISTINCT vid) FROM events WHERE ts>=? AND ts<? AND tip IN ('card','diag')", (a, b))
+    smotreli = c.fetchone()[0] or 0
+    c.execute("SELECT COUNT(DISTINCT vid) FROM events WHERE ts>=? AND ts<? AND tip='card'", (a, b))
+    otkryli = c.fetchone()[0] or 0
+    c.execute("SELECT COUNT(DISTINCT vid) FROM events WHERE ts>=? AND ts<? AND tip IN ('whatsapp','telegram','phone','zayavka')", (a, b))
+    kontakt = c.fetchone()[0] or 0
+
+    c.execute("SELECT put, COUNT(*) FROM sessions WHERE nachalo>=? AND nachalo<? AND put<>'' GROUP BY put", (a, b))
+    marshruty = _top([(x[0], x[1]) for x in c.fetchall()], 5)
+    d.close()
+
+    t = []
+    t.append("📊 UA ART — АНАЛИТИКА")
+    t.append(imya)
+    t.append("")
+    t.append("👥 Посетителей: %d" % posetiteley)
+    t.append("🔄 Сессий: %d" % sessiy)
+    t.append("👁 Просмотров страниц: %d" % prosmotrov)
+    t.append("")
+    t.append("📥 ОТКУДА ПРИШЛИ")
+    for im, n in istochniki:
+        t.append("%s — %d" % (im, n))
+    if utm:
+        t.append("")
+        t.append("🎯 РЕКЛАМА (UTM)")
+        for im, n in utm:
+            t.append("%s — %d" % (im, n))
+    t.append("")
+    t.append("👀 ЧТО СМОТРЕЛИ")
+    for im, n in stranicy:
+        t.append("%s — %d" % (im, n))
+    if deystviya:
+        t.append("")
+        t.append("➡️ ЧТО НАЖИМАЛИ")
+        for im, n in deystviya:
+            t.append("%s — %d" % (im, n))
+    if avto_stroki:
+        t.append("")
+        t.append("🚗 ИНТЕРЕС К АВТО")
+        for im, pr, ko in avto_stroki:
+            t.append("%s — %d просмотров / %d контактов" % (im, pr, ko))
+    t.append("")
+    t.append("🔥 КОНВЕРСИЯ")
+    t.append("Посетители: %d" % posetiteley)
+    t.append("Смотрели авто: %d" % smotreli)
+    t.append("Открыли карточку: %d" % otkryli)
+    t.append("Нажали контакт: %d" % kontakt)
+    if posetiteley:
+        t.append("Посетитель → контакт: %.1f%%" % (100.0 * kontakt / posetiteley))
+    if marshruty:
+        t.append("")
+        t.append("🧭 ТОП МАРШРУТОВ")
+        for im, n in marshruty:
+            t.append("%s — %d" % (im[:120], n))
+    return "\n".join(t)
+
+# ---------- скрипт для страниц ----------
+SKRIPT = r"""
+(function(){
+if (window.__UA_A) { return; } window.__UA_A = 1;
+var LS=window.localStorage, SS=window.sessionStorage;
+function rnd(){ return Math.random().toString(36).slice(2)+Date.now().toString(36); }
+function get(k,st){ try{ return st.getItem(k); }catch(e){ return null; } }
+function set(k,v,st){ try{ st.setItem(k,v); }catch(e){} }
+var vid=get('ua_vid',LS); if(!vid){ vid=rnd(); set('ua_vid',vid,LS); }
+var now=Date.now();
+var last=parseInt(get('ua_last',LS)||'0',10);
+var sid=get('ua_sid',LS);
+var novaya=false;
+if(!sid || !last || (now-last)>1800000){ sid=rnd(); set('ua_sid',sid,LS); novaya=true; }
+set('ua_last',String(now),LS);
+var par=new URLSearchParams(location.search);
+function utm(n){ return (par.get(n)||'').slice(0,100); }
+var us=utm('utm_source'), um=utm('utm_medium'), uc=utm('utm_campaign'), uk=utm('utm_content');
+function istochnik(){
+  if(us){ var m=us.toLowerCase();
+    if(m.indexOf('tik')>=0) return 'TikTok';
+    if(m.indexOf('insta')>=0||m==='ig') return 'Instagram';
+    if(m.indexOf('face')>=0||m==='fb') return 'Facebook';
+    if(m.indexOf('goog')>=0) return 'Google';
+    if(m.indexOf('tele')>=0||m==='tg') return 'Telegram';
+    if(m.indexOf('what')>=0) return 'WhatsApp';
+    if(m.indexOf('ria')>=0) return 'AUTO.RIA';
+    return us; }
+  var r=document.referrer||'';
+  if(!r) return 'Прямой / неизвестный';
+  try{ var h=new URL(r).hostname.replace('www.',''); }catch(e){ return 'Другой сайт'; }
+  if(h.indexOf(location.hostname)>=0) return '';
+  if(h.indexOf('tiktok')>=0) return 'TikTok';
+  if(h.indexOf('instagram')>=0) return 'Instagram';
+  if(h.indexOf('facebook')>=0||h.indexOf('fb.')>=0) return 'Facebook';
+  if(h.indexOf('google')>=0) return 'Google';
+  if(h.indexOf('t.me')>=0||h.indexOf('telegram')>=0) return 'Telegram';
+  if(h.indexOf('whatsapp')>=0) return 'WhatsApp';
+  if(h.indexOf('auto.ria')>=0) return 'AUTO.RIA';
+  if(h.indexOf('bing')>=0||h.indexOf('yandex')>=0||h.indexOf('duck')>=0) return 'Поиск';
+  return h;
+}
+var ist=istochnik();
+if(ist===''){ ist=get('ua_ist',LS)||'Прямой / неизвестный'; } else { set('ua_ist',ist,LS); }
+if(novaya){ set('ua_ist',ist,LS); }
+var poslednie={};
+function shlyom(t,z){
+  var klyuch=t+'|'+(z||'')+'|'+location.pathname;
+  var tt=Date.now();
+  if(poslednie[klyuch] && (tt-poslednie[klyuch])<1200){ return; }
+  poslednie[klyuch]=tt;
+  var d={t:t,v:vid,s:sid,e:rnd()+rnd(),p:location.pathname+location.search,z:z||'',
+         i:ist,us:us,um:um,uc:uc,uk:uk};
+  var telo=JSON.stringify(d);
+  try{
+    if(navigator.sendBeacon){ navigator.sendBeacon('/ua/a/e', new Blob([telo],{type:'text/plain'})); return; }
+  }catch(e){}
+  try{ fetch('/ua/a/e',{method:'POST',body:telo,keepalive:true}); }catch(e){}
+}
+if(novaya){ shlyom('start',''); }
+var p=location.pathname.toLowerCase();
+if(/ua-\d+.*-diag/.test(p)){ shlyom('diag',''); }
+else if(/ua-\d+/.test(p)){ shlyom('card',''); }
+else { shlyom('page',''); }
+document.addEventListener('click', function(ev){
+  var a=ev.target; var i=0;
+  while(a && a.tagName!=='A' && i<6){ a=a.parentNode; i++; }
+  var h=(a && a.getAttribute && a.getAttribute('href')) || '';
+  var txt=((a && a.textContent) || (ev.target && ev.target.textContent) || '').trim().slice(0,60);
+  var hl=h.toLowerCase();
+  if(hl.indexOf('wa.me')>=0 || hl.indexOf('whatsapp')>=0){ shlyom('whatsapp',txt); return; }
+  if(hl.indexOf('t.me')>=0 || hl.indexOf('tg://')>=0){ shlyom('telegram',txt); return; }
+  if(hl.indexOf('tel:')===0){ shlyom('phone',txt); return; }
+  if(hl.indexOf('-diag')>=0){ shlyom('diag',txt); return; }
+  if(/ua-\d+\.html/.test(hl)){ shlyom('obyavlenie',txt); return; }
+  if(hl.indexOf('podbor')>=0){ shlyom('zakaz',txt); return; }
+  if(hl.indexOf('katalog')>=0 && hl.indexOf('stage')>=0){ shlyom('etap',txt); return; }
+  var t2=txt.toLowerCase();
+  if(t2.indexOf('позвонить')>=0){ shlyom('phone',txt); return; }
+  if(t2.indexOf('подел')>=0 || t2.indexOf('share')>=0){ shlyom('share',txt); return; }
+  if(t2.indexOf('купить')>=0 || t2.indexOf('заброн')>=0 || t2.indexOf('вопрос')>=0 || t2.indexOf('заявк')>=0){ shlyom('cta',txt); return; }
+}, true);
+document.addEventListener('play', function(ev){
+  if(ev.target && ev.target.tagName==='VIDEO'){ shlyom('video',''); }
+}, true);
+})();
+"""

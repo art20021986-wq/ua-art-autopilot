@@ -17,7 +17,7 @@ PARTNERS = (
          lender={'uk': 'ТОВ «УЛФ-Фінанс»', 'ru': 'ООО «УЛФ-Финанс»'},
          # The partner's link for UA ART (its Telegram bot counts visits for the partner's CRM): never change it.
          href='https://t.me/ulf_agent_bot?start=387da37d-92d7-4a21-8c69-13c14030906d=site',
-         logo='/video/finance/hapai-avto.png', logo_size=(0, 0),
+         logo='/video/finance/hapai-lizing.png', logo_size=(480, 66), logo_alt='ХАПАЙ лізинг',
          uk=dict(terms=('Аванс від 20%', 'Паспорт та ІПН', 'Розрахунок у Telegram'), cta='Розрахувати лізинг'),
          ru=dict(terms=('Аванс от 20%', 'Паспорт и ИНН', 'Расчёт в Telegram'), cta='Рассчитать лизинг')),
 )

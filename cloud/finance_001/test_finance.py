@@ -70,7 +70,7 @@ class PageTests(unittest.TestCase):
         self.assertIn('href="%s" target="_blank" rel="sponsored noopener" data-finance-partner="hapai-leasing"'
                       % LINK.replace('&', '&amp;'), html)
         self.assertIn('Розрахувати лізинг', html)
-        self.assertIn('alt="ХАПАЙ Авто"', html)
+        self.assertIn('alt="ХАПАЙ лізинг"', html)
 
     def test_other_pages_unchanged(self):
         names = {k for k in self.pages if 'kred' not in k}

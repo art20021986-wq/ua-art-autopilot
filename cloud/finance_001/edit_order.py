@@ -36,7 +36,7 @@ EDITS = {
     SCRIPT: (
         ("    const button=node('button',t('calculate'));button.type='button';"
          "button.addEventListener('click',()=>selectModel(model.key));\n",
-         "    const button=node('a',t('finance'),'finance-link');\n"
+         "    const button=node('a',t('finance'),'button finance-link');\n"
          "    button.href=`${t('finance_href')}?model=${encodeURIComponent(model.key)}&strana=${encodeURIComponent(state.country)}`;\n"),
     ),
     STRINGS: tuple(_strings(lang) for lang in ('uk', 'ru', 'ka')),
@@ -44,7 +44,7 @@ EDITS = {
 SCRIPT_VERSION = re.compile(r'order/order\.js\?v=[0-9.]+')
 # Public proof that each file is live.
 CHECK_PAGE = 'order/finance-link.css?v=' + VERSION
-CHECK_SCRIPT = "node('a',t('finance'),'finance-link')"
+CHECK_SCRIPT = "node('a',t('finance'),'button finance-link')"
 CHECK_STRINGS = '"finance": "Кредити та лізинг"'
 
 
