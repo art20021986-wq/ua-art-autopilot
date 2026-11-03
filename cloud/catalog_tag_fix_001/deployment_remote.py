@@ -137,6 +137,12 @@ import catalog_design_guard as guard
 golden = guard.GOLDEN_PATH.read_text(encoding='utf-8')
 live = (Path(root) / 'video/katalog.html').read_text(encoding='utf-8')
 tampered = live.replace('<title', '<title data-changed="1"', 1)
+import difflib, re
+def parts(text):
+    return [x for x in re.split(r'(?=<)', guard._normalize_shell(text)) if x.strip()]
+# The catalog is a public page: the remaining difference (if any) is reported as it is, bounded.
+difference = '\n'.join(difflib.unified_diff(parts(golden), parts(live), 'golden', 'katalog', n=0, lineterm=''))[:6000]
+print(json.dumps({'remaining_difference': difference or 'NONE'}, ensure_ascii=False), file=sys.stderr)
 print(json.dumps({'live_matches_golden': guard.shell_fingerprint(live) == guard.shell_fingerprint(golden),
                   'other_change_still_refused': guard.shell_fingerprint(tampered) != guard.shell_fingerprint(golden),
                   'golden_has_no_tag': '<!--UA-GTAG-V1-->' not in golden}))
@@ -149,8 +155,11 @@ def smoke(directory):
     if result.returncode != 0:
         raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
-    if not all(value.values()):
+    if not value['other_change_still_refused'] or not value['golden_has_no_tag']:
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value))
+    # Reported in the preview (not raised: the error text is cut short); an install is only prepared when the
+    # live catalog matches the golden file (live_matches_golden) and nothing else differs.
+    value['remaining_difference'] = json.loads(result.stderr.strip().splitlines()[-1])['remaining_difference']
     return value
 
 

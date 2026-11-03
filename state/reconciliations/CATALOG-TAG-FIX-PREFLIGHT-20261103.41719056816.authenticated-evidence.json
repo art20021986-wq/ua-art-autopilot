@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "d883282c1fbb7df03e2cc8c4fc25d9f8ddfa1e88d47d7b00b14586b302d1ceba",
+  "error": "SMOKE_RESULT live_matches_golden false: the catalog shell differs from the golden file beyond the Google tag block",
+  "failed_step": "execute / standard / execute: remote preview smoke, after the read-only candidate build",
+  "precedent": "state/reconciliations/CARD-CANONICAL-FIX-PREFLIGHT-20261103-R2.41661946960.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-03T21:27:09.616935+00:00",
+  "remote_mode": "preview (read-only; writes nothing to the site or CRM)",
+  "retry": "CATALOG-TAG-FIX-PREFLIGHT-20261103-R2 (smoke reports the full remaining shell difference)",
+  "run_id": "41719056816",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "CATALOG-TAG-FIX-PREFLIGHT-20261103"
+}

@@ -101,6 +101,9 @@ def install():
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
     plan = json.load(open(P + 'deployment_plan.json'))
     preview_value = json.load(open(P + 'deployment_preview.json'))
+    smoke = preview_value['smoke']
+    if smoke.get('live_matches_golden') is not True or smoke.get('remaining_difference') != 'NONE':
+        raise SystemExit('PREVIEW_SHELL_STILL_DIFFERS')
     probe = preview_value['storage_probe']
     storage = {k: probe[k] for k in ('account_quota_measured', 'free_bytes', 'measured_at', 'measurement_method',
                                      'read_only', 'target_environment', 'total_bytes', 'used_bytes')}
