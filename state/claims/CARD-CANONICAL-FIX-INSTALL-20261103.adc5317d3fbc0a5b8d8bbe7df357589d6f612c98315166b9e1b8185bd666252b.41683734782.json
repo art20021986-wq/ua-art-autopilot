@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "08e8076b04e9ba6469a27736288d45ab7c78ddd76c1ede6baded67b628603585",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-03T17:49:25Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-03T18:07:01Z",
+  "heartbeat_at": "2026-11-03T18:07:01Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "41683734782",
     "task_id": "CARD-CANONICAL-FIX-INSTALL-20261103",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 424.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 44.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-41683734782-adc5317d3fbc0a5b",
   "production_transaction_path": "state/transactions/CARD-CANONICAL-FIX-INSTALL-20261103.adc5317d3fbc0a5b8d8bbe7df357589d6f612c98315166b9e1b8185bd666252b.41683734782.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-d53fc4bd297bf2f0-444f61792013397e",
   "receipt_path": "state/receipts/CARD-CANONICAL-FIX-INSTALL-20261103.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "3c864e30a55dcd49b57057abc348c2822a707a4ad72a1b17ae7070cee9db7a53",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CARD-CANONICAL-FIX-INSTALL-20261103.json",
   "request_sha256": "adc5317d3fbc0a5b8d8bbe7df357589d6f612c98315166b9e1b8185bd666252b",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "3eaad4ecd95a242e966f8c6e3dd1e6b4c8ce175ca8d01f020419e447c333a051",
     "file_sha256": {
@@ -86,5 +109,5 @@
       "cloud/card_canonical_fix_001/test_release.py": "76305fa1830c31ed4dde723fbcb865dfe957c5d069dd1631b65fc6812eb05400"
     }
   },
-  "updated_at": "2026-11-03T17:49:25Z"
+  "updated_at": "2026-11-03T18:07:01Z"
 }
