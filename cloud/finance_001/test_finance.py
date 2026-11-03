@@ -10,8 +10,13 @@ import unittest
 
 HERE = Path(__file__).resolve().parent
 FIXTURES = HERE / 'fixtures'
+# The live server modules the landing generator imports, kept as .txt (the package's Python closure is only
+# its own declared files); importable from a temporary folder.
+MODULES = Path(tempfile.mkdtemp())
+for name in ('ua_seo_order_models', 'ua_seo_quick_form', 'ua_seo_schema'):
+    (MODULES / (name + '.py')).write_bytes((FIXTURES / (name + '.txt')).read_bytes())
 sys.path.insert(0, str(HERE))
-sys.path.insert(1, str(FIXTURES))
+sys.path.insert(1, str(MODULES))
 import edit_cars_ui  # noqa: E402
 import edit_landings  # noqa: E402
 import ua_finance_crm  # noqa: E402
@@ -23,7 +28,7 @@ LINK = 'https://t.me/ulf_agent_bot?start=387da37d-92d7-4a21-8c69-13c14030906d=si
 def landings():
     """The live generator with this release's edit, imported from a temporary folder."""
     folder = tempfile.mkdtemp()
-    Path(folder, 'ua_seo_landings.py').write_bytes(edit_landings.build((FIXTURES / 'ua_seo_landings.py').read_bytes()))
+    Path(folder, 'ua_seo_landings.py').write_bytes(edit_landings.build((FIXTURES / 'ua_seo_landings.txt').read_bytes()))
     sys.path.insert(0, folder)
     sys.modules.pop('ua_seo_landings', None)
     try:
@@ -80,7 +85,7 @@ class PageTests(unittest.TestCase):
         self.assertEqual(len(self.pages) - len(names), 2)
 
     def test_edit_refused_twice(self):
-        once = edit_landings.build((FIXTURES / 'ua_seo_landings.py').read_bytes())
+        once = edit_landings.build((FIXTURES / 'ua_seo_landings.txt').read_bytes())
         with self.assertRaisesRegex(ValueError, 'LANDINGS_FRAGMENT_NOT_UNIQUE'):
             edit_landings.build(once)
 
