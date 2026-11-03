@@ -122,6 +122,7 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(len(value['files']['cars_ui.py']['lines']), 4)
         self.assertEqual(len(value['files']['wsgi']['lines']), 2)
         self.assertIsNone(value['files']['ua_seo_landings.py'])
+        self.assertIn('video/order/order.css', value['files'])
 
 
 if __name__ == '__main__':
