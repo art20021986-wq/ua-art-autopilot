@@ -135,7 +135,8 @@ sys.path[:0] = [after, root]
 from pathlib import Path
 import master_card, ua_seo_metadata
 video = Path(root + '/video')
-cards = sorted(p for p in video.glob('UA-*.html') if not p.name.lower().endswith('-diag.html'))
+import re
+cards = sorted(p for p in video.glob('UA-*.html') if re.fullmatch(r'UA-[0-9]{4,}\.html', p.name))  # cards only
 canonical, other = [], {}
 for path in cards:
     page = ua_seo_metadata.normalize(path.read_text(encoding='utf-8'), str(path))
