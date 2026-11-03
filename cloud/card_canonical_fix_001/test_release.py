@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """The check edit on master_card.py's proverit as FINANCE-PROBE-20261103-R4 read it (lines 1906-1939)."""
+import importlib.util
 from pathlib import Path
-import re
+import tempfile
 import unittest
 
 import candidate_builder
@@ -15,9 +16,13 @@ PRELUDE = (HERE / 'fixtures' / 'prelude.txt').read_text(encoding='utf-8')
 
 
 def checker(text):
-    scope = {}
-    exec(PRELUDE + text, scope)
-    return scope['proverit']
+    """The check as a module (stand-ins + the check text), imported from a temporary folder."""
+    path = Path(tempfile.mkdtemp()) / 'proverit_check.py'
+    path.write_text(PRELUDE + text, encoding='utf-8')
+    spec = importlib.util.spec_from_file_location('proverit_check_%d' % id(text), path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.proverit
 
 
 def card(canonical):
