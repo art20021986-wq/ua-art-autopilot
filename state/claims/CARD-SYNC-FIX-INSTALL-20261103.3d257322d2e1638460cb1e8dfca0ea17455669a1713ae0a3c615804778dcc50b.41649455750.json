@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "76b97f7d71120e66881b9578b2080c3f9e2b866f2bca4e77fdca61db95e0165d",
   "autostart_source_commit": "459206207c29acd3f80b34a4150fe1a6a30f5ec6",
   "created_at": "2026-11-03T14:01:44Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "b15a687670a97001b7719914534bac41b68afc4ba37d82a086f38b95487f87cd",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-03T14:01:44Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-03T14:03:07Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "41649455750",
     "task_id": "CARD-SYNC-FIX-INSTALL-20261103",
     "task_sha256": "3d257322d2e1638460cb1e8dfca0ea17455669a1713ae0a3c615804778dcc50b"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 315.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 286.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-41649455750-3d257322d2e16384",
+  "production_transaction_path": "state/transactions/CARD-SYNC-FIX-INSTALL-20261103.3d257322d2e1638460cb1e8dfca0ea17455669a1713ae0a3c615804778dcc50b.41649455750.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-579929485383cacd-d2fc0ca1a57fde86",
   "receipt_path": "state/receipts/CARD-SYNC-FIX-INSTALL-20261103.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "273376572891f0e141a6a5ca9605058c4ce8e5ec",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 285.86,
+    "allowed": true,
+    "evidence_path": "state/storage/CARD-SYNC-FIX-INSTALL-20261103.json",
+    "evidence_sha256": "25395bdb2426555faf171bfc8a8d76763202c3565fbc4e68e1f266ee58cdfedb",
+    "free_bytes": 24442498560,
+    "heavy": true,
+    "measured_at": "2026-11-03T13:58:19.254255+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 30.16428982857143
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-03T14:01:44Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "3520e0c3d39df91eb41c166c926ed70bf744dd616665699366297f5cde33d075",
+    "file_sha256": {
+      "cloud/card_sync_fix_001/candidate_builder.py": "20bbc82381c3669e91a7535a3323dc75f8435bbc97e080fbf1a2296fbaf104fe",
+      "cloud/card_sync_fix_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/card_sync_fix_001/deployment_bootstrap.py": "009b729e32c7de574c3504b1971dd42f0baa79e47d8e5bd978b23b4698e05224",
+      "cloud/card_sync_fix_001/deployment_remote.py": "aa9f3f10cfdc6359acea1045e1b6d434b9d0d47e0fd8230f4e64e9b8b92aa1fe",
+      "cloud/card_sync_fix_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/card_sync_fix_001/deployment_transport.py": "7439eab429a4b54beadfaec36da62f5b7a2a9b49881c64527797b57a874e2bd6",
+      "cloud/card_sync_fix_001/edit_spec.py": "80324ea7bde31bfb75c074020dccb6d7c8cd52aec96674acb8cee416f78c2dd7",
+      "cloud/card_sync_fix_001/make_release.py": "5c1c7a14dce84614f6663e0e2d8da0e23bffb4a36d1f0472e89502da11277ec3",
+      "cloud/card_sync_fix_001/release_constants.py": "e9a1912dbd139591b1cbf47d0d531cfb3a895619d60d7f80db4d660788d388ad",
+      "cloud/card_sync_fix_001/test_deployment.py": "272bfeca0f45a280a3208503a10a04bc6c0609f424fb625dd3005e0e33c26bea",
+      "cloud/card_sync_fix_001/test_release.py": "c9ddc629ca9409f2e7a5a2dbc6d45d88e0bdacafb1728453a09733bbc8ea03b7"
+    }
+  },
+  "updated_at": "2026-11-03T14:03:07Z"
 }
