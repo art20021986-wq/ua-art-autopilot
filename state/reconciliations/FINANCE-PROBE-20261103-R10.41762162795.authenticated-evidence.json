@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "dcb6a0b814f0c0762289dc9b43aa68c27441edc1b4ea3dd42cbfc3a6a8613464",
+  "error": "FINANCE_PROBE_STOP:IDENTITY (the probe controller accepts single-digit retry suffixes -R0..-R9)",
+  "failed_step": "execute / standard / execute: controller.validate_identity, before any upload or remote call",
+  "precedent": "state/reconciliations/CRM-CARD-SOLD-PREFLIGHT-20261028-R2.40688042891.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-04T02:42:27.405064+00:00",
+  "remote_mode": "probe (read-only, never started)",
+  "retry": "FINANCE-PROBE-20261104",
+  "run_id": "41762162795",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "FINANCE-PROBE-20261103-R10"
+}
