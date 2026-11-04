@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "969ee352eaca8c659cb6dbff3d18c5047d69134ae9dfe748738182f3aa3ab302",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T15:29:18Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-04T15:33:06Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41857734341",
     "task_id": "FINANCE-STEP-INSTALL-20261104",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41857734341-0043b2f2034aac4e",
   "production_transaction_path": "state/transactions/FINANCE-STEP-INSTALL-20261104.0043b2f2034aac4e169146443941c3f9d63c3cced0d515196cb544efa13d12c1.41857734341.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-fa320ca31707a45a-468aa04d17b3551d",
   "receipt_path": "state/receipts/FINANCE-STEP-INSTALL-20261104.json",
   "receipt_validation_status": "PENDING",
@@ -94,5 +94,5 @@
       "cloud/finance_otp_003/ua_finance_partners.py": "7d3ef729bb90c7c1093d32f3128e3dfc4d6baac7688bd2d49f2518cd3bd8756d"
     }
   },
-  "updated_at": "2026-11-04T15:29:18Z"
+  "updated_at": "2026-11-04T15:33:06Z"
 }
