@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "969ee352eaca8c659cb6dbff3d18c5047d69134ae9dfe748738182f3aa3ab302",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T15:33:06Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-04T15:50:19Z",
+  "heartbeat_at": "2026-11-04T15:50:19Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "41857734341",
     "task_id": "FINANCE-STEP-INSTALL-20261104",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 356.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 120.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/seo/ua/kredyt-lizynh-avto.html",
+        "http_status": 200,
+        "latency_ms": 130.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/seo/ua/kredyt-lizynh-avto.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-41857734341-0043b2f2034aac4e",
   "production_transaction_path": "state/transactions/FINANCE-STEP-INSTALL-20261104.0043b2f2034aac4e169146443941c3f9d63c3cced0d515196cb544efa13d12c1.41857734341.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-fa320ca31707a45a-468aa04d17b3551d",
   "receipt_path": "state/receipts/FINANCE-STEP-INSTALL-20261104.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "dedb1ead37ab8dc6169591594f92ceb20f47f829c323efe46b2cbfcdc21452c8",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/FINANCE-STEP-INSTALL-20261104.json",
   "request_sha256": "0043b2f2034aac4e169146443941c3f9d63c3cced0d515196cb544efa13d12c1",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "a1ea32f853b1c07123b73e97c20acde06e37a2e443664e6b56455209fceb19c5",
     "file_sha256": {
@@ -94,5 +125,5 @@
       "cloud/finance_otp_003/ua_finance_partners.py": "7d3ef729bb90c7c1093d32f3128e3dfc4d6baac7688bd2d49f2518cd3bd8756d"
     }
   },
-  "updated_at": "2026-11-04T15:33:06Z"
+  "updated_at": "2026-11-04T15:50:19Z"
 }
