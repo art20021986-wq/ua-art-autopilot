@@ -5,20 +5,53 @@
   "autostart_ledger_sha256": "fc2df0b191e3d123d51fa031713ff4281907373f8f53e3165310c11779fe8037",
   "autostart_source_commit": "9ff54fcb74408af5c8a4da2cb32c9105bb12d363",
   "created_at": "2026-11-04T15:27:45Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "969ee352eaca8c659cb6dbff3d18c5047d69134ae9dfe748738182f3aa3ab302",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T15:27:45Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-04T15:29:18Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "41857734341",
     "task_id": "FINANCE-STEP-INSTALL-20261104",
     "task_sha256": "0043b2f2034aac4e169146443941c3f9d63c3cced0d515196cb544efa13d12c1"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 295.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 284.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/seo/ua/kredyt-lizynh-avto.html",
+        "http_status": 200,
+        "latency_ms": 295.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/seo/ua/kredyt-lizynh-avto.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-41857734341-0043b2f2034aac4e",
+  "production_transaction_path": "state/transactions/FINANCE-STEP-INSTALL-20261104.0043b2f2034aac4e169146443941c3f9d63c3cced0d515196cb544efa13d12c1.41857734341.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-fa320ca31707a45a-468aa04d17b3551d",
   "receipt_path": "state/receipts/FINANCE-STEP-INSTALL-20261104.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +62,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "c0fadfa94f0bb7a057f09bf8511704e471af367a",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 364.465,
+    "allowed": true,
+    "evidence_path": "state/storage/FINANCE-STEP-INSTALL-20261104.json",
+    "evidence_sha256": "b04545d93c043340bdff87e085c3c548f1c9e3ad9cae7299140ea041bbd2217c",
+    "free_bytes": 23858535936,
+    "heavy": true,
+    "measured_at": "2026-11-04T15:23:10.583602+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 31.83275446857143
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-04T15:27:45Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "a1ea32f853b1c07123b73e97c20acde06e37a2e443664e6b56455209fceb19c5",
+    "file_sha256": {
+      "cloud/finance_otp_003/candidate_builder.py": "2cbfc0b25c9baad0653d2df2c765bf85bb8e82fea4dfb60761ed644fd7e3815e",
+      "cloud/finance_otp_003/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/finance_otp_003/deployment_bootstrap.py": "53b8f2313807cbb794d7196a9a1119c7ee5d6850da8134323a0cba0558b33ac2",
+      "cloud/finance_otp_003/deployment_remote.py": "9b54acc28b4ef4874e0120a78ebb4f826038af7ed59424e640a1afdab0f6e739",
+      "cloud/finance_otp_003/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/finance_otp_003/deployment_transport.py": "e3e4b12186ad7dcc7e8e1695cf537e365ef4f8da2056be7e77304f4ffea0305c",
+      "cloud/finance_otp_003/make_release.py": "b9f4974ab77b3e6c7d3f579be73cefcfa966c7871aa9a3067d32da6edf936692",
+      "cloud/finance_otp_003/release_constants.py": "566c3e835a6f187d9e680d322d94ca254fce1c93c082693825087e146c790398",
+      "cloud/finance_otp_003/test_deployment.py": "f00fdf4f897ca5a8802e5cf8627c5a00bd52bfa3ee7eb5f917f807f18e002534",
+      "cloud/finance_otp_003/test_release.py": "eb839e60a863bf30cc12c7abaad29a450a675d5b4e8ac19664eef8a6c64cf13d",
+      "cloud/finance_otp_003/ua_finance_partners.py": "7d3ef729bb90c7c1093d32f3128e3dfc4d6baac7688bd2d49f2518cd3bd8756d"
+    }
+  },
+  "updated_at": "2026-11-04T15:29:18Z"
 }
