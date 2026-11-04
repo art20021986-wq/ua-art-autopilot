@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/FINANCE-STEP-INSTALL-20261104.0043b2f2034aac4e169146443941c3f9d63c3cced0d515196cb544efa13d12c1.json",
+  "autostart_ledger_sha256": "fc2df0b191e3d123d51fa031713ff4281907373f8f53e3165310c11779fe8037",
+  "autostart_source_commit": "9ff54fcb74408af5c8a4da2cb32c9105bb12d363",
+  "created_at": "2026-11-04T15:27:45Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41857734341",
+    "task_id": "FINANCE-STEP-INSTALL-20261104",
+    "task_sha256": "0043b2f2034aac4e169146443941c3f9d63c3cced0d515196cb544efa13d12c1"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-fa320ca31707a45a-468aa04d17b3551d",
+  "request_path": "tasks/requests/FINANCE-STEP-INSTALL-20261104.json",
+  "resource_locks": [
+    "PATH_SCOPE:fa320ca31707a45a"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
