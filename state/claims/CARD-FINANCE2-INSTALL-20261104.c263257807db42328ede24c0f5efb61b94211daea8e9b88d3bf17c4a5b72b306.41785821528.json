@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "b82549d3f086e9556840b65d5ce93201d4c3471073ffcf01306ada48209cf0b3",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T06:31:50Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-04T06:36:47Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41785821528",
     "task_id": "CARD-FINANCE2-INSTALL-20261104",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41785821528-c263257807db4232",
   "production_transaction_path": "state/transactions/CARD-FINANCE2-INSTALL-20261104.c263257807db42328ede24c0f5efb61b94211daea8e9b88d3bf17c4a5b72b306.41785821528.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-3732b932dd355a50-64047bddda0c9831",
   "receipt_path": "state/receipts/CARD-FINANCE2-INSTALL-20261104.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/card_finance_002/ua_card_finance.py": "c5f257f7c7f0e9cf4c23addf7dfd75217cf61ee78562b5156d67328a7bea5455"
     }
   },
-  "updated_at": "2026-11-04T06:31:50Z"
+  "updated_at": "2026-11-04T06:36:47Z"
 }
