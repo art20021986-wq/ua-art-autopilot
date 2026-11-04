@@ -7,21 +7,23 @@
   "created_at": "2026-11-04T14:08:32Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T14:08:32Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-04T14:12:42Z",
+  "heartbeat_at": "2026-11-04T14:12:42Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41844226582",
     "task_id": "SEO-PING-20261104",
     "task_sha256": "e4989e3dba21c56418f1c4288519ff549934e2d4b7743fdba553ae79123240b4"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-1073af84eebfa59f-97704093df442daf",
   "receipt_path": "state/receipts/SEO-PING-20261104.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "1bb3fd388180160f67769736458ea05dbf5ea9c20b6d8f5fa55026fb27eb6f4d",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SEO-PING-20261104.json",
   "request_sha256": "e4989e3dba21c56418f1c4288519ff549934e2d4b7743fdba553ae79123240b4",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "507744c9444f432f2b58e52a6d450792ca02dc41",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92858929152,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.078
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-04T14:08:32Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "5f7c79cf489ffdd1754f57d5dd428802ab1b4165a3311054f848f77189801507",
+    "file_sha256": {
+      "cloud/seo_ping_001/bootstrap.py": "605e4d3b2c3108956a29d332ce4a9c4fb597b1ad6a53ceb83b37ea7a9cfc38c7",
+      "cloud/seo_ping_001/make_request.py": "6a02fd045e3eeea4a39fe48010b517167035bcaa5643cb78602beb2e78eb1f5a",
+      "cloud/seo_ping_001/ping_remote.py": "2402fc7bb93bfae21b88f2ded760d5c6c8ac8bf1c303d8480177127ef9c4f65b",
+      "cloud/seo_ping_001/test_seo_ping.py": "abda2132b70c074103c8c692365b96ac42489b495e329b64d79bda4626298a35",
+      "cloud/seo_ping_001/transport.py": "8439cbd2c6df2df7224a8430347b846ce4f35481f5a538f0e2ca94e29ececc44"
+    }
+  },
+  "updated_at": "2026-11-04T14:12:42Z"
 }
