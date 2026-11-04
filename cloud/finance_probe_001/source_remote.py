@@ -173,7 +173,7 @@ def report(home=None, wsgi=None):
     shells['diff'] = shell_diff()
     shells['home_header'] = home_header()
     catalog = (HOME / 'video/katalog.html')
-    shells['catalog_cards'] = sorted(set(re.findall(r'data-id=["\'](UA-[0-9]{4,})["\']',
+    shells['catalog_cards'] = sorted(set(re.findall(r'href=["\'](?:[^"\']*/)?(UA-[0-9]{4,})\.html',
                                                     catalog.read_text(encoding='utf-8', errors='replace')))) if catalog.is_file() else None
     return {'status': 'PASS', 'files': files, 'cards_with_finance_link': linked, 'cards_total': len(cards), 'shells': shells, 'order_storage': storage_kind(), 'sync_state': sync_state(),
             'ua115_sources': ua115, 'guard_sources': guard}
