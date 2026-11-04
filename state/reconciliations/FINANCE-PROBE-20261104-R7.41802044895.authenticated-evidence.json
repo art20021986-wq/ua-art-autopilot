@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "14c760d86479ff1ad09913596b47cd56c4ed0741b9b8493075f12146fbecd0dd",
+  "error": "FINANCE_PROBE_STOP:TransportError (remote read-only probe returned no receipt in time)",
+  "failed_step": "execute / standard / execute: transport wait for remote receipt",
+  "precedent": "state/reconciliations/CRM-CARD-SOLD-PREFLIGHT-20261028-R2.40688042891.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-04T09:03:58.312494+00:00",
+  "remote_mode": "probe (read-only)",
+  "retry": "FINANCE-PROBE-20261104-R8",
+  "run_id": "41802044895",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "FINANCE-PROBE-20261104-R7"
+}
