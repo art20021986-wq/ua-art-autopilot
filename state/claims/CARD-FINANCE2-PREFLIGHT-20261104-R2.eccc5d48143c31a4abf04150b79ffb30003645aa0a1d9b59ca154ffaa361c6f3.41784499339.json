@@ -7,21 +7,23 @@
   "created_at": "2026-11-04T06:18:34Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T06:18:34Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-04T06:28:04Z",
+  "heartbeat_at": "2026-11-04T06:28:04Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41784499339",
     "task_id": "CARD-FINANCE2-PREFLIGHT-20261104-R2",
     "task_sha256": "eccc5d48143c31a4abf04150b79ffb30003645aa0a1d9b59ca154ffaa361c6f3"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-4a5c3738118fc69f-be8dc717da40271f",
   "receipt_path": "state/receipts/CARD-FINANCE2-PREFLIGHT-20261104-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "c7f962589ee4d504550479b21b504bc634d0b6ab7aec06f057e5c6b0ee7b85ca",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CARD-FINANCE2-PREFLIGHT-20261104-R2.json",
   "request_sha256": "eccc5d48143c31a4abf04150b79ffb30003645aa0a1d9b59ca154ffaa361c6f3",
   "resource_locks": [
@@ -29,8 +31,34 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "683f8a859e4b4f05fe377f979ec5e57e87f447a3",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92636635136,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.221
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-04T06:18:34Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "f998e71fc434db99f8c2ed68617153b0291a773478914d6b47a067b5f1be490d",
+    "file_sha256": {
+      "cloud/card_finance_002/candidate_builder.py": "298a56298b0e9138f009436d0e89ad4b6dc60ea9b8a5bd0f73e60eca8200bee7",
+      "cloud/card_finance_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/card_finance_002/deployment_bootstrap.py": "73e32d39c5b201f8e0e60f0aaa15e51618cab4af49dd9010d3cb44dd7b66a2f7",
+      "cloud/card_finance_002/deployment_remote.py": "eced29387afc160cbf8e83932589c4df6faf42f8cf4fa7b1ceee04919f05d23f",
+      "cloud/card_finance_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/card_finance_002/deployment_transport.py": "559f226d0d7807c7551e1f2c2509493cc6baa637f5367ce3cf7ce4a3ebb0cffc",
+      "cloud/card_finance_002/edit_metadata.py": "ea6119da7e8305382ea5dfc5e8cf527d2ac08fcdad82f7451956ae97192e6584",
+      "cloud/card_finance_002/make_release.py": "d431340b8de4dd34c7d3bb89c697a6d1c5cbe2cf063732b041fef83c6f920bfc",
+      "cloud/card_finance_002/release_constants.py": "89cf53942a7441a7c3f08dc45819b482f811c85491dd5ae169a90df992fa0695",
+      "cloud/card_finance_002/test_deployment.py": "272bfeca0f45a280a3208503a10a04bc6c0609f424fb625dd3005e0e33c26bea",
+      "cloud/card_finance_002/test_release.py": "45d0af8f0fa377a7b8cb84dea232c3199261a0e0192a7da3be7bf006e9e4b161",
+      "cloud/card_finance_002/ua_card_finance.py": "c5f257f7c7f0e9cf4c23addf7dfd75217cf61ee78562b5156d67328a7bea5455"
+    }
+  },
+  "updated_at": "2026-11-04T06:28:04Z"
 }
