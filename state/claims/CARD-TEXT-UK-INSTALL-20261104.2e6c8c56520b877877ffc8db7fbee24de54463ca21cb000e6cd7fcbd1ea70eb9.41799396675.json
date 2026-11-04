@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-TEXT-UK-INSTALL-20261104.2e6c8c56520b877877ffc8db7fbee24de54463ca21cb000e6cd7fcbd1ea70eb9.json",
+  "autostart_ledger_sha256": "c954658973f6ea50a3e6043cef83bd836ae8d2de88f9612f2450af252652aa75",
+  "autostart_source_commit": "4ca6e7948fd01a8154a9c36f33ee72d21764aaf1",
+  "created_at": "2026-11-04T08:26:47Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-04T08:26:47Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "41799396675",
+    "task_id": "CARD-TEXT-UK-INSTALL-20261104",
+    "task_sha256": "2e6c8c56520b877877ffc8db7fbee24de54463ca21cb000e6cd7fcbd1ea70eb9"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-1c6bf058bf51953c-c7412e5ba6508230",
+  "receipt_path": "state/receipts/CARD-TEXT-UK-INSTALL-20261104.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CARD-TEXT-UK-INSTALL-20261104.json",
+  "request_sha256": "2e6c8c56520b877877ffc8db7fbee24de54463ca21cb000e6cd7fcbd1ea70eb9",
+  "resource_locks": [
+    "PATH_SCOPE:1c6bf058bf51953c"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "4d226f88b73269ae6cf3f89ad9b089fe2a7d1155",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-04T08:26:47Z"
+}
