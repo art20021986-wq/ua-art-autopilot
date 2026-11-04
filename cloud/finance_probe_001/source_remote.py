@@ -170,12 +170,15 @@ def report(home=None, wsgi=None):
     video = HOME / 'video'
     cards = sorted(p for p in video.glob('UA-*.html') if re.fullmatch(r'UA-[0-9]{4,}\.html', p.name))
     linked = [p.name for p in cards if 'id="ua-finance-link"' in p.read_text(encoding='utf-8', errors='replace')]
+    # CARD-FINANCE-002: the yellow link (its inline style).
+    yellow = [p.name for p in cards if 'id="ua-finance-link" style="background:var(--zoloto' in p.read_text(encoding='utf-8', errors='replace')]
     # The language versions visitors and search engines open (CARD-LANG-001), and when each was written.
     versions = {}
     for folder in ('ua', 'ru'):
         for p in sorted((video / folder).glob('UA-*.html')):
             text = p.read_text(encoding='utf-8', errors='replace')
-            versions['%s/%s' % (folder, p.name)] = {'link': 'id="ua-finance-link"' in text, 'mtime': round(p.stat().st_mtime)}
+            versions['%s/%s' % (folder, p.name)] = {'link': 'id="ua-finance-link"' in text, 'mtime': round(p.stat().st_mtime),
+                                                   'yellow': 'id="ua-finance-link" style="background:var(--zoloto' in text}
     shells = {}
     for name in ('video/katalog.html', 'catalog_design_golden.html'):
         path = HOME / name
@@ -188,7 +191,7 @@ def report(home=None, wsgi=None):
     catalog = (HOME / 'video/katalog.html')
     shells['catalog_cards'] = sorted(set(re.findall(r'href=["\'](?:[^"\']*/)?(UA-[0-9]{4,})\.html',
                                                     catalog.read_text(encoding='utf-8', errors='replace')))) if catalog.is_file() else None
-    return {'status': 'PASS', 'files': files, 'cards_with_finance_link': linked, 'card_versions': versions, 'cards_total': len(cards), 'shells': shells, 'order_storage': storage_kind(), 'sync_state': sync_state(),
+    return {'status': 'PASS', 'files': files, 'cards_with_finance_link': linked, 'cards_with_yellow_link': yellow, 'card_versions': versions, 'cards_total': len(cards), 'shells': shells, 'order_storage': storage_kind(), 'sync_state': sync_state(),
             'ua115_sources': ua115, 'guard_sources': guard}
 
 
