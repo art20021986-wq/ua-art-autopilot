@@ -7,21 +7,23 @@
   "created_at": "2026-11-04T04:30:53Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T04:30:53Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-04T04:37:41Z",
+  "heartbeat_at": "2026-11-04T04:37:41Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41773514773",
     "task_id": "SEO-NAV-PREFLIGHT-20261104-R2",
     "task_sha256": "7b81efa676a5b8fe1e1d91b3c2fa9eda5b03ad17ec35e151801b615738b17bf1"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-453702372da3df92-6ab4a9a89319d89d",
   "receipt_path": "state/receipts/SEO-NAV-PREFLIGHT-20261104-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "77aeede2cfb5b751d95be76303314173e15bd4968017bd32654a49ba4c7ab781",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SEO-NAV-PREFLIGHT-20261104-R2.json",
   "request_sha256": "7b81efa676a5b8fe1e1d91b3c2fa9eda5b03ad17ec35e151801b615738b17bf1",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "f05de55ebddd6f6bd5ec5528620f014aff0596f7",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92638056448,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.22
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-04T04:30:53Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "4aebb55fac2aa63418e5d670008eab68537ee586fe7f265abf9663e2d23b2e04",
+    "file_sha256": {
+      "cloud/seo_nav_001/candidate_builder.py": "57c7a474b51c3636b3a428deea80d382a0ae84ffa152e4b0f355a11c6c566529",
+      "cloud/seo_nav_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/seo_nav_001/deployment_bootstrap.py": "9a27c25d7cf0f69a5e6a09578d9dfb486109de156fd5f8ae10a147b0223b537f",
+      "cloud/seo_nav_001/deployment_remote.py": "26b4b1f5cb506098911f52a868bfb73ac2ecae68ac025f0179cdcb1bad5db899",
+      "cloud/seo_nav_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/seo_nav_001/deployment_transport.py": "0967a9d4baea6e68bf3e75ce612258a8628b4e8a315e351a79349eafae07589a",
+      "cloud/seo_nav_001/edit_landings.py": "93a41a1eba64eb0a00a066c995b2ebbda5f1e90df10c6cf9b58013217b9d9d8a",
+      "cloud/seo_nav_001/make_release.py": "f20285bacb7c2bb0885762b409a3ce65b68b1f604eaf0afd41af2bb091b30895",
+      "cloud/seo_nav_001/release_constants.py": "5a9d2dc1ef818ba2a6ed5ce08d442e86f915405a311f06e1c5407afc3cbcb008",
+      "cloud/seo_nav_001/test_deployment.py": "f00fdf4f897ca5a8802e5cf8627c5a00bd52bfa3ee7eb5f917f807f18e002534",
+      "cloud/seo_nav_001/test_release.py": "aac3a0e65cc7fd847064df79f4d67cfde0b2c73a44f52554e624072a3c684c2a"
+    }
+  },
+  "updated_at": "2026-11-04T04:37:41Z"
 }
