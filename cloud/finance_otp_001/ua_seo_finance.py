@@ -4,7 +4,8 @@ Pure: texts and partners from ua_finance_partners in, HTML out. One section per 
 with its own heading, anchor, partner cards and steps, then a credit-or-leasing comparison and the visible
 questions. A partner has either a link (rel="sponsored", new tab, data-finance-partner, which the site's own
 analytics /ua/a.js records as a «finance» click for the CRM bot) or the partner's own calculator widget, embedded
-exactly as the partner gives it in a box that reserves its height (no layout shift while it loads).
+exactly as the partner gives it in a box that reserves its height (no layout shift while it loads). A partner's key
+condition (credit for a car still on its way) is highlighted in the partner's colour above its card.
 Structured data: the dealer, breadcrumbs, one LoanOrCredit per partner offer and the visible questions.
 """
 from html import escape
@@ -28,6 +29,9 @@ STYLE = (
     'font-size:14px;font-weight:600}'
     '.fin-card .cta{margin:4px 0 0;text-align:center}.fin-lender,.fin-note,.fin-lead{margin:0;color:#aebed0;font-size:13px}'
     '.fin-lead{margin:0 0 14px;font-size:15px}'
+    # A partner's key condition: filled in the partner's colour with dark text (contrast 6.4:1, above WCAG AA 4.5:1).
+    '.fin-highlight{--acc:#f0a63c;margin:0 0 16px;padding:16px 18px;border-radius:16px;background:var(--acc);color:#0b1a10}'
+    '.fin-highlight b{display:block;margin:0 0 4px;font-size:18px}.fin-highlight p{margin:0;font-size:15px;font-weight:600}'
     # The partner's calculator: its own heights (desktop / phone) are reserved before it loads.
     '.fin-widget{margin:16px 0 0;min-height:var(--h-desktop);border-radius:18px;overflow:hidden}'
     '.fin-steps{counter-reset:s;list-style:none;padding:0;display:grid;gap:10px}'
@@ -63,6 +67,14 @@ def _card(lang, partner, lender):
         _action(lang, partner), escape(lender), escape(partner['lender'][lang]))
 
 
+def _highlight(lang, partner):
+    """The partner's key condition, highlighted above the cards (when the partner has one)."""
+    if 'highlight' not in partner[lang]:
+        return ''
+    title, text = partner[lang]['highlight']
+    return '<div class="fin-highlight"%s><b>%s</b><p>%s</p></div>' % (_accent(partner), escape(title), escape(text))
+
+
 def _widget(partner):
     """The partner's calculator, the partner's own embed code (it draws itself where its script stands)."""
     widget = partner.get('widget')
@@ -75,12 +87,13 @@ def _widget(partner):
 
 
 def _section(lang, kind, anchor, text, partners):
+    highlights = ''.join(_highlight(lang, p) for p in partners)
     cards = ''.join(_card(lang, p, text['lender']) for p in partners)
     widgets = ''.join(_widget(p) for p in partners)
     steps = ''.join('<li>%s</li>' % escape(step) for step in text['steps'])
-    return ('<section class="fin-section" id="%s" aria-labelledby="%s-h"><h2 id="%s-h">%s</h2><p class="fin-lead">%s</p>'
+    return ('<section class="fin-section" id="%s" aria-labelledby="%s-h"><h2 id="%s-h">%s</h2><p class="fin-lead">%s</p>%s'
             '<ul class="fin-list">%s</ul>%s<h3>%s</h3><ol class="fin-steps">%s</ol></section>') % (
-        anchor, anchor, anchor, escape(text['h2']), escape(text['lead']), cards, widgets,
+        anchor, anchor, anchor, escape(text['h2']), escape(text['lead']), highlights, cards, widgets,
         escape(text['how']), steps)
 
 
