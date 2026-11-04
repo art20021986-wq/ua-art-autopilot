@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-NAV-PREFLIGHT-20261104.f57c915884da9b56d6380d73e6ef0c5924c56d555e8ae41933a2c9bddfc8e145.json",
+  "autostart_ledger_sha256": "292b5dfa01fbd2c3d07d6085bd948328a6ffb3b97980579d60da4eb9bb7b372a",
+  "autostart_source_commit": "bb6d08a1bf3f15ce48088e7bcfe67e26c32db1a1",
+  "created_at": "2026-11-04T03:48:51Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41769266938",
+    "task_id": "SEO-NAV-PREFLIGHT-20261104",
+    "task_sha256": "f57c915884da9b56d6380d73e6ef0c5924c56d555e8ae41933a2c9bddfc8e145"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-453702372da3df92-6ab4a9a89319d89d",
+  "request_path": "tasks/requests/SEO-NAV-PREFLIGHT-20261104.json",
+  "resource_locks": [
+    "PATH_SCOPE:453702372da3df92"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
