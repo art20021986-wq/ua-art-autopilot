@@ -1,0 +1,18 @@
+{
+  "evidence_path": "cloud/finance_probe_001/20261104-R4.json",
+  "live_source_environment": "production",
+  "partner_status": "PASS",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "d31fc2b7a5ec5b3edaaa0a332bba9f1edfa52a084047e555534f8d46e719f524",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "41764223901",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "FINANCE-PROBE-20261104-R4",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}
