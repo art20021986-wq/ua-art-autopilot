@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/FINANCE-OTP-PREFLIGHT-20261104.7ba95ddce6979d2fe62667e141d31bc97ea0dd3ae84d714bf69958a67e474ab6.json",
+  "autostart_ledger_sha256": "c01b44ee0fc771861d79d9d457d03df594a883591fd2ce6649f3b6602b9a2f3b",
+  "autostart_source_commit": "dc5bce900498b8458a2778ae90af49d2ce90ca8a",
+  "created_at": "2026-11-04T11:22:09Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-04T11:22:09Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "41820091413",
+    "task_id": "FINANCE-OTP-PREFLIGHT-20261104",
+    "task_sha256": "7ba95ddce6979d2fe62667e141d31bc97ea0dd3ae84d714bf69958a67e474ab6"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-cabbe3426179791c-24f3727b57ecdb51",
+  "receipt_path": "state/receipts/FINANCE-OTP-PREFLIGHT-20261104.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/FINANCE-OTP-PREFLIGHT-20261104.json",
+  "request_sha256": "7ba95ddce6979d2fe62667e141d31bc97ea0dd3ae84d714bf69958a67e474ab6",
+  "resource_locks": [
+    "PATH_SCOPE:cabbe3426179791c"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "efda5c8a05861eaf6d56a398fd5b1c2b3fd16212",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-04T11:22:09Z"
+}
