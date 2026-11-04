@@ -105,6 +105,22 @@ def sync_state():
             'schedule': schedule, 'last_success_ago_seconds': round(now - float(last.get('at') or 0)) if last else None}
 
 
+def home_header():
+    """Stage 5: the home page's top block as visitors get it (a public page: kept as it is, not masked) — the
+    <header class="site-header"> markup, the page's own <style> text and its stylesheet links — so the landing
+    pages can carry the same block."""
+    path = HOME / 'video/index.html'
+    if not path.is_file():
+        return None
+    page = path.read_text(encoding='utf-8', errors='replace')
+    header = re.search(r'<header class="site-header">.*?</header>', page, re.S)
+    styles = re.findall(r'<style[^>]*>(.*?)</style>', page, re.S)
+    links = re.findall(r'<link[^>]+rel=["\']stylesheet["\'][^>]*>', page)
+    return {'sha256': hashlib.sha256(page.encode()).hexdigest(), 'header': header.group(0) if header else None,
+            'styles': [s for s in styles if 'header' in s or 'brand' in s or 'lang-toggle' in s][:6],
+            'stylesheets': links[:20]}
+
+
 def shell_diff():
     """R7: the catalog shell (page outside the card region) of the golden file and of the live catalog, normalized
     as catalog_design_guard does, split at tags, and their difference (stdlib difflib); read only."""
@@ -155,6 +171,10 @@ def report(home=None, wsgi=None):
             shells[name] = {'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw),
                             'mtime': round(path.stat().st_mtime)}
     shells['diff'] = shell_diff()
+    shells['home_header'] = home_header()
+    catalog = (HOME / 'video/katalog.html')
+    shells['catalog_cards'] = sorted(set(re.findall(r'data-id=["\'](UA-[0-9]{4,})["\']',
+                                                    catalog.read_text(encoding='utf-8', errors='replace')))) if catalog.is_file() else None
     return {'status': 'PASS', 'files': files, 'cards_with_finance_link': linked, 'cards_total': len(cards), 'shells': shells, 'order_storage': storage_kind(), 'sync_state': sync_state(),
             'ua115_sources': ua115, 'guard_sources': guard}
 
