@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "a80908e83ffa7d9a757dafb6d9e1a8b1bf6b1bc467df50813f8d509aa6e6aaf0",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T01:38:34Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-04T01:45:36Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41755132131",
     "task_id": "CATALOG-TAG-FIX-INSTALL-20261103",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41755132131-879a457ce4177a12",
   "production_transaction_path": "state/transactions/CATALOG-TAG-FIX-INSTALL-20261103.879a457ce4177a12ab0bb9c6410e91422e29f2c29019dafdf01c987158e671ad.41755132131.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/CATALOG-TAG-FIX-INSTALL-20261103.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/catalog_tag_fix_001/test_release.py": "657ae877bcf94c54bf35b8090e6311d99b6e47ffb4b4d7d2911c2400a5c8d23e"
     }
   },
-  "updated_at": "2026-11-04T01:38:34Z"
+  "updated_at": "2026-11-04T01:45:36Z"
 }
