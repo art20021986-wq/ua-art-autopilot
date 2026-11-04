@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-NAV-INSTALL-20261104.6f58864aad9f5f165b8f210f5768428a9ad3ca8cf7d3d3ec76555ffc46baee75.json",
+  "autostart_ledger_sha256": "7e76884cd93646df51fa3b9917df7b7dc097c40b87f89fdfdd5e0c9b96ab688a",
+  "autostart_source_commit": "94645a63db6b11ea4763cb9d6fb35501021a30be",
+  "created_at": "2026-11-04T04:40:22Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41774487611",
+    "task_id": "SEO-NAV-INSTALL-20261104",
+    "task_sha256": "6f58864aad9f5f165b8f210f5768428a9ad3ca8cf7d3d3ec76555ffc46baee75"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-52a42559e710587f-fee9706bf28adc74",
+  "request_path": "tasks/requests/SEO-NAV-INSTALL-20261104.json",
+  "resource_locks": [
+    "PATH_SCOPE:52a42559e710587f"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
