@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "4a4dda7fc2b162cac4084f67aaafdbbd08be5535ba5e63240c104139c9ad43a2",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T12:40:55Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-04T12:47:02Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41830939162",
     "task_id": "FINANCE-CTA-INSTALL-20261104",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41830939162-bb36f16cd0b83e6a",
   "production_transaction_path": "state/transactions/FINANCE-CTA-INSTALL-20261104.bb36f16cd0b83e6a34b8b687c8c14d192147bc3ebb8d427d6f41208b4bf87521.41830939162.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-74f05f9db6ffc3f7-251cf96b7b24f45a",
   "receipt_path": "state/receipts/FINANCE-CTA-INSTALL-20261104.json",
   "receipt_validation_status": "PENDING",
@@ -95,5 +95,5 @@
       "cloud/finance_otp_002/ua_seo_finance.py": "f7fe58d9677089912c544d1e980058fee1c5f16ed759d27a156cf4d9aa65f640"
     }
   },
-  "updated_at": "2026-11-04T12:40:55Z"
+  "updated_at": "2026-11-04T12:47:02Z"
 }
