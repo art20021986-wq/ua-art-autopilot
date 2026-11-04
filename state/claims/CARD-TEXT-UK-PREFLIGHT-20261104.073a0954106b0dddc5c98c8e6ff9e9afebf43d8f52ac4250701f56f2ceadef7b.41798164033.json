@@ -7,21 +7,23 @@
   "created_at": "2026-11-04T08:17:21Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T08:17:21Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-04T08:24:07Z",
+  "heartbeat_at": "2026-11-04T08:24:07Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41798164033",
     "task_id": "CARD-TEXT-UK-PREFLIGHT-20261104",
     "task_sha256": "073a0954106b0dddc5c98c8e6ff9e9afebf43d8f52ac4250701f56f2ceadef7b"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-6bd93e95e7dc4cdb-73a1825beca218d5",
   "receipt_path": "state/receipts/CARD-TEXT-UK-PREFLIGHT-20261104.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "7b9bbdf655e19c73df7ed4c470fef3f273b065626eca0a6202100204d7415d61",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CARD-TEXT-UK-PREFLIGHT-20261104.json",
   "request_sha256": "073a0954106b0dddc5c98c8e6ff9e9afebf43d8f52ac4250701f56f2ceadef7b",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "ebba75a0c938f1613be45cb105d195acc588d210",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92634882048,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.222
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-04T08:17:21Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "a7b5165e08a1e4e23c6b343334e799c4105ea03b8ae699985c4c89fc8439dc62",
+    "file_sha256": {
+      "cloud/card_text_uk_001/candidate_builder.py": "90367375f6a588083c7c9279c786497a9854813141f03f29646ad14688697dbc",
+      "cloud/card_text_uk_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/card_text_uk_001/deployment_bootstrap.py": "f26c39853c8e3e16b05e87f034f089a552d3117190c729e33d06961f2ac30642",
+      "cloud/card_text_uk_001/deployment_remote.py": "e4868d1db733d7616752e98eb4d17011c13c1eac9ee6540be6164552f1ddf8f5",
+      "cloud/card_text_uk_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/card_text_uk_001/deployment_transport.py": "1b68873450ad4182151ca8a52191130bad8a87d0a595ff3c3f135f3b4c68c2d5",
+      "cloud/card_text_uk_001/edit_languages.py": "e1c4fe22c3111aed5aa3796c4f9fa3230a0b0df180222f4293915aa6b3f4ef2e",
+      "cloud/card_text_uk_001/make_release.py": "9ed55e3b3ed969d31a7a6439390413ddc0562393bd784bfd1337bfe7af4abc18",
+      "cloud/card_text_uk_001/release_constants.py": "42a75ad32f36ba3e8603f0bb0c613f8f25447469e899673ea6ec2073c4bda3d7",
+      "cloud/card_text_uk_001/test_deployment.py": "272bfeca0f45a280a3208503a10a04bc6c0609f424fb625dd3005e0e33c26bea",
+      "cloud/card_text_uk_001/test_release.py": "e066f95736b0ea9f5d055931d920a9b43b9e181c591b0c0eba403adb5528b8ea"
+    }
+  },
+  "updated_at": "2026-11-04T08:24:07Z"
 }
