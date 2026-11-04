@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "0ea5f431c37b68089b581986313cc7b7da98c1b20c95dc4879f183b5880279dd",
+  "error": "NEW_FILE_EXISTS:ua_card_finance.py (the package declared the installed module as a new file)",
+  "failed_step": "execute / standard / execute: remote preview prepare(), before any candidate write",
+  "precedent": "state/reconciliations/CATALOG-TAG-FIX-PREFLIGHT-20261103.41719056816.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-04T06:16:26.788760+00:00",
+  "remote_mode": "preview (read-only)",
+  "retry": "CARD-FINANCE2-PREFLIGHT-20261104-R2 (ua_card_finance.py read as a live source and replaced)",
+  "run_id": "41783749316",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "CARD-FINANCE2-PREFLIGHT-20261104"
+}
