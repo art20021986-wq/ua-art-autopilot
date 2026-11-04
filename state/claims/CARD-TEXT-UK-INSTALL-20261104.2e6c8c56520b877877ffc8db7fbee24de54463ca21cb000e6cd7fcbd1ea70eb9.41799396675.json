@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "67575eeead666b8b420e89c866b9fcff1ba116853fdc16bd7f3dc0dbc64202ec",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T08:28:07Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-04T08:32:05Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41799396675",
     "task_id": "CARD-TEXT-UK-INSTALL-20261104",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41799396675-2e6c8c56520b8778",
   "production_transaction_path": "state/transactions/CARD-TEXT-UK-INSTALL-20261104.2e6c8c56520b877877ffc8db7fbee24de54463ca21cb000e6cd7fcbd1ea70eb9.41799396675.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-1c6bf058bf51953c-c7412e5ba6508230",
   "receipt_path": "state/receipts/CARD-TEXT-UK-INSTALL-20261104.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/card_text_uk_001/test_release.py": "e066f95736b0ea9f5d055931d920a9b43b9e181c591b0c0eba403adb5528b8ea"
     }
   },
-  "updated_at": "2026-11-04T08:28:07Z"
+  "updated_at": "2026-11-04T08:32:05Z"
 }
