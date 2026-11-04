@@ -116,7 +116,14 @@ def home_header():
     header = re.search(r'<header class="site-header">.*?</header>', page, re.S)
     styles = re.findall(r'<style[^>]*>(.*?)</style>', page, re.S)
     links = re.findall(r'<link[^>]+rel=["\']stylesheet["\'][^>]*>', page)
-    return {'sha256': hashlib.sha256(page.encode()).hexdigest(), 'header': header.group(0) if header else None,
+    css = HOME / 'video/ua-v203.css'  # the site stylesheet the home page links (public, kept as it is)
+    script = HOME / 'video/ua-site-languages.js'
+    language_lines = [l.strip()[:300] for l in script.read_text(encoding='utf-8', errors='replace').splitlines()
+                      if re.search(r'searchParams|URLSearchParams|[?&]lang=|function valid|localStorage', l)][:40] \
+        if script.is_file() else None
+    return {'stylesheet': css.read_text(encoding='utf-8', errors='replace')[:400000] if css.is_file() else None,
+            'language_lines': language_lines,
+            'sha256': hashlib.sha256(page.encode()).hexdigest(), 'header': header.group(0) if header else None,
             'styles': [s for s in styles if 'header' in s or 'brand' in s or 'lang-toggle' in s][:6],
             'stylesheets': links[:20]}
 
