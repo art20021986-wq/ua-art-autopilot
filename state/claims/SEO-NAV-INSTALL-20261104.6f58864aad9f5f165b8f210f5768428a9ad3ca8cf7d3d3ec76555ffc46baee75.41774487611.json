@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "b59bc69b8623ef1d9ce24734ef7c417abaa353f6952be4a33e6e71f043e427a4",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T04:41:38Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-04T04:45:36Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41774487611",
     "task_id": "SEO-NAV-INSTALL-20261104",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41774487611-6f58864aad9f5f16",
   "production_transaction_path": "state/transactions/SEO-NAV-INSTALL-20261104.6f58864aad9f5f165b8f210f5768428a9ad3ca8cf7d3d3ec76555ffc46baee75.41774487611.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-52a42559e710587f-fee9706bf28adc74",
   "receipt_path": "state/receipts/SEO-NAV-INSTALL-20261104.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/seo_nav_001/test_release.py": "aac3a0e65cc7fd847064df79f4d67cfde0b2c73a44f52554e624072a3c684c2a"
     }
   },
-  "updated_at": "2026-11-04T04:41:38Z"
+  "updated_at": "2026-11-04T04:45:36Z"
 }
