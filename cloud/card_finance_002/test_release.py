@@ -32,7 +32,8 @@ class ReleaseTests(unittest.TestCase):
 
     def test_revision_edit(self):
         src = b"SEO_REVISION = 'CARD-FINANCE-001'\nX = 1\n"
-        out = candidate_builder.build({edit_metadata.NAME: src}, {})
+        live = (HERE.parent / 'card_finance_001' / 'ua_card_finance.py').read_bytes()
+        out = candidate_builder.build({edit_metadata.NAME: src, 'ua_card_finance.py': live}, {})
         self.assertEqual(out[edit_metadata.NAME], b"SEO_REVISION = 'CARD-FINANCE-002'\nX = 1\n")
         self.assertEqual(sorted(out), ['ua_card_finance.py', 'ua_seo_metadata.py'])
         with self.assertRaisesRegex(ValueError, 'METADATA_REVISION'):
