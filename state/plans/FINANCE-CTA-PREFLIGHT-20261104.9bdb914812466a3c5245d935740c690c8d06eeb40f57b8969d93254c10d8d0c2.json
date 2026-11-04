@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/FINANCE-CTA-PREFLIGHT-20261104.9bdb914812466a3c5245d935740c690c8d06eeb40f57b8969d93254c10d8d0c2.json",
+  "autostart_ledger_sha256": "3cfcc7c53d6e6261de2a0ef15dde4fb380a1c32b7598bf8e369513a339f33806",
+  "autostart_source_commit": "2460192c1b01efb09e14136aef93b0a61ffdfda4",
+  "created_at": "2026-11-04T12:32:02Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "41829878870",
+    "task_id": "FINANCE-CTA-PREFLIGHT-20261104",
+    "task_sha256": "9bdb914812466a3c5245d935740c690c8d06eeb40f57b8969d93254c10d8d0c2"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-f6e7b138e81f54b2-79aa303f6a1d3b97",
+  "request_path": "tasks/requests/FINANCE-CTA-PREFLIGHT-20261104.json",
+  "resource_locks": [
+    "PATH_SCOPE:f6e7b138e81f54b2"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
