@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "c82a102c6c6838bde4cc61a84cd50031ec37e33678f50676a1913c55c5c16ce8",
   "autostart_source_commit": "4f664341a25d45bb991e0978360cdd2aba3b1c17",
   "created_at": "2026-11-04T06:30:27Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "b82549d3f086e9556840b65d5ce93201d4c3471073ffcf01306ada48209cf0b3",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T06:30:27Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-04T06:31:50Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "41785821528",
     "task_id": "CARD-FINANCE2-INSTALL-20261104",
     "task_sha256": "c263257807db42328ede24c0f5efb61b94211daea8e9b88d3bf17c4a5b72b306"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 139.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 164.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-41785821528-c263257807db4232",
+  "production_transaction_path": "state/transactions/CARD-FINANCE2-INSTALL-20261104.c263257807db42328ede24c0f5efb61b94211daea8e9b88d3bf17c4a5b72b306.41785821528.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-3732b932dd355a50-64047bddda0c9831",
   "receipt_path": "state/receipts/CARD-FINANCE2-INSTALL-20261104.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,38 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "7f36e913a928e12be50b6e00e6c6b9143fbdef23",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 480.088,
+    "allowed": true,
+    "evidence_path": "state/storage/CARD-FINANCE2-INSTALL-20261104.json",
+    "evidence_sha256": "bd459e26362656da6cef6f49f4b355a45d99cef4ae7a0129a5bdf7d111edf4da",
+    "free_bytes": 23904640512,
+    "heavy": true,
+    "measured_at": "2026-11-04T06:23:47.466053+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 31.701027108571427
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-04T06:30:27Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "f998e71fc434db99f8c2ed68617153b0291a773478914d6b47a067b5f1be490d",
+    "file_sha256": {
+      "cloud/card_finance_002/candidate_builder.py": "298a56298b0e9138f009436d0e89ad4b6dc60ea9b8a5bd0f73e60eca8200bee7",
+      "cloud/card_finance_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/card_finance_002/deployment_bootstrap.py": "73e32d39c5b201f8e0e60f0aaa15e51618cab4af49dd9010d3cb44dd7b66a2f7",
+      "cloud/card_finance_002/deployment_remote.py": "eced29387afc160cbf8e83932589c4df6faf42f8cf4fa7b1ceee04919f05d23f",
+      "cloud/card_finance_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/card_finance_002/deployment_transport.py": "559f226d0d7807c7551e1f2c2509493cc6baa637f5367ce3cf7ce4a3ebb0cffc",
+      "cloud/card_finance_002/edit_metadata.py": "ea6119da7e8305382ea5dfc5e8cf527d2ac08fcdad82f7451956ae97192e6584",
+      "cloud/card_finance_002/make_release.py": "d431340b8de4dd34c7d3bb89c697a6d1c5cbe2cf063732b041fef83c6f920bfc",
+      "cloud/card_finance_002/release_constants.py": "89cf53942a7441a7c3f08dc45819b482f811c85491dd5ae169a90df992fa0695",
+      "cloud/card_finance_002/test_deployment.py": "272bfeca0f45a280a3208503a10a04bc6c0609f424fb625dd3005e0e33c26bea",
+      "cloud/card_finance_002/test_release.py": "45d0af8f0fa377a7b8cb84dea232c3199261a0e0192a7da3be7bf006e9e4b161",
+      "cloud/card_finance_002/ua_card_finance.py": "c5f257f7c7f0e9cf4c23addf7dfd75217cf61ee78562b5156d67328a7bea5455"
+    }
+  },
+  "updated_at": "2026-11-04T06:31:50Z"
 }
