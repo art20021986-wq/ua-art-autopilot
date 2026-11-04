@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "0152b2d785fe4bfd3927eefc4ea1dc8bf0ccbb44d5852d6e1aafb028e6d8035c",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-04T11:57:43Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-04T12:02:49Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "41824803978",
     "task_id": "FINANCE-OTP-INSTALL-20261104",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-41824803978-669df09cf62ec47b",
   "production_transaction_path": "state/transactions/FINANCE-OTP-INSTALL-20261104.669df09cf62ec47b1032f86a142810a976e6e66909b785495f201b954e6a6cac.41824803978.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-280a9de4369b4fa2-de746f014890cd59",
   "receipt_path": "state/receipts/FINANCE-OTP-INSTALL-20261104.json",
   "receipt_validation_status": "PENDING",
@@ -96,5 +96,5 @@
       "cloud/finance_otp_001/ua_seo_finance.py": "e2ae13806e514c38b42668e634b31079b697ecaeedeea5bac73a12ad718cc750"
     }
   },
-  "updated_at": "2026-11-04T11:57:43Z"
+  "updated_at": "2026-11-04T12:02:49Z"
 }
