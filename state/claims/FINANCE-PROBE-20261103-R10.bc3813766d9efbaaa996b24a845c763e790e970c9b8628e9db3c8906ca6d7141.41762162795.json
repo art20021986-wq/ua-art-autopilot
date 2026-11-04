@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "79e5a9ca26796a47"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-04T02:42:27.405064+00:00",
+      "class": "TASK_IDENTITY",
+      "evidence_path": "state/reconciliations/FINANCE-PROBE-20261103-R10.41762162795.authenticated-evidence.json",
+      "message": "Controller refused the two-digit retry suffix before any remote call; nothing written. Retried as FINANCE-PROBE-20261104.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-04T02:40:47Z",
@@ -42,6 +51,6 @@
   "source_commit": "623effb979e71f68636690d699634cfe66f83bf3",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-04T02:41:32Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-04T02:42:27.405064+00:00"
 }
