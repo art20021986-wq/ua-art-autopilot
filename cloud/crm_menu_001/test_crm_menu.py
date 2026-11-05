@@ -1,7 +1,9 @@
 """Main menu buttons: the pure row logic, and the cars_ui.py edit on the server source read by probe R4."""
+import importlib
 import json
 from pathlib import Path
 import sys
+import tempfile
 import types
 import unittest
 
@@ -56,21 +58,29 @@ class CarsUiEditTests(unittest.TestCase):
             candidate.cars_ui(result)
 
     def test_wraps_the_previous_menu_and_survives_a_failure(self):
-        # Run only the appended block against a stand-in previous with_stats_button.
+        # Import only the appended block as a module, after a stand-in previous with_stats_button.
         stub_telegram()
         sys.modules['ua_site_leads'] = types.SimpleNamespace(CALLBACK='leads:list', available=lambda: True)
         logged = []
-        scope = {'with_stats_button': lambda m: Markup([[Button('Фото', 'home_photo')]]),
-                 'log': types.SimpleNamespace(warning=lambda *a: logged.append(a))}
-        exec(candidate.BLOCK, scope)
-        menu = scope['with_stats_button'](None)
+        sys.modules['menu_prelude'] = types.SimpleNamespace(
+            previous=lambda m: Markup([[Button('Фото', 'home_photo')]]),
+            log=types.SimpleNamespace(warning=lambda *a: logged.append(a)))
+        with tempfile.TemporaryDirectory() as temp:
+            (Path(temp) / 'menu_block.py').write_text(
+                'from menu_prelude import previous as with_stats_button, log\n' + candidate.BLOCK, encoding='utf-8')
+            sys.path.insert(0, temp)
+            try:
+                block = importlib.import_module('menu_block')
+            finally:
+                sys.path.remove(temp)
+                sys.modules.pop('menu_block', None)
+        menu = block.with_stats_button(None)
         self.assertEqual([b.callback_data for r in menu.inline_keyboard for b in r], ['home_photo', 'leads:list', 'crm_more'])
         sys.modules['ua_menu_extra'] = None  # import fails → previous menu, one warning
-        menu = scope['with_stats_button'](None)
+        menu = block.with_stats_button(None)
         self.assertEqual([b.callback_data for r in menu.inline_keyboard for b in r], ['home_photo'])
         self.assertEqual(len(logged), 1)
         del sys.modules['ua_menu_extra']
-
 
 if __name__ == '__main__':
     unittest.main()
