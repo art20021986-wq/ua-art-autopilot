@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-INVITE2-PREFLIGHT-20261105.40fd75869088930b7c4c2cf0df457d0f32aace6b4849218754525a907eb62d01.json",
+  "autostart_ledger_sha256": "e8dd731fe194984a4dd6c4027d5ded374bfbac01dcc69e825167f725680cea61",
+  "autostart_source_commit": "0411d899f77cbbf4417ae5e6a7907307f72e271b",
+  "created_at": "2026-11-05T18:14:24Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42082070399",
+    "task_id": "CRM-INVITE2-PREFLIGHT-20261105",
+    "task_sha256": "40fd75869088930b7c4c2cf0df457d0f32aace6b4849218754525a907eb62d01"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/CRM-INVITE2-PREFLIGHT-20261105.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
