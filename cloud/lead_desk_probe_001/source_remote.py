@@ -15,8 +15,7 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('db.py', 'ua_site_leads.py', 'ua_order/storage.py', 'ua_order/service.py', 'ua_order/runtime.py',
-        'ua_order/contract.py')
+FULL = ('ua_site_leads.py',)
 PARTIAL = {}
 MAX_SOURCE = 600 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -66,7 +65,20 @@ def report(home=None):
         zone = 'OK'
     except Exception as error:
         zone = type(error).__name__
-    return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone}
+    desk = None
+    database = HOME/'crm.db'
+    if database.is_file():
+        import sqlite3
+        from contextlib import closing
+        # Read-only: only the names of the desk tables and when deadlines started to count; no rows of clients.
+        with closing(sqlite3.connect(database.as_uri() + '?mode=ro', uri=True, timeout=5)) as connection:
+            tables = sorted(r[0] for r in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'lead_desk%'"))
+            track = connection.execute("SELECT value FROM lead_desk_meta WHERE key='track_from'").fetchone() \
+                if 'lead_desk_meta' in tables else None
+        desk = {'tables': tables, 'track_from': track[0] if track else None}
+    return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone,
+            'lead_desk': desk}
 
 
 def main():
