@@ -1,0 +1,25 @@
+{
+  "application_writes": false,
+  "automatic_rollback_retried": false,
+  "decision": "ACCEPT_OBSERVED_MENU_INSTALLATION_ONLY",
+  "evidence_path": "state/reconciliations/CRM-MENU-INSTALL-20261105.42012840805.forward.evidence.json",
+  "evidence_sha256": "fb244158a71c1f2b220793b1e88980e483e6e8e04e4d61c8039d9ef308a7f756",
+  "full_crm_acceptance": false,
+  "next_step": "Fresh gated corrective release (fixed package): owner-approved menu buttons replace «📨 Заявки с сайта» and «⋯ Ещё». Original launch remains consumed.",
+  "original_state_sha256": {
+    "state/AUTOPILOT_HALT.json": "214b96c72dd47b163a1ff3c1cbea766bac01bf22c7c02a82b90a5e545fdcc9a6",
+    "state/claims/CRM-MENU-INSTALL-20261105.466562c0c50355d7997168ce8ce01f064156f96b3e1d3c48fe4469c5bcec810d.42012840805.json": "1605faeb893bdd6dc128438d3d4da9fb86dbb11a07a146e0e6f03c129d8f5bcb",
+    "state/transactions/CRM-MENU-INSTALL-20261105.466562c0c50355d7997168ce8ce01f064156f96b3e1d3c48fe4469c5bcec810d.42012840805.json": "fb488a049d7b42de133c646d39b5146ce153aa0f73007671d2ea341c85f75ecc",
+    "tasks/requests/CRM-MENU-INSTALL-20261105.json": "466562c0c50355d7997168ce8ce01f064156f96b3e1d3c48fe4469c5bcec810d"
+  },
+  "owner_command": "Разрешаю снять аварийную остановку CRM-MENU-INSTALL-20261105",
+  "precedent": "state/reconciliations/DELIVERY-STATUS-INSTALL-20260927.36268504600.forward.json",
+  "reconciled_at": "2026-11-05T11:44:28Z",
+  "rollback_performed": false,
+  "run_id": "42012840805",
+  "schema_version": "UA-ART-MANUAL-FORWARD-RECONCILIATION-1",
+  "task_id": "CRM-MENU-INSTALL-20261105",
+  "transaction_after": "FINISHED",
+  "transaction_before": "ROLLING_BACK",
+  "transaction_id": "tx-42012840805-466562c0c50355d7"
+}
