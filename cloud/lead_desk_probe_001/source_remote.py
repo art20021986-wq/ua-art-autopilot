@@ -15,10 +15,9 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('cars_ui.py', 'team_bot.py',
-        'db.py')
+FULL = ('video/index.html', 'video/ua-site-languages.js', 'video/podbor.html')
 PARTIAL = {}
-MAX_SOURCE = 600 * 1024
+MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
 LONG_NUMBER = re.compile(r'(?<!\d)\+?\d[\d\s()-]{8,}\d(?!\d)')
