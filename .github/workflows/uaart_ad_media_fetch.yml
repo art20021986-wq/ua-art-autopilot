@@ -1,0 +1,32 @@
+name: UA ART Ad Media Fetch (read-only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      code:
+        description: Catalog car code, e.g. UA-0018
+        required: true
+        default: UA-0018
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Download public photos and video (read-only, no secrets)
+        env:
+          CODE: ${{ inputs.code }}
+        run: |
+          [[ "$CODE" =~ ^UA-[0-9]{4}$ ]]
+          python3 -I cloud/ad_media_ua0018/fetch.py "$CODE" media
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ad-media-${{ inputs.code }}
+          path: media
+          retention-days: 7
