@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "c81cb18d1b2667b4bab342cf002e780496cb58a7878b56be05eb9ae801db9d88",
   "autostart_source_commit": "82d1e4468b702b81e3d48d8b85c0f6f039597eaf",
   "created_at": "2026-11-05T12:15:13Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "5e01897bd0f7d9abaff5a2325b7a46776f870a5dd8ba848b703d259fe730054f",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-05T12:15:13Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-05T12:16:35Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42025365115",
     "task_id": "CRM-MENU2-INSTALL-20261105",
     "task_sha256": "e16d1b487dfca45da398574c704a673a1d9d8206b1fc7cb18372f9a84b77c069"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 130.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 155.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42025365115-e16d1b487dfca45d",
+  "production_transaction_path": "state/transactions/CRM-MENU2-INSTALL-20261105.e16d1b487dfca45da398574c704a673a1d9d8206b1fc7cb18372f9a84b77c069.42025365115.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-MENU2-INSTALL-20261105.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,38 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "71a2201c4408c3616a976ce9b982ba465d6efbfb",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 1557.791,
+    "allowed": true,
+    "evidence_path": "state/storage/CRM-MENU2-INSTALL-20261105.json",
+    "evidence_sha256": "dba1150b6eb575000c52e2d1ebe9233481b33e4880812886e3502a165d677fc0",
+    "free_bytes": 23824616960,
+    "heavy": true,
+    "measured_at": "2026-11-05T11:50:35.756256+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 31.92966582857143
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-05T12:15:13Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/crm_menu_002/candidate.py": "5f03a7b9e33ae2af0d03e1039cdefd08c08d5cd5661506905db013e4a1799230",
+      "cloud/crm_menu_002/candidate_builder.py": "c314638f23a92659bd119bef4202df79255c2bebb2ba681ca906839e8fb65f96",
+      "cloud/crm_menu_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_menu_002/deployment_bootstrap.py": "31279c6caffff63826023d3f330ef9aa59d935a088f45443fe54812c3e98a683",
+      "cloud/crm_menu_002/deployment_remote.py": "a42ffdefd0e43ab614bebba099806cb7d2ed42f49214bd70c89dad16f45518b7",
+      "cloud/crm_menu_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_menu_002/deployment_transport.py": "50d03a30c8f8c67f68d3ce2634873a5179cabcacb04c4dbddbdf1a7b628e5a2d",
+      "cloud/crm_menu_002/make_release.py": "adf115cc7c6136762999fccfa61a4e8aba259cd5f11004f6f9a6e96405f1e55b",
+      "cloud/crm_menu_002/release_constants.py": "cebf54393086b17021fa5d94b6ca2d2ee759131c807c2d6a75df2d1e2dcc7f4e",
+      "cloud/crm_menu_002/test_crm_menu.py": "3232fa26e6bc0be21bac149ebe9c8b9c24cf8637e2aee5c7942929dd5c132524",
+      "cloud/crm_menu_002/test_deployment.py": "9468f38708d34cb2443aaa1447d34007a9870e3c6804f2db66d3a48bf4e34004",
+      "cloud/crm_menu_002/ua_menu_extra.py": "1c9e77f95acfc213117f091d12b05b3e7534ff575cdc6017e4a0502662c1c2e7"
+    }
+  },
+  "updated_at": "2026-11-05T12:16:35Z"
 }
