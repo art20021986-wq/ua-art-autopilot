@@ -63,10 +63,10 @@ class RemoteTests(unittest.TestCase):
     def test_returns_crm_sources_sanitized(self):
         with tempfile.TemporaryDirectory() as temp:
             home = Path(temp)
-            (home / 'ua_site_leads.py').write_text("TOKEN = 'abc'\nasync def clients_screen():\n    phone = '+380 99 222 20 02'\n"
+            (home / 'cars_ui.py').write_text("TOKEN = 'abc'\nasync def clients_screen():\n    phone = '+380 99 222 20 02'\n"
                                              "x = 'https://evil.example/p'\n")
             value = remote.report(home)
-        cars = value['files']['ua_site_leads.py']['source']
+        cars = value['files']['cars_ui.py']['source']
         self.assertIn('[REDACTED]', cars)
         self.assertNotIn('abc', cars)
         self.assertIn('[URL]', cars)
