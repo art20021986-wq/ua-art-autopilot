@@ -1,0 +1,24 @@
+{
+  "files": {
+    "ua_site_leads.py": {
+      "sha256": "072c7f92d28db0543b100d3a7776c668dcc4a78216d873dab7ef19d4be3151cc",
+      "source": "\"\"\"Site enquiries in the CRM bot: «Клиенты» → «Заявки с сайта» (ADS-READY-001; ORDER-PROCESS-001 desk).\n\nThe button opens the enquiry desk (ua_lead_desk): the order package's enquiries with status, reply timer,\nmanager note, transfer to «Клиенты» and reminders; «В меню» returns to «Клиенты». Active staff with the owner,\nadministrator or manager role may open it and get the reminders. The enquiries stay in the order package; the\ndesk keeps its own state in crm.db. The order package's own CRM adapter stays registered as before, so any\nearlier «orders:» button keeps working. Without the order package the button is not shown.\n\"\"\"\nimport time\n\nCALLBACK = 'leads:list'\nBUTTON = 'Заявки с сайта'\nBACK = 'cards_clients'\n\n\ndef _runtime():\n    from ua_order import host\n    loaded = host.current()\n    return None if loaded is None or loaded is host.UNAVAILABLE else loaded\n\n\ndef available():\n    return _runtime() is not None\n\n\ndef _roles():\n    import db\n    return (db.ROLE_OWNER, db.ROLE_ADMIN, db.ROLE_MANAGER)\n\n\ndef allowed(update):\n    import db\n    user = update.effective_user\n    staff = db.get_staff(user.id) if user else None\n    return bool(staff and staff['active'] and staff['role'] in _roles())\n\n\ndef staff_ids():\n    import db\n    return sorted({uid for role in _roles() for uid in db.staff_ids_by_role(role)})\n\n\ndef register(app):\n    loaded = _runtime()\n    if loaded is None:\n        return None\n    import db\n    from ua_lead_desk import Desk\n    from ua_lead_desk_store import Store\n    from ua_order.bindings import first_group\n    from ua_order.telegram import CRMAdapter\n    adapter = CRMAdapter(loaded.service.repository, loaded.service.catalog, authorize=allowed, menu_callback=BACK)\n    adapter.register(app, group=first_group(app))\n    store = Store(db.connect)\n    store.initialize()\n    desk = Desk(loaded.service.repository, loaded.service.catalog, store, authorize=allowed, staff_ids=staff_ids,\n                menu_callback=BACK, clock=time.time)\n    desk.register(app, group=first_group(app))\n    return desk"
+    }
+  },
+  "lead_desk": {
+    "tables": [
+      "lead_desk",
+      "lead_desk_meta",
+      "lead_desk_reminders"
+    ],
+    "track_from": "1793872225"
+  },
+  "mode": "probe",
+  "python": "3.10",
+  "remote_write_count": 0,
+  "run_id": "42006537384",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "LEAD-DESK-PROBE-20261105-R2",
+  "zone_kyiv": "OK"
+}
