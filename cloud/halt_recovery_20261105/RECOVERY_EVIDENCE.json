@@ -1,0 +1,47 @@
+{
+  "after_clear_mode_validation": {
+    "allow_halt_for_recovery": false,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "authorization_scope": "Archive the SYSTEM-WATCHDOG halt of 2026-11-05 (active workflow set mismatch); remove the two manual workflows outside the pinned set (uaart_lead_radar_probe.yml, uaart_ad_media_fetch.yml); preserve all protection policies, Gate B, backup and operator data",
+  "before_clear_mode_validation": {
+    "allow_halt_for_recovery": true,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "before_error": "ACTIVE_WORKFLOW_SET_MISMATCH:missing=-:unexpected=.github/workflows/uaart_lead_radar_probe.yml (later also uaart_ad_media_fetch.yml)",
+  "contract": "OWNER-AUTHORIZED-REPOSITORY-HALT-RECOVERY-EVIDENCE-1",
+  "credentials_read_or_changed": false,
+  "execution_mode_bytes_changed": false,
+  "existing_launch_markers_replayed": false,
+  "halt_archive": "state/halt_history/SYSTEM-WATCHDOG.41957931587/halt.json",
+  "halt_sha256": "06c1cf2d9253e407f21ccf3205ad64324ebcabbc5af521acbd99914531e3e7a8",
+  "historical_halt": {
+    "halted_at": "2026-11-05T02:52:29Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "Production watchdog discovery failed in run 41957931587",
+    "request_path": "",
+    "request_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "run_id": "41957931587",
+    "status": "EMERGENCY_HALT",
+    "task_id": "SYSTEM-WATCHDOG"
+  },
+  "owner_statement": "Да",
+  "precedent": "cloud/halt_recovery_20261103/RECOVERY_EVIDENCE.json",
+  "production_launch_created": false,
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-05T09:05:26.106019+00:00",
+  "removed_workflows": [
+    ".github/workflows/uaart_lead_radar_probe.yml",
+    ".github/workflows/uaart_ad_media_fetch.yml"
+  ],
+  "required_production_gates_weakened": false,
+  "runtime_code_changed": false,
+  "site_or_crm_written": false,
+  "watchdog_discover": {
+    "has_pending": false,
+    "pending_count": 0,
+    "transaction_status": "NONE"
+  }
+}
