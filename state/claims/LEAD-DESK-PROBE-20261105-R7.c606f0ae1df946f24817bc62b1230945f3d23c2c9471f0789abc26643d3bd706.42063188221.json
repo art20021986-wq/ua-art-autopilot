@@ -7,21 +7,23 @@
   "created_at": "2026-11-05T16:20:46Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-05T16:20:46Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-05T16:24:22Z",
+  "heartbeat_at": "2026-11-05T16:24:22Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "42063188221",
     "task_id": "LEAD-DESK-PROBE-20261105-R7",
     "task_sha256": "c606f0ae1df946f24817bc62b1230945f3d23c2c9471f0789abc26643d3bd706"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-165649e2ed385afa-9f9a58be48b2771c",
   "receipt_path": "state/receipts/LEAD-DESK-PROBE-20261105-R7.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "1dddbcb05addc17659151536ad74af54546c6a39bb40c86daba2568a400e454d",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/LEAD-DESK-PROBE-20261105-R7.json",
   "request_sha256": "c606f0ae1df946f24817bc62b1230945f3d23c2c9471f0789abc26643d3bd706",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "7cbaa7f138b989919ce95b58a05a1dffbe6b9fc2",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92848685056,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.084
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-05T16:20:46Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "7355a7628558fee9e3e6751f46fb3b54404cc8aa6c86cfb04965a8e1a4231ad9",
+    "file_sha256": {
+      "cloud/lead_desk_probe_001/bootstrap.py": "65994927cf60c55c2cc5341aaad72494a012b219aa359a84b53dfbf41b35d278",
+      "cloud/lead_desk_probe_001/make_request.py": "5c7c69e42a99d87e6d26422b50aecd0c307e6f9b67ab564398b45695c5e98f91",
+      "cloud/lead_desk_probe_001/source_remote.py": "6028adaf15c351076e2362e97474a8b258974ca703381747f954750cb42406f1",
+      "cloud/lead_desk_probe_001/test_lead_probe.py": "02654a4fb03fe117b09381806bf1b4923f6dff230aa2ec36f9c52405eaeda0f7",
+      "cloud/lead_desk_probe_001/transport.py": "b070efa3918ed221d6880fb9b7e9076dc634cf0d6c574c41c4779ad919713476"
+    }
+  },
+  "updated_at": "2026-11-05T16:24:22Z"
 }
