@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-MENU2-INSTALL-20261105.e16d1b487dfca45da398574c704a673a1d9d8206b1fc7cb18372f9a84b77c069.json",
+  "autostart_ledger_sha256": "c81cb18d1b2667b4bab342cf002e780496cb58a7878b56be05eb9ae801db9d88",
+  "autostart_source_commit": "82d1e4468b702b81e3d48d8b85c0f6f039597eaf",
+  "created_at": "2026-11-05T12:15:13Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42025365115",
+    "task_id": "CRM-MENU2-INSTALL-20261105",
+    "task_sha256": "e16d1b487dfca45da398574c704a673a1d9d8206b1fc7cb18372f9a84b77c069"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/CRM-MENU2-INSTALL-20261105.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
