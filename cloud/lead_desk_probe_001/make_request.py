@@ -24,8 +24,8 @@ def request(day):
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
         'description': 'Read-only probe before enquiry deadlines in the CRM bot (ORDER-PROCESS-001, owner «да» 2026-11-05). '
                        'Bounded run in the existing private inbox: upload this package, run source_remote.py once in a temporary '
-                       'always-on task (removed after its receipt; never the CRM bot) which only reads db.py, ua_site_leads.py and '
-                       'the order package storage/service/runtime/contract (sanitized) and checks the Europe/Kyiv zone. '
+                       'always-on task (removed after its receipt; never the CRM bot) which only reads the client bot, order package and order page sources '
+                       '(sanitized) and lead_desk table names in crm.db. '
                        'No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
