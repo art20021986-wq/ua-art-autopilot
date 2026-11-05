@@ -66,7 +66,7 @@ class RemoteTests(unittest.TestCase):
             (home / 'video').mkdir()
             (home / 'video/index.html').write_text("TOKEN = 'abc'\nasync def clients_screen():\n    phone = '+380 99 222 20 02'\n"
                                              "x = 'https://evil.example/p'\n")
-            with patch.object(remote, 'staff', return_value={}):
+            with patch.object(remote, 'staff', return_value={}), patch.object(remote, 'invites', return_value={}):
                 value = remote.report(home)
         self.assertEqual(value['files'], {})
         self.assertEqual(value['staff'], {})
