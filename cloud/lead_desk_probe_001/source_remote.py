@@ -78,7 +78,21 @@ def report(home=None):
                 if 'lead_desk_meta' in tables else None
         desk = {'tables': tables, 'track_from': track[0] if track else None}
     return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone,
-            'lead_desk': desk, 'public': public()}
+            'lead_desk': desk, 'staff': staff()}
+
+
+def staff():
+    """Read-only: active staff per role and whether the manager @Beetle204 is active (no names or ids returned)."""
+    import sqlite3
+    from contextlib import closing
+    with closing(sqlite3.connect((HOME/'crm.db').as_uri() + '?mode=ro', uri=True, timeout=5)) as connection:
+        rows = connection.execute('SELECT role, active, lower(coalesce(username, \'\')) FROM staff').fetchall()
+    roles = {}
+    for role, active, _ in rows:
+        if active:
+            roles[role] = roles.get(role, 0) + 1
+    beetle = [(role, bool(active)) for role, active, name in rows if name.lstrip('@') == 'beetle204']
+    return {'active_by_role': roles, 'beetle204': beetle}
 
 
 # Read-only public view: what each entry address serves now, as a phone browser asks for it.
