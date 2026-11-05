@@ -1,5 +1,9 @@
 import datetime
+import sys
 import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import ua_lead_calendar as cal
 
