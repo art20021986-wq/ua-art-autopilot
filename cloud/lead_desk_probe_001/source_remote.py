@@ -15,9 +15,8 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('lead_bot.py', 'run_all.py', 'start_safe.py', 'ua_order/bindings.py', 'ua_order/telegram.py',
-        'ua_order/web.py', 'ua_order/bot_flow.py', 'ua_order/notify.py', 'video/order/order.js',
-        'video/order/order-strings.json', 'ua_site_leads.py')
+FULL = ('cars_ui.py', 'team_bot.py',
+        'db.py')
 PARTIAL = {}
 MAX_SOURCE = 600 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
