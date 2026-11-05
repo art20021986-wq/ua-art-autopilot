@@ -9,7 +9,7 @@ on:
         default: UA-0018
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   fetch:
@@ -25,8 +25,15 @@ jobs:
         run: |
           [[ "$CODE" =~ ^UA-[0-9]{4}$ ]]
           python3 -I cloud/ad_media_ua0018/fetch.py "$CODE" media
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: ad-media-${{ inputs.code }}
-          path: media
-          retention-days: 7
+      - name: Publish media to a separate orphan branch (never main)
+        env:
+          CODE: ${{ inputs.code }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          find media -type f -size +95M -delete
+          cd media
+          git init -q -b "ad-media/$CODE"
+          git -c user.name=ua-art-autopilot -c user.email=actions@users.noreply.github.com add -A
+          git -c user.name=ua-art-autopilot -c user.email=actions@users.noreply.github.com commit -q -m "Ad media $CODE (public site copy)"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${REPO}.git" "HEAD:refs/heads/ad-media/$CODE"
