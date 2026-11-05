@@ -66,13 +66,10 @@ class RemoteTests(unittest.TestCase):
             (home / 'video').mkdir()
             (home / 'video/index.html').write_text("TOKEN = 'abc'\nasync def clients_screen():\n    phone = '+380 99 222 20 02'\n"
                                              "x = 'https://evil.example/p'\n")
-            value = remote.report(home)
-        cars = value['files']['video/index.html']['source']
-        self.assertIn('[REDACTED]', cars)
-        self.assertNotIn('abc', cars)
-        self.assertIn('[URL]', cars)
-        self.assertIn('[N]', cars)
-        self.assertIn('clients_screen', cars)
+            with patch.object(remote, 'public', return_value={}):
+                value = remote.report(home)
+        self.assertEqual(value['files'], {})
+        self.assertEqual(value['public'], {})
         self.assertIsNone(value['lead_desk'])
         self.assertEqual(value['zone_kyiv'], 'OK')
 

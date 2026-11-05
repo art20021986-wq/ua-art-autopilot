@@ -15,7 +15,7 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('video/index.html', 'video/ua-site-languages.js', 'video/podbor.html')
+FULL = ()
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -78,7 +78,31 @@ def report(home=None):
                 if 'lead_desk_meta' in tables else None
         desk = {'tables': tables, 'track_from': track[0] if track else None}
     return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone,
-            'lead_desk': desk}
+            'lead_desk': desk, 'public': public()}
+
+
+# Read-only public view: what each entry address serves now, as a phone browser asks for it.
+PUBLIC_URLS = ('https://uaart.com.ua/', 'http://uaart.com.ua/', 'https://www.uaart.com.ua/',
+               'https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/podbor.html')
+MARKERS = ('Безкоштовна консультація', 'podbor.html#zayavka', 'id="zayavka"', 'Розкажіть бюджет і побажання')
+
+
+def public():
+    import urllib.request
+    result = {}
+    for url in PUBLIC_URLS:
+        request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) '
+                                                       'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1'})
+        try:
+            with urllib.request.urlopen(request, timeout=20) as response:
+                body = response.read(2 * 1024 * 1024).decode('utf-8', 'replace')
+                result[url] = {'status': response.status, 'final_url': response.url, 'bytes': len(body),
+                               'server': response.headers.get('Server'), 'cache_control': response.headers.get('Cache-Control'),
+                               'last_modified': response.headers.get('Last-Modified'),
+                               'markers': {m: m in body for m in MARKERS}}
+        except Exception as error:
+            result[url] = {'error': type(error).__name__ + ':' + str(error)[:160]}
+    return result
 
 
 def main():
