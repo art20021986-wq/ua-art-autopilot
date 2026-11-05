@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "3d91c0221e93e7b68a80bc84ef60e65238d416ab15898b7963c32dc41d7bc74a",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-05T18:27:38Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-05T18:39:28Z",
+  "heartbeat_at": "2026-11-05T18:39:28Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "42083211894",
     "task_id": "CRM-INVITE2-INSTALL-20261105",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 834.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 282.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-42083211894-1fd88c7335ad06fd",
   "production_transaction_path": "state/transactions/CRM-INVITE2-INSTALL-20261105.1fd88c7335ad06fd157d1251acd37bfa6700596b314f3be8df403498d21dfa6a.42083211894.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-INVITE2-INSTALL-20261105.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "632999aaada0150f31134c13bb31382ef3e667982ed8020baa19037e86a3527e",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-INVITE2-INSTALL-20261105.json",
   "request_sha256": "1fd88c7335ad06fd157d1251acd37bfa6700596b314f3be8df403498d21dfa6a",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
     "file_sha256": {
@@ -86,5 +109,5 @@
       "cloud/crm_invite_002/ua_staff_invite.py": "02844e42cbd6a639e7dd13da208a2de13231965e84363fa27cf23f99c4acb570"
     }
   },
-  "updated_at": "2026-11-05T18:27:38Z"
+  "updated_at": "2026-11-05T18:39:28Z"
 }
