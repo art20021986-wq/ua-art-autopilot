@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/LEAD-DESK-INSTALL-20261105.b8a1892b5a0649efbf91f1bc1f29f8682d4092ffa311589a48a1d9e8c7ce6a36.json",
+  "autostart_ledger_sha256": "e0e3aa646b4a3b6941e0f61b7c90ac76f43121ab9e0a0c9857c524a6a2d48067",
+  "autostart_source_commit": "6d0aaaa2d75c9dba09ec94452a31c21b910364d5",
+  "created_at": "2026-11-05T09:38:19Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42003803980",
+    "task_id": "LEAD-DESK-INSTALL-20261105",
+    "task_sha256": "b8a1892b5a0649efbf91f1bc1f29f8682d4092ffa311589a48a1d9e8c7ce6a36"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-cd2148cd8eadc461-d2e63501b7697564",
+  "request_path": "tasks/requests/LEAD-DESK-INSTALL-20261105.json",
+  "resource_locks": [
+    "PATH_SCOPE:cd2148cd8eadc461"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
