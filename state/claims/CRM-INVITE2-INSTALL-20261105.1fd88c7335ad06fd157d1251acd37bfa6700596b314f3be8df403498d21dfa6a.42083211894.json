@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "3b88ccd3fa2374d1f2e4777cd71ec87d474ae2a9d0cfc29e0dd52a971d63cb4c",
   "autostart_source_commit": "cd8b2cb1c9d226a5cb59f384e555496e19d3bdd7",
   "created_at": "2026-11-05T18:23:33Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "3d91c0221e93e7b68a80bc84ef60e65238d416ab15898b7963c32dc41d7bc74a",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-05T18:23:33Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-05T18:24:47Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42083211894",
     "task_id": "CRM-INVITE2-INSTALL-20261105",
     "task_sha256": "1fd88c7335ad06fd157d1251acd37bfa6700596b314f3be8df403498d21dfa6a"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 56.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 51.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42083211894-1fd88c7335ad06fd",
+  "production_transaction_path": "state/transactions/CRM-INVITE2-INSTALL-20261105.1fd88c7335ad06fd157d1251acd37bfa6700596b314f3be8df403498d21dfa6a.42083211894.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-INVITE2-INSTALL-20261105.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "811348ab283df18476fca64957f7a8422c9c98b4",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 424.693,
+    "allowed": true,
+    "evidence_path": "state/storage/CRM-INVITE2-INSTALL-20261105.json",
+    "evidence_sha256": "f50d9a3a09cf7f8b212822a990faf7f459195d9a535223f0817a13ab32249998",
+    "free_bytes": 23790018048,
+    "heavy": true,
+    "measured_at": "2026-11-05T18:17:40.614386+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 32.028519862857145
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-05T18:23:33Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/crm_invite_002/candidate_builder.py": "c0542257ff69ea27a42c1825fe1d2cc3de0e953fc60b77b02986e62d28178a2b",
+      "cloud/crm_invite_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_invite_002/deployment_bootstrap.py": "96fdbd9ee38604ac0c70957071803fd5ee106701ab1071fcc74da4a738a9bd0c",
+      "cloud/crm_invite_002/deployment_remote.py": "3b2d797f74077eb16ef37ea98c07f3efa3c61b4793fbc6181ac044fbc5ca56d7",
+      "cloud/crm_invite_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_invite_002/deployment_transport.py": "c7cad66055f152b39ae823dbf627ac7b154f41fe555f364a35eccd79dd00d67c",
+      "cloud/crm_invite_002/make_release.py": "29549af6d327660cf331a39732d7e4f8c8f19d171150c3fec66226666beb520b",
+      "cloud/crm_invite_002/release_constants.py": "4ccfa5b021233ca89822fb6c561ee56f77b1f5f49549d9c809f9a3bc64722910",
+      "cloud/crm_invite_002/test_deployment.py": "e81cf02ce70a5282ced04eb01b13bbf8df5553f43bb9680af2e9ce57fc9b6a45",
+      "cloud/crm_invite_002/test_staff_invite.py": "de998f575dcec83642a69298f399e14bb8aaa877ddaebde876c77012ba5c6bd9",
+      "cloud/crm_invite_002/ua_staff_invite.py": "02844e42cbd6a639e7dd13da208a2de13231965e84363fa27cf23f99c4acb570"
+    }
+  },
+  "updated_at": "2026-11-05T18:24:47Z"
 }
