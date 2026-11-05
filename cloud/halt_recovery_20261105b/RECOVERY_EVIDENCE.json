@@ -1,0 +1,29 @@
+{
+  "authorization_scope": "Archive the CRM-MENU-INSTALL-20261105 halt; forward-reconcile the ROLLING_BACK transaction to FINISHED on owner-observed live state; preserve all protection policies, Gate B, backup and operator data",
+  "claim_archive": "state/halt_history/CRM-MENU-INSTALL-20261105.42012840805/claim.before.json",
+  "contract": "OWNER-AUTHORIZED-REPOSITORY-HALT-RECOVERY-EVIDENCE-1",
+  "credentials_read_or_changed": false,
+  "execution_mode_bytes_changed": false,
+  "existing_launch_markers_replayed": false,
+  "halt_archive": "state/halt_history/CRM-MENU-INSTALL-20261105.42012840805/halt.json",
+  "halt_sha256": "214b96c72dd47b163a1ff3c1cbea766bac01bf22c7c02a82b90a5e545fdcc9a6",
+  "historical_halt": {
+    "halted_at": "2026-11-05T11:00:34Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "CRITICAL Production pipeline failed; GitHub Actions run 42012840805; rollback reserved true; rollback performed false",
+    "request_path": "tasks/requests/CRM-MENU-INSTALL-20261105.json",
+    "request_sha256": "466562c0c50355d7997168ce8ce01f064156f96b3e1d3c48fe4469c5bcec810d",
+    "run_id": "42012840805",
+    "status": "EMERGENCY_HALT",
+    "task_id": "CRM-MENU-INSTALL-20261105"
+  },
+  "owner_statement": "Разрешаю снять аварийную остановку CRM-MENU-INSTALL-20261105",
+  "precedent": "cloud/halt_recovery_20261105/RECOVERY_EVIDENCE.json",
+  "production_launch_created": false,
+  "production_transaction_opened": false,
+  "reconciliation_evidence": "state/reconciliations/CRM-MENU-INSTALL-20261105.42012840805.forward.json",
+  "recorded_at": "2026-11-05T11:44:28Z",
+  "required_production_gates_weakened": false,
+  "runtime_code_changed": false,
+  "site_or_crm_written": false
+}

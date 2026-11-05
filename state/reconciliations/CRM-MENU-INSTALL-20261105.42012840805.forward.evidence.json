@@ -1,0 +1,31 @@
+{
+  "backup_receipt": "state/receipts/CRM-MENU-INSTALL-20261105-BACKUP.json",
+  "backup_status": "PASS",
+  "client_bot": {
+    "answered_start": true,
+    "menu": [
+      "Условия и гарантии",
+      "Авто под заказ",
+      "Аналитика",
+      "Открыть каталог"
+    ]
+  },
+  "crm_bot": {
+    "answered_start": true,
+    "main_menu_buttons": [
+      "🚗 Автомобили",
+      "🖼 Фото главной страницы",
+      "📨 Заявки с сайта",
+      "⋯ Ещё"
+    ],
+    "meaning": "cars_ui.py with the appended ORDER-PROCESS-001 block (planned 9d330d03) and ua_menu_extra.py (90ac94f0) are live and loaded",
+    "restart_notice": "«Бот обновлён и готов к работе» at 17:59 owner time = 10:59 UTC, right after the one-shot rollback run"
+  },
+  "crm_data_written_by_install": false,
+  "failure": "PROTECTED_CHANGED:cars_ui.py — package bug: the replaced file was also in the static protected list; in-install restore and one-shot rollback refused on the same check; rollback run re-enabled the bot",
+  "file_hashes_observed_remotely": false,
+  "run_id": "42012840805",
+  "schema_version": "UA-ART-OWNER-OBSERVATION-1",
+  "source": "Owner screenshots in chat, 2026-11-05 18:43 owner time (UTC+7) = 11:43 UTC",
+  "task_id": "CRM-MENU-INSTALL-20261105"
+}
