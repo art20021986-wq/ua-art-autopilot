@@ -78,7 +78,7 @@ def report(home=None):
                 if 'lead_desk_meta' in tables else None
         desk = {'tables': tables, 'track_from': track[0] if track else None}
     return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone,
-            'lead_desk': desk, 'staff': staff()}
+            'lead_desk': desk, 'staff': staff(), 'invites': invites(), 'reply_source': reply_source()}
 
 
 def staff():
@@ -93,6 +93,43 @@ def staff():
             roles[role] = roles.get(role, 0) + 1
     beetle = [(role, bool(active)) for role, active, name in rows if name.lstrip('@') == 'beetle204']
     return {'active_by_role': roles, 'beetle204': beetle}
+
+
+def invites():
+    """Read-only: the invite table's columns and, for the two codes the owner sent, whether each exists and is used."""
+    import sqlite3
+    from contextlib import closing
+    with closing(sqlite3.connect((HOME/'crm.db').as_uri() + '?mode=ro', uri=True, timeout=5)) as connection:
+        columns = [row[1] for row in connection.execute('PRAGMA table_info(invites)')]
+        result = {'columns': columns, 'codes': {}}
+        for code in ('7030AC', '812DFF'):
+            row = connection.execute('SELECT * FROM invites WHERE upper(code)=?', (code,)).fetchone()
+            if row is None:
+                result['codes'][code] = None
+            else:
+                item = dict(zip(columns, row))
+                result['codes'][code] = {k: item.get(k) for k in ('role', 'used_by', 'used_at', 'created_at', 'expires_at')
+                                         if k in item and k != 'used_by'} | {'used': bool(item.get('used_by'))}
+    return result
+
+
+def reply_source():
+    """Read-only: which Python files on the server contain the reply the employee got."""
+    needle = 'Доступ по приглашению'
+    found = []
+    for path in sorted(HOME.rglob('*.py')):
+        if any(part.startswith('.') or part in ('backups', 'autopilot_inbox', 'node_modules') for part in path.parts):
+            continue
+        try:
+            text = path.read_text(encoding='utf-8', errors='replace')
+        except OSError:
+            continue
+        if needle in text:
+            lines = [n + 1 for n, line in enumerate(text.splitlines()) if needle in line]
+            found.append({'file': str(path.relative_to(HOME)), 'lines': lines[:5]})
+        if len(found) >= 20:
+            break
+    return found
 
 
 # Read-only public view: what each entry address serves now, as a phone browser asks for it.
