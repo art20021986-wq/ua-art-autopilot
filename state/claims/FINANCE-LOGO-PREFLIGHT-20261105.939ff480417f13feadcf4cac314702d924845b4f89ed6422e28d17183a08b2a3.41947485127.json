@@ -7,21 +7,23 @@
   "created_at": "2026-11-05T01:18:46Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-05T01:18:46Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-05T01:23:58Z",
+  "heartbeat_at": "2026-11-05T01:23:58Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "41947485127",
     "task_id": "FINANCE-LOGO-PREFLIGHT-20261105",
     "task_sha256": "939ff480417f13feadcf4cac314702d924845b4f89ed6422e28d17183a08b2a3"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-cc928a192c1f12e8-63dafd8dd51449fe",
   "receipt_path": "state/receipts/FINANCE-LOGO-PREFLIGHT-20261105.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "5f6ed77532daa7f4755aed62b0b81701a4d2c65552899364516484945f0dc72a",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/FINANCE-LOGO-PREFLIGHT-20261105.json",
   "request_sha256": "939ff480417f13feadcf4cac314702d924845b4f89ed6422e28d17183a08b2a3",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "e89b90239b724d01eeeb30cfe87b04a27b38fa5c",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92630970368,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.225
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-05T01:18:46Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "8fb142e37a527bc8c91cae55b7eeaab3400260597fcb98a22aadd7f7240a177c",
+    "file_sha256": {
+      "cloud/finance_otp_004/candidate_builder.py": "a93996187989897a4ed5a43626c50839e922d8f8410bfaf49d01f4f79ce21c38",
+      "cloud/finance_otp_004/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/finance_otp_004/deployment_bootstrap.py": "11488fdda65473bf559cb783fa27748df32bc342aefbce3644985ed56d09a4f4",
+      "cloud/finance_otp_004/deployment_remote.py": "98b3a4638dd775e240d0e772e74a8a20c980b9c0c25ef92d5e959aedd1c4b468",
+      "cloud/finance_otp_004/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/finance_otp_004/deployment_transport.py": "a8dcc60d35a9306256305f0923583e323a546aba7b7285536276e5073e389e0d",
+      "cloud/finance_otp_004/make_release.py": "18afb482ed8c41937402d11aa54d72d6de82e06f21d7ca003c2c46104b7dfcf2",
+      "cloud/finance_otp_004/release_constants.py": "a70319538c7bf7d4365a3ca49859c30b2d6bb416b4705fc6fdaeca3a3ae2d890",
+      "cloud/finance_otp_004/test_deployment.py": "f00fdf4f897ca5a8802e5cf8627c5a00bd52bfa3ee7eb5f917f807f18e002534",
+      "cloud/finance_otp_004/test_release.py": "2fde36babbdce028e504a9dd40e95e4e1775daf1753b0c9532d8b953ffeb49fc",
+      "cloud/finance_otp_004/ua_seo_finance.py": "0238f0d6fa68df1c1d17dae34f4e89813cb464c014486a3328018e08a736093f"
+    }
+  },
+  "updated_at": "2026-11-05T01:23:58Z"
 }
