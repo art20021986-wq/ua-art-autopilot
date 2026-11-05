@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "6ef8c7351ecd83048afc8cb31fffc82badeb0cabdd0ee603fef5d9179c0c1783",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-05T17:18:25Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-05T17:23:24Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42072882710",
     "task_id": "CRM-INVITE-INSTALL-20261105",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42072882710-841e7e25aec80586",
   "production_transaction_path": "state/transactions/CRM-INVITE-INSTALL-20261105.841e7e25aec80586054b0348aac5d6d1e91429402b6eaf19a6d5561dc1b10982.42072882710.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-INVITE-INSTALL-20261105.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/crm_invite_001/ua_staff_invite.py": "801bebeaa1c621ec2c22ce619adaddf08aa74484ad09a9132e4ba5306c175589"
     }
   },
-  "updated_at": "2026-11-05T17:18:25Z"
+  "updated_at": "2026-11-05T17:23:24Z"
 }
