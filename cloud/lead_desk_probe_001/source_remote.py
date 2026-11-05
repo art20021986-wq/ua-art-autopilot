@@ -15,7 +15,7 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ()
+FULL = ('bezopasnost.py', 'team_bot.py', 'start_safe.py', 'run_all.py')
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -78,7 +78,7 @@ def report(home=None):
                 if 'lead_desk_meta' in tables else None
         desk = {'tables': tables, 'track_from': track[0] if track else None}
     return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone,
-            'lead_desk': desk, 'staff': staff(), 'invites': invites(), 'reply_source': reply_source()}
+            'lead_desk': desk}
 
 
 def staff():
