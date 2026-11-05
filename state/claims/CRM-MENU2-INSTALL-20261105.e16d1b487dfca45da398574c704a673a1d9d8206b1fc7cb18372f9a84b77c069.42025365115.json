@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "5e01897bd0f7d9abaff5a2325b7a46776f870a5dd8ba848b703d259fe730054f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-05T12:16:35Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-05T12:20:31Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42025365115",
     "task_id": "CRM-MENU2-INSTALL-20261105",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42025365115-e16d1b487dfca45d",
   "production_transaction_path": "state/transactions/CRM-MENU2-INSTALL-20261105.e16d1b487dfca45da398574c704a673a1d9d8206b1fc7cb18372f9a84b77c069.42025365115.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-MENU2-INSTALL-20261105.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/crm_menu_002/ua_menu_extra.py": "1c9e77f95acfc213117f091d12b05b3e7534ff575cdc6017e4a0502662c1c2e7"
     }
   },
-  "updated_at": "2026-11-05T12:16:35Z"
+  "updated_at": "2026-11-05T12:20:31Z"
 }
