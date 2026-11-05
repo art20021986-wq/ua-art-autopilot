@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/LEAD-DESK-PROBE-20261105-R9.6a48d7e9b243dba393daaea768bc11954fc0621047508371f889178bc56993ab.json",
+  "autostart_ledger_sha256": "9c7bcc922c7f130dc973fc54f0fe74445cc52f3941d2579cf07ce70d59013843",
+  "autostart_source_commit": "c5c2d732f26f90d7b7d7387503daa34b325f4c32",
+  "created_at": "2026-11-05T16:54:53Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42069107158",
+    "task_id": "LEAD-DESK-PROBE-20261105-R9",
+    "task_sha256": "6a48d7e9b243dba393daaea768bc11954fc0621047508371f889178bc56993ab"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-165649e2ed385afa-9f9a58be48b2771c",
+  "request_path": "tasks/requests/LEAD-DESK-PROBE-20261105-R9.json",
+  "resource_locks": [
+    "PATH_SCOPE:165649e2ed385afa"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
