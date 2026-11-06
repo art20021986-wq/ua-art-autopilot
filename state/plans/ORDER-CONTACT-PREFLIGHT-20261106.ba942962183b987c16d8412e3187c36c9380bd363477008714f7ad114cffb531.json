@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ORDER-CONTACT-PREFLIGHT-20261106.ba942962183b987c16d8412e3187c36c9380bd363477008714f7ad114cffb531.json",
+  "autostart_ledger_sha256": "633f0a195e1be9d6fbe10eb5003e4fecef45bfd2fa89bd7f423bddd699be399a",
+  "autostart_source_commit": "b20bb103055b9785741faafcae7c91a01914a469",
+  "created_at": "2026-11-06T03:26:11Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42156395930",
+    "task_id": "ORDER-CONTACT-PREFLIGHT-20261106",
+    "task_sha256": "ba942962183b987c16d8412e3187c36c9380bd363477008714f7ad114cffb531"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-cb0ab3d42b8fd943-9f41a206984f4ee1",
+  "request_path": "tasks/requests/ORDER-CONTACT-PREFLIGHT-20261106.json",
+  "resource_locks": [
+    "PATH_SCOPE:cb0ab3d42b8fd943"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
