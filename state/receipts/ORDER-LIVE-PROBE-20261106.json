@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/order_live_probe_001/20261106.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "1ab4c4e612347d61681b3861b275def5b053d708b8eac2dc7c44895259dfabe2",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "42229992275",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ORDER-LIVE-PROBE-20261106",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}

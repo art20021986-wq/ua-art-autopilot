@@ -1,0 +1,124 @@
+{
+  "mode": "probe",
+  "public": {
+    "/podbor.html": {
+      "error": "HTTPError:HTTP Error 404: Not Found"
+    },
+    "/video/order/order-strings.json?v=20261106.2": {
+      "bytes": 15693,
+      "cache_control": "no-cache, must-revalidate",
+      "etag": null,
+      "expires": null,
+      "final_url": "https://www.uaart.com.ua/video/order/order-strings.json?v=20261106.2",
+      "last_modified": "Fri, 06 Nov 2026 11:30:29 GMT",
+      "markers": {
+        "\"thanks\":": true,
+        "[this.contact,['contact']]": false,
+        "data-label=\"reply_time\"": false,
+        "data-label=\"saved\"": false,
+        "data-label=\"thanks\"": false,
+        "form.requestSubmit()": false,
+        "id=\"contact-fields\"": false,
+        "order.js?v=20261106.1": false,
+        "order.js?v=20261106.2": false,
+        "persist,$('contact-fields')": false
+      },
+      "sha256": "6aebf2db0026f86e6c17272e29d35cc4c920c31e3e82f8f70287629c7509e287",
+      "status": 200,
+      "versions": []
+    },
+    "/video/order/order.js?v=20261106.2": {
+      "bytes": 17639,
+      "cache_control": "no-cache, must-revalidate",
+      "etag": null,
+      "expires": null,
+      "final_url": "https://www.uaart.com.ua/video/order/order.js?v=20261106.2",
+      "last_modified": "Fri, 06 Nov 2026 11:30:29 GMT",
+      "markers": {
+        "\"thanks\":": false,
+        "[this.contact,['contact']]": false,
+        "data-label=\"reply_time\"": false,
+        "data-label=\"saved\"": false,
+        "data-label=\"thanks\"": false,
+        "form.requestSubmit()": true,
+        "id=\"contact-fields\"": false,
+        "order.js?v=20261106.1": false,
+        "order.js?v=20261106.2": false,
+        "persist,$('contact-fields')": true
+      },
+      "sha256": "60b255043c39b1cd315e41adab314d751ea0ac4795e50953d7fdfead85bf8026",
+      "status": 200,
+      "versions": [
+        "./gallery.js?v=20261027.1",
+        "./order-state.js?v=20261025.3",
+        "./preferences-form.js?v=20261106.2",
+        "./preferences-state.js?v=20260927.10"
+      ]
+    },
+    "/video/order/preferences-form.js?v=20261106.2": {
+      "bytes": 16919,
+      "cache_control": "no-cache, must-revalidate",
+      "etag": null,
+      "expires": null,
+      "final_url": "https://www.uaart.com.ua/video/order/preferences-form.js?v=20261106.2",
+      "last_modified": "Fri, 06 Nov 2026 11:30:29 GMT",
+      "markers": {
+        "\"thanks\":": false,
+        "[this.contact,['contact']]": true,
+        "data-label=\"reply_time\"": false,
+        "data-label=\"saved\"": false,
+        "data-label=\"thanks\"": false,
+        "form.requestSubmit()": false,
+        "id=\"contact-fields\"": false,
+        "order.js?v=20261106.1": false,
+        "order.js?v=20261106.2": false,
+        "persist,$('contact-fields')": false
+      },
+      "sha256": "d1c13f7bbf5d5bd62f43420131db36a98a4c1c22bdefd69190a47cf92f5639e3",
+      "status": 200,
+      "versions": [
+        "./preferences-state.js?v=20260927.10",
+        "./search-picker.js?v=20261106.1"
+      ]
+    },
+    "/video/podbor.html": {
+      "bytes": 32188,
+      "cache_control": "no-cache, must-revalidate",
+      "etag": null,
+      "expires": null,
+      "final_url": "https://www.uaart.com.ua/video/podbor.html",
+      "last_modified": "Fri, 06 Nov 2026 11:30:29 GMT",
+      "markers": {
+        "\"thanks\":": false,
+        "[this.contact,['contact']]": false,
+        "data-label=\"reply_time\"": true,
+        "data-label=\"saved\"": false,
+        "data-label=\"thanks\"": true,
+        "form.requestSubmit()": false,
+        "id=\"contact-fields\"": true,
+        "order.js?v=20261106.1": false,
+        "order.js?v=20261106.2": true,
+        "persist,$('contact-fields')": false
+      },
+      "sha256": "410dd77ad61e6825d66fe267f8a557e60ba2651197b2df989918f27864490726",
+      "status": 200,
+      "versions": [
+        "order/attribution.js?v=20261030.1",
+        "order/finance-link.css?v=20261103.1",
+        "order/gallery.css?v=20261027.1",
+        "order/model-note.css?v=20261030.1",
+        "order/model-price.css?v=20261031.1",
+        "order/order.css?v=20261025.2",
+        "order/order.js?v=20261106.2",
+        "order/quick-lead.css?v=20261030.1",
+        "order/quick-lead.js?v=20261030.1",
+        "order/search-picker.css?v=20261106.1"
+      ]
+    }
+  },
+  "remote_write_count": 0,
+  "run_id": "42229992275",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "ORDER-LIVE-PROBE-20261106"
+}
