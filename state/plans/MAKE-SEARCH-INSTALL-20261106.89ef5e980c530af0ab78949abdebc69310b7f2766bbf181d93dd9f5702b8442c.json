@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/MAKE-SEARCH-INSTALL-20261106.89ef5e980c530af0ab78949abdebc69310b7f2766bbf181d93dd9f5702b8442c.json",
+  "autostart_ledger_sha256": "1176c8e9a654dbe664279fb232f32dcbf3a9232285243711d37771c0d40a058f",
+  "autostart_source_commit": "4ff32b54b4a350d5271676718a22f1da89cccf0a",
+  "created_at": "2026-11-06T02:58:32Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42153028662",
+    "task_id": "MAKE-SEARCH-INSTALL-20261106",
+    "task_sha256": "89ef5e980c530af0ab78949abdebc69310b7f2766bbf181d93dd9f5702b8442c"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-09005e8d08bd96ff-c5102e0bd09d70dd",
+  "request_path": "tasks/requests/MAKE-SEARCH-INSTALL-20261106.json",
+  "resource_locks": [
+    "PATH_SCOPE:09005e8d08bd96ff"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
