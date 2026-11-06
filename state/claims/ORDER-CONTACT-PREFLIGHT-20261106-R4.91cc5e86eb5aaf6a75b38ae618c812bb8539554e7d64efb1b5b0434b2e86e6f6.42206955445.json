@@ -7,21 +7,23 @@
   "created_at": "2026-11-06T11:01:56Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-06T11:01:56Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-06T11:07:14Z",
+  "heartbeat_at": "2026-11-06T11:07:14Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "42206955445",
     "task_id": "ORDER-CONTACT-PREFLIGHT-20261106-R4",
     "task_sha256": "91cc5e86eb5aaf6a75b38ae618c812bb8539554e7d64efb1b5b0434b2e86e6f6"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-cb0ab3d42b8fd943-9f41a206984f4ee1",
   "receipt_path": "state/receipts/ORDER-CONTACT-PREFLIGHT-20261106-R4.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "d9bdd1886c54bb2b9269a7f8a09dec7eed78e549c941b882e4c926913cc51158",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ORDER-CONTACT-PREFLIGHT-20261106-R4.json",
   "request_sha256": "91cc5e86eb5aaf6a75b38ae618c812bb8539554e7d64efb1b5b0434b2e86e6f6",
   "resource_locks": [
@@ -29,8 +31,34 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "1af178137376871c3c9a98eba6847ce84d016bdc",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92832321536,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.095
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-06T11:01:56Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "c5dd7146c0701ee60c9100a9502f17e908534ae6493ab964089bc3e3fa6a94aa",
+    "file_sha256": {
+      "cloud/order_contact_001/candidate_builder.py": "90cdbebe0dfff4b810c2cb914de2c407052a3c2490df5a62a1498b4caa7c9608",
+      "cloud/order_contact_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/order_contact_001/deployment_bootstrap.py": "6d96f5b4184885f8da1de2efcc76444e1b7590d8313bb89ecccb6a0a0e5750a3",
+      "cloud/order_contact_001/deployment_remote.py": "6a3c84b4490219daaf53ef8b736eb5737dbce808c490608f23c9e2fe69fb5b4b",
+      "cloud/order_contact_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/order_contact_001/deployment_transport.py": "bc80210c114a5f3c657ed48948b9abeb19c77ce8dba2bed7c68777c3449aa609",
+      "cloud/order_contact_001/edit_contact_form.py": "1427b60d1f4767d5061d17eb9c7d9d069def5ec246a8a5823c00a1180c9a7a3b",
+      "cloud/order_contact_001/edit_order_page.py": "2455c324dd7249057174c5f0da2b4c04f7fcac04062a7418338a10adfb03fcf9",
+      "cloud/order_contact_001/make_release.py": "41f1471c9ded4cbbc50572a1fbf8660f60c072165845a72560767183e1b890c6",
+      "cloud/order_contact_001/release_constants.py": "76754df51205b60d6f950e6f67dbf40d7978c97c26c68d32c5cf5657b51f6783",
+      "cloud/order_contact_001/test_deployment.py": "7db9a269060e7b07dc4fc06e866799c361ecbe6a4ef4259545206f012303c09f",
+      "cloud/order_contact_001/test_order_contact.py": "9b5d92f3e927041e9d1ed79da23ac22f7f6c82c556a528dfe9045e71dc1248c0"
+    }
+  },
+  "updated_at": "2026-11-06T11:07:14Z"
 }
