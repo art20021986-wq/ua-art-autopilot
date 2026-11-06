@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "457dc837a5e44736696bf56b8ce36f3663c31bbcb49c8a59d82fd8e1ef3173d1",
   "autostart_source_commit": "ab05ce7efcf6d088449221c64b4ac5a55da253b3",
   "created_at": "2026-11-06T14:42:20Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "48190b691735797fa83be9a9b63899431285c6e5b39b0a421d24bd946b01056c",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-06T14:42:20Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-06T14:43:50Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42236089088",
     "task_id": "LEAD-FOLDERS-INSTALL-20261106",
     "task_sha256": "0b1d68fe7cf113fb90131999924568e77427121790deda30d7541e7f5956e76a"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 317.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 263.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42236089088-0b1d68fe7cf113fb",
+  "production_transaction_path": "state/transactions/LEAD-FOLDERS-INSTALL-20261106.0b1d68fe7cf113fb90131999924568e77427121790deda30d7541e7f5956e76a.42236089088.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/LEAD-FOLDERS-INSTALL-20261106.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,48 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "4b686f1bf9719ca17d0dc7287d7ad07ae115b307",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 319.381,
+    "allowed": true,
+    "evidence_path": "state/storage/LEAD-FOLDERS-INSTALL-20261106.json",
+    "evidence_sha256": "baf228a43f34628a3f822e147f452363ef22fc8284dc05a50bb6395dbc3fff71",
+    "free_bytes": 23697456640,
+    "heavy": true,
+    "measured_at": "2026-11-06T14:38:28.293716+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 32.292981028571425
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-06T14:42:20Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "5fc5148bd39900870a5891e05f5fc415f02d42127f77b07db7c67722d809ff3f",
+    "file_sha256": {
+      "cloud/lead_folders_001/candidate_builder.py": "c8ad3a67a935d6c28eba254b704d3af7e6535a6d1028605de160d24f259d7262",
+      "cloud/lead_folders_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/lead_folders_001/deployment_bootstrap.py": "3396ab7c40ca2254e0e6121c9265df9fa790abf63b5d86eb7a853757bcffb4dd",
+      "cloud/lead_folders_001/deployment_remote.py": "582ab7135acb7fdee1dbc803a354a89bf9b6e3bae4a8c1dffd327b7522a8a29e",
+      "cloud/lead_folders_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/lead_folders_001/deployment_transport.py": "2d430c96c7173cc91f9ee30fb50bae43a230cf9234cfb5da11a04244f76269df",
+      "cloud/lead_folders_001/edit_bots.py": "13b06afbdca8940519f8dcd8ec23bd623bccd60f8d944915f92efd65f43df68a",
+      "cloud/lead_folders_001/make_release.py": "1b5e674d66cd1d5a1b27e9349c4645599c6c529cdf0ef0cb07c3790d8bc80fd3",
+      "cloud/lead_folders_001/release_constants.py": "77d371adf4b8c99e627fc9051504d75ceeed818c601b0ab94c8d54fb92806a58",
+      "cloud/lead_folders_001/test_deployment.py": "cb4b0088436299083770bd2db9ea1d6f5e02950b0ac9d82b725bfa23bb854be8",
+      "cloud/lead_folders_001/test_lead_desk_bot.py": "346d21e4d8c2d71052393c2208ebab523f7c22085efa79b40f736bb4f7f84f58",
+      "cloud/lead_folders_001/test_lead_folders.py": "ccf4d95b9aa00d4ffffc02f659355804e7b60dd1c3657b9ea412d97170bb7734",
+      "cloud/lead_folders_001/test_release.py": "f2ee8e959c231317d7fa14fd79f421e471a960ee71a5ef6a1f95e1b3a46816d0",
+      "cloud/lead_folders_001/ua_contract_files.py": "57f1d6b0681b6134ce17cc1455fcebf37fec41778f133766f0847e359e37060a",
+      "cloud/lead_folders_001/ua_crm_orders.py": "ecfa6a1ecf5d632eeaee27b97a80afc9833e8545d0b76a58046214634c75a389",
+      "cloud/lead_folders_001/ua_crm_orders_view.py": "3cf1e08853ac3543dcc363ef1a66962c96ddc69a45ce1fd2685387401a50f013",
+      "cloud/lead_folders_001/ua_lead_desk.py": "76fd10d11202e393bcf17b0bbce433bb99bcbb2121dc23faddd88c620e08743c",
+      "cloud/lead_folders_001/ua_lead_desk_store.py": "943a9cac09f51155419a9e9bc040e6c1cee4751f5eb648b108fb0d098bc89026",
+      "cloud/lead_folders_001/ua_lead_desk_view.py": "a570b098e74468ea8a6d0129a49a37420e168f9fd0e77431f0f028bb2558047d",
+      "cloud/lead_folders_001/ua_lead_folders.py": "4fa1146df200efbc7ca3d2cb59422168d88eceaf2284f1c6f2981b0a4750dc5b",
+      "cloud/lead_folders_001/ua_lead_sources.py": "c56398e8ba140dfd88ea9341e96b523deb3db66aa8bef1aa97d05fd21e4a22fa",
+      "cloud/lead_folders_001/ua_order_book.py": "06a3b4a5f2e20eedbf0254a1dfc5c7f59f03f4915fc83ac0dd98f562707f18cb"
+    }
+  },
+  "updated_at": "2026-11-06T14:43:50Z"
 }
