@@ -269,6 +269,17 @@ def report_r3(home=None):
     return {'status': 'PASS', 'old_pages': {p: visible(p) for p in OLD_PAGES}}
 
 
+# R4 (owner 2026-11-06: «now the diagnostics appeared?»): UA-0007 now — CRM diagnostics field lengths, its diag
+# folder files and what its diagnostics page shows.
+def report_r4(home=None):
+    global HOME
+    if home is not None:
+        HOME = home
+    rows = [r for r in (cars() or {'rows': []})['rows'] if r.get('auto_number') == 'UA-0007']
+    return {'status': 'PASS', 'crm': rows, 'diag_folder': (diag_folders() or {}).get('UA-0007'),
+            'page': visible('video/UA-0007-diag.html'), 'audit': audit_history('UA-0007')}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -282,7 +293,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r3()  # R3; report_r2() R2, report() R1
+        value = report_r4()  # R4; report_r3() R3, report_r2() R2, report() R1
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)

@@ -126,6 +126,22 @@ class RemoteTests(unittest.TestCase):
         self.assertNotIn('380 99', page['text'])
         self.assertIsNone(value['old_pages']['etalon_dizayna/UA-0007-diag.html'])
 
+    def test_r4_current_state(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'video/diag/UA-0007').mkdir(parents=True)
+            (home / 'video/diag/UA-0007/01.jpg').write_bytes(b'x' * 2000)
+            (home / 'video/UA-0007-diag.html').write_text("<img src='diag/UA-0007/01.jpg'>")
+            with sqlite3.connect(home / 'crm.db') as db:
+                db.execute('CREATE TABLE cars (id, auto_number, diag_text)')
+                db.execute("INSERT INTO cars VALUES (13, 'UA-0007', 'abc')")
+                db.execute('CREATE TABLE audit (id INTEGER PRIMARY KEY, action, entity_type, entity_id, field, '
+                           'old_value, new_value, created_at)')
+            value = remote.report_r4(home)
+        self.assertEqual(value['crm'][0]['diag_text_length'], 3)
+        self.assertEqual(value['diag_folder'][0]['name'], '01.jpg')
+        self.assertEqual(value['page']['media'], ['diag/UA-0007/01.jpg'])
+
 
 if __name__ == '__main__':
     unittest.main()
