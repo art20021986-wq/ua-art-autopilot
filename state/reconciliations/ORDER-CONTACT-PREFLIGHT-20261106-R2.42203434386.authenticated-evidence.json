@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "4012567599ad5f339e09f2d72dc0cbbbce1b8405210aa523d07b451c97a666b2",
+  "error": "TASK_IDENTITY: the package controller compared the exact preview name and refused the -R2 retry name",
+  "failed_step": "execute / standard / execute: controller context(), before any PythonAnywhere call",
+  "precedent": "state/reconciliations/CATALOG-TAG-FIX-PREFLIGHT-20261103.41719056816.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-06T10:59:55+00:00",
+  "remote_mode": "none (stopped before the server was contacted)",
+  "retry": "ORDER-CONTACT-PREFLIGHT-20261106-R4 with the controller fix (accepts -R<n>, tested); R3 was refused RESOURCE_BUSY by this blocked claim and created no claim",
+  "run_id": "42203434386",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "ORDER-CONTACT-PREFLIGHT-20261106-R2"
+}
