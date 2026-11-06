@@ -27,13 +27,15 @@ def context():
     environment = os.environ
     task = environment['UAART_TASK_ID']
     run_id = environment['UAART_RUN_ID']
-    if task not in (PREVIEW_TASK, INSTALL_TASK) or not re.fullmatch(r'[0-9]+', run_id):
+    # A retry keeps the base name with a -R<n> suffix (make_release.py SUFFIX).
+    base = re.sub(r'-R[0-9]+$', '', task)
+    if base not in (PREVIEW_TASK, INSTALL_TASK) or not re.fullmatch(r'[0-9]+', run_id):
         raise RuntimeError('TASK_IDENTITY')
     request_path = (ROOT/environment['UAART_REQUEST_PATH']).resolve()
     if not request_path.is_relative_to(ROOT) or sha(request_path.read_bytes()) != environment['UAART_REQUEST_SHA256']:
         raise RuntimeError('REQUEST_BINDING')
     request = json.loads(request_path.read_bytes())
-    production = task == INSTALL_TASK
+    production = base == INSTALL_TASK
     if request['task_id'] != task or request['production_required'] is not production:
         raise RuntimeError('REQUEST_SCOPE')
     if environment['UAART_TASK_CLASS'] != ('CRITICAL' if production else 'STANDARD'):
@@ -79,7 +81,7 @@ def run(operation=None):
     api = API(env['PYTHONANYWHERE_API_TOKEN'])
     run_id, task = env['UAART_RUN_ID'], env['UAART_TASK_ID']
     bundle = upload_package(api)
-    if task == PREVIEW_TASK:
+    if request['production_required'] is False:
         value = api.run('preview', run_id, bundle)
         accepted(value, 'preview', run_id)
         save(PACKAGE+'/deployment_plan.json', value['plan'])

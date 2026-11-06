@@ -266,5 +266,37 @@ class PublicVerificationTests(unittest.TestCase):
                 controller.public_verify(None,'a'*64,'b'*64,{})
 
 
+
+
+class TaskIdentityTests(unittest.TestCase):
+    """A retry keeps the base task name with -R<n>; other names are refused before any request."""
+
+    def env(self, root, task, production):
+        request = root/'tasks/requests'/(task+'.json')
+        request.parent.mkdir(parents=True, exist_ok=True)
+        request.write_text(json.dumps({'task_id': task, 'production_required': production}))
+        return {'UAART_TASK_ID': task, 'UAART_RUN_ID': '7', 'UAART_REQUEST_PATH': 'tasks/requests/%s.json' % task,
+                'UAART_REQUEST_SHA256': controller.sha(request.read_bytes()),
+                'UAART_TASK_CLASS': 'CRITICAL' if production else 'STANDARD'}
+
+    def check(self, task, production):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            with patch.object(controller, 'ROOT', root), patch.dict(os.environ, self.env(root, task, production), clear=False):
+                return controller.context()
+
+    def test_retry_suffix_is_accepted(self):
+        for task, production in ((controller.PREVIEW_TASK+'-R2', False), (controller.INSTALL_TASK+'-R3', True)):
+            try:
+                self.check(task, production)
+            except RuntimeError as error:
+                self.assertNotEqual(str(error), 'TASK_IDENTITY')
+
+    def test_other_names_are_refused(self):
+        for task in ('OTHER-TASK', controller.PREVIEW_TASK+'-X2', controller.PREVIEW_TASK+'R2'):
+            with self.assertRaisesRegex(RuntimeError, 'TASK_IDENTITY'):
+                self.check(task, False)
+
+
 if __name__ == '__main__':
     unittest.main()
