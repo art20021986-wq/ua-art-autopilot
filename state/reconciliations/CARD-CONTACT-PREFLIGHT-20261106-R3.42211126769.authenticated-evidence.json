@@ -1,0 +1,15 @@
+{
+  "claim_before_sha256": "41cb8c8d6549c85c379d562d1cd66a643c4a1a14e6740f81deae7018c234115c",
+  "error": "SMOKE_RESULT: 22/22 cards one button, stable, contract unchanged; uk_ok 20/22 — UA-0019, UA-0020 have no Ukrainian version already today (Russian-only CRM description), the check required all 22",
+  "failed_step": "execute / standard / execute: remote preview smoke (read-only, in memory)",
+  "owner_statement": "Разрешаю закрыть прогон R3",
+  "precedent": "state/reconciliations/ORDER-CONTACT-PREFLIGHT-20261106-R2.42203434386.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-06T13:58:53+00:00",
+  "remote_mode": "preview (read-only; nothing written)",
+  "retry": "CARD-CONTACT-PREFLIGHT-20261106-R5 with the Ukrainian check relative to today; R4 was refused RESOURCE_BUSY by this blocked claim and created no claim",
+  "run_id": "42211126769",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "CARD-CONTACT-PREFLIGHT-20261106-R3"
+}
