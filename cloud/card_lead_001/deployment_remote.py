@@ -143,7 +143,7 @@ video = Path(root + '/video')
 script = (video/'ua-site-languages.js').read_text(encoding='utf-8')
 words = ua_card_lang.dictionary(script)
 cards = sorted(p for p in video.glob('UA-*.html') if ua_card_lang.CARD.fullmatch(p.name))
-done, stable, contract_same, uk_ok, missing, problems = 0, 0, 0, 0, {}, {}
+done, stable, contract_same, uk_ok, uk_before, missing, problems = 0, 0, 0, 0, 0, {}, {}
 for path in cards:
     code = path.name[:-5]
     live = path.read_text(encoding='utf-8')
@@ -165,16 +165,21 @@ for path in cards:
     contract_same += after_errors <= before
     if not after_errors <= before:
         problems[code + ':contract'] = sorted(after_errors - before)[:3]
+    # A card whose Ukrainian version cannot be derived today (e.g. a Russian-only CRM description) stays so;
+    # the button must not add an untranslated phrase.
+    before_versions, before_lost = ua_card_lang.versions(ua_seo_metadata.normalize(live, str(path)), path.name, words, '0' * 64)
+    uk_before += bool(before_versions)
     page = ua_seo_metadata.normalize(page, str(path))
     versions, lost = ua_card_lang.versions(page, path.name, words, '0' * 64)
     if versions and "Зв'язатися з менеджером</a>" in versions['ua/' + path.name] and 'data-quick-lead-car="' + code in versions['ua/' + path.name]:
         uk_ok += 1
     elif lost:
-        missing[path.name] = lost[:3]
+        new = sorted(set(lost) - set(before_lost or []))
+        missing[path.name] = new[:3] if new else 'pre-existing'
 for name in ('stranica.py', 'master_card.py', 'publikaciya.py'):
     compile(Path(after + '/' + name).read_bytes(), name, 'exec')
 print(json.dumps({'cards': len(cards), 'one_button': done, 'stable': stable, 'contract_same': contract_same,
-                  'uk_ok': uk_ok, 'untranslated': missing, 'problems': problems}, ensure_ascii=False))
+                  'uk_ok': uk_ok, 'uk_before': uk_before, 'untranslated': missing, 'problems': problems}, ensure_ascii=False))
 """
 
 
@@ -184,7 +189,8 @@ def smoke(directory):
     if result.returncode != 0:
         raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
-    if not value['cards'] or any(value[key] != value['cards'] for key in ('one_button', 'stable', 'contract_same', 'uk_ok')):
+    if (not value['cards'] or any(value[key] != value['cards'] for key in ('one_button', 'stable', 'contract_same'))
+            or value['uk_ok'] < value['uk_before'] or any(v != 'pre-existing' for v in value['untranslated'].values())):
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:300])
     return value
 
