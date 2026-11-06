@@ -15,10 +15,8 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('ua_seo_metadata.py', 'master_card.py', 'ua_card_lang.py', 'ua_card_finance.py', 'stranica.py',
-        'ua_order/contract.py', 'ua_order/web.py', 'ua_order/runtime.py', 'ua_order/bindings.py',
-        'video/order/quick-lead.js', 'video/order/quick-lead.css', 'video/UA-0018.html', 'video/ua/UA-0018.html',
-        'video/ru/UA-0018.html', 'video/ua-site-languages.js', 'video/podbor.html')
+FULL = ('ua_additional_spec.py', 'ua_spec_permanent.py', 'publikaciya.py', 'vitrina.py', 'ua_finance_partners.py',
+        'video/UA-0007.html', 'video/UA-0018-diag.html')
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -62,7 +60,7 @@ def report(home=None):
         files[name] = {'sha256': hashlib.sha256(raw).hexdigest(),
                        'lines': [{'line': n + 1, 'text': sanitized_line(l)} for n, l in enumerate(lines) if pattern.search(l)][:200]}
     hits = []
-    marker = re.compile(r"kn_kupit|dejstvie|id=.vopros|vopros_|kupit_|bron_|otpravit_zayavku")
+    marker = re.compile(r"^\s*(?:import|from)\s+(?:yadro|master_card|stranica|vitrina|publikaciya|ua_additional_spec)\b|import_module\(['\"](?:yadro|master_card|stranica|vitrina)")
     for path in sorted(HOME.glob('*.py')):
         if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_SOURCE:
             continue

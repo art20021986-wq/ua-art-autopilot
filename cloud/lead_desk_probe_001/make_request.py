@@ -24,9 +24,8 @@ def request(day):
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
         'description': 'Read-only probe before one «Связаться с менеджером» enquiry on car cards (LEAD-FOLDERS-001, owner 2026-11-06). '
                        'Bounded run in the existing private inbox: upload this package, run source_remote.py once in a temporary '
-                       'always-on task (removed after its receipt; never the CRM bot) which reads the card publication modules, '
-                       'the order package web/contract modules, the quick enquiry assets and one card page in ru/uk (sanitized), '
-                       'and lists lines of top-level server code that mention the card buttons. Counts of crm.db as before. '
+                       'always-on task (removed after its receipt; never the CRM bot) which reads ua_additional_spec, ua_spec_permanent, publikaciya, vitrina, ua_finance_partners, '
+                       'two card pages (sanitized) and lists import lines of the card generators in top-level server code. Counts of crm.db as before. '
                        'No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
