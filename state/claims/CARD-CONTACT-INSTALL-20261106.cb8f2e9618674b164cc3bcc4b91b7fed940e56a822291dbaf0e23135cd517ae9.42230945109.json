@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "ed6917d55fe1ba3b79d3d7a14adb2a79d161cb5833354fed32bcc54791aa6ca0",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-06T14:12:44Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-06T14:19:18Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42230945109",
     "task_id": "CARD-CONTACT-INSTALL-20261106",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42230945109-cb8f2e9618674b16",
   "production_transaction_path": "state/transactions/CARD-CONTACT-INSTALL-20261106.cb8f2e9618674b164cc3bcc4b91b7fed940e56a822291dbaf0e23135cd517ae9.42230945109.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CARD-CONTACT-INSTALL-20261106.json",
   "receipt_validation_status": "PENDING",
@@ -94,5 +94,5 @@
       "cloud/card_lead_001/ua_card_contact.py": "590d6001c8fb4ad3b103978e9ab0e3cc0cf3a52d43e3896030d5e447daf36b38"
     }
   },
-  "updated_at": "2026-11-06T14:12:44Z"
+  "updated_at": "2026-11-06T14:19:18Z"
 }
