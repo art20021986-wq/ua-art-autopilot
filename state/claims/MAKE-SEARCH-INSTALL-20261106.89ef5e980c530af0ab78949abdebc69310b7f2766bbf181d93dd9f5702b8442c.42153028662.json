@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "1176c8e9a654dbe664279fb232f32dcbf3a9232285243711d37771c0d40a058f",
   "autostart_source_commit": "4ff32b54b4a350d5271676718a22f1da89cccf0a",
   "created_at": "2026-11-06T02:58:32Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "6f3ce95185efe9d98bcd12c5dd99497f945e74e8fe59d4a659df8ffdb478aef7",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-06T02:58:32Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-06T03:00:14Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42153028662",
     "task_id": "MAKE-SEARCH-INSTALL-20261106",
     "task_sha256": "89ef5e980c530af0ab78949abdebc69310b7f2766bbf181d93dd9f5702b8442c"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 345.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 296.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42153028662-89ef5e980c530af0",
+  "production_transaction_path": "state/transactions/MAKE-SEARCH-INSTALL-20261106.89ef5e980c530af0ab78949abdebc69310b7f2766bbf181d93dd9f5702b8442c.42153028662.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-09005e8d08bd96ff-c5102e0bd09d70dd",
   "receipt_path": "state/receipts/MAKE-SEARCH-INSTALL-20261106.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,39 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "4111101b29fcb8b89bda278a7a8c62d9099f78c1",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 1084.538,
+    "allowed": true,
+    "evidence_path": "state/storage/MAKE-SEARCH-INSTALL-20261106.json",
+    "evidence_sha256": "6e2c605eeea0beb8dad2172b194127bc4eab5beb32e4739f992faaff38bfc4c9",
+    "free_bytes": 23739555328,
+    "heavy": true,
+    "measured_at": "2026-11-06T02:42:07.077509+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 32.17269906285714
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-06T02:58:32Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "be76c0f23d0205705996cf5359ebfcc30b120b2c47b1a18c8069a92954f4d9fe",
+    "file_sha256": {
+      "cloud/make_search_001/candidate_builder.py": "f9eab8617a9469fef5b00aa9d3b3bc8470bbe5e4c518e94cd7ba9620244c16a6",
+      "cloud/make_search_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/make_search_001/deployment_bootstrap.py": "6afa26be79c30fb10f77d44617defc9114ac5d5cebd0cb6ef58ac738c66d8d23",
+      "cloud/make_search_001/deployment_remote.py": "dc5047706660d221e8fe84aed7eec47bf1969acc01548d57bd42c9c5c4ca105d",
+      "cloud/make_search_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/make_search_001/deployment_transport.py": "12d9478996a3db27b135e6cb87c986d43a40e9fd3bdd1dc16dbae10de46edd9e",
+      "cloud/make_search_001/edit_order_page.py": "be08fb69c370c08c31558eae66d2df51a0bd1e627fbeb14604f9226e69a6e94b",
+      "cloud/make_search_001/edit_preferences_form.py": "e424d92a416a88e147c85d16b7b891d861854573f838bde28e77b4fd95e7cffe",
+      "cloud/make_search_001/make_release.py": "3593aeecc4221e04ea6bb7e984c381085b3cf19ff639ada57f511368bad08060",
+      "cloud/make_search_001/picker_assets.py": "367bccf4a8cf26b20e660f849b536660e5a5862ea7b03687cde3b202a7b2fdff",
+      "cloud/make_search_001/release_constants.py": "402c5f979d26f2d6bc397af02a3261e812cd750b2051ba3b3dc0b4ddea0d6958",
+      "cloud/make_search_001/test_deployment.py": "6b134de0db4348eb665b29e72b8151d93d3f33321dcc36a3ccd4b0747b20393b",
+      "cloud/make_search_001/test_make_search.py": "fcab2fad80d90de89bd30a4ae84c5dbae79ac168aeb7e1d3c5499d16b1092b9b"
+    }
+  },
+  "updated_at": "2026-11-06T03:00:14Z"
 }
