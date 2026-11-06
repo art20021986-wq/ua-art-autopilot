@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "6f3ce95185efe9d98bcd12c5dd99497f945e74e8fe59d4a659df8ffdb478aef7",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-06T03:00:14Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-06T03:05:13Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42153028662",
     "task_id": "MAKE-SEARCH-INSTALL-20261106",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42153028662-89ef5e980c530af0",
   "production_transaction_path": "state/transactions/MAKE-SEARCH-INSTALL-20261106.89ef5e980c530af0ab78949abdebc69310b7f2766bbf181d93dd9f5702b8442c.42153028662.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-09005e8d08bd96ff-c5102e0bd09d70dd",
   "receipt_path": "state/receipts/MAKE-SEARCH-INSTALL-20261106.json",
   "receipt_validation_status": "PENDING",
@@ -88,5 +88,5 @@
       "cloud/make_search_001/test_make_search.py": "fcab2fad80d90de89bd30a4ae84c5dbae79ac168aeb7e1d3c5499d16b1092b9b"
     }
   },
-  "updated_at": "2026-11-06T03:00:14Z"
+  "updated_at": "2026-11-06T03:05:13Z"
 }
