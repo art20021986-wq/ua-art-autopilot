@@ -7,21 +7,23 @@
   "created_at": "2026-11-06T14:01:11Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-06T14:01:11Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-06T14:04:53Z",
+  "heartbeat_at": "2026-11-06T14:04:53Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "42229983618",
     "task_id": "CARD-CONTACT-PREFLIGHT-20261106-R5",
     "task_sha256": "2ec5bff17ba9870ce342627038fd572e90781e5c4f5f3afc167eeb00c0ae25bf"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-4f1c602b5efecf4a-bd687dffecebd348",
   "receipt_path": "state/receipts/CARD-CONTACT-PREFLIGHT-20261106-R5.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "ae407069457102db15de78de4b594fe589dbb44a5d12d28acb3d940e7b3ddd27",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CARD-CONTACT-PREFLIGHT-20261106-R5.json",
   "request_sha256": "2ec5bff17ba9870ce342627038fd572e90781e5c4f5f3afc167eeb00c0ae25bf",
   "resource_locks": [
@@ -29,8 +31,41 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "89549df635de53262ff1a867b5b6d6fb71cf340b",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92831535104,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.095
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-06T14:01:11Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "f8cf4ea2593ad9a74d7cf5a5534ac0d52e08bb0f25e8e2264eb2dd83bf6bfd81",
+    "file_sha256": {
+      "cloud/card_lead_001/candidate_builder.py": "e93401f2b1d799abcfacc68a93f6eb4899f29d18100e0d7553e7f33c886265ff",
+      "cloud/card_lead_001/card_lead.py": "afb1a9b3d3c3d9866d82e9dfe558f0daa09e21fbbd4a4b19f065c28976f42e71",
+      "cloud/card_lead_001/card_lead_assets.py": "b1154dd08cc582d51eacdf296eaf404f06eff73afbb99119c3e87a01b59120dc",
+      "cloud/card_lead_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/card_lead_001/deployment_bootstrap.py": "9055a188b5199693add16022ef11e4ca97d1c38048521e2eed93e47489857554",
+      "cloud/card_lead_001/deployment_remote.py": "137bf5b3b929b39ad2d312bdfb3d08c771c771f2346685e62e3efa6d7f8ea62f",
+      "cloud/card_lead_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/card_lead_001/deployment_transport.py": "82bd6e09f73a9588ace37db4713aa012fd6dec84cd22f168dc4c67704a3f1775",
+      "cloud/card_lead_001/edit_generators.py": "00493f26f8a6007115c682e1b743a5f86874a1002a87cc2798b0590ef1809027",
+      "cloud/card_lead_001/edit_guards.py": "0faf0e45e9e39db13e64f7b16a908c2dd0da7d445a95c574f2e3132ca9bfe893",
+      "cloud/card_lead_001/edit_metadata.py": "000e1ef5b276b5fd5717149d8e7c963e8c0cefe5e369ad5d9e9844441df85177",
+      "cloud/card_lead_001/edit_order.py": "b4c16c549f143c291d6df995a79eb246c2d9d2d838a785abba893401af37af10",
+      "cloud/card_lead_001/make_release.py": "509245e36ac3974db248ef5bd3f014cdf83a1b6424b06dc5921c1a40017972f2",
+      "cloud/card_lead_001/release_constants.py": "493f2a470826662f18ed34e6b0d7ef3b6b471efd8d5efc07497f36e4f64e4bb8",
+      "cloud/card_lead_001/test_card_contact.py": "e89e169a92737f2d61bb3cceaf37074a2d131d8eaa4a96d0d07137b4dee3de5c",
+      "cloud/card_lead_001/test_card_lead.py": "f948f86437e2e3d841765deb5f189f962cf2db928060c13c869b493849674bcb",
+      "cloud/card_lead_001/test_deployment.py": "c35a71edf41577eae5b20db2d7e18a08b601e684ae25deafddf5459bdb229dbe",
+      "cloud/card_lead_001/test_release.py": "67aed8854fc580e7f7c749ea94791010cdd72818fa717e85e54e6f7f7715a2f9",
+      "cloud/card_lead_001/ua_card_contact.py": "590d6001c8fb4ad3b103978e9ab0e3cc0cf3a52d43e3896030d5e447daf36b38"
+    }
+  },
+  "updated_at": "2026-11-06T14:04:53Z"
 }
