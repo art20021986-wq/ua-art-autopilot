@@ -15,10 +15,10 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('client_ui.py', 'visits.py', 'cars_ui.py', 'db.py', 'ua_menu_extra.py', 'ua_finance_crm.py', 'ua_site_leads.py',
-        'ua_lead_desk.py', 'ua_lead_desk_view.py', 'ua_lead_desk_store.py', 'ua_order/host.py', 'ua_order/telegram.py',
-        'ua_order/crm.py', 'ua_order/notifications.py', 'ua_order/preference_summary.py', 'ua_order/catalog.py',
-        'ua_order/quick.py', 'ua_order/attribution.py', 'ua_order/catalog.json')
+FULL = ('ua_seo_metadata.py', 'master_card.py', 'ua_card_lang.py', 'ua_card_finance.py', 'stranica.py',
+        'ua_order/contract.py', 'ua_order/web.py', 'ua_order/runtime.py', 'ua_order/bindings.py',
+        'video/order/quick-lead.js', 'video/order/quick-lead.css', 'video/UA-0018.html', 'video/ua/UA-0018.html',
+        'video/ru/UA-0018.html', 'video/ua-site-languages.js', 'video/podbor.html')
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -61,6 +61,15 @@ def report(home=None):
         lines = raw.decode('utf-8', 'replace').splitlines()
         files[name] = {'sha256': hashlib.sha256(raw).hexdigest(),
                        'lines': [{'line': n + 1, 'text': sanitized_line(l)} for n, l in enumerate(lines) if pattern.search(l)][:200]}
+    hits = []
+    marker = re.compile(r"kn_kupit|dejstvie|id=.vopros|vopros_|kupit_|bron_|otpravit_zayavku")
+    for path in sorted(HOME.glob('*.py')):
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_SOURCE:
+            continue
+        for n, line in enumerate(path.read_text(encoding='utf-8', errors='replace').splitlines()):
+            if marker.search(line) and len(hits) < 400:
+                hits.append({'file': path.name, 'line': n + 1, 'text': sanitized_line(line)[:300]})
+    files['_card_button_hits'] = {'sha256': '', 'source': json.dumps(hits, ensure_ascii=False, indent=0)}
     try:
         import sys
         from zoneinfo import ZoneInfo

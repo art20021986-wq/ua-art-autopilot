@@ -67,13 +67,15 @@ class RemoteTests(unittest.TestCase):
             (home / 'video/index.html').write_text("TOKEN = 'abc'\nasync def clients_screen():\n    phone = '+380 99 222 20 02'\n"
                                              "x = 'https://evil.example/p'\n")
             (home / 'ua_order').mkdir()
-            (home / 'client_ui.py').write_text("TOKEN = 'abc'\nx = 'https://evil.example/p'\n")
+            (home / 'stranica.py').write_text("TOKEN = 'abc'\nx = 'https://evil.example/p'\n")
             value = remote.report(home)
-        guard = value['files']['client_ui.py']['source']
+        guard = value['files']['stranica.py']['source']
         self.assertIn('[REDACTED]', guard)
         self.assertIn('[URL]', guard)
-        self.assertIsNone(value['files']['cars_ui.py'])
+        self.assertIsNone(value['files']['master_card.py'])
         self.assertIsNone(value['lead_desk'])
+        hits = json.loads(value['files']['_card_button_hits']['source'])
+        self.assertEqual(hits, [])
         self.assertEqual(value['zone_kyiv'], 'OK')
 
     def test_counts_only_no_client_rows(self):
