@@ -1,6 +1,7 @@
 """Build the CARD-CONTACT candidate from the exact installed sources (LEAD-FOLDERS-001).
 
-Card generators: the stage primary action becomes the one «Связаться с менеджером» button (ua_card_contact);
+Card generators and publication checks: the stage primary action becomes the one «Связаться с менеджером» button
+(ua_card_contact);
 order package: the card enquiry schema (card_lead) and its hand-offs; the shared dialog script learns the card
 opener; ua_seo_metadata: a new revision so every card is republished once.
 """
@@ -9,6 +10,7 @@ from pathlib import Path
 
 import card_lead_assets
 import edit_generators
+import edit_guards
 import edit_metadata
 import edit_order
 
@@ -20,6 +22,8 @@ SOURCE_SHA256 = {
     'ua_order/contract.py': '64edc324a9ee3431af348e63474a5ff6242130886480ffa3df5fcf09a62d33b2',
     'ua_order/crm.py': '60f60431c6cf8a5b974abb091a4f747850dc4473c5f70cc4e1d9b685a4baeffb',
     'video/order/quick-lead.js': '1fe607494b5f36e8d28aba2024e5988758dd083309a301a2a8371ccfd627ee1d',
+    'ua_additional_spec.py': '855f99606f449918dbf3608d382a735b5b0083c244a7353cda78ef45a7a2a617',
+    'publikaciya.py': '1771351a32f33f02a8bd6dd51f58f87525e1f8243f0dd3441f4c3e52dfa75ef5',
 }
 SOURCE_FILES = tuple(SOURCE_SHA256)
 # Installed modules the candidate relies on unchanged.
@@ -39,6 +43,7 @@ def build(source, dependencies):
         if value is None or hashlib.sha256(value).hexdigest() != digest:
             raise ValueError('INPUT_HASH:' + name)
     result = {name: edit_generators.build(name, source[name]) for name in edit_generators.NAMES}
+    result.update({name: edit_guards.build(name, source[name]) for name in edit_guards.EDITS})
     result.update({name: edit_order.build(name, source[name]) for name in edit_order.EDITS})
     result[edit_metadata.NAME] = edit_metadata.build(source[edit_metadata.NAME])
     result['video/order/quick-lead.js'] = card_lead_assets.JS.encode('utf-8')

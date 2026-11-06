@@ -25,13 +25,13 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'card_lead.py', 'card_lead_assets.py', 'deployment_backup.py',
                                 'deployment_bootstrap.py', 'deployment_remote.py', 'deployment_rollback.py',
-                                'deployment_transport.py', 'edit_generators.py', 'edit_metadata.py', 'edit_order.py',
+                                'deployment_transport.py', 'edit_generators.py', 'edit_guards.py', 'edit_metadata.py', 'edit_order.py',
                                 'make_release.py', 'release_constants.py', 'ua_card_contact.py')]
 TESTS = [P + n for n in ('test_card_contact.py', 'test_card_lead.py', 'test_deployment.py', 'test_release.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'lead_bot.py',
-             'publication_fence.py', 'publikaciya.py', 'run_all.py', 'site_ge_inject.py',
-             'start_safe.py', 'team_bot.py', 'ua_additional_spec.py', 'ua_google_sitemap.py', 'ua_indexnow.py',
+             'publication_fence.py', 'run_all.py', 'site_ge_inject.py',
+             'start_safe.py', 'team_bot.py', 'ua_google_sitemap.py', 'ua_indexnow.py',
              'ua_public_freshness.py', 'ua_seo_catalog.py', 'ua_seo_order_models.py',
              'ua_seo_schema.py', 'ua_seo_sitemap.py', 'ua_site_counters.py']
 

@@ -100,7 +100,7 @@ def prepare(directory):
         'start_safe.py','run_all.py','team_bot.py','lead_bot.py','db.py',
         'publication_fence.py','ua_public_freshness.py',
         'ua_site_counters.py','catalog_design_guard.py','cars_schema.py',
-        'publish_transaction_guard.py','ua_additional_spec.py','ua_spec_permanent.py',
+        'publish_transaction_guard.py','ua_spec_permanent.py',
         'ua_seo_sitemap.py','ua_seo_catalog.py',
         'ua_order/preference_summary.py','ua_order/storage.py',
         'ua_crm_public_sync.py','ua_google_tag.py','cars_ui.py','ua_finance_partners.py','ua_card_lang_job.py',
@@ -130,8 +130,8 @@ def prepare(directory):
 # server root. For every published card page: the generators' new primary-action step (one button, then finish)
 # applied to the live page gives exactly one «Связаться с менеджером» button and one dialog, a second pass changes
 # nothing, the card publication contract (ua_additional_spec) has no new error, and the Ukrainian version is derived
-# with the site's live translations with the button's Ukrainian text. The candidate generators are only compiled
-# (importing them would touch the CRM). Nothing is written.
+# with the site's live translations with the button's Ukrainian text. The candidate generators and publisher are only
+# compiled (importing them would touch the CRM); the candidate contract module is imported (it reads the CRM only). Nothing is written.
 SMOKE = r"""
 import json, re, sys
 after, root = sys.argv[1], sys.argv[2]
@@ -171,7 +171,7 @@ for path in cards:
         uk_ok += 1
     elif lost:
         missing[path.name] = lost[:3]
-for name in ('stranica.py', 'master_card.py'):
+for name in ('stranica.py', 'master_card.py', 'publikaciya.py'):
     compile(Path(after + '/' + name).read_bytes(), name, 'exec')
 print(json.dumps({'cards': len(cards), 'one_button': done, 'stable': stable, 'contract_same': contract_same,
                   'uk_ok': uk_ok, 'untranslated': missing, 'problems': problems}, ensure_ascii=False))

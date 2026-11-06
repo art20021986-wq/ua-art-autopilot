@@ -13,21 +13,20 @@ sys.path.insert(0, str(HERE))
 import candidate_builder  # noqa: E402
 import card_lead_assets  # noqa: E402
 import edit_generators  # noqa: E402
+import edit_guards  # noqa: E402
 import edit_metadata  # noqa: E402
 
 FILES = {'stranica.py': 'stranica.txt', 'master_card.py': 'master_card.txt', 'ua_seo_metadata.py': 'ua_seo_metadata.txt',
          'ua_order/contract.py': 'ua_order/contract.py', 'ua_order/crm.py': 'ua_order/crm.py',
-         'video/order/quick-lead.js': 'quick-lead.js'}
+         'video/order/quick-lead.js': 'quick-lead.js', 'ua_additional_spec.py': 'ua_additional_spec.txt',
+         'publikaciya.py': 'publikaciya.txt'}
 
 
-def stubbed(text):
-    """The probe replaced credential-like lines with [REDACTED]; compile them as `pass` at their indentation."""
-    lines = text.split('\n')
-    for index, line in enumerate(lines):
-        if line.strip() == '[REDACTED]':
-            following = next(item for item in lines[index + 1:] if item.strip())
-            lines[index] = following[:len(following) - len(following.lstrip())] + 'pass'
-    return '\n'.join(lines)
+def compiles(text, name):
+    """Compile a candidate file. The probe replaced credential-like lines of the fixtures with [REDACTED]; those
+    files are compiled on the server by the preview (prepare compiles every candidate module), here only the rest."""
+    if '[REDACTED]' not in text:
+        compile(text, name, 'exec')
 
 
 class CandidateTests(unittest.TestCase):
@@ -42,7 +41,7 @@ class CandidateTests(unittest.TestCase):
         self.assertEqual(sorted(result), sorted(list(FILES) + ['ua_card_contact.py', 'ua_order/card_lead.py']))
         for name, value in result.items():
             if name.endswith('.py'):
-                compile(stubbed(value.decode()), name, 'exec')
+                compiles(value.decode(), name)
         self.assertEqual(result['video/order/quick-lead.js'], card_lead_assets.JS.encode())
         self.assertIn("SEO_REVISION = 'CARD-CONTACT-001'", result['ua_seo_metadata.py'].decode())
 
@@ -58,6 +57,15 @@ class CandidateTests(unittest.TestCase):
             # The stage and the bot address of the action stay as they were.
             self.assertIn('action = "kupit" if stage == 4 else "bron"', text)
             self.assertIn('if ("start=%s_%s" % (expected_action, kod)) not in node:', text)
+
+    def test_checks_expect_the_button(self):
+        result = self.build()
+        for name in edit_guards.EDITS:
+            text = result[name].decode()
+            self.assertNotIn('"Купить" if', text)
+            self.assertEqual(text.count("ua_card_contact.LABEL['ru']"), 1)
+            with self.assertRaises(ValueError):
+                edit_guards.build(name, result[name])
 
     def test_edits_refused_twice(self):
         result = self.build()
