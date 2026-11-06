@@ -67,14 +67,30 @@ class RemoteTests(unittest.TestCase):
             (home / 'video/index.html').write_text("TOKEN = 'abc'\nasync def clients_screen():\n    phone = '+380 99 222 20 02'\n"
                                              "x = 'https://evil.example/p'\n")
             (home / 'ua_order').mkdir()
-            (home / 'ua_order/preferences.json').write_text("TOKEN = 'abc'\nx = 'https://evil.example/p'\n")
+            (home / 'client_ui.py').write_text("TOKEN = 'abc'\nx = 'https://evil.example/p'\n")
             value = remote.report(home)
-        guard = value['files']['ua_order/preferences.json']['source']
+        guard = value['files']['client_ui.py']['source']
         self.assertIn('[REDACTED]', guard)
         self.assertIn('[URL]', guard)
-        self.assertIsNone(value['files']['video/podbor.html'])
+        self.assertIsNone(value['files']['cars_ui.py'])
         self.assertIsNone(value['lead_desk'])
         self.assertEqual(value['zone_kyiv'], 'OK')
+
+    def test_counts_only_no_client_rows(self):
+        import sqlite3
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            with sqlite3.connect(home / 'crm.db') as c:
+                c.execute('CREATE TABLE clients (name, phone, source, stage, created_at)')
+                c.execute("INSERT INTO clients VALUES ('Ivan', '+380992222002', 'Instagram', 'new', '2026-11-06T10:00')")
+                c.execute('CREATE TABLE lead_desk_meta (key, value)')
+                c.execute("INSERT INTO lead_desk_meta VALUES ('track_from', '1')")
+            value = remote.report(home)
+        dumped = json.dumps(value['lead_desk'])
+        self.assertNotIn('Ivan', dumped)
+        self.assertNotIn('380992222002', dumped)
+        self.assertEqual(value['lead_desk']['aggregates']['clients_by_source'], [['Instagram', 1]])
+        self.assertEqual(value['lead_desk']['aggregates']['lead_desk_by_status'], 'OperationalError')
 
 
 if __name__ == '__main__':

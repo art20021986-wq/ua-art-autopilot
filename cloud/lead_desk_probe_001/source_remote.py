@@ -15,8 +15,10 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('video/order/preferences-form.js', 'video/order/preferences-state.js', 'video/order/order.css',
-        'ua_order/preferences.json', 'video/podbor.html')
+FULL = ('client_ui.py', 'visits.py', 'cars_ui.py', 'db.py', 'ua_menu_extra.py', 'ua_finance_crm.py', 'ua_site_leads.py',
+        'ua_lead_desk.py', 'ua_lead_desk_view.py', 'ua_lead_desk_store.py', 'ua_order/host.py', 'ua_order/telegram.py',
+        'ua_order/crm.py', 'ua_order/notifications.py', 'ua_order/preference_summary.py', 'ua_order/catalog.py',
+        'ua_order/quick.py', 'ua_order/attribution.py', 'ua_order/catalog.json')
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -77,7 +79,20 @@ def report(home=None):
                 "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'lead_desk%'"))
             track = connection.execute("SELECT value FROM lead_desk_meta WHERE key='track_from'").fetchone() \
                 if 'lead_desk_meta' in tables else None
-        desk = {'tables': tables, 'track_from': track[0] if track else None}
+            # LEAD-FOLDERS (owner 2026-11-06): counts only, no names, phones or ids of clients.
+            def counts(sql):
+                try:
+                    return [list(r) for r in connection.execute(sql)]
+                except sqlite3.Error as error:
+                    return type(error).__name__
+            aggregates = {
+                'clients_by_source': counts("SELECT substr(coalesce(source,''),1,40), count(*) FROM clients GROUP BY 1"),
+                'clients_by_stage': counts("SELECT coalesce(stage,''), count(*) FROM clients GROUP BY 1"),
+                'clients_by_day': counts("SELECT substr(created_at,1,10), count(*) FROM clients GROUP BY 1 ORDER BY 1 DESC LIMIT 15"),
+                'lead_desk_by_status': counts("SELECT status, count(*) FROM lead_desk GROUP BY 1"),
+                'tables': counts("SELECT name FROM sqlite_master WHERE type='table' ORDER BY 1"),
+            }
+        desk = {'tables': tables, 'track_from': track[0] if track else None, 'aggregates': aggregates}
     return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone,
             'lead_desk': desk}
 
