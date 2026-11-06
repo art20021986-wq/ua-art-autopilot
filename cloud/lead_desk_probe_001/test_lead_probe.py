@@ -67,12 +67,12 @@ class RemoteTests(unittest.TestCase):
             (home / 'video/index.html').write_text("TOKEN = 'abc'\nasync def clients_screen():\n    phone = '+380 99 222 20 02'\n"
                                              "x = 'https://evil.example/p'\n")
             (home / 'ua_order').mkdir()
-            (home / 'stranica.py').write_text("TOKEN = 'abc'\nx = 'https://evil.example/p'\n")
+            (home / 'vitrina.py').write_text("TOKEN = 'abc'\nx = 'https://evil.example/p'\n")
             value = remote.report(home)
-        guard = value['files']['stranica.py']['source']
+        guard = value['files']['vitrina.py']['source']
         self.assertIn('[REDACTED]', guard)
         self.assertIn('[URL]', guard)
-        self.assertIsNone(value['files']['master_card.py'])
+        self.assertIsNone(value['files']['publikaciya.py'])
         self.assertIsNone(value['lead_desk'])
         hits = json.loads(value['files']['_card_button_hits']['source'])
         self.assertEqual(hits, [])
