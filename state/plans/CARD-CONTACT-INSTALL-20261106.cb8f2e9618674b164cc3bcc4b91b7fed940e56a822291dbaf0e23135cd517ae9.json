@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-CONTACT-INSTALL-20261106.cb8f2e9618674b164cc3bcc4b91b7fed940e56a822291dbaf0e23135cd517ae9.json",
+  "autostart_ledger_sha256": "f12e5fe71e2402167a1476a7ce28057a8225aae628130527c9bd4814d798ae7f",
+  "autostart_source_commit": "482c91a39c99e47126eb20dc5f955dbcf0d3ade5",
+  "created_at": "2026-11-06T14:11:17Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42230945109",
+    "task_id": "CARD-CONTACT-INSTALL-20261106",
+    "task_sha256": "cb8f2e9618674b164cc3bcc4b91b7fed940e56a822291dbaf0e23135cd517ae9"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/CARD-CONTACT-INSTALL-20261106.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
