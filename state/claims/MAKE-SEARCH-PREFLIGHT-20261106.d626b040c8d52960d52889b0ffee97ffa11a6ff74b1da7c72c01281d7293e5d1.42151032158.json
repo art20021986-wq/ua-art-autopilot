@@ -7,21 +7,23 @@
   "created_at": "2026-11-06T02:38:27Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-06T02:38:27Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-06T02:44:14Z",
+  "heartbeat_at": "2026-11-06T02:44:14Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "42151032158",
     "task_id": "MAKE-SEARCH-PREFLIGHT-20261106",
     "task_sha256": "d626b040c8d52960d52889b0ffee97ffa11a6ff74b1da7c72c01281d7293e5d1"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-abb48340634f71d6-9c81fe10be46f3b2",
   "receipt_path": "state/receipts/MAKE-SEARCH-PREFLIGHT-20261106.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b087226cd11a32ca45dfbeca184fabd8bf6beb19eafe30e0c09fc06181055026",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/MAKE-SEARCH-PREFLIGHT-20261106.json",
   "request_sha256": "d626b040c8d52960d52889b0ffee97ffa11a6ff74b1da7c72c01281d7293e5d1",
   "resource_locks": [
@@ -29,8 +31,35 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "6fcf342acf2abd743465f4c1f1cec81ba88d0cb7",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92840693760,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.09
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-06T02:38:27Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "be76c0f23d0205705996cf5359ebfcc30b120b2c47b1a18c8069a92954f4d9fe",
+    "file_sha256": {
+      "cloud/make_search_001/candidate_builder.py": "f9eab8617a9469fef5b00aa9d3b3bc8470bbe5e4c518e94cd7ba9620244c16a6",
+      "cloud/make_search_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/make_search_001/deployment_bootstrap.py": "6afa26be79c30fb10f77d44617defc9114ac5d5cebd0cb6ef58ac738c66d8d23",
+      "cloud/make_search_001/deployment_remote.py": "dc5047706660d221e8fe84aed7eec47bf1969acc01548d57bd42c9c5c4ca105d",
+      "cloud/make_search_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/make_search_001/deployment_transport.py": "12d9478996a3db27b135e6cb87c986d43a40e9fd3bdd1dc16dbae10de46edd9e",
+      "cloud/make_search_001/edit_order_page.py": "be08fb69c370c08c31558eae66d2df51a0bd1e627fbeb14604f9226e69a6e94b",
+      "cloud/make_search_001/edit_preferences_form.py": "e424d92a416a88e147c85d16b7b891d861854573f838bde28e77b4fd95e7cffe",
+      "cloud/make_search_001/make_release.py": "6e27b34832d2ff64c4e15dfd5b01c1cf99a4e8f23cf3ef99ae27102dd5ac637f",
+      "cloud/make_search_001/picker_assets.py": "367bccf4a8cf26b20e660f849b536660e5a5862ea7b03687cde3b202a7b2fdff",
+      "cloud/make_search_001/release_constants.py": "402c5f979d26f2d6bc397af02a3261e812cd750b2051ba3b3dc0b4ddea0d6958",
+      "cloud/make_search_001/test_deployment.py": "6b134de0db4348eb665b29e72b8151d93d3f33321dcc36a3ccd4b0747b20393b",
+      "cloud/make_search_001/test_make_search.py": "fcab2fad80d90de89bd30a4ae84c5dbae79ac168aeb7e1d3c5499d16b1092b9b"
+    }
+  },
+  "updated_at": "2026-11-06T02:44:14Z"
 }
