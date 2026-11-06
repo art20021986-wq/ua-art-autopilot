@@ -15,7 +15,8 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('bezopasnost.py', 'team_bot.py', 'start_safe.py', 'run_all.py')
+FULL = ('video/order/preferences-form.js', 'video/order/preferences-state.js', 'video/order/order.css',
+        'ua_order/preferences.json', 'video/podbor.html')
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
