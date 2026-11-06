@@ -1,0 +1,22 @@
+{
+  "backup_started": false,
+  "claim_before_sha256": "0c911324a08fc6f42d40cb14e8c6036156cdc3d9a1a0867b9a972b857426cf5d",
+  "claim_status_before": {
+    "critical_gate_status": "PENDING",
+    "package_compile_status": "PENDING",
+    "storage_preflight_status": "PENDING",
+    "task_execution_status": "BLOCKED_ROOT_CAUSE"
+  },
+  "error": "STORAGE_PROBE_STALE_OR_FUTURE",
+  "failed_step": "execute / critical / prepare: storage_preflight",
+  "halt_archive": "state/halt_history/ORDER-CONTACT-INSTALL-20261106.42187171197/halt.json",
+  "owner_statement": "Разрешаю снять остановку",
+  "precedent": "state/reconciliations/HOME-PHOTO-INSTALL-20261028.40720176915.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "production_transaction_prepared": false,
+  "recorded_at": "2026-11-06T10:32:21+00:00",
+  "run_id": "42187171197",
+  "site_or_crm_written": false,
+  "task_id": "ORDER-CONTACT-INSTALL-20261106",
+  "workflow_conclusion": "failure"
+}

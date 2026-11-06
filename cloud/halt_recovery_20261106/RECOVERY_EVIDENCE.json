@@ -1,0 +1,45 @@
+{
+  "after_clear_mode_validation": {
+    "allow_halt_for_recovery": false,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "authorization_scope": "Archive the ORDER-CONTACT-INSTALL-20261106 halt (storage preflight refused a stale probe before any production write); preserve all protection policies, Gate B, backup and operator data",
+  "before_clear_mode_validation": {
+    "allow_halt_for_recovery": true,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "before_error": "STORAGE_PROBE_STALE_OR_FUTURE at storage preflight (install run 42187171197)",
+  "claim_archive": "state/halt_history/ORDER-CONTACT-INSTALL-20261106.42187171197/claim.before.json",
+  "contract": "OWNER-AUTHORIZED-REPOSITORY-HALT-RECOVERY-EVIDENCE-1",
+  "credentials_read_or_changed": false,
+  "execution_mode_bytes_changed": false,
+  "existing_launch_markers_replayed": false,
+  "halt_archive": "state/halt_history/ORDER-CONTACT-INSTALL-20261106.42187171197/halt.json",
+  "halt_sha256": "a24b1ffc92391f9f0f88855aca43a935aadbcdeb9ab755dd06eaa9a60159fda8",
+  "historical_halt": {
+    "halted_at": "2026-11-06T08:24:51Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "CRITICAL Production pipeline failed; GitHub Actions run 42187171197; rollback reserved false; rollback performed false",
+    "request_path": "tasks/requests/ORDER-CONTACT-INSTALL-20261106.json",
+    "request_sha256": "e69d3d422bd9a05192a070ad957a6b85bccbefabdc7c8ff8d9644ffcb14a084f",
+    "run_id": "42187171197",
+    "status": "EMERGENCY_HALT",
+    "task_id": "ORDER-CONTACT-INSTALL-20261106"
+  },
+  "owner_statement": "Разрешаю снять остановку",
+  "precedent": "cloud/halt_recovery_20261028/RECOVERY_EVIDENCE.json",
+  "production_launch_created": false,
+  "production_transaction_opened": false,
+  "production_transaction_validation": {
+    "after": {
+      "has_pending": false,
+      "pending_count": 0
+    }
+  },
+  "recorded_at": "2026-11-06T10:32:21+00:00",
+  "required_production_gates_weakened": false,
+  "runtime_code_changed": false,
+  "site_or_crm_written": false
+}
