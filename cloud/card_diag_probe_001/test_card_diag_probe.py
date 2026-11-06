@@ -111,6 +111,21 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(value['database_backups']['newest'][0]['lengths'], {'diag_text': 8, 'condition_videos': 0})
         self.assertNotIn('old text', json.dumps(value))
 
+    def test_r3_old_page_text(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'video').mkdir()
+            (home / 'video/UA-0007-diag.html').write_text(
+                "<style>x{}</style><div class='zag'>Техсостояние</div><p>Мотор &amp; ходовая</p>"
+                "<img src='diag/UA-0007/1.jpg'><p>+380 99 222 20 02</p>")
+            value = remote.report_r3(home)
+        page = value['old_pages']['video/UA-0007-diag.html']
+        self.assertEqual(page['headings'], ['Техсостояние'])
+        self.assertEqual(page['media'], ['diag/UA-0007/1.jpg'])
+        self.assertIn('Мотор & ходовая', page['text'])
+        self.assertNotIn('380 99', page['text'])
+        self.assertIsNone(value['old_pages']['etalon_dizayna/UA-0007-diag.html'])
+
 
 if __name__ == '__main__':
     unittest.main()
