@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-DIAG-PROBE-20261106-R2.2829579cfc31d80f10f3cb76135e159b568ac3ff879d55367627431b5c53c19f.json",
+  "autostart_ledger_sha256": "f4930a1bde38cefe4410b2c2460a25e416c6bae565bd15c3c403672d331b4d13",
+  "autostart_source_commit": "212d0edbabfa8904036ea5898b56ca1b679ed7bb",
+  "created_at": "2026-11-06T01:50:43Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42146321379",
+    "task_id": "CARD-DIAG-PROBE-20261106-R2",
+    "task_sha256": "2829579cfc31d80f10f3cb76135e159b568ac3ff879d55367627431b5c53c19f"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-a91474ab88fe58dc-d8f30626bdc116d6",
+  "request_path": "tasks/requests/CARD-DIAG-PROBE-20261106-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:a91474ab88fe58dc"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
