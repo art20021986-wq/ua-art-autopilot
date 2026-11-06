@@ -17,7 +17,7 @@ import edit_guards  # noqa: E402
 import edit_metadata  # noqa: E402
 
 FILES = {'stranica.py': 'stranica.txt', 'master_card.py': 'master_card.txt', 'ua_seo_metadata.py': 'ua_seo_metadata.txt',
-         'ua_order/contract.py': 'ua_order/contract.py', 'ua_order/crm.py': 'ua_order/crm.py',
+         'ua_order/contract.py': 'ua_order/contract.txt', 'ua_order/crm.py': 'ua_order/crm.txt',
          'video/order/quick-lead.js': 'quick-lead.js', 'ua_additional_spec.py': 'ua_additional_spec.txt',
          'publikaciya.py': 'publikaciya.txt'}
 

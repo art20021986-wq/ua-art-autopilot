@@ -38,7 +38,9 @@ class OrderPackage(unittest.TestCase):
     def setUpClass(cls):
         cls.temp = tempfile.mkdtemp()
         package = Path(cls.temp) / 'ua_order'
-        shutil.copytree(HERE / 'fixtures/ua_order', package)
+        package.mkdir()
+        for fixture in (HERE / 'fixtures/ua_order').glob('*.txt'):  # the installed sources, kept as .txt
+            shutil.copy(fixture, package / (fixture.stem + '.py'))
         (package / '__init__.py').write_text('')
         # crm.py imports preference_summary; the installed one needs the full preferences catalogue.
         (package / 'preference_summary.py').write_text(
@@ -99,7 +101,7 @@ class OrderPackage(unittest.TestCase):
 
     def test_edit_refused_twice(self):
         for name in edit_order.EDITS:
-            source = (HERE / 'fixtures' / name).read_bytes()
+            source = (HERE / 'fixtures' / name).with_suffix('.txt').read_bytes()
             with self.assertRaises(ValueError):
                 edit_order.build(name, edit_order.build(name, source))
 
