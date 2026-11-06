@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "48190b691735797fa83be9a9b63899431285c6e5b39b0a421d24bd946b01056c",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-06T14:43:50Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-06T14:49:40Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42236089088",
     "task_id": "LEAD-FOLDERS-INSTALL-20261106",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42236089088-0b1d68fe7cf113fb",
   "production_transaction_path": "state/transactions/LEAD-FOLDERS-INSTALL-20261106.0b1d68fe7cf113fb90131999924568e77427121790deda30d7541e7f5956e76a.42236089088.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/LEAD-FOLDERS-INSTALL-20261106.json",
   "receipt_validation_status": "PENDING",
@@ -97,5 +97,5 @@
       "cloud/lead_folders_001/ua_order_book.py": "06a3b4a5f2e20eedbf0254a1dfc5c7f59f03f4915fc83ac0dd98f562707f18cb"
     }
   },
-  "updated_at": "2026-11-06T14:43:50Z"
+  "updated_at": "2026-11-06T14:49:40Z"
 }
