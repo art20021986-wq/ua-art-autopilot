@@ -1,0 +1,2273 @@
+"""
+UA Art Company LLC — Lead-Capture + Car Catalog Telegram Bot
+==============================================================================
+ВЕРСИЯ 2.0 — доработанная
+
+ЧТО ИЗМЕНИЛОСЬ ПО СРАВНЕНИЮ С ВЕРСИЕЙ 1:
+1.  Токен больше НЕ в коде. Читается из bot_token.txt или переменной окружения.
+2.  Бот отвечает на свободный текст (раньше молчал — терялись горячие клиенты).
+3.  Каждое сообщение клиента дублируется менеджеру ("вижу всех, кто пишет").
+4.  Все лиды пишутся в leads_db.json ДО отправки менеджеру — не теряются,
+    даже если Telegram недоступен или менеджер заблокировал бота.
+5.  Кнопка "Поделиться номером" в один тап вместо ввода руками.
+6.  Кнопка "Оставить заявку" под /terms, каталогом и в конце любого ответа.
+7.  Метки источников: t.me/бот?start=insta → в заявке видно, откуда клиент.
+8.  allow_reentry — клиент, застрявший в анкете, выходит из неё по /start.
+9.  Обработка фото/голосовых/стикеров внутри анкеты (раньше был тупик).
+10. Кнопка "Купить авто" теперь тоже собирает телефон, а не только username.
+11. Команды /help, /leads (админ), меню команд в интерфейсе Telegram.
+12. Глобальный перехват ошибок — бот не падает молча.
+
+УСТАНОВКА:
+    pip install "python-telegram-bot[job-queue]" --upgrade
+
+НАСТРОЙКА ТОКЕНА (обязательно):
+    Создайте в /home/Carix/ файл bot_token.txt и вставьте туда ТОЛЬКО
+    новый токен от BotFather, одной строкой, без кавычек и пробелов.
+
+КОМАНДЫ АДМИНА:
+/addcar /editstatus /reserve /mycars /archive /sold /leads
+
+КОМАНДЫ КЛИЕНТА:
+/start /cars /mycar /terms /help
+"""
+
+import os
+import re
+import csv
+import json
+import logging
+import traceback
+from datetime import datetime, timedelta
+
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+    ReplyKeyboardRemove,
+    BotCommand,
+    BotCommandScopeChat,
+)
+from telegram.constants import ChatAction
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    CallbackQueryHandler,
+    MessageHandler,
+    ContextTypes,
+    ConversationHandler,
+    filters,
+)
+
+logging.basicConfig(
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    level=logging.INFO,
+)
+
+# ---------------------------------------------------------------------
+# CONFIG
+# ---------------------------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+[REDACTED]
+
+
+def read_token() -> str:
+    """Токен берём из переменной окружения либо из bot_token.txt.
+    В коде токен не хранится — так его нельзя случайно слить вместе с файлом."""
+[REDACTED]
+[REDACTED]
+        return env_token
+    if os.path.exists(TOKEN_FILE):
+        with open(TOKEN_FILE, "r", encoding="utf-8") as f:
+            return f.read().strip()
+    return ""
+
+
+[REDACTED]
+
+# ---------------------------------------------------------------------
+# ⬇️ ЗАПОЛНИТЕ ЭТО — единственное место, где нужно что-то менять руками
+# ---------------------------------------------------------------------
+# Юзернейм менеджера БЕЗ символа @ — например: artem_uaart
+# Нужен для кнопки «Написать менеджеру». Посмотреть можно в Telegram:
+# Настройки → Имя пользователя. Если оставить пустым, кнопка всё равно
+# будет работать, но менеджеру придётся писать клиенту первым.
+MANAGER_USERNAME = ""
+
+MANAGER_CHAT_ID = os.environ.get("MANAGER_CHAT_ID", "397376186")
+ADMIN_IDS = [int(MANAGER_CHAT_ID)] if str(MANAGER_CHAT_ID).lstrip("-").isdigit() else []
+
+import visits
+import client_ui
+
+CARS_DB_FILE = os.path.join(BASE_DIR, "cars_db.json")
+USERS_DB_FILE = os.path.join(BASE_DIR, "users_db.json")
+LEADS_DB_FILE = os.path.join(BASE_DIR, "leads_db.json")
+
+# Пересылать менеджеру каждое свободное сообщение клиента.
+# Если станет слишком шумно — поставьте False.
+FORWARD_ALL_MESSAGES = True
+
+# Через сколько минут напомнить менеджеру о заявке без отметки «Взял в работу»
+REMINDER_AFTER_MINUTES = 60
+
+# Через сколько дней прогревать клиента, который посмотрел машины и пропал
+WARMUP_AFTER_DAYS = 2
+
+STATUS_LABELS = {
+    "purchased": "📦 Этап 1 — выкуплено в Корее, готовим к отправке",
+    "korea_georgia": "🚗 Этап 2 — в пути: Корея → Грузия",
+    "arrived_georgia": "✅ Этап 3 — авто в Грузии, ждёт своего покупателя",
+    "in_ukraine": "🇺🇦 Авто в Украине — доступно к выдаче",
+    "reserved": "🔒 Зарезервировано (под договором)",
+    "sold": "❌ Продано",
+    "issued": "📦 Выдано клиенту (архив)",
+}
+
+# Машины, которые ещё едут — этапы 1–3 из условий доставки
+IN_TRANSIT_STATUSES = ("purchased", "korea_georgia", "arrived_georgia")
+
+STATUS_DURATIONS_DAYS = {
+    "purchased": 14,
+    "korea_georgia": 60,
+    "arrived_georgia": 14,
+}
+
+# Читаемые названия источников для меток t.me/бот?start=XXX
+SOURCE_LABELS = {
+    "insta": "Instagram",
+    "instagram": "Instagram",
+    "fb": "Facebook",
+    "olx": "OLX",
+    "autoria": "AUTO.RIA",
+    "tiktok": "TikTok",
+    "google": "Google / реклама",
+    "yt": "YouTube",
+    "qr": "QR-код (офлайн)",
+    "viz": "Визитка",
+}
+
+TERMS_TEXT = """💳 <b>Условия оплаты и этапы доставки</b>
+
+UA Art Company LLC работает официально и заключает с каждым клиентом договор. \
+В договоре фиксируются: стоимость автомобиля, сроки доставки, порядок оплаты, \
+права и обязанности сторон. После подписания договора стоимость не меняется.
+
+✅ <b>Что входит в стоимость:</b> покупка авто, международная логистика, \
+доставка до Грузии и до Киева, оформление документов, сертификация.
+
+💰 <b>Порядок оплаты (2 этапа):</b>
+1️⃣ После подписания договора — 50% стоимости (в гривне по курсу НБУ на дату платежа).
+2️⃣ После прибытия авто в Грузию — оставшиеся 50% (также по курсу НБУ). После этого авто отправляется в Украину.
+
+🚢 <b>Этапы доставки:</b>
+Этап 1 — подготовка к отправке: до 14 дней
+Этап 2 — морская перевозка до Грузии: ~60 дней
+Этап 3 — доставка в Украину: ~14 дней
+📅 Итого: ~85–90 дней с момента покупки
+
+🤝 <b>Гарантии:</b> официальный договор, фиксированная цена, расчёты в гривне \
+по курсу НБУ, актуальная информация о местонахождении авто на каждом этапе, \
+персональный менеджер сопровождает сделку до передачи автомобиля."""
+
+MANAGER_INTRO_TEXT = """Здравствуйте! 👋
+
+Вас приветствует UA Art Company LLC.
+
+Если в процессе работы с ботом у вас возникли вопросы или что-то осталось \
+непонятным, напишите в этот чат. Меня зовут Артём, я ваш персональный \
+менеджер, и с удовольствием помогу разобраться, отвечу на все вопросы и \
+подберу для вас лучший вариант автомобиля."""
+
+HELP_TEXT = """🚗 <b>Чем я могу помочь</b>
+
+Всё доступно кнопками ниже:
+• оставить заявку на подбор авто
+• посмотреть авто, которые уже в Украине
+• посмотреть машины в пути
+• узнать условия оплаты и доставки
+• написать менеджеру напрямую
+
+Можете просто написать сообщение своими словами — например,
+«хочу Sportage до 20 тысяч» — менеджер увидит и ответит."""
+
+VIN_CHECK_BASE_URL = "[URL]"
+
+PHONE_RE = re.compile(r"(?:\+?\d[\d\-\s()]{8,}\d)")
+
+
+# ---------------------------------------------------------------------
+# ОБЩИЕ КНОПКИ
+# ---------------------------------------------------------------------
+CATALOG_BTN_TEXT = "🇺🇦 Авто в Украине"
+ORDER_BTN_TEXT = "📦 Заказать из Кореи"
+TRANSIT_BTN_TEXT = "🚢 Машины в пути"
+TERMS_BTN_TEXT = "💳 Условия оплаты"
+MANAGER_BTN_TEXT = "👨‍💼 Менеджер"
+
+
+def transit_btn_label() -> str:
+    """Счётчик в скобках — цифра цепляет взгляд лучше слов.
+    Если машин в пути нет, скобки не показываем."""
+    count = len([c for c in load_cars() if c.get("status") in IN_TRANSIT_STATUSES])
+    return f"{TRANSIT_BTN_TEXT} ({count})" if count else TRANSIT_BTN_TEXT
+
+
+def manager_button() -> InlineKeyboardButton:
+    """Если юзернейм менеджера заполнен — кнопка открывает личный чат сразу.
+    Если нет — идём через бота: менеджеру придёт уведомление."""
+    if MANAGER_USERNAME:
+        return InlineKeyboardButton(
+            MANAGER_BTN_TEXT, url=f"[URL]'@')}"
+        )
+    return InlineKeyboardButton(MANAGER_BTN_TEXT, callback_data="contact_manager")
+
+
+def lead_cta_markup(with_catalog=True, with_terms=False, with_manager=True):
+    """Кнопки под каждым информационным блоком, чтобы человеку
+    не приходилось искать, куда нажать."""
+    rows = [[InlineKeyboardButton("📝 Оставить заявку", callback_data="lead_start")]]
+    if with_catalog:
+        rows.append([InlineKeyboardButton(CATALOG_BTN_TEXT, callback_data="show_cars")])
+    # Второстепенные кнопки — в один ряд, чтобы не растягивать экран
+    bottom = []
+    if with_terms:
+        bottom.append(InlineKeyboardButton(TERMS_BTN_TEXT, callback_data="show_terms"))
+    if with_manager:
+        bottom.append(manager_button())
+    if bottom:
+        rows.append(bottom)
+    return InlineKeyboardMarkup(rows)
+
+
+def main_menu_markup():
+    """Два основных сценария в верхнем ряду, служебное — внизу."""
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(CATALOG_BTN_TEXT, callback_data="show_cars"),
+            InlineKeyboardButton(ORDER_BTN_TEXT, callback_data="custom_order"),
+        ],
+        [InlineKeyboardButton(transit_btn_label(), callback_data="show_transit")],
+        [
+            InlineKeyboardButton(TERMS_BTN_TEXT, callback_data="show_terms"),
+            manager_button(),
+        ],
+    ])
+
+
+def admin_menu_markup():
+    """Панель администратора — вместо запоминания семи команд."""
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("➕ Добавить машину", callback_data="adm_addcar")],
+        [InlineKeyboardButton("🔄 Сменить статус", callback_data="adm_editstatus")],
+        [InlineKeyboardButton("🔒 Закрепить за покупателем", callback_data="adm_reserve")],
+        [InlineKeyboardButton("📋 Активные машины", callback_data="adm_mycars")],
+        [InlineKeyboardButton("❌ Пометить проданной", callback_data="adm_sold")],
+        [InlineKeyboardButton("📦 Архив", callback_data="adm_archive")],
+        [InlineKeyboardButton("📊 Заявки (лиды)", callback_data="adm_leads")],
+    ])
+
+
+def contact_request_markup():
+    """Кнопка «Поделиться номером» — один тап вместо набора цифр вручную."""
+    return ReplyKeyboardMarkup(
+        [[KeyboardButton("📱 Поделиться номером", request_contact=True)]],
+        resize_keyboard=True,
+        one_time_keyboard=True,
+    )
+
+
+# ---------------------------------------------------------------------
+# ХРАНИЛИЩЕ: общие функции чтения/записи (устойчивые к битому JSON)
+# ---------------------------------------------------------------------
+def _load_json(path, default):
+    if not os.path.exists(path):
+        return default
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError) as e:
+        logging.error(f"Не удалось прочитать {path}: {e}. Использую пустое значение.")
+        return default
+
+
+def _save_json(path, data):
+    """Пишем через временный файл: если процесс упадёт в момент записи,
+    основной файл с базой останется целым."""
+    tmp = path + ".tmp"
+    try:
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, path)
+    except OSError as e:
+        logging.error(f"Не удалось записать {path}: {e}")
+
+
+# ---------------------------------------------------------------------
+# ХРАНИЛИЩЕ: машины
+# ---------------------------------------------------------------------
+# Машины из CRM получают id со сдвигом, чтобы не сталкиваться с теми,
+# что заведены напрямую в клиентском боте через /addcar.
+CRM_ID_OFFSET = 100000
+
+
+def _crm_to_catalog(row: dict) -> dict:
+    """Карточка из crm.db в том виде, в каком её ждёт клиентский каталог.
+    Без этого перевода подтверждённые машины до клиентов не доходили."""
+    nazvanie = " ".join(
+        str(x) for x in (row.get("brand"), row.get("model"), row.get("year")) if x
+    ) or "Автомобиль"
+
+    # Характеристики собираем из отдельных полей CRM
+    chasti = []
+    for pole, podpis in (
+        ("mileage", "пробег"), ("color", "цвет"), ("engine", "двигатель"),
+        ("fuel", "топливо"), ("trim", "комплектация"), ("condition", "состояние"),
+        ("accidents", "ДТП"),
+    ):
+        znachenie = row.get(pole)
+        if znachenie:
+            chasti.append(f"{podpis}: {znachenie}")
+
+    def _spisok(raw):
+        if not raw:
+            return []
+        try:
+            data = json.loads(raw) if isinstance(raw, str) else raw
+            return data if isinstance(data, list) else []
+        except (json.JSONDecodeError, TypeError):
+            return []
+
+    return {
+        "id": CRM_ID_OFFSET + row["id"],
+        "crm_id": row["id"],
+        "model": nazvanie,
+        "specs": ", ".join(chasti),
+        "price": row.get("price_total") or row.get("price_buy") or "уточняйте у менеджера",
+        "status": row.get("stage") or "purchased",
+        "vin": row.get("vin"),
+        "photo_file_ids": _spisok(row.get("photos")),
+        "video_file_ids": _spisok(row.get("videos")),
+        "tech_report_desc": row.get("condition"),
+        "created_at": row.get("created_at"),
+        "status_changed_at": row.get("updated_at") or row.get("created_at"),
+        "viewers": [],
+        "buyers": [],
+    }
+
+
+def load_cars():
+    """Каталог = машины, заведённые в клиентском боте, плюс подтверждённые
+    карточки из CRM. Раньше вторые никуда не попадали."""
+    cars = _load_json(CARS_DB_FILE, [])
+    try:
+        import db as crm_db
+        for row in crm_db.published_cars():
+            cars.append(_crm_to_catalog(row))
+    except Exception as e:
+        # CRM недоступна — каталог всё равно должен работать
+        logging.warning(f"Не удалось прочитать машины из CRM: {e}")
+    return cars
+
+
+def save_cars(cars):
+    """Пишем только свои машины. Карточки из CRM редактируются
+    во внутреннем боте, здесь их трогать нельзя."""
+    svoi = [c for c in cars if c.get("id", 0) < CRM_ID_OFFSET]
+    _save_json(CARS_DB_FILE, svoi)
+
+
+def is_crm_car(car_id: int) -> bool:
+    return car_id >= CRM_ID_OFFSET
+
+
+def next_car_id(cars):
+    svoi = [c["id"] for c in cars if c.get("id", 0) < CRM_ID_OFFSET]
+    return (max(svoi, default=0)) + 1
+
+
+def get_car(car_id: int):
+    return next((c for c in load_cars() if c["id"] == car_id), None)
+
+
+def update_car(car_id: int, **fields):
+    if is_crm_car(car_id):
+        # Статусы машин из CRM меняются во внутреннем боте
+        logging.info(f"Машина {car_id} из CRM — правки здесь не применяются")
+        return
+    cars = _load_json(CARS_DB_FILE, [])
+    for c in cars:
+        if c["id"] == car_id:
+            c.update({k: v for k, v in fields.items() if v is not None})
+            break
+    _save_json(CARS_DB_FILE, cars)
+
+
+def container_tracking_link(container_number: str) -> str:
+    return f"[URL]"
+
+
+def vin_check_link(vin: str) -> str:
+    return f"{VIN_CHECK_BASE_URL}{vin}"
+
+
+def remaining_days_text(car: dict) -> str:
+    status = car.get("status")
+    duration = STATUS_DURATIONS_DAYS.get(status)
+    if not duration:
+        return ""
+    base_iso = car.get("ship_date") or car.get("status_changed_at") or car.get("created_at")
+    if not base_iso:
+        return f"⏳ Ориентировочно ~{duration} дней на этом этапе"
+    try:
+        base_date = datetime.fromisoformat(base_iso)
+    except ValueError:
+        return f"⏳ Ориентировочно ~{duration} дней на этом этапе"
+    target = base_date + timedelta(days=duration)
+    remaining = (target - datetime.now()).days
+    if remaining > 0:
+        return f"⏳ Осталось ~{remaining} дней"
+    return "⏳ Со дня на день"
+
+
+# Сколько дней остаётся до Украины, считая от начала текущего этапа
+DAYS_TO_UKRAINE = {
+    "purchased": 14 + 60 + 14,
+    "korea_georgia": 60 + 14,
+    "arrived_georgia": 14,
+}
+
+
+def arrival_date_text(car: dict) -> str:
+    """Конкретная дата убеждает сильнее, чем «осталось N дней»."""
+    status = car.get("status")
+    if status == "in_ukraine":
+        return "📍 Уже в Украине — можно забирать"
+    days_left = DAYS_TO_UKRAINE.get(status)
+    if not days_left:
+        return ""
+    base_iso = car.get("ship_date") or car.get("status_changed_at") or car.get("created_at")
+    if not base_iso:
+        return ""
+    try:
+        base_date = datetime.fromisoformat(base_iso)
+    except ValueError:
+        return ""
+    arrival = base_date + timedelta(days=days_left)
+    if arrival < datetime.now():
+        return "📅 Ожидаем в Украине со дня на день"
+    return f"📅 Ожидаем в Украине: ~{arrival.strftime('%d.%m.%Y')}"
+
+
+def buy_button_label(car: dict) -> str:
+    """Машину в пути бронируют, машину на месте покупают —
+    формулировка должна совпадать с тем, что человек реально делает."""
+    if car.get("status") in ("purchased", "korea_georgia"):
+        return "🔒 Забронировать"
+    return "🛒 Купить это авто"
+
+
+def is_admin(user_id: int) -> bool:
+    return user_id in ADMIN_IDS
+
+
+# ---------------------------------------------------------------------
+# ХРАНИЛИЩЕ: пользователи
+# ---------------------------------------------------------------------
+def load_users():
+    return _load_json(USERS_DB_FILE, {})
+
+
+def save_users(users):
+    _save_json(USERS_DB_FILE, users)
+
+
+def track_user(user, source=None):
+    users = load_users()
+    uid = str(user.id)
+    entry = users.get(uid, {"cars_viewed": [], "cars_bought": []})
+    entry["username"] = user.username
+    entry["full_name"] = user.full_name
+    entry.setdefault("cars_viewed", [])
+    entry.setdefault("cars_bought", [])
+    entry.setdefault("first_seen", datetime.now().isoformat())
+    # Источник фиксируем только первый раз — важно, откуда человек пришёл изначально
+    if source and not entry.get("source"):
+        entry["source"] = source
+    entry["last_seen"] = datetime.now().isoformat()
+    users[uid] = entry
+    save_users(users)
+
+
+def get_user_source(user_id) -> str:
+    users = load_users()
+    entry = users.get(str(user_id), {})
+    raw = entry.get("source")
+    if not raw:
+        return "Прямой заход в бота"
+    return SOURCE_LABELS.get(raw.lower(), raw)
+
+
+def track_view(user, car_id: int):
+    track_user(user)
+    users = load_users()
+    uid = str(user.id)
+    if car_id not in users[uid]["cars_viewed"]:
+        users[uid]["cars_viewed"].append(car_id)
+    save_users(users)
+
+    if is_crm_car(car_id):
+        return  # интерес к машинам из CRM отслеживается по users_db
+    cars = _load_json(CARS_DB_FILE, [])
+    for c in cars:
+        if c["id"] == car_id:
+            c.setdefault("viewers", [])
+            if user.id not in c["viewers"]:
+                c["viewers"].append(user.id)
+            break
+    _save_json(CARS_DB_FILE, cars)
+
+
+def track_buy(user, car_id: int):
+    track_user(user)
+    users = load_users()
+    uid = str(user.id)
+    if car_id not in users[uid]["cars_bought"]:
+        users[uid]["cars_bought"].append(car_id)
+    save_users(users)
+
+    if is_crm_car(car_id):
+        return
+    cars = _load_json(CARS_DB_FILE, [])
+    for c in cars:
+        if c["id"] == car_id:
+            c.setdefault("buyers", [])
+            if user.id not in c["buyers"]:
+                c["buyers"].append(user.id)
+            break
+    _save_json(CARS_DB_FILE, cars)
+
+
+# ---------------------------------------------------------------------
+# ХРАНИЛИЩЕ: лиды
+# ---------------------------------------------------------------------
+def save_lead(lead: dict) -> int:
+    """Лид сначала пишется на диск, и только потом уходит менеджеру.
+    Если Telegram недоступен или менеджер заблокировал бота — заявка всё равно
+    сохранена и её видно через /leads."""
+    leads = _load_json(LEADS_DB_FILE, [])
+    lead["id"] = (max([l.get("id", 0) for l in leads], default=0)) + 1
+    lead["created_at"] = datetime.now().isoformat()
+    lead["delivered_to_manager"] = False
+    leads.append(lead)
+    _save_json(LEADS_DB_FILE, leads)
+    mirror_lead_to_crm(lead)
+    return lead["id"]
+
+
+def mirror_lead_to_crm(lead: dict):
+    """Заявка становится карточкой клиента в CRM. Без этого лиды жили
+    отдельно, и найти человека поиском по телефону было невозможно."""
+    try:
+        import db as crm_db
+    except Exception:
+        return
+    try:
+        crm_db.init_db()
+        telegram_handle = f"@{lead['username']}" if lead.get("username") else None
+
+        # Тот же человек мог обращаться раньше — не плодим дубли
+        with crm_db.connect() as c:
+            existing = None
+            if lead.get("user_id"):
+                existing = c.execute(
+                    "SELECT id FROM clients WHERE tg_user_id=?", (lead["user_id"],)
+                ).fetchone()
+            if existing:
+                if lead.get("phone"):
+                    c.execute("UPDATE clients SET phone=?, updated_at=? WHERE id=?",
+                              (lead["phone"], crm_db.now(), existing["id"]))
+                return
+
+        data = {
+            "name": lead.get("full_name"),
+            "phone": lead.get("phone"),
+            "telegram": telegram_handle,
+            "car_interest": lead.get("car_model") or lead.get("model"),
+            "budget": lead.get("budget"),
+            "wishes": lead.get("message") or lead.get("timing"),
+            "source": lead.get("source"),
+            "stage": lead.get("type"),
+        }
+        data = {k: v for k, v in data.items() if v}
+        card_id = crm_db.create_card("clients", data, lead.get("user_id") or 0)
+        with crm_db.connect() as c:
+            c.execute("UPDATE clients SET tg_user_id=? WHERE id=?",
+                      (lead.get("user_id"), card_id))
+        crm_db.log_action(lead.get("user_id") or 0, "lead_from_bot", "clients", card_id,
+                          None, None, lead.get("type"))
+    except Exception as e:
+        logging.warning(f"Лид не продублирован в CRM: {e}")
+
+
+def mark_lead_delivered(lead_id: int):
+    leads = _load_json(LEADS_DB_FILE, [])
+    for l in leads:
+        if l.get("id") == lead_id:
+            l["delivered_to_manager"] = True
+            break
+    _save_json(LEADS_DB_FILE, leads)
+
+
+def mark_lead_taken(lead_id: int) -> dict:
+    """Менеджер жмёт «Взял в работу» — с этого момента напоминания
+    по заявке прекращаются."""
+    leads = _load_json(LEADS_DB_FILE, [])
+    found = {}
+    for l in leads:
+        if l.get("id") == lead_id:
+            l["taken"] = True
+            l["taken_at"] = datetime.now().isoformat()
+            found = l
+            break
+    _save_json(LEADS_DB_FILE, leads)
+    return found
+
+
+def mark_lead_reminded(lead_id: int):
+    leads = _load_json(LEADS_DB_FILE, [])
+    for l in leads:
+        if l.get("id") == lead_id:
+            l["reminded"] = True
+            break
+    _save_json(LEADS_DB_FILE, leads)
+
+
+def taken_markup(lead_id: int) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("✅ Взял в работу", callback_data=f"lead_taken:{lead_id}")]
+    ])
+
+
+async def send_to_manager(context: ContextTypes.DEFAULT_TYPE, text: str, lead_id=None) -> bool:
+    """Единая точка отправки менеджеру. Все ошибки ловим — падение отправки
+    не должно ломать диалог с клиентом."""
+    try:
+        await context.bot.send_message(
+            chat_id=MANAGER_CHAT_ID,
+            text=text,
+            parse_mode="HTML",
+            reply_markup=taken_markup(lead_id) if lead_id else None,
+        )
+        if lead_id:
+            mark_lead_delivered(lead_id)
+        return True
+    except Exception as e:
+        logging.error(f"НЕ ОТПРАВЛЕНО МЕНЕДЖЕРУ (lead_id={lead_id}): {e}")
+        return False
+
+
+async def lead_taken_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer("Отмечено")
+    if not is_admin(query.from_user.id):
+        return
+    lead_id = int(query.data.split(":")[1])
+    mark_lead_taken(lead_id)
+    try:
+        await query.edit_message_reply_markup(reply_markup=None)
+    except Exception:
+        pass
+
+
+def user_block(user, source_label=None) -> str:
+    username_line = f"@{user.username}" if user.username else "(username не указан)"
+    src = source_label or get_user_source(user.id)
+    return (
+        f"<b>Telegram:</b> {username_line}\n"
+        f"<b>Имя в Telegram:</b> {user.full_name}\n"
+        f"<b>Написать напрямую:</b> <a href=\"tg://user?id={user.id}\">открыть чат</a>\n"
+        f"<b>ID:</b> <code>{user.id}</code>\n"
+        f"<b>Источник:</b> {src}"
+    )
+
+
+# ---------------------------------------------------------------------
+# УВЕДОМЛЕНИЯ
+# ---------------------------------------------------------------------
+async def notify_car_watchers(context: ContextTypes.DEFAULT_TYPE, car: dict, message: str):
+    watcher_ids = set(car.get("viewers", []) + car.get("buyers", []))
+    if car.get("reserved_by"):
+        watcher_ids.add(car["reserved_by"])
+    for uid in watcher_ids:
+        try:
+            await context.bot.send_message(chat_id=uid, text=message, parse_mode="HTML")
+        except Exception as e:
+            logging.warning(f"Не удалось уведомить {uid}: {e}")
+
+
+async def manager_reminder_job(context: ContextTypes.DEFAULT_TYPE):
+    """Заявка без отметки «Взял в работу» дольше часа — напоминаем.
+    Один раз, чтобы не превращать чат в спам."""
+    leads = _load_json(LEADS_DB_FILE, [])
+    now = datetime.now()
+    for l in leads:
+        if l.get("taken") or l.get("reminded"):
+            continue
+        try:
+            created = datetime.fromisoformat(l.get("created_at", ""))
+        except ValueError:
+            continue
+        if (now - created) < timedelta(minutes=REMINDER_AFTER_MINUTES):
+            continue
+        mins = int((now - created).total_seconds() // 60)
+        who = f"@{l['username']}" if l.get("username") else l.get("full_name", "клиент")
+        phone = f"\n📱 {l['phone']}" if l.get("phone") else ""
+        detail = l.get("car_model") or l.get("model") or (l.get("message", "") or "")[:60]
+        try:
+            await context.bot.send_message(
+                chat_id=MANAGER_CHAT_ID,
+                text=(
+                    f"⏰ <b>Заявка #{l.get('id')} висит без ответа {mins} мин.</b>\n\n"
+                    f"{who}{phone}\n"
+                    f"{detail}\n\n"
+                    f"<a href=\"tg://user?id={l.get('user_id')}\">Написать клиенту</a>"
+                ),
+                parse_mode="HTML",
+                reply_markup=taken_markup(l.get("id")),
+            )
+            mark_lead_reminded(l.get("id"))
+        except Exception as e:
+            logging.warning(f"Не удалось напомнить по лиду {l.get('id')}: {e}")
+
+
+def user_has_lead(user_id) -> bool:
+    leads = _load_json(LEADS_DB_FILE, [])
+    return any(str(l.get("user_id")) == str(user_id) for l in leads)
+
+
+async def warmup_job(context: ContextTypes.DEFAULT_TYPE):
+    """Прогрев: человек посмотрел машины и пропал — через 2 дня
+    напоминаем о себе. Отправляется один раз на пользователя."""
+    users = load_users()
+    now = datetime.now()
+    changed = False
+    for uid, data in users.items():
+        if data.get("warmed"):
+            continue
+        if not data.get("cars_viewed"):
+            continue
+        if user_has_lead(uid):  # уже оставил заявку — прогревать незачем
+            continue
+        try:
+            last_seen = datetime.fromisoformat(data.get("last_seen", ""))
+        except ValueError:
+            continue
+        if (now - last_seen) < timedelta(days=WARMUP_AFTER_DAYS):
+            continue
+        try:
+            await context.bot.send_message(
+                chat_id=int(uid),
+                text=(
+                    "👋 Здравствуйте! Это UA Art Company LLC.\n\n"
+                    "Вы смотрели у нас автомобили — актуален ли ещё поиск?\n\n"
+                    "Если не нашли подходящий вариант, напишите марку и бюджет — "
+                    "подберём под ваш запрос и выкупим в Корее."
+                ),
+                reply_markup=lead_cta_markup(with_terms=True),
+            )
+            data["warmed"] = True
+            changed = True
+        except Exception as e:
+            logging.warning(f"Прогрев не доставлен {uid}: {e}")
+            data["warmed"] = True  # чтобы не долбиться в заблокировавших
+            changed = True
+    if changed:
+        save_users(users)
+
+
+async def weekly_reminder_job(context: ContextTypes.DEFAULT_TYPE):
+    users = load_users()
+    sent = 0
+    for uid, data in users.items():
+        if not data.get("cars_viewed"):
+            continue
+        try:
+            await context.bot.send_message(
+                chat_id=int(uid),
+                text=(
+                    "👋 Привет! Это UA Art Company LLC.\n\n"
+                    "Хотели напомнить о себе — вы интересовались нашими автомобилями. "
+                    "Актуален ли ещё поиск авто? Если что-то поменялось в бюджете или "
+                    "модели — напишите, подберём заново."
+                ),
+                reply_markup=lead_cta_markup(),
+            )
+            sent += 1
+        except Exception as e:
+            logging.warning(f"Не удалось отправить напоминание {uid}: {e}")
+    logging.info(f"Еженедельная рассылка: отправлено {sent}")
+
+
+# ---------------------------------------------------------------------
+# ЛИД-ЗАХВАТ
+# ---------------------------------------------------------------------
+CAR_TYPE, MODEL, BUDGET, TIMING, CONTACT = range(5)
+
+
+# ---------------------------------------------------------------------
+# СВОДКА ВЛАДЕЛЬЦУ НА ГЛАВНОМ ЭКРАНЕ
+# ---------------------------------------------------------------------
+async def _stats_header(update, context):
+    """Считает заход и показывает владельцу сводку. Клиенты её не видят."""
+    try:
+        user = update.effective_user
+        istochnik = context.args[0] if getattr(context, "args", None) else None
+        visits.hit(user, istochnik)
+    except Exception:
+        pass
+    try:
+        if not is_admin(update.effective_user.id):
+            return
+        await update.effective_message.reply_text(
+            visits.short_line(),
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton("Подробно", callback_data="stats_full"),
+                InlineKeyboardButton("За неделю", callback_data="stats_week"),
+            ]]),
+        )
+    except Exception:
+        pass
+
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await _stats_header(update, context)
+    # Метка источника: ссылка вида t.me/ваш_бот?start=insta
+    source = context.args[0] if context.args else None
+    track_user(update.effective_user, source=source)
+    context.user_data.clear()
+
+    await update.message.reply_text(
+        "Здравствуйте! Помогу подобрать корейский автомобиль. 🚗\n\n"
+        "Выберите, что вас интересует:",
+        reply_markup=main_menu_markup(),
+    )
+    return CAR_TYPE
+
+
+async def lead_start_from_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Вход в анкету по кнопке «Оставить заявку» из любого места бота."""
+    query = update.callback_query
+    await query.answer()
+    track_user(update.effective_user)
+    context.user_data.clear()
+
+    keyboard = [
+        [InlineKeyboardButton("🚗 Готовое авто в Украине", callback_data="ready")],
+        [InlineKeyboardButton("📦 Под заказ из Кореи", callback_data="custom_order")],
+    ]
+    await query.message.reply_text(
+        "Отлично! Пара коротких вопросов — это займёт меньше минуты.\n\n"
+        "Что вас интересует?",
+        reply_markup=InlineKeyboardMarkup(keyboard),
+    )
+    return CAR_TYPE
+
+
+# ---------------------------------------------------------------------
+# КНОПКА «НАПИСАТЬ МЕНЕДЖЕРУ»
+# ---------------------------------------------------------------------
+async def contact_manager_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Работает, даже если MANAGER_USERNAME не заполнен: менеджеру падает
+    уведомление с прямой ссылкой на клиента."""
+    query = update.callback_query
+    await query.answer()
+    user = update.effective_user
+    track_user(user)
+
+    lead_id = save_lead({
+        "type": "Запрос связи с менеджером",
+        "user_id": user.id,
+        "username": user.username,
+        "full_name": user.full_name,
+        "source": get_user_source(user.id),
+    })
+    await send_to_manager(
+        context,
+        f"🙋 <b>Лид #{lead_id} — клиент просит связаться</b>\n\n" + user_block(user),
+        lead_id=lead_id,
+    )
+    await query.message.reply_text(
+        "Передал менеджеру! 👨‍💼 Артём напишет вам в Telegram в ближайшее время.\n\n"
+        "Можете сразу описать здесь, что ищете — он всё увидит."
+    )
+
+
+async def car_type_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    is_custom = query.data == "custom_order"
+    context.user_data["car_type"] = (
+        "Готовое авто в Украине" if not is_custom else "Под заказ из Кореи"
+    )
+    context.user_data["is_custom_order"] = is_custom
+    await query.edit_message_text(
+        f"Выбрано: {context.user_data['car_type']}\n\n"
+        "Какая марка/модель интересует? (например: Hyundai Tucson 2022)\n\n"
+        "Если ещё не определились — напишите «не знаю», подберём вместе."
+    )
+    return MODEL
+
+
+async def model_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data["model"] = update.message.text
+    await update.message.reply_text(
+        "Какой ориентировочный бюджет? (в $ или грн)\n\n"
+        "Можно диапазоном — например «15–20 тысяч»."
+    )
+    return BUDGET
+
+
+async def budget_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data["budget"] = update.message.text
+    if context.user_data.get("is_custom_order"):
+        await update.message.reply_text(
+            "Когда планируете покупку?\n\n"
+            "Например: «в течение месяца», «через 2–3 месяца», «пока присматриваюсь»."
+        )
+        return TIMING
+    return await ask_contact(update, context)
+
+
+async def timing_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data["timing"] = update.message.text
+    return await ask_contact(update, context)
+
+
+async def ask_contact(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "И последнее — как с вами связаться?\n\n"
+        "Нажмите кнопку ниже, чтобы поделиться номером в один тап, "
+        "или напишите номер вручную.",
+        reply_markup=contact_request_markup(),
+    )
+    return CONTACT
+
+
+async def contact_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Принимаем и нажатие кнопки «Поделиться номером», и набранный текст."""
+    msg = update.message
+    if msg.contact:
+        context.user_data["phone"] = msg.contact.phone_number
+        context.user_data["contact_text"] = f"{msg.contact.phone_number} (кнопкой)"
+    else:
+        text = msg.text or ""
+        context.user_data["contact_text"] = text
+        found = PHONE_RE.search(text)
+        context.user_data["phone"] = found.group(0).strip() if found else None
+    await finalize_lead(update, context)
+    return ConversationHandler.END
+
+
+async def contact_wrong_type(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "Нужен номер телефона — нажмите кнопку «📱 Поделиться номером» "
+        "или напишите номер текстом.",
+        reply_markup=contact_request_markup(),
+    )
+    return CONTACT
+
+
+async def wrong_type_in_survey(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Раньше присланное фото/голосовое посреди анкеты вешало диалог наглухо."""
+    await update.message.reply_text(
+        "Пожалуйста, ответьте текстом 🙂\n\n"
+        "Если хотите начать заново — /start"
+    )
+    return None  # остаёмся в текущем состоянии
+
+
+async def finalize_lead(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    data = context.user_data
+
+    lead = {
+        "type": "Анкета",
+        "user_id": user.id,
+        "username": user.username,
+        "full_name": user.full_name,
+        "car_type": data.get("car_type"),
+        "model": data.get("model"),
+        "budget": data.get("budget"),
+        "timing": data.get("timing"),
+        "contact_text": data.get("contact_text"),
+        "phone": data.get("phone"),
+        "source": get_user_source(user.id),
+    }
+    lead_id = save_lead(lead)  # сначала на диск, потом уже отправка
+
+    timing_line = f"<b>Когда планирует покупку:</b> {data.get('timing')}\n" if data.get("timing") else ""
+    phone_line = f"<b>📱 Телефон:</b> <code>{data.get('phone')}</code>\n" if data.get("phone") else ""
+
+    text = (
+        f"🔔 <b>Новый лид #{lead_id}</b>\n\n"
+        f"<b>Тип:</b> {data.get('car_type', '-')}\n"
+        f"<b>Модель:</b> {data.get('model', '-')}\n"
+        f"<b>Бюджет:</b> {data.get('budget', '-')}\n"
+        f"{timing_line}"
+        f"{phone_line}"
+        f"<b>Контакт (как написал):</b> {data.get('contact_text', '-')}\n\n"
+        + user_block(user)
+    )
+    await send_to_manager(context, text, lead_id=lead_id)
+
+    await update.message.reply_text(
+        "Спасибо! ✅ Ваша заявка передана менеджеру, он свяжется с вами в ближайшее время.",
+        reply_markup=ReplyKeyboardRemove(),
+    )
+    await update.message.reply_text(
+        MANAGER_INTRO_TEXT,
+        reply_markup=lead_cta_markup(with_catalog=True, with_terms=True),
+    )
+    context.user_data.clear()
+
+
+async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data.clear()
+    await update.message.reply_text(
+        "Диалог отменён. Напишите /start, чтобы начать заново.",
+        reply_markup=ReplyKeyboardRemove(),
+    )
+    return ConversationHandler.END
+
+
+# ---------------------------------------------------------------------
+# СВОБОДНЫЙ ТЕКСТ — раньше бот на такие сообщения просто молчал
+# ---------------------------------------------------------------------
+INTEREST_WORDS = [
+    "хочу", "нужен", "нужна", "интересует", "подобрать", "заказать", "куплю",
+    "купить", "цена", "стоимость", "сколько", "бюджет", "рассрочка", "доставка",
+    "kia", "hyundai", "genesis", "киа", "хендай", "хёндай", "хундай", "джензис",
+    "sorento", "sportage", "tucson", "santa", "carnival", "sonata", "elantra",
+    "ioniq", "ev6", "niro", "seltos", "palisade", "k5", "k8",
+]
+
+
+async def free_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Ловит любое сообщение вне анкеты: отвечает клиенту и показывает
+    менеджеру, что человек пишет. Это и есть «видеть всех, кто проявил интерес»."""
+    user = update.effective_user
+    text = (update.message.text or "").strip()
+    track_user(user)
+
+    lower = text.lower()
+    has_phone = bool(PHONE_RE.search(text))
+    is_hot = has_phone or any(w in lower for w in INTEREST_WORDS)
+
+    # Менеджеру — уведомление о живом сообщении
+    if FORWARD_ALL_MESSAGES:
+        marker = "🔥 <b>Горячее сообщение в боте</b>" if is_hot else "💬 <b>Сообщение в боте</b>"
+        lead_id = None
+        if is_hot:
+            lead_id = save_lead({
+                "type": "Свободное сообщение",
+                "user_id": user.id,
+                "username": user.username,
+                "full_name": user.full_name,
+                "message": text,
+                "phone": PHONE_RE.search(text).group(0).strip() if has_phone else None,
+                "source": get_user_source(user.id),
+            })
+        await send_to_manager(
+            context,
+            f"{marker}\n\n"
+            f"<b>Текст:</b> {text[:800]}\n\n" + user_block(user),
+            lead_id=lead_id,
+        )
+
+    # Клиенту — осмысленный ответ, а не тишина
+    if has_phone:
+        reply = (
+            "Спасибо, записал ваш номер! 📱\n"
+            "Менеджер свяжется с вами в ближайшее время.\n\n"
+            "Пока можете посмотреть, что есть в наличии:"
+        )
+    elif is_hot:
+        reply = (
+            "Понял вас! 🚗 Передал сообщение менеджеру — он ответит в ближайшее время.\n\n"
+            "Чтобы он сразу подобрал подходящие варианты, ответьте на 3 коротких вопроса:"
+        )
+    else:
+        reply = (
+            "Спасибо за сообщение! Менеджер его увидит и ответит.\n\n"
+            "А пока — вот что можно сделать:"
+        )
+
+    await update.message.reply_text(reply, reply_markup=lead_cta_markup(with_terms=True))
+
+
+async def non_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Фото, голосовые, стикеры вне анкеты."""
+    user = update.effective_user
+    track_user(user)
+    if FORWARD_ALL_MESSAGES:
+        await send_to_manager(
+            context,
+            "📎 <b>Клиент прислал медиа-сообщение в бота</b>\n\n" + user_block(user),
+        )
+        try:
+            await context.bot.forward_message(
+                chat_id=MANAGER_CHAT_ID,
+                from_chat_id=update.effective_chat.id,
+                message_id=update.message.message_id,
+            )
+        except Exception as e:
+            logging.warning(f"Не удалось переслать медиа менеджеру: {e}")
+    await update.message.reply_text(
+        "Получил! Менеджер посмотрит и ответит. 👌",
+        reply_markup=lead_cta_markup(),
+    )
+
+
+# ---------------------------------------------------------------------
+# КОМАНДЫ /terms /help
+# ---------------------------------------------------------------------
+async def terms(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    track_user(update.effective_user)
+    await update.message.reply_text(
+        TERMS_TEXT, parse_mode="HTML", reply_markup=lead_cta_markup()
+    )
+
+
+async def show_terms_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    await query.message.reply_text(
+        TERMS_TEXT, parse_mode="HTML", reply_markup=lead_cta_markup(with_catalog=True)
+    )
+
+
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        HELP_TEXT, parse_mode="HTML", reply_markup=lead_cta_markup()
+    )
+
+
+# ---------------------------------------------------------------------
+# КАТАЛОГ (/cars) + "моя машина" (/mycar)
+# ---------------------------------------------------------------------
+def visible_cars_for(user_id: int):
+    cars = load_cars()
+    result = []
+    for c in cars:
+        if c["status"] in ("sold", "issued"):
+            continue
+        if c["status"] == "reserved" and c.get("reserved_by") != user_id:
+            continue
+        result.append(c)
+    return result
+
+
+async def _render_catalog(chat_id, user, context):
+    """«Авто в Украине» — только те, что уже здесь. Машины в пути
+    показывает отдельная кнопка, чтобы списки не дублировались."""
+    cars = [c for c in visible_cars_for(user.id) if c["status"] in ("in_ukraine", "reserved")]
+    if not cars:
+        transit_count = len([c for c in load_cars() if c.get("status") in IN_TRANSIT_STATUSES])
+        hint = (
+            f"\n\nСейчас в пути {transit_count} авто — посмотрите их."
+            if transit_count else ""
+        )
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text=(
+                "🇺🇦 <b>Авто в Украине</b>\n\n"
+                "Сейчас в наличии ничего нет.\n\n"
+                "Мы возим авто под заказ из Кореи под ваш бюджет — "
+                "оставьте заявку, и менеджер подберёт варианты лично для вас."
+                + hint
+            ),
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("📝 Оставить заявку", callback_data="lead_start")],
+                [InlineKeyboardButton(transit_btn_label(), callback_data="show_transit")],
+                [
+                    InlineKeyboardButton(TERMS_BTN_TEXT, callback_data="show_terms"),
+                    manager_button(),
+                ],
+            ]),
+        )
+        return
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text=f"🇺🇦 <b>Авто в Украине — {len(cars)} шт.</b>",
+        parse_mode="HTML",
+    )
+    for car in cars:
+        track_view(user, car["id"])
+        await send_car_card(chat_id, context, car, user.id)
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text="Не нашли подходящее? Оставьте заявку — подберём под ваш бюджет.",
+        reply_markup=lead_cta_markup(with_catalog=False, with_terms=True),
+    )
+
+
+async def cars_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await _render_catalog(update.effective_chat.id, update.effective_user, context)
+
+
+async def show_cars_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    await _render_catalog(query.message.chat_id, update.effective_user, context)
+
+
+async def show_transit_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Машины, которые ещё едут — этапы 1–3 из условий доставки."""
+    query = update.callback_query
+    await query.answer()
+    user = update.effective_user
+    chat_id = query.message.chat_id
+
+    cars = [c for c in visible_cars_for(user.id) if c["status"] in IN_TRANSIT_STATUSES]
+    if not cars:
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text=(
+                "🚢 <b>Машины в пути</b>\n\n"
+                "Сейчас в дороге ничего нет.\n\n"
+                "Оставьте заявку — сообщим, как только выкупим авто под ваш запрос."
+            ),
+            parse_mode="HTML",
+            reply_markup=lead_cta_markup(with_terms=True),
+        )
+        return
+
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text=(
+            f"🚢 <b>Машины в пути — {len(cars)} шт.</b>\n\n"
+            "Эти авто уже выкуплены и едут. Их можно забронировать до прибытия — "
+            "цена фиксируется договором."
+        ),
+        parse_mode="HTML",
+    )
+    for car in cars:
+        track_view(user, car["id"])
+        await send_car_card(chat_id, context, car, user.id)
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text="Хотите забронировать одну из них? Оставьте заявку — менеджер расскажет детали.",
+        reply_markup=lead_cta_markup(with_catalog=True, with_terms=True),
+    )
+
+
+async def mycar(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user = update.effective_user
+    cars = [c for c in load_cars() if c.get("reserved_by") == user.id]
+    if not cars:
+        await update.message.reply_text(
+            "За вами пока не закреплена машина.", reply_markup=lead_cta_markup()
+        )
+        return
+    for car in cars:
+        await send_car_card(update.effective_chat.id, context, car, user.id)
+
+
+async def send_car_card(chat_id, context: ContextTypes.DEFAULT_TYPE, car: dict, viewer_id: int):
+    days_line = remaining_days_text(car)
+    arrival_line = arrival_date_text(car)
+    tech = car.get("tech_report_desc")
+    tech_line = f"\n<b>Техотчёт:</b> {tech}" if tech else ""
+
+    caption = (
+        f"<b>{car['model']}</b>\n"
+        f"{car.get('specs', '')}\n\n"
+        f"<b>Цена:</b> {car.get('price', 'уточняйте у менеджера')}\n"
+        f"<b>Статус:</b> {STATUS_LABELS.get(car['status'], car['status'])}\n"
+        f"{days_line}\n"
+        f"{arrival_line}"
+        f"{tech_line}"
+    )
+
+    buttons = []
+    if car.get("container"):
+        buttons.append([InlineKeyboardButton(
+            "📍 Отследить контейнер", url=container_tracking_link(car["container"])
+        )])
+    if car.get("vin"):
+        buttons.append([InlineKeyboardButton("🔎 Проверить VIN", url=vin_check_link(car["vin"]))])
+    if car["status"] not in ("reserved",) or car.get("reserved_by") == viewer_id:
+        buttons.append([InlineKeyboardButton(buy_button_label(car), callback_data=f"buycar:{car['id']}")])
+    markup = InlineKeyboardMarkup(buttons)
+
+    photos = car.get("photo_file_ids") or ([car["photo_file_id"]] if car.get("photo_file_id") else [])
+    try:
+        if photos:
+            for i, photo_id in enumerate(photos):
+                if i == 0:
+                    await context.bot.send_photo(
+                        chat_id=chat_id, photo=photo_id, caption=caption,
+                        parse_mode="HTML", reply_markup=markup,
+                    )
+                else:
+                    await context.bot.send_photo(chat_id=chat_id, photo=photo_id)
+        else:
+            await context.bot.send_message(
+                chat_id=chat_id, text=caption, parse_mode="HTML", reply_markup=markup
+            )
+
+        videos = car.get("video_file_ids") or ([car["video_file_id"]] if car.get("video_file_id") else [])
+        for video_id in videos:
+            await context.bot.send_video(chat_id=chat_id, video=video_id)
+
+        for p in car.get("tech_report_photos", []):
+            await context.bot.send_photo(chat_id=chat_id, photo=p, caption="📋 Техотчёт: фото")
+        for v in car.get("tech_report_videos", []):
+            await context.bot.send_video(chat_id=chat_id, video=v, caption="📋 Техотчёт: видео")
+    except Exception as e:
+        # Например, устаревший file_id — карточка не должна ронять весь каталог
+        logging.error(f"Ошибка показа машины #{car.get('id')}: {e}")
+        await context.bot.send_message(
+            chat_id=chat_id, text=caption, parse_mode="HTML", reply_markup=markup
+        )
+
+
+# ---------------------------------------------------------------------
+# БЫСТРЫЙ ЛИД ИЗ КАТАЛОГА — теперь с запросом телефона
+# ---------------------------------------------------------------------
+BUY_CONTACT = 40
+
+
+async def quick_lead_from_car(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    car_id = int(query.data.split(":")[1])
+    car = get_car(car_id)
+    if not car:
+        await query.message.reply_text("Эта машина больше не доступна.")
+        return ConversationHandler.END
+
+    user = update.effective_user
+    track_buy(user, car_id)
+    try:
+        visits.lead(user, "каталог · %s" % car.get("model", ""), car.get("price", ""))
+    except Exception:
+        pass
+    context.user_data["buy_car_id"] = car_id
+
+    # Менеджеру сообщаем сразу — не дожидаясь телефона.
+    # Если клиент бросит на этом шаге, лид всё равно зафиксирован.
+    lead_id = save_lead({
+        "type": "Интерес к машине из каталога",
+        "user_id": user.id,
+        "username": user.username,
+        "full_name": user.full_name,
+        "car_id": car_id,
+        "car_model": car["model"],
+        "price": car.get("price"),
+        "source": get_user_source(user.id),
+    })
+    context.user_data["buy_lead_id"] = lead_id
+
+    await send_to_manager(
+        context,
+        f"🔔 <b>Лид #{lead_id} — интерес к машине из каталога</b>\n\n"
+        f"<b>Машина:</b> {car['model']} (id {car['id']})\n"
+        f"<b>Цена:</b> {car.get('price', '-')}\n"
+        f"<b>Статус:</b> {STATUS_LABELS.get(car['status'], car['status'])}\n"
+        f"<i>Телефон пока не оставил — ждём</i>\n\n" + user_block(user),
+        lead_id=lead_id,
+    )
+
+    await query.message.reply_text(
+        f"Отличный выбор! 🚗 {car['model']}\n\n"
+        "Оставьте номер — менеджер свяжется и расскажет детали "
+        "(комплектация, состояние, сроки).",
+        reply_markup=contact_request_markup(),
+    )
+    return BUY_CONTACT
+
+
+async def buy_contact_received(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = update.message
+    user = update.effective_user
+    car_id = context.user_data.get("buy_car_id")
+    car = get_car(car_id) if car_id else None
+
+    if msg.contact:
+        phone = msg.contact.phone_number
+    else:
+        found = PHONE_RE.search(msg.text or "")
+        phone = found.group(0).strip() if found else (msg.text or "").strip()
+
+    lead_id = save_lead({
+        "type": "Телефон по машине из каталога",
+        "user_id": user.id,
+        "username": user.username,
+        "full_name": user.full_name,
+        "car_id": car_id,
+        "car_model": car["model"] if car else None,
+        "phone": phone,
+        "source": get_user_source(user.id),
+    })
+
+    await send_to_manager(
+        context,
+        f"📱 <b>Лид #{lead_id} — ТЕЛЕФОН получен</b>\n\n"
+        f"<b>Машина:</b> {car['model'] if car else '-'}\n"
+        f"<b>📱 Телефон:</b> <code>{phone}</code>\n\n" + user_block(user),
+        lead_id=lead_id,
+    )
+
+    await msg.reply_text(
+        "Спасибо! ✅ Менеджер свяжется с вами в ближайшее время.",
+        reply_markup=ReplyKeyboardRemove(),
+    )
+    await msg.reply_text(MANAGER_INTRO_TEXT, reply_markup=lead_cta_markup())
+    context.user_data.pop("buy_car_id", None)
+    context.user_data.pop("buy_lead_id", None)
+    return ConversationHandler.END
+
+
+async def buy_contact_skip(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "Хорошо! Менеджер напишет вам в Telegram.",
+        reply_markup=ReplyKeyboardRemove(),
+    )
+    context.user_data.pop("buy_car_id", None)
+    return ConversationHandler.END
+
+
+# ---------------------------------------------------------------------
+# АДМИН: /leads — просмотр и выгрузка заявок
+# ---------------------------------------------------------------------
+async def leads_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = await _ack(update)
+    if not is_admin(update.effective_user.id):
+        return
+    leads = _load_json(LEADS_DB_FILE, [])
+    if not leads:
+        await msg.reply_text("Заявок пока нет.", reply_markup=admin_menu_markup())
+        return
+
+    undelivered = [l for l in leads if not l.get("delivered_to_manager")]
+    lines = [f"📊 Всего заявок: <b>{len(leads)}</b>"]
+    untaken = [l for l in leads if not l.get("taken")]
+    if untaken:
+        lines.append(f"🔴 Не взято в работу: <b>{len(untaken)}</b>")
+    if undelivered:
+        lines.append(f"⚠️ Не дошло до чата менеджера: <b>{len(undelivered)}</b>")
+    lines.append("\n<b>Последние 10:</b>")
+
+    for l in leads[-10:][::-1]:
+        when = l.get("created_at", "")[:16].replace("T", " ")
+        who = f"@{l['username']}" if l.get("username") else l.get("full_name", "?")
+        phone = f" 📱{l['phone']}" if l.get("phone") else ""
+        detail = l.get("car_model") or l.get("model") or l.get("message", "")[:40] or "-"
+        mark = "✅" if l.get("taken") else "🔴"
+        lines.append(f"{mark} #{l.get('id')} {when} — {who}{phone} — {detail}")
+
+    await msg.reply_text("\n".join(lines), parse_mode="HTML", reply_markup=admin_menu_markup())
+
+    # Выгрузка в CSV — открывается в Excel и Google Таблицах
+    try:
+        csv_path = os.path.join(BASE_DIR, "leads_export.csv")
+        fields = ["id", "created_at", "type", "full_name", "username", "phone",
+                  "car_type", "model", "car_model", "budget", "timing",
+                  "contact_text", "message", "source", "user_id", "taken", "taken_at"]
+        with open(csv_path, "w", encoding="utf-8-sig", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+            writer.writeheader()
+            for l in leads:
+                writer.writerow(l)
+        with open(csv_path, "rb") as f:
+            await context.bot.send_document(
+                chat_id=update.effective_chat.id,
+                document=f,
+                filename="leads_export.csv",
+                caption="Все заявки одним файлом (открывается в Excel).",
+            )
+    except Exception as e:
+        logging.error(f"Не удалось выгрузить CSV: {e}")
+
+
+# ---------------------------------------------------------------------
+# АДМИН: /addcar
+# ---------------------------------------------------------------------
+AC_PHOTO, AC_VIDEO, AC_MODEL, AC_SPECS, AC_PRICE, AC_VIN, AC_TECH = range(10, 17)
+
+
+async def _ack(update: Update):
+    """Одна и та же функция должна запускаться и командой, и кнопкой панели."""
+    if update.callback_query:
+        await update.callback_query.answer()
+    return update.effective_message
+
+
+async def admin_panel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = await _ack(update)
+    if not is_admin(update.effective_user.id):
+        return
+    leads = _load_json(LEADS_DB_FILE, [])
+    cars = [c for c in load_cars() if c["status"] not in ("sold", "issued")]
+    await msg.reply_text(
+        "🛠 <b>Панель администратора</b>\n\n"
+        f"Активных машин: <b>{len(cars)}</b>\n"
+        f"Всего заявок: <b>{len(leads)}</b>",
+        parse_mode="HTML",
+        reply_markup=admin_menu_markup(),
+    )
+
+
+async def addcar_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = await _ack(update)
+    if not is_admin(update.effective_user.id):
+        await msg.reply_text("Эта команда доступна только администратору.")
+        return ConversationHandler.END
+    context.user_data["new_car"] = {"photo_file_ids": [], "video_file_ids": []}
+    await msg.reply_text(
+        "Добавляем новую машину 🚗\n\n"
+        "Шаг 1/7 — пришлите фото (можно несколько подряд). "
+        "Когда закончите — отправьте /done. Если фото нет — /skip."
+    )
+    return AC_PHOTO
+
+
+async def addcar_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.photo:
+        context.user_data["new_car"]["photo_file_ids"].append(update.message.photo[-1].file_id)
+        count = len(context.user_data["new_car"]["photo_file_ids"])
+        await update.message.reply_text(f"Фото {count} добавлено. Ещё, или /done для продолжения.")
+    return AC_PHOTO
+
+
+async def addcar_photo_done(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "Шаг 2/7 — пришлите видео (можно несколько). Когда закончите — /done. Если нет — /skip."
+    )
+    return AC_VIDEO
+
+
+async def addcar_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.video:
+        context.user_data["new_car"]["video_file_ids"].append(update.message.video.file_id)
+        count = len(context.user_data["new_car"]["video_file_ids"])
+        await update.message.reply_text(f"Видео {count} добавлено. Ещё, или /done для продолжения.")
+    return AC_VIDEO
+
+
+async def addcar_video_done(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Шаг 3/7 — название/модель авто? (например: Hyundai Sonata 2018)")
+    return AC_MODEL
+
+
+async def addcar_model(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data["new_car"]["model"] = update.message.text
+    await update.message.reply_text("Шаг 4/7 — характеристики одним сообщением (пробег, комплектация и т.д.)")
+    return AC_SPECS
+
+
+async def addcar_specs(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data["new_car"]["specs"] = update.message.text
+    await update.message.reply_text("Шаг 5/7 — цена? (например: $12000 или 'уточняется')")
+    return AC_PRICE
+
+
+async def addcar_price(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data["new_car"]["price"] = update.message.text.strip()
+    await update.message.reply_text("Шаг 6/7 — VIN-код, если уже известен (или /skip)")
+    return AC_VIN
+
+
+async def addcar_vin(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data["new_car"]["vin"] = update.message.text.strip()
+    await update.message.reply_text("Шаг 7/7 — краткое описание техсостояния для техотчёта (или /skip)")
+    return AC_TECH
+
+
+async def addcar_vin_skip(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Шаг 7/7 — краткое описание техсостояния для техотчёта (или /skip)")
+    return AC_TECH
+
+
+async def addcar_tech_finish(update: Update, context: ContextTypes.DEFAULT_TYPE, desc=None):
+    new_car = context.user_data.get("new_car")
+    if not new_car:
+        await update.message.reply_text("Что-то пошло не так. Начните заново: /addcar")
+        return ConversationHandler.END
+    if desc:
+        new_car["tech_report_desc"] = desc
+    new_car["status"] = "purchased"
+    new_car["created_at"] = datetime.now().isoformat()
+    new_car["status_changed_at"] = new_car["created_at"]
+
+    cars = load_cars()
+    new_car["id"] = next_car_id(cars)
+    cars.append(new_car)
+    save_cars(cars)
+
+    await update.message.reply_text(
+        f"✅ Машина добавлена (id {new_car['id']}), статус: "
+        f"{STATUS_LABELS['purchased']}. Проверить — /cars"
+    )
+    context.user_data.pop("new_car", None)
+    return ConversationHandler.END
+
+
+async def addcar_tech(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    return await addcar_tech_finish(update, context, desc=update.message.text.strip())
+
+
+async def addcar_tech_skip(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    return await addcar_tech_finish(update, context, desc=None)
+
+
+async def addcar_photo_skip(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    return await addcar_photo_done(update, context)
+
+
+async def addcar_video_skip(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    return await addcar_video_done(update, context)
+
+
+async def addcar_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data.pop("new_car", None)
+    await update.message.reply_text("Добавление машины отменено.")
+    return ConversationHandler.END
+
+
+# ---------------------------------------------------------------------
+# АДМИН: /mycars
+# ---------------------------------------------------------------------
+async def mycars(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = await _ack(update)
+    if not is_admin(update.effective_user.id):
+        await msg.reply_text("Эта команда доступна только администратору.")
+        return
+    cars = [c for c in load_cars() if c["status"] not in ("sold", "issued")]
+    if not cars:
+        await msg.reply_text("Активных машин нет.", reply_markup=admin_menu_markup())
+        return
+    lines = [
+        f"#{c['id']} — {c['model']} — {c.get('price', '-')} — {STATUS_LABELS.get(c['status'], c['status'])}"
+        for c in cars
+    ]
+    await msg.reply_text("\n".join(lines), reply_markup=admin_menu_markup())
+
+
+# ---------------------------------------------------------------------
+# АДМИН: /editstatus
+# ---------------------------------------------------------------------
+ES_PICK_CAR, ES_PICK_STATUS, ES_CONTAINER, ES_SHIP_DATE, ES_NEW_PRICE = range(20, 25)
+
+
+async def editstatus_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = await _ack(update)
+    if not is_admin(update.effective_user.id):
+        await msg.reply_text("Эта команда доступна только администратору.")
+        return ConversationHandler.END
+    cars = [c for c in load_cars() if c["status"] not in ("sold", "issued")]
+    if not cars:
+        await msg.reply_text("Нет активных машин в каталоге.")
+        return ConversationHandler.END
+
+    buttons = [
+        [InlineKeyboardButton(f"#{c['id']} {c['model']}", callback_data=f"es_pick:{c['id']}")]
+        for c in cars
+    ]
+    await msg.reply_text("Какую машину обновить?", reply_markup=InlineKeyboardMarkup(buttons))
+    return ES_PICK_CAR
+
+
+async def editstatus_pick_car(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    car_id = int(query.data.split(":")[1])
+    context.user_data["edit_car_id"] = car_id
+
+    buttons = [
+        [InlineKeyboardButton(label, callback_data=f"es_status:{key}")]
+        for key, label in STATUS_LABELS.items()
+        if key not in ("reserved",)
+    ]
+    await query.edit_message_text("Выберите новый статус:", reply_markup=InlineKeyboardMarkup(buttons))
+    return ES_PICK_STATUS
+
+
+async def editstatus_pick_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    new_status = query.data.split(":")[1]
+    context.user_data["edit_new_status"] = new_status
+
+    if new_status == "korea_georgia":
+        await query.edit_message_text("Номер контейнера?")
+        return ES_CONTAINER
+
+    await _apply_status_and_notify(query.message, context, new_price=None)
+    return ConversationHandler.END
+
+
+async def editstatus_container(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data["edit_container"] = update.message.text.strip()
+    await update.message.reply_text("Дата отправки? (в формате ДД.ММ.ГГГГ)")
+    return ES_SHIP_DATE
+
+
+async def editstatus_ship_date(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text.strip()
+    try:
+        ship_date = datetime.strptime(text, "%d.%m.%Y")
+    except ValueError:
+        await update.message.reply_text("Не получилось распознать дату. Формат: ДД.ММ.ГГГГ, попробуйте ещё раз.")
+        return ES_SHIP_DATE
+
+    car_id = context.user_data["edit_car_id"]
+    update_car(
+        car_id,
+        status="korea_georgia",
+        container=context.user_data.get("edit_container"),
+        ship_date=ship_date.isoformat(),
+        status_changed_at=datetime.now().isoformat(),
+    )
+    arrival = ship_date + timedelta(days=STATUS_DURATIONS_DAYS["korea_georgia"])
+    await update.message.reply_text(
+        f"✅ Статус обновлён: {STATUS_LABELS['korea_georgia']}\n"
+        f"Ожидаемое прибытие в Грузию: ~{arrival.strftime('%d.%m.%Y')}"
+    )
+    car = get_car(car_id)
+    await notify_car_watchers(
+        context, car,
+        f"🚢 Ваш автомобиль {car['model']} отправлен! Ожидаемое прибытие в Грузию: ~{arrival.strftime('%d.%m.%Y')}."
+    )
+    for key in ("edit_car_id", "edit_new_status", "edit_container"):
+        context.user_data.pop(key, None)
+    return ConversationHandler.END
+
+
+async def _apply_status_and_notify(message, context, new_price=None):
+    car_id = context.user_data.get("edit_car_id")
+    new_status = context.user_data.get("edit_new_status")
+    update_car(
+        car_id,
+        status=new_status,
+        price=new_price,
+        status_changed_at=datetime.now().isoformat(),
+    )
+    car = get_car(car_id)
+    await message.reply_text(f"✅ Статус обновлён: {STATUS_LABELS.get(new_status, new_status)}")
+
+    notify_texts = {
+        "arrived_georgia": f"🎉 Отличная новость! Ваш автомобиль {car['model']} прибыл в Грузию.",
+        "in_ukraine": f"🇺🇦 Ваш автомобиль {car['model']} уже в Украине и готов к выдаче!",
+    }
+    if new_status in notify_texts:
+        await notify_car_watchers(context, car, notify_texts[new_status])
+
+    for key in ("edit_car_id", "edit_new_status"):
+        context.user_data.pop(key, None)
+
+
+async def editstatus_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    for key in ("edit_car_id", "edit_new_status", "edit_container"):
+        context.user_data.pop(key, None)
+    await update.message.reply_text("Изменение отменено.")
+    return ConversationHandler.END
+
+
+# ---------------------------------------------------------------------
+# АДМИН: /reserve
+# ---------------------------------------------------------------------
+RS_PICK_CAR, RS_BUYER_ID = range(30, 32)
+
+
+async def reserve_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = await _ack(update)
+    if not is_admin(update.effective_user.id):
+        await msg.reply_text("Эта команда доступна только администратору.")
+        return ConversationHandler.END
+    cars = [c for c in load_cars() if c["status"] not in ("sold", "issued", "reserved")]
+    if not cars:
+        await msg.reply_text("Нет доступных для резерва машин.")
+        return ConversationHandler.END
+    buttons = [
+        [InlineKeyboardButton(f"#{c['id']} {c['model']}", callback_data=f"rs_pick:{c['id']}")]
+        for c in cars
+    ]
+    await msg.reply_text(
+        "Какую машину закрепить за покупателем?", reply_markup=InlineKeyboardMarkup(buttons)
+    )
+    return RS_PICK_CAR
+
+
+async def reserve_pick_car(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    car_id = int(query.data.split(":")[1])
+    context.user_data["reserve_car_id"] = car_id
+    car = get_car(car_id)
+    hint = ""
+    if car.get("buyers"):
+        hint = f"\n(Последний проявивший интерес: {car['buyers'][-1]})"
+    await query.edit_message_text(f"Введите Telegram ID покупателя (число).{hint}")
+    return RS_BUYER_ID
+
+
+async def reserve_buyer_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text.strip()
+    if not text.lstrip("-").isdigit():
+        await update.message.reply_text("Это должно быть число (Telegram ID). Попробуйте ещё раз.")
+        return RS_BUYER_ID
+    buyer_id = int(text)
+    car_id = context.user_data["reserve_car_id"]
+    update_car(car_id, status="reserved", reserved_by=buyer_id, status_changed_at=datetime.now().isoformat())
+    car = get_car(car_id)
+    await update.message.reply_text(f"🔒 Машина #{car_id} закреплена за {buyer_id}. Скрыта из общего каталога.")
+    try:
+        await context.bot.send_message(
+            chat_id=buyer_id,
+            text=f"🔒 Машина {car['model']} закреплена за вами. Посмотреть — /mycar",
+        )
+    except Exception as e:
+        logging.warning(f"Не удалось уведомить покупателя {buyer_id}: {e}")
+        await update.message.reply_text(
+            "⚠️ Клиенту не удалось отправить уведомление — возможно, он не запускал бота."
+        )
+    context.user_data.pop("reserve_car_id", None)
+    return ConversationHandler.END
+
+
+async def reserve_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    context.user_data.pop("reserve_car_id", None)
+    await update.message.reply_text("Резервирование отменено.")
+    return ConversationHandler.END
+
+
+# ---------------------------------------------------------------------
+# АДМИН: /archive и /sold
+# ---------------------------------------------------------------------
+async def archive_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = await _ack(update)
+    if not is_admin(update.effective_user.id):
+        await msg.reply_text("Эта команда доступна только администратору.")
+        return
+    cars = [c for c in load_cars() if c["status"] in ("sold", "issued")]
+    if not cars:
+        await msg.reply_text("Архив пуст.", reply_markup=admin_menu_markup())
+        return
+    for c in cars:
+        buttons = []
+        if c["status"] == "sold":
+            buttons.append([InlineKeyboardButton("📦 Отметить «Выдано»", callback_data=f"issue:{c['id']}")])
+        text = f"#{c['id']} {c['model']} — {c.get('price', '-')} — {STATUS_LABELS[c['status']]}"
+        markup = InlineKeyboardMarkup(buttons) if buttons else None
+        await msg.reply_text(text, reply_markup=markup)
+
+
+async def mark_issued(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    if not is_admin(query.from_user.id):
+        return
+    car_id = int(query.data.split(":")[1])
+    update_car(car_id, status="issued", status_changed_at=datetime.now().isoformat())
+    await query.edit_message_text(f"📦 Машина #{car_id} отмечена как выданная.")
+
+
+async def sold_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    msg = await _ack(update)
+    if not is_admin(update.effective_user.id):
+        await msg.reply_text("Эта команда доступна только администратору.")
+        return
+    cars = [c for c in load_cars() if c["status"] not in ("sold", "issued")]
+    if not cars:
+        await msg.reply_text("Нет активных машин.", reply_markup=admin_menu_markup())
+        return
+    buttons = [
+        [InlineKeyboardButton(f"#{c['id']} {c['model']} — {c.get('price','-')}", callback_data=f"sold:{c['id']}")]
+        for c in cars
+    ]
+    await msg.reply_text("Какую машину пометить проданной?", reply_markup=InlineKeyboardMarkup(buttons))
+
+
+async def mark_sold(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    if not is_admin(query.from_user.id):
+        return
+    car_id = int(query.data.split(":")[1])
+    car = get_car(car_id)
+    update_car(
+        car_id,
+        status="sold",
+        archived_price=car.get("price"),
+        status_changed_at=datetime.now().isoformat(),
+    )
+    await query.edit_message_text(
+        f"❌ Машина #{car_id} помечена проданной, цена зафиксирована: {car.get('price','-')}. "
+        f"Теперь видна только в /archive."
+    )
+
+
+# ---------------------------------------------------------------------
+# ГЛОБАЛЬНЫЙ ПЕРЕХВАТ ОШИБОК
+# ---------------------------------------------------------------------
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
+    """Раньше ошибка просто уходила в лог, и вы о ней не узнавали."""
+    logging.error("Ошибка при обработке обновления:", exc_info=context.error)
+    tb = "".join(traceback.format_exception(None, context.error, context.error.__traceback__))
+    try:
+        await context.bot.send_message(
+            chat_id=MANAGER_CHAT_ID,
+            text=f"⚠️ <b>Ошибка в боте</b>\n\n<code>{tb[-1200:]}</code>",
+            parse_mode="HTML",
+        )
+    except Exception:
+        pass
+
+
+async def post_init(application):
+    """Меню команд в интерфейсе Telegram — клиент видит список, а не гадает."""
+    await application.bot.set_my_commands([
+        BotCommand("start", "Главное меню"),
+        BotCommand("cars", "Авто в Украине"),
+        BotCommand("mycar", "Моя зарезервированная машина"),
+        BotCommand("terms", "Условия оплаты и доставки"),
+        BotCommand("help", "Помощь"),
+    ])
+    # У администратора своё меню — клиенты этих команд не видят
+    for admin_id in ADMIN_IDS:
+        try:
+            await application.bot.set_my_commands(
+                [
+                    BotCommand("admin", "🛠 Панель администратора"),
+                    BotCommand("leads", "Заявки и выгрузка в Excel"),
+                    BotCommand("addcar", "Добавить машину"),
+                    BotCommand("editstatus", "Сменить статус машины"),
+                    BotCommand("reserve", "Закрепить за покупателем"),
+                    BotCommand("mycars", "Активные машины"),
+                    BotCommand("sold", "Пометить проданной"),
+                    BotCommand("archive", "Архив"),
+                    BotCommand("cars", "Авто в Украине"),
+                    BotCommand("start", "Главное меню"),
+                ],
+                scope=BotCommandScopeChat(chat_id=admin_id),
+            )
+        except Exception as e:
+            logging.warning(f"Не удалось задать меню админа {admin_id}: {e}")
+    logging.info("Меню команд установлено.")
+
+
+# ---------------------------------------------------------------------
+# MAIN
+# ---------------------------------------------------------------------
+def build_application():
+    """Собирает приложение, но не запускает — нужно, чтобы run_all.py мог
+    поднять клиентский и внутренний ботов в одном процессе."""
+[REDACTED]
+        logging.error(
+            f"Токен клиентского бота не найден. Создайте {TOKEN_FILE} "
+            f"и вставьте туда токен от BotFather."
+        )
+        return None
+
+    app = ApplicationBuilder().token(BOT_TOKEN).post_init(post_init).build()
+
+    # --- Анкета (лид) ---
+    lead_conv = ConversationHandler(
+        entry_points=[
+            CommandHandler("start", start),
+            CallbackQueryHandler(lead_start_from_button, pattern=r"^lead_start$"),
+        ],
+        states={
+            CAR_TYPE: [CallbackQueryHandler(car_type_chosen, pattern=r"^(ready|custom_order)$")],
+            MODEL: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, model_received),
+                MessageHandler(~filters.TEXT & ~filters.COMMAND, wrong_type_in_survey),
+            ],
+            BUDGET: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, budget_received),
+                MessageHandler(~filters.TEXT & ~filters.COMMAND, wrong_type_in_survey),
+            ],
+            TIMING: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, timing_received),
+                MessageHandler(~filters.TEXT & ~filters.COMMAND, wrong_type_in_survey),
+            ],
+            CONTACT: [
+                MessageHandler(filters.CONTACT, contact_received),
+                MessageHandler(filters.TEXT & ~filters.COMMAND, contact_received),
+                MessageHandler(~filters.TEXT & ~filters.CONTACT & ~filters.COMMAND, contact_wrong_type),
+            ],
+        },
+        fallbacks=[
+            CommandHandler("cancel", cancel),
+            CommandHandler("start", start),  # выход из зависшей анкеты
+        ],
+        allow_reentry=True,  # клиент может перезапустить анкету в любой момент
+    )
+    app.add_handler(lead_conv)
+    try:   # UA-ANALIT-V1
+        import analitika_bot; analitika_bot.register(app)
+    except Exception as _e_ana:
+        print('analitika_bot:', _e_ana)
+
+    # --- Быстрый лид из каталога с запросом телефона ---
+    buy_conv = ConversationHandler(
+        entry_points=[CallbackQueryHandler(quick_lead_from_car, pattern=r"^buycar:")],
+        states={
+            BUY_CONTACT: [
+                MessageHandler(filters.CONTACT, buy_contact_received),
+                MessageHandler(filters.TEXT & ~filters.COMMAND, buy_contact_received),
+            ],
+        },
+        fallbacks=[
+            CommandHandler("cancel", buy_contact_skip),
+            CommandHandler("start", start),
+        ],
+        allow_reentry=True,
+    )
+    app.add_handler(buy_conv)
+
+    # --- Команды ---
+    app.add_handler(CommandHandler("terms", terms))
+    app.add_handler(CallbackQueryHandler(stats_full_cb, pattern="^stats_full$"))
+    app.add_handler(CallbackQueryHandler(stats_week_cb, pattern="^stats_week$"))
+    app.add_handler(CommandHandler("stats", stats_cmd))
+
+    app.add_handler(CommandHandler("help", help_cmd))
+    app.add_handler(CommandHandler("cars", cars_list))
+    app.add_handler(CommandHandler("mycar", mycar))
+    app.add_handler(CommandHandler("leads", leads_cmd))
+
+    # --- Кнопки общего назначения ---
+    app.add_handler(CallbackQueryHandler(show_cars_cb, pattern=r"^show_cars$"))
+    app.add_handler(CallbackQueryHandler(show_transit_cb, pattern=r"^show_transit$"))
+    app.add_handler(CallbackQueryHandler(show_terms_cb, pattern=r"^show_terms$"))
+    app.add_handler(CallbackQueryHandler(contact_manager_cb, pattern=r"^contact_manager$"))
+    app.add_handler(CallbackQueryHandler(lead_taken_cb, pattern=r"^lead_taken:"))
+
+    # --- Панель администратора ---
+    app.add_handler(CommandHandler("admin", admin_panel))
+    app.add_handler(CallbackQueryHandler(admin_panel, pattern=r"^adm_panel$"))
+    app.add_handler(CallbackQueryHandler(mycars, pattern=r"^adm_mycars$"))
+    app.add_handler(CallbackQueryHandler(archive_list, pattern=r"^adm_archive$"))
+    app.add_handler(CallbackQueryHandler(sold_cmd, pattern=r"^adm_sold$"))
+    app.add_handler(CallbackQueryHandler(leads_cmd, pattern=r"^adm_leads$"))
+
+    # --- Админские диалоги ---
+    addcar_conv = ConversationHandler(
+        entry_points=[
+            CommandHandler("addcar", addcar_start),
+            CallbackQueryHandler(addcar_start, pattern=r"^adm_addcar$"),
+        ],
+        states={
+            AC_PHOTO: [
+                MessageHandler(filters.PHOTO, addcar_photo),
+                CommandHandler("done", addcar_photo_done),
+                CommandHandler("skip", addcar_photo_skip),
+            ],
+            AC_VIDEO: [
+                MessageHandler(filters.VIDEO, addcar_video),
+                CommandHandler("done", addcar_video_done),
+                CommandHandler("skip", addcar_video_skip),
+            ],
+            AC_MODEL: [MessageHandler(filters.TEXT & ~filters.COMMAND, addcar_model)],
+            AC_SPECS: [MessageHandler(filters.TEXT & ~filters.COMMAND, addcar_specs)],
+            AC_PRICE: [MessageHandler(filters.TEXT & ~filters.COMMAND, addcar_price)],
+            AC_VIN: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, addcar_vin),
+                CommandHandler("skip", addcar_vin_skip),
+            ],
+            AC_TECH: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, addcar_tech),
+                CommandHandler("skip", addcar_tech_skip),
+            ],
+        },
+        fallbacks=[CommandHandler("cancel", addcar_cancel)],
+        allow_reentry=True,
+    )
+    app.add_handler(addcar_conv)
+
+    app.add_handler(CommandHandler("mycars", mycars))
+
+    editstatus_conv = ConversationHandler(
+        entry_points=[
+            CommandHandler("editstatus", editstatus_start),
+            CallbackQueryHandler(editstatus_start, pattern=r"^adm_editstatus$"),
+        ],
+        states={
+            ES_PICK_CAR: [CallbackQueryHandler(editstatus_pick_car, pattern=r"^es_pick:")],
+            ES_PICK_STATUS: [CallbackQueryHandler(editstatus_pick_status, pattern=r"^es_status:")],
+            ES_CONTAINER: [MessageHandler(filters.TEXT & ~filters.COMMAND, editstatus_container)],
+            ES_SHIP_DATE: [MessageHandler(filters.TEXT & ~filters.COMMAND, editstatus_ship_date)],
+        },
+        fallbacks=[CommandHandler("cancel", editstatus_cancel)],
+        allow_reentry=True,
+    )
+    app.add_handler(editstatus_conv)
+
+    reserve_conv = ConversationHandler(
+        entry_points=[
+            CommandHandler("reserve", reserve_start),
+            CallbackQueryHandler(reserve_start, pattern=r"^adm_reserve$"),
+        ],
+        states={
+            RS_PICK_CAR: [CallbackQueryHandler(reserve_pick_car, pattern=r"^rs_pick:")],
+            RS_BUYER_ID: [MessageHandler(filters.TEXT & ~filters.COMMAND, reserve_buyer_id)],
+        },
+        fallbacks=[CommandHandler("cancel", reserve_cancel)],
+        allow_reentry=True,
+    )
+    app.add_handler(reserve_conv)
+
+    app.add_handler(CommandHandler("archive", archive_list))
+    app.add_handler(CallbackQueryHandler(mark_issued, pattern=r"^issue:"))
+    app.add_handler(CommandHandler("sold", sold_cmd))
+    app.add_handler(CallbackQueryHandler(mark_sold, pattern=r"^sold:"))
+
+    # --- ЛОВУШКА ДЛЯ ВСЕГО ОСТАЛЬНОГО (обязательно последней) ---
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, free_text_handler))
+    app.add_handler(MessageHandler(
+        (filters.PHOTO | filters.VIDEO | filters.VOICE | filters.Sticker.ALL
+         | filters.Document.ALL | filters.AUDIO),
+        non_text_handler,
+    ))
+
+    app.add_error_handler(error_handler)
+
+    if app.job_queue:
+        app.job_queue.run_repeating(
+            weekly_reminder_job, interval=timedelta(days=7), first=timedelta(days=7)
+        )
+        # Напоминание менеджеру о непринятых заявках — проверка каждые 15 минут
+        app.job_queue.run_repeating(
+            manager_reminder_job, interval=timedelta(minutes=15), first=timedelta(minutes=5)
+        )
+        # Прогрев остывших клиентов — проверка 4 раза в сутки
+        app.job_queue.run_repeating(
+            warmup_job, interval=timedelta(hours=6), first=timedelta(minutes=10)
+        )
+    else:
+        logging.warning("job-queue не установлен — напоминания и прогрев отключены.")
+
+    # v27-pustoy — клиентский бот пуст. Всё, что было собрано выше,
+    # снимается. Ни витрина, ни старые экраны, ни учёт не подключены.
+    # Здесь подключается новая платформа: одна строка вида
+    #     novaya_platforma.register(app)
+    try:
+        app.handlers.clear()
+        logging.info("Клиентский бот очищен: обработчиков нет.")
+    except Exception as e:
+        logging.error("Не удалось очистить обработчиков: %s", e)
+
+    try:
+        from telegram.ext import CommandHandler as _CommandHandler
+
+        async def _zaglushka(update, context):
+            try:
+                await update.effective_message.reply_text('Здравствуйте! Бот обновляется — напишите нам в WhatsApp: [N]')
+            except Exception:
+                pass
+
+        app.add_handler(_CommandHandler("start", _zaglushka))
+        logging.info("Заглушка на /start подключена.")
+    except Exception as e:
+        logging.error("Заглушка не подключена: %s", e)
+
+    # --- витрина UA ART: подключение клиентских экранов ---
+    try:
+        import client_ui as _vitrina
+        _vitrina.register(app, globals().get('MANAGER_CHAT_ID'))
+        print('[vitrina] client_ui подключена')
+    except TypeError:
+        try:
+            _vitrina.register(app)
+            print('[vitrina] client_ui подключена (без chat_id)')
+        except Exception as _e:
+            print('[vitrina] НЕ подключена:', _e)
+    except Exception as _e:
+        print('[vitrina] НЕ подключена:', _e)
+    # UA-ART-ORDER-8COUNTRIES-40-001
+    from ua_order.host import register_customer as _register_orders
+    _register_orders(app, owner_id=MANAGER_CHAT_ID)
+    return app
+
+
+
+# ---------------------------------------------------------------------
+# СВОДКА ПО ПОСЕЩЕНИЯМ (видит только владелец)
+# ---------------------------------------------------------------------
+async def stats_full_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    if not is_admin(query.from_user.id):
+        return
+    await query.message.reply_text(
+        visits.full_text(), parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([[
+            InlineKeyboardButton("За неделю", callback_data="stats_week")]]))
+
+
+async def stats_week_cb(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    if not is_admin(query.from_user.id):
+        return
+    await query.message.reply_text(
+        visits.week_text(), parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([[
+            InlineKeyboardButton("Сегодня", callback_data="stats_full")]]))
+
+
+async def stats_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not is_admin(update.effective_user.id):
+        return
+    await update.message.reply_text(
+        visits.full_text(), parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([[
+            InlineKeyboardButton("За неделю", callback_data="stats_week")]]))
+
+
+
+# ---------------------------------------------------------------------
+# МЕНЮ КОМАНД: клиенту — только нужное, владельцу — служебное
+# ---------------------------------------------------------------------
+async def _setup_menu(application):
+    from telegram import BotCommand, BotCommandScopeChat, BotCommandScopeDefault
+    klientu = [
+        BotCommand("start", "Главное меню"),
+        BotCommand("cars", "Авто в наличии и в пути"),
+        BotCommand("terms", "Условия и гарантии"),
+    ]
+    vladelcu = klientu + [
+        BotCommand("stats", "Статистика бота"),
+        BotCommand("leads", "Заявки и выгрузка"),
+        BotCommand("archive", "Архив машин"),
+    ]
+    try:
+        await application.bot.set_my_commands(klientu, scope=BotCommandScopeDefault())
+        for admin_id in ADMIN_IDS:
+            await application.bot.set_my_commands(
+                vladelcu, scope=BotCommandScopeChat(chat_id=admin_id))
+    except Exception as e:
+        print("Меню команд не обновилось:", e)
+
+
+def main():
+    logging.basicConfig(
+        format="%(asctime)s [%(levelname)s] %(message)s", level=logging.INFO
+    )
+    app = build_application()
+    if not app:
+        return
+    print("Бот запущен.")
+    app.run_polling(drop_pending_updates=False)
+
+
+if __name__ == "__main__":
+    main()
