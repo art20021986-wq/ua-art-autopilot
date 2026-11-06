@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ORDER-CONTACT-INSTALL-20261106.e69d3d422bd9a05192a070ad957a6b85bccbefabdc7c8ff8d9644ffcb14a084f.json",
+  "autostart_ledger_sha256": "d33cb6f171f33ad5fe53fd3d10bc65ac669dec505ddff8d7df06e29cb6b78169",
+  "autostart_source_commit": "d56d454adece8a1e96b3dc53e8f5157d1f7f5698",
+  "created_at": "2026-11-06T08:23:24Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42187171197",
+    "task_id": "ORDER-CONTACT-INSTALL-20261106",
+    "task_sha256": "e69d3d422bd9a05192a070ad957a6b85bccbefabdc7c8ff8d9644ffcb14a084f"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-e2f9130c6c318985-423dd642846d339f",
+  "request_path": "tasks/requests/ORDER-CONTACT-INSTALL-20261106.json",
+  "resource_locks": [
+    "PATH_SCOPE:e2f9130c6c318985"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
