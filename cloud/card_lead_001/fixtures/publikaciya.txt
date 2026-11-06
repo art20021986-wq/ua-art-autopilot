@@ -1,0 +1,579 @@
+# -*- coding: utf-8 -*-
+# UA-PUB-SERVICE-V1 — ЕДИНСТВЕННАЯ точка публикации карточки автомобиля.
+# Генерация только мастер-генератором stranica.py.
+# Порядок: сборка -> временный файл -> валидация -> резерв -> атомарная замена
+# -> проверка, что чужие карточки не изменились -> журнал.
+# Fallback на card_html ЗАПРЕЩЁН: если мастер не смог — публикация FAIL.
+
+import os, io, re, sys, time, json, shutil, hashlib
+
+BASE  = "/home/Carix"
+VIDEO = os.path.join(BASE, "video")
+SITE  = os.path.join(BASE, "site")
+LOG   = os.path.join(BASE, "publish_log.txt")
+REZERV_KORE = os.path.join(BASE, "rezerv_publikacii")
+
+if BASE not in sys.path:
+    sys.path.insert(0, BASE)
+
+
+def _sha(put):
+    try:
+        h = hashlib.sha256()
+        with open(put, "rb") as f:
+            for k in iter(lambda: f.read(65536), b""):
+                h.update(k)
+        return h.hexdigest()
+    except Exception:
+        return "-"
+
+
+def _sha_teksta(t):
+    if isinstance(t, str):
+        t = t.encode("utf-8")
+    return hashlib.sha256(t).hexdigest()
+
+
+def _chitat(put):
+    try:
+        with io.open(put, "r", encoding="utf-8", errors="ignore") as f:
+            return f.read()
+    except Exception:
+        return ""
+
+
+def _zhurnal(stroki):
+    try:
+        with io.open(LOG, "a", encoding="utf-8") as f:
+            for s in stroki:
+                f.write("%s  %s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), s))
+    except Exception:
+        pass
+
+
+def _kartochki(krome=None):
+    """sha всех карточек и диагностик, кроме указанной машины."""
+    d = {}
+    for papka in (VIDEO, SITE):
+        if not os.path.isdir(papka):
+            continue
+        for imya in os.listdir(papka):
+            if not (imya.startswith("UA-") and imya.endswith(".html")):
+                continue
+            if krome and imya.startswith(krome):
+                continue
+            d[os.path.join(papka, imya)] = _sha(os.path.join(papka, imya))
+    return d
+
+
+# ------------------------------------------------------------ ВАЛИДАТОР
+def proverit(html, kod):
+    """Возвращает список причин отказа. Пустой список = страница годная."""
+    prichiny = []
+    if not html or len(html) < 5000:
+        prichiny.append("страница короче 5 КБ")
+        return prichiny
+    n64 = html.count("data:image")
+    if n64 > 2:
+        prichiny.append("вшитые base64-фотографии: %d — чужой шаблон" % n64)
+    if len(html) > 600000:
+        prichiny.append("страница тяжелее 600 КБ (%d байт)" % len(html))
+    if kod not in html:
+        prichiny.append("нет номера машины %s" % kod)
+    chuzhie = sorted(set(re.findall(r"UA-\d{4}", html)) - set([kod]))
+    if chuzhie:
+        prichiny.append("данные другой машины: %s" % ", ".join(chuzhie))
+    if "</html>" not in html:
+        prichiny.append("страница оборвана, нет </html>")
+    if not re.search(r"\d[\d\s\u00a0]{2,}\s*\$", html):
+        prichiny.append("нет цены")
+    if "иагностик" not in html:
+        prichiny.append("нет раздела диагностики")
+    if (kod + "-diag.html") not in html:
+        prichiny.append("нет ссылки на страницу диагностики")
+    if "упить" not in html:
+        prichiny.append("нет кнопки Купить")
+    if "оделиться" not in html:
+        prichiny.append("нет кнопки Поделиться")
+    if "index.html" not in html:
+        prichiny.append("нет навигации на главную")
+    if "wa.me" not in html:
+        prichiny.append("нет контакта WhatsApp")
+    if "<img" not in html:
+        prichiny.append("нет фотографий")
+    if "aspect-ratio:16/10" not in html.replace(" ", ""):
+        prichiny.append("правило показа фото не совпадает с эталоном 16/10")
+    return prichiny
+
+
+def _master(kod):
+    """Собирает карточку и диагностику мастер-генератором. Возвращает (html, diag, mashina)."""
+    import stranica as S
+    spisok = S.mashiny()
+    m = None
+    for x in spisok:
+        try:
+            if (S.nomer(x) or "").upper() == kod.upper():
+                m = x
+                break
+        except Exception:
+            continue
+    if m is None:
+        return None, None, None
+    kadry = S.kadry_mashiny(m)
+    html = S.sobrat_kartochku(m, kadry)
+    diag = None
+    try:
+        if S.est_diagnostika(m):
+            diag = S.sobrat_diagnostiku(m)
+    except Exception:
+        diag = None
+    if isinstance(html, bytes):
+        html = html.decode("utf-8", "ignore")
+    if isinstance(diag, bytes):
+        diag = diag.decode("utf-8", "ignore")
+    return html, diag, m
+
+
+def _zapisat_atomarno(put, tekst):
+    # >>> UA-ART-SITE-GE-PERSISTENCE-V1: PUBLISHER_ATOMIC_WRITE
+    from site_ge_inject import inject_html as _ua_site_ge_inject_html
+    tekst = _ua_site_ge_inject_html(tekst)
+    # <<< UA-ART-SITE-GE-PERSISTENCE-V1: PUBLISHER_ATOMIC_WRITE
+    from ua_seo_metadata import normalize
+    from ua_seo_sitemap import sync_after_write
+    tekst = normalize(tekst, put)
+    vrem = put + ".rem2tmp"
+    with io.open(vrem, "w", encoding="utf-8") as f:
+        f.write(tekst)
+    os.replace(vrem, put)
+    sync_after_write(put, tekst)
+
+
+def opublikovat(kod, proba=False):
+    """Единственная разрешённая публикация карточки. (ok, текст для владельца)"""
+    kod = (kod or "").strip().upper()
+    if not re.match(r"^UA-\d{3,5}$", kod):
+        return False, "Публикация отменена: непонятный номер машины."
+
+    do = _kartochki(krome=kod)          # чужие карточки до работы
+    try:
+        html, diag, m = _master(kod)
+    except Exception as e:
+        _zhurnal(["%s FAIL сборка мастером: %s" % (kod, e)])
+        return False, "Публикация отменена: сборщик не смог собрать %s (%s). Старая страница цела." % (kod, e)
+    if not html:
+        _zhurnal(["%s FAIL машина не найдена в CRM" % kod])
+        return False, "Публикация отменена: %s не найдена среди машин CRM." % kod
+
+    prichiny = proverit(html, kod)
+    if prichiny:
+        _zhurnal(["%s FAIL валидация: %s" % (kod, "; ".join(prichiny))])
+        return False, ("Публикация отменена, страница не прошла проверку:\n· %s\n"
+                       "Прежняя страница на сайте не тронута." % "\n· ".join(prichiny))
+
+    if proba:
+        return True, "Проба: страница %s собрана и проверена, ничего не записано." % kod
+
+    papka_rez = os.path.join(REZERV_KORE, "%s_%s" % (kod, time.strftime("%Y%m%d_%H%M%S")))
+    celi = []
+    for papka in (VIDEO, SITE):
+        if not os.path.isdir(papka):
+            continue
+        celi.append(os.path.join(papka, kod + ".html"))
+        for imya in os.listdir(papka):
+            if re.match(r"^%s-[0-9a-f]{6,10}\.html$" % kod, imya):
+                celi.append(os.path.join(papka, imya))
+        if diag:
+            celi.append(os.path.join(papka, kod + "-diag.html"))
+    try:
+        os.makedirs(papka_rez, exist_ok=True)
+        for put in celi:
+            if os.path.exists(put):
+                shutil.copy2(put, os.path.join(
+                    papka_rez, put.replace(BASE + "/", "").replace("/", "__")))
+    except Exception as e:
+        _zhurnal(["%s FAIL резерв: %s" % (kod, e)])
+        return False, "Публикация отменена: не удалось сделать резерв (%s)." % e
+
+    bylo = dict((put, _sha(put)) for put in celi)
+    try:
+        for put in celi:
+            _zapisat_atomarno(put, diag if put.endswith("-diag.html") else html)
+    except Exception as e:
+        _otkat(papka_rez, celi)
+        _zhurnal(["%s FAIL запись: %s — выполнен откат" % (kod, e)])
+        return False, "Публикация отменена при записи (%s). Выполнен откат." % e
+
+    posle = _kartochki(krome=kod)
+    izmenilis = [k for k in do if do.get(k) != posle.get(k)]
+    if izmenilis:
+        _otkat(papka_rez, celi)
+        _zhurnal(["%s FAIL регрессия: изменились %s — откат" % (kod, ", ".join(izmenilis))])
+        return False, ("Публикация отменена: изменились чужие карточки (%s). "
+                       "Выполнен откат." % ", ".join(os.path.basename(x) for x in izmenilis))
+
+    stalo = dict((put, _sha(put)) for put in celi)
+    _zhurnal(["%s PASS публикация · мастер stranica.sobrat_kartochku · файлов %d"
+              % (kod, len(celi))]
+             + ["    %s  %s -> %s" % (os.path.basename(k), (bylo.get(k) or "-")[:12],
+                                      (stalo.get(k) or "-")[:12]) for k in celi])
+    hvost = "" if diag else "\nМатериалов диагностики в CRM нет — страница диагностики не трогалась."
+    return True, ("Страница %s обновлена на сайте по утверждённому шаблону.%s\n"
+                  "https://www.uaart.com.ua/video/%s.html?v=%d"
+                  % (kod, hvost, kod, int(time.time())))
+
+
+def _otkat(papka_rez, celi):
+    for put in celi:
+        kopiya = os.path.join(papka_rez, put.replace(BASE + "/", "").replace("/", "__"))
+        try:
+            if os.path.exists(kopiya):
+                shutil.copy2(kopiya, put)
+        except Exception:
+            pass
+
+
+# ───────────────────────────── UA-MCF-V1 · MASTER CARD SYSTEM FINAL ──────────
+try:
+    import os as _mcf_os, re as _mcf_re
+    import master_card as _MCF
+
+    _mcf_ishodnaya_zapis = _zapisat_atomarno
+
+    def _zapisat_atomarno(put, tekst):
+        try:
+            imya = _mcf_os.path.basename("%s" % put)
+            m = _mcf_re.search(r"(UA-\d{4})", imya)
+            if m and "-diag" not in imya and isinstance(tekst, str):
+                tekst = _MCF.obrabotat_kartochku(tekst, m.group(1))
+            elif imya.startswith(("index", "katalog")) and isinstance(tekst, str):
+                tekst = _MCF.obrabotat_obshuyu(tekst)
+        except Exception:
+            pass
+        return _mcf_ishodnaya_zapis(put, tekst)
+except Exception:
+    pass
+# ───────────────────────────── конец UA-MCF-V1 ───────────────────────────────
+
+
+# ───────────────────────────── UA-MCF-V2 · ЖЁСТКАЯ ПРОВЕРКА ПЕРЕД ПУБЛИКАЦИЕЙ ──
+try:
+    import os as _v2_os, re as _v2_re, io as _v2_io, time as _v2_time
+    import master_card as _V2
+
+    _v2_ishodnaya = _zapisat_atomarno
+
+    def _zapisat_atomarno(put, tekst):
+        try:
+            imya = _v2_os.path.basename("%s" % put)
+            m = _v2_re.search(r"(UA-\d{4})", imya)
+            if m and "-diag" not in imya and isinstance(tekst, str):
+                bedy = _V2.proverit(tekst, m.group(1))
+                if bedy:
+                    try:
+                        with _v2_io.open("/home/Carix/publish_block.txt", "a",
+                                         encoding="utf-8") as f:
+                            f.write("%s %s BLOCKED: %s\n" % (
+                                _v2_time.strftime("%Y-%m-%d %H:%M:%S"),
+                                m.group(1), "; ".join(bedy)))
+                    except Exception:
+                        pass
+                    raise RuntimeError("PUBLICATION BLOCKED %s: %s"
+                                       % (m.group(1), "; ".join(bedy)))
+        except RuntimeError:
+            raise
+        except Exception:
+            pass
+        return _v2_ishodnaya(put, tekst)
+except Exception:
+    pass
+# ───────────────────────────── конец UA-MCF-V2 ───────────────────────────────
+
+
+# ───────────────────── UA-URGENT-0009-V1 ─────────────────────
+# Минимальный безопасный ремонт публикации UA-0009:
+# активная диагностика с пустым состоянием, единый CTA «Задаток 500 $»,
+# точечная публикация карточки/диагностики/каталога без изменения CRM и WSGI.
+_UA9_BASE_MASTER = _master
+_UA9_BASE_PROVERIT = proverit
+_UA9_BASE_PUBLISH = opublikovat
+
+def _ua9_waiting_text(diag):
+    if not isinstance(diag, str):
+        return diag
+    for old in (
+        "Материалы диагностики пока не добавлены.",
+        "Материалы комплексной диагностики пока не добавлены.",
+        "Данные диагностики пока не добавлены.",
+    ):
+        diag = diag.replace(old, "Комплексная диагностика ожидает данных.")
+    return diag
+
+def _master(kod):
+    html, diag, mashina = _UA9_BASE_MASTER(kod)
+    if mashina is not None:
+        if not diag:
+            try:
+                import stranica as _ua9_stranica
+                diag = _ua9_stranica.sobrat_diagnostiku(mashina)
+            except Exception:
+                diag = None
+        try:
+            import master_card as _ua9_master_card
+            _ua9_master_card.cta_diagnostiki = (
+                lambda nom, m=None: _ua9_master_card._CTA_ON.replace("{KOD}", nom)
+            )
+            if html:
+                html = _ua9_master_card.obrabotat_kartochku(html, kod)
+        except Exception:
+            pass
+    if isinstance(html, str):
+        html = html.replace(
+            ">Забронировать авто за 500 $<", ">Задаток 500 $<")
+        html = html.replace(">Купить авто<", ">Задаток 500 $<")
+    diag = _ua9_waiting_text(diag)
+    return html, diag, mashina
+
+def proverit(html, kod):
+    bedy = [x for x in _UA9_BASE_PROVERIT(html, kod)
+            if x != "нет кнопки Купить"]
+    if "Задаток 500 $" not in (html or ""):
+        bedy.append("нет кнопки Задаток 500 $")
+    return bedy
+
+def _ua9_sobrat_katalog():
+    import stranica as _ua9_s
+    from ua_delivery_status import stage_number
+    spisok = [row for row in _ua9_s.mashiny()
+              if row.get('published') == 1 and stage_number(row.get('status'))]
+    kadry = {}
+    for mashina in spisok:
+        nom = _ua9_s.nomer(mashina)
+        kadry[nom] = _ua9_s.kadry_mashiny(mashina)
+    katalog = _ua9_s.sobrat_katalog(spisok, kadry)
+    try:
+        import master_card as _ua9_m
+        katalog = _ua9_m.obrabotat_obshuyu(katalog)
+    except Exception:
+        pass
+    return katalog, spisok
+
+def ua0009_urgent_probe():
+    kod = "UA-0009"
+    html, diag, mashina = _master(kod)
+    katalog, spisok = _ua9_sobrat_katalog()
+    nomera = []
+    try:
+        import stranica as _ua9_s
+        nomera = [_ua9_s.nomer(x) for x in spisok]
+    except Exception:
+        pass
+    try:
+        import master_card as _ua9_m
+        master_bedy = _ua9_m.proverit(html, kod)
+    except Exception as e:
+        master_bedy = ["master check error: %s" % e]
+    diag_href_count = (html or "").count(kod + "-diag.html")
+    catalog_count = len(re.findall(
+        r"href=['\"]%s\.html" % re.escape(kod), katalog or ""))
+    result = {
+        "card_found": bool(mashina),
+        "card_validation": proverit(html, kod),
+        "master_validation": master_bedy,
+        "diag_page_bytes": len((diag or "").encode("utf-8")),
+        "diag_waiting_text": "Комплексная диагностика ожидает данных." in (diag or ""),
+        "diag_href_count": diag_href_count,
+        "deposit_cta_count": (html or "").count("Задаток 500 $"),
+        "catalog_ua0009_count": catalog_count,
+        "catalog_car_count": len(spisok),
+        "catalog_unique_numbers": len(nomera) == len(set(nomera)),
+    }
+    result["pass"] = bool(
+        result["card_found"]
+        and not result["card_validation"]
+        and not result["master_validation"]
+        and result["diag_page_bytes"] > 5000
+        and result["diag_waiting_text"]
+        and result["diag_href_count"] == 1
+        and result["deposit_cta_count"] == 1
+        and result["catalog_ua0009_count"] == 1
+        and result["catalog_car_count"] >= 9
+        and result["catalog_unique_numbers"]
+    )
+    return result
+
+def ua0009_urgent_publish():
+    kod = "UA-0009"
+    proba = ua0009_urgent_probe()
+    if not proba.get("pass"):
+        return False, "UA-0009 URGENT PROBE FAIL: %s" % json.dumps(
+            proba, ensure_ascii=False, sort_keys=True)
+    ok, soobshchenie = _UA9_BASE_PUBLISH(kod, proba=False)
+    if not ok:
+        return False, soobshchenie
+
+    katalog, spisok = _ua9_sobrat_katalog()
+    metka = time.strftime("%Y%m%d_%H%M%S")
+    rezerv = os.path.join(REZERV_KORE, "%s_URGENT_CATALOG_%s" % (kod, metka))
+    os.makedirs(rezerv, exist_ok=True)
+    zapisannye = []
+    rezervy = {}
+    try:
+        for papka in (VIDEO, SITE):
+            if not os.path.isdir(papka):
+                continue
+            cel = os.path.join(papka, "katalog.html")
+            kopiya = os.path.join(
+                rezerv, os.path.basename(papka.rstrip(os.sep)) + "__katalog.html")
+            if os.path.exists(cel):
+                shutil.copy2(cel, kopiya)
+                rezervy[cel] = kopiya
+            _zapisat_atomarno(cel, katalog)
+            zapisannye.append(cel)
+
+        for cel in zapisannye:
+            fakt = _chitat(cel)
+            skolko = len(re.findall(
+                r"href=['\"]%s\.html" % re.escape(kod), fakt))
+            if skolko != 1:
+                raise RuntimeError(
+                    "catalog verification %s: UA-0009 count=%d" % (cel, skolko))
+    except Exception as e:
+        for cel, kopiya in rezervy.items():
+            try:
+                shutil.copy2(kopiya, cel)
+            except Exception:
+                pass
+        return False, (
+            "Карточка и диагностика созданы, но каталог возвращён из резерва: %s"
+            % e)
+
+    return True, (
+        "%s\nUA-0009 добавлена в каталог. Диагностика активна и ожидает данных. "
+        "CTA: Задаток 500 $. Машин в каталоге: %d."
+        % (soobshchenie, len(spisok))
+    )
+# ─────────────────── конец UA-URGENT-0009-V1 ───────────────────
+# ───────────────────── UA-URGENT-0009-V2 ─────────────────────
+# V1 подтвердил сборку диагностики/каталога; V2 гарантированно вставляет
+# единственную активную ссылку диагностики в карточку до валидации.
+_UA9_MASTER_V1 = _master
+
+def _master(kod):
+    html, diag, mashina = _UA9_MASTER_V1(kod)
+    if html and (kod + "-diag.html") not in html:
+        cta = (
+            '<a class="mcf-diag-cta" href="%s-diag.html" '
+            'style="display:flex;align-items:center;gap:12px;margin:14px 0;'
+            'padding:15px 16px;border-radius:14px;text-decoration:none;'
+            'background:linear-gradient(180deg,rgba(212,175,55,.20),'
+            'rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);'
+            'color:#f4e3ae">'
+            '<span style="font-size:22px;line-height:1">🔧</span>'
+            '<span style="flex:1">'
+            '<span style="display:block;font-weight:800;font-size:16px">'
+            'Комплексная диагностика →</span>'
+            '<span style="display:block;font-size:13px;opacity:.85;'
+            'margin-top:3px">Ожидает данных</span></span>'
+            '<span style="font-size:20px;opacity:.8">›</span></a>'
+        ) % kod
+        poz = html.find("<a class='dejstvie kn_kupit'")
+        if poz < 0:
+            poz = html.find("<a class='dejstvie'")
+        if poz < 0:
+            poz = html.rfind("</body>")
+        if poz < 0:
+            poz = len(html)
+        html = html[:poz] + cta + html[poz:]
+    return html, diag, mashina
+# ─────────────────── конец UA-URGENT-0009-V2 ───────────────────
+# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:PUBLISHER:START
+_UA083_BASE_PUBLISH = _UA9_BASE_PUBLISH
+
+def opublikovat(kod, proba=False):
+    from publish_transaction_guard import publish_one as _ua083_publish_one
+    return _ua083_publish_one(_UA083_BASE_PUBLISH, kod, proba=proba)
+
+def obnovit_katalog():
+    from publish_transaction_guard import rebuild_catalog as _ua083_rebuild_catalog
+    return _ua083_rebuild_catalog()
+# UA-0012-UA-0013-PUBLISH-TRANSACTION-001-V1.0:PUBLISHER:END
+
+# >>> UA099 PUBLICATION CONTRACT V1
+_UA099_BASE_PROVERIT = proverit
+_UA099_BASE_WRITE = _zapisat_atomarno
+
+def _zapisat_atomarno(put, tekst):
+    import os as _ua099_os
+    import re as _ua099_re
+    name = _ua099_os.path.basename(str(put))
+    match = _ua099_re.search(r"(UA-[0-9]{4})-diag\.html$", name, _ua099_re.I)
+    if match and isinstance(tekst, str):
+        import ua_additional_spec as _ua099_spec
+        uid = match.group(1).upper()
+        tekst = _ua099_spec.normalize_diagnostics(tekst, uid)
+        errors = _ua099_spec.diagnostics_contract_errors(tekst, uid)
+        if errors:
+            raise RuntimeError("UA099_DIAGNOSTICS_WRITE:%s:%s" % (uid, ";".join(errors)))
+    return _UA099_BASE_WRITE(put, tekst)
+
+def proverit(html, kod):
+    errors = [item for item in _UA099_BASE_PROVERIT(html, kod)
+              if item not in ("нет кнопки Задаток 500 $", "нет кнопки Купить")]
+    import re as _ua099_re
+    import ua_additional_spec as _ua099_spec
+    stage_match = _ua099_re.search(r"data-ua-stage=['\"](\d+)['\"]", html or "", _ua099_re.I)
+    stage = int(stage_match.group(1)) if stage_match else _ua099_spec._stage_number(kod)
+    expected = "Купить" if stage == 4 else "Задаток 500 $"
+    if expected not in (html or ""):
+        errors.append("нет основной кнопки " + expected)
+    for item in _ua099_spec.public_contract_errors(html or "", kod):
+        errors.append("TASK099: " + item)
+    return list(dict.fromkeys(errors))
+# <<< UA099 PUBLICATION CONTRACT V1
+
+# >>> UA111 FINAL PUBLIC SPEC NORMALIZER V1
+# Some legacy, card-specific _master wrappers run after master_card and may
+# alter HTML comments.  Normalize the completed primary page at the final
+# publisher boundary, immediately before the existing validation/transaction.
+_UA111_BASE_MASTER = _master
+
+def _master(kod):
+    html, diag, card = _UA111_BASE_MASTER(kod)
+    if isinstance(html, str) and html:
+        import ua_additional_spec as _ua111_spec
+        html = _ua111_spec.inject_public_spec(html, kod)
+    return html, diag, card
+# <<< UA111 FINAL PUBLIC SPEC NORMALIZER V1
+
+
+# >>> UA-ART-ISSUE84-PERMANENT-SPEC-V1
+from ua_spec_permanent import ensure_html as _ua84_ensure_html
+from ua_spec_permanent import card_uid_from_path as _ua84_uid_from_path
+from ua_spec_permanent import write_lock as _ua84_write_lock
+
+def _ua84_require_uid(value):
+    candidate = _ua84_uid_from_path(str(value) + ".html")
+    if candidate is None:
+        raise ValueError("UA84_CARD_UID_REQUIRED")
+    return candidate
+
+def _ua84_model_uid(model):
+    # Existing generators use nomer(model); its result is validated before use.
+    value = None
+    if hasattr(model, "get"):
+        value = model.get("auto_number")
+    if not value:
+        value = nomer(model)
+    return _ua84_require_uid(value)
+
+_ua84_previous_zapisat_atomarno = _zapisat_atomarno
+def _zapisat_atomarno(put, tekst):
+    uid = _ua84_uid_from_path(put)
+    if uid is not None:
+        with _ua84_write_lock():
+            tekst = _ua84_ensure_html(tekst, uid)
+            return _ua84_previous_zapisat_atomarno(put, tekst)
+    return _ua84_previous_zapisat_atomarno(put, tekst)
+# <<< UA-ART-ISSUE84-PERMANENT-SPEC-V1

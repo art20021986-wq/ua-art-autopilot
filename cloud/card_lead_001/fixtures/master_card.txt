@@ -1,0 +1,2941 @@
+# -*- coding: utf-8 -*-
+# UA-MASTER-CARD-V2 — единое мастер-правило карточек UA ART.
+# Один источник истины: фото (фасад + фокус), чат, дедуп видео, CTA диагностики,
+# трекинг контейнера, тексты этапов. Никаких правок отдельных HTML.
+
+import os, re, io, json, shutil, sqlite3, hashlib, subprocess, tempfile
+
+METKA  = "MCF-V18"
+DOM    = "/home/Carix"
+VIDEO  = os.path.join(DOM, "video")
+BAZA   = os.path.join(DOM, "crm.db")
+FOKUS  = os.path.join(DOM, "foto_fokus.json")
+FASAD  = os.path.join(DOM, "fasad.json")
+TRACK  = os.path.join(DOM, "tracking.json")
+DUBLI  = os.path.join(DOM, "video_dubli.json")
+STAGE  = os.path.join(DOM, "video", "stage")
+OPT    = os.path.join(DOM, "video", "opt")
+CEL_W, CEL_H = 880, 815           # замер окна: 203x188, аспект 1.08
+
+# ═══════════════════════════════════════════════ CRM
+def stage_po_statusu(status):
+    s = (status or "").strip().lower()
+    if s.startswith("ua_"):
+        return "kiev"
+    if s.startswith("ge_"):
+        return "georgia"
+    if s.startswith("sea_"):
+        return "sea"
+    if s.startswith("kr_"):
+        return "korea"
+    return ""
+
+def vse_kody():
+    """Список машин берётся ТОЛЬКО из CRM: 8, 9, 20 — сколько есть, столько и будет."""
+    try:
+        con = sqlite3.connect("file:%s?mode=ro" % BAZA, uri=True)
+        cur = con.cursor()
+        cur.execute("select auto_number from cars where auto_number is not null "
+                    "order by auto_number")
+        kody = [r[0] for r in cur.fetchall() if r[0]]
+        con.close()
+        return kody
+    except Exception:
+        return []
+
+def kody_na_sayte():
+    """Машины, у которых есть страница — тоже без жёсткого диапазона."""
+    if not os.path.isdir(VIDEO):
+        return []
+    return sorted(set(re.findall(r"^(UA-\d{4})\.html$", "\n".join(os.listdir(VIDEO)),
+                                 re.M)))
+
+def dannye(kod):
+    try:
+        con = sqlite3.connect("file:%s?mode=ro" % BAZA, uri=True)
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("select * from cars where auto_number=?", (kod,))
+        r = cur.fetchone()
+        con.close()
+        return dict(r) if r else {}
+    except Exception:
+        return {}
+
+def _json_fajl(put):
+    try:
+        with io.open(put, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def _zapisat_json(put, d):
+    try:
+        vrem = put + ".tmp"
+        with io.open(vrem, "w", encoding="utf-8") as f:
+            f.write(json.dumps(d, ensure_ascii=False, indent=1))
+        os.replace(vrem, put)
+    except Exception:
+        pass
+
+# ═══════════════════════════════════════════════ ТРЕКИНГ
+LINII = [
+    (("ONEY", "ONEU", "NYKU", "MOLU", "KKLU"), "ONE",
+     "[URL]"),
+]
+
+def tracking(nomer):
+    n = (nomer or "").strip().upper().replace(" ", "")
+    if not n:
+        return (None, None)
+    ruchnoy = _json_fajl(TRACK)
+    if n in ruchnoy and ruchnoy[n]:
+        return ("CRM", ruchnoy[n])
+    for prefiksy, imya, shablon in LINII:
+        for pref in prefiksy:
+            if n.startswith(pref):
+                hvost = n[4:] if (imya == "ONE" and n.startswith("ONEY") and len(n) > 12) else n
+                return (imya, shablon % hvost)
+    return (None, None)
+
+# ═══════════════════════════════════════════════ ФОТО
+def _razmer(put):
+    try:
+        from PIL import Image
+        with Image.open(put) as im:
+            return im.size
+    except Exception:
+        return (0, 0)
+
+def fokus_fajla(put):
+    """Точка фокуса: центр масс детализации (кузов детальный, небо и асфальт ровные)."""
+    kesh = _json_fajl(FOKUS)
+    klyuch = put.replace(DOM, "")
+    try:
+        metka = "%d" % int(os.path.getmtime(put))
+    except Exception:
+        metka = "0"
+    if kesh.get(klyuch, {}).get("m") == metka:
+        return (kesh[klyuch]["x"], kesh[klyuch]["y"])
+    x, y = 50, 50
+    try:
+        from PIL import Image
+        import numpy as np
+        with Image.open(put) as im:
+            im = im.convert("L")
+            im.thumbnail((180, 180))
+            a = np.asarray(im, dtype="float32")
+        e = np.abs(np.diff(a, axis=1))[:-1, :] + np.abs(np.diff(a, axis=0))[:, :-1]
+        m = (e > float(np.median(e)) * 1.6 + 1.0).astype("float32")
+        if m.sum() > 20:
+            h, w = m.shape
+            ys, xs = np.nonzero(m)
+            x = max(20, min(80, int(round(float(xs.mean()) / max(w - 1, 1) * 100))))
+            y = max(25, min(75, int(round(float(ys.mean()) / max(h - 1, 1) * 100))))
+    except Exception:
+        pass
+    kesh[klyuch] = {"x": x, "y": y, "m": metka}
+    _zapisat_json(FOKUS, kesh)
+    return (x, y)
+
+def kandidat_fasada(kod):
+    """ПОДСКАЗКА для владельца, а не решение: горизонтальный крупный кадр.
+    Никогда не используется как «фасад» — перед от зада без модели не отличить."""
+    papka = os.path.join(VIDEO, "foto", kod)
+    if not os.path.isdir(papka):
+        return ""
+    luchshee, ball = "", -1.0
+    for f in sorted(os.listdir(papka))[:16]:
+        if f.startswith(".") or not f.lower().endswith((".jpg", ".jpeg", ".png", ".webp")):
+            continue
+        put = os.path.join(papka, f)
+        w, h = _razmer(put)
+        if not w or not h or float(w) / float(h) < 1.15:
+            continue
+        b = min(float(w * h) / 1200000.0, 1.5)
+        try:
+            b += min(os.path.getsize(put) / 250000.0, 1.0)
+        except Exception:
+            pass
+        if b > ball:
+            luchshee, ball = f, b
+    return luchshee
+
+def pervoe_foto(kod):
+    """ЕДИНОЕ ПРАВИЛО: первое фото автомобиля и есть главное."""
+    papka = os.path.join(VIDEO, "foto", kod)
+    if not os.path.isdir(papka):
+        return ""
+    fajly = sorted([f for f in os.listdir(papka)
+                    if not f.startswith(".")
+                    and f.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))])
+    return fajly[0] if fajly else ""
+
+def front_podtverzhden(kod, m=None):
+    """Главное фото определено всегда: либо cover_photo из CRM, либо первое фото.
+    Ручной выбор фасада не требуется."""
+    return bool(pervoe_foto(kod)) or bool((m or dannye(kod)).get("cover_photo"))
+
+def vybrat_glavnoe(kod, m=None):
+    """1) cover_photo из CRM (если менеджер задал), 2) первое фото автомобиля.
+    Правило одинаково для существующих и всех будущих карточек."""
+    papka = os.path.join(VIDEO, "foto", kod)
+    if not os.path.isdir(papka):
+        return ("001.jpg", "папки фото нет")
+    fajly = sorted([f for f in os.listdir(papka)
+                    if not f.startswith(".")
+                    and f.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))])
+    if not fajly:
+        return ("001.jpg", "фотографий нет")
+    if m is None:
+        m = dannye(kod)
+    from photo_visibility import visible_names
+    fajly = visible_names(m if m is not None else dannye(kod), fajly)
+    if not fajly:
+        raise ValueError("No visible photo available for cover")
+    cover = os.path.basename((m.get("cover_photo") or "").strip()) if m else ""
+    if cover and cover in fajly:
+        return (cover, "cover_photo из CRM")
+    return (fajly[0], "первое фото автомобиля")
+
+def zakrepit_pervoe_foto_v_crm(kody):
+    """Пишет главное фото в cars.cover_photo, чтобы источник истины был один
+    и повторная публикация его не меняла. Меняется только эта колонка."""
+    sdelano = []
+    try:
+        con = sqlite3.connect(BAZA)
+        cur = con.cursor()
+        for kod in kody:
+            imya = pervoe_foto(kod)
+            if not imya:
+                continue
+            cur.execute("select cover_photo from cars where auto_number=?", (kod,))
+            r = cur.fetchone()
+            tek = os.path.basename((r[0] or "").strip()) if r and r[0] else ""
+            if tek == imya:
+                continue
+            cur.execute("update cars set cover_photo=? where auto_number=?", (imya, kod))
+            if cur.rowcount:
+                sdelano.append("%s → %s" % (kod, imya))
+        con.commit()
+        con.close()
+    except Exception as e:
+        return ["ошибка записи: %s" % e]
+    return sdelano
+
+def zapisat_fasad_v_crm():
+    """Переносит подтверждённые фасады из fasad.json в cars.cover_photo.
+    Трогается ровно одна колонка, остальные данные не меняются."""
+    fasady = _json_fajl(FASAD)
+    if not fasady:
+        return []
+    sdelano = []
+    try:
+        con = sqlite3.connect(BAZA)
+        cur = con.cursor()
+        for kod, imya in fasady.items():
+            imya = os.path.basename("%s" % imya)
+            if not imya:
+                continue
+            cur.execute("update cars set cover_photo=? where auto_number=?", (imya, kod))
+            if cur.rowcount:
+                sdelano.append("%s → %s" % (kod, imya))
+        con.commit()
+        con.close()
+    except Exception as e:
+        return ["ошибка записи: %s" % e]
+    return sdelano
+
+
+# ═══════════════════════════════════════════════ SMART CROP: КАДР ПОД БЛОК
+def bbox_obekta(put):
+    """Прямоугольник, в котором лежит сам автомобиль (доли 0..1).
+    Кузов детальный, небо и асфальт ровные — берём границы массы деталей."""
+    try:
+        from PIL import Image
+        import numpy as np
+        with Image.open(put) as im:
+            im = im.convert("L")
+            im.thumbnail((260, 260))
+            a = np.asarray(im, dtype="float32")
+    except Exception:
+        return (0.0, 0.0, 1.0, 1.0)
+    h, w = a.shape
+    if w < 30 or h < 30:
+        return (0.0, 0.0, 1.0, 1.0)
+    e = np.abs(np.diff(a, axis=1))[:-1, :] + np.abs(np.diff(a, axis=0))[:, :-1]
+    porog = float(np.median(e)) * 1.5 + 1.0
+    m = (e > porog).astype("float32")
+    if m.sum() < 30:
+        return (0.0, 0.0, 1.0, 1.0)
+    def granicy(proekciya, dolya=0.04):
+        s = proekciya.cumsum()
+        vsego = s[-1]
+        if vsego <= 0:
+            return (0.0, 1.0)
+        import numpy as np
+        n0 = int(np.searchsorted(s, vsego * dolya))
+        n1 = int(np.searchsorted(s, vsego * (1 - dolya)))
+        return (n0 / float(len(proekciya)), max(n1, n0 + 1) / float(len(proekciya)))
+    x0, x1 = granicy(m.sum(axis=0))
+    y0, y1 = granicy(m.sum(axis=1))
+    return (x0, y0, x1, y1)
+
+def _cvet_kraya(im, storona):
+    """Средний цвет крайней полосы снимка — им заполняется свободное поле.
+    Это не blur и не дорисовка: сплошной цвет фона того же кадра."""
+    w, h = im.size
+    polosa = im.crop((0, 0, w, max(int(h * 0.06), 1))) if storona == "verh" else \
+             im.crop((0, h - max(int(h * 0.06), 1), w, h)) if storona == "niz" else \
+             im.crop((0, 0, max(int(w * 0.06), 1), h)) if storona == "levo" else \
+             im.crop((w - max(int(w * 0.06), 1), 0, w, h))
+    malenkiy = polosa.resize((1, 1))
+    return malenkiy.getpixel((0, 0))
+
+def sdelat_vitrinnoe(kod, imya_fajla):
+    """РЕЖИМ C — реальное кадрирование: из снимка вырезается окно точно в
+    пропорции витринного блока, центрированное по автомобилю. Кадр заполняет
+    окно целиком, срезается только фон. Ни заливки краёв, ни полей, ни blur."""
+    ishod = os.path.join(VIDEO, "foto", kod, imya_fajla)
+    if not os.path.exists(ishod):
+        return ("", {"ok": False, "prichina": "файла нет"})
+    try:
+        os.makedirs(STAGE)
+    except Exception:
+        pass
+    try:
+        from PIL import Image
+        with Image.open(ishod) as im:
+            im = im.convert("RGB")
+            w, h = im.size
+            aspekt = float(CEL_W) / float(CEL_H)
+            bx0, by0, bx1, by1 = bbox_obekta(ishod)
+            px0, py0, px1, py1 = bx0 * w, by0 * h, bx1 * w, by1 * h
+            # максимально возможное окно нужных пропорций внутри снимка
+            if w / float(h) >= aspekt:
+                ch = float(h)
+                cw = ch * aspekt
+            else:
+                cw = float(w)
+                ch = cw / aspekt
+            cx, cy = (px0 + px1) / 2.0, (py0 + py1) / 2.0
+            left = min(max(cx - cw / 2.0, 0.0), max(w - cw, 0.0))
+            top = min(max(cy - ch / 2.0, 0.0), max(h - ch, 0.0))
+            srezano = 1.0 - (cw * ch) / float(w * h)
+            vidno_x = max(0.0, min(px1, left + cw) - max(px0, left))
+            vidno_y = max(0.0, min(py1, top + ch) - max(py0, top))
+            ploshad = max((px1 - px0) * (py1 - py0), 1.0)
+            srez_kuzova = 1.0 - (vidno_x * vidno_y) / ploshad
+            kadr = im.crop((int(left), int(top),
+                            int(left + cw), int(top + ch))).resize(
+                                (CEL_W, CEL_H), Image.LANCZOS)
+            put_jpg = os.path.join(STAGE, "%s.jpg" % kod)
+            put_webp = os.path.join(STAGE, "%s.webp" % kod)
+            kadr.save(put_jpg, quality=86, optimize=True, progressive=True)
+            try:
+                kadr.save(put_webp, quality=84, method=5)
+            except Exception:
+                put_webp = ""
+    except Exception as e:
+        return ("", {"ok": False, "prichina": "%s" % e})
+    legkiy = put_webp or put_jpg
+    return ("/video/stage/%s" % os.path.basename(legkiy),
+            {"ok": True, "celikom": srez_kuzova < 0.02, "bez_poley": True,
+             "dolya_polya": 0, "srez": round(srezano * 100),
+             "srez_kuzova": round(srez_kuzova * 100), "ishod": imya_fajla,
+             "ves": os.path.getsize(legkiy), "razmer": "%dx%d" % (CEL_W, CEL_H)})
+
+def podgotovit_vitrinu(kod, m=None):
+    """ЖИВОЕ ФОТО = ПЕРВОЕ ФОТО АВТОМОБИЛЯ. Никакого перебора кадров,
+    никакого «лучшего снимка»: только фото №1 из галереи машины
+    (или cover_photo, если менеджер задал его в CRM)."""
+    if m is None:
+        m = dannye(kod)
+    imya, istochnik = vybrat_glavnoe(kod, m)
+    pervoe = pervoe_foto(kod)
+    put, otchet = sdelat_vitrinnoe(kod, imya)
+    otchet["foto"] = imya
+    otchet["pervoe_foto"] = pervoe
+    otchet["istochnik"] = istochnik
+    otchet["sovpadaet_s_pervym"] = bool(imya and imya == pervoe)
+    otchet["podtverzhden"] = True
+    return (put, otchet)
+
+def stil_fokusa(kod, imya_fajla, vitrina=False, vazhno=False):
+    """Кадр витрины уже подготовлен точно под окно, поэтому здесь только
+    заполнение окна без искажения пропорций."""
+    vzh = "!important" if vazhno else ""
+    if vitrina:
+        return "object-fit:cover%s;object-position:50%% 50%%%s" % (vzh, vzh)
+    put = os.path.join(VIDEO, "foto", kod, imya_fajla or "")
+    x, y = fokus_fajla(put) if imya_fajla and os.path.exists(put) else (50, 50)
+    return "object-position:%d%% %d%%%s" % (x, y, vzh)
+
+def _pravka_tega_foto(teg, kod, glav, vitrina):
+    src = re.search(r'src=["\']([^"\']*/foto/(UA-\d{4})/([^"\']+))["\']', teg)
+    if not src:
+        return teg
+    tek = src.group(3)
+    if glav and glav != tek:
+        teg = teg.replace("/foto/%s/%s" % (kod, tek), "/foto/%s/%s" % (kod, glav))
+    if "mcf-foto" in teg:
+        return teg
+    stil = stil_fokusa(kod, glav or tek, vitrina=vitrina, vazhno=vitrina)
+    m = re.search(r'style=["\']([^"\']*)["\']', teg)
+    if m:
+        staryy = re.sub(r"object-(fit|position)\s*:[^;]*;?", "", m.group(1))
+        teg = teg.replace(m.group(0), 'style="%s;%s" data-mcf-foto="1"'
+                          % (staryy.rstrip(";"), stil), 1)
+    else:
+        teg = teg[:-1].rstrip("/") + ' style="%s" data-mcf-foto="1">' % stil
+    return teg
+
+def _dhash(put_kadra):
+    try:
+        from PIL import Image
+        import numpy as np
+        with Image.open(put_kadra) as im:
+            im = im.convert("L").resize((9, 8))
+            a = np.asarray(im, dtype="int16")
+        bity = (a[:, 1:] > a[:, :-1]).flatten()
+        v = 0
+        for b in bity:
+            v = (v << 1) | int(b)
+        return v
+    except Exception:
+        return None
+
+def _dlitelnost(put):
+    try:
+        r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                            "-of", "default=nw=1:nk=1", put],
+                           capture_output=True, timeout=25)
+        return float((r.stdout or b"0").decode().strip() or 0)
+    except Exception:
+        return 0.0
+
+def _put_iz_src(src):
+    if src.startswith("/video/"):
+        return os.path.join(DOM, src.lstrip("/"))
+    return src if src.startswith("/") else os.path.join(VIDEO, src)
+
+def _rasstoyanie(a, b):
+    return bin(a ^ b).count("1")
+
+def otpechatki_kadrov(put):
+    """Пять кадров: начало, 25 %, 50 %, 75 %, конец — устойчиво к пережатию."""
+    d = _dlitelnost(put)
+    if d <= 0:
+        return []
+    rez = []
+    papka = tempfile.mkdtemp(prefix="mcf_kadry_")
+    try:
+        for dolya in (0.05, 0.25, 0.5, 0.75, 0.95):
+            kadr = os.path.join(papka, "k%d.jpg" % int(dolya * 100))
+            try:
+                subprocess.run(["ffmpeg", "-nostdin", "-v", "error", "-ss", "%.2f" % (d * dolya),
+                                "-i", put, "-frames:v", "1", "-y", kadr],
+                               capture_output=True, timeout=40)
+            except Exception:
+                continue
+            if os.path.exists(kadr):
+                h = _dhash(kadr)
+                if h is not None:
+                    rez.append(h)
+    finally:
+        try:
+            for f in os.listdir(papka):
+                os.remove(os.path.join(papka, f))
+            os.rmdir(papka)
+        except Exception:
+            pass
+    return rez
+
+def otpechatok_video(put):
+    h = hashlib.sha256()
+    try:
+        with io.open(put, "rb") as f:
+            while True:
+                b = f.read(524288)
+                if not b:
+                    break
+                h.update(b)
+        return h.hexdigest()
+    except Exception:
+        return None
+
+def sodejatelno_odno(put1, put2):
+    """True — практически один и тот же ролик (пережатый, обрезанный по краям и т. п.)."""
+    if otpechatok_video(put1) == otpechatok_video(put2):
+        return True
+    k1, k2 = otpechatki_kadrov(put1), otpechatki_kadrov(put2)
+    if len(k1) < 3 or len(k2) < 3:
+        return False
+    n = min(len(k1), len(k2))
+    sovpalo = sum(1 for i in range(n) if _rasstoyanie(k1[i], k2[i]) <= 8)
+    return sovpalo >= max(3, int(n * 0.6))
+
+def ubrat_dubli_video(html, kod=""):
+    """Уровень 1 — SHA256, уровень 2 — сравнение кадров. Файлы не удаляются:
+    повтор просто не показывается, решение пишется в video_dubli.json."""
+    bloki = list(re.finditer(r"<video\b[^>]*>.*?</video>|<video\b[^>]*/?>", html, re.S))
+    if len(bloki) < 2:
+        return html, 0
+    zhurnal = _json_fajl(DUBLI)
+    ostavleny, ubrano, rez, kon = [], 0, [], 0
+    for m in bloki:
+        src = re.search(r'src="([^"]+)"', m.group(0))
+        if not src:
+            continue
+        put = _put_iz_src(src.group(1))
+        if not os.path.exists(put):
+            continue
+        dubl = False
+        for bylo, bylo_src in ostavleny:
+            # ТОЛЬКО один и тот же файл, вставленный дважды (защита от
+            # размножения при повторной публикации). Разные ролики не трогаем.
+            if os.path.abspath(bylo) == os.path.abspath(put) or \
+                    otpechatok_video(bylo) == otpechatok_video(put):
+                dubl = True
+                break
+        if dubl:
+            rez.append(html[kon:m.start()])
+            kon = m.end()
+            ubrano += 1
+        else:
+            ostavleny.append((put, src.group(1)))
+    _zapisat_json(DUBLI, zhurnal)
+    if ubrano:
+        rez.append(html[kon:])
+        return ("".join(rez), ubrano)
+    return (html, 0)
+
+
+def video_uzhe_est(kod, put_novogo):
+    """Для точки загрузки видео в CRM: True → VIDEO ALREADY EXISTS."""
+    for koren, _, fajly in os.walk(VIDEO):
+        if "/preview" in koren or "/archive" in koren:
+            continue
+        for f in fajly:
+            if f.startswith(".") or not f.lower().endswith((".mp4", ".mov", ".m4v", ".webm")):
+                continue
+            if kod not in f and kod not in koren:
+                continue
+            put = os.path.join(koren, f)
+            if os.path.abspath(put) == os.path.abspath(put_novogo):
+                continue
+            if sodejatelno_odno(put, put_novogo):
+                return True
+    return False
+
+# ═══════════════════════════════════════════════ ОБЛЕГЧЕНИЕ КАРТИНОК
+def oblegchit(src, max_w=900, kachestvo=82):
+    """Делает лёгкую webp-копию тяжёлой картинки в /video/opt и возвращает её адрес.
+    Оригиналы не трогаются. Если копия уже свежая — используется она."""
+    if not src.startswith("/video/") or "/opt/" in src or "/stage/" in src:
+        return src
+    ishod = os.path.join(DOM, src.lstrip("/").split("?")[0])
+    if not os.path.exists(ishod):
+        return src
+    try:
+        if os.path.getsize(ishod) < 70000:
+            return src               # и так лёгкая
+    except Exception:
+        return src
+    imya = re.sub(r"[^A-Za-z0-9_.-]", "_", src.lstrip("/"))
+    imya = os.path.splitext(imya)[0] + ".webp"
+    cel = os.path.join(OPT, imya)
+    try:
+        if os.path.exists(cel) and os.path.getmtime(cel) >= os.path.getmtime(ishod):
+            return "/video/opt/%s" % imya
+    except Exception:
+        pass
+    try:
+        os.makedirs(OPT)
+    except Exception:
+        pass
+    try:
+        from PIL import Image
+        with Image.open(ishod) as im:
+            im = im.convert("RGB")
+            if im.size[0] > max_w:
+                k = max_w / float(im.size[0])
+                im = im.resize((max_w, max(int(im.size[1] * k), 1)), Image.LANCZOS)
+            im.save(cel, quality=kachestvo, method=5)
+    except Exception:
+        return src
+    try:
+        if os.path.getsize(cel) >= os.path.getsize(ishod):
+            return src               # выигрыша нет
+    except Exception:
+        pass
+    return "/video/opt/%s" % imya
+
+# ═══════════════════════════════════════════════ КАНОНИЧЕСКИЕ ПУТИ
+def kanonicheskiy_put(kod, papka=None):
+    """Один production-путь на машину. Хеш — только метаданные версии."""
+    return os.path.join(papka or VIDEO, "%s.html" % kod)
+
+def versiya_kartochki(kod):
+    put = kanonicheskiy_put(kod)
+    try:
+        with io.open(put, "rb") as f:
+            return hashlib.sha256(f.read()).hexdigest()[:8]
+    except Exception:
+        return ""
+
+# ═══════════════════════════════════════════════ ДЕДУП ФАЙЛОВ МАШИНЫ
+ARHIV_DUBLEY = os.path.join(DOM, "archive", "video_dubli")
+
+def video_fajly_mashiny(kod):
+    spisok = []
+    for koren, _, fajly in os.walk(VIDEO):
+        if "/preview" in koren or "/archive" in koren or "/stage" in koren:
+            continue
+        for f in sorted(fajly):
+            if f.startswith(".") or not f.lower().endswith((".mp4", ".mov", ".m4v", ".webm")):
+                continue
+            if f.startswith(kod):
+                spisok.append(os.path.join(koren, f))
+    return spisok
+
+def svedeniya_video(put):
+    d = {"put": put, "razmer": 0, "dlitelnost": 0.0, "razreshenie": "?", "sha": ""}
+    try:
+        d["razmer"] = os.path.getsize(put)
+    except Exception:
+        pass
+    d["sha"] = otpechatok_video(put) or ""
+    d["dlitelnost"] = round(_dlitelnost(put), 2)
+    try:
+        r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0",
+                            "-show_entries", "stream=width,height",
+                            "-of", "csv=p=0:s=x", put], capture_output=True, timeout=25)
+        d["razreshenie"] = (r.stdout or b"").decode().strip() or "?"
+    except Exception:
+        pass
+    return d
+
+def ubrat_dubli_v_istochnike(kod):
+    """Содержательные дубли ФАЙЛОВ машины уезжают в archive/video_dubli.
+    Оригинал не уничтожается, генератор их больше не видит — значит и cikl2 тоже."""
+    fajly = video_fajly_mashiny(kod)
+    otchet = {"bylo": [svedeniya_video(f) for f in fajly], "ubrano": [], "shozhest": []}
+    if len(fajly) < 2:
+        otchet["stalo"] = len(fajly)
+        return otchet
+    try:
+        os.makedirs(ARHIV_DUBLEY)
+    except Exception:
+        pass
+    ostavleny = []
+    for put in sorted(fajly, key=lambda f: -os.path.getsize(f)):
+        dubl_dlya = None
+        for bylo in ostavleny:
+            if sodejatelno_odno(bylo, put):
+                dubl_dlya = bylo
+                break
+        if dubl_dlya and False:
+            k1, k2 = otpechatki_kadrov(dubl_dlya), otpechatki_kadrov(put)
+            n = min(len(k1), len(k2))
+            sovpalo = sum(1 for i in range(n) if _rasstoyanie(k1[i], k2[i]) <= 8)
+            otchet["shozhest"].append("%s ≈ %s: совпало кадров %d из %d"
+                                      % (os.path.basename(dubl_dlya),
+                                         os.path.basename(put), sovpalo, n))
+            cel = os.path.join(ARHIV_DUBLEY, os.path.basename(put))
+            try:
+                shutil.move(put, cel)
+                otchet["ubrano"].append("%s → archive/video_dubli/" % os.path.basename(put))
+            except Exception as e:
+                otchet["ubrano"].append("не удалось убрать %s: %s" % (put, e))
+        else:
+            ostavleny.append(put)
+    otchet["stalo"] = len(video_fajly_mashiny(kod))
+    return otchet
+
+def unikalnye_video(puti):
+    """Сколько содержательно РАЗНЫХ роликов в списке файлов."""
+    gruppy = []
+    for put in puti:
+        nashli = False
+        for g in gruppy:
+            if sodejatelno_odno(g[0], put):
+                g.append(put)
+                nashli = True
+                break
+        if not nashli:
+            gruppy.append([put])
+    return gruppy
+
+def svesti_k_unikalnym(kod):
+    """ХУК ДЕДУПА: вызывается публикацией ДО сборки HTML. Копии одного и того же
+    материала уводятся в archive/video_dubli, разные ролики остаются."""
+    fajly = video_fajly_mashiny(kod)
+    if len(fajly) < 2:
+        return {"fajlov": len(fajly), "unikalnyh": len(fajly), "ubrano": []}
+    gruppy = unikalnye_video(fajly)
+    ubrano = []
+    arhiv = os.path.join(DOM, "archive", "video_dubli")
+    for g in gruppy:
+        for lishniy in g[1:]:
+            try:
+                os.makedirs(arhiv)
+            except Exception:
+                pass
+            try:
+                shutil.move(lishniy, os.path.join(arhiv, os.path.basename(lishniy)))
+                ubrano.append(os.path.basename(lishniy))
+            except Exception:
+                pass
+    ostalos = video_fajly_mashiny(kod)
+    return {"fajlov": len(ostalos), "unikalnyh": len(unikalnye_video(ostalos)),
+            "ubrano": ubrano}
+
+def nayti_poteryannoe_video(kod, imeyushiesya):
+    """Ищет в uploads, archive и резервах ролик машины, которого нет среди текущих."""
+    mesta = [os.path.join(DOM, "uploads"), os.path.join(DOM, "archive")]
+    kandidaty = []
+    for mesto in mesta:
+        if not os.path.isdir(mesto):
+            continue
+        for koren, _, fajly in os.walk(mesto):
+            for f in fajly:
+                if f.startswith(".") or not f.lower().endswith((".mp4", ".mov", ".m4v", ".webm")):
+                    continue
+                if kod not in f:
+                    continue
+                kandidaty.append(os.path.join(koren, f))
+    novye = []
+    for k in kandidaty:
+        if any(sodejatelno_odno(k, e) for e in imeyushiesya + novye):
+            continue
+        novye.append(k)
+    return novye
+
+# ═══════════════════════════════════════════════ ЧАТ (БЕЗ ВСТАВКИ HTML В ТЕКСТ)
+STAGE_CSS = """<style id="mcf-stage-css">
+/* подписи карточек не обрезаем: содержимое важнее фиксированной высоты */
+.stage-card{overflow:visible!important}
+.stage-card .stage-live{display:block!important}
+@media (max-width:560px){
+.stage-card{height:auto!important;min-height:0!important;padding-bottom:10px!important}
+}
+</style>"""
+
+IZMERITEL = """<script id="mcf-izmer">
+(function(){try{
+if(location.search.indexOf("izmer=1")<0)return;
+window.addEventListener("load",function(){
+ var f=document.querySelector(".stage-live");if(!f)return;
+ var r=f.getBoundingClientRect();
+ var d=document.createElement("div");
+ d.style.cssText="position:fixed;left:8px;bottom:8px;z-index:99999;background:#111;"+
+  "color:#0f0;font:14px/1.3 monospace;padding:8px 10px;border-radius:8px";
+ d.textContent="окно "+Math.round(r.width)+"x"+Math.round(r.height)+
+  " (аспект "+(r.width/r.height).toFixed(2)+")";
+ document.body.appendChild(d);});
+}catch(e){}})();
+</script>"""
+
+CHAT_CSS = """<style id="mcf-chat-css">
+/* Desktop не меняем */
+a.mcf-chat,.mcf-chat{position:fixed!important;right:16px!important;left:auto!important;
+bottom:calc(16px + env(safe-area-inset-bottom))!important;z-index:9990!important;
+display:inline-flex!important;align-items:center!important;gap:8px!important;
+width:auto!important;padding:11px 16px!important;border-radius:999px!important;
+font-size:15px!important;line-height:1!important;white-space:nowrap!important}
+/* Телефон: маленький кружок, не закрывает автомобиль, стрелку и текст.
+   Правило ловит кнопку по ссылке на WhatsApp и слову chat в классе,
+   поэтому работает даже если наш класс не проставился. */
+@media (max-width:900px){
+body a.mcf-chat,
+body a[href*="wa.me"][class*="chat"],
+body a[href*="wa.me"][id*="chat"]{
+width:44px!important;min-width:44px!important;max-width:44px!important;
+height:44px!important;padding:0!important;border-radius:50%!important;
+display:flex!important;align-items:center!important;justify-content:center!important;
+right:10px!important;left:auto!important;
+bottom:calc(78px + env(safe-area-inset-bottom))!important;
+font-size:0!important;line-height:0!important;gap:0!important;overflow:hidden!important;
+opacity:.94!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important}
+body a.mcf-chat svg,
+body a[href*="wa.me"][class*="chat"] svg{width:22px!important;height:22px!important;
+flex:0 0 auto!important;display:block!important}
+body a.mcf-chat > *:not(svg),
+body a[href*="wa.me"][class*="chat"] > *:not(svg){display:none!important}
+body a.mcf-chat::after,body a[href*="wa.me"][class*="chat"]::after{content:""!important}
+}
+</style>"""
+
+MARKERY_STARYE = ("mcf-ch-full", "mcf-ch-short")
+_OTKR = ("<", "&lt;", "\\u003c", "\u003c", "&#60;", "&#x3c;", "&#x3C;")
+_ZAKR = (">", "&gt;", "\\u003e", "\u003e", "&#62;", "&#x3e;", "&#x3E;")
+
+def _granica_vlevo(html, poz):
+    luchshe, dlina = -1, 0
+    for o in _OTKR:
+        i = html.rfind(o, max(0, poz - 400), poz)
+        if i > luchshe:
+            luchshe, dlina = i, len(o)
+    return luchshe
+
+def _granica_vpravo(html, poz):
+    luchshe, dlina = len(html), 0
+    for z in _ZAKR:
+        i = html.find(z, poz, poz + 400)
+        if i != -1 and i < luchshe:
+            luchshe, dlina = i, len(z)
+    return luchshe + dlina if dlina else -1
+
+def fragment(html, vokrug="Чат online", shirina=130):
+    """Кусок страницы вокруг надписи кнопки — чтобы видеть реальный вид."""
+    poz = html.find(vokrug)
+    if poz < 0:
+        for mk in MARKERY_STARYE:
+            poz = html.find(mk)
+            if poz >= 0:
+                break
+    if poz < 0:
+        return ""
+    return html[max(0, poz - shirina):poz + shirina].replace("\n", " ")
+
+def ochistit_staroe(html):
+    """Вырезает вставки прежней версии по МАРКЕРУ, а не по форме записи:
+    границы тега ищутся во всех видах (< , &lt; , \\u003c и т. п.),
+    поэтому работает и в обычном HTML, и в экранированном, и внутри JS-строки."""
+    if not any(mk in html for mk in MARKERY_STARYE):
+        return html
+    for _ in range(60):
+        poz = -1
+        for mk in MARKERY_STARYE:
+            i = html.find(mk)
+            if i >= 0 and (poz < 0 or i < poz):
+                poz = i
+        if poz < 0:
+            break
+        a = _granica_vlevo(html, poz)
+        b = _granica_vpravo(html, poz)
+        if a < 0 or b <= a:
+            html = html.replace(html[poz:poz + len("mcf-ch-full")], "", 1)
+            continue
+        kusok = html[a:b]
+        if (b - a) > 140 or "<a " in kusok or "href=" in kusok:
+            # опасно: можно снести саму ссылку — убираем только сам маркер
+            html = html[:poz] + html[poz + len("mcf-ch-full"):] \
+                if html[poz:poz + len("mcf-ch-full")] == "mcf-ch-full" \
+                else html[:poz] + html[poz + len("mcf-ch-short"):]
+            continue
+        html = html[:a] + html[b:]
+    # осиротевшие закрывающие теги рядом с надписью кнопки
+    poz = html.find("Чат online")
+    if poz >= 0:
+        n, k = max(0, poz - 400), min(len(html), poz + 400)
+        okno = html[n:k]
+        for zakr in ("&lt;/span&gt;", "\\u003c/span\\u003e", "\u003c/span\u003e",
+                     "&#60;/span&#62;", "</span>"):
+            okno = okno.replace(zakr, "")
+        okno = okno.replace("Чат onlineЧат", "Чат online").replace("Чат online Чат", "Чат online")
+        html = html[:n] + okno + html[k:]
+    return html
+
+CHAT_TELEFON = "[N]"
+_CHAT_SVG = ('<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">'
+             '<path d="M12 2a[N].7 15l-1.2 4.4 4.5-1.2A[N]zm5.6 '
+             '14.2c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.2-.8-2.7-1.1-4.4-3.9-4.5-4-.1-.2-1-1.4-1-2.7 '
+             '0-1.3.7-1.9.9-2.2.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 '
+             '1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.5.3.1.2.1.7-.1 1.2z"/></svg>')
+CHAT_VIDZHET = ('<a class="mcf-chat" href="[URL]" target="_blank" rel="noopener" '
+                'aria-label="Написать в WhatsApp" '
+                'style="background:#25D366;color:#08210f;text-decoration:none;font-weight:700">'
+                '%s<span>Чат online</span></a>' % (CHAT_TELEFON, _CHAT_SVG))
+
+def _skolko_chatov(html):
+    return html.count('class="mcf-chat')
+
+def obespechit_chat(html):
+    """ПОРЯДОК: убрать legacy → пометить существующий (лишние удалить) →
+    если чата не осталось, вставить чистый мастер-виджет → добавить CSS.
+    Валидация count = 1 делается только ПОСЛЕ этого."""
+    html = ochistit_staroe(html)
+    najdeno = [0]
+
+    def zamena(m):
+        otkr, vnutr, zakr = m.group(1), m.group(2), m.group(3)
+        najdeno[0] += 1
+        if najdeno[0] > 1:
+            return ""
+        if "mcf-chat" in otkr:
+            return otkr + vnutr + zakr
+        if 'class="' in otkr:
+            otkr = otkr.replace('class="', 'class="mcf-chat ', 1)
+        elif "class='" in otkr:
+            otkr = otkr.replace("class='", "class='mcf-chat ", 1)
+        else:
+            otkr = otkr[:-1] + ' class="mcf-chat">'
+        return otkr + vnutr + zakr
+
+    html = re.sub(r"(<a\b[^>]*>)((?:(?!</a>).)*?Чат online(?:(?!</a>).)*?)(</a>)",
+                  zamena, html, flags=re.S)
+    if _skolko_chatov(html) == 0:
+        # запасной поиск: плавающая ссылка на WhatsApp со словом «Чат»
+        html = re.sub(r"(<a\b[^>]*wa\.me[^>]*>)((?:(?!</a>).)*?Чат(?:(?!</a>).)*?)(</a>)",
+                      zamena, html, flags=re.S)
+    if _skolko_chatov(html) == 0:
+        if "</body>" in html:
+            html = html.replace("</body>", CHAT_VIDZHET + "</body>", 1)
+        else:
+            html = html + CHAT_VIDZHET
+    if 'id="mcf-chat-css"' not in html:
+        html = html.replace("</head>", CHAT_CSS + "</head>", 1) \
+            if "</head>" in html else CHAT_CSS + html
+    if 'id="mcf-izmer"' not in html and "stage-card" in html:
+        html = html.replace("</body>", IZMERITEL + "</body>", 1) \
+            if "</body>" in html else html + IZMERITEL
+    if 'id="mcf-stage-css"' not in html and "stage-card" in html:
+        html = html.replace("</head>", STAGE_CSS + "</head>", 1) \
+            if "</head>" in html else STAGE_CSS + html
+    return html, _skolko_chatov(html)
+
+def pochinit_chat(html):
+    """Ровно один компактный чат. Только класс и CSS — разметка текста не трогается."""
+    html = ochistit_staroe(html)
+    najdeno = [0]
+
+    def zamena(m):
+        otkr, vnutr, zakr = m.group(1), m.group(2), m.group(3)
+        najdeno[0] += 1
+        if najdeno[0] > 1:
+            return ""
+        if "mcf-chat" in otkr:
+            return otkr + vnutr + zakr
+        if 'class="' in otkr:
+            otkr = otkr.replace('class="', 'class="mcf-chat ', 1)
+        elif "class='" in otkr:
+            otkr = otkr.replace("class='", "class='mcf-chat ", 1)
+        else:
+            otkr = otkr[:-1] + ' class="mcf-chat">'
+        return otkr + vnutr + zakr
+
+    novyy = re.sub(r"(<a\b[^>]*>)((?:(?!</a>).)*?Чат online(?:(?!</a>).)*?)(</a>)",
+                   zamena, html, flags=re.S)
+    if najdeno[0] and 'id="mcf-chat-css"' not in novyy:
+        novyy = novyy.replace("</head>", CHAT_CSS + "</head>", 1) \
+            if "</head>" in novyy else CHAT_CSS + novyy
+    return novyy, najdeno[0]
+
+# ═══════════════════════════════════════════════ ДИАГНОСТИКА: ПОНЯТНАЯ КНОПКА
+def est_materialy(kod, m=None):
+    """Активная кнопка только при реальных материалах именно этой машины."""
+    if m is None:
+        m = dannye(kod)
+    if not os.path.exists(os.path.join(VIDEO, "%s-diag.html" % kod)):
+        return False
+    for pole in ("diag_link", "diag_text", "diag_report"):
+        if ("%s" % (m.get(pole) or "")).strip():
+            return True
+    for pole in ("condition_photos", "condition_videos"):
+        v = ("%s" % (m.get(pole) or "")).strip()
+        if v and v not in ("[]", "null", "{}"):
+            return True
+    papka = os.path.join(VIDEO, "diag", kod)
+    if os.path.isdir(papka):
+        for f in os.listdir(papka):
+            if not f.startswith(".") and f.lower().endswith(
+                    (".jpg", ".jpeg", ".png", ".webp", ".mp4", ".mov", ".webm")):
+                return True
+    return False
+
+_CTA_ON = (
+    '<a class="mcf-diag-cta" href="{KOD}-diag.html" '
+    'style="display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;'
+    'border-radius:14px;text-decoration:none;'
+    'background:linear-gradient(180deg,rgba(212,175,55,.20),rgba(212,175,55,.08));'
+    'border:1px solid rgba(212,175,55,.55);color:#f4e3ae">'
+    '<span style="font-size:22px;line-height:1">🔧</span>'
+    '<span style="flex:1">'
+    '<span style="display:block;font-weight:800;font-size:16px">Комплексная диагностика →</span>'
+    '<span style="display:block;font-size:13px;opacity:.85;margin-top:3px">'
+    'ЛКП · OBD · ходовая · фото · видео</span></span>'
+    '<span style="font-size:20px;opacity:.8">›</span></a>')
+
+_CTA_OFF = (
+    '<div class="mcf-diag-cta mcf-diag-off" '
+    'style="display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;'
+    'border-radius:14px;background:rgba(255,255,255,.05);'
+    'border:1px dashed rgba(255,255,255,.25);color:#c9d4e2">'
+    '<span style="font-size:22px;line-height:1">🔧</span>'
+    '<span style="flex:1"><span style="display:block;font-weight:700;font-size:15px">'
+    'Диагностика готовится</span>'
+    '<span style="display:block;font-size:13px;opacity:.8;margin-top:3px">'
+    'Материалы проверки появятся здесь</span></span></div>')
+
+def cta_diagnostiki(kod, m=None):
+    return _CTA_ON.replace("{KOD}", kod) if est_materialy(kod, m) else _CTA_OFF
+
+# ═══════════════════════════════════════════════ ТЕКСТЫ ЭТАПОВ
+SHAG_KIEV_STARYY = "Киев: растаможка и выдача"
+SHAG_KIEV_NOVYY  = "Киев: растаможен · готов к выдаче"
+
+_O = ("border-radius:14px;padding:16px 18px;margin:18px 0;"
+      "background:linear-gradient(180deg,rgba(212,175,55,.10),rgba(11,21,36,.55));"
+      "border:1px solid rgba(212,175,55,.35);line-height:1.55")
+_Z = "font-weight:800;font-size:17px;letter-spacing:.2px;color:#e8c766;margin:0 0 8px"
+_V = ("margin:12px 0 0;padding:11px 13px;border-radius:10px;"
+      "background:rgba(212,175,55,.16);border:1px solid rgba(212,175,55,.5);"
+      "font-weight:700;color:#f4e3ae")
+
+TEKSTY = {
+ "kiev": ('<div class="mcf-etap mcf-kiev" style="' + _O + '">'
+          '<div style="' + _Z + '">Автомобиль уже в Киеве — можно приехать на осмотр</div>'
+          '<div>Автомобиль полностью растаможен, сертифицирован и готов к оформлению на '
+          'нового владельца — доплат по доставке и оформлению нет.</div>'
+          '<div style="' + _V + '">Автомобиль не эксплуатировался по Украине. '
+          'Вы будете его первым владельцем в Украине.</div>'
+          '<div style="margin-top:10px">Можно лично осмотреть автомобиль, пройти тест-драйв '
+          'и оформить покупку.<br>Осмотр в Киеве: просп. Победы, 20.</div></div>'),
+ "georgia": ('<div class="mcf-etap mcf-georgia" style="' + _O + '">'
+             '<div style="' + _Z + '">Автомобиль уже в Грузии</div>'
+             '<div>После вашего бронирования автомобиль отправляется в Киев ближайшим '
+             'регулярным автовозом. Ориентировочно около 10 дней — и автомобиль будет '
+             'растаможен и готов к выдаче в Киеве.</div>'
+             '<div style="margin-top:8px">Отправки из Грузии в Киев выполняются каждую неделю. '
+             'Автомобиль уже прошёл самый длительный этап маршрута, поэтому ожидание значительно '
+             'меньше, чем при покупке машины ещё в Корее или в море.</div>'
+             '<div style="' + _V + '">Не нашли подходящий автомобиль?</div>'
+             '<div style="margin-top:8px">Подберём автомобиль непосредственно в Грузии — '
+             'на рынке AUTOPAPA и по предложениям по всей стране. Проверим автомобиль перед '
+             'покупкой, согласуем состояние и стоимость, организуем выкуп, доставку в Украину, '
+             'растаможку, сертификацию и выдачу в Киеве.<br>Один процесс — от подбора '
+             'автомобиля в Грузии до готовой машины в Киеве.</div></div>'),
+ "sea": ('<div class="mcf-etap mcf-sea" style="' + _O + '">'
+         '<div style="' + _Z + '">Автомобиль в море: Корея → Грузия</div>'
+         '<div>Автомобиль выкуплен, проверен и загружен в контейнер — доставка уже идёт. '
+         'Движение контейнера можно отследить онлайн по номеру выше.</div>'
+         '<div style="margin-top:8px">После прихода в Грузию автомобиль отправляется в Киев '
+         'ближайшим регулярным автовозом, затем растаможка, сертификация и выдача.</div></div>'),
+ "korea": ('<div class="mcf-etap mcf-korea" style="' + _O + '">'
+           '<div style="' + _Z + '">Автомобиль выкуплен и проверен в Корее</div>'
+           '<div>Автомобиль находится на нашей площадке в Корее и готовится к отправке. '
+           'Впереди погрузка в контейнер, морская доставка Корея → Грузия и доставка в Киев.</div>'
+           '<div style="margin-top:8px">Цена фиксируется в договоре до покупки и не '
+           'меняется.</div></div>'),
+}
+
+def obrabotat_diagnostiku(html, kod):
+    """Страница UA-XXXX-diag.html: если в CRM есть отчёт (diag_link/diag_text),
+    а страница показывает заглушку — материалы выводятся клиенту."""
+    if not html or "mcf-diag-block" in html:
+        return html
+    m = dannye(kod)
+    link = ("%s" % (m.get("diag_link") or "")).strip()
+    tekst = ("%s" % (m.get("diag_text") or "")).strip()
+    if not link and not tekst:
+        return html
+    chasti = ['<div class="mcf-diag-block" style="' + _O + '">',
+              '<div style="' + _Z + '">Результаты комплексной диагностики</div>']
+    if link:
+        chasti.append(
+            '<div style="margin:10px 0"><a href="%s" target="_blank" rel="noopener" '
+            'style="display:inline-block;padding:11px 16px;border-radius:12px;'
+            'background:rgba(212,175,55,.20);border:1px solid rgba(212,175,55,.55);'
+            'color:#f4e3ae;font-weight:800;text-decoration:none">'
+            'Открыть отчёт компьютерной диагностики →</a></div>' % link)
+    if tekst:
+        bezopasno = (tekst.replace("&", "&amp;").replace("<", "&lt;")
+                     .replace(">", "&gt;"))
+        chasti.append('<div style="white-space:pre-line;margin-top:8px">%s</div>' % bezopasno)
+    chasti.append("</div>")
+    blok = "".join(chasti)
+    for yakor in ("Материалы комплексной диагностики пока не добавлены.",
+                  "Материалы диагностики пока не добавлены",
+                  "Данные диагностики пока не добавлены."):
+        if yakor in html:
+            return html.replace(yakor, blok, 1)
+    if "</body>" in html:
+        return html.replace("</body>", blok + "</body>", 1)
+    return html + blok
+
+# ═══════════════════════════════════════════════ ВАЛИДАТОР
+def proverit(html, kod=""):
+    """КРИТИЧНОЕ — из-за этого публиковать нельзя. Пустой список = можно."""
+    bedy = []
+    if not html or len(html) < 3000:
+        bedy.append("страница пустая или слишком короткая")
+        return bedy
+    if ("mcf-ch-full" in html) or ("mcf-ch-short" in html):
+        bedy.append("в кнопке чата остались служебные теги прежней версии")
+    syroy = re.search(r"&lt;(span|div|a)\b[^&]{0,40}class", html)
+    if syroy:
+        nach = max(0, syroy.start() - 30)
+        bedy.append("сырой markup в тексте: …%s…"
+                    % html[nach:syroy.end() + 30].replace("\n", " "))
+    n = html.count('class="mcf-chat')
+    if n != 1:
+        bedy.append("виджетов чата на странице: %d (нужен ровно 1)" % n)
+    if "Комплексная диагностика" not in html:
+        bedy.append("пропал раздел «Комплексная диагностика»")
+    if "UA ART" not in html:
+        bedy.append("пропала шапка UA ART")
+    if kod:
+        m = dannye(kod)
+        if stage_po_statusu(m.get("status") or m.get("stage")) == "kiev" and SHAG_KIEV_STARYY in html:
+            bedy.append("для машины в Киеве осталась старая формулировка этапа")
+    return bedy
+
+def zamechaniya(html, kod=""):
+    """НЕ критичное: записывается в отчёт, публикацию не отменяет."""
+    zam = []
+    if kod:
+        m = dannye(kod)
+        stage = stage_po_statusu(m.get("status") or m.get("stage"))
+        if stage and TEKSTY.get(stage) and "mcf-etap" not in html:
+            zam.append("нет блока текущего этапа")
+        chuzhie = [s for s in TEKSTY if s != stage and ('mcf-%s"' % s) in html]
+        if chuzhie:
+            zam.append("на странице классы чужих этапов: %s" % ", ".join(chuzhie))
+        if "mcf-diag-cta" not in html:
+            zam.append("нет кнопки диагностики")
+
+    return zam
+
+# ═══════════════════════════════════════════════ СБОРКА КАРТОЧКИ
+def _vstavit_pered_diagnostikoy(html, blok):
+    poz = html.find("Комплексная диагностика")
+    if poz < 0:
+        poz = html.find("Купить авто")
+    if poz < 0:
+        return html, False
+    nach = max(html.rfind("<section", 0, poz), html.rfind("<div", 0, poz),
+               html.rfind("<h2", 0, poz), html.rfind("<h3", 0, poz))
+    if nach < 0:
+        return html, False
+    return (html[:nach] + blok + html[nach:], True)
+
+def obrabotat_kartochku(html, kod):
+    """ЕДИНОЕ мастер-правило. Работает при каждой записи любой карточки."""
+    if not html:
+        return html
+    html = ochistit_staroe(html)
+    # раннего выхода нет: каждый шаг сам проверяет, нужен ли он,
+    # иначе после очистки чата его было бы некому вставить
+    m = dannye(kod)
+    stage = stage_po_statusu(m.get("status") or m.get("stage"))
+
+    if stage == "kiev":
+        html = html.replace(SHAG_KIEV_STARYY, SHAG_KIEV_NOVYY)
+
+    nomer = (m.get("sea_container") or "").strip()
+    if nomer and "mcf-track" not in html:
+        liniya, url = tracking(nomer)
+        if url:
+            knopka = (
+                '<div class="mcf-track" style="margin:6px 0 10px">'
+                '<a href="%s" target="_blank" rel="noopener" '
+                'style="display:inline-block;padding:9px 14px;border-radius:10px;'
+                'background:rgba(212,175,55,.18);border:1px solid rgba(212,175,55,.55);'
+                'color:#f4e3ae;font-weight:700;text-decoration:none">'
+                'Отследить контейнер онлайн →</a>'
+                '<span style="opacity:.7;font-size:12px;margin-left:8px">%s</span></div>'
+                % (url, liniya))
+            novyy = re.sub(r"Контейнер:\s*<b>[^<]{4,24}</b>\s*(<br\s*/?>)?",
+                           lambda mm: mm.group(0) + knopka, html, count=1)
+            html = novyy
+
+    if "mcf-etap" not in html:
+        blok = TEKSTY.get(stage)
+        if blok:
+            html, _ = _vstavit_pered_diagnostikoy(html, blok)
+
+    if "mcf-diag-cta" not in html:
+        poz = html.find("Комплексная диагностика")
+        if poz >= 0:
+            konec = html.find("</", poz)
+            konec = html.find(">", konec) + 1 if konec > 0 else poz
+            html = html[:konec] + cta_diagnostiki(kod, m) + html[konec:]
+
+    html, _ = obespechit_chat(html)
+    html, _ = ubrat_dubli_video(html, kod)
+
+    glav, prichina = vybrat_glavnoe(kod, m)
+    sdelano = [0]
+
+    def _foto(mm):
+        if sdelano[0]:
+            return mm.group(0)
+        sdelano[0] = 1
+        return _pravka_tega_foto(mm.group(0), kod, glav, vitrina=False)
+
+    html = re.sub(r'<img[^>]*/foto/%s/[^>]*>' % kod, _foto, html)
+    # метка ставится ровно одна: повторная сборка не должна менять страницу
+    html = re.sub(r"<!-- MCF-[^>]*-->\s*", "", html)
+    html = html.replace("</body>", "<!-- %s / %s / %s / stage=%s -->\n</body>"
+                        % (METKA, glav, prichina, stage or "?"), 1)
+    return html
+
+# ═══════════════════════════════════════════════ ГЛАВНАЯ И КАТАЛОГ
+STARYE_PODPISI = [
+    "После отправки в Украину — фиксированные 15 дней",
+    "После відправлення в Україну — фіксовані 15 днів",
+    "фиксированные 15 дней",
+]
+PODPIS_GRUZIYA = "Отправки каждую неделю · ориентировочно около 10 дней до Киева"
+
+def obrabotat_obshuyu(html):
+    if not html:
+        return html
+    html = ochistit_staroe(html)
+    for staraya in STARYE_PODPISI:
+        html = html.replace(staraya, PODPIS_GRUZIYA)
+
+    def _zhivoe(mm):
+        teg = mm.group(0)
+        src = re.search(r'src=["\']([^"\']*/(?:foto|stage)/(UA-\d{4})[^"\']*)["\']', teg)
+        if not src:
+            return teg
+        kod = src.group(2)
+        gotovyy, _ = podgotovit_vitrinu(kod)
+        if gotovyy:
+            teg = teg.replace(src.group(1), gotovyy)
+        stil = stil_fokusa(kod, "", vitrina=True, vazhno=True)
+        m2 = re.search(r'style=["\']([^"\']*)["\']', teg)
+        if m2:
+            staryy = re.sub(r"object-(fit|position)\s*:[^;]*;?", "", m2.group(1))
+            teg = teg.replace(m2.group(0), 'style="%s;%s"' % (staryy.rstrip(";"), stil), 1)
+        else:
+            teg = teg[:-1].rstrip("/") + ' style="%s">' % stil
+        return teg
+
+    html = re.sub(r'<img[^>]*/(?:foto|stage)/UA-\d{4}[^>]*>', _zhivoe, html)
+
+    def _oblegchit_teg(mm):
+        teg = mm.group(0)
+        src = re.search(r'src="(/video/[^"]+\.(?:jpg|jpeg|png))"', teg)
+        if not src:
+            return teg
+        shirina = 1200 if "hero" in src.group(1) else 900
+        novyy = oblegchit(src.group(1), shirina)
+        return teg.replace(src.group(1), novyy) if novyy != src.group(1) else teg
+
+    html = re.sub(r"<img[^>]*>", _oblegchit_teg, html)
+
+    def _oblegchit_fon(mm):
+        adres = mm.group(1).strip("'\"")
+        novyy = oblegchit(adres, 900)
+        return mm.group(0).replace(adres, novyy) if novyy != adres else mm.group(0)
+
+    html = re.sub(r"background-image\s*:\s*url\(([^)]+)\)", _oblegchit_fon, html)
+    # тяжёлые webp-исходники в <source srcset> тоже облегчаем
+    def _istochnik(mm):
+        adres = mm.group(1)
+        novyy = oblegchit(adres, 900)
+        return mm.group(0).replace(adres, novyy) if novyy != adres else mm.group(0)
+
+    html = re.sub(r'srcset="(/video/[^"]+\.(?:jpg|jpeg|png))"', _istochnik, html)
+
+    def _otlozhit(mm):
+        teg = mm.group(0)
+        if "loading=" in teg:
+            return teg
+        return teg[:-1].rstrip("/") + ' loading="lazy" decoding="async">'
+
+    html = re.sub(r"<img[^>]*>", _otlozhit, html)
+    html, _ = obespechit_chat(html)
+    return html
+
+
+# ───────────────────────────── UA-VFIX2 · ВИДЕО: ЗАСТАВКА, AUTOPLAY, ЗАЩИТА ──
+MASTER_VERSION = "UA-CARD-STABLE-V1"
+
+def zastavka_rolika(src):
+    put = (src or "").split("?")[0]
+    imya = os.path.basename(put)
+    if not imya.lower().endswith((".mp4", ".mov", ".m4v")):
+        return ""
+    osnova = os.path.splitext(imya)[0]
+    papka = os.path.dirname(put)
+    baza = os.path.join(VIDEO, papka.lstrip("/")) if papka else VIDEO
+    if os.path.exists(os.path.join(baza, osnova + ".poster.jpg")):
+        return (papka + "/" if papka else "") + osnova + ".poster.jpg"
+    return ""
+
+def rasstavit_zastavki(html):
+    def _zamena(m):
+        blok = m.group(0)
+        src = re.search(r"<source[^>]*src=['\"]([^'\"]+)['\"]", blok)
+        if not src:
+            # ролик может быть задан прямо в теге video, без вложенного source
+            src = re.search(r"<video[^>]*\ssrc=['\"]([^'\"]+)['\"]", blok)
+        if not src:
+            return blok
+        svoya = zastavka_rolika(src.group(1))
+        if svoya:
+            if re.search(r"poster=['\"][^'\"]*['\"]", blok):
+                blok = re.sub(r"poster=['\"][^'\"]*['\"]", "poster='%s'" % svoya, blok, count=1)
+            else:
+                blok = blok.replace("<video", "<video poster='%s'" % svoya, 1)
+        else:
+            blok = re.sub(r"\s*poster=['\"]\s*['\"]", "", blok)
+        for atr in ("autoplay", "muted", "playsinline"):
+            if atr not in blok.split(">")[0]:
+                blok = blok.replace("<video", "<video %s" % atr, 1)
+        return blok
+    return re.sub(r"<video\b.*?</video>", _zamena, html, flags=re.S)
+
+def video_bez_dublej(html):
+    bedy = []
+    bloki = re.findall(r"<video\b.*?</video>", html, re.S)
+    srcy, postery = [], []
+    for b in bloki:
+        shapka = b.split(">")[0]
+        s = re.search(r"<source[^>]*src=['\"]([^'\"]+)['\"]", b) or \
+            re.search(r"<video[^>]*\ssrc=['\"]([^'\"]+)['\"]", b)
+        po = re.search(r"poster=['\"]([^'\"]*)['\"]", b)
+        if s:
+            srcy.append(s.group(1))
+            fajl = os.path.join(VIDEO, s.group(1).split("?")[0].lstrip("/"))
+            if not os.path.exists(fajl):
+                bedy.append("VIDEO VALIDATION FAIL — нет файла %s" % s.group(1))
+            elif os.path.getsize(fajl) == 0:
+                bedy.append("VIDEO VALIDATION FAIL — пустой файл %s" % s.group(1))
+        if po is not None:
+            postery.append(po.group(1))
+            if not po.group(1).strip():
+                bedy.append("VIDEO VALIDATION FAIL — пустой poster (чёрный экран)")
+            else:
+                fp = os.path.join(VIDEO, po.group(1).split("?")[0].lstrip("/"))
+                if not os.path.exists(fp):
+                    bedy.append("VIDEO VALIDATION FAIL — заставки нет на диске %s" % po.group(1))
+        if "autoplay" in shapka and "muted" not in shapka:
+            bedy.append("VIDEO VALIDATION FAIL — autoplay без muted")
+        if bloki and "playsinline" not in shapka:
+            bedy.append("VIDEO VALIDATION FAIL — нет playsinline")
+    if len(srcy) != len(set(srcy)):
+        bedy.append("VIDEO DUPLICATE DETECTED — одинаковый src у двух роликов")
+    if len(srcy) > 1 and len(postery) > 1 and len(set(postery)) == 1:
+        bedy.append("VIDEO DUPLICATE DETECTED — одинаковая заставка у разных роликов")
+    return bedy
+
+_vfix_ishodnaya_proverit = proverit
+
+def proverit(html, kod=""):
+    bedy = _vfix_ishodnaya_proverit(html, kod)
+    try:
+        bedy = list(bedy) + video_bez_dublej(html)
+    except Exception:
+        pass
+    return bedy
+
+_vfix_ishodnaya_kartochka = obrabotat_kartochku
+
+def obrabotat_kartochku(html, kod):
+    html = _vfix_ishodnaya_kartochka(html, kod)
+    try:
+        html = rasstavit_zastavki(html)
+    except Exception:
+        pass
+    return html
+# ───────────────────────────── конец UA-VFIX2 ────────────────────────────────
+
+
+# ───────────────────────────── UA-PHOTOFIT · ЗАПОЛНЕНИЕ КОНТЕЙНЕРОВ ФОТО ─────
+# Плитка каталога и превью заполняются целиком: пропорции сохраняются,
+# кадрируется только лишний фон, положение подбирается по области автомобиля.
+PHOTOFIT_VERSION = "UA-PHOTOFIT-V1"
+
+PHOTOFIT_CSS = """<style id="mcf-photofit-css">
+/* Фото в плитках и превью заполняют контейнер, не деформируясь */
+.plitka img,.karta img,.card img,.preview img,.tile img,
+a[href*="UA-"] > img,figure.foto img{
+object-fit:cover!important;width:100%!important;height:100%!important;
+display:block!important;background:transparent!important}
+</style>"""
+
+def _fokus_procenty(kod, imya):
+    try:
+        put = os.path.join(VIDEO, "foto", kod, imya)
+        if os.path.exists(put):
+            x, y = fokus_fajla(put)
+            return x, y
+    except Exception:
+        pass
+    return 50, 50
+
+def zapolnit_foto(html):
+    """Каждому фото машины в плитке — заполнение контейнера и положение по
+    автомобилю. Кадры этапов (/video/stage) не трогаются: они под замком."""
+    def _teg(m):
+        teg = m.group(0)
+        if "/stage/" in teg or "data-mcf-fit" in teg:
+            return teg
+        src = re.search(r'src=["\']([^"\']*/foto/(UA-\d{4})/([^"\']+))["\']', teg)
+        if not src:
+            return teg
+        x, y = _fokus_procenty(src.group(2), src.group(3))
+        stil = ("object-fit:cover!important;object-position:%d%% %d%%!important;"
+                "width:100%%!important;height:100%%!important" % (x, y))
+        m2 = re.search(r'style=["\']([^"\']*)["\']', teg)
+        if m2:
+            staryy = re.sub(r"object-(fit|position)\s*:[^;]*;?", "", m2.group(1))
+            teg = teg.replace(m2.group(0), 'style="%s;%s" data-mcf-fit="1"'
+                              % (staryy.rstrip(";"), stil), 1)
+        else:
+            teg = teg[:-1].rstrip("/") + ' style="%s" data-mcf-fit="1">' % stil
+        return teg
+    html = re.sub(r"<img[^>]*>", _teg, html)
+    if 'id="mcf-photofit-css"' not in html:
+        html = html.replace("</head>", PHOTOFIT_CSS + "</head>", 1) \
+            if "</head>" in html else PHOTOFIT_CSS + html
+    return html
+
+_pf_ishodnaya_obshaya = obrabotat_obshuyu
+
+def obrabotat_obshuyu(html):
+    html = _pf_ishodnaya_obshaya(html)
+    try:
+        html = zapolnit_foto(html)
+    except Exception:
+        pass
+    return html
+# ───────────────────────────── конец UA-PHOTOFIT ─────────────────────────────
+
+# UA-CARDS-STAGE-ANCHOR-001-V1.1: permanent four-stage card contract.
+import datetime as _ua_stage_dt
+import html as _ua_stage_html
+import json as _ua_stage_json
+import os as _ua_stage_os
+try:
+    from zoneinfo import ZoneInfo as _UaStageZoneInfo
+except Exception:
+    _UaStageZoneInfo = None
+
+_UA_STAGE_START = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:START -->"
+_UA_STAGE_END = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:END -->"
+_UA_STAGE_LABELS = ("Корея", "Паром", "Грузия", "Киев")
+_UA_STAGE_DETAILS = (
+    "Выкуплен · стоянка в Корее",
+    "Паром · Корея → Грузия",
+    "Грузия · оформление",
+    "Киев · выдача автомобиля",
+)
+_UA_STAGE_MONTHS = (
+    "января", "февраля", "марта", "апреля", "мая", "июня",
+    "июля", "августа", "сентября", "октября", "ноября", "декабря",
+)
+
+
+def _ua_stage_escape(value):
+    try:
+        return ekran(str(value))
+    except Exception:
+        return _ua_stage_html.escape(str(value), quote=True)
+
+
+def _ua_stage_number(m):
+    status = str(m.get("status") or "").strip().lower()
+    if status.startswith("kr_"):
+        return 1
+    if status.startswith("sea_"):
+        return 2
+    if status == "ge_to_kyiv" or status.startswith("ge_"):
+        return 3
+    if status.startswith("ua_"):
+        return 4
+    try:
+        saved = int(m.get("stage") or 0)
+        if 1 <= saved <= 4:
+            return saved
+    except Exception:
+        pass
+    return 1
+
+
+def _ua_stage_date(value):
+    text = str(value or "").strip()
+    if not text:
+        return None
+    for pattern, width in (("%Y-%m-%d", 10), ("%d.%m.%Y", 10), ("%d/%m/%Y", 10)):
+        try:
+            return _ua_stage_dt.datetime.strptime(text[:width], pattern).date()
+        except Exception:
+            pass
+    return None
+
+
+def _ua_stage_today():
+    if _UaStageZoneInfo is not None:
+        try:
+            return _ua_stage_dt.datetime.now(_UaStageZoneInfo("Europe/Kyiv")).date()
+        except Exception:
+            pass
+    zone = _ua_stage_dt.timezone(_ua_stage_dt.timedelta(hours=3))
+    return _ua_stage_dt.datetime.now(zone).date()
+
+
+def _ua_stage_pretty(value):
+    return "%d %s %d" % (value.day, _UA_STAGE_MONTHS[value.month - 1], value.year)
+
+
+def _ua_stage_plural(value):
+    value = abs(int(value))
+    if value % 10 == 1 and value % 100 != 11:
+        return "день"
+    if value % 10 in (2, 3, 4) and value % 100 not in (12, 13, 14):
+        return "дня"
+    return "дней"
+
+
+def _ua_stage_saved_release(m):
+    for key in ("ge_released", "ge_to_kyiv_at"):
+        value = _ua_stage_date(m.get(key))
+        if value is not None:
+            return value
+    identifier = str(m.get("auto_number") or "").strip()
+    if not identifier:
+        return None
+    for path in ("/home/Carix/.srok_gruzia.json", "/home/Carix/.sroki_gruzia.json"):
+        try:
+            with open(path, "r", encoding="utf-8") as handle:
+                memory = _ua_stage_json.load(handle)
+            value = _ua_stage_date((memory.get(identifier) or {}).get("vyehal"))
+            if value is not None:
+                return value
+        except Exception:
+            pass
+    return None
+
+
+def _ua_stage_eta(m, stage):
+    status = str(m.get("status") or "").strip().lower()
+    if stage >= 4 or status.startswith("ua_"):
+        return ("arrived", None, None)
+    manual = _ua_stage_date(m.get("eta_manual"))
+    if manual is not None:
+        target = manual
+    elif status == "ge_to_kyiv":
+        released = _ua_stage_saved_release(m)
+        target = released + _ua_stage_dt.timedelta(days=15) if released else None
+    elif status.startswith("ge_"):
+        target = None
+    else:
+        shipped = _ua_stage_date(m.get("sea_date_out"))
+        target = shipped + _ua_stage_dt.timedelta(days=75) if shipped else None
+    if target is None:
+        return ("georgia" if status.startswith("ge_") else "unknown", None, None)
+    days = max((target - _ua_stage_today()).days, 0)
+    return ("due" if days else "soon", days, target)
+
+
+def _ua_delivery_stage_anchor(m):
+    stage = _ua_stage_number(m)
+    progress = int(round((stage - 1) * 100.0 / 3.0))
+    status = str(m.get("status") or "").strip().lower()
+    details = list(_UA_STAGE_DETAILS)
+    if status == "ge_to_kyiv":
+        details[2] = "Грузия · отправлен в Киев"
+    css = r"""<style>
+.ua-delivery-v1{position:relative;margin:14px 0;padding:18px 16px 16px;overflow:hidden;border:1px solid rgba(240,166,60,.30);border-radius:18px;background:linear-gradient(145deg,rgba(19,37,59,.98),rgba(10,25,42,.98));box-shadow:0 16px 38px rgba(0,0,0,.20)}
+.ua-delivery-v1:before{content:"";position:absolute;inset:-90px auto auto -80px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(240,166,60,.12),transparent 68%);pointer-events:none}
+.ua-stage-v1-head{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:17px}.ua-stage-v1-title{font-size:18px;font-weight:850;letter-spacing:.1px;color:#f3f6fb}.ua-stage-v1-count{flex:0 0 auto;padding:6px 9px;border:1px solid rgba(240,166,60,.35);border-radius:999px;color:#f5bf70;background:rgba(240,166,60,.08);font-size:10px;font-weight:850;letter-spacing:.65px}
+.ua-stage-v1-route{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px}.ua-stage-v1-track{position:absolute;z-index:0;top:19px;left:12.5%;right:12.5%;height:3px;border-radius:4px;background:rgba(154,169,189,.18);overflow:hidden}.ua-stage-v1-fill{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#d68c2d,#ffc05a);box-shadow:0 0 13px rgba(240,166,60,.55)}
+.ua-stage-v1-step{position:relative;z-index:1;min-width:0;text-align:center}.ua-stage-v1-node{display:grid;place-items:center;width:40px;height:40px;margin:0 auto 8px;border:2px solid rgba(154,169,189,.30);border-radius:50%;background:#13243a;color:#8595aa;font-size:14px;font-weight:900;box-shadow:0 0 0 4px #102238}.ua-stage-v1-step.is-done .ua-stage-v1-node{border-color:#d89435;background:#d89435;color:#101a28}.ua-stage-v1-step.is-current .ua-stage-v1-node{border-color:#ffc05a;background:#f2a63b;color:#111b29;box-shadow:0 0 0 5px rgba(240,166,60,.13),0 0 23px rgba(240,166,60,.52)}.ua-stage-v1-name{display:block;overflow:hidden;color:#8291a5;font-size:11.5px;font-weight:750;text-overflow:ellipsis;white-space:nowrap}.ua-stage-v1-step.is-done .ua-stage-v1-name,.ua-stage-v1-step.is-current .ua-stage-v1-name{color:#f1ad4e}.ua-stage-v1-now{display:inline-flex;min-height:17px;align-items:center;justify-content:center;margin-top:5px;padding:2px 6px;border-radius:999px;background:#f0a63c;color:#101a28;font-size:8px;font-weight:950;letter-spacing:.7px}.ua-stage-v1-future{display:block;height:17px;margin-top:5px}
+.ua-stage-v1-current{display:flex;align-items:center;gap:10px;margin-top:16px;padding:11px 12px;border:1px solid rgba(240,166,60,.20);border-radius:13px;background:rgba(240,166,60,.065)}.ua-stage-v1-current-icon{display:grid;place-items:center;flex:0 0 auto;width:30px;height:30px;border-radius:9px;background:rgba(240,166,60,.15);font-size:16px}.ua-stage-v1-current-copy{min-width:0}.ua-stage-v1-current-copy small{display:block;margin-bottom:2px;color:#f0a63c;font-size:9px;font-weight:900;letter-spacing:.8px}.ua-stage-v1-current-copy b{display:block;color:#edf2f8;font-size:13px;line-height:1.25}
+.ua-stage-v1-meta{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:13px}.ua-stage-v1-container-row{display:inline-flex;align-items:center;flex-wrap:nowrap;flex:0 0 auto;gap:10px;max-width:100%;min-width:0;white-space:nowrap}.ua-stage-v1-badge{padding:7px 9px;border:1px solid rgba(142,160,183,.18);border-radius:10px;background:rgba(255,255,255,.035);color:#b9c5d4;font-size:11px}.ua-stage-v1-badge b{color:#eef3f8}.ua-stage-v1-container-row .ua-stage-v1-badge{flex:0 0 auto;white-space:nowrap}.ua-stage-v1-eta{margin-top:13px;padding-top:13px;border-top:1px solid rgba(142,160,183,.14)}.ua-stage-v1-eta-row{display:flex;align-items:baseline;gap:9px}.ua-stage-v1-days{color:#f0a63c;font-size:44px;font-weight:900;line-height:.95}.ua-stage-v1-days-copy{color:#eef3f8;font-size:14px;font-weight:750;line-height:1.3}.ua-stage-v1-date{margin-top:7px;color:#aebccd;font-size:12.5px}.ua-stage-v1-date b{color:#e8eef5}.ua-stage-v1-state{color:#f2b45d;font-size:16px;font-weight:850;line-height:1.3}.ua-stage-v1-note{margin-top:4px;color:#aebccd;font-size:12.5px;line-height:1.4}.ua-stage-v1-track-link{position:relative;display:inline-flex;align-items:center;flex:0 0 auto;min-height:32px;padding:6px 2px;color:#f2ba69;font-size:11px;font-weight:850;line-height:1;white-space:nowrap;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}.ua-stage-v1-track-link:hover{color:#ffd18c}.ua-stage-v1-track-link:focus-visible{outline:2px solid #ffc05a;outline-offset:3px;border-radius:4px}
+@media(max-width:380px){.ua-delivery-v1{padding:16px 11px 14px}.ua-stage-v1-name{font-size:10.5px}.ua-stage-v1-node{width:36px;height:36px}.ua-stage-v1-track{top:17px}.ua-stage-v1-title{font-size:17px}.ua-stage-v1-count{font-size:9px}.ua-stage-v1-container-row{gap:7px}.ua-stage-v1-container-row .ua-stage-v1-badge{padding-left:7px;padding-right:7px;font-size:10px}.ua-stage-v1-track-link{font-size:10px}}@media(max-width:340px){.ua-stage-v1-container-row{gap:5px}.ua-stage-v1-container-row .ua-stage-v1-badge{padding-left:6px;padding-right:6px;font-size:9.2px}.ua-stage-v1-track-link{font-size:9.5px}}
+@media(prefers-reduced-motion:no-preference){.ua-stage-v1-step.is-current .ua-stage-v1-node{animation:uaStagePulse 2.6s ease-in-out infinite}@keyframes uaStagePulse{0%,100%{box-shadow:0 0 0 5px rgba(240,166,60,.11),0 0 17px rgba(240,166,60,.35)}50%{box-shadow:0 0 0 7px rgba(240,166,60,.18),0 0 27px rgba(240,166,60,.58)}}}
+</style>"""
+    out = [_UA_STAGE_START, "<!--v173-marshrut--><!--ua-art-karta-v177-->", css]
+    out.append('<section class="ua-delivery-v1" data-ua-stage-current="%d" aria-label="Путь автомобиля: этап %d из 4">' % (stage, stage))
+    out.append('<div class="ua-stage-v1-head"><div class="ua-stage-v1-title">Путь автомобиля</div><div class="ua-stage-v1-count">ЭТАП %d ИЗ 4</div></div>' % stage)
+    out.append('<div class="ua-stage-v1-route" role="list"><div class="ua-stage-v1-track" aria-hidden="true"><span class="ua-stage-v1-fill" style="width:%d%%"></span></div>' % progress)
+    for number, label in enumerate(_UA_STAGE_LABELS, 1):
+        state = "is-done" if number < stage else ("is-current" if number == stage else "is-future")
+        icon = "✓" if number < stage else str(number)
+        current = ' aria-current="step"' if number == stage else ""
+        out.append('<div class="ua-stage-v1-step %s" data-ua-stage="%d" data-ua-state="%s" role="listitem"%s><div class="ua-stage-v1-node">%s</div><span class="ua-stage-v1-name" data-ua-stage-label="%s">%s</span>%s</div>' % (
+            state, number, state[3:], current, icon, label, label,
+            '<span class="ua-stage-v1-now">СЕЙЧАС</span>' if number == stage else '<span class="ua-stage-v1-future"></span>',
+        ))
+    out.append('</div><div class="ua-stage-v1-current"><span class="ua-stage-v1-current-icon">%s</span><span class="ua-stage-v1-current-copy"><small>ТЕКУЩИЙ ЭТАП</small><b>%s</b></span></div>' % (("🇰🇷", "🚢", "📋", "📍")[stage - 1], details[stage - 1]))
+
+    from ua_tracking_widget import render_tracking
+    shipped = _ua_stage_date(m.get("sea_date_out"))
+    out.append('<div class="ua-stage-v1-meta">')
+    out.append(render_tracking(m.get("sea_container")))
+    if shipped is not None:
+        out.append('<span class="ua-stage-v1-badge">Отправлен: <b>%s</b></span>' % _ua_stage_pretty(shipped))
+    out.append('</div>')
+
+    kind, days, target = _ua_stage_eta(m, stage)
+    out.append('<div class="ua-stage-v1-eta">')
+    if kind == "arrived":
+        out.append('<div class="ua-stage-v1-state">Автомобиль в Киеве — можно приехать на осмотр</div><div class="ua-stage-v1-note">Осмотр в офисе на Победы 20</div>')
+    elif kind == "due":
+        out.append('<div class="ua-stage-v1-eta-row"><span class="ua-stage-v1-days">%d</span><span class="ua-stage-v1-days-copy">%s до выдачи<br>в Киеве</span></div><div class="ua-stage-v1-date">Ориентировочная дата выдачи — <b>%s</b></div>' % (days, _ua_stage_plural(days), _ua_stage_pretty(target)))
+    elif kind == "soon":
+        out.append('<div class="ua-stage-v1-state">Прибытие в Киев ожидается со дня на день</div><div class="ua-stage-v1-date">Ориентировочная дата — <b>%s</b></div>' % _ua_stage_pretty(target))
+    elif kind == "georgia":
+        out.append('<div class="ua-stage-v1-state">Автомобиль в Грузии</div><div class="ua-stage-v1-note">Дата отправления в Украину уточняется</div>')
+    else:
+        out.append('<div class="ua-stage-v1-state">Дата прибытия уточняется</div><div class="ua-stage-v1-note">Сообщим точный срок после отправки контейнера</div>')
+    out.append('</div></section>')
+    out.append(_UA_STAGE_END)
+    return "".join(out)
+
+# UA-CARDS-STAGE-ANCHOR-001-V1.1-MASTER-FINAL
+_UA_MASTER_DIAG_MARKER = "<!--ua-art-diagnostics-permanent-v1-->"
+
+
+def _ua_master_balanced_div_end(source, start):
+    pattern = re.compile(r"<div\b[^>]*>|</div\s*>", re.IGNORECASE)
+    depth = 0
+    first = True
+    for match in pattern.finditer(source, start):
+[REDACTED]
+        if first:
+            if match.start() != start or token.startswith("</"):
+                raise RuntimeError("UA_STAGE_DIV_START_INVALID")
+            first = False
+        if token.startswith("</"):
+            depth -= 1
+            if depth == 0:
+                return match.end()
+        else:
+            depth += 1
+    raise RuntimeError("UA_STAGE_DIV_UNBALANCED")
+
+
+def _ua_master_remove_class_divs(source, class_names):
+    terms = "|".join(re.escape(value) for value in class_names)
+    pattern = re.compile(
+        r'<div\b[^>]*\bclass=["\'][^"\']*\b(?:' + terms
+        + r')\b[^"\']*["\'][^>]*>',
+        re.IGNORECASE,
+    )
+    while True:
+        match = pattern.search(source)
+        if match is None:
+            return source
+        end = _ua_master_balanced_div_end(source, match.start())
+        source = source[:match.start()] + source[end:]
+
+
+def _ua_master_stage_span(source):
+    start_count = source.count(_UA_STAGE_START)
+    end_count = source.count(_UA_STAGE_END)
+    if start_count or end_count:
+        if start_count != 1 or end_count != 1:
+            raise RuntimeError("UA_STAGE_MARKER_COUNT_INVALID")
+        start = source.index(_UA_STAGE_START)
+        end = source.index(_UA_STAGE_END, start) + len(_UA_STAGE_END)
+        return start, end
+
+    positions = []
+    for phrase in ("Где машина сейчас", "Де машина зараз", "<!--ua-art-karta-v177-->"):
+        position = source.find(phrase)
+        if position >= 0:
+            positions.append(position)
+    if not positions:
+        return None
+    position = min(positions)
+    candidates = list(re.finditer(
+        r'<div\b[^>]*\bclass=["\'][^"\']*(?:blok|krt)[^"\']*["\'][^>]*>',
+        source[:position],
+        re.IGNORECASE,
+    ))
+    for match in reversed(candidates):
+        end = _ua_master_balanced_div_end(source, match.start())
+        if end > position:
+            return match.start(), end
+    return None
+
+
+def _ua_master_stage_errors(source, row):
+    errors = []
+    if source.count(_UA_STAGE_START) != 1 or source.count(_UA_STAGE_END) != 1:
+        return ["постоянных блоков этапов не ровно один"]
+    start = source.index(_UA_STAGE_START)
+    end = source.index(_UA_STAGE_END, start) + len(_UA_STAGE_END)
+    region = source[start:end]
+    if re.findall(r'data-ua-stage="([1-4])"', region) != ["1", "2", "3", "4"]:
+        errors.append("этапы Корея/Паром/Грузия/Киев повреждены")
+    if region.count('data-ua-state="current"') != 1 or region.count("СЕЙЧАС") != 1:
+        errors.append("текущий этап не единственный")
+    expected = _ua_stage_number(row)
+    current = re.search(r'data-ua-stage-current="([1-4])"', region)
+    if current is None or int(current.group(1)) != expected:
+        errors.append("текущий этап не совпадает с CRM")
+    for label in _UA_STAGE_LABELS:
+        if region.count('data-ua-stage-label="%s"' % label) != 1:
+            errors.append("пропала метка этапа %s" % label)
+    if re.search(r'class=["\'][^"\']*\bmcf-etap\b', source, re.IGNORECASE):
+        errors.append("остался дублирующий старый блок этапа")
+    if re.search(r'class=["\'][^"\']*\bmcf-track\b', source, re.IGNORECASE):
+        errors.append("осталась дублирующая старая кнопка контейнера")
+    if "Автомобиль в море: Корея → Грузия" in source:
+        errors.append("осталась старая формулировка «в море»")
+    return errors
+
+
+def _ua_master_ensure_stage(source, kod, row):
+    if not source or "</html>" not in source.lower():
+        raise RuntimeError("UA_STAGE_INVALID_CARD:%s" % kod)
+    source = _ua_master_remove_class_divs(source, ("mcf-etap", "mcf-track"))
+    span = _ua_master_stage_span(source)
+    block = _ua_delivery_stage_anchor(row)
+    if span is not None:
+        source = source[:span[0]] + block + source[span[1]:]
+    else:
+        position = -1
+        for needle in (_UA_MASTER_DIAG_MARKER, "Комплексная диагностика", "Купить авто"):
+            position = source.find(needle)
+            if position >= 0:
+                tag = source.rfind("<", 0, position)
+                if tag >= 0:
+                    position = tag
+                break
+        if position < 0:
+            position = source.lower().rfind("</body>")
+        if position < 0:
+            raise RuntimeError("UA_STAGE_INSERTION_POINT_MISSING:%s" % kod)
+        source = source[:position] + block + source[position:]
+    errors = _ua_master_stage_errors(source, row)
+    if errors:
+        raise RuntimeError("UA_STAGE_FINAL_INVALID:%s:%s" % (kod, ";".join(errors)))
+    return source
+
+
+def _ua_master_diag_anchor(kod):
+    return (
+        _UA_MASTER_DIAG_MARKER
+        + '<a class="mcf-diag-cta" href="%s-diag.html" '
+          'style="display:flex;align-items:center;gap:12px;margin:14px 0;'
+          'padding:15px 16px;border-radius:14px;text-decoration:none;'
+          'background:linear-gradient(180deg,rgba(212,175,55,.20),'
+          'rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);'
+          'color:#f4e3ae"><span style="font-size:22px;line-height:1">🔧</span>'
+          '<span style="flex:1"><span style="display:block;font-weight:800;'
+          'font-size:16px">Комплексная диагностика →</span>'
+          '<span style="display:block;font-size:13px;opacity:.85;margin-top:3px">'
+          'ЛКП · OBD · ходовая · фото · видео</span></span>'
+          '<span style="font-size:20px;opacity:.8">›</span></a>' % kod
+    )
+
+
+def _ua_master_diag_errors(source, kod):
+    errors = []
+    if source.count(_UA_MASTER_DIAG_MARKER) != 1:
+        errors.append("постоянных меток диагностики не ровно одна")
+    links = re.findall(
+        r'href=["\']' + re.escape(kod) + r'-diag\.html(?:\?[^"\']*)?["\']',
+        source,
+        re.IGNORECASE,
+    )
+    if len(links) != 1:
+        errors.append("ссылок комплексной диагностики не ровно одна")
+    if re.search(r'class=["\'][^"\']*\bmcf-diag-off\b', source, re.IGNORECASE):
+        errors.append("диагностика ошибочно зависит от наличия материалов")
+    return errors
+
+
+def _ua_master_ensure_diag(source, kod):
+    anchor_pattern = re.compile(
+        r'<a\b(?=[^>]*(?:\bclass=["\'][^"\']*\bmcf-diag-cta\b[^"\']*["\']'
+        r'|\bhref=["\'](?:[^"\']*/)?' + re.escape(kod)
+        + r'-diag\.html(?:\?[^"\']*)?["\']))[^>]*>.*?</a\s*>',
+        re.IGNORECASE | re.DOTALL,
+    )
+    source = anchor_pattern.sub("", source).replace(_UA_MASTER_DIAG_MARKER, "")
+    source = _ua_master_remove_class_divs(source, ("mcf-diag-cta",))
+    purchase = re.search(
+        r'<a\b(?=[^>]*\bclass=["\'][^"\']*(?:kn_kupit|dejstvie|knp\s+zol)'
+        r'[^"\']*["\'])[^>]*>',
+        source,
+        re.IGNORECASE,
+    )
+    if purchase is None:
+        purchase = re.search(
+            r'<a\b[^>]*href=["\']katalog\.html(?:\?[^"\']*)?["\'][^>]*>',
+            source,
+            re.IGNORECASE,
+        )
+    position = purchase.start() if purchase is not None else source.lower().rfind("</body>")
+    if position < 0:
+        raise RuntimeError("UA_DIAGNOSTICS_INSERTION_POINT_MISSING:%s" % kod)
+    source = source[:position] + _ua_master_diag_anchor(kod) + source[position:]
+    errors = _ua_master_diag_errors(source, kod)
+    if errors:
+        raise RuntimeError("UA_DIAGNOSTICS_FINAL_INVALID:%s:%s" % (kod, ";".join(errors)))
+    return source
+
+
+# Even direct callers of the old helper can no longer receive a disabled CTA.
+def cta_diagnostiki(kod, m=None):
+    return _ua_master_diag_anchor(kod)
+
+
+_ua_master_original_card = obrabotat_kartochku
+
+
+def obrabotat_kartochku(html, kod):
+    html = _ua_master_original_card(html, kod)
+    if not html:
+        return html
+    kod = "%s" % kod
+    row = dict(dannye(kod) or {})
+    row.setdefault("auto_number", kod)
+    html = _ua_master_ensure_stage(html, kod, row)
+    html = _ua_master_ensure_diag(html, kod)
+    errors = _ua_master_stage_errors(html, row) + _ua_master_diag_errors(html, kod)
+    if errors:
+        raise RuntimeError("UA_MASTER_FINAL_CONTRACT:%s:%s" % (kod, ";".join(errors)))
+    return html
+
+
+_ua_master_original_validate = proverit
+
+
+def proverit(html, kod=""):
+    errors = list(_ua_master_original_validate(html, kod) or [])
+    if kod:
+        row = dict(dannye(kod) or {})
+        row.setdefault("auto_number", kod)
+        errors.extend(_ua_master_stage_errors(html, row))
+        errors.extend(_ua_master_diag_errors(html, kod))
+    result = []
+    for error in errors:
+        if error not in result:
+            result.append(error)
+    return result
+
+# SEO-REHAB-GUARD-068-PRODUCTION-V1
+import os as _ua_seo068_os
+import pathlib as _ua_seo068_pathlib
+import re as _ua_seo068_re
+
+_UA_SEO068_ORIGIN = "https://www.uaart.com.ua"
+_UA_SEO068_CTA = "Задаток 500 $"
+_UA_SEO068_CANONICAL = _ua_seo068_re.compile(r'<link\b(?=[^>]*\brel\s*=\s*["\'][^"\']*\bcanonical\b[^"\']*["\'])[^>]*>\s*', _ua_seo068_re.I)
+_UA_SEO068_ROBOTS = _ua_seo068_re.compile(r'<meta\b(?=[^>]*\bname\s*=\s*["\'](?:robots|googlebot)["\'])[^>]*>\s*', _ua_seo068_re.I)
+_UA_SEO068_ACTION = _ua_seo068_re.compile(r'(<(?P<tag>a|button)\b[^>]*>)(?P<inner>.*?)(</(?P=tag)\s*>)', _ua_seo068_re.I | _ua_seo068_re.S)
+_UA_SEO068_DIAG = _ua_seo068_re.compile(r'<a\b(?=[^>]*(?:\bclass\s*=\s*["\'][^"\']*\bmcf-diag-cta\b[^"\']*["\']|\bhref\s*=\s*["\'][^"\']*UA-[0-9]{4,}-diag\.html[^"\']*["\']))[^>]*>.*?</a\s*>\s*', _ua_seo068_re.I | _ua_seo068_re.S)
+_UA_SEO068_CTA_RE = _ua_seo068_re.compile(r'(?:Купить авто|Купити авто|Задаток\s*\$?\s*500\s*\$?|Депозит\s*\$?\s*500\s*\$?|Забронировать авто за\s*\$?\s*500\s*\$?)', _ua_seo068_re.I)
+
+def _ua_seo068_attr(tag, name):
+    found = _ua_seo068_re.search(r'\b' + _ua_seo068_re.escape(name) + r'\s*=\s*(["\'])(.*?)\1', tag, _ua_seo068_re.I | _ua_seo068_re.S)
+    return found.group(2) if found else ""
+
+def _ua_seo068_strip(value):
+    value = _ua_seo068_re.sub(r'<(?:script|style)\b.*?</(?:script|style)>', ' ', value, flags=_ua_seo068_re.I | _ua_seo068_re.S)
+    value = _ua_seo068_re.sub(r'<[^>]+>', ' ', value)
+    return _ua_seo068_re.sub(r'\s+', ' ', value).strip()
+
+def _ua_seo068_head(source, addition):
+    if _ua_seo068_re.search(r'</head\s*>', source, _ua_seo068_re.I):
+        return _ua_seo068_re.sub(r'</head\s*>', addition + '\n</head>', source, count=1, flags=_ua_seo068_re.I)
+    found = _ua_seo068_re.search(r'<html\b[^>]*>', source, _ua_seo068_re.I)
+    if found:
+        return source[:found.end()] + '\n<head>' + addition + '\n</head>' + source[found.end():]
+    return '<head>' + addition + '\n</head>\n' + source
+
+def _ua_seo068_diag_anchor(identifier):
+    return ('<!--seo-rehab-guard-068-diagnostics--><a class="mcf-diag-cta" href="%s-diag.html" style="display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(212,175,55,.20),rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);color:#f4e3ae"><span style="font-size:22px;line-height:1">🔧</span><span style="flex:1"><span style="display:block;font-weight:800;font-size:16px">Комплексная диагностика →</span><span style="display:block;font-size:13px;opacity:.85;margin-top:3px">ЛКП · OBD · ходовая · фото · видео</span></span><span style="font-size:20px;opacity:.8">›</span></a>' % identifier)
+
+def _ua_seo068_cta(source):
+    def replace(found):
+        opening, inner, closing = found.group(1), found.group('inner'), found.group(4)
+        classes = _ua_seo068_attr(opening, 'class').split()
+        if 'kn_kupit' not in classes and not _UA_SEO068_CTA_RE.search(_ua_seo068_strip(inner)):
+            return found.group(0)
+        inner = _UA_SEO068_CTA_RE.sub(_UA_SEO068_CTA, inner)
+        return opening + inner + closing
+    return _UA_SEO068_ACTION.sub(replace, source)
+
+def _ua_seo068_normalize(source, file_name, identifier=''):
+    if not source:
+        return source
+    source = _UA_SEO068_CANONICAL.sub('', str(source))
+    source = _UA_SEO068_ROBOTS.sub('', source)
+    source = _ua_seo068_head(source, '<link rel="canonical" href="%s/video/%s">' % (_UA_SEO068_ORIGIN, file_name))
+    if identifier:
+        identifier = str(identifier).upper()
+        target = identifier + '-diag.html'
+        if not any(_ua_seo068_os.path.isfile(_ua_seo068_os.path.join(root, target)) for root in ('/home/Carix/video', '/home/Carix/site')):
+            raise RuntimeError('SEO068_DIAGNOSTIC_TARGET_MISSING:' + identifier)
+        hrefs = []
+        for tag in _ua_seo068_re.findall(r'<a\b[^>]*>', source, _ua_seo068_re.I):
+            href = _ua_seo068_attr(tag, 'href')
+            match = _ua_seo068_re.search(r'(UA-[0-9]{4,}-diag\.html)(?:[?#]|$)', href, _ua_seo068_re.I)
+            if match:
+                hrefs.append(match.group(1).upper())
+        if any(value != target.upper() for value in hrefs):
+            raise RuntimeError('SEO068_WRONG_DIAGNOSTIC:' + identifier)
+        source = _UA_SEO068_DIAG.sub('', source).replace('<!--seo-rehab-guard-068-diagnostics-->', '')
+        source = _ua_seo068_cta(source)
+        purchase = _ua_seo068_re.search(r'<a\b(?=[^>]*\bclass\s*=\s*["\'][^"\']*\bkn_kupit\b[^"\']*["\'])', source, _ua_seo068_re.I)
+        position = purchase.start() if purchase else source.lower().rfind('</body>')
+        if position < 0:
+            raise RuntimeError('SEO068_INSERTION_POINT_MISSING:' + identifier)
+        source = source[:position] + _ua_seo068_diag_anchor(identifier) + '\n' + source[position:]
+    from ua_seo_metadata import normalize
+    return normalize(source, file_name)
+
+def _ua_seo068_identifier(mapping):
+    try:
+        return str(mapping.get('auto_number') or mapping.get('id') or mapping.get('kod') or '').upper()
+    except Exception:
+        return ''
+
+def _ua_seo068_core_path(source):
+    from ua_seo_metadata import page_name
+    return page_name(source)
+
+_ua_seo068_original_obrabotat_kartochku = obrabotat_kartochku
+def obrabotat_kartochku(html, kod):
+    result = _ua_seo068_original_obrabotat_kartochku(html, kod)
+    identifier = str(kod).upper()
+    if not _ua_seo068_re.fullmatch(r'UA-[0-9]{4,}', identifier):
+        raise RuntimeError('SEO068_CARD_ID_INVALID:' + identifier)
+    return _ua_seo068_normalize(result, identifier + '.html', identifier)
+
+_ua_seo068_original_obrabotat_obshuyu = obrabotat_obshuyu
+def obrabotat_obshuyu(html):
+    result = _ua_seo068_original_obrabotat_obshuyu(html)
+    file_name = _ua_seo068_core_path(result)
+    return _ua_seo068_normalize(result, file_name) if file_name else result
+
+_ua_seo068_original_proverit = proverit
+def proverit(html, kod=''):
+    errors = list(_ua_seo068_original_proverit(html, kod) or [])
+    file_name = (str(kod).upper() + '.html') if kod else _ua_seo068_core_path(html)
+    if file_name:
+        expected = _UA_SEO068_ORIGIN + '/video/' + file_name
+        # CARD-CANONICAL-FIX-001: a card with language versions names its Ukrainian version (CARD-LANG-001).
+        allowed = [expected, _UA_SEO068_ORIGIN + '/video/ua/' + file_name] if kod else [expected]
+        canonicals = _ua_seo068_re.findall(r'<link\b(?=[^>]*\brel\s*=\s*["\'][^"\']*canonical[^"\']*["\'])(?=[^>]*\bhref\s*=\s*["\']([^"\']+)["\'])[^>]*>', str(html), _ua_seo068_re.I)
+        if len(canonicals) != 1 or canonicals[0] not in allowed:
+            errors.append('SEO068 canonical')
+        if _ua_seo068_re.search(r'<meta\b(?=[^>]*\bname\s*=\s*["\'](?:robots|googlebot)["\'])[^>]*\bcontent\s*=\s*["\'][^"\']*(?:noindex|nofollow)', str(html), _ua_seo068_re.I):
+            errors.append('SEO068 robots')
+        if kod:
+            identifier = str(kod).upper()
+            primary = []
+            for found in _UA_SEO068_ACTION.finditer(str(html)):
+                opening = found.group(1)
+                visible = _ua_seo068_strip(found.group('inner'))
+                if 'kn_kupit' in _ua_seo068_attr(opening, 'class').split() or _UA_SEO068_CTA_RE.search(visible):
+                    primary.append(visible)
+            if primary != [_UA_SEO068_CTA]:
+                errors.append('SEO068 CTA')
+            diagnostics = []
+            for tag in _ua_seo068_re.findall(r'<a\b[^>]*>', str(html), _ua_seo068_re.I):
+                href = _ua_seo068_attr(tag, 'href')
+                match = _ua_seo068_re.search(r'(UA-[0-9]{4,}-diag\.html)(?:[?#]|$)', href, _ua_seo068_re.I)
+                if match:
+                    diagnostics.append(match.group(1).upper())
+            if diagnostics != [identifier + '-DIAG.HTML']:
+                errors.append('SEO068 diagnostics')
+    result = []
+    for error in errors:
+        if error not in result:
+            result.append(error)
+    return result
+
+# UA-CARDS-FERRY-VIN-001-V1.1-PERMANENT
+# CATALOG-CARD-UNIFY-002-V1.0-PERMANENT
+# CATALOG-CARD-DEDUP-GUARD-083-V1.0-PERMANENT
+import datetime as _ua068_dt
+import html as _ua068_html
+import os as _ua068_os
+import re as _ua068_re
+import tempfile as _ua068_tempfile
+
+_UA068_VIN_START = "<!-- UA-ART-VIN-GUARD-LITE-V1:START -->"
+_UA068_VIN_END = "<!-- UA-ART-VIN-GUARD-LITE-V1:END -->"
+_UA068_CAT_START = "<!-- UA-ART-CATALOG-VIN-V1:START -->"
+_UA068_CAT_END = "<!-- UA-ART-CATALOG-VIN-V1:END -->"
+_UA068_FALLBACK_START = "<!-- UA-ART-CATALOG-CARD-FALLBACK-V1:START -->"
+_UA068_FALLBACK_END = "<!-- UA-ART-CATALOG-CARD-FALLBACK-V1:END -->"
+_UA068_STAGE_START = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:START -->"
+_UA068_STAGE_END = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:END -->"
+_UA068_DIAG = "<!--ua-art-diagnostics-permanent-v1-->"
+_UA068_VERSION = "ua06811"
+_UA068_CARHISTORY_URL = ""  # UA115: external VIN advertising disabled
+
+
+def _ua068_e(value):
+    return _ua068_html.escape(str(value or ""), quote=True)
+
+
+def _ua068_terms(source):
+    """Remove only user-facing sea wording; internal ASCII status aliases stay intact."""
+    if not source:
+        return source
+    rules = (
+        (r"(?i)(?<![А-Яа-яЁёІіЇїЄє])в\s+море(?![А-Яа-яЁёІіЇїЄє])", "на пароме", "На пароме"),
+        (r"(?i)(?<![А-Яа-яЁёІіЇїЄє])на\s+море(?![А-Яа-яЁёІіЇїЄє])", "на пароме", "На пароме"),
+        (r"(?i)(?<![А-Яа-яЁёІіЇїЄє])у\s+мор[іi](?![А-Яа-яЁёІіЇїЄє])", "на поромі", "На поромі"),
+        (r"(?i)(?<![А-Яа-яЁёІіЇїЄє])в\s+мор[іi](?![А-Яа-яЁёІіЇїЄє])", "на поромі", "На поромі"),
+        (r"(?i)(?<![А-Яа-яЁёІіЇїЄє])морем(?![А-Яа-яЁёІіЇїЄє])", "паромом", "Паромом"),
+        (r"(?i)(?<![А-Яа-яЁёІіЇїЄє])морской(?![А-Яа-яЁёІіЇїЄє])", "паромный", "Паромный"),
+        (r"(?i)(?<![А-Яа-яЁёІіЇїЄє])морская(?![А-Яа-яЁёІіЇїЄє])", "паромная", "Паромная"),
+        (r"(?i)(?<![А-Яа-яЁёІіЇїЄє])морское(?![А-Яа-яЁёІіЇїЄє])", "паромное", "Паромное"),
+        (r"(?i)(?<![А-Яа-яЁёІіЇїЄє])морские(?![А-Яа-яЁёІіЇїЄє])", "паромные", "Паромные"),
+        (r"(?i)(?<![А-Яа-яЁёІіЇїЄє])море(?![А-Яа-яЁёІіЇїЄє])", "паром", "Паром"),
+        (r"(?i)(?<![А-Яа-яЁёІіЇїЄє])мор[іi](?![А-Яа-яЁёІіЇїЄє])", "поромі", "Поромі"),
+    )
+    for pattern, lower, upper in rules:
+        source = _ua068_re.sub(
+            pattern,
+            lambda match, lo=lower, up=upper: up if match.group(0)[:1].isupper() else lo,
+            source,
+        )
+    return source
+
+
+def _ua068_forbidden_count(source):
+    patterns = (
+        r"(?i)(?<![А-Яа-яЁёІіЇїЄє])в\s+море(?![А-Яа-яЁёІіЇїЄє])",
+        r"(?i)(?<![А-Яа-яЁёІіЇїЄє])на\s+море(?![А-Яа-яЁёІіЇїЄє])",
+        r"(?i)(?<![А-Яа-яЁёІіЇїЄє])у\s+мор[іi](?![А-Яа-яЁёІіЇїЄє])",
+        r"(?i)(?<![А-Яа-яЁёІіЇїЄє])в\s+мор[іi](?![А-Яа-яЁёІіЇїЄє])",
+        r"(?i)(?<![А-Яа-яЁёІіЇїЄє])мор(?:е|ем|ской|ская|ское|ские)(?![А-Яа-яЁёІіЇїЄє])",
+    )
+    return sum(len(_ua068_re.findall(pattern, source or "")) for pattern in patterns)
+
+
+def _ua068_date(value):
+    if isinstance(value, _ua068_dt.datetime):
+        return value.date()
+    if isinstance(value, _ua068_dt.date):
+        return value
+    text = str(value or "").strip()[:10]
+    if not text:
+        return None
+    try:
+        return _ua068_dt.datetime.strptime(text, "%Y-%m-%d").date()
+    except Exception:
+        return None
+
+
+def _ua068_pretty(value):
+    value = _ua068_date(value)
+    if value is None:
+        return ""
+    months_ru = ("января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
+    months_uk = ("січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня")
+    return ("%d %s %d" % (value.day, months_ru[value.month - 1], value.year),
+            "%d %s %d" % (value.day, months_uk[value.month - 1], value.year))
+
+
+def _ua068_stage(row):
+    status = str((row or {}).get("status") or (row or {}).get("stage") or "").lower()
+    if status.startswith("kr_") or status in ("korea", "1"):
+        return 1
+    if status.startswith("sea_") or status.startswith("ferry_") or status in ("sea", "ferry", "2"):
+        return 2
+    if status.startswith("ge_") or status in ("georgia", "3"):
+        return 3
+    return 4
+
+
+def _ua068_primary_action(source, kod, row):
+    """Enforce one stage-aware commercial CTA on cards and diagnostics."""
+    stage = _ua068_stage(row)
+    action = "kupit" if stage == 4 else "bron"
+    label = "Купить" if stage == 4 else "Задаток 500 $"
+    href = "[URL]" % (action, kod)
+    canonical = ('<a class="dejstvie kn_kupit ua-primary-action-v1" '
+                 'data-ua-stage-action="%d" href="%s">%s</a>'
+                 % (stage, _ua068_e(href), label))
+
+    purchase = _ua068_re.compile(
+        r'<a\b(?=[^>]*href=["\'][^"\']*start=(?:kupit|bron)_' +
+        _ua068_re.escape(str(kod)) + r'(?:&[^"\']*)?["\'])[^>]*>.*?</a\s*>',
+        _ua068_re.I | _ua068_re.S)
+    matches = list(purchase.finditer(source))
+    if matches:
+        source = purchase.sub(lambda match: canonical if match.start() == matches[0].start() else "", source)
+    else:
+        fallback = _ua068_re.compile(
+            r'<a\b(?=[^>]*class=["\'][^"\']*\b(?:kn_kupit|dejstvie)\b[^"\']*["\'])'
+            r'(?=[^>]*href=)[^>]*>.*?</a\s*>', _ua068_re.I | _ua068_re.S)
+        source, count = fallback.subn(canonical, source, count=1)
+        if count != 1:
+            text_fallback = _ua068_re.compile(
+                r'<a\b(?=[^>]*href=)[^>]*>\s*(?:Купить(?:\s+авто)?|Задаток\s+500\s*\$|Забронировать\s+авто\s+за\s+500\s*\$)\s*</a\s*>',
+                _ua068_re.I | _ua068_re.S)
+            source, count = text_fallback.subn(canonical, source, count=1)
+        if count != 1:
+            raise RuntimeError("UA068_PRIMARY_ACTION_MISSING:%s" % kod)
+    # A Kyiv purchase is immediate: no explanatory deposit note may remain
+    # next to the primary CTA. Delivery-stage copy elsewhere is stage-aware.
+    if stage == 4:
+        source = _ua068_re.sub(
+            r'<(?:div|p)\b[^>]*class=["\'][^"\']*\bcta-note\b[^"\']*["\'][^>]*>.*?</(?:div|p)\s*>',
+            "", source, flags=_ua068_re.I | _ua068_re.S)
+    return source
+
+
+def _ua068_primary_action_errors(source, kod, row):
+    stage = _ua068_stage(row)
+    nodes = _ua068_re.findall(
+        r'<a\b[^>]*class=["\'][^"\']*\bua-primary-action-v1\b[^"\']*["\'][^>]*>.*?</a\s*>',
+        source, _ua068_re.I | _ua068_re.S)
+    if len(nodes) != 1:
+        return ["primary actions != 1"]
+    node = nodes[0]
+    expected_action = "kupit" if stage == 4 else "bron"
+    expected_label = "Купить" if stage == 4 else "Задаток 500 $"
+    errors = []
+    if ("start=%s_%s" % (expected_action, kod)) not in node:
+        errors.append("primary action target mismatch")
+    text = _ua068_re.sub(r"<[^>]+>", "", node).strip()
+    if text != expected_label:
+        errors.append("primary action label mismatch")
+    return errors
+
+
+def _ua068_eta(row, stage):
+    row = row or {}
+    today = _ua068_dt.datetime.now(_ua068_dt.timezone.utc).date()
+    if stage == 1:
+        return (
+            "После внесения предоплаты 500 $ автомобиль будет отправлен ближайшим паромом.",
+            "Після внесення передоплати 500 $ автомобіль буде відправлено найближчим поромом.",
+            "Дата прибытия будет рассчитана после погрузки на паром.",
+            "Дату прибуття буде розраховано після завантаження на пором.",
+        )
+    if stage == 2:
+        target = _ua068_date(row.get("eta_manual"))
+        if target is None:
+            shipped = _ua068_date(row.get("sea_date_out"))
+            if shipped is not None:
+                target = shipped + _ua068_dt.timedelta(days=75)
+        if target is not None:
+            days = max(0, (target - today).days)
+            ru_date, uk_date = _ua068_pretty(target)
+            return (
+                "%d дн. до Киева · ориентировочно %s." % (days, ru_date),
+                "%d дн. до Києва · орієнтовно %s." % (days, uk_date),
+                "",
+                "",
+            )
+        return (
+            "Количество дней до Киева уточняется.",
+            "Кількість днів до Києва уточнюється.",
+            "Дата прибытия будет рассчитана после подтверждения маршрута.",
+            "Дату прибуття буде розраховано після підтвердження маршруту.",
+        )
+    if stage == 3:
+        deposit = _ua068_date(row.get("ge_to_kyiv_at"))
+        if deposit is not None:
+            target = deposit + _ua068_dt.timedelta(days=15)
+            ru_date, uk_date = _ua068_pretty(target)
+            extra_ru = "Расчётная дата прибытия — %s." % ru_date
+            extra_uk = "Розрахункова дата прибуття — %s." % uk_date
+        else:
+            extra_ru = "Точная дата появится после внесения предоплаты."
+            extra_uk = "Точна дата з’явиться після внесення передоплати."
+        return (
+            "После внесения предоплаты 500 $ автомобиль прибудет в Киев в течение 15 календарных дней.",
+            "Після внесення передоплати 500 $ автомобіль прибуде до Києва протягом 15 календарних днів.",
+            extra_ru,
+            extra_uk,
+        )
+    arrived = (_ua068_date(row.get("ua_delivered")) or _ua068_date(row.get("ua_handed"))
+               or _ua068_date(row.get("eta_manual")))
+    if arrived is not None:
+        ru_date, uk_date = _ua068_pretty(arrived)
+        extra_ru = "Дата прибытия в Киев — %s." % ru_date
+        extra_uk = "Дата прибуття до Києва — %s." % uk_date
+    else:
+        extra_ru = "Автомобиль в Киеве и готов к осмотру."
+        extra_uk = "Автомобіль у Києві та готовий до огляду."
+    return (extra_ru, extra_uk, "", "")
+
+
+def _ua068_vin_result(row):
+    row = row or {}
+    vin = str(row.get("vin") or "").strip().upper()
+    brand = str(row.get("brand") or "").strip().lower()
+    duplicate_count = int(row.get("_ua068_vin_duplicates") or 1)
+    if not _ua068_re.fullmatch(r"[A-HJ-NPR-Z0-9]{17}", vin):
+        return vin, "ОШИБКА VIN", "error", "VIN должен содержать 17 допустимых символов без I, O и Q."
+    wmi_ok = True
+    if "kia" in brand or "киа" in brand:
+        wmi_ok = vin.startswith(("KN", "KNA", "KND", "KNE"))
+    elif "mercedes" in brand or "мерседес" in brand:
+        wmi_ok = vin.startswith(("WDB", "WDD", "WDC", "W1"))
+    if duplicate_count > 1:
+        return vin, "ТРЕБУЕТ УТОЧНЕНИЯ", "warn", "VIN повторяется в опубликованных карточках."
+    if not wmi_ok:
+        return vin, "ТРЕБУЕТ УТОЧНЕНИЯ", "warn", "WMI не совпадает с маркой в карточке."
+    return vin, "VIN ПРОВЕРЕН", "ok", "Формат, запрещённые символы, WMI и уникальность в опубликованных карточках проверены."
+
+
+def _ua068_engine(row):
+    value = str((row or {}).get("engine_cc") or "").strip()
+    try:
+        return ("{:,}".format(int(float(value))).replace(",", " "))
+    except Exception:
+        return value
+
+
+def _ua068_video_count_from_html(source):
+    paths = set()
+    for value in _ua068_re.findall(r'(?:src|href)=["\']([^"\']+\.mp4(?:\?[^"\']*)?)["\']',
+                                   source or "", _ua068_re.I):
+        clean = value.split("?", 1)[0]
+        if ".novoe." in clean or clean.endswith(".novoe.mp4") or "/diag/" in clean:
+            continue
+        paths.add(clean)
+    if paths:
+        return len(paths)
+    return len(_ua068_re.findall(r"<video\b", source or "", _ua068_re.I))
+
+
+def _ua068_video_count(kod, row=None, source=None):
+    row = row or {}
+    if source is not None:
+        return _ua068_video_count_from_html(source)
+    if "_ua068_video_count" in row:
+        try:
+            return max(0, int(row.get("_ua068_video_count") or 0))
+        except Exception:
+            pass
+    path = "/home/Carix/video/%s.html" % str(kod)
+    try:
+        if _ua068_os.path.isfile(path):
+            with open(path, "r", encoding="utf-8") as handle:
+                return _ua068_video_count_from_html(handle.read())
+    except Exception:
+        pass
+    return 0
+
+
+def _ua068_video_word(count):
+    count = int(count)
+    if count % 10 == 1 and count % 100 != 11:
+        return "видео"
+    return "видео"
+
+
+def _ua068_cache_meta(source):
+    if 'name="ua-art-contract" content="UA-CARDS-FERRY-VIN-001-V1.1"' not in source:
+        meta = ('<meta name="ua-art-contract" content="UA-CARDS-FERRY-VIN-001-V1.1">'
+                '<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">'
+                '<meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">')
+        head = _ua068_re.search(r"<head\b[^>]*>", source, _ua068_re.I)
+        if head:
+            source = source[:head.end()] + meta + source[head.end():]
+    if 'name="ua-art-unified-contract" content="UA-CARDS-UNIFIED-SHELL-001-V1.1"' not in source:
+        meta = '<meta name="ua-art-unified-contract" content="UA-CARDS-UNIFIED-SHELL-001-V1.1">'
+        head = _ua068_re.search(r"<head\b[^>]*>", source, _ua068_re.I)
+        if head:
+            source = source[:head.end()] + meta + source[head.end():]
+    return source
+
+
+def _ua068_replace_marked(source, start, end):
+    return _ua068_re.sub(_ua068_re.escape(start) + r".*?" + _ua068_re.escape(end), "", source,
+                         flags=_ua068_re.I | _ua068_re.S)
+
+
+def _ua068_diag_anchor(kod):
+    return (_UA068_DIAG
+            + '<a class="mcf-diag-cta" href="%s-diag.html" style="display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(212,175,55,.20),rgba(212,175,55,.08));border:1px solid rgba(212,175,55,.55);color:#f4e3ae"><span style="font-size:22px">🔧</span><span style="flex:1"><b>Комплексная диагностика →</b><small style="display:block;margin-top:3px;opacity:.82">ЛКП · OBD · ходовая · фото · видео</small></span><span>›</span></a>' % _ua068_e(kod))
+
+
+def _ua068_diag_placeholder(kod, row):
+    title = "%s %s %s" % (str((row or {}).get("brand") or "").strip(),
+                           str((row or {}).get("model") or "").strip(),
+                           str((row or {}).get("year") or "").strip())
+    source = ("<!doctype html><html lang='ru'><head><meta charset='utf-8'><!-- UA-ART-FAVICON-20260928 -->\n<link rel=\"icon\" href=\"/video/brand/ua-art/favicon.ico\" sizes=\"16x16 32x32 48x48\" type=\"image/x-icon\">\n<link rel=\"icon\" href=\"/video/brand/ua-art/favicon-96.png\" sizes=\"96x96\" type=\"image/png\">\n<link rel=\"apple-touch-icon\" href=\"/video/brand/ua-art/apple-touch-icon.png\" sizes=\"180x180\">\n<!-- /UA-ART-FAVICON-20260928 -->"
+            "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+            "<meta name='ua-art-contract' content='UA-CARDS-FERRY-VIN-001-V1.1'>"
+            "<meta name='ua-art-unified-contract' content='UA-CARDS-UNIFIED-SHELL-001-V1.1'>"
+            "<title>Комплексная диагностика %s — UA ART</title>"
+            "<style>body{margin:0;background:#0b1726;color:#e8eef6;font:16px/1.55 -apple-system,BlinkMacSystemFont,Segoe UI,sans-serif}.w{max-width:720px;margin:auto;padding:24px}.c{margin-top:18px;padding:22px;border-radius:20px;background:#16263a;border:1px solid rgba(240,166,60,.46)}h1{font-size:25px;margin:0 0 9px}.s{display:inline-block;padding:7px 10px;border-radius:999px;color:#ffd283;border:1px solid rgba(240,166,60,.48);font-size:12px;font-weight:800}.p{color:#aebed0}.b,.dejstvie{display:block;margin-top:20px;padding:14px;text-align:center;border-radius:13px;background:#f0a63c;color:#102034;text-decoration:none;font-weight:900}</style></head><body><main class='w'><div>UA ART COMPANY · %s</div><section class='c'><span class='s'>ДИАГНОСТИКА ОЖИДАЕТ ДАННЫХ</span><h1>Комплексная диагностика</h1><p>%s</p><p class='p'>Страница закреплена постоянно. Здесь появятся ЛКП, OBD, ходовая, фото и видео сразу после загрузки материалов.</p><a class='dejstvie' href='[URL]'>Купить</a><a class='b' href='%s.html'>← Вернуться к автомобилю</a></section></main></body></html>"
+            % (_ua068_e(kod), _ua068_e(kod), _ua068_e(title), _ua068_e(kod), _ua068_e(kod)))
+    return _ua068_primary_action(source, kod, row)
+
+
+def _ua068_ensure_diag_files(kod, row):
+    """Future-card failsafe: create only missing targets; never overwrite reports."""
+    payload = _ua068_diag_placeholder(kod, row).encode("utf-8")
+    for root in ("/home/Carix/video", "/home/Carix/site"):
+        path = _ua068_os.path.join(root, "%s-diag.html" % kod)
+        if _ua068_os.path.exists(path):
+            continue
+        try:
+            _ua068_os.makedirs(root, exist_ok=True)
+            handle = _ua068_tempfile.NamedTemporaryFile(prefix=".ua068-diag-", suffix=".tmp", dir=root, delete=False)
+            temp_path = handle.name
+            with handle:
+                handle.write(payload)
+                handle.flush()
+                _ua068_os.fsync(handle.fileno())
+            if not _ua068_os.path.exists(path):
+                _ua068_os.replace(temp_path, path)
+            elif _ua068_os.path.exists(temp_path):
+                _ua068_os.unlink(temp_path)
+        except Exception:
+            try:
+                if 'temp_path' in locals() and _ua068_os.path.exists(temp_path):
+                    _ua068_os.unlink(temp_path)
+            except Exception:
+                pass
+
+
+def _ua068_balanced_div_end(source, start):
+    pattern = _ua068_re.compile(r"<div\b[^>]*>|</div\s*>", _ua068_re.I)
+    depth = 0
+    first = True
+    for match in pattern.finditer(source, start):
+[REDACTED]
+        if first:
+            if match.start() != start or token.startswith("</"):
+                raise RuntimeError("UA068_LEGACY_DIV_START_INVALID")
+            first = False
+        if token.startswith("</"):
+            depth -= 1
+            if depth == 0:
+                return match.end()
+        else:
+            depth += 1
+    raise RuntimeError("UA068_LEGACY_DIV_UNBALANCED")
+
+
+def _ua068_strip_legacy_blocks(source):
+    """Remove superseded stage/diagnostics UI at every final generator boundary."""
+    legacy = r"(?:mcf-etap|mcf-track|mcf-diag-off)"
+    div_pattern = _ua068_re.compile(
+        r'<div\b(?=[^>]*\bclass=["\'][^"\']*\b' + legacy
+        + r'\b[^"\']*["\'])[^>]*>',
+        _ua068_re.I,
+    )
+    for _attempt in range(64):
+        match = div_pattern.search(source)
+        if match is None:
+            break
+        end = _ua068_balanced_div_end(source, match.start())
+        source = source[:match.start()] + source[end:]
+    else:
+        raise RuntimeError("UA068_LEGACY_DIV_LIMIT")
+
+    container_pattern = _ua068_re.compile(
+        r'<(?P<tag>a|button|section|aside)\b(?=[^>]*\bclass=["\'][^"\']*\b'
+        + legacy + r'\b[^"\']*["\'])[^>]*>.*?</(?P=tag)\s*>',
+        _ua068_re.I | _ua068_re.S,
+    )
+    previous = None
+    while previous != source:
+        previous = source
+        source = container_pattern.sub("", source)
+    if _ua068_re.search(
+        r'class=["\'][^"\']*\b' + legacy + r'\b[^"\']*["\']',
+        source,
+        _ua068_re.I,
+    ):
+        raise RuntimeError("UA068_LEGACY_UI_REMAINS")
+    return source
+
+
+def _ua068_native_stage_span(source):
+    heading = _ua068_re.search(
+        r'<div\b(?=[^>]*\bclass=["\'][^"\']*\bzag\b[^"\']*["\'])[^>]*>\s*'
+        r'(?:Где\s+(?:машина|автомобиль)\s+сейчас|'
+        r'Де\s+(?:машина|автомобіль|авто)\s+зараз)\s*</div\s*>',
+        source,
+        _ua068_re.I,
+    )
+    if heading is None:
+        return None
+    candidates = list(_ua068_re.finditer(
+        r'<div\b(?=[^>]*\bclass=["\'][^"\']*\b(?:blok|krt)\b[^"\']*["\'])[^>]*>',
+        source[:heading.start()],
+        _ua068_re.I,
+    ))
+    for match in reversed(candidates):
+        end = _ua068_balanced_div_end(source, match.start())
+        if end >= heading.end():
+            return match.start(), end
+    return None
+
+
+def _ua068_reposition_stage(source, row):
+    """Replace the old route block in-place; never append a second route."""
+    slot = "<!-- UA-ART-DELIVERY-STAGE-SLOT-V1 -->"
+    if slot in source:
+        raise RuntimeError("UA068_STAGE_SLOT_ALREADY_PRESENT")
+    native = _ua068_native_stage_span(source)
+    if native is not None:
+        source = source[:native[0]] + slot + source[native[1]:]
+        source = _ua068_replace_marked(source, _UA068_STAGE_START, _UA068_STAGE_END)
+    elif source.count(_UA068_STAGE_START) == 1 and source.count(_UA068_STAGE_END) == 1:
+        start = source.index(_UA068_STAGE_START)
+        end = source.index(_UA068_STAGE_END, start) + len(_UA068_STAGE_END)
+        source = source[:start] + slot + source[end:]
+    else:
+        source = _ua068_replace_marked(source, _UA068_STAGE_START, _UA068_STAGE_END)
+        position = source.find(_UA068_DIAG)
+        if position < 0:
+            purchase = _ua068_re.search(
+                r'<a\b(?=[^>]*\bclass=["\'][^"\']*(?:kn_kupit|dejstvie|knp\s+zol)'
+                r'[^"\']*["\'])[^>]*>',
+                source,
+                _ua068_re.I,
+            )
+            position = purchase.start() if purchase is not None else source.lower().rfind("</body>")
+        if position < 0:
+            raise RuntimeError("UA068_STAGE_INSERTION_POINT_MISSING")
+        source = source[:position] + slot + source[position:]
+    if source.count(slot) != 1:
+        raise RuntimeError("UA068_STAGE_SLOT_COUNT_INVALID")
+    renderer = globals().get("_ua_delivery_stage_anchor")
+    if not callable(renderer):
+        raise RuntimeError("UA068_STAGE_RENDERER_MISSING")
+    return source.replace(slot, renderer(row), 1)
+
+
+def _ua068_ensure_stage_diag(source, kod, row):
+    source = _ua068_strip_legacy_blocks(source)
+    source = _ua068_reposition_stage(source, row)
+    master_stage = globals().get("_ua_master_ensure_stage")
+    master_diag = globals().get("_ua_master_ensure_diag")
+    if callable(master_stage):
+        source = master_stage(source, kod, row)
+    elif source.count(_UA068_STAGE_START) != 1 or source.count(_UA068_STAGE_END) != 1:
+        source = _ua068_replace_marked(source, _UA068_STAGE_START, _UA068_STAGE_END)
+        renderer = globals().get("_ua_delivery_stage_anchor")
+        if not callable(renderer):
+            raise RuntimeError("UA068_STAGE_RENDERER_MISSING:%s" % kod)
+        position = source.find(_UA068_DIAG)
+        if position < 0:
+            position = source.lower().rfind("</body>")
+        source = source[:position] + renderer(row) + source[position:]
+    if callable(master_diag):
+        source = master_diag(source, kod)
+    else:
+        source = source.replace(_UA068_DIAG, "")
+        source = _ua068_re.sub(
+            r'<a\b(?=[^>]*href=["\'](?:[^"\']*/)?' + _ua068_re.escape(kod)
+            + r'-diag\.html(?:\?[^"\']*)?["\'])[^>]*>.*?</a\s*>',
+            "", source, flags=_ua068_re.I | _ua068_re.S)
+        position = source.find(_UA068_STAGE_END)
+        if position >= 0:
+            position += len(_UA068_STAGE_END)
+        else:
+            position = source.lower().rfind("</body>")
+        source = source[:position] + _ua068_diag_anchor(kod) + source[position:]
+    return _ua068_strip_legacy_blocks(source)
+
+
+def _ua068_vin_block(kod, row):
+    """Render VIN as vehicle data only; external VIN offers are forbidden."""
+    vin = str((row or {}).get("vin") or "").strip().upper()
+    stage = _ua068_stage(row)
+    video_count = _ua068_video_count(kod, row)
+    return (
+        _UA068_VIN_START
+        + '<div class="blok ua-clean-vin" data-ua-clean-vin="1" data-ua-card="%s" '
+          'data-ua-stage="%d" data-ua-video-count="%d">'
+          '<div class="zag">VIN</div><div class="ua-vin-value">%s</div></div>'
+          % (_ua068_e(kod), stage, video_count, _ua068_e(vin))
+        + _UA068_VIN_END
+    )
+
+
+def _ua068_ensure_engine(source, row):
+    engine = _ua068_engine(row)
+    if engine:
+        source = _ua068_re.sub(r"(?<![0-9])(?:[0-9][0-9 \u00a0]{2,})\s*(?=см³)", engine + " ", source)
+    return source
+
+
+def _ua068_strip_vin_actions(source):
+    source = _ua068_replace_marked(source, _UA068_VIN_START, _UA068_VIN_END)
+    return _ua068_re.sub(
+        r'<(?:a|button)\b[^>]*>\s*(?:🛡\s*)?Проверить\s+VIN(?:\s*→)?\s*</(?:a|button)\s*>',
+        "", source, flags=_ua068_re.I | _ua068_re.S)
+
+
+def _ua068_ensure_card(source, kod, row):
+    if not source or "</html>" not in source.lower():
+        raise RuntimeError("UA068_INVALID_CARD:%s" % kod)
+    row = dict(row or {})
+    row.setdefault("auto_number", kod)
+    row["_ua068_video_count"] = _ua068_video_count(kod, row, source)
+    source = _ua068_terms(source)
+    source = _ua068_cache_meta(source)
+    source = _ua068_ensure_engine(source, row)
+    source = _ua068_ensure_stage_diag(source, kod, row)
+    source = _ua068_strip_vin_actions(source)
+    block = _ua068_vin_block(kod, row)
+    position = source.find(_UA068_STAGE_END)
+    if position >= 0:
+        position += len(_UA068_STAGE_END)
+    else:
+        position = source.find(_UA068_DIAG)
+    if position < 0:
+        position = source.lower().rfind("</body>")
+    source = source[:position] + block + source[position:]
+    source = _ua068_primary_action(source, kod, row)
+    source = _ua068_terms(source)
+    source = _ua068_strip_legacy_blocks(source)
+    return source
+
+
+def _ua068_catalog_block(kod, row):
+    vin, status, kind, _reason = _ua068_vin_result(row)
+    stage = _ua068_stage(row)
+    ru, uk, ru2, uk2 = _ua068_eta(row, stage)
+    video_count = _ua068_video_count(kod, row)
+    return (_UA068_CAT_START
+            + '<div class="ua-cat-vin-v1" data-ua-card="%s" data-ua-stage="%d" data-ua-video-count="%d"><div class="ua-cat-vin-v1-top"><span>VIN <b>%s</b></span><i class="%s">%s</i></div><div class="ua-cat-vin-v1-spec">Двигатель: <b>%s см³</b> · Видео: <b>%d</b></div><div class="ua-cat-vin-v1-copy"><span class="ua068-ru">%s %s</span><span class="ua068-uk">%s %s</span></div></div>' % (_ua068_e(kod), stage, video_count, _ua068_e(vin) or "НЕ УКАЗАН", kind, _ua068_e(status), _ua068_e(_ua068_engine(row)), video_count, _ua068_e(ru), _ua068_e(ru2), _ua068_e(uk), _ua068_e(uk2))
+            + _UA068_CAT_END)
+
+
+def _ua068_catalog_fallback(kod, row):
+    stage = _ua068_stage(row)
+    title = " ".join(str((row or {}).get(key) or "").strip()
+                     for key in ("brand", "model", "year")).strip()
+    labels_ru = {
+        1: "В Корее · подготовка к ближайшему парому",
+        2: "На пароме · Корея → Грузия",
+        3: "В Грузии · 15 дней до Киева после предоплаты",
+        4: "В Киеве · можно посмотреть",
+    }
+    labels_uk = {
+        1: "У Кореї · підготовка до найближчого порома",
+        2: "На поромі · Корея → Грузія",
+        3: "У Грузії · 15 днів до Києва після передоплати",
+        4: "У Києві · можна оглянути",
+    }
+    return (_UA068_FALLBACK_START
+            + '<a class="ua-cat-fallback-v1" href="%s.html?v=%s" data-ua-fallback-card="%s" data-ua-stage-tile="%d">' % (_ua068_e(kod), _UA068_VERSION, _ua068_e(kod), stage)
+            + '<span class="ua-cat-fallback-v1-kicker">%s · ЕТАП %d ИЗ 4</span>' % (_ua068_e(kod), stage)
+            + '<strong class="ua-cat-fallback-v1-title">%s</strong>' % (_ua068_e(title) or _ua068_e(kod))
+            + '<span class="ua-cat-fallback-v1-stage"><span class="ua068-ru">%s</span><span class="ua068-uk">%s</span></span>' % (_ua068_e(labels_ru[stage]), _ua068_e(labels_uk[stage]))
+            + _ua068_catalog_block(kod, row)
+            + '<span class="ua-cat-fallback-v1-open"><span class="ua068-ru">Открыть карточку →</span><span class="ua068-uk">Відкрити картку →</span></span></a>'
+            + _UA068_FALLBACK_END)
+
+
+def _ua068_catalog_item(block, rows):
+    match = _ua068_re.search(r"UA-[0-9]{4,}", block, _ua068_re.I)
+    if not match:
+        return _ua068_terms(block)
+    kod = match.group(0).upper()
+    row = rows.get(kod)
+    if not row:
+        return _ua068_terms(block)
+    block = _ua068_ensure_engine(_ua068_terms(block), row)
+    video_count = _ua068_video_count(kod, row)
+    block = _ua068_re.sub(r"\b[0-9]+\s+видео\b", "%d видео" % video_count,
+                          block, flags=_ua068_re.I)
+    block = _ua068_re.sub(r"·\s*видео\b", "· %d видео" % video_count,
+                          block, flags=_ua068_re.I)
+    if _UA068_CAT_START in block:
+        return block
+    close = list(_ua068_re.finditer(r"</(?:article|a)\s*>", block, _ua068_re.I))
+    if not close:
+        return block
+    position = close[-1].start()
+    return block[:position] + _ua068_catalog_block(kod, row) + block[position:]
+
+
+# CATALOG-CARD-DEDUP-GUARD-083 runtime helper
+import re as _ua083_re
+_UA083_CAT_START = "<!-- UA-ART-CATALOG-VIN-V1:START -->"
+_UA083_CAT_END = "<!-- UA-ART-CATALOG-VIN-V1:END -->"
+
+def _ua083_visible(fragment):
+    value = _ua083_re.sub(r"<[^>]+>", " ", fragment)
+    for old, new in (
+        ("&nbsp;", " "), ("&#10;", " "), ("&#x0a;", " "),
+        ("&amp;", "&"), ("&rarr;", "→"), ("&gt;", ">"), ("&lt;", "<"),
+    ):
+        value = value.replace(old, new).replace(old.upper(), new)
+    return " ".join(value.casefold().replace("\u00a0", " ").split())
+
+def _ua083_dedup_block(block, upper):
+    replacements = (
+        ("Автомобиль на пароме: Корея → Грузия.", ""),
+        ("Автомобіль на поромі: Корея → Грузія.", ""),
+        ("Автомобиль на пароме · количество дней до Киева уточняется.",
+         "Количество дней до Киева уточняется."),
+        ("Автомобіль на поромі · кількість днів до Києва уточнюється.",
+         "Кількість днів до Києва уточнюється."),
+        ("Автомобиль в Киеве и готов к осмотру.", ""),
+        ("Автомобіль у Києві та готовий до огляду.", ""),
+        ("После внесения предоплаты 500 $ автомобиль прибудет в Киев в течение "
+         "15 календарных дней. Точная дата появится после внесения предоплаты.",
+         "До Киева — до 15 календарных дней после бронирования за 500 $. "
+         "Точную дату укажем после отправки."),
+        ("Після внесення передоплати 500 $ автомобіль прибуде до Києва протягом "
+         "15 календарних днів. Точна дата з’явиться після внесення передоплати.",
+         "До Києва — до 15 календарних днів після бронювання за 500 $. "
+         "Точну дату вкажемо після відправлення."),
+        ("После внесения предоплаты 500 $ автомобиль будет отправлен ближайшим "
+         "паромом. Дата прибытия будет рассчитана после погрузки на паром.",
+         "Предоплата 500 $ фиксирует бронирование. Отправка — ближайшим рейсом; "
+         "дату прибытия рассчитаем после погрузки."),
+        ("Після внесення передоплати 500 $ автомобіль буде відправлено найближчим "
+         "поромом. Дату прибуття буде розраховано після завантаження на пором.",
+         "Передоплата 500 $ фіксує бронювання. Відправлення — найближчим рейсом; "
+         "дату прибуття розрахуємо після завантаження."),
+    )
+    for old, new in replacements:
+        block = block.replace(old, new)
+
+    spec = _ua083_re.search(
+        r'<div class=["\']ua-cat-vin-v1-spec["\']>\s*'
+        r'Двигатель:\s*<b>(.*?)</b>\s*·\s*Видео:\s*<b>(\d+)</b>\s*</div>',
+        block, _ua083_re.I | _ua083_re.S,
+    )
+    if spec:
+        engine_html, video_text = spec.group(1), spec.group(2)
+        engine_text = _ua083_visible(engine_html)
+        upper_text = _ua083_visible(upper)
+        video_duplicate = bool(_ua083_re.search(
+            r'(^|\D)' + _ua083_re.escape(video_text) +
+            r'\s*(?:видео|відео)(?:\D|$)', upper_text,
+        ))
+        pieces = []
+        if engine_text and engine_text not in upper_text:
+            pieces.append("Двигатель: <b>" + engine_html + "</b>")
+        if int(video_text) > 0 and not video_duplicate:
+            pieces.append("Видео: <b>" + video_text + "</b>")
+        replacement = (
+            '<div class="ua-cat-vin-v1-spec">' + " · ".join(pieces) + "</div>"
+            if pieces else ""
+        )
+        block = block[:spec.start()] + replacement + block[spec.end():]
+
+    copy = _ua083_re.search(
+        r'<div class=["\']ua-cat-vin-v1-copy["\']>(.*?)</div>',
+        block, _ua083_re.I | _ua083_re.S,
+    )
+    if copy and not _ua083_visible(copy.group(1)):
+        block = block[:copy.start()] + block[copy.end():]
+    block = _ua083_re.sub(r"([.!?])\s{2,}", r"\1 ", block)
+    return block
+
+def _ua083_dedup_catalog(source):
+    pattern = _ua083_re.compile(
+        _ua083_re.escape(_UA083_CAT_START) + r".*?" +
+        _ua083_re.escape(_UA083_CAT_END), _ua083_re.S,
+    )
+    matches = list(pattern.finditer(source))
+    if not matches:
+        return source
+    output = []
+    cursor = 0
+    previous_end = 0
+    for match in matches:
+        output.append(source[cursor:match.start()])
+        upper = source[previous_end:match.start()]
+        output.append(_ua083_dedup_block(match.group(0), upper))
+        cursor = match.end()
+        previous_end = match.end()
+    output.append(source[cursor:])
+    return "".join(output)
+
+def _ua068_ensure_catalog_base(source, rows):
+    if not source:
+        return source
+    rows = {str(k).upper(): dict(v or {}) for k, v in (rows or {}).items()}
+    source = _ua068_terms(source)
+    source = _ua068_cache_meta(source)
+    source = _ua068_replace_marked(source, _UA068_FALLBACK_START, _UA068_FALLBACK_END)
+    source = _ua068_replace_marked(source, _UA068_CAT_START, _UA068_CAT_END)
+    # Catalogs currently exist in two layouts: modern <article> cards and
+    # legacy standalone <a> tiles.  A page may also contain both layouts
+    # (or a second link to one car).  Insert exactly one canonical block per
+    # identifier instead of choosing one page-wide parser branch.
+    seen = set()
+
+    def render_once(match):
+        block = match.group(0)
+        found = _ua068_re.search(r"UA-[0-9]{4,}", block, _ua068_re.I)
+        if not found:
+            return _ua068_terms(block)
+        identifier = found.group(0).upper()
+        if identifier not in rows or identifier in seen:
+            return _ua068_terms(block)
+        rendered = _ua068_catalog_item(block, rows)
+        if 'data-ua-card="%s"' % identifier in rendered:
+            seen.add(identifier)
+        return rendered
+
+    article = _ua068_re.compile(
+        r'<article\b[^>]*>.*?</article\s*>', _ua068_re.I | _ua068_re.S)
+    source = article.sub(render_once, source)
+    anchor = _ua068_re.compile(
+        r'<a\b(?=[^>]*href=["\'][^"\']*UA-[0-9]{4,}\.html(?:\?[^"\']*)?["\'])[^>]*>.*?</a\s*>',
+        _ua068_re.I | _ua068_re.S)
+    source = anchor.sub(render_once, source)
+
+    missing = [identifier for identifier in rows if identifier not in seen]
+    if missing:
+        fallback = "".join(_ua068_catalog_fallback(identifier, rows[identifier])
+                           for identifier in missing)
+        position = -1
+        modern = _ua068_re.search(r'<div\b[^>]*class=["\'][^"\']*\bempty-assist\b',
+                                  source, _ua068_re.I)
+        if modern:
+            position = modern.start()
+        if position < 0:
+            legacy = _ua068_re.search(
+                r'<a\b(?=[^>]*class=["\'][^"\']*\bvtoraya\b)(?=[^>]*href=["\'][^"\']*podbor\.html)',
+                source, _ua068_re.I)
+            if legacy:
+                position = legacy.start()
+        if position < 0:
+            position = source.lower().rfind("</main>")
+        if position < 0:
+            position = source.lower().rfind("</body>")
+        if position < 0:
+            raise RuntimeError("UA068_CATALOG_INSERTION_POINT_MISSING")
+        source = source[:position] + fallback + source[position:]
+        seen.update(missing)
+
+    total = len(rows)
+    source = _ua068_re.sub(
+        r'(<div\b[^>]*class=["\']schet["\'][^>]*>)\s*\d+\s+в подборке',
+        lambda match: match.group(1) + str(total) + " в подборке", source,
+        flags=_ua068_re.I)
+    counts = {stage: sum(1 for row in rows.values() if _ua068_stage(row) == stage)
+              for stage in (1, 2, 3, 4)}
+    count_labels = (
+        (r"Все\s*·\s*\d+", "Все · %d" % total),
+        (r"Усі\s*·\s*\d+", "Усі · %d" % total),
+        (r"В Киеве\s*·\s*\d+", "В Киеве · %d" % counts[4]),
+        (r"У Києві\s*·\s*\d+", "У Києві · %d" % counts[4]),
+        (r"В Грузии\s*·\s*\d+", "В Грузии · %d" % counts[3]),
+        (r"У Грузії\s*·\s*\d+", "У Грузії · %d" % counts[3]),
+        (r"На пароме\s*·\s*\d+", "На пароме · %d" % counts[2]),
+        (r"На поромі\s*·\s*\d+", "На поромі · %d" % counts[2]),
+        (r"В Корее\s*·\s*\d+", "В Корее · %d" % counts[1]),
+        (r"У Кореї\s*·\s*\d+", "У Кореї · %d" % counts[1]),
+        (r"Показано:\s*\d+", "Показано: %d" % total),
+    )
+    for pattern, replacement in count_labels:
+        source = _ua068_re.sub(pattern, replacement, source, flags=_ua068_re.I)
+    source = _ua068_re.sub(
+        r'href=(["\'])([^"\']*UA-[0-9]{4,}\.html)(?:\?[^"\']*)?\1',
+        lambda match: 'href=%s%s?v=%s%s' % (match.group(1), match.group(2), _UA068_VERSION, match.group(1)),
+        source, flags=_ua068_re.I)
+    css = """<style id="ua-cat-vin-v1-style">.ua-cat-vin-v1{margin:12px 0 2px;padding:11px 12px;border-radius:13px;background:linear-gradient(145deg,rgba(240,166,60,.10),rgba(20,36,55,.72));border:1px solid rgba(240,166,60,.32);color:#cbd8e6;font-size:12px;line-height:1.42}.ua-cat-vin-v1-top{display:flex;align-items:center;gap:8px}.ua-cat-vin-v1-top span{min-width:0;overflow-wrap:anywhere}.ua-cat-vin-v1-top b{font:800 11px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:#f3f6fa;letter-spacing:.03em}.ua-cat-vin-v1-top i{margin-left:auto;font-style:normal;font-size:8px;font-weight:900;letter-spacing:.06em;padding:4px 6px;border-radius:999px;white-space:nowrap}.ua-cat-vin-v1-top i.ok{color:#72dfa5;border:1px solid rgba(64,190,125,.42)}.ua-cat-vin-v1-top i.warn{color:#ffd180;border:1px solid rgba(240,166,60,.45)}.ua-cat-vin-v1-top i.error{color:#ff9898;border:1px solid rgba(235,80,80,.4)}.ua-cat-vin-v1-spec{margin-top:5px;color:#aabbd0}.ua-cat-vin-v1-copy{margin-top:5px;color:#aabbd0}.ua-cat-fallback-v1{display:block;margin:14px 0;padding:17px;border:1px solid rgba(240,166,60,.46);border-radius:18px;background:linear-gradient(145deg,#172a40,#102033);color:#edf3fb;text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.2)}.ua-cat-fallback-v1-kicker{display:block;color:#f0a63c;font-size:10px;font-weight:900;letter-spacing:.11em}.ua-cat-fallback-v1-title{display:block;margin-top:7px;font-size:20px;line-height:1.25}.ua-cat-fallback-v1-stage{display:block;margin-top:7px;color:#aebed0;font-size:13px}.ua-cat-fallback-v1-open{display:block;margin-top:11px;color:#f4b65c;font-size:13px;font-weight:850}.ua068-uk{display:none}html:lang(uk) .ua068-ru{display:none}html:lang(uk) .ua068-uk{display:inline}/* UA-CATALOG-CARD-UNIFY-002-V1.0 */.catalog-card{--ua-card-surface:#0f2137;overflow:hidden!important;}.catalog-card .catalog-body{background:var(--ua-card-surface)!important;border-radius:0!important;margin-bottom:0!important;}.catalog-card .ua-cat-vin-v1{margin:0!important;padding:14px 20px 18px!important;border:0!important;border-top:1px solid rgba(240,166,60,.32)!important;border-radius:0 0 20px 20px!important;background:var(--ua-card-surface)!important;box-shadow:none!important;}@media(max-width:520px){.catalog-card .ua-cat-vin-v1{padding:13px 20px 17px!important;}}</style>"""
+    source = _ua068_re.sub(r'<style\b[^>]*id=["\']ua-cat-vin-v1-style["\'][^>]*>.*?</style\s*>', "", source,
+                           flags=_ua068_re.I | _ua068_re.S)
+    head_end = source.lower().find("</head>")
+    if head_end >= 0:
+        source = source[:head_end] + css + source[head_end:]
+    return _ua068_terms(source)
+
+
+
+def _ua068_ensure_catalog(*args, **kwargs):
+    return _ua083_dedup_catalog(_ua068_ensure_catalog_base(*args, **kwargs))
+
+def _ua068_card_errors(source, kod, row):
+    errors = []
+    if _ua068_re.search(
+            r"carhistory(?:\.kr)?|проверить\s+vin|перевірити\s+vin|2\s*200\s*krw",
+            source, _ua068_re.I):
+        errors.append("VIN advertisement forbidden")
+    if source.count(_UA068_VIN_START) != 1 or source.count(_UA068_VIN_END) != 1:
+        errors.append("VIN Guard blocks != 1")
+    errors.extend(_ua068_primary_action_errors(source, kod, row))
+    if source.count(_UA068_STAGE_START) != 1 or source.count(_UA068_STAGE_END) != 1:
+        errors.append("stage anchors != 1")
+    if source.count(_UA068_DIAG) != 1:
+        errors.append("diagnostics anchors != 1")
+    diag_links = _ua068_re.findall(
+        r'href=["\'](?:[^"\']*/)?' + _ua068_re.escape(str(kod)) + r'-diag\.html(?:\?[^"\']*)?["\']',
+        source, _ua068_re.I)
+    if len(diag_links) != 1:
+        errors.append("diagnostics links != 1")
+    if _ua068_forbidden_count(source):
+        errors.append("forbidden sea wording remains")
+    if _ua068_re.search(
+            r'class=["\'][^"\']*\b(?:mcf-etap|mcf-track|mcf-diag-off)\b[^"\']*["\']',
+            source, _ua068_re.I):
+        errors.append("legacy duplicate UI remains")
+    if _ua068_native_stage_span(source) is not None:
+        errors.append("native stage duplicate remains")
+    vin = str((row or {}).get("vin") or "").strip().upper()
+    if not vin or vin not in source:
+        errors.append("VIN missing")
+    engine = _ua068_engine(row)
+    if engine and not _ua068_re.search(_ua068_re.escape(engine) + r"\s*см³", source):
+        errors.append("engine mismatch")
+    stage = _ua068_stage(row)
+    if 'data-ua-stage="%d"' % stage not in source:
+        errors.append("stage copy mismatch")
+    if stage == 4 and ("Выдача и осмотр — Киев" in source or "Видача та огляд — Київ" in source):
+        errors.append("redundant Kyiv issue/inspection copy remains")
+    expected_videos = _ua068_video_count(kod, row, source)
+    if 'data-ua-video-count="%d"' % expected_videos not in source:
+        errors.append("video count mismatch")
+    return errors
+
+_ua068_master_card_original = obrabotat_kartochku
+_ua068_master_validate_original = proverit
+_ua068_master_common_original = obrabotat_obshuyu
+
+
+def _ua068_master_row(kod):
+    row = dict(dannye(kod) or {})
+    row.setdefault("auto_number", kod)
+    vin = str(row.get("vin") or "").strip().upper()
+    duplicate_count = 0
+    try:
+        for other_kod in vse_kody():
+            other = dict(dannye(other_kod) or {})
+            if str(other.get("vin") or "").strip().upper() == vin:
+                duplicate_count += 1
+    except Exception:
+        duplicate_count = 1
+    row["_ua068_vin_duplicates"] = max(1, duplicate_count)
+    return row
+
+
+def obrabotat_kartochku(html, kod):
+    html = _ua068_master_card_original(html, kod)
+    if not html:
+        return html
+    kod = str(kod)
+    row = _ua068_master_row(kod)
+    html = _ua068_ensure_card(html, kod, row)
+    _ua068_ensure_diag_files(kod, row)
+    errors = _ua068_card_errors(html, kod, row)
+    if errors:
+        raise RuntimeError("UA068_MASTER_FINAL:%s:%s" % (kod, ";".join(errors)))
+    return html
+
+
+def proverit(html, kod=""):
+    errors = list(_ua068_master_validate_original(html, kod) or [])
+    if kod:
+        errors.extend(_ua068_card_errors(html, str(kod), _ua068_master_row(str(kod))))
+    return list(dict.fromkeys(errors))
+
+
+def obrabotat_obshuyu(html):
+    html = _ua068_master_common_original(html)
+    rows = {}
+    try:
+        for kod in vse_kody():
+            row = _ua068_master_row(str(kod))
+            if int(row.get("published") or 0) != 1:
+                continue
+            rows[str(kod).upper()] = row
+    except Exception:
+        pass
+    return _ua068_ensure_catalog(html, rows)
+# CATALOG-DESIGN-STAGE-RESTORE-090-V1.0:MASTER:START
+def obrabotat_obshuyu(html):
+    from ua_delivery_status import stage_number
+    import pathlib as _ua090_pathlib
+    import catalog_design_guard as _ua090_design
+
+    _rows = {}
+    for _kod in vse_kody():
+        _row = dict(_ua068_master_row(str(_kod)) or {})
+        try:
+            _published = int(_row.get("published") or 0)
+        except (TypeError, ValueError):
+            _published = 0
+        if _published != 1 or not stage_number(_row.get("status")):
+            continue
+        _identifier = str(_kod).strip().upper()
+        _rows[_identifier] = _row
+
+    _photos = {}
+    for _identifier in sorted(_rows):
+        _primary = _ua090_pathlib.Path("/home/Carix/video") / (_identifier + ".html")
+        if not _primary.is_file():
+            raise RuntimeError("TASK090_PRIMARY_MISSING:" + _identifier)
+        _page = _primary.read_text(encoding="utf-8", errors="replace")
+        _photos[_identifier] = _ua090_design.extract_main_photo(_page, _identifier)
+
+    _result = _ua090_design.build_from_golden_path(_rows.values(), _photos)
+    _audit = _ua090_design.audit_catalog(
+        _result, _rows.values(),
+        _ua090_design.GOLDEN_PATH.read_text(encoding="utf-8"),
+    )
+    if _audit.get("status") != "PASS":
+        raise RuntimeError("TASK090_CATALOG_AUDIT:" + ",".join(_audit.get("errors") or []))
+    return _result
+# CATALOG-DESIGN-STAGE-RESTORE-090-V1.0:MASTER:END
+
+# >>> UA099 ADDITIONAL SPEC MASTER V1
+_UA099_BASE_OBRABOTAT_KARTOCHKU = obrabotat_kartochku
+_UA099_BASE_OBRABOTAT_DIAGNOSTIKU = obrabotat_diagnostiku
+_UA099_BASE_PROVERIT = proverit
+
+_UA099_OBSOLETE_VIN_ERRORS = {
+    "VIN Guard blocks != 1",
+    "VIN buttons != 1",
+    "CarHistory target != 1",
+    "VIN copy helper missing",
+    "video count mismatch",
+    "SEO068 CTA",
+}
+
+def obrabotat_kartochku(html, kod):
+    html = _UA099_BASE_OBRABOTAT_KARTOCHKU(html, kod)
+    if not html:
+        return html
+    import ua_additional_spec as _ua099_spec
+    return _ua099_spec.inject_public_spec(html, kod)
+
+def obrabotat_diagnostiku(html, kod):
+    html = _UA099_BASE_OBRABOTAT_DIAGNOSTIKU(html, kod)
+    if not html:
+        return html
+    import ua_additional_spec as _ua099_spec
+    return _ua099_spec.normalize_diagnostics(html, kod)
+
+def proverit(html, kod=""):
+    # Keep every legacy safety check except the five checks whose subject was
+    # deliberately replaced by TASK099's local, non-paid VIN block.  Then run
+    # the new public contract, which is stricter about uniqueness and order.
+    errors = [item for item in list(_UA099_BASE_PROVERIT(html, kod) or [])
+              if item not in _UA099_OBSOLETE_VIN_ERRORS]
+    if kod:
+        import ua_additional_spec as _ua099_spec
+        errors.extend("TASK099: " + item
+                      for item in _ua099_spec.public_contract_errors(html or "", kod))
+    return list(dict.fromkeys(errors))
+# <<< UA099 ADDITIONAL SPEC MASTER V1
+
+
+# >>> UA-ART-ISSUE84-PERMANENT-SPEC-V1
+from ua_spec_permanent import ensure_html as _ua84_ensure_html
+from ua_spec_permanent import card_uid_from_path as _ua84_uid_from_path
+from ua_spec_permanent import write_lock as _ua84_write_lock
+
+def _ua84_require_uid(value):
+    candidate = _ua84_uid_from_path(str(value) + ".html")
+    if candidate is None:
+        raise ValueError("UA84_CARD_UID_REQUIRED")
+    return candidate
+
+def _ua84_model_uid(model):
+    # Existing generators use nomer(model); its result is validated before use.
+    value = None
+    if hasattr(model, "get"):
+        value = model.get("auto_number")
+    if not value:
+        value = nomer(model)
+    return _ua84_require_uid(value)
+
+_ua84_previous_obrabotat_kartochku = obrabotat_kartochku
+def obrabotat_kartochku(html, kod):
+    result = _ua84_previous_obrabotat_kartochku(html, kod)
+    return _ua84_ensure_html(result, _ua84_require_uid(kod))
+# <<< UA-ART-ISSUE84-PERMANENT-SPEC-V1
