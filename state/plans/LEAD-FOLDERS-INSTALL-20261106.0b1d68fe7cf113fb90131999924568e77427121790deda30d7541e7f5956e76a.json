@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/LEAD-FOLDERS-INSTALL-20261106.0b1d68fe7cf113fb90131999924568e77427121790deda30d7541e7f5956e76a.json",
+  "autostart_ledger_sha256": "457dc837a5e44736696bf56b8ce36f3663c31bbcb49c8a59d82fd8e1ef3173d1",
+  "autostart_source_commit": "ab05ce7efcf6d088449221c64b4ac5a55da253b3",
+  "created_at": "2026-11-06T14:42:20Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42236089088",
+    "task_id": "LEAD-FOLDERS-INSTALL-20261106",
+    "task_sha256": "0b1d68fe7cf113fb90131999924568e77427121790deda30d7541e7f5956e76a"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/LEAD-FOLDERS-INSTALL-20261106.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
