@@ -90,6 +90,27 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(sorted(value['mercedes_pages']), ['UA-0013.html', 'ua/UA-0013.html'])
         self.assertNotIn('+380', json.dumps(value))
 
+    def test_r2_history_files_backups(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'video/diag/UA-0007').mkdir(parents=True)
+            (home / 'video/diag/UA-0007/01.mp4').write_bytes(b'x' * 10)
+            (home / 'backups').mkdir()
+            for name in ('crm.db', 'backups/crm-1.db'):
+                with sqlite3.connect(home / name) as db:
+                    db.execute('CREATE TABLE cars (id, auto_number, diag_text, condition_videos)')
+                    db.execute("INSERT INTO cars VALUES (13, 'UA-0007', ?, '')", ('' if name == 'crm.db' else 'old text',))
+                    db.execute('CREATE TABLE audit (id INTEGER PRIMARY KEY, action, entity_type, entity_id, field, '
+                               'old_value, new_value, created_at)')
+                    db.execute("INSERT INTO audit VALUES (1, 'update', 'cars', 13, 'diag_text', 'old text', '', 't1')")
+            value = remote.report_r2(home)
+        self.assertEqual(value['diag_folders']['UA-0007'][0]['name'], '01.mp4')
+        self.assertEqual(value['audit']['diag_rows'], [{'action': 'update', 'field': 'diag_text', 'old_length': 8,
+                                                        'new_length': 0, 'at': 't1'}])
+        self.assertEqual([f['path'] for f in value['named_files']], ['video/diag/UA-0007/01.mp4'])
+        self.assertEqual(value['database_backups']['newest'][0]['lengths'], {'diag_text': 8, 'condition_videos': 0})
+        self.assertNotIn('old text', json.dumps(value))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -146,6 +146,101 @@ def report(home=None):
             'mercedes_pages': mercedes_pages(published['cards'])}
 
 
+# R2 (owner 2026-11-06: the diagnostics page of the B-Class in stock is empty, it had photos/video/text before).
+DIAG_FIELDS = ('diag_text', 'diag_link', 'diag_report', 'condition_photos', 'condition_videos', 'condition_text')
+
+
+def diag_folders():
+    """Per card: the files in video/diag/<code>/ the page is built from (names, sizes, times)."""
+    base = HOME / 'video/diag'
+    if not base.is_dir():
+        return None
+    result = {}
+    for folder in sorted(base.iterdir()):
+        if folder.is_dir() and not folder.is_symlink():
+            result[folder.name] = [{'name': f.name, 'bytes': f.stat().st_size, 'mtime': round(f.stat().st_mtime)}
+                                   for f in sorted(folder.iterdir()) if f.is_file()][:80]
+    return result
+
+
+def audit_history(code):
+    """Read-only: every audit row of this car for a diagnostics field — time, action, field and value lengths only."""
+    import sqlite3
+    from contextlib import closing
+    with closing(sqlite3.connect((HOME / 'crm.db').as_uri() + '?mode=ro', uri=True, timeout=5)) as connection:
+        connection.execute('PRAGMA query_only=ON')
+        row = connection.execute('SELECT id FROM cars WHERE auto_number=?', (code,)).fetchone()
+        if row is None:
+            return None
+        marks = ','.join('?' * len(DIAG_FIELDS))
+        rows = connection.execute(
+            "SELECT action, field, length(coalesce(old_value,'')), length(coalesce(new_value,'')), created_at FROM audit "
+            "WHERE entity_type='cars' AND entity_id=? AND field IN (%s) ORDER BY id" % marks, (row[0],) + DIAG_FIELDS).fetchall()
+        actions = connection.execute(
+            "SELECT action, field, created_at FROM audit WHERE entity_type='cars' AND entity_id=? ORDER BY id DESC LIMIT 40",
+            (row[0],)).fetchall()
+    return {'car_id': row[0], 'diag_rows': [dict(zip(('action', 'field', 'old_length', 'new_length', 'at'), r)) for r in rows],
+            'last_actions': [dict(zip(('action', 'field', 'at'), r)) for r in actions]}
+
+
+def named_files(code, limit=300):
+    """Files anywhere under the home folder (depth <= 6) whose name or folder carries the card code and diag/cond."""
+    import os as _os
+    found = []
+    for root, dirs, files in _os.walk(HOME):
+        depth = len(Path(root).relative_to(HOME).parts)
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ('node_modules', '__pycache__') and depth < 6]
+        inside = code in root and re.search(r'(?i)diag|cond|proverk', root)
+        for name in files:
+            if inside or (code in name and re.search(r'(?i)diag|cond', name)):
+                path = Path(root) / name
+                try:
+                    st = path.stat()
+                except OSError:
+                    continue
+                found.append({'path': str(path.relative_to(HOME)), 'bytes': st.st_size, 'mtime': round(st.st_mtime)})
+                if len(found) >= limit:
+                    return found
+    return found
+
+
+def database_backups(code, limit=40):
+    """Read-only: copies of crm.db on disk (depth <= 4) and, in each, this car's diagnostics field lengths."""
+    import sqlite3
+    from contextlib import closing
+    candidates = []
+    for pattern in ('*.db', '*/*.db', '*/*/*.db', '*/*/*/*.db'):
+        for path in HOME.glob(pattern):
+            if 'crm' in path.name.lower() and path.is_file() and path != HOME / 'crm.db':
+                candidates.append(path)
+    candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    result = []
+    for path in candidates[:limit]:
+        item = {'path': str(path.relative_to(HOME)), 'bytes': path.stat().st_size, 'mtime': round(path.stat().st_mtime)}
+        try:
+            with closing(sqlite3.connect(path.as_uri() + '?mode=ro', uri=True, timeout=2)) as connection:
+                connection.execute('PRAGMA query_only=ON')
+                columns = [r[1] for r in connection.execute('PRAGMA table_info(cars)')]
+                wanted = [f for f in DIAG_FIELDS if f in columns]
+                if wanted and 'auto_number' in columns:
+                    row = connection.execute('SELECT %s FROM cars WHERE auto_number=?' % ','.join(
+                        "length(coalesce(%s,''))" % f for f in wanted), (code,)).fetchone()
+                    item['lengths'] = dict(zip(wanted, row)) if row else None
+        except Exception as error:
+            item['error'] = type(error).__name__
+        result.append(item)
+    return {'count': len(candidates), 'newest': result}
+
+
+def report_r2(home=None):
+    global HOME
+    if home is not None:
+        HOME = home
+    code = 'UA-0007'
+    return {'status': 'PASS', 'diag_folders': diag_folders(), 'audit': audit_history(code),
+            'named_files': named_files(code), 'database_backups': database_backups(code)}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -159,7 +254,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report()
+        value = report_r2()  # R2; report() is R1
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
