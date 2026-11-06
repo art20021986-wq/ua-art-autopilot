@@ -241,6 +241,34 @@ def report_r2(home=None):
             'named_files': named_files(code), 'database_backups': database_backups(code)}
 
 
+# R3: what the old, larger diagnostics page of UA-0007 showed (visible text and media sources only).
+OLD_PAGES = ('archive/backups/rezerv_arch1_20260824_083323/home_Carix_video_UA-0007-diag.html',
+             'etalon_dizayna/UA-0007-diag.html',
+             'archive/backups/rezerv_kart_20260823_102940/video__UA-0007-diag.html',
+             'video/UA-0007-diag.html')
+
+
+def visible(path):
+    text = text_of(HOME / path)
+    if text is None:
+        return None
+    media = re.findall(r'<(?:img|source|video)\b[^>]*\bsrc=["\']([^"\']+)', text, re.I)
+    body = re.sub(r'(?is)<(script|style)[^>]*>.*?</\1>', ' ', text)
+    body = re.sub(r'<[^>]+>', ' ', body)
+    import html as _html
+    body = re.sub(r'\s+', ' ', _html.unescape(body)).strip()
+    heads = re.findall(r"<div class=['\"](?:zag|zagolovok)['\"]>(.*?)</div>", text)
+    return {'bytes': len(text.encode()), 'headings': [sanitized_line(h)[:120] for h in heads][:30],
+            'media': [sanitized_line(m)[:160] for m in media][:80], 'text': sanitized_line(body)[:6000]}
+
+
+def report_r3(home=None):
+    global HOME
+    if home is not None:
+        HOME = home
+    return {'status': 'PASS', 'old_pages': {p: visible(p) for p in OLD_PAGES}}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -254,7 +282,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r2()  # R2; report() is R1
+        value = report_r3()  # R3; report_r2() R2, report() R1
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
