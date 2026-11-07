@@ -15,8 +15,7 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('ua_additional_spec.py', 'ua_spec_permanent.py', 'publikaciya.py', 'vitrina.py', 'ua_finance_partners.py',
-        'video/UA-0007.html', 'video/UA-0018-diag.html')
+FULL = ()
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -59,6 +58,13 @@ def report(home=None):
         lines = raw.decode('utf-8', 'replace').splitlines()
         files[name] = {'sha256': hashlib.sha256(raw).hexdigest(),
                        'lines': [{'line': n + 1, 'text': sanitized_line(l)} for n, l in enumerate(lines) if pattern.search(l)][:200]}
+    log_lines = []
+    log = Path('/var/log/alwayson-log-266084.log')
+    if log.is_file():
+        tail = log.read_bytes()[-400000:].decode('utf-8', 'replace').splitlines()
+        wanted = re.compile(r'ua_lead_desk|ua_crm_orders|lead desk|LEAD-FOLDERS|Traceback|Error|не подключ')
+        log_lines = [sanitized_line(l)[:300] for l in tail if wanted.search(l)][-80:]
+    files['_bot_log'] = {'sha256': '', 'source': '\n'.join(log_lines)}
     hits = []
     marker = re.compile(r"^\s*(?:import|from)\s+(?:yadro|master_card|stranica|vitrina|publikaciya|ua_additional_spec)\b|import_module\(['\"](?:yadro|master_card|stranica|vitrina)")
     for path in sorted(HOME.glob('*.py')):
@@ -99,6 +105,14 @@ def report(home=None):
                 'lead_desk_by_status': counts("SELECT status, count(*) FROM lead_desk GROUP BY 1"),
                 'tables': counts("SELECT name FROM sqlite_master WHERE type='table' ORDER BY 1"),
             }
+            # LEAD-FOLDERS check (2026-11-07): the desk tables exist and whether the client bot's manager chat is
+            # an active owner (a yes/no only, no id is returned).
+            manager = os.environ.get('MANAGER_CHAT_ID', '397376186')
+            owner_ids = {str(r[0]) for r in connection.execute(
+                "SELECT user_id FROM staff WHERE role='owner' AND active=1")} if 'staff' in [t[0] for t in aggregates['tables']] else set()
+            aggregates['manager_chat_is_owner'] = manager in owner_ids
+            aggregates['lead_desk_tables'] = counts("SELECT name FROM sqlite_master WHERE name IN "
+                                                     "('lead_state','lead_state_reminders','crm_orders','crm_order_stages')")
         desk = {'tables': tables, 'track_from': track[0] if track else None, 'aggregates': aggregates}
     return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone,
             'lead_desk': desk}

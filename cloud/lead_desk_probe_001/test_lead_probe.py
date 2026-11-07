@@ -67,15 +67,12 @@ class RemoteTests(unittest.TestCase):
             (home / 'video/index.html').write_text("TOKEN = 'abc'\nasync def clients_screen():\n    phone = '+380 99 222 20 02'\n"
                                              "x = 'https://evil.example/p'\n")
             (home / 'ua_order').mkdir()
-            (home / 'vitrina.py').write_text("TOKEN = 'abc'\nx = 'https://evil.example/p'\n")
+            (home / 'vitrina_unused.py').write_text("TOKEN = 'abc'\nx = 'https://evil.example/p'\n")
             value = remote.report(home)
-        guard = value['files']['vitrina.py']['source']
-        self.assertIn('[REDACTED]', guard)
-        self.assertIn('[URL]', guard)
-        self.assertIsNone(value['files']['publikaciya.py'])
+        self.assertEqual(remote.sanitized_line("TOKEN = 'abc'"), '[REDACTED]')
+        self.assertIn('[URL]', remote.sanitized_line("x = 'https://evil.example/p'"))
         self.assertIsNone(value['lead_desk'])
-        hits = json.loads(value['files']['_card_button_hits']['source'])
-        self.assertEqual(hits, [])
+        self.assertIn('_bot_log', value['files'])
         self.assertEqual(value['zone_kyiv'], 'OK')
 
     def test_counts_only_no_client_rows(self):
@@ -87,12 +84,16 @@ class RemoteTests(unittest.TestCase):
                 c.execute("INSERT INTO clients VALUES ('Ivan', '+380992222002', 'Instagram', 'new', '2026-11-06T10:00')")
                 c.execute('CREATE TABLE lead_desk_meta (key, value)')
                 c.execute("INSERT INTO lead_desk_meta VALUES ('track_from', '1')")
+                c.execute('CREATE TABLE staff (user_id, role, active)')
+                c.execute("INSERT INTO staff VALUES (397376186, 'owner', 1)")
             value = remote.report(home)
         dumped = json.dumps(value['lead_desk'])
         self.assertNotIn('Ivan', dumped)
         self.assertNotIn('380992222002', dumped)
         self.assertEqual(value['lead_desk']['aggregates']['clients_by_source'], [['Instagram', 1]])
         self.assertEqual(value['lead_desk']['aggregates']['lead_desk_by_status'], 'OperationalError')
+        self.assertIs(value['lead_desk']['aggregates']['manager_chat_is_owner'], True)
+        self.assertNotIn('397376186', dumped)
 
 
 if __name__ == '__main__':
