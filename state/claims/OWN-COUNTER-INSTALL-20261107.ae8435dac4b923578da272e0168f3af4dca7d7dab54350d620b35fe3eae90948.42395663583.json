@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "12af1663a8c9a7a27f4c505069e647c614c9efb7dd6a2d3472e7780d92fd3a59",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-11-07T17:45:41Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 42395663583",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "d602b9669dc9629a"
+    }
+  ],
   "heartbeat_at": "2026-11-07T17:26:04Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -90,7 +101,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "ef2d00f587db39a95846bfca0c200b6999bde351d4ebdd29e18b8d2bb15f305f",
     "file_sha256": {
@@ -107,5 +118,5 @@
       "cloud/own_counter_001/ua_own_counter.py": "e9414d9988d3d3a2b22011cd051a65d6f8d086cde3d7abc1443bb35b45a5fd38"
     }
   },
-  "updated_at": "2026-11-07T17:37:40Z"
+  "updated_at": "2026-11-07T17:45:41Z"
 }
