@@ -1,0 +1,828 @@
+{
+  "environment": {
+    "benchmark_index": 1960,
+    "lighthouse": "13.5.0",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36"
+  },
+  "node": "v24.22.2",
+  "package": "lighthouse@13.5.0",
+  "pages": {
+    "/video/index.html": {
+      "failing": [
+        {
+          "display": "Est savings of 2 KiB",
+          "id": "cache-insight",
+          "resources": [
+            {
+              "totalBytes": 1980,
+              "url": "https://www.uaart.com.ua/ua/a.js?v=1",
+              "wastedBytes": 1815
+            }
+          ],
+          "score": 50,
+          "title": "Use efficient cache lifetimes"
+        },
+        {
+          "display": "Est savings of 906 KiB",
+          "id": "image-delivery-insight",
+          "resources": [
+            {
+              "totalBytes": 179804,
+              "url": "https://www.uaart.com.ua/video/stage/UA-0005.webp?v=034537",
+              "wastedBytes": 162919
+            },
+            {
+              "totalBytes": 136704,
+              "url": "https://www.uaart.com.ua/video/preview/v4/assets/ai/04_stage_georgia_carcarrier_v3.webp",
+              "wastedBytes": 128060
+            },
+            {
+              "totalBytes": 140442,
+              "url": "https://www.uaart.com.ua/video/stage/UA-0003.webp?v=034537",
+              "wastedBytes": 123557
+            },
+            {
+              "totalBytes": 121704,
+              "url": "https://www.uaart.com.ua/video/preview/v4/assets/ai/06_stage_korea_v3.webp",
+              "wastedBytes": 114008
+            },
+            {
+              "totalBytes": 101776,
+              "url": "https://www.uaart.com.ua/video/preview/v4/assets/ai/03_stage_kiev_v3.webp",
+              "wastedBytes": 95294
+            },
+            {
+              "totalBytes": 91468,
+              "url": "https://www.uaart.com.ua/video/preview/v4/assets/ai/05_stage_sea_ferry_v3.webp",
+              "wastedBytes": 85684
+            },
+            {
+              "totalBytes": 142303,
+              "url": "https://www.uaart.com.ua/video/order/home-d3bc2918f4b0.jpg",
+              "wastedBytes": 84545
+            },
+            {
+              "totalBytes": 84496,
+              "url": "https://www.uaart.com.ua/video/stage/UA-0001.webp?v=034537",
+              "wastedBytes": 69469
+            },
+            {
+              "totalBytes": 77846,
+              "url": "https://www.uaart.com.ua/video/stage/UA-0002.webp?v=034537",
+              "wastedBytes": 64002
+            }
+          ],
+          "score": 0,
+          "title": "Improve image delivery"
+        },
+        {
+          "display": "5.9 s",
+          "id": "interactive",
+          "resources": [],
+          "score": 66,
+          "title": "Time to Interactive"
+        },
+        {
+          "display": "150 ms",
+          "id": "max-potential-fid",
+          "resources": [],
+          "score": 85,
+          "title": "Max Potential First Input Delay"
+        },
+        {
+          "display": "Est savings of 900 ms",
+          "id": "modern-http-insight",
+          "resources": [
+            {
+              "url": "https://www.uaart.com.ua/video/brand/ua-art/favicon.ico"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/katalog.html"
+            },
+            {
+              "url": "https://www.uaart.com.ua/ua/a/e"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/stage/UA-0003.webp?v=034537"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/preview/v4/assets/ai/06_stage_korea_v3.webp"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/stage/UA-0005.webp?v=034537"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/preview/v4/assets/ai/05_stage_sea_ferry_v3.webp"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/stage/UA-0001.webp?v=034537"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/preview/v4/assets/ai/04_stage_georgia_carcarrier_v3.webp"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/stage/UA-0002.webp?v=034537"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/preview/v4/assets/ai/03_stage_kiev_v3.webp"
+            },
+            {
+              "url": "https://www.uaart.com.ua/ua/a.js?v=1"
+            }
+          ],
+          "score": 0,
+          "title": "Modern HTTP"
+        },
+        {
+          "display": "",
+          "id": "network-dependency-tree-insight",
+          "resources": [
+            {
+              "transferSize": 17647,
+              "url": "https://www.uaart.com.ua/video/index.html"
+            },
+            {
+              "transferSize": 15003,
+              "url": "https://www.uaart.com.ua/video/ua-v203.css?v=20260828_0710"
+            }
+          ],
+          "score": 0,
+          "title": "Network dependency tree"
+        },
+        {
+          "display": "Est savings of 150 ms",
+          "id": "render-blocking-insight",
+          "resources": [
+            {
+              "totalBytes": 15003,
+              "url": "https://www.uaart.com.ua/video/ua-v203.css?v=20260828_0710",
+              "wastedMs": 166
+            }
+          ],
+          "score": 0,
+          "title": "Render-blocking requests"
+        },
+        {
+          "display": "Est savings of 3 KiB",
+          "id": "unminified-css",
+          "resources": [
+            {
+              "totalBytes": 15003,
+              "url": "https://www.uaart.com.ua/video/ua-v203.css?v=20260828_0710",
+              "wastedBytes": 2901
+            }
+          ],
+          "score": 0,
+          "title": "Minify CSS"
+        },
+        {
+          "display": "Est savings of 70 KiB",
+          "id": "unused-javascript",
+          "resources": [
+            {
+              "totalBytes": 163433,
+              "url": "https://www.googletagmanager.com/gtag/js?id=G-6SRBQK6GY4",
+              "wastedBytes": 71800
+            }
+          ],
+          "score": 50,
+          "title": "Reduce unused JavaScript"
+        }
+      ],
+      "final_url": "https://www.uaart.com.ua/video/index.html",
+      "lcp_element": "<img src=\"/video/order/home-d3bc2918f4b0.jpg\" alt=\"Авто під замовлення — UA ART COMPANY, Київ\" width=\"885\" height=\"590\" fetchpriority=\"high\" decoding=\"async\">",
+      "lcp_parts_ms": {
+        "elementRenderDelay": 134,
+        "resourceLoadDelay": 14,
+        "resourceLoadDuration": 22,
+        "timeToFirstByte": 41
+      },
+      "metrics": {
+        "cls": 0,
+        "fcp_ms": 1452,
+        "lcp_ms": 5062,
+        "si_ms": 1767,
+        "tbt_ms": 112
+      },
+      "performance": 80,
+      "runs_performance": [
+        67,
+        80,
+        81
+      ],
+      "runtime_error": "",
+      "seo": 100
+    },
+    "/video/podbor.html": {
+      "failing": [
+        {
+          "display": "Est savings of 6 KiB",
+          "id": "cache-insight",
+          "resources": [
+            {
+              "totalBytes": 24872,
+              "url": "https://telegram.org/js/telegram-web-app.js",
+              "wastedBytes": 4352.5999999999985
+            },
+            {
+              "totalBytes": 1980,
+              "url": "https://www.uaart.com.ua/ua/a.js?v=1",
+              "wastedBytes": 1815
+            }
+          ],
+          "score": 50,
+          "title": "Use efficient cache lifetimes"
+        },
+        {
+          "display": "4.4 s",
+          "id": "interactive",
+          "resources": [],
+          "score": 83,
+          "title": "Time to Interactive"
+        },
+        {
+          "display": "140 ms",
+          "id": "max-potential-fid",
+          "resources": [],
+          "score": 86,
+          "title": "Max Potential First Input Delay"
+        },
+        {
+          "display": "Est savings of 300 ms",
+          "id": "modern-http-insight",
+          "resources": [
+            {
+              "url": "https://www.uaart.com.ua/video/order/flags/georgia.svg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/flags/uae.svg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/flags/canada.svg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/flags/china.svg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/flags/europe.svg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/flags/usa.svg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/flags/japan.svg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/flags/korea.svg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/brand/ua-art/favicon.ico"
+            },
+            {
+              "url": "https://www.uaart.com.ua/ua/a/e"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/order-strings.json?v=20261106.2"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/model-gallery.json?v=20261106.2"
+            }
+          ],
+          "score": 0,
+          "title": "Modern HTTP"
+        },
+        {
+          "display": "",
+          "id": "network-dependency-tree-insight",
+          "resources": [
+            {
+              "transferSize": 24872,
+              "url": "https://telegram.org/js/telegram-web-app.js"
+            },
+            {
+              "transferSize": 19545,
+              "url": "https://www.uaart.com.ua/api/orders/bootstrap"
+            },
+            {
+              "transferSize": 10185,
+              "url": "https://www.uaart.com.ua/video/podbor.html"
+            },
+            {
+              "transferSize": 8813,
+              "url": "https://www.uaart.com.ua/video/order/model-gallery.json?v=20261106.2"
+            },
+            {
+              "transferSize": 6081,
+              "url": "https://www.uaart.com.ua/video/order/order.js?v=20261106.2"
+            },
+            {
+              "transferSize": 5597,
+              "url": "https://www.uaart.com.ua/video/order/preferences-form.js?v=20261106.2"
+            },
+            {
+              "transferSize": 4396,
+              "url": "https://www.uaart.com.ua/video/order/order-strings.json?v=20261106.2"
+            },
+            {
+              "transferSize": 3418,
+              "url": "https://www.uaart.com.ua/video/order/preferences-state.js?v=20260927.10"
+            },
+            {
+              "transferSize": 2309,
+              "url": "https://www.uaart.com.ua/video/order/order.css?v=20261025.2"
+            },
+            {
+              "transferSize": 1709,
+              "url": "https://www.uaart.com.ua/video/order/search-picker.js?v=20261106.1"
+            },
+            {
+              "transferSize": 1399,
+              "url": "https://www.uaart.com.ua/video/order/gallery.css?v=20261027.1"
+            },
+            {
+              "transferSize": 1169,
+              "url": "https://www.uaart.com.ua/video/order/gallery.js?v=20261027.1"
+            }
+          ],
+          "score": 0,
+          "title": "Network dependency tree"
+        },
+        {
+          "display": "Est savings of 450 ms",
+          "id": "render-blocking-insight",
+          "resources": [
+            {
+              "totalBytes": 620,
+              "url": "https://www.uaart.com.ua/video/order/model-note.css?v=20261030.1",
+              "wastedMs": 471
+            },
+            {
+              "totalBytes": 631,
+              "url": "https://www.uaart.com.ua/video/order/model-price.css?v=20261031.1",
+              "wastedMs": 471
+            },
+            {
+              "totalBytes": 617,
+              "url": "https://www.uaart.com.ua/video/order/finance-link.css?v=20261103.1",
+              "wastedMs": 471
+            },
+            {
+              "totalBytes": 1399,
+              "url": "https://www.uaart.com.ua/video/order/gallery.css?v=20261027.1",
+              "wastedMs": 471
+            },
+            {
+              "totalBytes": 873,
+              "url": "https://www.uaart.com.ua/video/order/quick-lead.css?v=20261030.1",
+              "wastedMs": 471
+            },
+            {
+              "totalBytes": 2309,
+              "url": "https://www.uaart.com.ua/video/order/order.css?v=20261025.2",
+              "wastedMs": 171
+            },
+            {
+              "totalBytes": 994,
+              "url": "https://www.uaart.com.ua/video/order/search-picker.css?v=20261106.1",
+              "wastedMs": 171
+            }
+          ],
+          "score": 0,
+          "title": "Render-blocking requests"
+        },
+        {
+          "display": "Est savings of 6 KiB",
+          "id": "unminified-javascript",
+          "resources": [
+            {
+              "totalBytes": 24671,
+              "url": "https://telegram.org/js/telegram-web-app.js",
+              "wastedBytes": 5846
+            }
+          ],
+          "score": 50,
+          "title": "Minify JavaScript"
+        },
+        {
+          "display": "Est savings of 70 KiB",
+          "id": "unused-javascript",
+          "resources": [
+            {
+              "totalBytes": 163597,
+              "url": "https://www.googletagmanager.com/gtag/js?id=G-6SRBQK6GY4",
+              "wastedBytes": 71247
+            }
+          ],
+          "score": 0,
+          "title": "Reduce unused JavaScript"
+        }
+      ],
+      "final_url": "https://www.uaart.com.ua/video/podbor.html",
+      "lcp_element": "<p id=\"ua-seo-order-intro\" style=\"margin:12px 0;color:inherit\">",
+      "lcp_parts_ms": {
+        "elementRenderDelay": 139,
+        "timeToFirstByte": 66
+      },
+      "metrics": {
+        "cls": 0,
+        "fcp_ms": 1593,
+        "lcp_ms": 2744,
+        "si_ms": 1654,
+        "tbt_ms": 86
+      },
+      "performance": 95,
+      "runs_performance": [
+        93,
+        95,
+        99
+      ],
+      "runtime_error": "",
+      "seo": 100
+    },
+    "/video/seo/ua/kia-k5-koreya-kyiv.html": {
+      "failing": [
+        {
+          "display": "Est savings of 440 KiB",
+          "id": "image-delivery-insight",
+          "resources": [
+            {
+              "totalBytes": 166248,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0014/m/001.jpg",
+              "wastedBytes": 111550
+            },
+            {
+              "totalBytes": 139508,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0006/m/001.jpg",
+              "wastedBytes": 84810
+            },
+            {
+              "totalBytes": 122582,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0012/m/003.jpg",
+              "wastedBytes": 67884
+            },
+            {
+              "totalBytes": 112346,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0018/m/001.jpg",
+              "wastedBytes": 55621
+            },
+            {
+              "totalBytes": 87051,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0010/m/001.jpg",
+              "wastedBytes": 48959
+            },
+            {
+              "totalBytes": 82979,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0009/m/001.jpg",
+              "wastedBytes": 46669
+            },
+            {
+              "totalBytes": 85727,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0022/m/001.jpg",
+              "wastedBytes": 35038
+            }
+          ],
+          "score": 0,
+          "title": "Improve image delivery"
+        },
+        {
+          "display": "4.8 s",
+          "id": "interactive",
+          "resources": [],
+          "score": 78,
+          "title": "Time to Interactive"
+        },
+        {
+          "display": "130 ms",
+          "id": "max-potential-fid",
+          "resources": [],
+          "score": 89,
+          "title": "Max Potential First Input Delay"
+        },
+        {
+          "display": "Est savings of 590 ms",
+          "id": "modern-http-insight",
+          "resources": [
+            {
+              "url": "https://www.uaart.com.ua/video/brand/ua-art/favicon.ico"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0022/m/001.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0014/m/001.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0006/m/001.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0012/m/003.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0009/m/001.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0010/m/001.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/api/orders/bootstrap"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0018/m/001.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/quick-lead.js?v=20261030.1"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/attribution.js?v=20261030.1"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/order/quick-lead.css?v=20261030.1"
+            }
+          ],
+          "score": 0,
+          "title": "Modern HTTP"
+        },
+        {
+          "display": "",
+          "id": "network-dependency-tree-insight",
+          "resources": [
+            {
+              "transferSize": 7021,
+              "url": "https://www.uaart.com.ua/video/seo/ua/kia-k5-koreya-kyiv.html"
+            },
+            {
+              "transferSize": 873,
+              "url": "https://www.uaart.com.ua/video/order/quick-lead.css?v=20261030.1"
+            }
+          ],
+          "score": 0,
+          "title": "Network dependency tree"
+        },
+        {
+          "display": "Est savings of 130 ms",
+          "id": "render-blocking-insight",
+          "resources": [
+            {
+              "totalBytes": 873,
+              "url": "https://www.uaart.com.ua/video/order/quick-lead.css?v=20261030.1",
+              "wastedMs": 164
+            }
+          ],
+          "score": 0,
+          "title": "Render-blocking requests"
+        },
+        {
+          "display": "Est savings of 69 KiB",
+          "id": "unused-javascript",
+          "resources": [
+            {
+              "totalBytes": 163429,
+              "url": "https://www.googletagmanager.com/gtag/js?id=G-6SRBQK6GY4",
+              "wastedBytes": 71060
+            }
+          ],
+          "score": 50,
+          "title": "Reduce unused JavaScript"
+        }
+      ],
+      "final_url": "https://www.uaart.com.ua/video/seo/ua/kia-k5-koreya-kyiv.html",
+      "lcp_element": "<p>",
+      "lcp_parts_ms": {
+        "elementRenderDelay": 67,
+        "timeToFirstByte": 30
+      },
+      "metrics": {
+        "cls": 0,
+        "fcp_ms": 928,
+        "lcp_ms": 1978,
+        "si_ms": 928,
+        "tbt_ms": 64
+      },
+      "performance": 99,
+      "runs_performance": [
+        99,
+        99,
+        100
+      ],
+      "runtime_error": "",
+      "seo": 100
+    },
+    "/video/ua/UA-0013.html": {
+      "failing": [
+        {
+          "display": "Est savings of 4 KiB",
+          "id": "cache-insight",
+          "resources": [
+            {
+              "totalBytes": 24872,
+              "url": "https://telegram.org/js/telegram-web-app.js",
+              "wastedBytes": 4352.5999999999985
+            }
+          ],
+          "score": 50,
+          "title": "Use efficient cache lifetimes"
+        },
+        {
+          "display": "Est savings of 661 KiB",
+          "id": "image-delivery-insight",
+          "resources": [
+            {
+              "totalBytes": 119105,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/001.jpg",
+              "wastedBytes": 81315
+            },
+            {
+              "totalBytes": 49226,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/018.jpg",
+              "wastedBytes": 45895
+            },
+            {
+              "totalBytes": 46617,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/023.jpg",
+              "wastedBytes": 43286
+            },
+            {
+              "totalBytes": 45779,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/016.jpg",
+              "wastedBytes": 42448
+            },
+            {
+              "totalBytes": 38740,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/015.jpg",
+              "wastedBytes": 35409
+            },
+            {
+              "totalBytes": 37865,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/012.jpg",
+              "wastedBytes": 34534
+            },
+            {
+              "totalBytes": 37310,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/011.jpg",
+              "wastedBytes": 33979
+            },
+            {
+              "totalBytes": 36024,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/019.jpg",
+              "wastedBytes": 33433
+            },
+            {
+              "totalBytes": 36398,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/021.jpg",
+              "wastedBytes": 33067
+            },
+            {
+              "totalBytes": 34395,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/020.jpg",
+              "wastedBytes": 31064
+            },
+            {
+              "totalBytes": 33635,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/022.jpg",
+              "wastedBytes": 30304
+            },
+            {
+              "totalBytes": 25858,
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/013.jpg",
+              "wastedBytes": 23982
+            }
+          ],
+          "score": 0,
+          "title": "Improve image delivery"
+        },
+        {
+          "display": "6.1 s",
+          "id": "interactive",
+          "resources": [],
+          "score": 63,
+          "title": "Time to Interactive"
+        },
+        {
+          "display": "150 ms",
+          "id": "max-potential-fid",
+          "resources": [],
+          "score": 85,
+          "title": "Max Potential First Input Delay"
+        },
+        {
+          "display": "Est savings of 470 ms",
+          "id": "modern-http-insight",
+          "resources": [
+            {
+              "url": "https://www.uaart.com.ua/video/brand/ua-art/favicon.ico"
+            },
+            {
+              "url": "https://www.uaart.com.ua/api/orders/bootstrap"
+            },
+            {
+              "url": "https://www.uaart.com.ua/ua-art-public-prices-v1.json?_price_revision=1794041774462"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/023.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/022.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/021.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/020.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/019.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/018.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/017.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/016.jpg"
+            },
+            {
+              "url": "https://www.uaart.com.ua/video/foto/UA-0013/s/015.jpg"
+            }
+          ],
+          "score": 0,
+          "title": "Modern HTTP"
+        },
+        {
+          "display": "",
+          "id": "network-dependency-tree-insight",
+          "resources": [
+            {
+              "transferSize": 25572,
+              "url": "https://www.uaart.com.ua/video/ua/UA-0013.html"
+            },
+            {
+              "transferSize": 24872,
+              "url": "https://telegram.org/js/telegram-web-app.js"
+            },
+            {
+              "transferSize": 873,
+              "url": "https://www.uaart.com.ua/video/order/quick-lead.css?v=20261106.1"
+            }
+          ],
+          "score": 0,
+          "title": "Network dependency tree"
+        },
+        {
+          "display": "Est savings of 6 KiB",
+          "id": "unminified-javascript",
+          "resources": [
+            {
+              "totalBytes": 24671,
+              "url": "https://telegram.org/js/telegram-web-app.js",
+              "wastedBytes": 5846
+            }
+          ],
+          "score": 50,
+          "title": "Minify JavaScript"
+        },
+        {
+          "display": "Est savings of 70 KiB",
+          "id": "unused-javascript",
+          "resources": [
+            {
+              "totalBytes": 163429,
+              "url": "https://www.googletagmanager.com/gtag/js?id=G-6SRBQK6GY4",
+              "wastedBytes": 71760
+            }
+          ],
+          "score": 50,
+          "title": "Reduce unused JavaScript"
+        }
+      ],
+      "final_url": "https://www.uaart.com.ua/video/ua/UA-0013.html",
+      "lcp_element": "<img src=\"/video/foto/UA-0013/001.jpg\" alt=\"Mercedes-Benz Б-КЛАССА 2015 — фото 1\" loading=\"eager\" fetchpriority=\"high\" decoding=\"async\" draggable=\"false\">",
+      "lcp_parts_ms": {
+        "elementRenderDelay": 73,
+        "resourceLoadDelay": 16,
+        "resourceLoadDuration": 43,
+        "timeToFirstByte": 51
+      },
+      "metrics": {
+        "cls": 0,
+        "fcp_ms": 978,
+        "lcp_ms": 2152,
+        "si_ms": 1936,
+        "tbt_ms": 176
+      },
+      "performance": 96,
+      "runs_performance": [
+        96,
+        96,
+        94
+      ],
+      "runtime_error": "",
+      "seo": 100
+    }
+  },
+  "preset": "mobile (Lighthouse default: simulated slow 4G, 4x CPU slowdown)",
+  "remote_write_count": 0,
+  "run_id": "42357340339",
+  "runs_per_page": 3,
+  "task_id": "PAGESPEED-PROBE-20261107"
+}
