@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "0205e104233eec98d2327fdc9c0f3f6ff5d99928389ca9225d7b27f431021924",
   "autostart_source_commit": "a16544a33e0b62edec48f9a00fd975c55d667073",
   "created_at": "2026-11-07T08:10:47Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "930b92869eab9428aa85e8c1f6bac808743633891b764c02a7c5e5c6baa59270",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-07T08:10:47Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-07T08:12:00Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42354251367",
     "task_id": "SPEED-INSTALL-20261101-R2",
     "task_sha256": "808b05a07482098f41e6788569596ed6aac63d1e178ce9b009cc68c2da7d08fb"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 151.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 159.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42354251367-808b05a07482098f",
+  "production_transaction_path": "state/transactions/SPEED-INSTALL-20261101-R2.808b05a07482098f41e6788569596ed6aac63d1e178ce9b009cc68c2da7d08fb.42354251367.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-476fb8ab806c7723-140b48b35ddf1641",
   "receipt_path": "state/receipts/SPEED-INSTALL-20261101-R2.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,38 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "ba7d29b5cda31262acf506f28696f590095ff4d8",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 323.813,
+    "allowed": true,
+    "evidence_path": "state/storage/SPEED-INSTALL-20261101-R2.json",
+    "evidence_sha256": "bce6f9aa41d43dd35822e8b025af65bafd564fd300092a5875359b4cf26d0f72",
+    "free_bytes": 23679827456,
+    "heavy": true,
+    "measured_at": "2026-11-07T08:06:34.957549+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 32.34335012571429
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-07T08:10:47Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "de81a630675e9d7b6b4b2ed41eefb2cf9528e2d91951870b115445ccf9548c1e",
+    "file_sha256": {
+      "cloud/speed_001/candidate_builder.py": "6ba051b23982518c25dc850b5c727b66f1e6736cf3005969874dff710194332b",
+      "cloud/speed_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/speed_001/deployment_bootstrap.py": "08f53d06500e4f0efa1beea8751e2925fd6563f54ed0ee44a6e47c6847750339",
+      "cloud/speed_001/deployment_remote.py": "a42d4508b65755038607fb2222392049f15909cbf668229e99cccbc31d8ca13a",
+      "cloud/speed_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/speed_001/deployment_transport.py": "69171499c14e4190a2769ac8a5e5208ed9aeac312c64e64a40e6217e6009fb32",
+      "cloud/speed_001/make_release.py": "ed9bf99176ab4cca1f6c7a036b7d7583804efea9d02ea654b9a6c00306ba77cf",
+      "cloud/speed_001/release_constants.py": "447d87477695a33aff4bcdbf163bb2c8691a08d1b0bd1b294408f1efce6c7575",
+      "cloud/speed_001/test_deployment.py": "8f505ec62cc860cc7ad11849a59b3936ee40c6b9fe6b2459dc70d0647fcf76ed",
+      "cloud/speed_001/test_release.py": "26bff404026ce424e6f860602bd312d9ba993e22b126de33e44ff4df91d037d6",
+      "cloud/speed_001/ua_photo_copies.py": "457904fb9ad595eb6443a422ed2428baa9f76bf3638bb6ce17e6c490a9f5d954",
+      "cloud/speed_001/ua_tg_script.py": "ce14c5e71135fd990fdbed7a3d7934f634c0437c43ee07a592073a727cfaf1b9"
+    }
+  },
+  "updated_at": "2026-11-07T08:12:00Z"
 }
