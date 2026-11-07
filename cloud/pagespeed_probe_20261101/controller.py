@@ -16,7 +16,10 @@ import re
 import subprocess
 
 PACKAGE = 'cloud/pagespeed_probe_20261101'
-TASKS = ('PAGESPEED-PROBE-20261101', 'PAGESPEED-PROBE-20261101-R2')  # R2: + resource details
+# Task -> evidence file. R2: + resource details; 20261107: after SPEED-001 (same pages, same method).
+EVIDENCE = {'PAGESPEED-PROBE-20261101': 'evidence.json', 'PAGESPEED-PROBE-20261101-R2': 'evidence-R2.json',
+            'PAGESPEED-PROBE-20261107': 'evidence-20261107.json'}
+TASKS = tuple(EVIDENCE)
 ROOT = Path(__file__).resolve().parents[2]
 SITE = 'https://www.uaart.com.ua'
 PAGES = ('/video/index.html', '/video/seo/ua/kia-k5-koreya-kyiv.html', '/video/ua/UA-0013.html',
@@ -163,7 +166,7 @@ def execute(env, *, root=None, run=subprocess.run):
     root = ROOT if root is None else Path(root)
     request_sha, run_id = validate_identity(env, root)
     task = env['UAART_TASK_ID']
-    evidence = PACKAGE + '/evidence%s.json' % task[len(TASKS[0]):]
+    evidence = PACKAGE + '/' + EVIDENCE[task]
     write(root, evidence, dump({'task_id': task, 'run_id': run_id, 'remote_write_count': 0, **collect(run)}))
     receipt = {'task_id': task, 'status': 'FINISHED', 'task_class': 'STANDARD', 'target_environment': 'shadow',
                'live_source_environment': 'production', 'tests': 'PASS', 'tests_scope': 'READ_ONLY_PROBE',
