@@ -1,0 +1,2279 @@
+{
+  "files": {
+    "by_kind": {
+      "card": {
+        "both": 0,
+        "google": 106,
+        "html": 106,
+        "none": 0,
+        "own": 0
+      },
+      "core": {
+        "both": 6,
+        "google": 6,
+        "html": 6,
+        "none": 0,
+        "own": 6
+      },
+      "diag": {
+        "both": 0,
+        "google": 0,
+        "html": 44,
+        "none": 44,
+        "own": 0
+      },
+      "landing": {
+        "both": 2,
+        "google": 33,
+        "html": 48,
+        "none": 1,
+        "own": 16
+      },
+      "order": {
+        "both": 2,
+        "google": 2,
+        "html": 3,
+        "none": 1,
+        "own": 2
+      },
+      "preview": {
+        "both": 0,
+        "google": 0,
+        "html": 764,
+        "none": 764,
+        "own": 0
+      },
+      "verification": {
+        "both": 0,
+        "google": 0,
+        "html": 1,
+        "none": 1,
+        "own": 0
+      }
+    },
+    "without_google_tag": [
+      "/video/UA-0001-diag.html",
+      "/video/UA-0003-diag.html",
+      "/video/UA-0004-diag.html",
+      "/video/UA-0005-diag.html",
+      "/video/UA-0006-diag.html",
+      "/video/UA-0007-diag.html",
+      "/video/UA-0008-diag.html",
+      "/video/UA-0009-diag.html",
+      "/video/UA-0010-diag.html",
+      "/video/UA-0011-diag.html",
+      "/video/UA-0012-diag.html",
+      "/video/UA-0013-diag.html",
+      "/video/UA-0014-diag.html",
+      "/video/UA-0015-diag.html",
+      "/video/UA-0016-diag.html",
+      "/video/UA-0017-diag.html",
+      "/video/UA-0018-diag.html",
+      "/video/UA-0019-diag.html",
+      "/video/UA-0020-diag.html",
+      "/video/UA-0021-diag.html",
+      "/video/UA-0022-diag.html",
+      "/video/UA-0023-diag.html",
+      "/video/google609494476a22f741.html",
+      "/video/izmeritel.html",
+      "/video/order/podbor.html",
+      "/video/otchet_recovery_88703a64.html",
+      "/video/otchet_v180_94ba0eb9.html",
+      "/video/otchet_v181_cafffe71.html",
+      "/video/otchet_v183_45d2d61d.html",
+      "/video/otchet_v184_5c0abec3.html",
+      "/video/otchet_v186_f1c69371.html",
+      "/video/privacy.html",
+      "/video/proba-index.html",
+      "/video/proba-katalog.html",
+      "/video/proba2-index.html",
+      "/video/proba2-katalog.html",
+      "/video/proverka.html",
+      "/site/UA-0001-diag.html",
+      "/site/UA-0003-diag.html",
+      "/site/UA-0004-diag.html",
+      "/site/UA-0005-diag.html",
+      "/site/UA-0006-diag.html",
+      "/site/UA-0007-diag.html",
+      "/site/UA-0008-diag.html",
+      "/site/UA-0009-diag.html",
+      "/site/UA-0010-diag.html",
+      "/site/UA-0011-diag.html",
+      "/site/UA-0012-diag.html",
+      "/site/UA-0013-diag.html",
+      "/site/UA-0014-diag.html",
+      "/site/UA-0015-diag.html",
+      "/site/UA-0016-diag.html",
+      "/site/UA-0017-diag.html",
+      "/site/UA-0018-diag.html",
+      "/site/UA-0019-diag.html",
+      "/site/UA-0020-diag.html",
+      "/site/UA-0021-diag.html",
+      "/site/UA-0022-diag.html",
+      "/site/UA-0023-diag.html",
+      "/site/izmeritel.html",
+      "/site/proverka.html"
+    ],
+    "without_own_counter": [
+      "/video/UA-0001-00cf71c0.html",
+      "/video/UA-0001-diag.html",
+      "/video/UA-0001.html",
+      "/video/UA-0003-a7bfb532.html",
+      "/video/UA-0003-diag.html",
+      "/video/UA-0003.html",
+      "/video/UA-0004-0edda61a.html",
+      "/video/UA-0004-diag.html",
+      "/video/UA-0004.html",
+      "/video/UA-0005-9e3432b2.html",
+      "/video/UA-0005-diag.html",
+      "/video/UA-0005.html",
+      "/video/UA-0006-diag.html",
+      "/video/UA-0006-ed784b7f.html",
+      "/video/UA-0006.html",
+      "/video/UA-0007-de6e3ebe.html",
+      "/video/UA-0007-diag.html",
+      "/video/UA-0007.html",
+      "/video/UA-0008-87693e0e.html",
+      "/video/UA-0008-diag.html",
+      "/video/UA-0008.html",
+      "/video/UA-0009-372ada15.html",
+      "/video/UA-0009-diag.html",
+      "/video/UA-0009.html",
+      "/video/UA-0010-614505f4.html",
+      "/video/UA-0010-diag.html",
+      "/video/UA-0010.html",
+      "/video/UA-0011-9842913c.html",
+      "/video/UA-0011-diag.html",
+      "/video/UA-0011.html",
+      "/video/UA-0012-453f3da4.html",
+      "/video/UA-0012-diag.html",
+      "/video/UA-0012.html",
+      "/video/UA-0013-d593cad2.html",
+      "/video/UA-0013-diag.html",
+      "/video/UA-0013.html",
+      "/video/UA-0014-568b2491.html",
+      "/video/UA-0014-diag.html",
+      "/video/UA-0014.html",
+      "/video/UA-0015-8d6c4f80.html",
+      "/video/UA-0015-diag.html",
+      "/video/UA-0015.html",
+      "/video/UA-0016-d9c506f8.html",
+      "/video/UA-0016-diag.html",
+      "/video/UA-0016.html",
+      "/video/UA-0017-bf0a6669.html",
+      "/video/UA-0017-diag.html",
+      "/video/UA-0017.html",
+      "/video/UA-0018-bfcd1711.html",
+      "/video/UA-0018-diag.html",
+      "/video/UA-0018.html",
+      "/video/UA-0019-906958ad.html",
+      "/video/UA-0019-diag.html",
+      "/video/UA-0019.html",
+      "/video/UA-0020-bf284c6a.html",
+      "/video/UA-0020-diag.html",
+      "/video/UA-0020.html",
+      "/video/UA-0021-10acf230.html",
+      "/video/UA-0021-diag.html",
+      "/video/UA-0021.html",
+      "/video/UA-0022-diag.html",
+      "/video/UA-0022-fa461c2d.html",
+      "/video/UA-0022.html",
+      "/video/UA-0023-956711ae.html",
+      "/video/UA-0023-diag.html",
+      "/video/UA-0023.html",
+      "/video/google609494476a22f741.html",
+      "/video/order/podbor.html",
+      "/video/privacy.html",
+      "/video/ru/UA-0001.html",
+      "/video/ru/UA-0003.html",
+      "/video/ru/UA-0004.html",
+      "/video/ru/UA-0005.html",
+      "/video/ru/UA-0006.html",
+      "/video/ru/UA-0007.html",
+      "/video/ru/UA-0009.html",
+      "/video/ru/UA-0010.html",
+      "/video/ru/UA-0011.html",
+      "/video/ru/UA-0012.html",
+      "/video/ru/UA-0013.html",
+      "/video/ru/UA-0014.html",
+      "/video/ru/UA-0015.html",
+      "/video/ru/UA-0016.html",
+      "/video/ru/UA-0017.html",
+      "/video/ru/UA-0018.html",
+      "/video/ru/UA-0021.html",
+      "/video/ru/UA-0022.html",
+      "/video/ru/UA-0023.html",
+      "/video/seo/gu/avtomobili-koreidan-sakartveloshi.html",
+      "/video/seo/gu/hyundai-sonata-koreidan-sakartveloshi.html",
+      "/video/seo/gu/kia-k5-koreidan-sakartveloshi.html",
+      "/video/seo/ru/audi-a6-koreya-kiev.html",
+      "/video/seo/ru/avto-iz-korei-na-gaze-lpi.html",
+      "/video/seo/ru/avto-iz-korei-v-kiev-pod-kluch.html",
+      "/video/seo/ru/avto-iz-yaponii-pod-zakaz.html",
+      "/video/seo/ru/avto-pod-zakaz-kiev.html",
+      "/video/seo/ru/hyundai-santa-fe-koreya-kiev.html",
+      "/video/seo/ru/hyundai-sonata-koreya-kiev.html",
+      "/video/seo/ru/hyundai-tucson-koreya-kiev.html",
+      "/video/seo/ru/kia-k5-koreya-kiev.html",
+      "/video/seo/ru/kia-sportage-koreya-kiev.html",
+      "/video/seo/ru/mercedes-benz-b-class-koreya-kiev.html",
+      "/video/seo/ru/mercedes-benz-e-class-koreya-kiev.html",
+      "/video/seo/ru/nissan-note-yaponiya-kiev.html",
+      "/video/seo/ru/skolko-stoit-avto-iz-korei-pod-kluch.html",
+      "/video/seo/ua/audi-a6-koreya-kyiv.html",
+      "/video/seo/ua/avto-pid-zamovlennia-kyiv.html",
+      "/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html",
+      "/video/seo/ua/avto-z-korei-na-gazu-lpi.html",
+      "/video/seo/ua/avto-z-yaponii-pid-zamovlennia.html",
+      "/video/seo/ua/hyundai-santa-fe-koreya-kyiv.html",
+      "/video/seo/ua/hyundai-sonata-koreya-kyiv.html",
+      "/video/seo/ua/hyundai-tucson-koreya-kyiv.html",
+      "/video/seo/ua/kia-k5-koreya-kyiv.html",
+      "/video/seo/ua/kia-sportage-koreya-kyiv.html",
+      "/video/seo/ua/mercedes-benz-b-class-koreya-kyiv.html",
+      "/video/seo/ua/mercedes-benz-e-class-koreya-kyiv.html",
+      "/video/seo/ua/nissan-note-yaponiya-kyiv.html",
+      "/video/seo/ua/skilky-koshtuie-avto-z-korei-pid-kliuch.html",
+      "/video/ua/UA-0001.html",
+      "/video/ua/UA-0003.html",
+      "/video/ua/UA-0004.html",
+      "/video/ua/UA-0005.html",
+      "/video/ua/UA-0006.html",
+      "/video/ua/UA-0007.html",
+      "/video/ua/UA-0009.html",
+      "/video/ua/UA-0010.html",
+      "/video/ua/UA-0011.html",
+      "/video/ua/UA-0012.html",
+      "/video/ua/UA-0013.html",
+      "/video/ua/UA-0014.html",
+      "/video/ua/UA-0015.html",
+      "/video/ua/UA-0016.html",
+      "/video/ua/UA-0017.html",
+      "/video/ua/UA-0018.html",
+      "/video/ua/UA-0021.html",
+      "/video/ua/UA-0022.html",
+      "/video/ua/UA-0023.html",
+      "/site/UA-0001-00cf71c0.html",
+      "/site/UA-0001-diag.html",
+      "/site/UA-0001.html",
+      "/site/UA-0003-diag.html",
+      "/site/UA-0003.html",
+      "/site/UA-0004-0edda61a.html",
+      "/site/UA-0004-diag.html",
+      "/site/UA-0004.html",
+      "/site/UA-0005-diag.html",
+      "/site/UA-0005.html",
+      "/site/UA-0006-diag.html",
+      "/site/UA-0006.html"
+    ]
+  },
+  "mode": "probe",
+  "remote_write_count": 0,
+  "run_id": "42394159618",
+  "safe_to_stop": true,
+  "sources": {
+    "analitika_stop": {
+      "exists": true,
+      "mtime_utc": "2026-08-23 07:53"
+    },
+    "full": {
+      "/var/www/www_uaart_com_ua_wsgi.py": "# -*- coding: utf-8 -*-\n# UA-V61 · переадресация короткого адреса на главную страницу сайта.\n# Папка /video/ отдаётся отдельно в разделе Static files и сюда не заходит.\n\nCEL = \"https://www.uaart.com.ua/video/index.html\"\n\nSTRANICA = (\n    \"<!doctype html><html lang='ru'><head><meta charset='utf-8'>\"\n    \"<meta http-equiv='refresh' content='0; url=\" + CEL + \"'>\"\n    \"<title>UA ART COMPANY</title></head>\"\n    \"<body style='background:#0d1826;color:#eaf0f7;font-family:sans-serif;\"\n    \"text-align:center;padding:60px 20px'>\"\n    \"<p>Открываем сайт UA ART COMPANY…</p>\"\n    \"<p><a style='color:#e8a33d' href='\" + CEL + \"'>Перейти вручную</a></p>\"\n    \"</body></html>\"\n).encode(\"utf-8\")\n\n\ndef application(environ, start_response):\n    method = str(environ.get('REQUEST_METHOD', 'GET')).upper()\n    if environ.get('PATH_INFO', '/') == '/' and method in ('GET', 'HEAD'):\n        # UA-ART-SHORT-HOME-20260928\n        from ua_homepage import respond\n        return respond(environ, start_response)\n    body = ('<!doctype html><html lang=\"uk\"><meta charset=\"utf-8\">'\n            '<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">'\n            '<title>Сторінку не знайдено — UA ART COMPANY</title>'\n            '<body><main><h1>Сторінку не знайдено</h1>'\n            '<p>Перевірте адресу або перейдіть до каталогу автомобілів.</p>'\n            '<a href=\"/video/katalog.html\">Відкрити каталог</a></main></body></html>').encode('utf-8')\n    start_response('404 Not Found', [\n        ('Content-Type', 'text/html; charset=utf-8'),\n        ('Content-Length', str(len(body))), ('Cache-Control', 'no-cache'),\n    ])\n    return [] if method == 'HEAD' else [body]\n\n# --- UA-ANALIT-V1 ---\ntry:\n    import sys\n    if '/home/Carix' not in sys.path:\n        sys.path.insert(0, '/home/Carix')\n    import analitika_wsgi\n    application = analitika_wsgi.obolochka(application)\nexcept Exception as _e_ana:\n    pass\n# --- конец UA-ANALIT-V1 ---\n\n# --- UAART-BRIDGE-V1 BEGIN ---\n# Isolated Make -> PythonAnywhere ingress.\ntry:\n    import uaart_bridge_wsgi\n    application = uaart_bridge_wsgi.obolochka(application)\nexcept Exception as _e_uaart_bridge:\n    pass\n# --- UAART-BRIDGE-V1 END ---\n\n# SEO-REHAB-GUARD-068-PRODUCTION-V1\nimport os as _ua_seo068_wsgi_os\nimport re as _ua_seo068_wsgi_re\n\n_ua_seo068_wsgi_previous = application\n_ua_seo068_wsgi_core = ('index.html', 'katalog.html', 'info.html', 'podbor.html')\n\ndef _ua_seo068_wsgi_payload(path):\n    if path == '/robots.txt':\n        return (\n            b'User-agent: *\\nAllow: /\\nDisallow: /video/preview/\\n'\n            b'Sitemap: https://www.uaart.com.ua/sitemap.xml\\n',\n            'text/plain; charset=utf-8',\n        )\n    if path == '/sitemap.xml':\n        from ua_seo_sitemap import sitemap\n        return sitemap('/home/Carix/video'), 'application/xml; charset=utf-8'\n    return None\n\ndef application(environ, start_response):\n    method = str(environ.get('REQUEST_METHOD', 'GET')).upper()\n    path = str(environ.get('PATH_INFO', ''))\n    value = _ua_seo068_wsgi_payload(path) if method in ('GET', 'HEAD') else None\n    if value is None:\n        return _ua_seo068_wsgi_previous(environ, start_response)\n    payload, content_type = value\n    start_response('200 OK', [\n        ('Content-Type', content_type),\n        ('Content-Length', str(len(payload))),\n        ('Cache-Control', 'no-store'),\n        ('X-Content-Type-Options', 'nosniff'),\n    ])\n    return [] if method == 'HEAD' else [payload]\n\n# UA-ART-PUBLIC-PRICES-V1: preserve every existing route.\nimport sys as _ua_prices_sys\nif '/home/Carix' not in _ua_prices_sys.path:\n    _ua_prices_sys.path.insert(0, '/home/Carix')\nfrom uaart_public_prices_v1 import wrap as _ua_prices_wrap\napplication = _ua_prices_wrap(application)\n\n# UA-ART-ORDER-8COUNTRIES-40-001\nfrom ua_order.host import mount_application as _mount_orders\napplication = _mount_orders(application)",
+      "analitika_knopka.py": "# -*- coding: utf-8 -*-\n# UA-ANALIT-KNOPKA-V2 — раздел «📊 Аналитика» клиентского бота.\n# Пользуется тем, что уже есть в проекте: отправка через vitrina.poslat,\n# кнопки парами, «Назад» — существующее действие v_start, доступ — vladelec.txt.\nimport sys\nif \"/home/Carix\" not in sys.path:\n    sys.path.insert(0, \"/home/Carix\")\n\nDEYSTVIE = \"v_analytics\"\nZAPASNOY_VLADELEC = \"397376186\"\nPERIODY = {\"v_an_today\": \"today\", \"v_an_yesterday\": \"yesterday\",\n           \"v_an_7\": \"7d\", \"v_an_30\": \"30d\"}\nIMENA = {\"today\": \"Сегодня\", \"yesterday\": \"Вчера\", \"7d\": \"7 дней\", \"30d\": \"30 дней\"}\n\n\ndef vladelec_id():\n    try:\n        import vitrina\n        znach = (vitrina.fajl(\"vladelec.txt\") or \"\").strip()\n        if znach:\n            return znach\n    except Exception:\n        pass\n    return ZAPASNOY_VLADELEC\n\n\ndef vladelec_li(kto):\n    try:\n        return int(kto) == int(vladelec_id())\n    except Exception:\n        return False\n\n\ndef otchet(period=\"today\"):\n    \"\"\"Отчёт строит analitika_otchet (та же база, правильные периоды).\"\"\"\n    try:\n        import analitika_otchet\n        return analitika_otchet.otchet(period)\n    except Exception as oshibka:\n        try:\n            import analitika_yadro as Y\n            return Y.otchet(period)\n        except Exception:\n            return \"Отчёт временно недоступен: \" + str(oshibka)\n\n\ndef knopki():\n    return [\n        [(\"📅 Сегодня\", \"v_an_today\"), (\"📅 Вчера\", \"v_an_yesterday\")],\n        [(\"📅 7 дней\", \"v_an_7\"), (\"📅 30 дней\", \"v_an_30\")],\n        [(\"🔄 Обновить\", \"v_an_today\")],\n        [(\"⬅️ Назад\", \"v_start\")],\n    ]\n\n\nasync def vetka(bot, chat_id, kto, deystvie):\n    \"\"\"True — действие обработано здесь, витрина дальше его не разбирает.\"\"\"\n    import vitrina\n    if not vladelec_li(kto):\n        return True\n    if deystvie == DEYSTVIE:\n        await vitrina.poslat(bot, chat_id,\n                             \"📊 <b>UA ART — аналитика</b>\\nВыберите период:\", knopki())\n        return True\n    period = PERIODY.get(deystvie)\n    if period is None:\n        return False\n    try:\n        tekst = otchet(period)\n    except Exception as oshibka:\n        tekst = \"Не удалось построить отчёт: \" + str(oshibka)\n    await vitrina.poslat(bot, chat_id, tekst, knopki())\n    return True",
+      "analitika_otchet.py": "# -*- coding: utf-8 -*-\n# UA-ANALIT-OTCHET-V2 — построение отчётов поверх СУЩЕСТВУЮЩЕЙ analytics.db.\n# Новых таблиц и второй базы нет. crm.db открывается только на чтение.\nimport os, re, time, sqlite3\n\nKOREN = \"/home/Carix\"\nBAZA = os.path.join(KOREN, \"analytics.db\")\nCRM = os.path.join(KOREN, \"crm.db\")\n\nE = {'vremya': 'ts', 'tip': 'tip', 'stranica': 'stranica', 'posetitel': 'vid', 'sessiya': 'sid', 'avto': 'avto'}\nS = {'sessiya': 'sid', 'posetitel': 'vid', 'istochnik': 'istochnik', 'utm_source': 'utm_source', 'utm_campaign': 'utm_campaign', 'utm_medium': 'utm_medium', 'referrer': None, 'vremya': 'nachalo'}\n\nIMENA_PERIODOV = {\"today\": \"Сегодня\", \"yesterday\": \"Вчера\",\n                  \"7d\": \"Последние 7 дней\", \"30d\": \"Последние 30 дней\"}\n\nISTOCHNIKI = [\n    (\"tiktok\", \"TikTok\"), (\"instagram\", \"Instagram\"), (\"facebook\", \"Facebook\"),\n    (\"fb.\", \"Facebook\"), (\"google\", \"Google\"), (\"t.me\", \"Telegram\"),\n    (\"telegram\", \"Telegram\"), (\"whatsapp\", \"WhatsApp\"), (\"wa.me\", \"WhatsApp\"),\n    (\"auto.ria\", \"AUTO.RIA\"), (\"autoria\", \"AUTO.RIA\"), (\"youtube\", \"YouTube\"),\n    (\"olx\", \"OLX\"), (\"bing\", \"Bing\"), (\"yandex\", \"Yandex\"),\n]\n\nDEYSTVIYA = [\n    (\"whatsapp\", \"WhatsApp\"), (\"telegram\", \"Telegram\"), (\"tel\", \"Позвонить\"),\n    (\"phone\", \"Позвонить\"), (\"diag\", \"Диагностика\"), (\"video\", \"Видео\"),\n    (\"share\", \"Поделиться\"), (\"zakaz\", \"Авто под заказ\"), (\"podbor\", \"Авто под заказ\"),\n    (\"etap\", \"Этап\"), (\"obyavlenie\", \"Открыть объявление\"), (\"card\", \"Открыть карточку\"),\n    (\"bron\", \"Бронь\"), (\"zayavka\", \"Заявка\"),\n]\n\nSISTEMNYE = (\"start\", \"init\", \"ping\", \"heartbeat\", \"session_start\")\n\n\ndef _ro(put):\n    return sqlite3.connect(\"file:%s?mode=ro\" % put, uri=True, timeout=10)\n\n\ndef granicy(period):\n    \"\"\"Начало и конец периода в секундах. Сутки — по времени сервера.\"\"\"\n    teper = time.time()\n    nachalo_sutok = time.mktime(time.localtime(teper)[:3] + (0, 0, 0, 0, 0, -1))\n    if period == \"today\":\n        return nachalo_sutok, teper\n    if period == \"yesterday\":\n        return nachalo_sutok - 86400, nachalo_sutok\n    if period == \"7d\":\n        return nachalo_sutok - 6 * 86400, teper\n    if period == \"30d\":\n        return nachalo_sutok - 29 * 86400, teper\n    return nachalo_sutok, teper\n\n\ndef _mashiny():\n    \"\"\"Человеческие названия авто из CRM (только чтение).\"\"\"\n    itog = {}\n    try:\n        s = _ro(CRM)\n        s.row_factory = sqlite3.Row\n        for r in s.execute(\"select * from cars\"):\n            d = dict(r)\n            nom = str(d.get(\"auto_number\") or \"\").strip()\n            if not nom:\n                continue\n            imya = \" \".join(str(x) for x in (d.get(\"brand\"), d.get(\"model\"), d.get(\"year\")) if x)\n            itog[nom] = imya or nom\n        s.close()\n    except Exception:\n        pass\n    return itog\n\n\ndef nomer_iz_adresa(adres):\n    \"\"\"Карточка авто узнаётся по адресу — новые UA-0009 и дальше попадут сами.\"\"\"\n    m = re.search(r\"(UA-\\d{3,5})\", adres or \"\")\n    return m.group(1) if m else None\n\n\ndef imya_stranicy(adres, mashiny):\n    a = (adres or \"\").split(\"?\")[0]\n    nom = nomer_iz_adresa(a)\n    if nom:\n        nazvanie = mashiny.get(nom, nom)\n        if \"-diag\" in a or \"diag\" in a.rsplit(\"/\", 1)[-1]:\n            return \"Диагностика · \" + nazvanie\n        return nazvanie\n    hvost = a.rstrip(\"/\").rsplit(\"/\", 1)[-1].lower()\n    if hvost in (\"\", \"index.html\"):\n        return \"Главная\"\n    if hvost.startswith(\"katalog\"):\n        return \"Каталог\"\n    if hvost.startswith(\"info\"):\n        return \"Условия и гарантии\"\n    if hvost.startswith(\"podbor\"):\n        return \"Подбор под заказ\"\n    return hvost or \"Страница\"\n\n\ndef imya_deystviya(tip, adres, mashiny):\n    t = (tip or \"\").lower()\n    for klyuch, imya in DEYSTVIYA:\n        if klyuch in t:\n            return imya\n    if t in (\"page\", \"page_view\", \"view\", \"stranica\"):\n        return None\n    return t\n\n\ndef klass_istochnika(istochnik, referrer, utm_source):\n    for znach in (utm_source, istochnik, referrer):\n        z = (znach or \"\").strip().lower()\n        if not z:\n            continue\n        for klyuch, imya in ISTOCHNIKI:\n            if klyuch in z:\n                return imya\n        if z in (\"direct\", \"(direct)\", \"pryamoy\", \"pryamaya\"):\n            return \"Прямая ссылка\"\n        if z.startswith(\"http\"):\n            try:\n                domen = z.split(\"//\", 1)[1].split(\"/\")[0]\n            except Exception:\n                domen = z\n            if \"uaart\" in domen:\n                return \"Прямая ссылка\"\n            return \"Другой сайт: \" + domen\n        if z not in (\"unknown\", \"none\", \"null\"):\n            return z[:24]\n    return \"Неизвестно\"\n\n\ndef _sobytiya(soed, ot, do):\n    polya = [E[\"vremya\"], E[\"tip\"], E[\"stranica\"], E[\"posetitel\"], E[\"sessiya\"]]\n    imena = [x for x in polya if x]\n    zapros = \"select %s from events where %s >= ? and %s < ? order by %s\" % (\n        \", \".join(imena), E[\"vremya\"], E[\"vremya\"], E[\"vremya\"])\n    stroki = []\n    for r in soed.execute(zapros, (ot, do)):\n        d = dict(zip(imena, r))\n        stroki.append({\n            \"kogda\": d.get(E[\"vremya\"]),\n            \"tip\": (d.get(E[\"tip\"]) or \"\"),\n            \"adres\": (d.get(E[\"stranica\"]) or \"\") if E[\"stranica\"] else \"\",\n            \"kto\": (d.get(E[\"posetitel\"]) or \"\") if E[\"posetitel\"] else \"\",\n            \"sess\": (d.get(E[\"sessiya\"]) or \"\") if E[\"sessiya\"] else \"\",\n        })\n    return stroki\n\n\ndef _sessii(soed, ot, do):\n    if not S.get(\"sessiya\"):\n        return {}\n    imena = [x for x in (S.get(\"sessiya\"), S.get(\"posetitel\"), S.get(\"istochnik\"),\n                         S.get(\"utm_source\"), S.get(\"utm_campaign\"), S.get(\"referrer\"),\n                         S.get(\"vremya\")) if x]\n    itog = {}\n    try:\n        for r in soed.execute(\"select %s from sessions\" % \", \".join(imena)):\n            d = dict(zip(imena, r))\n            itog[str(d.get(S[\"sessiya\"]))] = {\n                \"kto\": d.get(S.get(\"posetitel\")),\n                \"istochnik\": d.get(S.get(\"istochnik\")),\n                \"utm_source\": d.get(S.get(\"utm_source\")),\n                \"utm_campaign\": d.get(S.get(\"utm_campaign\")),\n                \"referrer\": d.get(S.get(\"referrer\")),\n            }\n    except Exception:\n        pass\n    return itog\n\n\ndef sklonenie(n, odna, dve, mnogo):\n    n = int(n)\n    if n % 10 == 1 and n % 100 != 11:\n        return odna\n    if n % 10 in (2, 3, 4) and n % 100 not in (12, 13, 14):\n        return dve\n    return mnogo\n\n\ndef _verh(schet, skolko=5):\n    return sorted(schet.items(), key=lambda x: (-x[1], x[0]))[:skolko]\n\n\ndef otchet(period=\"today\"):\n    imya_perioda = IMENA_PERIODOV.get(period, period)\n    ot, do = granicy(period)\n    try:\n        soed = _ro(BAZA)\n    except Exception as e:\n        return \"📊 UA ART — Аналитика\\n%s\\n\\nБаза недоступна: %s\" % (imya_perioda, e)\n\n    mashiny = _mashiny()\n    try:\n        sobytiya = _sobytiya(soed, ot, do)\n        sessii = _sessii(soed, ot, do)\n    except Exception as e:\n        soed.close()\n        return \"📊 UA ART — Аналитика\\n%s\\n\\nНе удалось прочитать события: %s\" % (\n            imya_perioda, e)\n    soed.close()\n\n    if not sobytiya:\n        return (\"📊 <b>UA ART — Аналитика</b>\\n%s\\n\\n\"\n                \"👥 Посетителей: 0\\n🔄 Сессий: 0\\n👁 Просмотров: 0\\n\\n\"\n                \"Данных за выбранный период пока нет.\" % imya_perioda)\n\n    lyudi, sessii_mn, prosmotry = set(), set(), 0\n    stranicy, deystviya, istochniki, reklama = {}, {}, {}, {}\n    avto_prosmotry, avto_kontakty = {}, {}\n    smotreli_avto, otkryli_kartochku, kontakt = set(), set(), set()\n    marshruty = {}\n\n    for s in sobytiya:\n        kto = str(s[\"kto\"] or s[\"sess\"] or \"?\")\n        lyudi.add(kto)\n        if s[\"sess\"]:\n            sessii_mn.add(str(s[\"sess\"]))\n        tip = (s[\"tip\"] or \"\").lower()\n        if tip in SISTEMNYE:\n            continue\n\n        nomer = nomer_iz_adresa(s[\"adres\"])\n        deystvie = imya_deystviya(tip, s[\"adres\"], mashiny)\n\n        if deystvie is None:          # просмотр страницы\n            prosmotry += 1\n            nazvanie = imya_stranicy(s[\"adres\"], mashiny)\n            stranicy[nazvanie] = stranicy.get(nazvanie, 0) + 1\n            if nomer:                 # карточка авто = просмотр автомобиля\n                smotreli_avto.add(kto)\n                otkryli_kartochku.add(kto)\n                imya_avto = mashiny.get(nomer, nomer)\n                avto_prosmotry[imya_avto] = avto_prosmotry.get(imya_avto, 0) + 1\n            marshruty.setdefault(kto, []).append(nazvanie)\n        else:\n            deystviya[deystvie] = deystviya.get(deystvie, 0) + 1\n            if deystvie in (\"WhatsApp\", \"Telegram\", \"Позвонить\", \"Заявка\", \"Бронь\"):\n                kontakt.add(kto)\n                if nomer:\n                    imya_avto = mashiny.get(nomer, nomer)\n                    avto_kontakty.setdefault(imya_avto, set()).add(kto)\n            marshruty.setdefault(kto, []).append(deystvie)\n\n        sved = sessii.get(str(s[\"sess\"]), {})\n        istochnik = klass_istochnika(sved.get(\"istochnik\"), sved.get(\"referrer\"),\n                                     sved.get(\"utm_source\"))\n        istochniki[istochnik] = istochniki.get(istochnik, 0) + 1\n        if sved.get(\"utm_source\"):\n            klyuch = \"%s / %s\" % (klass_istochnika(None, None, sved.get(\"utm_source\")),\n                                  sved.get(\"utm_campaign\") or \"без кампании\")\n            reklama.setdefault(klyuch, set()).add(kto)\n\n    # источники считаем по людям, а не по событиям\n    lyudi_istochnik = {}\n    for s in sobytiya:\n        kto = str(s[\"kto\"] or s[\"sess\"] or \"?\")\n        sved = sessii.get(str(s[\"sess\"]), {})\n        lyudi_istochnik[kto] = klass_istochnika(sved.get(\"istochnik\"), sved.get(\"referrer\"),\n                                               sved.get(\"utm_source\"))\n    po_istochnikam = {}\n    for kto, ist in lyudi_istochnik.items():\n        po_istochnikam[ist] = po_istochnikam.get(ist, 0) + 1\n\n    stroki = [\"📊 <b>UA ART — Аналитика</b>\", imya_perioda, \"\"]\n    stroki.append(\"👥 Посетителей: %d\" % len(lyudi))\n    stroki.append(\"🔄 Сессий: %d\" % (len(sessii_mn) or len(lyudi)))\n    stroki.append(\"👁 Просмотров страниц: %d\" % prosmotry)\n\n    stroki.append(\"\")\n    stroki.append(\"📥 <b>ОТКУДА ПРИШЛИ</b>\")\n    for imya, n in _verh(po_istochnikam, 8):\n        stroki.append(\"%s — %d\" % (imya, n))\n\n    if reklama:\n        stroki.append(\"\")\n        stroki.append(\"🎯 <b>РЕКЛАМА (UTM)</b>\")\n        for imya, kto_mn in _verh(dict((k, len(v)) for k, v in reklama.items()), 6):\n            stroki.append(\"%s — %d\" % (imya, kto_mn))\n\n    if stranicy:\n        stroki.append(\"\")\n        stroki.append(\"👀 <b>ЧТО СМОТРЕЛИ</b>\")\n        for imya, n in _verh(stranicy, 8):\n            stroki.append(\"%s — %d\" % (imya, n))\n\n    if deystviya:\n        stroki.append(\"\")\n        stroki.append(\"➡️ <b>ЧТО НАЖИМАЛИ</b>\")\n        for imya, n in _verh(deystviya, 8):\n            stroki.append(\"%s — %d\" % (imya, n))\n\n    if avto_prosmotry:\n        stroki.append(\"\")\n        stroki.append(\"🚗 <b>ИНТЕРЕС К АВТО</b>\")\n        for imya, n in _verh(avto_prosmotry, 5):\n            k = len(avto_kontakty.get(imya, ()))\n            stroki.append(\"%s — %d %s / %d %s\" % (\n                imya, n, sklonenie(n, \"просмотр\", \"просмотра\", \"просмотров\"),\n                k, sklonenie(k, \"контакт\", \"контакта\", \"контактов\")))\n\n    stroki.append(\"\")\n    stroki.append(\"🔥 <b>КОНВЕРСИЯ</b>\")\n    stroki.append(\"Посетителей: %d\" % len(lyudi))\n    stroki.append(\"Смотрели авто: %d\" % len(smotreli_avto))\n    stroki.append(\"Открыли карточку: %d\" % len(otkryli_kartochku))\n    stroki.append(\"Нажали контакт: %d\" % len(kontakt))\n    if lyudi:\n        stroki.append(\"Посетитель → контакт: %.1f%%\" % (100.0 * len(kontakt) / len(lyudi)))\n    if otkryli_kartochku:\n        stroki.append(\"Карточка → контакт: %.1f%%\" % (\n            100.0 * len(kontakt & otkryli_kartochku) / len(otkryli_kartochku)))\n\n    cepochki = {}\n    for kto, shagi in marshruty.items():\n        chistye = []\n        for sh in shagi:\n            if chistye and chistye[-1] == sh:\n                continue\n            chistye.append(sh)\n        if not chistye:\n            continue\n        nachalo = lyudi_istochnik.get(kto, \"Неизвестно\")\n        cepochka = nachalo + \" → \" + \" → \".join(chistye[:5])\n        cepochki[cepochka] = cepochki.get(cepochka, 0) + 1\n    if cepochki:\n        stroki.append(\"\")\n        stroki.append(\"🧭 <b>ТОП МАРШРУТОВ</b>\")\n        for imya, n in _verh(cepochki, 5):\n            stroki.append(\"%s — %d\" % (imya, n))\n\n    return \"\\n\".join(stroki)",
+      "analitika_wsgi.py": "# -*- coding: utf-8 -*-\n# UA-ANALIT-V1  обёртка WSGI: /ua/a.js и /ua/a/e. Всё прочее уходит дальше без изменений.\nimport os, io, json, time, sys\n\nDOM = \"/home/Carix\"\nif DOM not in sys.path:\n    sys.path.insert(0, DOM)\n\nVIDEO = os.path.join(DOM, \"video\")\nSITE  = os.path.join(DOM, \"site\")\nSTROKA = \"<script src='/ua/a.js?v=1' defer></script><!--UA-ANALIT-V1-->\"\n_FON = [0]\n\ndef _storozh():\n    # раз в 2 минуты дописывает строку скрипта в страницы, где её нет.\n    # Выключается созданием файла /home/Carix/analitika_stop.txt\n    if time.time() - _FON[0] < 120:\n        return\n    _FON[0] = time.time()\n    if os.path.exists(os.path.join(DOM, \"analitika_stop.txt\")):\n        return\n    for papka in (VIDEO, SITE):\n        try:\n            imena = os.listdir(papka)\n        except Exception:\n            continue\n        for imya in imena:\n            if not imya.lower().endswith(\".html\"):\n                continue\n            put = os.path.join(papka, imya)\n            try:\n                with io.open(put, \"r\", encoding=\"utf-8\", errors=\"replace\") as f:\n                    t = f.read()\n                if \"UA-ANALIT-V1\" in t:\n                    continue\n                if \"</body>\" not in t:\n                    continue\n                t = t.replace(\"</body>\", STROKA + \"</body>\", 1)\n                vrem = put + \".ana_tmp\"\n                with io.open(vrem, \"w\", encoding=\"utf-8\") as f:\n                    f.write(t)\n                os.replace(vrem, put)\n            except Exception:\n                pass\n\ndef obolochka(prilozhenie):\n    def novoe(environ, start_response):\n        put = environ.get(\"PATH_INFO\", \"\") or \"\"\n        try:\n            if put == \"/ua/a.js\":\n                import analitika_yadro as ya\n                telo = ya.SKRIPT.encode(\"utf-8\")\n                start_response(\"200 OK\", [(\"Content-Type\", \"application/javascript; charset=utf-8\"),\n                                          (\"Cache-Control\", \"max-age=600\"),\n                                          (\"Content-Length\", str(len(telo)))])\n                return [telo]\n            if put == \"/ua/a/e\":\n                try:\n                    dlina = int(environ.get(\"CONTENT_LENGTH\") or 0)\n                    syroe = environ[\"wsgi.input\"].read(min(dlina, 8000)) if dlina else b\"\"\n                    dannye = json.loads(syroe.decode(\"utf-8\", \"replace\"))\n                    import analitika_yadro as ya\n                    ya.zapisat(dannye)\n                except Exception:\n                    pass\n                start_response(\"204 No Content\", [(\"Content-Length\", \"0\")])\n                return [b\"\"]\n        except Exception:\n            pass\n        try:\n            _storozh()\n        except Exception:\n            pass\n        return prilozhenie(environ, start_response)\n    return novoe",
+      "analitika_yadro.py": "# -*- coding: utf-8 -*-\n# UA-ANALIT-V1  ядро аналитики UA ART (база, приём событий, отчёты)\nimport os, io, re, json, time, sqlite3, hashlib\n\nDOM   = \"/home/Carix\"\nBAZA  = os.path.join(DOM, \"analytics.db\")\nCRM   = os.path.join(DOM, \"crm.db\")\nSDVIG_KIEV = 3 * 3600          # сервер UTC -> Киев\nSESSIYA_MIN = 30\nHRANIT_DNEY = 120\n\ndef _db():\n    d = sqlite3.connect(BAZA, timeout=10)\n    try:\n        d.execute(\"PRAGMA journal_mode=WAL\")\n        d.execute(\"PRAGMA synchronous=NORMAL\")\n    except Exception:\n        pass\n    return d\n\ndef init():\n    d = _db()\n    c = d.cursor()\n    c.execute(\"CREATE TABLE IF NOT EXISTS visitors(vid TEXT PRIMARY KEY, pervyy INTEGER, posledniy INTEGER, istochnik TEXT)\")\n    c.execute(\"CREATE TABLE IF NOT EXISTS sessions(sid TEXT PRIMARY KEY, vid TEXT, nachalo INTEGER, konec INTEGER, istochnik TEXT, utm_source TEXT, utm_medium TEXT, utm_campaign TEXT, utm_content TEXT, put TEXT)\")\n    c.execute(\"CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT, eid TEXT UNIQUE, sid TEXT, vid TEXT, ts INTEGER, tip TEXT, stranica TEXT, avto TEXT, znachenie TEXT)\")\n    c.execute(\"CREATE TABLE IF NOT EXISTS sutki(den TEXT PRIMARY KEY, svodka TEXT)\")\n    c.execute(\"CREATE INDEX IF NOT EXISTS i_ev_ts ON events(ts)\")\n    c.execute(\"CREATE INDEX IF NOT EXISTS i_ev_sid ON events(sid)\")\n    c.execute(\"CREATE INDEX IF NOT EXISTS i_ev_tip ON events(tip)\")\n    c.execute(\"CREATE INDEX IF NOT EXISTS i_ev_avto ON events(avto)\")\n    c.execute(\"CREATE INDEX IF NOT EXISTS i_ses_nach ON sessions(nachalo)\")\n    d.commit()\n    d.close()\n\n# ---------- человеческие названия страниц ----------\n_KESH = {\"vremya\": 0, \"avto\": {}}\n\ndef _avto_iz_crm():\n    if time.time() - _KESH[\"vremya\"] < 300 and _KESH[\"avto\"]:\n        return _KESH[\"avto\"]\n    d = {}\n    try:\n        con = sqlite3.connect(\"file:%s?mode=ro\" % CRM, uri=True, timeout=5)\n        cur = con.cursor()\n        cur.execute(\"SELECT auto_number, brand, model, year FROM cars\")\n        for kod, marka, model, god in cur.fetchall():\n            if not kod:\n                continue\n            imya = \" \".join([str(x) for x in (marka, model, god) if x])\n            d[str(kod).upper()] = imya.strip() or str(kod)\n        con.close()\n    except Exception:\n        pass\n    _KESH[\"avto\"] = d\n    _KESH[\"vremya\"] = time.time()\n    return d\n\ndef kod_avto(put):\n    m = re.search(r\"(UA-\\d{3,5})\", put or \"\", re.I)\n    return m.group(1).upper() if m else \"\"\n\ndef nazvanie_stranicy(put):\n    p = (put or \"\").split(\"?\")[0].strip().lower()\n    kod = kod_avto(p)\n    if kod:\n        imya = _avto_iz_crm().get(kod, kod)\n        if \"-diag\" in p:\n            return \"Диагностика · \" + imya\n        return imya\n    if p.endswith(\"katalog.html\"):\n        return \"Каталог\"\n    if p.endswith(\"podbor.html\"):\n        return \"Авто под заказ\"\n    if p.endswith(\"info.html\"):\n        return \"Условия и сроки\"\n    if p.endswith(\"index.html\") or p in (\"\", \"/\", \"/video/\", \"/site/\"):\n        return \"Главная\"\n    return p.rsplit(\"/\", 1)[-1] or \"Страница\"\n\n# ---------- запись события ----------\nRAZRESHENO = set([\"start\", \"page\", \"card\", \"diag\", \"video\", \"whatsapp\", \"telegram\",\n                  \"phone\", \"share\", \"zakaz\", \"obyavlenie\", \"zayavka\", \"cta\", \"etap\",\n                  \"finance\"])  # FINANCE-001: a visit to a finance partner\n\ndef zapisat(dannye):\n    \"\"\"dannye — словарь от браузера. Возвращает 'ok' / 'dubl' / 'skip'.\"\"\"\n    tip = str(dannye.get(\"t\", \"\"))[:20]\n    if tip not in RAZRESHENO:\n        return \"skip\"\n    vid = re.sub(r\"[^a-zA-Z0-9]\", \"\", str(dannye.get(\"v\", \"\")))[:40]\n    sid = re.sub(r\"[^a-zA-Z0-9]\", \"\", str(dannye.get(\"s\", \"\")))[:40]\n    eid = re.sub(r\"[^a-zA-Z0-9]\", \"\", str(dannye.get(\"e\", \"\")))[:60]\n    if not vid or not sid or not eid:\n        return \"skip\"\n    put  = str(dannye.get(\"p\", \"\"))[:300]\n    znch = str(dannye.get(\"z\", \"\"))[:200]\n    ist  = str(dannye.get(\"i\", \"\"))[:40] or \"Прямой / неизвестный\"\n    us   = str(dannye.get(\"us\", \"\"))[:80]\n    um   = str(dannye.get(\"um\", \"\"))[:80]\n    uc   = str(dannye.get(\"uc\", \"\"))[:120]\n    uk   = str(dannye.get(\"uk\", \"\"))[:120]\n    ts   = int(time.time())\n    avto = kod_avto(put)\n    init()\n    d = _db()\n    c = d.cursor()\n    try:\n        c.execute(\"INSERT INTO events(eid,sid,vid,ts,tip,stranica,avto,znachenie) VALUES(?,?,?,?,?,?,?,?)\",\n                  (eid, sid, vid, ts, tip, put, avto, znch))\n    except sqlite3.IntegrityError:\n        d.close()\n        return \"dubl\"\n    c.execute(\"INSERT OR IGNORE INTO visitors(vid,pervyy,posledniy,istochnik) VALUES(?,?,?,?)\", (vid, ts, ts, ist))\n    c.execute(\"UPDATE visitors SET posledniy=? WHERE vid=?\", (ts, vid))\n    c.execute(\"INSERT OR IGNORE INTO sessions(sid,vid,nachalo,konec,istochnik,utm_source,utm_medium,utm_campaign,utm_content,put) VALUES(?,?,?,?,?,?,?,?,?,?)\",\n              (sid, vid, ts, ts, ist, us, um, uc, uk, \"\"))\n    shag = nazvanie_stranicy(put) if tip in (\"page\", \"card\", \"diag\") else _imya_tipa(tip)\n    c.execute(\"SELECT put FROM sessions WHERE sid=?\", (sid,))\n    r = c.fetchone()\n    marshrut = (r[0] if r and r[0] else \"\")\n    chasti = [x for x in marshrut.split(\" > \") if x]\n    if not chasti or chasti[-1] != shag:\n        chasti.append(shag)\n    marshrut = \" > \".join(chasti[-12:])\n    c.execute(\"UPDATE sessions SET konec=?, put=? WHERE sid=?\", (ts, marshrut, sid))\n    d.commit()\n    d.close()\n    _uborka()\n    return \"ok\"\n\n_IMENA_TIPOV = {\"whatsapp\": \"WhatsApp\", \"telegram\": \"Telegram\", \"phone\": \"Позвонить\",\n                \"video\": \"Видео\", \"share\": \"Поделиться\", \"zakaz\": \"Авто под заказ\",\n                \"obyavlenie\": \"Открыть объявление\", \"zayavka\": \"Заявка\",\n                \"diag\": \"Диагностика\", \"card\": \"Карточка\", \"cta\": \"Кнопка\", \"etap\": \"Этап\",\n                \"finance\": \"Кредиты и лизинг\"}\n\ndef _imya_tipa(t):\n    return _IMENA_TIPOV.get(t, t)\n\n_POSLED_UBORKA = [0]\ndef _uborka():\n    if time.time() - _POSLED_UBORKA[0] < 6 * 3600:\n        return\n    _POSLED_UBORKA[0] = time.time()\n    try:\n        d = _db()\n        porog = int(time.time()) - HRANIT_DNEY * 86400\n        d.execute(\"DELETE FROM events WHERE ts<?\", (porog,))\n        d.execute(\"DELETE FROM sessions WHERE konec<?\", (porog,))\n        d.commit()\n        d.close()\n    except Exception:\n        pass\n\n# ---------- отчёты ----------\ndef _granicy(period):\n    t = time.time() + SDVIG_KIEV\n    den = int(t // 86400)\n    if period == \"segodnya\":\n        a, b = den * 86400, (den + 1) * 86400\n        imya = \"Сегодня\"\n    elif period == \"vchera\":\n        a, b = (den - 1) * 86400, den * 86400\n        imya = \"Вчера\"\n    elif period == \"7\":\n        a, b = (den - 6) * 86400, (den + 1) * 86400\n        imya = \"7 дней\"\n    else:\n        a, b = (den - 29) * 86400, (den + 1) * 86400\n        imya = \"30 дней\"\n    return a - SDVIG_KIEV, b - SDVIG_KIEV, imya\n\ndef _top(spisok, n=8):\n    return sorted(spisok, key=lambda x: -x[1])[:n]\n\ndef otchet(period=\"segodnya\"):\n    init()\n    a, b, imya = _granicy(period)\n    d = _db()\n    c = d.cursor()\n    c.execute(\"SELECT COUNT(DISTINCT vid) FROM events WHERE ts>=? AND ts<?\", (a, b))\n    posetiteley = c.fetchone()[0] or 0\n    c.execute(\"SELECT COUNT(DISTINCT sid) FROM events WHERE ts>=? AND ts<?\", (a, b))\n    sessiy = c.fetchone()[0] or 0\n    c.execute(\"SELECT COUNT(*) FROM events WHERE ts>=? AND ts<? AND tip IN ('page','card','diag')\", (a, b))\n    prosmotrov = c.fetchone()[0] or 0\n\n    if not posetiteley:\n        d.close()\n        return \"📊 UA ART — АНАЛИТИКА\\n%s\\n\\nДанных за этот период пока нет.\" % imya\n\n    c.execute(\"SELECT istochnik, COUNT(DISTINCT sid) FROM sessions WHERE nachalo>=? AND nachalo<? GROUP BY istochnik\", (a, b))\n    istochniki = _top(c.fetchall(), 8)\n    c.execute(\"SELECT utm_source, utm_campaign, COUNT(DISTINCT sid) FROM sessions WHERE nachalo>=? AND nachalo<? AND utm_source<>'' GROUP BY utm_source, utm_campaign\", (a, b))\n    utm = _top([(\"%s / %s\" % (x[0], x[1] or \"-\"), x[2]) for x in c.fetchall()], 6)\n\n    c.execute(\"SELECT stranica, COUNT(*) FROM events WHERE ts>=? AND ts<? AND tip IN ('page','card','diag') GROUP BY stranica\", (a, b))\n    svod = {}\n    for put, n in c.fetchall():\n        im = nazvanie_stranicy(put)\n        svod[im] = svod.get(im, 0) + n\n    stranicy = _top(list(svod.items()), 8)\n\n    c.execute(\"SELECT tip, COUNT(*) FROM events WHERE ts>=? AND ts<? AND tip NOT IN ('page','start') GROUP BY tip\", (a, b))\n    deystviya = _top([(_imya_tipa(t), n) for t, n in c.fetchall()], 10)\n\n    c.execute(\"SELECT avto, COUNT(*) FROM events WHERE ts>=? AND ts<? AND avto<>'' AND tip IN ('card','diag') GROUP BY avto\", (a, b))\n    prosm_avto = dict(c.fetchall())\n    c.execute(\"SELECT avto, COUNT(*) FROM events WHERE ts>=? AND ts<? AND avto<>'' AND tip IN ('whatsapp','telegram','phone','zayavka') GROUP BY avto\", (a, b))\n    kont_avto = dict(c.fetchall())\n    avto_stroki = []\n    for kod, n in _top(list(prosm_avto.items()), 8):\n        avto_stroki.append((_avto_iz_crm().get(kod, kod), n, kont_avto.get(kod, 0)))\n\n    c.execute(\"SELECT COUNT(DISTINCT vid) FROM events WHERE ts>=? AND ts<? AND tip IN ('card','diag')\", (a, b))\n    smotreli = c.fetchone()[0] or 0\n    c.execute(\"SELECT COUNT(DISTINCT vid) FROM events WHERE ts>=? AND ts<? AND tip='card'\", (a, b))\n    otkryli = c.fetchone()[0] or 0\n    c.execute(\"SELECT COUNT(DISTINCT vid) FROM events WHERE ts>=? AND ts<? AND tip IN ('whatsapp','telegram','phone','zayavka')\", (a, b))\n    kontakt = c.fetchone()[0] or 0\n\n    c.execute(\"SELECT put, COUNT(*) FROM sessions WHERE nachalo>=? AND nachalo<? AND put<>'' GROUP BY put\", (a, b))\n    marshruty = _top([(x[0], x[1]) for x in c.fetchall()], 5)\n    d.close()\n\n    t = []\n    t.append(\"📊 UA ART — АНАЛИТИКА\")\n    t.append(imya)\n    t.append(\"\")\n    t.append(\"👥 Посетителей: %d\" % posetiteley)\n    t.append(\"🔄 Сессий: %d\" % sessiy)\n    t.append(\"👁 Просмотров страниц: %d\" % prosmotrov)\n    t.append(\"\")\n    t.append(\"📥 ОТКУДА ПРИШЛИ\")\n    for im, n in istochniki:\n        t.append(\"%s — %d\" % (im, n))\n    if utm:\n        t.append(\"\")\n        t.append(\"🎯 РЕКЛАМА (UTM)\")\n        for im, n in utm:\n            t.append(\"%s — %d\" % (im, n))\n    t.append(\"\")\n    t.append(\"👀 ЧТО СМОТРЕЛИ\")\n    for im, n in stranicy:\n        t.append(\"%s — %d\" % (im, n))\n    if deystviya:\n        t.append(\"\")\n        t.append(\"➡️ ЧТО НАЖИМАЛИ\")\n        for im, n in deystviya:\n            t.append(\"%s — %d\" % (im, n))\n    if avto_stroki:\n        t.append(\"\")\n        t.append(\"🚗 ИНТЕРЕС К АВТО\")\n        for im, pr, ko in avto_stroki:\n            t.append(\"%s — %d просмотров / %d контактов\" % (im, pr, ko))\n    t.append(\"\")\n    t.append(\"🔥 КОНВЕРСИЯ\")\n    t.append(\"Посетители: %d\" % posetiteley)\n    t.append(\"Смотрели авто: %d\" % smotreli)\n    t.append(\"Открыли карточку: %d\" % otkryli)\n    t.append(\"Нажали контакт: %d\" % kontakt)\n    if posetiteley:\n        t.append(\"Посетитель → контакт: %.1f%%\" % (100.0 * kontakt / posetiteley))\n    if marshruty:\n        t.append(\"\")\n        t.append(\"🧭 ТОП МАРШРУТОВ\")\n        for im, n in marshruty:\n            t.append(\"%s — %d\" % (im[:120], n))\n    return \"\\n\".join(t)\n\n# ---------- скрипт для страниц ----------\nSKRIPT = r\"\"\"\n(function(){\nif (window.__UA_A) { return; } window.__UA_A = 1;\nvar LS=window.localStorage, SS=window.sessionStorage;\nfunction rnd(){ return Math.random().toString(36).slice(2)+Date.now().toString(36); }\nfunction get(k,st){ try{ return st.getItem(k); }catch(e){ return null; } }\nfunction set(k,v,st){ try{ st.setItem(k,v); }catch(e){} }\nvar vid=get('ua_vid',LS); if(!vid){ vid=rnd(); set('ua_vid',vid,LS); }\nvar now=Date.now();\nvar last=parseInt(get('ua_last',LS)||'0',10);\nvar sid=get('ua_sid',LS);\nvar novaya=false;\nif(!sid || !last || (now-last)>1800000){ sid=rnd(); set('ua_sid',sid,LS); novaya=true; }\nset('ua_last',String(now),LS);\nvar par=new URLSearchParams(location.search);\nfunction utm(n){ return (par.get(n)||'').slice(0,100); }\nvar us=utm('utm_source'), um=utm('utm_medium'), uc=utm('utm_campaign'), uk=utm('utm_content');\nfunction istochnik(){\n  if(us){ var m=us.toLowerCase();\n    if(m.indexOf('tik')>=0) return 'TikTok';\n    if(m.indexOf('insta')>=0||m==='ig') return 'Instagram';\n    if(m.indexOf('face')>=0||m==='fb') return 'Facebook';\n    if(m.indexOf('goog')>=0) return 'Google';\n    if(m.indexOf('tele')>=0||m==='tg') return 'Telegram';\n    if(m.indexOf('what')>=0) return 'WhatsApp';\n    if(m.indexOf('ria')>=0) return 'AUTO.RIA';\n    return us; }\n  var r=document.referrer||'';\n  if(!r) return 'Прямой / неизвестный';\n  try{ var h=new URL(r).hostname.replace('www.',''); }catch(e){ return 'Другой сайт'; }\n  if(h.indexOf(location.hostname)>=0) return '';\n  if(h.indexOf('tiktok')>=0) return 'TikTok';\n  if(h.indexOf('instagram')>=0) return 'Instagram';\n  if(h.indexOf('facebook')>=0||h.indexOf('fb.')>=0) return 'Facebook';\n  if(h.indexOf('google')>=0) return 'Google';\n  if(h.indexOf('t.me')>=0||h.indexOf('telegram')>=0) return 'Telegram';\n  if(h.indexOf('whatsapp')>=0) return 'WhatsApp';\n  if(h.indexOf('auto.ria')>=0) return 'AUTO.RIA';\n  if(h.indexOf('bing')>=0||h.indexOf('yandex')>=0||h.indexOf('duck')>=0) return 'Поиск';\n  return h;\n}\nvar ist=istochnik();\nif(ist===''){ ist=get('ua_ist',LS)||'Прямой / неизвестный'; } else { set('ua_ist',ist,LS); }\nif(novaya){ set('ua_ist',ist,LS); }\nvar poslednie={};\nfunction shlyom(t,z){\n  var klyuch=t+'|'+(z||'')+'|'+location.pathname;\n  var tt=Date.now();\n  if(poslednie[klyuch] && (tt-poslednie[klyuch])<1200){ return; }\n  poslednie[klyuch]=tt;\n  var d={t:t,v:vid,s:sid,e:rnd()+rnd(),p:location.pathname+location.search,z:z||'',\n         i:ist,us:us,um:um,uc:uc,uk:uk};\n  var telo=JSON.stringify(d);\n  try{\n    if(navigator.sendBeacon){ navigator.sendBeacon('/ua/a/e', new Blob([telo],{type:'text/plain'})); return; }\n  }catch(e){}\n  try{ fetch('/ua/a/e',{method:'POST',body:telo,keepalive:true}); }catch(e){}\n}\nif(novaya){ shlyom('start',''); }\nvar p=location.pathname.toLowerCase();\nif(/ua-\\d+.*-diag/.test(p)){ shlyom('diag',''); }\nelse if(/ua-\\d+/.test(p)){ shlyom('card',''); }\nelse { shlyom('page',''); }\ndocument.addEventListener('click', function(ev){\n  var a=ev.target; var i=0;\n  while(a && a.tagName!=='A' && i<6){ a=a.parentNode; i++; }\n  var h=(a && a.getAttribute && a.getAttribute('href')) || '';\n  var txt=((a && a.textContent) || (ev.target && ev.target.textContent) || '').trim().slice(0,60);\n  var fp=a && a.getAttribute && a.getAttribute('data-finance-partner');\n  if(fp){ shlyom('finance',fp); return; }\n  var hl=h.toLowerCase();\n  if(hl.indexOf('wa.me')>=0 || hl.indexOf('whatsapp')>=0){ shlyom('whatsapp',txt); return; }\n  if(hl.indexOf('t.me')>=0 || hl.indexOf('tg://')>=0){ shlyom('telegram',txt); return; }\n  if(hl.indexOf('tel:')===0){ shlyom('phone',txt); return; }\n  if(hl.indexOf('-diag')>=0){ shlyom('diag',txt); return; }\n  if(/ua-\\d+\\.html/.test(hl)){ shlyom('obyavlenie',txt); return; }\n  if(hl.indexOf('podbor')>=0){ shlyom('zakaz',txt); return; }\n  if(hl.indexOf('katalog')>=0 && hl.indexOf('stage')>=0){ shlyom('etap',txt); return; }\n  var t2=txt.toLowerCase();\n  if(t2.indexOf('позвонить')>=0){ shlyom('phone',txt); return; }\n  if(t2.indexOf('подел')>=0 || t2.indexOf('share')>=0){ shlyom('share',txt); return; }\n  if(t2.indexOf('купить')>=0 || t2.indexOf('заброн')>=0 || t2.indexOf('вопрос')>=0 || t2.indexOf('заявк')>=0){ shlyom('cta',txt); return; }\n}, true);\ndocument.addEventListener('play', function(ev){\n  if(ev.target && ev.target.tagName==='VIDEO'){ shlyom('video',''); }\n}, true);\n})();\n\"\"\"",
+      "ua_google_tag.py": "\"\"\"Google tag (GA4) for public pages: the snippet and its idempotent insertion; no I/O.\n\nLeads sent to Analytics: «generate_lead» when the order form is saved or handed off to Telegram,\n«contact» on a phone, Telegram, Viber or WhatsApp link (parameter «method»).\n\"\"\"\nimport re\n\nMEASUREMENT_ID = 'G-6SRBQK6GY4'\nMARK = '<!--UA-GTAG-V1-->'\nEND = '<!--/UA-GTAG-V1-->'\nHEAD = re.compile(r'<head(?:\\s[^>]*)?>', re.I)\n\nEVENTS = r\"\"\"(function(){var last={};\nfunction lead(name,method){var key=name+'|'+method,now=Date.now();if(last[key]&&now-last[key]<2000)return;last[key]=now;gtag('event',name,{method:method});}\nfunction contact(href){var h=href.toLowerCase();if(h.indexOf('tel:')===0)return 'phone';if(h.indexOf('viber:')===0)return 'viber';\nif(/^tg:|\\/\\/(t\\.me|telegram\\.me)\\//.test(h))return 'telegram';if(/\\/\\/(wa\\.me|api\\.whatsapp\\.com)\\/|^whatsapp:/.test(h))return 'whatsapp';return '';}\ndocument.addEventListener('click',function(e){var t=e.target;if(!t||!t.closest)return;\nif(t.closest('#ua-order #handoff')){lead('generate_lead','order_telegram');return;}\nvar a=t.closest('a[href]');var m=a?contact(a.getAttribute('href')):'';if(m)lead('contact',m);},true);\ndocument.addEventListener('DOMContentLoaded',function(){var r=document.querySelector('#ua-order #receipt');if(!r||!window.MutationObserver)return;\nnew MutationObserver(function(){if(r.hidden)return;try{if(sessionStorage.getItem('ua_gtag_lead'))return;sessionStorage.setItem('ua_gtag_lead','1');}catch(x){}\nlead('generate_lead','order_form');}).observe(r,{attributes:true,attributeFilter:['hidden']});});})();\"\"\"\n\nSNIPPET = (MARK + '<script async src=\"https://www.googletagmanager.com/gtag/js?id=' + MEASUREMENT_ID + '\"></script>'\n           '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}'\n           \"gtag('js',new Date());gtag('config','\" + MEASUREMENT_ID + \"');\\n\" + EVENTS + '</script>' + END)\n\n\ndef apply(html):\n    \"\"\"The page with the tag right after <head>; unchanged if already tagged or without a head.\"\"\"\n    if not isinstance(html, str) or MARK in html:\n        return html\n    head = HEAD.search(html)\n    if not head:\n        return html\n    return html[:head.end()] + SNIPPET + html[head.end():]",
+      "ua_seo_index.py": "\"\"\"Rewrite the derived search files after the catalog is installed.\n\nThe only writer of video/seo/{ua,ru}/ landing pages (with the Google tag) and video/sitemap.xml. Never\ndeletes: a model page stays (offering selection) after its cars are sold.\nURLs added, removed or with a new lastmod in the sitemap are sent to IndexNow, and\nGoogle is asked to re-read the changed sitemap.\n\"\"\"\nfrom pathlib import Path\nimport re\n\nimport ua_google_sitemap\nimport ua_google_tag\nimport ua_indexnow\nimport ua_seo_catalog\nimport ua_seo_landings\nimport ua_seo_sitemap\n\nENTRY = re.compile(r'<loc>([^<]+)</loc><lastmod>([^<]+)</lastmod>')\nKEPT = re.compile(r'<meta name=\"%s\" content=\"([^\"|]+)\\|([^\"]+)\">' % ua_seo_landings.MODEL_META)\n\n\ndef kept_keys(root):\n    keys = set()\n    for lang in ua_seo_landings.LANGS:\n        for path in sorted((root/'seo'/ua_seo_landings.DIRS[lang]).glob('*.html')):\n            found = KEPT.search(path.read_text(encoding='utf-8', errors='replace'))\n            if found:\n                keys.add((found.group(1), found.group(2)))\n    return keys\n\n\ndef entries(path):\n    return set(ENTRY.findall(path.read_text(encoding='utf-8'))) if path.is_file() else set()\n\n\ndef refresh(root):\n    root = Path(root)\n    before = entries(root/'sitemap.xml')\n    cars = ua_seo_catalog.cars((root/'katalog.html').read_text(encoding='utf-8'))\n    existing = {p.relative_to(root).as_posix() for p in root.glob(ua_seo_sitemap.LANDINGS)}\n    changed = [relative for relative, html in sorted(ua_seo_landings.pages(cars, kept_keys(root), existing).items())\n               if ua_seo_sitemap.write(root/relative, ua_google_tag.apply(html).encode('utf-8'))]\n    sitemap_changed = ua_seo_sitemap.write(root/'sitemap.xml', ua_seo_sitemap.sitemap(root))\n    urls = {loc for loc, _ in before ^ entries(root/'sitemap.xml')}\n    return {'status': 'PASS', 'cars': len(cars), 'landings_changed': changed, 'sitemap_changed': sitemap_changed,\n            'indexnow': ua_indexnow.submit(urls) if sitemap_changed else {'status': 'SKIP'},\n            'google': ua_google_sitemap.submit() if sitemap_changed else {'status': 'SKIP'}}"
+    },
+    "hits": {
+      "ajs.py": [
+        {
+          "line": 2,
+          "text": "# AJS (UA-AJS-V1) — ПРОВЕРКА /ua/a.js. ТОЛЬКО ЧТЕНИЕ."
+        },
+        {
+          "line": 9,
+          "text": "#   1 публичный ответ по /ua/a.js и /ua/a.js?v=1;"
+        },
+        {
+          "line": 87,
+          "text": "    zagolovok(\"1. ПУБЛИЧНАЯ ПРОВЕРКА /ua/a.js\")"
+        },
+        {
+          "line": 89,
+          "text": "    for url in (SAIT + \"/ua/a.js?v=1\", SAIT + \"/ua/a.js\","
+        },
+        {
+          "line": 90,
+          "text": "                SAIT + \"/video/ua/a.js\"):"
+        },
+        {
+          "line": 105,
+          "text": "    osnovnoy = kody.get(SAIT + \"/ua/a.js?v=1\", (0, \"\", \"\"))"
+        },
+        {
+          "line": 110,
+          "text": "    p(\"итог: по адресу /ua/a.js?v=1 отдаётся настоящий JavaScript: %s\""
+        },
+        {
+          "line": 112,
+          "text": "    itog(\"/ua/a.js HTTP\", str(osnovnoy[0]), osnovnoy[1] or \"\")"
+        },
+        {
+          "line": 120,
+          "text": "    prostye = [VIDEO + \"/ua/a.js\", SITE + \"/ua/a.js\", DOM + \"/ua/a.js\","
+        },
+        {
+          "line": 290,
+          "text": "    p(\"AJS (UA-AJS-V1) — ПРОВЕРКА /ua/a.js, ТОЛЬКО ЧТЕНИЕ\")"
+        },
+        {
+          "line": 322,
+          "text": "        p(\"локальное отсутствие /home/Carix/video/ua/a.js дефектом НЕ является\")"
+        }
+      ],
+      "analitika_bot.py": [
+        {
+          "line": 2,
+          "text": "# UA-ANALIT-V1  раздел \"Аналитика\" в клиентском боте. Доступ только владельцу."
+        }
+      ],
+      "analitika_knopka.py": [
+        {
+          "line": 2,
+          "text": "# UA-ANALIT-KNOPKA-V2 — раздел «📊 Аналитика» клиентского бота."
+        }
+      ],
+      "analitika_otchet.py": [
+        {
+          "line": 2,
+          "text": "# UA-ANALIT-OTCHET-V2 — построение отчётов поверх СУЩЕСТВУЮЩЕЙ analytics.db."
+        },
+        {
+          "line": 84,
+          "text": "        if \"-diag\" in a or \"diag\" in a.rsplit(\"/\", 1)[-1]:"
+        }
+      ],
+      "analitika_wsgi.py": [
+        {
+          "line": 2,
+          "text": "# UA-ANALIT-V1  обёртка WSGI: /ua/a.js и /ua/a/e. Всё прочее уходит дальше без изменений."
+        },
+        {
+          "line": 11,
+          "text": "STROKA = \"<script src='/ua/a.js?v=1' defer></script><!--UA-ANALIT-V1-->\""
+        },
+        {
+          "line": 34,
+          "text": "                if \"UA-ANALIT-V1\" in t:"
+        },
+        {
+          "line": 50,
+          "text": "            if put == \"/ua/a.js\":"
+        }
+      ],
+      "analitika_yadro.py": [
+        {
+          "line": 2,
+          "text": "# UA-ANALIT-V1  ядро аналитики UA ART (база, приём событий, отчёты)"
+        },
+        {
+          "line": 8,
+          "text": "SDVIG_KIEV = 3 * 3600          # сервер UTC -> Киев"
+        },
+        {
+          "line": 68,
+          "text": "        if \"-diag\" in p:"
+        },
+        {
+          "line": 158,
+          "text": "    t = time.time() + SDVIG_KIEV"
+        },
+        {
+          "line": 172,
+          "text": "    return a - SDVIG_KIEV, b - SDVIG_KIEV, imya"
+        },
+        {
+          "line": 347,
+          "text": "  if(hl.indexOf('-diag')>=0){ shlyom('diag',txt); return; }"
+        }
+      ],
+      "arch1.py": [
+        {
+          "line": 217,
+          "text": "    return ('<a class=\"knp diag-cta\" href=\"%s-diag.html\" style=\"%s\">&#128295; %s &#8594;'"
+        },
+        {
+          "line": 500,
+          "text": "            if \"time.time()\" in s and (\"append\" in s or \"%s-diag\" in s or \"?v=\" in s):"
+        }
+      ],
+      "arch2.py": [
+        {
+          "line": 354,
+          "text": "        k.publish_card(kod, hd, [SB_VIDEO + \"/\" + kod + \"-diag.html\"])"
+        },
+        {
+          "line": 397,
+          "text": "        hd = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        }
+      ],
+      "arch2b.py": [
+        {
+          "line": 496,
+          "text": "        k.publish_card(kod, hd, [SB_VIDEO + \"/\" + kod + \"-diag.html\"])"
+        },
+        {
+          "line": 539,
+          "text": "        hd = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        }
+      ],
+      "arch2c.py": [
+        {
+          "line": 561,
+          "text": "        k.publish_card(kod, hd, [SB_VIDEO + \"/\" + kod + \"-diag.html\"])"
+        },
+        {
+          "line": 604,
+          "text": "        hd = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        }
+      ],
+      "arch2d.py": [
+        {
+          "line": 231,
+          "text": "    return ('<a class=\"knp diag-cta\" href=\"%s-diag.html\" style=\"%s\">&#128295; %s &#8594;'"
+        },
+        {
+          "line": 1146,
+          "text": "        hd = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 1179,
+          "text": "        k.publish_card(kod, hd, [SB_VIDEO + \"/\" + kod + \"-diag.html\"])"
+        },
+        {
+          "line": 1225,
+          "text": "        hd = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 1362,
+          "text": "                        _hd = chitat(SB_VIDEO + \"/\" + _kod + \"-diag.html\")"
+        }
+      ],
+      "arch2e.py": [
+        {
+          "line": 239,
+          "text": "    return ('<a class=\"knp diag-cta\" href=\"%s-diag.html\" style=\"%s\">&#128295; %s &#8594;'"
+        },
+        {
+          "line": 1190,
+          "text": "        hd = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 1284,
+          "text": "        fayl = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 1346,
+          "text": "        k.publish_card(kod, hd, [SB_VIDEO + \"/\" + kod + \"-diag.html\"])"
+        },
+        {
+          "line": 1392,
+          "text": "        hd = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        }
+      ],
+      "arch2f.py": [
+        {
+          "line": 242,
+          "text": "    return ('<a class=\"knp diag-cta\" href=\"%s-diag.html\" style=\"%s\">&#128295; %s &#8594;'"
+        },
+        {
+          "line": 1194,
+          "text": "        hd = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 1288,
+          "text": "        fayl = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 1350,
+          "text": "        k.publish_card(kod, hd, [SB_VIDEO + \"/\" + kod + \"-diag.html\"])"
+        },
+        {
+          "line": 1396,
+          "text": "        hd = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        }
+      ],
+      "arch2g.py": [
+        {
+          "line": 253,
+          "text": "    return ('<a class=\"knp diag-cta\" href=\"%s-diag.html\" style=\"%s\">&#128295; %s &#8594;'"
+        },
+        {
+          "line": 1205,
+          "text": "        hd = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 1299,
+          "text": "        fayl = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 1345,
+          "text": "        stranicy[kod] = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 1396,
+          "text": "        k.publish_card(kod, hd, [SB_VIDEO + \"/\" + kod + \"-diag.html\"])"
+        },
+        {
+          "line": 1442,
+          "text": "        hd = chitat(SB_VIDEO + \"/\" + kod + \"-diag.html\")"
+        }
+      ],
+      "arch3.py": [
+        {
+          "line": 12,
+          "text": "# Страницы -diag.html и хэш-копии НЕ трогаются (требование владельца)."
+        },
+        {
+          "line": 292,
+          "text": "        hd = chitat(VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 333,
+          "text": "    tronuto_diag = [x for x in izmenilos if \"-diag.html\" in x]"
+        },
+        {
+          "line": 337,
+          "text": "    hesh_kopii = [x for x in glob.glob(VIDEO + \"/UA-????-*.html\") if \"-diag\" not in x]"
+        },
+        {
+          "line": 365,
+          "text": "    p(\"страницы -diag.html, главная, каталог и хэш-копии НЕ трогаются\")"
+        }
+      ],
+      "baseline.py": [
+        {
+          "line": 161,
+          "text": "    diag = chit(os.path.join(VIDEO, \"%s-diag.html\" % kod))"
+        },
+        {
+          "line": 198,
+          "text": "               \"диагностика\" if \"-diag\" in adres else"
+        }
+      ],
+      "chatfix.py": [
+        {
+          "line": 1035,
+          "text": "    if not os.path.exists(os.path.join(VIDEO, \"%s-diag.html\" % kod)):"
+        },
+        {
+          "line": 1053,
+          "text": "    '<a class=\"mcf-diag-cta\" href=\"{KOD}-diag.html\" '"
+        },
+        {
+          "line": 1129,
+          "text": "    \"\"\"Страница UA-XXXX-diag.html: если в CRM есть отчёт (diag_link/diag_text),"
+        }
+      ],
+      "check3.py": [
+        {
+          "line": 282,
+          "text": "    ostalnye = [x for x in fayly if \"-diag.html\" not in x]"
+        }
+      ],
+      "chern.py": [
+        {
+          "line": 292,
+          "text": "        stranica = VIDEO + \"/\" + kod + \"-diag.html\""
+        },
+        {
+          "line": 323,
+          "text": "        p(\"   страница лежит в  : %s/video/%s-diag.html\" % (SAIT, kod))"
+        }
+      ],
+      "cifry.py": [
+        {
+          "line": 178,
+          "text": "        if \"-diag\" in celaya.lower():"
+        },
+        {
+          "line": 238,
+          "text": "  if(h.toLowerCase().indexOf(\"-diag\")>=0)continue;"
+        }
+      ],
+      "ctaprim.py": [
+        {
+          "line": 13,
+          "text": "# Правятся: /video/UA-XXXX.html, /site/UA-XXXX.html и их -diag.html,"
+        },
+        {
+          "line": 113,
+          "text": "        for imya in (kod + \".html\", kod + \"-diag.html\"):"
+        }
+      ],
+      "ctaprim2.py": [
+        {
+          "line": 20,
+          "text": "# Правятся: /video/UA-XXXX.html, /site/UA-XXXX.html и их -diag.html,"
+        },
+        {
+          "line": 123,
+          "text": "            if put.endswith(\"-diag.html\"):"
+        },
+        {
+          "line": 133,
+          "text": "        for imya in (kod + \".html\", kod + \"-diag.html\"):"
+        }
+      ],
+      "filtr.py": [
+        {
+          "line": 267,
+          "text": "# ==========================================  4 РОЛЬ /ua/a.js"
+        },
+        {
+          "line": 269,
+          "text": "    zagolovok(\"4. ОТВЕЧАЕТ ЛИ /ua/a.js ЗА КЛИК ПО ПАНЕЛИ\")"
+        },
+        {
+          "line": 270,
+          "text": "    kod_http, telo, zag = skachat(SAIT + \"/ua/a.js?v=1\")"
+        },
+        {
+          "line": 271,
+          "text": "    p(\"HTTP /ua/a.js?v=1 : %s · тип %s\" % (kod_http, zag.get(\"Content-Type\", \"нет\")))"
+        },
+        {
+          "line": 279,
+          "text": "    est_na_diske = os.path.isfile(VIDEO + \"/ua/a.js\")"
+        },
+        {
+          "line": 280,
+          "text": "    p(\"файл /home/Carix/video/ua/a.js на диске: %s\" % (\"есть\" if est_na_diske else \"НЕТ\"))"
+        },
+        {
+          "line": 348,
+          "text": "                        \"скрипте /ua/a.js, а этот файл отсутствует и не отдаётся — \""
+        }
+      ],
+      "fix947b.py": [
+        {
+          "line": 149,
+          "text": "                                 'href=\"{KOD}-diag.html\"', teg, count=1)"
+        }
+      ],
+      "fixchip2.py": [
+        {
+          "line": 296,
+          "text": "    p(\"DIAGNOSTIC PAGES CHANGED: %d\" % len([x for x in izmenilos if \"-diag\" in x]))"
+        },
+        {
+          "line": 301,
+          "text": "    itog(\"DIAGNOSTIC PAGES CHANGED\", str(len([x for x in izmenilos if \"-diag\" in x])), \"\")"
+        }
+      ],
+      "karta.py": [
+        {
+          "line": 162,
+          "text": "            if (\"diag\" in put and kod in put) or imya.startswith(kod + \"-diag\"):"
+        },
+        {
+          "line": 249,
+          "text": "    put_d = VIDEO + \"/\" + kod + \"-diag.html\""
+        }
+      ],
+      "kartochka.py": [
+        {
+          "line": 123,
+          "text": "    return ('<a class=\"knp diag-cta\" href=\"%s-diag.html\" style=\"%s\">&#128295; %s &#8594;'"
+        }
+      ],
+      "lead_bot.py": [
+        {
+          "line": 2014,
+          "text": "    try:   # UA-ANALIT-V1"
+        }
+      ],
+      "master_card.py": [
+        {
+          "line": 931,
+          "text": "    if not os.path.exists(os.path.join(VIDEO, \"%s-diag.html\" % kod)):"
+        },
+        {
+          "line": 949,
+          "text": "    '<a class=\"mcf-diag-cta\" href=\"{KOD}-diag.html\" '"
+        },
+        {
+          "line": 1025,
+          "text": "    \"\"\"Страница UA-XXXX-diag.html: если в CRM есть отчёт (diag_link/diag_text),"
+        },
+        {
+          "line": 1710,
+          "text": "        + '<a class=\"mcf-diag-cta\" href=\"%s-diag.html\" '"
+        },
+        {
+          "line": 1841,
+          "text": "    return ('<!--seo-rehab-guard-068-diagnostics--><a class=\"mcf-diag-cta\" href=\"%s-diag.html\" style=\"display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;backg"
+        },
+        {
+          "line": 1861,
+          "text": "        target = identifier + '-diag.html'"
+        },
+        {
+          "line": 2247,
+          "text": "            + '<a class=\"mcf-diag-cta\" href=\"%s-diag.html\" style=\"display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(21"
+        },
+        {
+          "line": 2268,
+          "text": "        path = _ua068_os.path.join(root, \"%s-diag.html\" % kod)"
+        }
+      ],
+      "med1.py": [
+        {
+          "line": 330,
+          "text": "    if \"-diag\" in os.path.basename(put):"
+        },
+        {
+          "line": 350,
+          "text": "adresa.append(SAIT + \"/video/\" + NOM + \"-diag.html\")"
+        }
+      ],
+      "med2.py": [
+        {
+          "line": 141,
+          "text": "            put2 = papka + \"/\" + kod + \"-diag.html\""
+        },
+        {
+          "line": 486,
+          "text": "                stranica.zapisat(kod + \"-diag\", hd)"
+        },
+        {
+          "line": 519,
+          "text": "    td = chitat(VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 829,
+          "text": "    td = chitat(koren_video + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 901,
+          "text": "                stranica.zapisat(kod + \"-diag\", hd)"
+        },
+        {
+          "line": 976,
+          "text": "    pisat(mv + \"/UA-9999-diag.html\", \"<html>нет видео</html>\")"
+        }
+      ],
+      "med3.py": [
+        {
+          "line": 266,
+          "text": "        for hvost in (\"\", \"-diag\"):"
+        },
+        {
+          "line": 513,
+          "text": "                stranica.zapisat(kod + \"-diag\", hd)"
+        },
+        {
+          "line": 567,
+          "text": "            vernut(VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 568,
+          "text": "            vernut(SITE + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 597,
+          "text": "        for imya in (kod, kod + \"-diag\"):"
+        },
+        {
+          "line": 617,
+          "text": "    hd = chitat(VIDEO + \"/\" + NOM + \"-diag.html\")"
+        },
+        {
+          "line": 654,
+          "text": "            bedy_vsego += ve.proverit(kod) + ve.proverit(kod + \"-diag\")"
+        },
+        {
+          "line": 679,
+          "text": "    for imya in (kod, kod + \"-diag\"):"
+        },
+        {
+          "line": 691,
+          "text": "    html_d = chitat(koren_video + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 742,
+          "text": "    pisat(mv + \"/UA-9998-diag.html\", \"<html>без видео</html>\")"
+        }
+      ],
+      "med31.py": [
+        {
+          "line": 96,
+          "text": "        kand = papka + \"/home_Carix_video_\" + NOM + \"-diag.html\""
+        },
+        {
+          "line": 116,
+          "text": "    hd = chitat(VIDEO + \"/\" + NOM + \"-diag.html\")"
+        },
+        {
+          "line": 388,
+          "text": "    putd = VIDEO + \"/\" + kod + \"-diag.html\""
+        },
+        {
+          "line": 403,
+          "text": "        stranica.zapisat(kod + \"-diag\", hd)"
+        },
+        {
+          "line": 412,
+          "text": "            stranica.zapisat(kod + \"-diag\", bylo_d)"
+        },
+        {
+          "line": 471,
+          "text": "        hd = chitat(VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 495,
+          "text": "        hd = chitat(VIDEO + \"/\" + NOM + \"-diag.html\")"
+        },
+        {
+          "line": 510,
+          "text": "    putd = VIDEO + \"/\" + NOM + \"-diag.html\""
+        },
+        {
+          "line": 547,
+          "text": "    hd = chitat(VIDEO + \"/\" + NOM + \"-diag.html\")"
+        }
+      ],
+      "med32.py": [
+        {
+          "line": 203,
+          "text": "    put = VIDEO + \"/\" + kod + \"-diag.html\""
+        },
+        {
+          "line": 214,
+          "text": "    stranica.zapisat(kod + \"-diag\", html)"
+        },
+        {
+          "line": 220,
+          "text": "            stranica.zapisat(kod + \"-diag\", bylo)"
+        },
+        {
+          "line": 354,
+          "text": "    put = VIDEO + \"/\" + NOM + \"-diag.html\""
+        },
+        {
+          "line": 406,
+          "text": "    hd = chitat(VIDEO + \"/\" + NOM + \"-diag.html\")"
+        },
+        {
+          "line": 445,
+          "text": "    adresa = [SAIT + \"/video/\" + NOM + \"-diag.html\"]"
+        },
+        {
+          "line": 472,
+          "text": "    put = VIDEO + \"/\" + NOM + \"-diag.html\""
+        },
+        {
+          "line": 495,
+          "text": "    lishnie = [x for x in izmenilos if NOM + \"-diag\" not in x]"
+        },
+        {
+          "line": 498,
+          "text": "        p(\"   %s%s\" % (x, \"  ← ожидаемо\" if NOM + \"-diag\" in x else \"  ← НЕ ОЖИДАЛОСЬ\"))"
+        }
+      ],
+      "med33.py": [
+        {
+          "line": 11,
+          "text": "# 7 сверка SHA: меняться может только UA-0008-diag.html"
+        },
+        {
+          "line": 232,
+          "text": "        html2, pravki = ve.pravilo(html, NOM + \"-diag\")"
+        },
+        {
+          "line": 314,
+          "text": "    stranica.zapisat(NOM + \"-diag\", html)"
+        },
+        {
+          "line": 340,
+          "text": "            prod = chitat(VIDEO + \"/\" + NOM + \"-diag.html\")"
+        },
+        {
+          "line": 399,
+          "text": "    lishnie = [x for x in izmenilos if NOM + \"-diag\" not in x]"
+        },
+        {
+          "line": 402,
+          "text": "        p(\"   %s%s\" % (x, \"  ← ожидаемо\" if NOM + \"-diag\" in x else \"  ← НЕ ОЖИДАЛОСЬ\"))"
+        }
+      ],
+      "med34.py": [
+        {
+          "line": 463,
+          "text": "    hd = chitat(VIDEO + \"/\" + NOM + \"-diag.html\")"
+        }
+      ],
+      "med35.py": [
+        {
+          "line": 195,
+          "text": "            and stroka.count(TEMNAYA) == 1 and \"-diag.html\" in stroka"
+        },
+        {
+          "line": 254,
+          "text": "    maket = ('<div><a class=\"temnaya\" href=\"UA-0008-diag.html\">%s</a></div>'"
+        },
+        {
+          "line": 255,
+          "text": "             '<div><a class=\"zolotaya\" href=\"UA-0008-diag.html\">%s →</a></div>' % (TEMNAYA, ZOLOTAYA))"
+        }
+      ],
+      "observe_point4_core_dynamic.py": [
+        {
+          "line": 360,
+          "text": "                    if 'diag' in classes or urlsplit(href).path.endswith(code + '-diag.html'):"
+        },
+        {
+          "line": 362,
+          "text": "                        if target is None or Path(target).name != code + '-diag.html':"
+        }
+      ],
+      "pesok.py": [
+        {
+          "line": 203,
+          "text": "    put = pisat_sb(KONTROL + \"-diag.html\", html or \"\")"
+        },
+        {
+          "line": 283,
+          "text": "            pisat_sb(\"run%02d/%s-diag.html\" % (run, kod), html or \"\")"
+        },
+        {
+          "line": 311,
+          "text": "        html = chitat(SB + \"/run10/\" + kod + \"-diag.html\") or chitat(SB + \"/run01/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 323,
+          "text": "        novoe = chitat(SB + \"/run10/\" + kod + \"-diag.html\") or chitat(SB + \"/run01/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 326,
+          "text": "        for put in (VIDEO + \"/\" + kod + \"-diag.html\", SITE + \"/\" + kod + \"-diag.html\"):"
+        },
+        {
+          "line": 342,
+          "text": "    osnovnye = [x for x in zashishchennye if \"-diag\" not in x]"
+        }
+      ],
+      "pesok2.py": [
+        {
+          "line": 358,
+          "text": "            pisat_sb(\"run%02d/%s-diag.html\" % (run, kod), html)"
+        }
+      ],
+      "pesok3.py": [
+        {
+          "line": 270,
+          "text": "        pisat_sb(\"itog/%s-diag.html\" % kod, html)"
+        },
+        {
+          "line": 338,
+          "text": "            pisat_sb(\"run%02d/%s-diag.html\" % (run, kod), html)"
+        },
+        {
+          "line": 377,
+          "text": "    zagolovok(\"4. DRY-RUN: КАКИЕ *-diag.html ПОТРЕБУЕТСЯ РАЗМОРОЗИТЬ И ЗАМЕНИТЬ\")"
+        },
+        {
+          "line": 383,
+          "text": "        novoe = chitat(SB + \"/itog/%s-diag.html\" % kod)"
+        },
+        {
+          "line": 386,
+          "text": "        for put in (VIDEO + \"/\" + kod + \"-diag.html\", SITE + \"/\" + kod + \"-diag.html\"):"
+        },
+        {
+          "line": 402,
+          "text": "    osnovnye = [x for x in izmenit if \"-diag\" not in x]"
+        }
+      ],
+      "play.py": [
+        {
+          "line": 35,
+          "text": "     VIDEO + \"/UA-0002-diag.html\"),"
+        },
+        {
+          "line": 37,
+          "text": "     VIDEO + \"/UA-0008-diag.html\"),"
+        },
+        {
+          "line": 45,
+          "text": "    \"Referer\": SAIT + \"/video/UA-0002-diag.html\","
+        }
+      ],
+      "poster.py": [
+        {
+          "line": 11,
+          "text": "#   /video/UA-0002-diag.html, /site/UA-0002-diag.html,"
+        },
+        {
+          "line": 12,
+          "text": "#   /video/UA-0008-diag.html, /site/UA-0008-diag.html"
+        },
+        {
+          "line": 32,
+          "text": "    BELYY_SPISOK.append(VIDEO + \"/\" + _k + \"-diag.html\")"
+        },
+        {
+          "line": 33,
+          "text": "    BELYY_SPISOK.append(SITE + \"/\" + _k + \"-diag.html\")"
+        },
+        {
+          "line": 222,
+          "text": "        for put in (VIDEO + \"/\" + kod + \"-diag.html\", SITE + \"/\" + kod + \"-diag.html\"):"
+        },
+        {
+          "line": 299,
+          "text": "    drugie_diag = [x for x in lishnie if \"-diag.html\" in x]"
+        },
+        {
+          "line": 300,
+          "text": "    osnovnye = [x for x in lishnie if \"-diag\" not in x]"
+        },
+        {
+          "line": 315,
+          "text": "        put = VIDEO + \"/\" + kod + \"-diag.html\""
+        },
+        {
+          "line": 350,
+          "text": "    p(\"разрешено менять только 4 файла: UA-0002-diag.html и UA-0008-diag.html в /video и /site\")"
+        },
+        {
+          "line": 387,
+          "text": "        p(\"   %s/video/%s-diag.html?v=%s\" % (SAIT, kod, METKA[-4:]))"
+        }
+      ],
+      "prichina.py": [
+        {
+          "line": 147,
+          "text": "# ==========================================  1 КТО ПИШЕТ -diag.html"
+        },
+        {
+          "line": 149,
+          "text": "    zagolovok(\"ВОПРОС 1. КАКАЯ ФУНКЦИЯ СОЗДАЁТ UA-XXXX-diag.html\")"
+        },
+        {
+          "line": 154,
+          "text": "            if \"-diag\" in s and re.search(r\"zapisat|write|open\\(|publish|sохран|сохран\", s, re.I):"
+        },
+        {
+          "line": 257,
+          "text": "        hd = chitat(VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 290,
+          "text": "    zagolovok(\"ЧЕМ ФАКТИЧЕСКИ СОЗДАНЫ НЫНЕШНИЕ -diag.html\")"
+        },
+        {
+          "line": 292,
+          "text": "        put = VIDEO + \"/\" + kod + \"-diag.html\""
+        }
+      ],
+      "publik.py": [
+        {
+          "line": 4,
+          "text": "# Разрешение владельца: изменить только 16 файлов *-diag.html (перечислены ниже)."
+        },
+        {
+          "line": 37,
+          "text": "    BELYY_SPISOK.append(VIDEO + \"/\" + _k + \"-diag.html\")"
+        },
+        {
+          "line": 38,
+          "text": "    BELYY_SPISOK.append(SITE + \"/\" + _k + \"-diag.html\")"
+        },
+        {
+          "line": 230,
+          "text": "        for put in (VIDEO + \"/\" + kod + \"-diag.html\", SITE + \"/\" + kod + \"-diag.html\"):"
+        },
+        {
+          "line": 291,
+          "text": "        html = chitat(VIDEO + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 349,
+          "text": "    p(\"разрешено менять только 16 файлов *-diag.html; всё остальное запрещено\")"
+        },
+        {
+          "line": 380,
+          "text": "        p(\"   %s/video/%s-diag.html?v=%s\" % (SAIT, kod, METKA[-4:]))"
+        }
+      ],
+      "publikaciya.py": [
+        {
+          "line": 92,
+          "text": "    if (kod + \"-diag.html\") not in html:"
+        },
+        {
+          "line": 188,
+          "text": "            celi.append(os.path.join(papka, kod + \"-diag.html\"))"
+        },
+        {
+          "line": 202,
+          "text": "            _zapisat_atomarno(put, diag if put.endswith(\"-diag.html\") else html)"
+        },
+        {
+          "line": 248,
+          "text": "            if m and \"-diag\" not in imya and isinstance(tekst, str):"
+        },
+        {
+          "line": 271,
+          "text": "            if m and \"-diag\" not in imya and isinstance(tekst, str):"
+        },
+        {
+          "line": 377,
+          "text": "    diag_href_count = (html or \"\").count(kod + \"-diag.html\")"
+        },
+        {
+          "line": 465,
+          "text": "    if html and (kod + \"-diag.html\") not in html:"
+        },
+        {
+          "line": 467,
+          "text": "            '<a class=\"mcf-diag-cta\" href=\"%s-diag.html\" '"
+        }
+      ],
+      "publikuy.py": [
+        {
+          "line": 48,
+          "text": "diagi   = [f for f in stranicy if f.endswith(\"-diag.html\")]"
+        }
+      ],
+      "publish_transaction_guard.py": [
+        {
+          "line": 142,
+          "text": "            paths.add(root / (code + \"-diag.html\"))"
+        },
+        {
+          "line": 264,
+          "text": "            path = root / (code + \"-diag.html\")"
+        },
+        {
+          "line": 435,
+          "text": "            diag_path = root / (code + \"-diag.html\")"
+        },
+        {
+          "line": 675,
+          "text": "            paths.add(root / (code + \"-diag.html\"))"
+        },
+        {
+          "line": 827,
+          "text": "            import ua_google_tag"
+        },
+        {
+          "line": 828,
+          "text": "            after = ua_google_tag.apply(before.decode('utf-8')).encode('utf-8')"
+        }
+      ],
+      "sandbox.py": [
+        {
+          "line": 122,
+          "text": "    diag = chit(os.path.join(SVIDEO, \"%s-diag.html\" % kod))"
+        },
+        {
+          "line": 183,
+          "text": "    for imya in (\"%s.html\" % kod, \"%s-diag.html\" % kod):"
+        },
+        {
+          "line": 680,
+          "text": "           chit(os.path.join(SVIDEO, \"%s-diag.html\" % kod))"
+        },
+        {
+          "line": 702,
+          "text": "    diag = chit(os.path.join(SVIDEO, \"%s-diag.html\" % kod))"
+        }
+      ],
+      "sborka_diag.py": [
+        {
+          "line": 102,
+          "text": "    put = VIDEO + \"/\" + kod + \"-diag.html\""
+        },
+        {
+          "line": 113,
+          "text": "    stranica.zapisat(kod + \"-diag\", html)"
+        },
+        {
+          "line": 119,
+          "text": "            stranica.zapisat(kod + \"-diag\", bylo)"
+        }
+      ],
+      "spec_emergency_install_20260910_r1.py": [
+        {
+          "line": 154,
+          "text": "        require(b'UA-ANALIT-V1' in raw and b'UA-ANALIT-V1' in new, 'ANALYTICS_SKIP_MARKER_REQUIRED')"
+        }
+      ],
+      "stage_exact_preview_20260922.py": [
+        {
+          "line": 48,
+          "text": "ANALYTICS_URL = 'https://www.uaart.com.ua/ua/a.js'"
+        },
+        {
+          "line": 368,
+          "text": "    allowed = {'video/info.html','video/podbor.html',*('video/'+c+'-diag.html' for c in codes)}"
+        }
+      ],
+      "storozh_media.py": [
+        {
+          "line": 94,
+          "text": "    td = chitat(koren_video + \"/\" + kod + \"-diag.html\")"
+        },
+        {
+          "line": 166,
+          "text": "                stranica.zapisat(kod + \"-diag\", hd)"
+        },
+        {
+          "line": 222,
+          "text": "    for imya in (kod, kod + \"-diag\"):"
+        },
+        {
+          "line": 234,
+          "text": "    html_d = chitat(koren_video + \"/\" + kod + \"-diag.html\")"
+        }
+      ],
+      "stranica.py": [
+        {
+          "line": 1110,
+          "text": "    c.append('<a class=\"mcf-diag-cta\" href=\"%s-diag.html\" style=\"display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(212"
+        },
+        {
+          "line": 1698,
+          "text": "                    and not str(imya_bez).endswith(\"-diag\")"
+        },
+        {
+          "line": 1699,
+          "text": "                    and _base.startswith(str(imya_bez) + \"-diag\")):"
+        },
+        {
+          "line": 1775,
+          "text": "        # независимы; карточка не может затереть *-diag.html."
+        },
+        {
+          "line": 1778,
+          "text": "                and not str(imya_bez).endswith(\"-diag\")"
+        },
+        {
+          "line": 1779,
+          "text": "                and _base.startswith(str(imya_bez) + \"-diag\")):"
+        },
+        {
+          "line": 1836,
+          "text": "            zapisat(nom + \"-diag\", diag)"
+        },
+        {
+          "line": 1837,
+          "text": "            obnovit_etalon(nom + \"-diag\", diag)"
+        },
+        {
+          "line": 2126,
+          "text": "V169_SDVIG_KIEV = 7 * 3600   # время сервера отстаёт от киевского"
+        },
+        {
+          "line": 2149,
+          "text": "                            time.localtime(time.time() + V169_SDVIG_KIEV))"
+        },
+        {
+          "line": 2621,
+          "text": "                and \"-diag\" not in imya"
+        },
+        {
+          "line": 2645,
+          "text": "V173_SDVIG_KIEV = 7 * 3600"
+        },
+        {
+          "line": 2655,
+          "text": "    return time.strftime(\"%Y-%m-%d\", time.localtime(time.time() + V173_SDVIG_KIEV))"
+        },
+        {
+          "line": 2831,
+          "text": "                and \"-diag\" not in imya"
+        },
+        {
+          "line": 2924,
+          "text": "                and \"-diag\" not in imya"
+        },
+        {
+          "line": 2991,
+          "text": "    return ('<!--seo-rehab-guard-068-diagnostics--><a class=\"mcf-diag-cta\" href=\"%s-diag.html\" style=\"display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;backg"
+        },
+        {
+          "line": 3011,
+          "text": "        target = identifier + '-diag.html'"
+        },
+        {
+          "line": 3358,
+          "text": "            + '<a class=\"mcf-diag-cta\" href=\"%s-diag.html\" style=\"display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(21"
+        },
+        {
+          "line": 3383,
+          "text": "        path = _ua068_os.path.join(root, \"%s-diag.html\" % kod)"
+        }
+      ],
+      "ua0004.py": [
+        {
+          "line": 131,
+          "text": "    kopii = [x for x in kopii if not x.endswith(\"-diag.html\")]"
+        }
+      ],
+      "ua0009.py": [
+        {
+          "line": 668,
+          "text": "              VIDEO + \"/\" + NOVAYA + \"-diag.html\", SITE + \"/\" + NOVAYA + \"-diag.html\"]"
+        }
+      ],
+      "ua0009_v2.py": [
+        {
+          "line": 705,
+          "text": "              VIDEO + \"/\" + NOVAYA + \"-diag.html\", SITE + \"/\" + NOVAYA + \"-diag.html\"]"
+        }
+      ],
+      "ua0009_v3.py": [
+        {
+          "line": 4,
+          "text": "#   1) 16 законно опубликованных *-diag.html больше не считаются повреждением;"
+        },
+        {
+          "line": 719,
+          "text": "                    if sha(x) != z.get(\"sha\") and \"-diag.html\" not in x]"
+        },
+        {
+          "line": 721,
+          "text": "                     if sha(x) != z.get(\"sha\") and \"-diag.html\" in x]"
+        },
+        {
+          "line": 821,
+          "text": "              VIDEO + \"/\" + NOVAYA + \"-diag.html\", SITE + \"/\" + NOVAYA + \"-diag.html\"]"
+        },
+        {
+          "line": 877,
+          "text": "                if sha(x) != z.get(\"sha\") and \"-diag.html\" not in x] if baseline else []"
+        },
+        {
+          "line": 879,
+          "text": "                 if sha(x) != z.get(\"sha\") and \"-diag.html\" in x] if baseline else []"
+        }
+      ],
+      "ua0009_v4.py": [
+        {
+          "line": 10,
+          "text": "#   1) 16 законно опубликованных *-diag.html больше не считаются повреждением;"
+        },
+        {
+          "line": 575,
+          "text": "    while nachalo > 0 and \"-diag.html\" not in stroki[nachalo]:"
+        },
+        {
+          "line": 589,
+          "text": "                           \"href='%s-diag.html'\" % \"%s\", zamena_teksta)"
+        },
+        {
+          "line": 625,
+          "text": "                           \"href='%s-diag.html'\" % kod, etalon)"
+        },
+        {
+          "line": 860,
+          "text": "                    if sha(x) != z.get(\"sha\") and \"-diag.html\" not in x]"
+        },
+        {
+          "line": 862,
+          "text": "                     if sha(x) != z.get(\"sha\") and \"-diag.html\" in x]"
+        },
+        {
+          "line": 962,
+          "text": "              VIDEO + \"/\" + NOVAYA + \"-diag.html\", SITE + \"/\" + NOVAYA + \"-diag.html\"]"
+        },
+        {
+          "line": 1018,
+          "text": "                if sha(x) != z.get(\"sha\") and \"-diag.html\" not in x] if baseline else []"
+        },
+        {
+          "line": 1020,
+          "text": "                 if sha(x) != z.get(\"sha\") and \"-diag.html\" in x] if baseline else []"
+        }
+      ],
+      "ua_art_home_ge_001_install.py": [
+        {
+          "line": 181,
+          "text": "PAYLOAD = {'baseline': '<!doctype html><html lang=\"ru\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\"><meta name=\"theme-color\" content=\"#07111e\"><meta na"
+        }
+      ],
+      "ua_art_site_ge_002_install.py": [
+        {
+          "line": 27,
+          "text": "                      [f'video/UA-{i:04d}-diag.html' for i in range(1, 19)])"
+        }
+      ],
+      "ua_finance_crm.py": [
+        {
+          "line": 3,
+          "text": "A visit is the site's own analytics event «finance» (analitika_yadro, /ua/a.js): the partner id, the page"
+        }
+      ],
+      "ua_seo_finance.py": [
+        {
+          "line": 5,
+          "text": "questions. Every partner card has a button marked data-finance-partner, which the site's own analytics /ua/a.js"
+        },
+        {
+          "line": 47,
+          "text": "ANALYTICS = \"<script src='/ua/a.js?v=1' defer></script><!--UA-ANALIT-V1-->\""
+        }
+      ],
+      "ua_seo_index.py": [
+        {
+          "line": 12,
+          "text": "import ua_google_tag"
+        },
+        {
+          "line": 42,
+          "text": "               if ua_seo_sitemap.write(root/relative, ua_google_tag.apply(html).encode('utf-8'))]"
+        }
+      ],
+      "ua_seo_metadata.py": [
+        {
+          "line": 10,
+          "text": "import ua_google_tag"
+        },
+        {
+          "line": 304,
+          "text": "    return ua_google_tag.apply(source)"
+        }
+      ],
+      "vitrina.py": [
+        {
+          "line": 233,
+          "text": "    # UA-ANALIT-KNOPKA-V2 · раздел аналитики виден только владельцу"
+        },
+        {
+          "line": 565,
+          "text": "        # UA-ANALIT-KNOPKA-V2 · раздел аналитики"
+        }
+      ],
+      "vosstan.py": [
+        {
+          "line": 129,
+          "text": "    return bool(medial) or os.path.isfile(VIDEO + \"/\" + kod + \"-diag.html\")"
+        }
+      ],
+      "vse.py": [
+        {
+          "line": 391,
+          "text": "        ish = os.path.join(koren, shablon + \"-diag.html\")"
+        },
+        {
+          "line": 392,
+          "text": "        if os.path.exists(ish) and not os.path.exists(os.path.join(koren, kod + \"-diag.html\")):"
+        },
+        {
+          "line": 394,
+          "text": "            zapis(os.path.join(koren, kod + \"-diag.html\"), t)"
+        }
+      ],
+      "yadro.py": [
+        {
+          "line": 31,
+          "text": "SDVIG_KIEV = 7 * 3600"
+        },
+        {
+          "line": 51,
+          "text": "    return time.strftime(\"%Y-%m-%d\", time.localtime(time.time() + SDVIG_KIEV))"
+        },
+        {
+          "line": 1012,
+          "text": "    c.append(\"<a class=\\\"knp ram\\\" href=\\\"%s-diag.html\\\">🩺 %s</a>\""
+        },
+        {
+          "line": 1102,
+          "text": "    adres = ADRES_SAYTA + nom + \"-diag.html\""
+        },
+        {
+          "line": 1639,
+          "text": "                              (\"диагностика\", \"-diag.html\"),"
+        },
+        {
+          "line": 1737,
+          "text": "    return ('<!--seo-rehab-guard-068-diagnostics--><a class=\"mcf-diag-cta\" href=\"%s-diag.html\" style=\"display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;backg"
+        },
+        {
+          "line": 1757,
+          "text": "        target = identifier + '-diag.html'"
+        },
+        {
+          "line": 2103,
+          "text": "            + '<a class=\"mcf-diag-cta\" href=\"%s-diag.html\" style=\"display:flex;align-items:center;gap:12px;margin:14px 0;padding:15px 16px;border-radius:14px;text-decoration:none;background:linear-gradient(180deg,rgba(21"
+        },
+        {
+          "line": 2128,
+          "text": "        path = _ua068_os.path.join(root, \"%s-diag.html\" % kod)"
+        }
+      ]
+    },
+    "sha256": {
+      "analitika_bot.py": "b650e39854ece6997a71fabf6e6fe093c7b11bbafa8ba64ac6ac909929f48f9b",
+      "analitika_knopka.py": "a681522138b5f8fd2cfb621394c0b5550cb5409a69996a34ad82b1f6f9197998",
+      "analitika_otchet.py": "f70f978df1b5ff5a084441ba475871cb610cf9402752d68f9b23f7f1f3279051",
+      "analitika_wsgi.py": "a73be46099596322dcd607ecadd56140d45483a5ad38f1c1a0a0e395cfc8bc94",
+      "analitika_yadro.py": "afbc8a9e78da6cbdeba6bebae416192e13aa2fda359faded94ec6e0c9432b20b",
+      "master_card.py": "546ce4290f191ff67adc56e112dfbbe100633806a2d67e0e63a0e78874ac165e",
+      "publikaciya.py": "8e319f191f6ab4b4e8379ca3b57089d27b03111a543323e682eaef264303cfaf",
+      "publish_transaction_guard.py": "4b36b2f06f2b3582705b341e67f8361818890922133f3cf2e2a3ace935ec9b95",
+      "stranica.py": "3ea203df96b7219fedcd7c7fa2b110bac661bd698cc7f8db88422e45bd369f8b",
+      "ua_crm_public_sync.py": "25a824be411598566fb837de190c3e6a0057962bbfe7ee1d6dcf90a0ff2027cd",
+      "ua_google_tag.py": "f5f0a30489d20d7f7d973c27bd31e583e9827fb5a6d1e24a97fb35d1e6a3b6d4",
+      "ua_seo_finance.py": "0238f0d6fa68df1c1d17dae34f4e89813cb464c014486a3328018e08a736093f",
+      "ua_seo_index.py": "757adb13af4af7b397934fa48cb619df5a46e31a4de331db6bac25df1dde88a7",
+      "ua_seo_landings.py": "bc9c3bce841a064e171ba363fb5878b7e985b2194e8ec65b590bd6d68eaad8a4",
+      "ua_seo_metadata.py": "b0af0db31c9aa66ff4b2867824cc8a0592beacbc006d31aca50660f59c767ac4",
+      "ua_site_counters.py": "17f662420284da3e193d7a520b6302b27fce26aa8e38cfff60772299c221277f"
+    }
+  },
+  "status": "PASS",
+  "task_id": "ANALYTICS-AUDIT-PROBE-20261107-R2",
+  "without_own": {
+    "/site/UA-0001-00cf71c0.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0001-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0001.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0003-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0003.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0004-0edda61a.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0004-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0004.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0005-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0005.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0006-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0006.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0007-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0007.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0008-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0008.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0009-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0009.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0010-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0010.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0011-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0011.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0012-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0012.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0013-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0013.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0014-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0014.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0015-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0015.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0016-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0016.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0017-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0017.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0018-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0018.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0019-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0019.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0020-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0020.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0021-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0021.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0022-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0022.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/site/UA-0023-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/site/UA-0023.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0001-00cf71c0.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0001-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0001.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0003-a7bfb532.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0003-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0003.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0004-0edda61a.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0004-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0004.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0005-9e3432b2.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0005-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0005.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0006-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0006-ed784b7f.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0006.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0007-de6e3ebe.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0007-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0007.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0008-87693e0e.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0008-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0008.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0009-372ada15.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0009-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0009.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0010-614505f4.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0010-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0010.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0011-9842913c.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0011-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0011.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0012-453f3da4.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0012-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0012.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0013-d593cad2.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0013-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0013.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0014-568b2491.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0014-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0014.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0015-8d6c4f80.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0015-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0015.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0016-d9c506f8.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0016-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0016.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0017-bf0a6669.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0017-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0017.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0018-bfcd1711.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0018-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0018.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0019-906958ad.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0019-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0019.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0020-bf284c6a.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0020-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0020.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0021-10acf230.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0021-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0021.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0022-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0022-fa461c2d.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0022.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0023-956711ae.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/UA-0023-diag.html": {
+      "google": false,
+      "kind": "diag"
+    },
+    "/video/UA-0023.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/google609494476a22f741.html": {
+      "google": false,
+      "kind": "verification"
+    },
+    "/video/order/podbor.html": {
+      "google": false,
+      "kind": "order"
+    },
+    "/video/privacy.html": {
+      "google": false,
+      "kind": "landing"
+    },
+    "/video/ru/UA-0001.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0003.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0004.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0005.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0006.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0007.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0009.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0010.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0011.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0012.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0013.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0014.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0015.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0016.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0017.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0018.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0021.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0022.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ru/UA-0023.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/seo/gu/avtomobili-koreidan-sakartveloshi.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/gu/hyundai-sonata-koreidan-sakartveloshi.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/gu/kia-k5-koreidan-sakartveloshi.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/audi-a6-koreya-kiev.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/avto-iz-korei-na-gaze-lpi.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/avto-iz-korei-v-kiev-pod-kluch.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/avto-iz-yaponii-pod-zakaz.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/avto-pod-zakaz-kiev.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/hyundai-santa-fe-koreya-kiev.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/hyundai-sonata-koreya-kiev.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/hyundai-tucson-koreya-kiev.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/kia-k5-koreya-kiev.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/kia-sportage-koreya-kiev.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/mercedes-benz-b-class-koreya-kiev.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/mercedes-benz-e-class-koreya-kiev.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/nissan-note-yaponiya-kiev.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ru/skolko-stoit-avto-iz-korei-pod-kluch.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/audi-a6-koreya-kyiv.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/avto-pid-zamovlennia-kyiv.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/avto-z-korei-na-gazu-lpi.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/avto-z-yaponii-pid-zamovlennia.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/hyundai-santa-fe-koreya-kyiv.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/hyundai-sonata-koreya-kyiv.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/hyundai-tucson-koreya-kyiv.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/kia-k5-koreya-kyiv.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/kia-sportage-koreya-kyiv.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/mercedes-benz-b-class-koreya-kyiv.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/mercedes-benz-e-class-koreya-kyiv.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/nissan-note-yaponiya-kyiv.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/seo/ua/skilky-koshtuie-avto-z-korei-pid-kliuch.html": {
+      "google": true,
+      "kind": "landing"
+    },
+    "/video/ua/UA-0001.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0003.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0004.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0005.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0006.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0007.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0009.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0010.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0011.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0012.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0013.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0014.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0015.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0016.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0017.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0018.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0021.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0022.html": {
+      "google": true,
+      "kind": "card"
+    },
+    "/video/ua/UA-0023.html": {
+      "google": true,
+      "kind": "card"
+    }
+  }
+}
