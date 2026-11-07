@@ -22,10 +22,10 @@ def request(day):
     task = 'LEAD-DESK-PROBE-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Read-only probe before one «Связаться с менеджером» enquiry on car cards (LEAD-FOLDERS-001, owner 2026-11-06). '
-                       'Bounded run in the existing private inbox: upload this package, run source_remote.py once in a temporary '
-                       'always-on task (removed after its receipt; never the CRM bot) which reads ua_additional_spec, ua_spec_permanent, publikaciya, vitrina, ua_finance_partners, '
-                       'two card pages (sanitized) and lists import lines of the card generators in top-level server code. Counts of crm.db as before. '
+        'description': 'Read-only check after LEAD-FOLDERS-INSTALL (owner 2026-11-07): the bot log lines of the lead desk '
+                       'and CRM orders registration (sanitized, last 80 matching lines), whether the desk tables exist and '
+                       'whether the client bot manager chat is an active CRM owner (yes/no; no id or row returned). '
+                       'Bounded run in the existing private inbox in a temporary always-on task (never the CRM bot). '
                        'No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
