@@ -11,11 +11,13 @@ pages show full photos in small tiles (−1.1 MB). Changes, each in its own modu
 Texts, photo order, CRM data and every other byte stay as they are.
 """
 from pathlib import Path
+import re
 
 HERE = Path(__file__).resolve().parent
 NEW_MODULES = ('ua_tg_script.py', 'ua_photo_copies.py')
 PAGES = ('video/podbor.html', 'site/podbor.html')
-REVISION = ("SEO_REVISION = 'SEO-CONTENT-001'", "SEO_REVISION = 'SPEED-001'")
+# Whatever revision is live (other releases bump it too): exactly one such line becomes SPEED-001.
+REVISION = re.compile(r"^SEO_REVISION = '[A-Z0-9-]+'$", re.M)
 EDITS = {
     'ua_media_gallery.py': [
         ('from ua_media_script import JS\n',
@@ -46,7 +48,7 @@ def _car_list(cars, lang):"""),
             escape(photo_copies.copy(c['image'], 'm') or c['image']), _tile_srcset(c['image']), escape(c['name']),
             'eager' if i == 0 else 'lazy')) if c.get('image') else ''"""),
     ],
-    'ua_seo_metadata.py': [REVISION],
+    'ua_seo_metadata.py': [],
     'site_ge_inject.py': [
         ('    return render(_ua_price_base_inject(source))',
          """    return render(_ua_price_base_inject(source))
@@ -75,6 +77,10 @@ def edit(name, value):
         if text.count(old) != 1:
             raise ValueError('SPEED_EDIT:%s:%d' % (name, text.count(old)))
         text = text.replace(old, new)
+    if name == 'ua_seo_metadata.py':
+        text, count = REVISION.subn("SEO_REVISION = 'SPEED-001'", text)
+        if count != 1:
+            raise ValueError('SPEED_REVISION:%d' % count)
     return text.encode('utf-8')
 
 
