@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/LEAD-DESK-FIX-PREFLIGHT-20261107.02350ad46e29fc4b9a229e1d297fc289b9278456adf20845fe778885356067d9.json",
+  "autostart_ledger_sha256": "82b552cb04fe0958ebad8c25f9e6d35f407529ac26a1794f0716b5359200c028",
+  "autostart_source_commit": "e43db0f0aa39c28d67cad21403b123dcb6518636",
+  "created_at": "2026-11-07T06:50:22Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42348640409",
+    "task_id": "LEAD-DESK-FIX-PREFLIGHT-20261107",
+    "task_sha256": "02350ad46e29fc4b9a229e1d297fc289b9278456adf20845fe778885356067d9"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-2e48b209a9dced93-0a8c395be22a9832",
+  "request_path": "tasks/requests/LEAD-DESK-FIX-PREFLIGHT-20261107.json",
+  "resource_locks": [
+    "PATH_SCOPE:2e48b209a9dced93"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
