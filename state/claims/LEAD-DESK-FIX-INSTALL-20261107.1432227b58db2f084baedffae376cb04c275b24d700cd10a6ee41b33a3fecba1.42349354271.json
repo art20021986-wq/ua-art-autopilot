@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/LEAD-DESK-FIX-INSTALL-20261107.1432227b58db2f084baedffae376cb04c275b24d700cd10a6ee41b33a3fecba1.json",
+  "autostart_ledger_sha256": "25b50b1c1360ded0fef555bcc057d35e59eb9cbb75aa8a0468743df906b08261",
+  "autostart_source_commit": "3da73a628b188f64a32d01944ef57825c71ca398",
+  "created_at": "2026-11-07T07:01:03Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-07T07:01:03Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "42349354271",
+    "task_id": "LEAD-DESK-FIX-INSTALL-20261107",
+    "task_sha256": "1432227b58db2f084baedffae376cb04c275b24d700cd10a6ee41b33a3fecba1"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-8c89ee715a5ccdd8-d14b1a6dfbc828e6",
+  "receipt_path": "state/receipts/LEAD-DESK-FIX-INSTALL-20261107.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/LEAD-DESK-FIX-INSTALL-20261107.json",
+  "request_sha256": "1432227b58db2f084baedffae376cb04c275b24d700cd10a6ee41b33a3fecba1",
+  "resource_locks": [
+    "PATH_SCOPE:8c89ee715a5ccdd8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "d578ca68399cb7e7ff2db3fad8abc772f79701dc",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-07T07:01:03Z"
+}
