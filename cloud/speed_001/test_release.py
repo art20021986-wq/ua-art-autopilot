@@ -56,8 +56,10 @@ class PhotoCopyTests(unittest.TestCase):
 
 class BuildTests(unittest.TestCase):
     def sources(self):
-        return {name: ('# head\n' + ''.join(old + '\n# between\n' for old, _ in edits)).encode()
-                for name, edits in builder.EDITS.items()}
+        source = {name: ('# head\n' + ''.join(old + '\n# between\n' for old, _ in edits)).encode()
+                  for name, edits in builder.EDITS.items()}
+        source['ua_seo_metadata.py'] = b"CORE = ()\nSEO_REVISION = 'CARD-CONTACT-001'\nX = 1\n"
+        return source
 
     def test_exact_edits_and_new_modules(self):
         source = self.sources()
