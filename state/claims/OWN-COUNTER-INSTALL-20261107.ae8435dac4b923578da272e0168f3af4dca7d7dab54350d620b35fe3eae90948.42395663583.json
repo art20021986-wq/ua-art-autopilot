@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42395663583-ae8435dac4b92357",
   "production_transaction_path": "state/transactions/OWN-COUNTER-INSTALL-20261107.ae8435dac4b923578da272e0168f3af4dca7d7dab54350d620b35fe3eae90948.42395663583.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "ROLLING_BACK",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/OWN-COUNTER-INSTALL-20261107.json",
   "receipt_validation_status": "PENDING",
@@ -107,5 +107,5 @@
       "cloud/own_counter_001/ua_own_counter.py": "e9414d9988d3d3a2b22011cd051a65d6f8d086cde3d7abc1443bb35b45a5fd38"
     }
   },
-  "updated_at": "2026-11-07T17:26:04Z"
+  "updated_at": "2026-11-07T17:37:40Z"
 }
