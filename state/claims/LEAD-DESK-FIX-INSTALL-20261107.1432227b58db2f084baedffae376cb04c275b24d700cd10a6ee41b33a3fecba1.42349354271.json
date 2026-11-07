@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "a13e2e6d4b60387875662a8823907fb7dee13b10dda79f9ec9aa5c2ea1420b0a",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-07T07:02:20Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-07T07:04:03Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42349354271",
     "task_id": "LEAD-DESK-FIX-INSTALL-20261107",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42349354271-1432227b58db2f08",
   "production_transaction_path": "state/transactions/LEAD-DESK-FIX-INSTALL-20261107.1432227b58db2f084baedffae376cb04c275b24d700cd10a6ee41b33a3fecba1.42349354271.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-8c89ee715a5ccdd8-d14b1a6dfbc828e6",
   "receipt_path": "state/receipts/LEAD-DESK-FIX-INSTALL-20261107.json",
   "receipt_validation_status": "PENDING",
@@ -90,5 +90,5 @@
       "cloud/lead_folders_002/ua_lead_desk_view.py": "81fb0c2547d00234b5921d7e087f43da7ad1769a192306635ae7c6147a2e28aa"
     }
   },
-  "updated_at": "2026-11-07T07:02:20Z"
+  "updated_at": "2026-11-07T07:04:03Z"
 }
