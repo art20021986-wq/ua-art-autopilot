@@ -1,0 +1,321 @@
+"""Read-only analytics audit on the server (ANALYTICS-AUDIT-PROBE).
+
+1. Public HTML files: which carry the own counter (/ua/a.js) and the Google tag, by page kind.
+2. Live pages from the sitemap, fetched as a phone: the same two markers in what visitors are served.
+3. Web app access logs: per-day human visitors (robots and our own checks left out) and how many of them
+   reached the own counter (sent at least one /ua/a/e beacon). IP and browser are hashed in memory per day
+   and never saved.
+4. analytics.db opened read-only: per-day totals only.
+5. Google Analytics Data API (read-only scope): per-day totals, channels and top pages.
+Nothing is written outside this run's own receipt. No personal data is returned.
+"""
+import argparse
+from collections import Counter
+import gzip
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import resource
+import sqlite3
+import time
+import urllib.error
+import urllib.request
+
+HERE = Path(__file__).resolve().parent
+HOME = Path('/home/Carix')
+PUBLIC = (HOME/'video', HOME/'site')
+SITE = 'https://www.uaart.com.ua'
+LOG = Path('/var/log/www.uaart.com.ua.access.log')
+DB = HOME/'analytics.db'
+KEYS = tuple(HOME/('uaart-autopilot-110fb4d36d23' + ext) for ext in ('.json', '', '.txt'))
+PROPERTY = 'properties/560695713'
+DATA = 'https://analyticsdata.googleapis.com/v1beta/%s:runReport' % PROPERTY
+TAG = 'G-6SRBQK6GY4'
+OWN = '/ua/a.js'
+DAYS = 14
+PHONE = ('Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) '
+         'Version/18.0 Mobile/15E148 Safari/604.1')
+ROBOT = re.compile(r'bot|crawl|spider|slurp|python|curl|wget|headless|ua-?art|task\d|probe|monitor|preview|'
+                   r'externalhit|http|java|okhttp|scrapy|lighthouse|go-|axios|node|feed|scan|fetch|meta-|'
+                   r'chatgpt|perplexity|claude|^-?$', re.I)
+LINE = re.compile(r'^(\S+) .*?\[(\d{2}/\w{3}/\d{4}):[^\]]*\] "(\S+) (\S+)[^"]*" (\d{3}) \S+ "([^"]*)" "([^"]*)"')
+SOURCES = (('google', ('google.',)), ('bing', ('bing.com',)), ('chatgpt', ('chatgpt.com', 'openai.com')),
+           ('facebook', ('facebook.com', 'fb.com')), ('instagram', ('instagram.com',)),
+           ('telegram', ('t.me', 'telegram.')), ('tiktok', ('tiktok.com',)), ('youtube', ('youtube.com', 'youtu.be')),
+           ('autoria', ('auto.ria.com',)), ('olx', ('olx.ua',)))
+
+
+def kind(relative):
+    name = relative.rsplit('/', 1)[-1].lower()
+    if '/preview/' in '/' + relative:
+        return 'preview'
+    if re.match(r'ua-\d+.*-diag', name):
+        return 'diag'
+    if re.match(r'ua-\d+', name):
+        return 'card'
+    if 'podbor' in name or '/order/' in '/' + relative:
+        return 'order'
+    if name in ('index.html', 'katalog.html', 'info.html', 'sravnenie.html'):
+        return 'core'
+    if name.startswith('google') and len(name) < 30:
+        return 'verification'
+    return 'landing'
+
+
+def page_files():
+    """{url path: (kind, own, tag)} for every public HTML file."""
+    files = {}
+    for root in PUBLIC:
+        if not root.is_dir():
+            continue
+        for path in sorted(root.rglob('*.html')):
+            if path.is_symlink() or not path.is_file():
+                continue
+            text = path.read_text(encoding='utf-8', errors='replace')
+            relative = str(path.relative_to(HOME))
+            files['/' + relative] = (kind(relative), OWN in text, TAG in text)
+    return files
+
+
+def coverage(files):
+    by_kind, without_own, without_tag = {}, [], []
+    for url, (name, own, tag) in files.items():
+        row = by_kind.setdefault(name, {'html': 0, 'own': 0, 'google': 0, 'both': 0, 'none': 0})
+        row['html'] += 1
+        row['own'] += own
+        row['google'] += tag
+        row['both'] += own and tag
+        row['none'] += not own and not tag
+        if name != 'preview':
+            if not own:
+                without_own.append(url)
+            if not tag:
+                without_tag.append(url)
+    return {'by_kind': by_kind, 'without_own_counter': without_own[:150], 'without_google_tag': without_tag[:150]}
+
+
+def fetch(url):
+    request = urllib.request.Request(url, headers={'User-Agent': PHONE, 'Cache-Control': 'no-cache'})
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            return response.status, response.read(4 * 1024 * 1024).decode('utf-8', 'replace')
+    except urllib.error.HTTPError as error:
+        return error.code, ''
+    except Exception as error:
+        return type(error).__name__, ''
+
+
+def live():
+    status, sitemap = fetch(SITE + '/sitemap.xml')
+    urls = [u for u in re.findall(r'<loc>\s*([^<\s]+)\s*</loc>', sitemap) if u.startswith(SITE + '/')][:80]
+    for extra in ('/', '/video/index.html', '/video/katalog.html', '/video/podbor.html'):
+        if SITE + extra not in urls:
+            urls.append(SITE + extra)
+    pages = {}
+    for url in urls:
+        code, text = fetch(url)
+        pages[url[len(SITE):]] = {'http': code, 'own': OWN in text, 'google': TAG in text}
+    return {'sitemap_http': status, 'pages': pages,
+            'summary': {'pages': len(pages), 'own': sum(p['own'] for p in pages.values()),
+                        'google': sum(p['google'] for p in pages.values())}}
+
+
+def log_texts():
+    found = {}
+    for suffix in [''] + ['.1'] + ['.%d.gz' % n for n in range(2, 15)]:
+        path = Path(str(LOG) + suffix)
+        try:
+            raw = path.read_bytes()
+            if suffix.endswith('.gz'):
+                raw = gzip.decompress(raw)
+        except (OSError, EOFError) as error:
+            found[suffix or 'current'] = {'error': type(error).__name__}
+            if suffix not in ('', '.1'):
+                break
+            continue
+        found[suffix or 'current'] = {'text': raw.decode('utf-8', 'replace')}
+    return found
+
+
+def source(referrer, path):
+    match = re.search(r'utm_source=([\w.-]{1,40})', path)
+    if match:
+        return 'utm:' + match.group(1).lower()
+    host = re.sub(r'^https?://', '', referrer).split('/')[0].split(':')[0].lower()
+    if not host or host == '-':
+        return 'direct'
+    if host.endswith('uaart.com.ua'):
+        return 'internal'
+    for label, needles in SOURCES:
+        if any(n in host for n in needles):
+            return label
+    return 'other'
+
+
+def file_for(path, files):
+    clean = path.split('?')[0].split('#')[0]
+    if clean.endswith('/'):
+        clean += 'index.html'
+    return files.get(clean)
+
+
+def is_page(path):
+    clean = path.split('?')[0]
+    return clean.endswith(('.html', '/')) or '.' not in clean.rsplit('/', 1)[-1]
+
+
+def access(texts, files):
+    days = {}
+    for text in texts:
+        for line in text.splitlines():
+            match = LINE.search(line)
+            if not match:
+                continue
+            ip, day, method, path, status, referrer, agent = match.groups()
+            day = time.strftime('%Y-%m-%d', time.strptime(day, '%d/%b/%Y'))
+            d = days.setdefault(day, {'visitors': {}, 'robot_requests': 0, 'page_views': 0, 'beacons': 0,
+                                      'own_script_loads': 0, 'kinds': Counter(), 'unknown_pages': Counter()})
+            if ROBOT.search(agent):
+                d['robot_requests'] += 1
+                continue
+            visitor = hashlib.sha256((day + ip + agent).encode()).hexdigest()[:16]
+            entry = d['visitors'].setdefault(visitor, {'pages': 0, 'beacon': False, 'own_page': False,
+                                                       'google_page': False, 'first': None, 'source': 'direct',
+                                                       'mobile': bool(re.search('Mobile|Android|iPhone', agent))})
+            clean = path.split('?')[0]
+            if method == 'POST' and clean == '/ua/a/e':
+                d['beacons'] += 1
+                entry['beacon'] = True
+                continue
+            if clean == OWN:
+                d['own_script_loads'] += 1
+                continue
+            if method != 'GET' or not is_page(path) or not status.startswith(('2', '3')):
+                continue
+            d['page_views'] += 1
+            entry['pages'] += 1
+            page = file_for(path, files)
+            name = page[0] if page else 'unmapped'
+            d['kinds'][name] += 1
+            if not page:
+                d['unknown_pages'][clean[:120]] += 1
+            if entry['first'] is None:
+                entry['first'] = name
+                entry['first_own'] = bool(page and page[1])
+            entry['own_page'] |= bool(page and page[1])
+            entry['google_page'] |= bool(page and page[2])
+            label = source(referrer, path)
+            if entry['source'] in ('direct', 'internal') and label not in ('direct', 'internal'):
+                entry['source'] = label
+    daily, unmapped = {}, Counter()
+    for day, d in sorted(days.items())[-DAYS:]:
+        people = [v for v in d['visitors'].values() if v['pages']]
+        unmapped.update(d['unknown_pages'])
+        daily[day] = {'human_visitors': len(people), 'human_page_views': d['page_views'],
+                      'reached_own_counter': sum(v['beacon'] for v in people),
+                      'saw_page_with_own_counter': sum(v['own_page'] for v in people),
+                      'saw_page_with_google_tag': sum(v['google_page'] for v in people),
+                      'landed_on': dict(Counter(v['first'] for v in people)),
+                      'landed_without_own_counter': sum(not v.get('first_own') for v in people),
+                      'mobile': sum(v['mobile'] for v in people), 'sources': dict(Counter(v['source'] for v in people)),
+                      'one_page_only': sum(v['pages'] == 1 for v in people),
+                      'page_views_by_kind': dict(d['kinds']), 'beacons': d['beacons'],
+                      'own_script_loads': d['own_script_loads'], 'robot_requests': d['robot_requests']}
+    return {'daily_utc': daily, 'unmapped_pages': unmapped.most_common(20)}
+
+
+def own_db():
+    if not DB.is_file():
+        return {'error': 'MISSING'}
+    connection = sqlite3.connect('file:%s?mode=ro' % DB, uri=True, timeout=10)
+    try:
+        since = int(time.time()) - DAYS * 86400
+        q = lambda sql: connection.execute(sql, (since,)).fetchall()
+        daily = {}
+        for day, visitors, sessions, views in q(
+                "SELECT date(ts,'unixepoch'), COUNT(DISTINCT vid), COUNT(DISTINCT sid), "
+                "SUM(tip IN ('page','card','diag')) FROM events WHERE ts>=? GROUP BY 1"):
+            daily[day] = {'visitors': visitors, 'sessions': sessions, 'page_views': views}
+        return {'daily_utc': daily, 'event_types': dict(q('SELECT tip, COUNT(*) FROM events WHERE ts>=? GROUP BY 1')),
+                'sources': dict(q('SELECT istochnik, COUNT(*) FROM sessions WHERE nachalo>=? GROUP BY 1')),
+                'oldest_event_utc': connection.execute("SELECT datetime(MIN(ts),'unixepoch') FROM events").fetchone()[0]}
+    finally:
+        connection.close()
+
+
+def ga4():
+    key = next((k for k in KEYS if k.is_file()), None)
+    if not key:
+        return {'error': 'KEY_MISSING'}
+    from google.oauth2 import service_account
+    from google.auth.transport.requests import Request
+    credentials = service_account.Credentials.from_service_account_file(
+        str(key), scopes=['https://www.googleapis.com/auth/analytics.readonly'])
+    credentials.refresh(Request())
+    dates = [{'startDate': '%ddaysAgo' % (DAYS - 1), 'endDate': 'today'}]
+
+    def run(dimensions, metrics, limit=40):
+        body = {'dateRanges': dates, 'dimensions': [{'name': n} for n in dimensions],
+                'metrics': [{'name': n} for n in metrics], 'limit': limit}
+        request = urllib.request.Request(DATA, data=json.dumps(body).encode(), method='POST', headers={
+            'Authorization': 'Bearer ' + credentials.token, 'Content-Type': 'application/json'})
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                value = json.loads(response.read())
+        except urllib.error.HTTPError as error:
+            return {'http': error.code, 'error': error.read(500).decode('utf-8', 'replace')}
+        return [[c.get('value') for c in r.get('dimensionValues', []) + r.get('metricValues', [])]
+                for r in value.get('rows', [])]
+    return {'columns_daily': ['date', 'activeUsers', 'sessions', 'screenPageViews', 'eventCount'],
+            'daily_kyiv': run(['date'], ['activeUsers', 'sessions', 'screenPageViews', 'eventCount']),
+            'channels': run(['sessionDefaultChannelGroup'], ['activeUsers', 'sessions']),
+            'sources': run(['sessionSource'], ['activeUsers', 'sessions'], 20),
+            'pages': run(['pagePath'], ['screenPageViews', 'activeUsers'], 25),
+            'devices': run(['deviceCategory'], ['activeUsers']),
+            'events': run(['eventName'], ['eventCount'], 20)}
+
+
+def guarded(step, *args):
+    try:
+        return step(*args)
+    except Exception as error:
+        return {'error': type(error).__name__ + ':' + str(error)[:200]}
+
+
+def report():
+    files = page_files()
+    logs = log_texts()
+    return {'status': 'PASS', 'files': coverage(files), 'live': guarded(live),
+            'log_files': {k: ({'lines': v['text'].count('\n')} if 'text' in v else v) for k, v in logs.items()},
+            'access': guarded(access, [v['text'] for v in logs.values() if 'text' in v], files),
+            'own_analytics': guarded(own_db), 'google_analytics': guarded(ga4)}
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--run', required=True)
+    args = parser.parse_args()
+    if not re.fullmatch(r'[0-9]+', args.run):
+        raise SystemExit('RUN_ID')
+    resource.setrlimit(resource.RLIMIT_CPU, (300, 320))
+    work = HERE/'runs'/args.run
+    work.mkdir(parents=True, exist_ok=True, mode=0o700)
+    receipt = work/'receipt-probe.json'
+    if receipt.exists():
+        return 0
+    try:
+        value = report()
+    except Exception as error:
+        value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
+    value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
+    temporary = work/'.receipt-probe.tmp'
+    temporary.write_text(json.dumps(value, ensure_ascii=False, sort_keys=True), encoding='utf-8')
+    os.chmod(temporary, 0o600)
+    os.replace(temporary, receipt)
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
