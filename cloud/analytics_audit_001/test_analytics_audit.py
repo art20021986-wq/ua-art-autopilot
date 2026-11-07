@@ -110,6 +110,16 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(list(value['daily_utc'].values()), [{'visitors': 1, 'sessions': 1, 'page_views': 1}])
         self.assertEqual(value['sources'], {'Google': 1})
 
+    def test_sources_redact_secrets(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'ua_google_tag.py').write_text("TOKEN = 'abc'\nx = 1  # /ua/a.js\n")
+            with patch.object(remote, 'HOME', home), patch.object(remote, 'WSGI', home / 'none.py'):
+                value = remote.sources()
+        self.assertEqual(value['full']['ua_google_tag.py'], '[REDACTED]\nx = 1  # /ua/a.js')
+        self.assertEqual(value['hits']['ua_google_tag.py'], [{'line': 2, 'text': 'x = 1  # /ua/a.js'}])
+        self.assertFalse(value['analitika_stop']['exists'])
+
     def test_live_only_public_get(self):
         seen = []
 

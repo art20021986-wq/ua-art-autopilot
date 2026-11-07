@@ -1,5 +1,9 @@
 """Read-only analytics audit on the server (ANALYTICS-AUDIT-PROBE).
 
+R2 (owner «Да» 2026-11-07 to put the own counter on every page and fix its source and time): reads the current
+counter, Google tag and page-writer sources (sanitized) and lists which pages lack the own counter. R1 sections
+below stay for reference; report() runs the R2 reading only.
+
 1. Public HTML files: which carry the own counter (/ua/a.js) and the Google tag, by page kind.
 2. Live pages from the sitemap, fetched as a phone: the same two markers in what visitors are served.
 3. Web app access logs: per-day human visitors (robots and our own checks left out) and how many of them
@@ -277,6 +281,54 @@ def ga4():
             'events': run(['eventName'], ['eventCount'], 20)}
 
 
+SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\s*[\'"]?\s*[:=]'
+                    r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
+LONG_NUMBER = re.compile(r'(?<!\d)\+?\d[\d\s()-]{8,}\d(?!\d)')
+FULL = ('analitika_wsgi.py', 'analitika_yadro.py', 'analitika_otchet.py', 'analitika_knopka.py', 'ua_google_tag.py',
+        'ua_seo_index.py')
+WSGI = Path('/var/www/www_uaart_com_ua_wsgi.py')
+HASHED = ('ua_seo_metadata.py', 'publish_transaction_guard.py', 'master_card.py', 'stranica.py', 'publikaciya.py',
+          'ua_seo_landings.py', 'ua_seo_finance.py', 'ua_crm_public_sync.py', 'ua_site_counters.py', 'analitika_bot.py')
+NEEDLES = ('ua_google_tag', '-diag.html', "-diag'", '-diag"', 'UA-ANALIT', '/ua/a.js', 'SDVIG_KIEV')
+
+
+def clean(line):
+    return '[REDACTED]' if SECRET.search(line) else LONG_NUMBER.sub('[N]', line)
+
+
+def sources():
+    full, hashes, hits = {}, {}, {}
+    for name in FULL:
+        path = HOME/name
+        full[name] = '\n'.join(clean(x) for x in path.read_text('utf-8', 'replace').splitlines()) if path.is_file() else None
+    if WSGI.is_file():
+        full[str(WSGI)] = '\n'.join(clean(x) for x in WSGI.read_text('utf-8', 'replace').splitlines())
+    for name in HASHED + FULL:
+        path = HOME/name
+        hashes[name] = hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
+    recent = time.time() - 120 * 86400
+    for path in sorted(HOME.glob('*.py')):
+        try:
+            if path.is_symlink() or path.stat().st_mtime < recent or path.stat().st_size > 2 * 1024 * 1024:
+                continue
+            lines = path.read_text('utf-8', 'replace').splitlines()
+        except OSError:
+            continue
+        found = [{'line': n + 1, 'text': clean(lines[n])[:220]} for n in range(len(lines))
+                 if any(x in lines[n] for x in NEEDLES)]
+        if found:
+            hits[path.name] = found[:40]
+    stop = HOME/'analitika_stop.txt'
+    return {'full': full, 'sha256': hashes, 'hits': hits,
+            'analitika_stop': {'exists': stop.exists(),
+                               'mtime_utc': time.strftime('%Y-%m-%d %H:%M', time.gmtime(stop.stat().st_mtime))
+                               if stop.exists() else None}}
+
+
+def pages_without_own(files):
+    return {url: {'kind': k, 'google': g} for url, (k, own, g) in files.items() if not own and k != 'preview'}
+
+
 def guarded(step, *args):
     try:
         return step(*args)
@@ -285,6 +337,12 @@ def guarded(step, *args):
 
 
 def report():
+    files = page_files()
+    return {'status': 'PASS', 'files': coverage(files), 'sources': guarded(sources),
+            'without_own': pages_without_own(files)}
+
+
+def report_r1():
     files = page_files()
     logs = log_texts()
     return {'status': 'PASS', 'files': coverage(files), 'live': guarded(live),
