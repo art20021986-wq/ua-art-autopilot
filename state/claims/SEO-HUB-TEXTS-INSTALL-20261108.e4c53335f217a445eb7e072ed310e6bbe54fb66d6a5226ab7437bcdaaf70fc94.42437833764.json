@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "6e01327ea4f78c167c8adc8b2e302a501f490c52997d44801a949fb1725e2909",
   "autostart_source_commit": "a37b3702f69ff85d29c7d48103ad9dcb83b248ad",
   "created_at": "2026-11-08T02:20:40Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "1060186ecfceb17dadbac70dafce25620424ab2e14c1f560d832058315a2b082",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-08T02:20:40Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-08T02:22:03Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42437833764",
     "task_id": "SEO-HUB-TEXTS-INSTALL-20261108",
     "task_sha256": "e4c53335f217a445eb7e072ed310e6bbe54fb66d6a5226ab7437bcdaaf70fc94"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 206.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 263.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42437833764-e4c53335f217a445",
+  "production_transaction_path": "state/transactions/SEO-HUB-TEXTS-INSTALL-20261108.e4c53335f217a445eb7e072ed310e6bbe54fb66d6a5226ab7437bcdaaf70fc94.42437833764.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-7d28059bb1bea1b9-cc36ccc303c43974",
   "receipt_path": "state/receipts/SEO-HUB-TEXTS-INSTALL-20261108.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,38 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "5be0a5f1a192ab2896183bbfa9e36dfa01172f13",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 529.122,
+    "allowed": true,
+    "evidence_path": "state/storage/SEO-HUB-TEXTS-INSTALL-20261108.json",
+    "evidence_sha256": "ee9276925ebfccf141638a877b13044b1fdfc3cd979844441230ef71d6834b1f",
+    "free_bytes": 23603912192,
+    "heavy": true,
+    "measured_at": "2026-11-08T02:13:11.048280+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 32.56025088
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-08T02:20:40Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "6cb5cae341c483f1eca9ad2728e806a32b1f0049db6cafb1206e6835f97c698c",
+    "file_sha256": {
+      "cloud/seo_hub_texts_001/candidate_builder.py": "a3b5b8a89c4409ecd56d0782fde1e338565027147625ac6310c1055a2823a0f7",
+      "cloud/seo_hub_texts_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/seo_hub_texts_001/deployment_bootstrap.py": "e78375024d26c35643e1182fc4e21cd71da8c3be1a20388c28c2dcdcbdce3e2d",
+      "cloud/seo_hub_texts_001/deployment_remote.py": "bc12710b45d477350394e84aa256b44eefabad2a541cf1d3151ebb8c893b6367",
+      "cloud/seo_hub_texts_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/seo_hub_texts_001/deployment_transport.py": "588229bdb184b0a2ec3cd1050b4a6060035b60eb3c0cab0a24abd751cd80e169",
+      "cloud/seo_hub_texts_001/edit_landings.py": "7b33d6a1e2bf2c723b49e63387fdc92c4f190ec6c454d921483ddce6ce758151",
+      "cloud/seo_hub_texts_001/make_release.py": "55f6901d26198fcd239715dea4ce7adbc625496aa012f6000b221ec8d5837867",
+      "cloud/seo_hub_texts_001/release_constants.py": "5abafdd3dfc0a32b342c89d73817e80a493b8831f7d81c2cc2abf31602bc87ef",
+      "cloud/seo_hub_texts_001/test_deployment.py": "2e519c7a08c2324505466b6bab7627183eed54bb4c1d42487b48d788f8c03f7a",
+      "cloud/seo_hub_texts_001/test_release.py": "c87a98bc3daa583cd54df6362edb9687a5574293508b229e8f83aadc843a7363",
+      "cloud/seo_hub_texts_001/ua_seo_hub_texts.py": "87ad5d078d1a71f53a45530b4d390ae6b06dc6a1687a3667c6f8a7fb3e5ff16b"
+    }
+  },
+  "updated_at": "2026-11-08T02:22:03Z"
 }
