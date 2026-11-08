@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-HUB-TEXTS-INSTALL-20261108.e4c53335f217a445eb7e072ed310e6bbe54fb66d6a5226ab7437bcdaaf70fc94.json",
+  "autostart_ledger_sha256": "6e01327ea4f78c167c8adc8b2e302a501f490c52997d44801a949fb1725e2909",
+  "autostart_source_commit": "a37b3702f69ff85d29c7d48103ad9dcb83b248ad",
+  "created_at": "2026-11-08T02:20:40Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-08T02:20:40Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "42437833764",
+    "task_id": "SEO-HUB-TEXTS-INSTALL-20261108",
+    "task_sha256": "e4c53335f217a445eb7e072ed310e6bbe54fb66d6a5226ab7437bcdaaf70fc94"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-7d28059bb1bea1b9-cc36ccc303c43974",
+  "receipt_path": "state/receipts/SEO-HUB-TEXTS-INSTALL-20261108.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/SEO-HUB-TEXTS-INSTALL-20261108.json",
+  "request_sha256": "e4c53335f217a445eb7e072ed310e6bbe54fb66d6a5226ab7437bcdaaf70fc94",
+  "resource_locks": [
+    "PATH_SCOPE:7d28059bb1bea1b9"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "5be0a5f1a192ab2896183bbfa9e36dfa01172f13",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-08T02:20:40Z"
+}
