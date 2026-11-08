@@ -1,5 +1,7 @@
 """Read-only analytics audit on the server (ANALYTICS-AUDIT-PROBE).
 
+R3 (2026-11-08, after OWN-COUNTER-INSTALL): counter coverage, live pages, the public /ua/a.js fix and the
+installed modules; report() runs R3, report_r2/report_r1 stay for reference.
 R2 (owner «Да» 2026-11-07 to put the own counter on every page and fix its source and time): reads the current
 counter, Google tag and page-writer sources (sanitized) and lists which pages lack the own counter. R1 sections
 below stay for reference; report() runs the R2 reading only.
@@ -336,7 +338,37 @@ def guarded(step, *args):
         return {'error': type(error).__name__ + ':' + str(error)[:200]}
 
 
+SCRIPT_MARK = 'UA-OWN-COUNTER-001'
+
+
+def script():
+    """R3: the public /ua/a.js after OWN-COUNTER-INSTALL carries the source fix."""
+    code, text = fetch(SITE + '/ua/a.js?v=1&check=%d' % int(time.time()))
+    return {'http': code, 'fixed': SCRIPT_MARK in text}
+
+
+def installed():
+    """R3: installed module hashes and whether the report days start at midnight in Kyiv."""
+    value = {name: hashlib.sha256((HOME/name).read_bytes()).hexdigest() if (HOME/name).is_file() else None
+             for name in ('ua_own_counter.py', 'ua_seo_metadata.py', 'ua_seo_index.py', 'analitika_yadro.py',
+                          'analitika_otchet.py')}
+    import importlib.util
+    import datetime
+    spec = importlib.util.spec_from_file_location('otchet_check', HOME/'analitika_otchet.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    start = datetime.datetime.fromtimestamp(module.granicy('today')[0], module._kiev())
+    value['report_today_start_kiev'] = start.isoformat()
+    return value
+
+
 def report():
+    files = page_files()
+    return {'status': 'PASS', 'files': coverage(files), 'live': guarded(live), 'script': guarded(script),
+            'installed': guarded(installed), 'without_own': pages_without_own(files)}
+
+
+def report_r2():
     files = page_files()
     return {'status': 'PASS', 'files': coverage(files), 'sources': guarded(sources),
             'without_own': pages_without_own(files)}
