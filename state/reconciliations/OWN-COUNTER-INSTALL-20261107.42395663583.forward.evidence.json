@@ -1,0 +1,13 @@
+{
+  "backup_receipt": "state/receipts/OWN-COUNTER-INSTALL-20261107-BACKUP.json",
+  "backup_status": "PASS",
+  "crm_data_written_by_install": false,
+  "failure": "REMOTE_VERIFY FILE_CHANGED:site/UA-0001-00cf71c0.html — the CRM public sync republished that card copy after the bot resumed (legitimate writer, normalize hook now adds the counter); one-shot rollback refused ROLLBACK_CONCURRENT_CHANGE on the same file; nothing was restored",
+  "file_hashes_observed_remotely": false,
+  "install": "controller passed the install step (remote lifecycle PASS with crm_unchanged and bot resumed are required before verify runs)",
+  "next_check": "read-only probe ANALYTICS-AUDIT-PROBE-20261108 (coverage, live pages, /ua/a.js) right after the halt is lifted",
+  "run_id": "42395663583",
+  "schema_version": "UA-ART-OWNER-OBSERVATION-1",
+  "source": "GitHub Actions run 42395663583 job logs; owner permission in chat 2026-11-08",
+  "task_id": "OWN-COUNTER-INSTALL-20261107"
+}

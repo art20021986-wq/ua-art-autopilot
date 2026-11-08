@@ -54,10 +54,11 @@
   "production_required": true,
   "production_transaction_id": "tx-42395663583-ae8435dac4b92357",
   "production_transaction_path": "state/transactions/OWN-COUNTER-INSTALL-20261107.ae8435dac4b923578da272e0168f3af4dca7d7dab54350d620b35fe3eae90948.42395663583.json",
-  "production_transaction_status": "ROLLING_BACK",
+  "production_transaction_status": "FINISHED",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/OWN-COUNTER-INSTALL-20261107.json",
   "receipt_validation_status": "PENDING",
+  "reconciliation_path": "state/reconciliations/OWN-COUNTER-INSTALL-20261107.42395663583.forward.json",
   "request_path": "tasks/requests/OWN-COUNTER-INSTALL-20261107.json",
   "request_sha256": "ae8435dac4b923578da272e0168f3af4dca7d7dab54350d620b35fe3eae90948",
   "resource_locks": [
@@ -101,7 +102,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "ef2d00f587db39a95846bfca0c200b6999bde351d4ebdd29e18b8d2bb15f305f",
     "file_sha256": {

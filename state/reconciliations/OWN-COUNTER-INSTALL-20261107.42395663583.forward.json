@@ -1,0 +1,25 @@
+{
+  "application_writes": false,
+  "automatic_rollback_retried": false,
+  "decision": "ACCEPT_OBSERVED_OWN_COUNTER_INSTALLATION",
+  "evidence_path": "state/reconciliations/OWN-COUNTER-INSTALL-20261107.42395663583.forward.evidence.json",
+  "evidence_sha256": "f21be1abc68b1c5621182393790fc880fef25b32a99ef13938ea9c3ce5feac68",
+  "full_crm_acceptance": false,
+  "next_step": "Read-only live check; then a fixed verify (cards republished by the CRM public sync must keep the counter, not stay byte-equal). Original launch remains consumed.",
+  "original_state_sha256": {
+    "state/AUTOPILOT_HALT.json": "c702e5c6c6ac26bd78e5b778fba8dcf50877094f5164f3294da5b5c85596bca6",
+    "state/claims/OWN-COUNTER-INSTALL-20261107.ae8435dac4b923578da272e0168f3af4dca7d7dab54350d620b35fe3eae90948.42395663583.json": "a3500bc126d92edb171d0a1a5bf5f65943882da5f2e600e8650b7d0458c8c871",
+    "state/transactions/OWN-COUNTER-INSTALL-20261107.ae8435dac4b923578da272e0168f3af4dca7d7dab54350d620b35fe3eae90948.42395663583.json": "6a13c7576270fceb15a826dc21836d21bf0a7750eaf6e58116c86d40d2776aff",
+    "tasks/requests/OWN-COUNTER-INSTALL-20261107.json": "ae8435dac4b923578da272e0168f3af4dca7d7dab54350d620b35fe3eae90948"
+  },
+  "owner_command": "Разрешаю снять аварийную остановку OWN-COUNTER-INSTALL-2026110",
+  "precedent": "state/reconciliations/CRM-MENU-INSTALL-20261105.42012840805.forward.json",
+  "reconciled_at": "2026-11-08T00:52:49Z",
+  "rollback_performed": false,
+  "run_id": "42395663583",
+  "schema_version": "UA-ART-MANUAL-FORWARD-RECONCILIATION-1",
+  "task_id": "OWN-COUNTER-INSTALL-20261107",
+  "transaction_after": "FINISHED",
+  "transaction_before": "ROLLING_BACK",
+  "transaction_id": "tx-42395663583-ae8435dac4b92357"
+}
