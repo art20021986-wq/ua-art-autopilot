@@ -22,11 +22,11 @@ def request(day):
     task = 'CARD-LANG-PROBE-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Read-only probe for the next speed/SEO work (owner «Да» 2026-11-08: one URL per card, home '
-                       'stage images, order page styles): bounded run in the existing private inbox (temporary always-on '
-                       'task removed after its receipt; never the CRM bot) that reads the web app WSGI file, sitemap, '
-                       'home/order/catalogue pages, card language and design guard sources, lists the modules that write '
-                       'stage images or link order page styles, and image sizes. No source, CRM, HTML, media or bot change.',
+        'description': 'Read-only probe R6 for SPEED-002 (owner «Да» 2026-11-08): bounded run in the existing private '
+                       'inbox (temporary always-on task removed after its receipt; never the CRM bot) that reads the '
+                       'catalogue reader, landing index, CRM public sync and freshness modules and lists the lines of '
+                       'top-level modules that read card links or write the home, catalogue or order pages. '
+                       'No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
