@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/webapp_reload_001/20261108.json",
+  "live_source_environment": "production",
+  "production_required": false,
+  "reload": "HTTP_200",
+  "request_sha256": "94f24386c75688accbaa1bd037419f9e7e72b90f3010d490f2281e59102cdd1e",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_FILE_OR_CRM_WRITES",
+  "run_id": "42432509141",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "WEBAPP-RELOAD-20261108",
+  "tests": "PASS",
+  "tests_scope": "WEBAPP_RELOAD_ONLY",
+  "unexpected_changes": 0
+}
