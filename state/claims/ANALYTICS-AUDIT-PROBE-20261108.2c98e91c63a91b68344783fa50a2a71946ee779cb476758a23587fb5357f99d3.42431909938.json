@@ -7,21 +7,23 @@
   "created_at": "2026-11-08T00:55:55Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-08T00:55:55Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-08T00:59:57Z",
+  "heartbeat_at": "2026-11-08T00:59:57Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "42431909938",
     "task_id": "ANALYTICS-AUDIT-PROBE-20261108",
     "task_sha256": "2c98e91c63a91b68344783fa50a2a71946ee779cb476758a23587fb5357f99d3"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-a00b7a073566cbee-5817bb944ce75cbd",
   "receipt_path": "state/receipts/ANALYTICS-AUDIT-PROBE-20261108.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "0266539cee20c938665854575f067eeda01554e7f46eb1b683d503e788c8e3e2",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ANALYTICS-AUDIT-PROBE-20261108.json",
   "request_sha256": "2c98e91c63a91b68344783fa50a2a71946ee779cb476758a23587fb5357f99d3",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "6d896fa1d66ba9b180e47b55a1edb867f5531324",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92828545024,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.097
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-08T00:55:55Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "40598fc2a536c1a9c10a585a02e7e591e5906cdbe1dc62e9bc2b042bfdd6cf29",
+    "file_sha256": {
+      "cloud/analytics_audit_001/bootstrap.py": "63a59601e0e417523f5714066a87cce2ca8153521d0fff984677688375c55e3d",
+      "cloud/analytics_audit_001/make_request.py": "b2200073669359253b95b2e125cbfedef01aa3e951326c92f73d179993488860",
+      "cloud/analytics_audit_001/source_remote.py": "2ca7ad2a33f1e4a744cdf2024e9d9c89c54f8f101c7a4318653f06cf78630acc",
+      "cloud/analytics_audit_001/test_analytics_audit.py": "6c198875913b4e5d4b4db68223385784d0bdf76508eabf1d67b2036edf592df6",
+      "cloud/analytics_audit_001/transport.py": "2c5de9a04fcaf37756eb3241959730086b0ed8e636f759c5c8f15456a3b1b796"
+    }
+  },
+  "updated_at": "2026-11-08T00:59:57Z"
 }
