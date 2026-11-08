@@ -67,12 +67,14 @@ class RemoteTests(unittest.TestCase):
             (home / 'stranica.py').write_text("M = 'https://maps.app.goo.gl/AbC123'\nTOKEN = 'x'\n")
             (home / 'video' / 'index.html').write_text("<a href='https://maps.app.goo.gl/AbC123'>a</a><a href=\"https://www.google.com/maps/place/X\">b</a>")
             (home / 'other.py').write_text('print(1)\n')
+            (home / 'ua_seo_sitemap.py').write_text("TOKEN = 'x'\nS = 'video/stage/UA-0001.webp'\n")
             value = remote.report(home)
         self.assertEqual(value['maps'], {'stranica.py': {'https://maps.app.goo.gl/AbC123': 1},
                                          'video/index.html': {'https://maps.app.goo.gl/AbC123': 1,
                                                               'https://www.google.com/maps/place/X': 1}})
-        self.assertIn('[REDACTED]', value['files']['stranica.py']['source'])
-        self.assertIsNone(value['files']['ua_media_gallery.py'])
+        self.assertIn('[REDACTED]', value['files']['ua_seo_sitemap.py']['source'])
+        self.assertIsNone(value['files']['ua_card_lang.py'])
+        self.assertEqual([row['line'] for row in value['scan']['ua_seo_sitemap.py']], [2])
         self.assertIn('pillow', value['media'])
 
 
