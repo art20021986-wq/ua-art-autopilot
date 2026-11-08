@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+import json
+from pathlib import Path
+import re
+import sqlite3
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import controller as c  # noqa: E402
+import source_remote as remote  # noqa: E402
+import transport  # noqa: E402
+
+
+class FakeAPI:
+    def __init__(self, report):
+        self.report = report
+
+    def run(self, mode, run_id, bundle):
+        return self.report
+
+
+class ControllerTests(unittest.TestCase):
+    TASK = 'SOCIAL-PROBE-20261105'
+
+    def env(self, root):
+        request = root / 'tasks/requests' / (self.TASK + '.json')
+        request.parent.mkdir(parents=True)
+        request.write_text(json.dumps({'production_required': False}))
+        return {'UAART_TASK_ID': self.TASK, 'UAART_RECEIPT_PATH': 'state/receipts/%s.json' % self.TASK,
+                'UAART_REQUEST_PATH': 'tasks/requests/%s.json' % self.TASK,
+                'UAART_REQUEST_SHA256': c.sha(request.read_bytes()), 'UAART_RUN_ID': '7'}
+
+    def test_report_saved(self):
+        with tempfile.TemporaryDirectory() as temp:
+            receipt = c.execute(self.env(Path(temp)), root=temp, api=FakeAPI({'status': 'PASS'}), upload=lambda a: 'b' * 64)
+        self.assertEqual((receipt['probe_status'], receipt['evidence_path']),
+                         ('PASS', 'cloud/social_probe_001/20261105.json'))
+
+    def test_key_material_never_saved(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with self.assertRaisesRegex(c.ProbeError, 'KEY_MATERIAL'):
+                c.execute(self.env(Path(temp)), root=temp, api=FakeAPI({'x': '-----BEGIN PRIVATE KEY'}),
+                          upload=lambda a: 'b' * 64)
+
+
+class TransportTests(unittest.TestCase):
+    def test_never_the_bot(self):
+        api = transport.API('test-token')
+        with patch.object(api, 'file', return_value=None), \
+             patch.object(api, 'json', return_value={'id': transport.BOT_ID}):
+            with self.assertRaisesRegex(transport.TransportError, 'TRIGGER_IDENTITY'):
+                api.run('probe', '1', 'a' * 64)
+
+    def test_own_server_prefix(self):
+        self.assertIn('diagprobe-', Path(transport.__file__).read_text())
+        self.assertNotIn('crmprobe', Path(transport.__file__).read_text())
+
+    def test_bundle_names_pass_bootstrap_filter(self):
+        for path in Path(__file__).resolve().parent.glob('*.py'):
+            self.assertRegex(path.name, re.compile(r'[a-z_]+\.py'))
+
+
+class RemoteTests(unittest.TestCase):
+    def test_sources_callers_footers(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'video/ua').mkdir(parents=True)
+            (home / 'site_ge_inject.py').write_text("TOKEN = 'abc'\ndef inject_html(s):\n    return s\n")
+            (home / 'writer.py').write_text("from site_ge_inject import inject_html\nx = '</footer>'\n")
+            (home / 'video/index.html').write_text('<body><main>x</main><footer class="site-footer">'
+                                                   '<a href="https://evil.example/x">a</a> +380 99 222 20 02</footer></body>')
+            (home / 'video/ua/UA-0001.html').write_text('<body>' + 'x' * 3000 + '<p>end</p></body>')
+            value = remote.report(home)
+        self.assertEqual(value['sources']['site_ge_inject.py']['source'].splitlines()[0], '[REDACTED]')
+        self.assertIsNone(value['sources']['ua_seo_index.py'])
+        self.assertEqual(sorted(value['callers']), ['site_ge_inject.py', 'writer.py'])
+        end = value['footers']['video/index.html']['end']
+        self.assertTrue(value['footers']['video/index.html']['has_footer'])
+        self.assertIn('[URL]', end)
+        self.assertIn('[N]', end)
+        self.assertNotIn('evil', end)
+        card = value['footers']['video/ua/UA-0001.html']
+        self.assertFalse(card['has_footer'])
+        self.assertTrue(card['end'].endswith('<p>end</p></body>'))
+        self.assertIsNone(value['footers']['video/info.html'])
+        self.assertEqual(value['counts']['video/ua'], 1)
+
+if __name__ == '__main__':
+    unittest.main()
