@@ -1,0 +1,128 @@
+"""Read-only probe on the server for SEO-PLAN-003 item 7 (social links at the bottom of every page).
+
+Reads only, sanitized (credential-like lines redacted, foreign URLs and long numbers masked):
+- the shared page-write hook and the SEO modules in full (site_ge_inject, ua_seo_index, ua_seo_metadata, ua_seo_schema);
+- which top-level modules call inject_html or write pages (file, sha256, matching lines);
+- the footer (or the end of <body>) of one page of every kind, and the count of pages per folder.
+Nothing is written outside this run's own receipt.
+"""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import resource
+
+HERE = Path(__file__).resolve().parent
+HOME = Path('/home/Carix')
+MAX_SOURCE = 900 * 1024
+SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
+                    r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
+LONG_NUMBER = re.compile(r'(?<!\d)\+?\d[\d\s()-]{8,}\d(?!\d)')
+URL = re.compile(r'https?://[^\s\'"<>)]+')
+PUBLIC_HOSTS = re.compile(r'https?://(?:www\.)?(?:uaart\.com\.ua|schema\.org|auto\.ria\.com|t\.me|instagram\.com|'
+                          r'youtube\.com|wa\.me|viber\.click|maps\.app\.goo\.gl)(?:[/\'"\s?]|$)')
+FULL = ('site_ge_inject.py', 'ua_seo_index.py', 'ua_seo_metadata.py', 'ua_seo_schema.py', 'ua_seo_header.py')
+NEEDLE = re.compile(r'inject_html|</footer>|site-footer|<footer')
+PAGES = ('video/index.html', 'video/katalog.html', 'video/podbor.html', 'video/info.html', 'video/privacy.html',
+         'video/UA-0001.html', 'video/ua/UA-0001.html', 'video/ru/UA-0001.html', 'video/UA-0001-diag.html',
+         'video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html', 'video/seo/ua/kredyt-lizynh-avto.html',
+         'video/seo/gu/avtomobili-koreidan-sakartveloshi.html', 'site/index.html', 'site/podbor.html', 'site/UA-0001.html')
+FOLDERS = ('video', 'video/ua', 'video/ru', 'video/seo/ua', 'video/seo/ru', 'video/seo/gu', 'video/gu', 'site')
+SKIP_DIRS = {'backups', 'autopilot_inbox', 'node_modules', 'video', 'site', '__pycache__', 'archive'}
+
+
+def sanitized_line(line):
+    if SECRET.search(line):
+        return '[REDACTED]'
+    line = URL.sub(lambda m: m.group(0) if PUBLIC_HOSTS.match(m.group(0) + ' ') else '[URL]', line)
+    return LONG_NUMBER.sub('[N]', line)
+
+
+def sanitized(text):
+    return '\n'.join(sanitized_line(line) for line in text.splitlines())
+
+
+def text_of(path):
+    if not path.is_file() or path.is_symlink():
+        return None
+    raw = path.read_bytes()
+    return raw.decode('utf-8', 'replace') if len(raw) <= MAX_SOURCE else None
+
+
+def full_sources():
+    result = {}
+    for name in FULL:
+        text = text_of(HOME / name)
+        result[name] = None if text is None else {'sha256': hashlib.sha256(text.encode()).hexdigest(),
+                                                  'source': sanitized(text)}
+    return result
+
+
+def callers():
+    found = {}
+    for path in sorted(HOME.glob('*.py')):
+        text = text_of(path)
+        if text is None or not NEEDLE.search(text):
+            continue
+        lines = text.splitlines()
+        found[path.name] = {'sha256': hashlib.sha256(text.encode()).hexdigest(),
+                            'lines': [{'line': n + 1, 'text': sanitized_line(l)[:300]}
+                                      for n, l in enumerate(lines) if NEEDLE.search(l)][:40]}
+    return found
+
+
+def footer(path):
+    text = text_of(HOME / path)
+    if text is None:
+        return None
+    start = text.rfind('<footer')
+    end = text.rfind('</body>')
+    piece = text[start:end + 7] if start >= 0 else text[max(0, end - 2500):end + 7]
+    return {'bytes': len(text.encode()), 'has_footer': start >= 0, 'footers': text.count('<footer'),
+            'end': sanitized(piece)[:4000]}
+
+
+def counts():
+    result = {}
+    for folder in FOLDERS:
+        base = HOME / folder
+        result[folder] = len(list(base.glob('*.html'))) if base.is_dir() else None
+    return result
+
+
+def report(home=None):
+    global HOME
+    if home is not None:
+        HOME = home
+    return {'status': 'PASS', 'sources': full_sources(), 'callers': callers(),
+            'footers': {p: footer(p) for p in PAGES}, 'counts': counts()}
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--run', required=True)
+    args = parser.parse_args()
+    if not re.fullmatch(r'[0-9]+', args.run):
+        raise SystemExit('RUN_ID')
+    resource.setrlimit(resource.RLIMIT_CPU, (60, 70))
+    work = HERE / 'runs' / args.run
+    work.mkdir(parents=True, exist_ok=True, mode=0o700)
+    receipt = work / 'receipt-probe.json'
+    if receipt.exists():
+        return 0
+    try:
+        value = report()
+    except Exception as error:
+        value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
+    value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
+    temporary = work / '.receipt-probe.tmp'
+    temporary.write_text(json.dumps(value, ensure_ascii=False, sort_keys=True), encoding='utf-8')
+    os.chmod(temporary, 0o600)
+    os.replace(temporary, receipt)
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
