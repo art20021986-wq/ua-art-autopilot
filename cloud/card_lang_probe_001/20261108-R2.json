@@ -1,0 +1,2769 @@
+{
+  "files": {
+    "card_html.py": {
+      "lines": [],
+      "sha256": "454c45638826f23d6c417e28c27e877db4c77629ca72954c77591fd9034c9f99"
+    },
+    "cars_ui.py": {
+      "lines": [],
+      "sha256": "32eb47b07378ecd3213f0d85e877a0aa779338764c5738a15ae77bb8771cdd6d"
+    },
+    "client_ui.py": {
+      "lines": [
+        {
+          "line": 82,
+          "text": "        from telegram import WebAppInfo"
+        },
+        {
+          "line": 84,
+          "text": "                                    web_app=WebAppInfo(url=u))"
+        }
+      ],
+      "sha256": "64c813bc1f6e9eaf4276f76ddffc567091bc9b98bc06e06eb085265373ce271c"
+    },
+    "lead_bot.py": {
+      "lines": [],
+      "sha256": "4f5441f70411c292a2be3b14db8a1c030f8d82328759ee194d3ed6be3c084b73"
+    },
+    "team_bot.py": {
+      "lines": [],
+      "sha256": "bfd2ada58521c3d5a3fc37f4ef7b0883c99b85dcaf2eb43597c99d2c07814c03"
+    },
+    "ua_crm_public_sync.py": {
+      "sha256": "25a824be411598566fb837de190c3e6a0057962bbfe7ee1d6dcf90a0ff2027cd",
+      "source": "\"\"\"CRM publication reconciliation using the existing transactional publisher.\nNo CRM writes. Persistent revision ledger, per-card retry, one publisher worker.\n\"\"\"\nimport fcntl\nimport hashlib\nimport json\nimport logging\nimport os\nfrom pathlib import Path\nimport sqlite3\nimport tempfile\nimport threading\nimport time\n\nROOT = Path('/home/Carix')\nSTATE = ROOT / '.crm_public_sync_state.json'\nLOCK = ROOT / '.crm_public_sync_worker.lock'\nLOG = logging.getLogger(__name__)\n_wake = threading.Event()\n_thread = None\n_start_lock = threading.Lock()\n\n\ndef snapshot():\n    from ua_delivery_status import public_status\n    from ua_diag_files import names as diag_names\n    from ua_seo_metadata import SEO_REVISION\n    conn = sqlite3.connect((ROOT / 'crm.db').as_uri() + '?mode=ro', uri=True, timeout=5)\n    conn.row_factory = sqlite3.Row\n    try:\n        rows = [dict(r) for r in conn.execute('SELECT * FROM cars WHERE published=1')]\n    finally:\n        conn.close()\n    result = {}\n    codes = set()\n    for row in rows:\n        code = str(row.get('auto_number') or '')\n        if not code or code in codes:\n            raise RuntimeError('Missing or duplicate published auto_number')\n        codes.add(code)\n        diag_files = diag_names(code)\n        source = dict(row, _diag_files=diag_files) if diag_files else row\n        source = dict(source, _seo_revision=SEO_REVISION)\n        raw = json.dumps(source, sort_keys=True, ensure_ascii=False, default=str).encode()\n        result[str(row['id'])] = {'code': code, 'sha256': hashlib.sha256(raw).hexdigest(), 'delivery_status': public_status(row.get('status'))}\n    return result\n\n\ndef save_state(state):\n    fd, name = tempfile.mkstemp(prefix='.crm_public_sync_state.', dir=str(ROOT))\n    try:\n        with os.fdopen(fd, 'w') as out:\n            os.fchmod(out.fileno(), 0o600)\n            json.dump(state, out, sort_keys=True)\n            out.flush()\n            os.fsync(out.fileno())\n        os.replace(name, STATE)\n    finally:\n        if os.path.exists(name):\n            os.unlink(name)\n\n\ndef initialize():\n    if STATE.exists():\n        raise RuntimeError('State already exists; refusing to reset pending revisions')\n    # Existing rows are an installation baseline, not a claim of verification.\n    # UA-0022 was explicitly published before installation; other cards untouched.\n    save_state({'version': 1, 'baseline_at': time.time(), 'revisions': snapshot(),\n                'retry': {}, 'last_success': None})\n\n\ndef notify():\n    \"\"\"Called after DB commit; cannot block the Telegram handler.\"\"\"\n    _wake.set()\n\n\ndef reconcile_once(publish=None, clock=time.time):\n    with open(LOCK, 'a') as lock:\n        os.chmod(LOCK, 0o600)\n        try:\n            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)\n        except BlockingIOError:\n            return 'busy'\n        with STATE.open() as source:\n            state = json.load(source)\n        if state.get('version') != 1:\n            raise RuntimeError('Unsupported sync state')\n        rows = snapshot()\n        retry = state.setdefault('retry', {})\n        import ua_publish_requests as requests\n        explicit = requests.pending(ROOT)\n        for identity, request in explicit.items():\n            if identity not in rows or rows[identity]['delivery_status'] == 'hidden':\n                requests.finish(ROOT, request['token'], 'cancelled')\n        rows = dict(sorted(rows.items(), key=lambda item: item[0] not in explicit))\n        # A catalog set mismatch affects the whole publication, not one car.\n        # Persist the cooldown so restarts and repeated UI wakes do not defeat it.\n        source_revision = hashlib.sha256(json.dumps(rows, sort_keys=True).encode()).hexdigest()\n        catalog_retry = state.get('catalog_retry', {})\n        if (catalog_retry.get('source_revision') == source_revision\n                and catalog_retry.get('after', 0) > clock()):\n            return 'catalog_retry_pending'\n        if catalog_retry and catalog_retry.get('source_revision') != source_revision:\n            # Fresh operator data may resolve the mismatch; keep its chance to run.\n            blocked_code = catalog_retry.get('code')\n            retry = {key: value for key, value in retry.items()\n                     if blocked_code not in value.get('error', '')} if blocked_code else retry\n            state['retry'] = retry\n            state.pop('catalog_retry', None)\n        for identity, revision in rows.items():\n            request = explicit.get(identity)\n            if (not request and revision['sha256'] == state['revisions'].get(identity, {}).get('sha256')):\n                continue\n            attempt = retry.get(identity, {})\n            if attempt.get('sha256') == revision['sha256'] and attempt.get('after', 0) > clock():\n                continue\n            try:\n                if revision['delivery_status'] == 'hidden':\n                    from ua_stage_catalog_sync import reconcile\n                    reconcile(apply=True)\n                else:\n                    if publish is None:\n                        from publikaciya import opublikovat\n                        publish = opublikovat\n                    ok, message = publish(revision['code'])\n                    if not ok:\n                        raise RuntimeError(str(message)[:500])\n                    from ua_public_freshness import verify_public\n                    verify_public(revision['code'])\n                if snapshot().get(identity) != revision:\n                    # Keep old ledger revision: a newer operator edit needs another pass.\n                    LOG.warning('CRM sync: changed during publish: %s', revision['code'])\n                    return 'changed_during_publish'\n                state['revisions'][identity] = revision\n                retry.pop(identity, None)\n                state.pop('catalog_retry', None)\n                state['last_success'] = {'code': revision['code'], 'at': clock()}\n                save_state(state)\n                if request and revision['delivery_status'] != 'hidden':\n                    requests.finish(ROOT, request['token'], 'verified', revision['sha256'])\n                LOG.info('CRM sync PASS: %s', revision['code'])\n                return 'hidden' if revision['delivery_status'] == 'hidden' else 'published'\n            except Exception as exc:\n                count = (attempt.get('count', 0) if attempt.get('sha256') == revision['sha256'] else 0) + 1\n                retry[identity] = {'sha256': revision['sha256'], 'count': count,\n                                   'after': clock() + min(900, 15 * 2 ** min(count-1, 6)),\n                                   'error': type(exc).__name__ + ': ' + str(exc)[:500]}\n                catalog_error = next((code for code in (\n                    'CATALOG_ROW_SET_MISMATCH', 'CATALOG_PUBLISHED_SET_MISMATCH'\n                ) if code in str(exc)), None)\n                if catalog_error:\n                    state['catalog_retry'] = {'source_revision': source_revision,\n                                              'after': clock() + 900, 'code': catalog_error}\n                save_state(state)\n                LOG.exception('CRM sync failed; retry pending: %s', revision['code'])\n                if catalog_error:\n                    return 'catalog_retry_pending'\n                # Continue so a failing card does not starve other pending cards.\n        return 'idle'\n\n\ndef _run():\n    LOG.info('CRM public sync worker started')\n    while True:\n        _wake.wait(15)\n        _wake.clear()\n        # Debounce burst saves (media albums and multi-field edits).\n        time.sleep(2)\n        try:\n            if reconcile_once() in ('published', 'hidden', 'changed_during_publish'):\n                _wake.set()\n        except Exception:\n            LOG.exception('CRM sync worker error; retry in 15 seconds')\n\n\ndef start():\n    global _thread\n    with _start_lock:\n        if _thread is not None and _thread.is_alive():\n            return\n        if not STATE.exists():\n            raise RuntimeError('Installation baseline missing; not silently resetting sync state')\n        _thread = threading.Thread(target=_run, name='crm-public-sync', daemon=True)\n        _thread.start()\n        _wake.set()"
+    },
+    "ua_public_freshness.py": {
+      "sha256": "6c750d0ffcfd3959413120905e46b8765049a2a207b77741d7fc5721a225c134",
+      "source": "\"\"\"Check CRM identity and public bytes before marking a sync revision successful.\"\"\"\nimport hashlib\nimport re\nimport time\nimport urllib.request\nfrom pathlib import Path\n\nROOT = Path('/home/Carix')\nBASE = 'https://www.uaart.com.ua/video/'\n\n\ndef verify_public(code, fetch=None, card=None, root=None):\n    if not re.fullmatch(r'UA-[0-9]{4,}', code):\n        raise ValueError('Invalid public car code')\n    if card is None:\n        import sqlite3\n        with sqlite3.connect('file:/home/Carix/crm.db?mode=ro', uri=True) as conn:\n            conn.row_factory = sqlite3.Row\n            rows = conn.execute('SELECT * FROM cars WHERE auto_number=? AND published=1', (code,)).fetchall()\n        if len(rows) != 1:\n            raise RuntimeError('Published CRM row missing or ambiguous')\n        card = dict(rows[0])\n    vin = str(card.get('vin') or '').strip()\n    year = str(card.get('year') or '').strip()\n    if not vin or not re.fullmatch(r'[0-9]{4}', year):\n        raise RuntimeError('CRM VIN/year missing; freshness unverified')\n    fetch = fetch or urllib.request.urlopen\n    root = root or ROOT / 'video'\n    for name in (code + '.html', 'katalog.html'):\n        expected = (root / name).read_bytes()\n        html = expected.decode('utf-8')\n        from ua_price_html_v2 import verify_prices\n        verify_prices(html)\n        if name == 'katalog.html':\n            fragments = [x for x in re.findall(r'<article\\b.*?</article>', html, re.S | re.I)\n                         if re.search(r'href=[\\\"\\']' + re.escape(code) + r'\\.html(?:[?\\\"\\'])', x)]\n            if len(fragments) != 1:\n                raise RuntimeError('Catalog car fragment missing or ambiguous')\n            fragment = fragments[0]\n            heading = re.search(r'<h2\\b[^>]*>(.*?)</h2>', fragment, re.S | re.I)\n        else:\n            fragment = html\n            heading = re.search(r'<title\\b[^>]*>(.*?)</title>', html, re.S | re.I)\n        if vin not in fragment or not heading or not re.search(r'(?<!\\d)' + year + r'(?!\\d)', heading[1]):\n            raise RuntimeError('Generated HTML does not match CRM VIN/year: ' + name)\n        digest = hashlib.sha256(expected).digest()\n        for fresh in (True, False):\n            url = BASE + name + ('?_crm_verify=' + str(time.time_ns()) if fresh else '')\n            headers = {'Cache-Control': 'no-cache', 'Pragma': 'no-cache'} if fresh else {}\n            with fetch(urllib.request.Request(url, headers=headers), timeout=20) as response:\n                actual = response.read(4 * 1024 * 1024 + 1)\n                if response.status != 200 or hashlib.sha256(actual).digest() != digest:\n                    raise RuntimeError('Public HTML is stale or differs: ' + name + '; fresh=' + str(fresh))\n        if (root / name).read_bytes() != expected:\n            raise RuntimeError('Generated HTML changed during verification: ' + name)"
+    },
+    "ua_seo_catalog.py": {
+      "sha256": "5b66b369c97f914b302e9bc564dd139c617927fb64489d618d982fd0b5c8c0aa",
+      "source": "\"\"\"Public facts of the published cars, read from the installed catalog page only.\n\nPure: no network, database or file access. The catalog is the single public list\nof published cars, so pages derived from it never show a car the site hides.\n\"\"\"\nfrom html import unescape\nimport re\n\nORIGIN = 'https://www.uaart.com.ua'\nARTICLE = re.compile(r'<article\\b[^>]*>.*?</article>', re.S | re.I)\nCODE = re.compile(r'href=\"(UA-[0-9]{4,})\\.html\"')\n# Cyrillic letters that CRM operators type instead of identical Latin ones.\nLOOKALIKE = str.maketrans('АВЕКМНОРСТХаеорсх', 'ABEKMHOPCTXaeopcx')\nBRANDS = {'kia': 'Kia', 'hyundai': 'Hyundai', 'audi': 'Audi', 'mercedes-benz': 'Mercedes-Benz',\n          'bmw': 'BMW', 'genesis': 'Genesis', 'chevrolet': 'Chevrolet', 'renault': 'Renault',\n          'ssangyong': 'SsangYong', 'volkswagen': 'Volkswagen', 'toyota': 'Toyota', 'lexus': 'Lexus'}\nMODEL_ALIASES = {'Б-КЛАССА': 'B-Class', 'Б-КЛАСС': 'B-Class', 'Е-КЛАСС': 'E-Class'}\n\n\ndef _text(value):\n    return ' '.join(unescape(re.sub(r'<[^>]+>', ' ', value)).split())\n\n\ndef _first(pattern, value):\n    found = re.search(pattern, value, re.S)\n    return _text(found.group(1)) if found else ''\n\n\ndef _number(value):\n    digits = re.sub(r'[^0-9]', '', value or '')\n    return int(digits) if digits else None\n\n\ndef model_key(name):\n    \"\"\"('Kia', 'K5') for 'Kia К5 2016'; None when the brand is unknown.\"\"\"\n    words = name.split()\n    if words and re.fullmatch(r'(19|20)[0-9]{2}', words[-1]):\n        words = words[:-1]\n    if len(words) < 2:\n        return None\n    brand = BRANDS.get(words[0].translate(LOOKALIKE).lower())\n    if brand is None:\n        return None\n    raw = ' '.join(words[1:])\n    if raw.upper() in MODEL_ALIASES:\n        return brand, MODEL_ALIASES[raw.upper()]\n    model = raw.translate(LOOKALIKE)\n    if brand == 'Mercedes-Benz':\n        letter = re.fullmatch(r'([A-Z])[ -]?(?:[0-9]{3}[a-z]?|class)', model, re.I)\n        if letter:\n            return brand, letter.group(1).upper() + '-Class'\n    if not re.fullmatch(r'[A-Za-z0-9 -]+', model):\n        return None\n    if re.fullmatch(r'[A-Za-z]{1,3}[0-9]{1,3}|[A-Za-z]{2,3}', model):\n        return brand, model.upper()\n    return brand, ' '.join(w if w.isupper() and len(w) <= 3 else w.capitalize() for w in model.split())\n\n\ndef cars(catalog):\n    \"\"\"Cars in catalog order: code, name, url, image, price_usd, mileage_km, specs, stage, key.\"\"\"\n    result, seen = [], set()\n    for article in ARTICLE.findall(catalog):\n        codes = set(CODE.findall(article))\n        if len(codes) != 1:\n            continue\n        code = codes.pop()\n        if code in seen:\n            raise ValueError('SEO_CATALOG_DUPLICATE:' + code)\n        seen.add(code)\n        name = _first(r'<h2[^>]*>(.*?)</h2>', article)\n        price = re.search(r'data-ua-market=\"ukraine\"[^>]*?data-ua-value=\"([^\"]*)\"', article)\n        stage = re.search(r'data-ua-stage=\"([0-9])\"', article)\n        image = re.search(r'<img\\b[^>]*\\bsrc=\"([^\"]+)\"', article)\n        specs = _first(r'<p>(.*?)</p>', article)\n        if not name:\n            raise ValueError('SEO_CATALOG_NAME:' + code)\n        src = unescape(image.group(1)) if image else ''\n        if src and not src.startswith('http'):\n            src = ORIGIN + '/video/' + src.lstrip('./')\n        result.append({'code': code, 'name': name, 'url': '%s/video/%s.html' % (ORIGIN, code),\n                       'image': src, 'price_usd': _number(price.group(1)) if price else None,\n                       'mileage_km': _number(specs.split('км')[0]) if 'км' in specs else None,\n                       'specs': specs, 'stage': int(stage.group(1)) if stage else None,\n                       'key': model_key(name)})\n    return result"
+    },
+    "ua_seo_index.py": {
+      "sha256": "3af0bc5be608e3c201207ab96fd074f062b74cbc9ab27e87b76e5ab57c859d37",
+      "source": "\"\"\"Rewrite the derived search files after the catalog is installed.\n\nThe only writer of video/seo/{ua,ru}/ landing pages (with the Google tag) and video/sitemap.xml. Never\ndeletes: a model page stays (offering selection) after its cars are sold.\nURLs added, removed or with a new lastmod in the sitemap are sent to IndexNow, and\nGoogle is asked to re-read the changed sitemap.\n\"\"\"\nfrom pathlib import Path\nimport re\n\nimport ua_google_sitemap\nimport ua_google_tag\nimport ua_own_counter  # UA-OWN-COUNTER-001\nimport ua_indexnow\nimport ua_seo_catalog\nimport ua_seo_landings\nimport ua_seo_sitemap\n\nENTRY = re.compile(r'<loc>([^<]+)</loc><lastmod>([^<]+)</lastmod>')\nKEPT = re.compile(r'<meta name=\"%s\" content=\"([^\"|]+)\\|([^\"]+)\">' % ua_seo_landings.MODEL_META)\n\n\ndef kept_keys(root):\n    keys = set()\n    for lang in ua_seo_landings.LANGS:\n        for path in sorted((root/'seo'/ua_seo_landings.DIRS[lang]).glob('*.html')):\n            found = KEPT.search(path.read_text(encoding='utf-8', errors='replace'))\n            if found:\n                keys.add((found.group(1), found.group(2)))\n    return keys\n\n\ndef entries(path):\n    return set(ENTRY.findall(path.read_text(encoding='utf-8'))) if path.is_file() else set()\n\n\ndef refresh(root):\n    root = Path(root)\n    before = entries(root/'sitemap.xml')\n    cars = ua_seo_catalog.cars((root/'katalog.html').read_text(encoding='utf-8'))\n    existing = {p.relative_to(root).as_posix() for p in root.glob(ua_seo_sitemap.LANDINGS)}\n    changed = [relative for relative, html in sorted(ua_seo_landings.pages(cars, kept_keys(root), existing).items())\n               if ua_seo_sitemap.write(root/relative, ua_own_counter.apply(ua_google_tag.apply(html)).encode('utf-8'))]\n    sitemap_changed = ua_seo_sitemap.write(root/'sitemap.xml', ua_seo_sitemap.sitemap(root))\n    urls = {loc for loc, _ in before ^ entries(root/'sitemap.xml')}\n    return {'status': 'PASS', 'cars': len(cars), 'landings_changed': changed, 'sitemap_changed': sitemap_changed,\n            'indexnow': ua_indexnow.submit(urls) if sitemap_changed else {'status': 'SKIP'},\n            'google': ua_google_sitemap.submit() if sitemap_changed else {'status': 'SKIP'}}"
+    },
+    "yadro.py": {
+      "lines": [],
+      "sha256": "c1eb0f611ae6bd35844061320d134e30fa4ab7deacff741e5a1944886cdff06c"
+    }
+  },
+  "maps": {
+    "card_html.py": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "client_style.py": {
+      "https://www.google.com/maps/search/?api=1": 1
+    },
+    "client_ui.py": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1,
+      "https://www.google.com/maps/search/?api=1&query=Kyiv+vulytsia+Peremohy+20": 1
+    },
+    "site/UA-0001-00cf71c0.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0001-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0001.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0003-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0003.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0004-0edda61a.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0004-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0004.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0005-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0005.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0006-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0006.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0007-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0007.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0008-diag.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0008.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0009-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0009.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0010-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0010.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0011-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0011.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0012-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0012.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0013-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0013.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0014-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0014.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0015-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0015.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0016-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0016.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0017-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0017.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0018-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0018.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0019-diag.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0019.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0020-diag.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0020.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 2
+    },
+    "site/UA-0021-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0021.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0022-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0022.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/UA-0023-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "site/UA-0023.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/index.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/info.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/katalog.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "site/podbor.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "start_safe.py": {
+      "https://www.google.com/maps/search/?api=1&query=Киев+улица+Победы+20": 1
+    },
+    "stranica.py": {
+      "https://maps.google.com": 1
+    },
+    "stranica_klienta.py": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "ua_art_home_ge_001_install.py": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 2
+    },
+    "ua_seo_schema.py": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0001-00cf71c0.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0001-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0001.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0003-a7bfb532.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0003-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0003.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0004-0edda61a.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0004-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0004.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0005-9e3432b2.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0005-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0005.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0006-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0006-ed784b7f.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0006.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0007-de6e3ebe.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0007-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0007.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0008-87693e0e.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0008-diag.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0008.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0009-372ada15.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0009-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0009.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0010-614505f4.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0010-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0010.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0011-9842913c.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0011-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0011.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0012-453f3da4.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0012-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0012.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0013-d593cad2.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0013-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0013.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0014-568b2491.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0014-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0014.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0015-8d6c4f80.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0015-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0015.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0016-d9c506f8.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0016-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0016.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0017-bf0a6669.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0017-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0017.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0018-bfcd1711.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0018-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0018.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0019-906958ad.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0019-diag.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0019.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0020-bf284c6a.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 2
+    },
+    "video/UA-0020-diag.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0020.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 2
+    },
+    "video/UA-0021-10acf230.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0021-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0021.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0022-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0022-fa461c2d.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0022.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0023-956711ae.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/UA-0023-diag.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/UA-0023.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1,
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/index.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 2
+    },
+    "video/info.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/katalog.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/podbor.html": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    },
+    "video/proba-index.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/proba-katalog.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/proba2-index.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "video/proba2-katalog.html": {
+      "https://maps.app.goo.gl/4HvzWMdCp1QT2F9CA": 1
+    },
+    "vitrina.py": {
+      "https://maps.google.com": 1
+    },
+    "yadro.py": {
+      "https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8": 1
+    }
+  },
+  "media": {
+    "card_folders": [
+      "m",
+      "s"
+    ],
+    "pillow": "10.4.0",
+    "sizes": {
+      "video/opt/video_preview_v4_assets_ai_03_stage_kiev_v3.webp": [
+        900,
+        668,
+        73260
+      ],
+      "video/opt/video_preview_v4_assets_ai_04_stage_georgia_carcarrier_v3.webp": [
+        900,
+        668,
+        98776
+      ],
+      "video/opt/video_preview_v4_assets_ai_05_stage_sea_ferry_v3.webp": [
+        900,
+        668,
+        69184
+      ],
+      "video/opt/video_preview_v4_assets_ai_06_stage_korea_v3.webp": [
+        900,
+        668,
+        94274
+      ],
+      "video/opt/video_preview_v4_assets_hero_hero_bmw_xm_label_desktop_v2.webp": [
+        1200,
+        600,
+        49784
+      ],
+      "video/opt/video_preview_v4_assets_hero_hero_bmw_xm_label_mobile_v2.webp": [
+        900,
+        1600,
+        80788
+      ],
+      "video/opt/video_preview_v4_assets_hero_hero_mercedes_amg_one_desktop_v2.webp": [
+        1200,
+        600,
+        53436
+      ],
+      "video/opt/video_preview_v4_assets_hero_hero_mercedes_amg_one_mobile_v2.webp": [
+        900,
+        1600,
+        86624
+      ],
+      "video/stage/UA-0001.webp": [
+        880,
+        815,
+        84496
+      ],
+      "video/stage/UA-0002.webp": [
+        880,
+        815,
+        77846
+      ],
+      "video/stage/UA-0003.webp": [
+        880,
+        815,
+        140442
+      ],
+      "video/stage/UA-0004.webp": [
+        880,
+        815,
+        102170
+      ],
+      "video/stage/UA-0005.webp": [
+        880,
+        815,
+        179804
+      ],
+      "video/stage/UA-0006.webp": [
+        880,
+        815,
+        130440
+      ],
+      "video/stage/UA-0007.webp": [
+        880,
+        815,
+        113814
+      ],
+      "video/stage/UA-0008.webp": [
+        880,
+        815,
+        75216
+      ],
+      "video/stage/UA-0009.webp": [
+        880,
+        815,
+        68194
+      ],
+      "video/stage/UA-0010.webp": [
+        880,
+        815,
+        75254
+      ]
+    },
+    "webp": true
+  },
+  "mode": "probe",
+  "remote_write_count": 0,
+  "run_id": "42436873685",
+  "safe_to_stop": true,
+  "scan": {
+    "ajs.py": [
+      {
+        "line": 171,
+        "text": "    for imya, fayl in ((\"главная\", \"index.html\"), (\"каталог\", \"katalog.html\"),"
+      },
+      {
+        "line": 172,
+        "text": "                       (\"подбор\", \"podbor.html\"), (\"условия\", \"info.html\")):"
+      },
+      {
+        "line": 241,
+        "text": "    html_glav = chitat(VIDEO + \"/index.html\")"
+      },
+      {
+        "line": 242,
+        "text": "    html_kat = chitat(VIDEO + \"/katalog.html\")"
+      },
+      {
+        "line": 270,
+        "text": "    kartochki_v_katalog = len(re.findall(r\"href\\s*=\\s*['\\\"][^'\\\"]*UA-\\d{4}\\.html\", html_kat))"
+      }
+    ],
+    "analitika_otchet.py": [
+      {
+        "line": 86,
+        "text": "    m = re.search(r\"(UA-\\d{3,5})\", adres or \"\")"
+      },
+      {
+        "line": 99,
+        "text": "    if hvost in (\"\", \"index.html\"):"
+      }
+    ],
+    "analitika_yadro.py": [
+      {
+        "line": 60,
+        "text": "    m = re.search(r\"(UA-\\d{3,5})\", put or \"\", re.I)"
+      },
+      {
+        "line": 71,
+        "text": "    if p.endswith(\"katalog.html\"):"
+      },
+      {
+        "line": 73,
+        "text": "    if p.endswith(\"podbor.html\"):"
+      },
+      {
+        "line": 77,
+        "text": "    if p.endswith(\"index.html\") or p in (\"\", \"/\", \"/video/\", \"/site/\"):"
+      }
+    ],
+    "arch1.py": [
+      {
+        "line": 129,
+        "text": "FOTO_PUT = re.compile(r\"foto/(UA-\\d{4})/(?:[ms]/)?(\\d+)\\.jpg\")"
+      },
+      {
+        "line": 630,
+        "text": "    shabl = re.compile(r'(==|!=)\\s*[\"\\']UA-\\d{4}[\"\\']|[\"\\']UA-\\d{4}[\"\\']\\s*(==|!=)')"
+      }
+    ],
+    "arch2d.py": [
+      {
+        "line": 143,
+        "text": "FOTO_PUT = re.compile(r\"foto/(UA-\\d{4})/(?:[ms]/)?(\\d+)\\.jpg\")"
+      }
+    ],
+    "arch2e.py": [
+      {
+        "line": 151,
+        "text": "FOTO_PUT = re.compile(r\"foto/(UA-\\d{4})/(?:[ms]/)?(\\d+)\\.jpg\")"
+      }
+    ],
+    "arch2f.py": [
+      {
+        "line": 154,
+        "text": "FOTO_PUT = re.compile(r\"foto/(UA-\\d{4})/(?:[ms]/)?(\\d+)\\.jpg\")"
+      }
+    ],
+    "arch2g.py": [
+      {
+        "line": 165,
+        "text": "FOTO_PUT = re.compile(r\"foto/(UA-\\d{4})/(?:[ms]/)?(\\d+)\\.jpg\")"
+      }
+    ],
+    "arch3.py": [
+      {
+        "line": 189,
+        "text": "    isporchennaya = re.sub(r\"foto/UA-\\d{4}/(?:[ms]/)?\\d+\\.jpg\", \"net.jpg\", bylo)"
+      },
+      {
+        "line": 334,
+        "text": "    obshchie = [x for x in izmenilos if os.path.basename(x) in (\"index.html\", \"katalog.html\")]"
+      }
+    ],
+    "avtomat.py": [
+      {
+        "line": 42,
+        "text": "    put_kat = os.path.join(VIDEO, \"katalog.html\")"
+      },
+      {
+        "line": 48,
+        "text": "        if not re.match(r'^UA-\\d+$', kod):"
+      },
+      {
+        "line": 102,
+        "text": "    glav = open(os.path.join(VIDEO, \"index.html\"), encoding=\"utf-8\", errors=\"ignore\").read()"
+      }
+    ],
+    "baseline.py": [
+      {
+        "line": 199,
+        "text": "               \"карточка\" if re.search(r\"UA-\\d{4}\\.html\", adres) else"
+      }
+    ],
+    "busti.py": [
+      {
+        "line": 11,
+        "text": "# собранный в память katalog.html содержит новый URL -> та же одна строка"
+      },
+      {
+        "line": 12,
+        "text": "# в текущем katalog.html."
+      },
+      {
+        "line": 28,
+        "text": "KATALOG = VIDEO + \"/katalog.html\""
+      },
+      {
+        "line": 252,
+        "text": "    zagolovok(\"4. ТА ЖЕ ОДНА СТРОКА В ТЕКУЩЕМ katalog.html\")"
+      },
+      {
+        "line": 307,
+        "text": "    kartochki = [x for x in izmenilos if re.search(r\"UA-\\d{4}\", x)]"
+      },
+      {
+        "line": 338,
+        "text": "    shutil.copy2(KATALOG, REZERV + \"/katalog.html\")"
+      },
+      {
+        "line": 346,
+        "text": "        p(\"Костыль в katalog.html молча делать не буду — он слетит при\")"
+      },
+      {
+        "line": 369,
+        "text": "                     \"stranica.py (одна строка) + katalog.html (одна строка)\")"
+      },
+      {
+        "line": 378,
+        "text": "    p(\"   1. открыть %s/video/katalog.html\" % SAIT)"
+      }
+    ],
+    "busti2.py": [
+      {
+        "line": 5,
+        "text": "#   ЭТАП А — только доказательство: откуда берутся index.html и katalog.html."
+      },
+      {
+        "line": 9,
+        "text": "# Правится доказанная цепочка: настоящий шаблон плюс рабочие index.html и"
+      },
+      {
+        "line": 10,
+        "text": "# katalog.html, если они подключают тот же i18n.js. Пробные proba-*,"
+      },
+      {
+        "line": 26,
+        "text": "KATALOG = VIDEO + \"/katalog.html\""
+      },
+      {
+        "line": 27,
+        "text": "INDEKS = VIDEO + \"/index.html\""
+      },
+      {
+        "line": 130,
+        "text": "                and os.path.basename(x[0]) in (\"index.html\", \"katalog.html\")]"
+      },
+      {
+        "line": 141,
+        "text": "    zagolovok(\"А2. КТО СОЗДАЁТ index.html И katalog.html\")"
+      },
+      {
+        "line": 147,
+        "text": "        for imya_str in (\"katalog.html\", \"index.html\"):"
+      },
+      {
+        "line": 151,
+        "text": "    for imya_str in (\"katalog.html\", \"index.html\"):"
+      },
+      {
+        "line": 194,
+        "text": "    pishet_katalog = bool(pishut.get(\"katalog.html\"))"
+      },
+      {
+        "line": 195,
+        "text": "    pishet_indeks = bool(pishut.get(\"index.html\"))"
+      },
+      {
+        "line": 196,
+        "text": "    p(\"katalog.html пишется скриптом проекта: %s\" % (\"да\" if pishet_katalog else \"НЕТ\"))"
+      },
+      {
+        "line": 197,
+        "text": "    p(\"index.html пишется скриптом проекта  : %s\" % (\"да\" if pishet_indeks else \"НЕТ\"))"
+      },
+      {
+        "line": 209,
+        "text": "                            if os.path.basename(x[0]) == \"katalog.html\"), \"\")"
+      },
+      {
+        "line": 211,
+        "text": "                            if os.path.basename(x[0]) == \"index.html\"), \"\")"
+      },
+      {
+        "line": 302,
+        "text": "    kartochki = [x for x in izmenilos if re.search(r\"UA-\\d{4}\", x)]"
+      },
+      {
+        "line": 372,
+        "text": "    p(\"   %s/video/katalog.html\" % SAIT)"
+      }
+    ],
+    "busti3.py": [
+      {
+        "line": 10,
+        "text": "#   /home/Carix/video/index.html"
+      },
+      {
+        "line": 11,
+        "text": "#   /home/Carix/video/katalog.html"
+      },
+      {
+        "line": 29,
+        "text": "KATALOG = VIDEO + \"/katalog.html\""
+      },
+      {
+        "line": 30,
+        "text": "INDEKS = VIDEO + \"/index.html\""
+      },
+      {
+        "line": 111,
+        "text": "    zagolovok(\"1. КТО ДЕЙСТВИТЕЛЬНО ПИШЕТ index.html И katalog.html\")"
+      },
+      {
+        "line": 122,
+        "text": "            for imya_str in (\"katalog.html\", \"index.html\"):"
+      },
+      {
+        "line": 136,
+        "text": "    for imya_str in (\"index.html\", \"katalog.html\"):"
+      },
+      {
+        "line": 156,
+        "text": "    nikto_ne_pishet = not zapisi.get(\"index.html\") and not zapisi.get(\"katalog.html\")"
+      },
+      {
+        "line": 270,
+        "text": "    kartochki = [x for x in izmenilos if re.search(r\"UA-\\d{4}\", x)]"
+      },
+      {
+        "line": 302,
+        "text": "    p(\"правятся ровно два файла: /video/index.html и /video/katalog.html\")"
+      },
+      {
+        "line": 325,
+        "text": "                 \"index.html и katalog.html, по одной строке\")"
+      },
+      {
+        "line": 334,
+        "text": "    p(\"   %s/video/katalog.html\" % SAIT)"
+      }
+    ],
+    "busti4.py": [
+      {
+        "line": 5,
+        "text": "#   /home/Carix/video/index.html"
+      },
+      {
+        "line": 6,
+        "text": "#   /home/Carix/video/katalog.html"
+      },
+      {
+        "line": 18,
+        "text": "CELI = (VIDEO + \"/index.html\", VIDEO + \"/katalog.html\")"
+      },
+      {
+        "line": 118,
+        "text": "    p(\"   %s/video/katalog.html\" % SAIT)"
+      }
+    ],
+    "cars_ui.py": [
+      {
+        "line": 4066,
+        "text": "_UA122_CATALOG = _ua122_Path('/home/Carix/video/katalog.html')"
+      },
+      {
+        "line": 4193,
+        "text": "        for name in ('katalog.html', 'index.html'):"
+      }
+    ],
+    "catalog_design_guard.py": [
+      {
+        "line": 24,
+        "text": "CARD_ID_RE = re.compile(r\"UA-[0-9]{4,}\", re.I)"
+      },
+      {
+        "line": 223,
+        "text": "    if not re.fullmatch(r\"UA-[0-9]{4,}\", identifier):"
+      },
+      {
+        "line": 445,
+        "text": "        if not re.fullmatch(r\"UA-[0-9]{4,}\", identifier):"
+      }
+    ],
+    "catalog_stage_guard_core.py": [
+      {
+        "line": 16,
+        "text": "CARD_ID_RE = re.compile(r\"UA-[0-9]{4,}\", re.I)"
+      },
+      {
+        "line": 175,
+        "text": "        r\"<a\\b(?=[^>]*href=[\\\"'][^\\\"']*UA-[0-9]{4,}\\.html(?:\\?[^\\\"']*)?[\\\"'])\""
+      }
+    ],
+    "chatfix.py": [
+      {
+        "line": 70,
+        "text": "        if re.match(r\"^(UA-\\d{4}(-diag)?\\.html|index\\.html|katalog\\.html|podbor\\.html|info\\.html)$\", imya):"
+      },
+      {
+        "line": 131,
+        "text": "    return sorted(set(re.findall(r\"^(UA-\\d{4})\\.html$\", \"\\n\".join(os.listdir(VIDEO)),"
+      },
+      {
+        "line": 479,
+        "text": "    src = re.search(r'src=[\"\\']([^\"\\']*/foto/(UA-\\d{4})/([^\"\\']+))[\"\\']', teg)"
+      },
+      {
+        "line": 1296,
+        "text": "        src = re.search(r'src=[\"\\']([^\"\\']*/(?:foto|stage)/(UA-\\d{4})[^\"\\']*)[\"\\']', teg)"
+      },
+      {
+        "line": 1312,
+        "text": "    html = re.sub(r'<img[^>]*/(?:foto|stage)/UA-\\d{4}[^>]*>', _zhivoe, html)"
+      },
+      {
+        "line": 1363,
+        "text": "ind = chit(os.path.join(VIDEO, \"index.html\")) or \"\""
+      },
+      {
+        "line": 1378,
+        "text": "        if not re.match(r\"^(UA-\\d{4}\\.html|index\\.html|katalog\\.html|podbor\\.html|info\\.html)$\", imya):"
+      },
+      {
+        "line": 1392,
+        "text": "ind2 = chit(os.path.join(VIDEO, \"index.html\")) or \"\""
+      },
+      {
+        "line": 1402,
+        "text": "for imya in (\"index.html\", \"katalog.html\"):"
+      },
+      {
+        "line": 1423,
+        "text": "for imya in (\"index.html\", \"katalog.html\"):"
+      },
+      {
+        "line": 1426,
+        "text": "for kod in sorted(set(re.findall(r\"^(UA-\\d{4})\\.html$\", \"\\n\".join(os.listdir(VIDEO)), re.M))):"
+      }
+    ],
+    "check3.py": [
+      {
+        "line": 119,
+        "text": "    for imya, fayl in ((\"главная\", \"index.html\"), (\"каталог\", \"katalog.html\")):"
+      },
+      {
+        "line": 161,
+        "text": "    html = chitat(VIDEO + \"/index.html\")"
+      },
+      {
+        "line": 169,
+        "text": "        sled = html.find(\"katalog.html?\", m.end())"
+      }
+    ],
+    "cifry.py": [
+      {
+        "line": 12,
+        "text": "  3) ставит сторож цифр — маленький скрипт в начало katalog.html, который"
+      },
+      {
+        "line": 17,
+        "text": "index.html, страницы машин, предпросмотр. Ничего не удаляет."
+      },
+      {
+        "line": 121,
+        "text": "            if not any(re.match(r\"^UA-\\d{3,5}$\", o.strip()) for o in obrazcy):"
+      },
+      {
+        "line": 150,
+        "text": "            if not re.match(r\"^UA-\\d{3,5}$\", kod):"
+      },
+      {
+        "line": 170,
+        "text": "SSYLKA = re.compile(r'href=[\"\\']([^\"\\']*?(UA-\\d{3,5})[^\"\\']*?)[\"\\']', re.I)"
+      },
+      {
+        "line": 239,
+        "text": "  var m=h.match(/UA-\\d{3,5}/);"
+      },
+      {
+        "line": 384,
+        "text": "        put = os.path.join(papka, \"katalog.html\")"
+      },
+      {
+        "line": 397,
+        "text": "        kopiya = os.path.join(REZERV, papka.rstrip(\"/\").split(\"/\")[-1] + \"_katalog.html\")"
+      },
+      {
+        "line": 475,
+        "text": "                    sum([kody_na_stranice(open(os.path.join(p, \"katalog.html\"),"
+      },
+      {
+        "line": 479,
+        "text": "                         if os.path.exists(os.path.join(p, \"katalog.html\"))], [])]"
+      },
+      {
+        "line": 483,
+        "text": "    skazat(\"Откат: вернуть katalog.html из папки резерва на свои места\")"
+      }
+    ],
+    "cikl.py": [
+      {
+        "line": 6,
+        "text": "# Меняет ТОЛЬКО /video/katalog.html и /video/index.html."
+      },
+      {
+        "line": 33,
+        "text": "FAJLY = [\"katalog.html\", \"index.html\"]"
+      },
+      {
+        "line": 140,
+        "text": "    novyy[\"katalog.html\"] = S.sobrat_katalog(ishod[\"katalog.html\"], spisok, manifesty)"
+      },
+      {
+        "line": 141,
+        "text": "    novyy[\"index.html\"] = S.sobrat_glavnuyu(ishod[\"index.html\"], spisok, manifesty)"
+      },
+      {
+        "line": 142,
+        "text": "    if S.OSHIBKI or not novyy[\"katalog.html\"] or not novyy[\"index.html\"]:"
+      },
+      {
+        "line": 146,
+        "text": "    if not S.priyomka(novyy[\"katalog.html\"], novyy[\"index.html\"], spisok, manifesty):"
+      },
+      {
+        "line": 150,
+        "text": "    ok, opisanie = dizayn_kataloga_ne_izmenilsya(ishod[\"katalog.html\"], novyy[\"katalog.html\"])"
+      },
+      {
+        "line": 153,
+        "text": "        return False, \"katalog.html: %s\" % opisanie"
+      },
+      {
+        "line": 154,
+        "text": "    if skelet(ishod[\"index.html\"]) != skelet(novyy[\"index.html\"]):"
+      },
+      {
+        "line": 156,
+        "text": "        return False, \"index.html: изменилась разметка, а не только данные\""
+      },
+      {
+        "line": 169,
+        "text": "    horosho = S.priyomka(prod[\"katalog.html\"], prod[\"index.html\"], spisok, manifesty)"
+      }
+    ],
+    "cikl2.py": [
+      {
+        "line": 6,
+        "text": "# Меняет ТОЛЬКО /video/katalog.html и /video/index.html."
+      },
+      {
+        "line": 33,
+        "text": "FAJLY = [\"katalog.html\", \"index.html\"]"
+      },
+      {
+        "line": 140,
+        "text": "    novyy[\"katalog.html\"] = S.sobrat_katalog(ishod[\"katalog.html\"], spisok, manifesty)"
+      },
+      {
+        "line": 141,
+        "text": "    novyy[\"index.html\"] = S.sobrat_glavnuyu(ishod[\"index.html\"], spisok, manifesty)"
+      },
+      {
+        "line": 142,
+        "text": "    if S.OSHIBKI or not novyy[\"katalog.html\"] or not novyy[\"index.html\"]:"
+      },
+      {
+        "line": 146,
+        "text": "    if not S.priyomka(novyy[\"katalog.html\"], novyy[\"index.html\"], spisok, manifesty):"
+      },
+      {
+        "line": 150,
+        "text": "    ok, opisanie = dizayn_kataloga_ne_izmenilsya(ishod[\"katalog.html\"], novyy[\"katalog.html\"])"
+      },
+      {
+        "line": 153,
+        "text": "        return False, \"katalog.html: %s\" % opisanie"
+      },
+      {
+        "line": 154,
+        "text": "    if skelet(ishod[\"index.html\"]) != skelet(novyy[\"index.html\"]):"
+      },
+      {
+        "line": 156,
+        "text": "        return False, \"index.html: изменилась разметка, а не только данные\""
+      },
+      {
+        "line": 169,
+        "text": "    horosho = S.priyomka(prod[\"katalog.html\"], prod[\"index.html\"], spisok, manifesty)"
+      }
+    ],
+    "crm_folders_install_20260910.py": [
+      {
+        "line": 18,
+        "text": "CORE_TEXT = '\"\"\"Read-only grouping by the completed catalog HTML, never publication intent.\\n\\nThe integration must supply the complete authorized CRM list and the catalog\\nbytes from its existing committed local publication path. This modu"
+      },
+      {
+        "line": 19,
+        "text": "FRAGMENT = \"# UA-ART-CRM-CATALOG-FOLDERS-001:START\\nfrom pathlib import Path as _ua122_Path\\nfrom ua_crm_catalog_folders import (\\n    parse_catalog as _ua122_parse_catalog,\\n    partition_by_catalog as _ua122_partition,\\n)\\n\\n_UA122_CATALO"
+      },
+      {
+        "line": 64,
+        "text": "    catalog = ROOT / 'video/katalog.html'"
+      }
+    ],
+    "cta.py": [
+      {
+        "line": 114,
+        "text": "        if p.parent in (VIDEO, SITE) and re.match(r\"^UA-\\d{4}(-diag)?\\.html$\", p.name):"
+      }
+    ],
+    "ctaprim.py": [
+      {
+        "line": 102,
+        "text": "            if re.match(r\"^UA-\\d{4}$\", kod):"
+      },
+      {
+        "line": 326,
+        "text": "                  if os.path.basename(x) in (\"index.html\", \"katalog.html\")] else \"NO\", \"\")"
+      }
+    ],
+    "ctaprim2.py": [
+      {
+        "line": 110,
+        "text": "            if re.match(r\"^UA-\\d{4}$\", kod):"
+      },
+      {
+        "line": 168,
+        "text": "    glavnaya = chitat(VIDEO + \"/index.html\")"
+      },
+      {
+        "line": 169,
+        "text": "    katalog = chitat(VIDEO + \"/katalog.html\")"
+      },
+      {
+        "line": 392,
+        "text": "                  if os.path.basename(x) in (\"index.html\", \"katalog.html\")] else \"NO\", \"\")"
+      }
+    ],
+    "filtr.py": [
+      {
+        "line": 73,
+        "text": "    for m in re.finditer(r\"href\\s*=\\s*['\\\"][^'\\\"]*?(UA-\\d{4})\\.html\", html or \"\"):"
+      },
+      {
+        "line": 75,
+        "text": "    for m in re.finditer(r\"(UA-\\d{4})\", html or \"\"):"
+      },
+      {
+        "line": 82,
+        "text": "    return re.findall(r\"href\\s*=\\s*['\\\"]([^'\\\"]*UA-\\d{4}\\.html[^'\\\"]*)['\\\"]\", html or \"\")"
+      },
+      {
+        "line": 95,
+        "text": "            if not re.match(r\"^UA-\\d{4}$\", kod):"
+      },
+      {
+        "line": 108,
+        "text": "    html = chitat(VIDEO + \"/index.html\")"
+      },
+      {
+        "line": 110,
+        "text": "        p(\"index.html не прочитан\")"
+      },
+      {
+        "line": 214,
+        "text": "            url = SAIT + \"/video/katalog.html\" + (\"?stage=\" + stage if stage else \"\")"
+      },
+      {
+        "line": 226,
+        "text": "        kody = set(re.findall(r\"(UA-\\d{4})\\.html\", \" \".join(spisok)))"
+      }
+    ],
+    "filtr2.py": [
+      {
+        "line": 22,
+        "text": "KATALOG = VIDEO + \"/katalog.html\""
+      },
+      {
+        "line": 63,
+        "text": "            if re.match(r\"^UA-\\d{4}$\", kod):"
+      },
+      {
+        "line": 72,
+        "text": "    m = re.search(r\"(UA-\\d{4})\", kusok or \"\")"
+      },
+      {
+        "line": 78,
+        "text": "    pozicii = [m.start() for m in re.finditer(r\"UA-\\d{4}\\.html\", html or \"\")]"
+      },
+      {
+        "line": 235,
+        "text": "    p(\"в ссылках с главной передаются оба: katalog.html?f=sea&stage=sea\")"
+      },
+      {
+        "line": 256,
+        "text": "    p(\"katalog.html: %d знаков\" % len(html))"
+      }
+    ],
+    "filtr3.py": [
+      {
+        "line": 19,
+        "text": "KATALOG = VIDEO + \"/katalog.html\""
+      },
+      {
+        "line": 59,
+        "text": "            if re.match(r\"^UA-\\d{4}$\", kod):"
+      },
+      {
+        "line": 132,
+        "text": "        kod = re.search(r\"(UA-\\d{4})\", kusok)"
+      },
+      {
+        "line": 189,
+        "text": "        kod = re.search(r\"(UA-\\d{4})\", okno)"
+      },
+      {
+        "line": 214,
+        "text": "    p(\"katalog.html: %d знаков · машин в CRM: %d\" % (len(html), len(stadii)))"
+      }
+    ],
+    "fix947b.py": [
+      {
+        "line": 368,
+        "text": "    kartochki = [x for x in izmenilos if re.search(r\"UA-\\d{4}\", x)]"
+      }
+    ],
+    "fixchip.py": [
+      {
+        "line": 21,
+        "text": "KATALOG = VIDEO + \"/katalog.html\""
+      },
+      {
+        "line": 307,
+        "text": "        p(\"   %s/video/katalog.html?f=%s&stage=%s&v=%s\""
+      },
+      {
+        "line": 311,
+        "text": "    p(\"   %s/video/katalog.html?v=%s — золотая «Все · 8», машин 8\" % (SAIT, METKA[-4:]))"
+      }
+    ],
+    "fixchip2.py": [
+      {
+        "line": 26,
+        "text": "KATALOG = VIDEO + \"/katalog.html\""
+      },
+      {
+        "line": 293,
+        "text": "    kartochki = [x for x in izmenilos if re.search(r\"UA-\\d{4}\", x)]"
+      },
+      {
+        "line": 369,
+        "text": "        p(\"   %s/video/katalog.html?f=%s&stage=%s&v=%s\" % (SAIT, st, st, METKA[-4:]))"
+      },
+      {
+        "line": 371,
+        "text": "    p(\"   %s/video/katalog.html?v=%s\" % (SAIT, METKA[-4:]))"
+      }
+    ],
+    "fixclick.py": [
+      {
+        "line": 28,
+        "text": "KATALOG = VIDEO + \"/katalog.html\""
+      },
+      {
+        "line": 305,
+        "text": "    kartochki = [x for x in izmenilos if re.search(r\"UA-\\d{4}\", x)]"
+      },
+      {
+        "line": 365,
+        "text": "    p(\"   1. открыть %s/video/katalog.html\" % SAIT)"
+      }
+    ],
+    "fixcss.py": [
+      {
+        "line": 25,
+        "text": "KATALOG = VIDEO + \"/katalog.html\""
+      },
+      {
+        "line": 114,
+        "text": "            if re.match(r\"^UA-\\d{4}$\", kod):"
+      },
+      {
+        "line": 129,
+        "text": "        kod = re.search(r\"(UA-\\d{4})\", okno)"
+      },
+      {
+        "line": 135,
+        "text": "            kod = re.search(r\"(UA-\\d{4})\", okno)"
+      },
+      {
+        "line": 310,
+        "text": "        p(\"   %s/video/katalog.html?f=%s&stage=%s&v=%s   должно быть видно %s\""
+      }
+    ],
+    "home_counters_install_20260910.py": [
+      {
+        "line": 18,
+        "text": "CORE_TEXT = 'import html\\nimport re\\n\\nCARD_RE = re.compile(\\n    r\\'<a\\\\b(?=[^>]*\\\\bclass\\\\s*=\\\\s*[\"\\\\\\'][^\"\\\\\\']*\\\\bstage-card\\\\b[^\"\\\\\\']*[\"\\\\\\'])\\'\\n    r\\'(?=[^>]*\\\\bdata-stage\\\\s*=\\\\s*[\"\\\\\\'](?:kiev|georgia|sea|korea)[\"\\\\\\'])\\'\\n    r\\"
+      },
+      {
+        "line": 19,
+        "text": "FRAGMENT = '# UA-SITE-COUNTERS-123:START\\nfrom ua_site_counters import prepare_updates as _ua123_prepare_updates\\n\\n_UA123_BASE_SNAPSHOT = Snapshot\\n_UA123_BASE_INSTALL = _install_catalog\\n\\n\\nclass Snapshot(_UA123_BASE_SNAPSHOT):\\n    \"\"\"I"
+      },
+      {
+        "line": 46,
+        "text": "    if sha((ROOT/'video/index.html').read_bytes()) != EXPECTED_HOME:"
+      },
+      {
+        "line": 65,
+        "text": "    records,_ = namespace['catalog_snapshot']((ROOT/'video/katalog.html').read_text())"
+      },
+      {
+        "line": 74,
+        "text": "            if path.name == 'katalog.html':"
+      }
+    ],
+    "install_stage_sync_20260910.py": [
+      {
+        "line": 36,
+        "text": "        for name in ('katalog.html', 'index.html'):"
+      }
+    ],
+    "karta_knopka.py": [
+      {
+        "line": 33,
+        "text": "    r\"https?://[^\\s\\)\\]]+/video/(UA-\\d{3,6})\\.html(?:\\?[^\\s\\)\\]]*)?\","
+      }
+    ],
+    "kartochka.py": [
+      {
+        "line": 35,
+        "text": "FOTO_PUT = re.compile(r\"foto/(UA-\\d{4})/(?:[ms]/)?(\\d+)\\.jpg\")"
+      }
+    ],
+    "master_card.py": [
+      {
+        "line": 50,
+        "text": "    return sorted(set(re.findall(r\"^(UA-\\d{4})\\.html$\", \"\\n\".join(os.listdir(VIDEO)),"
+      },
+      {
+        "line": 375,
+        "text": "    src = re.search(r'src=[\"\\']([^\"\\']*/foto/(UA-\\d{4})/([^\"\\']+))[\"\\']', teg)"
+      },
+      {
+        "line": 1192,
+        "text": "        src = re.search(r'src=[\"\\']([^\"\\']*/(?:foto|stage)/(UA-\\d{4})[^\"\\']*)[\"\\']', teg)"
+      },
+      {
+        "line": 1208,
+        "text": "    html = re.sub(r'<img[^>]*/(?:foto|stage)/UA-\\d{4}[^>]*>', _zhivoe, html)"
+      },
+      {
+        "line": 1370,
+        "text": "        src = re.search(r'src=[\"\\']([^\"\\']*/foto/(UA-\\d{4})/([^\"\\']+))[\"\\']', teg)"
+      },
+      {
+        "line": 1820,
+        "text": "_UA_SEO068_DIAG = _ua_seo068_re.compile(r'<a\\b(?=[^>]*(?:\\bclass\\s*=\\s*[\"\\'][^\"\\']*\\bmcf-diag-cta\\b[^\"\\']*[\"\\']|\\bhref\\s*=\\s*[\"\\'][^\"\\']*UA-[0-9]{4,}-diag\\.html[^\"\\']*[\"\\']))[^>]*>.*?</a\\s*>\\s*', _ua_seo068_re.I | _ua_seo068_re.S)"
+      },
+      {
+        "line": 1867,
+        "text": "            match = _ua_seo068_re.search(r'(UA-[0-9]{4,}-diag\\.html)(?:[?#]|$)', href, _ua_seo068_re.I)"
+      },
+      {
+        "line": 1896,
+        "text": "    if not _ua_seo068_re.fullmatch(r'UA-[0-9]{4,}', identifier):"
+      },
+      {
+        "line": 1932,
+        "text": "                match = _ua_seo068_re.search(r'(UA-[0-9]{4,}-diag\\.html)(?:[?#]|$)', href, _ua_seo068_re.I)"
+      },
+      {
+        "line": 2527,
+        "text": "    match = _ua068_re.search(r\"UA-[0-9]{4,}\", block, _ua068_re.I)"
+      },
+      {
+        "line": 2662,
+        "text": "        found = _ua068_re.search(r\"UA-[0-9]{4,}\", block, _ua068_re.I)"
+      },
+      {
+        "line": 2677,
+        "text": "        r'<a\\b(?=[^>]*href=[\"\\'][^\"\\']*UA-[0-9]{4,}\\.html(?:\\?[^\"\\']*)?[\"\\'])[^>]*>.*?</a\\s*>',"
+      },
+      {
+        "line": 2728,
+        "text": "        r'href=([\"\\'])([^\"\\']*UA-[0-9]{4,}\\.html)(?:\\?[^\"\\']*)?\\1',"
+      }
+    ],
+    "med1.py": [
+      {
+        "line": 115,
+        "text": "        for shablon in (\"UA-*.html\", \"index.html\", \"katalog.html\"):"
+      }
+    ],
+    "med3.py": [
+      {
+        "line": 190,
+        "text": "    m = re.match(r\"(UA-\\d{4})\", os.path.basename(imya))"
+      },
+      {
+        "line": 442,
+        "text": "    shabl = re.compile(r'(==|!=)\\s*[\"\\']UA-\\d{4}[\"\\']|[\"\\']UA-\\d{4}[\"\\']\\s*(==|!=)')"
+      },
+      {
+        "line": 527,
+        "text": "        \"foto\": len(re.findall(r\"foto/UA-\\d{4}/\", html)),"
+      }
+    ],
+    "med31.py": [
+      {
+        "line": 242,
+        "text": "FOTO_PUT = re.compile(r\"foto/(UA-\\d{4})/(?:[ms]/)?(\\d+)\\.jpg\")"
+      },
+      {
+        "line": 450,
+        "text": "    est_spec = bool(re.search(r'==\\s*[\"\\']UA-\\d{4}', kod))"
+      },
+      {
+        "line": 514,
+        "text": "    plohaya = re.sub(r\"foto/UA-\\d{4}/(?:[ms]/)?\\d+\\.jpg\", \"нет.jpg\", bylo)"
+      }
+    ],
+    "med32.py": [
+      {
+        "line": 256,
+        "text": "    est_spec = bool(re.search(r'==\\s*[\"\\']UA-\\d{4}', SHAPKA))"
+      }
+    ],
+    "med34.py": [
+      {
+        "line": 282,
+        "text": "    m = re.match(r\"(UA-\\d{4})\", os.path.basename(imya))"
+      }
+    ],
+    "med35.py": [
+      {
+        "line": 86,
+        "text": "                  + [VIDEO + \"/index.html\", VIDEO + \"/katalog.html\"])"
+      },
+      {
+        "line": 290,
+        "text": "FOTO_PUT = re.compile(r\"foto/(UA-\\d{4})/(?:[ms]/)?(\\d+)\\.jpg\")"
+      },
+      {
+        "line": 414,
+        "text": "    ozhidaemo = [x for x in izmenilos if re.search(r\"UA-\\d{4}\\.html$\", x)]"
+      }
+    ],
+    "obnovit.py": [
+      {
+        "line": 67,
+        "text": "    print(\"Сайт обновлён. Проверьте: https://www.uaart.com.ua/video/index.html\")"
+      }
+    ],
+    "observe_point4_core_dynamic.py": [
+      {
+        "line": 42,
+        "text": "    'video/index.html': ROOT / 'video/index.html',"
+      },
+      {
+        "line": 43,
+        "text": "    'site/index.html': ROOT / 'site/index.html'}"
+      },
+      {
+        "line": 296,
+        "text": "            if len(codes) != len(set(codes)) or any(type(c) is not str or not re.fullmatch(r'UA-[0-9]{4}', c) for c in codes):"
+      },
+      {
+        "line": 374,
+        "text": "            for basename in ('info.html', 'podbor.html'):"
+      }
+    ],
+    "odna_karta.py": [
+      {
+        "line": 17,
+        "text": "NOMER     = re.compile(r\"\\bUA-\\d{3,5}\\b\")"
+      }
+    ],
+    "pochini.py": [
+      {
+        "line": 73,
+        "text": "    if not re.match(r'^UA-\\d+$', kod):"
+      },
+      {
+        "line": 103,
+        "text": "        put = os.path.join(koren, \"index.html\")"
+      },
+      {
+        "line": 155,
+        "text": "    put_kat = os.path.join(koren, \"katalog.html\")"
+      },
+      {
+        "line": 181,
+        "text": "glav = open(os.path.join(VIDEO, \"index.html\"), encoding=\"utf-8\", errors=\"ignore\").read()"
+      },
+      {
+        "line": 186,
+        "text": "    for f in (\"index.html\", \"katalog.html\", \"podbor.html\", \"info.html\", \"ua-v203.css\", \"i18n.js\"):"
+      },
+      {
+        "line": 191,
+        "text": "        if re.match(r'^UA-\\d+(-diag)?\\.html$', f):"
+      },
+      {
+        "line": 210,
+        "text": "glav_put = os.path.join(VIDEO, \"index.html\")"
+      },
+      {
+        "line": 258,
+        "text": "    g = open(os.path.join(koren, \"index.html\"), encoding=\"utf-8\", errors=\"ignore\").read()"
+      },
+      {
+        "line": 259,
+        "text": "    k = open(os.path.join(koren, \"katalog.html\"), encoding=\"utf-8\", errors=\"ignore\").read()"
+      }
+    ],
+    "poryadok.py": [
+      {
+        "line": 155,
+        "text": "        if ext in (\".html\", \".htm\") and not re.match(r\"^UA-\\d+\", f, re.I):"
+      }
+    ],
+    "publik.py": [
+      {
+        "line": 276,
+        "text": "    osnovnye = [x for x in izmenilos if re.search(r\"UA-\\d{4}\\.html$\", x)]"
+      }
+    ],
+    "publikaciya.py": [
+      {
+        "line": 83,
+        "text": "    chuzhie = sorted(set(re.findall(r\"UA-\\d{4}\", html)) - set([kod]))"
+      },
+      {
+        "line": 98,
+        "text": "    if \"index.html\" not in html:"
+      },
+      {
+        "line": 156,
+        "text": "    if not re.match(r\"^UA-\\d{3,5}$\", kod):"
+      },
+      {
+        "line": 247,
+        "text": "            m = _mcf_re.search(r\"(UA-\\d{4})\", imya)"
+      },
+      {
+        "line": 270,
+        "text": "            m = _v2_re.search(r\"(UA-\\d{4})\", imya)"
+      },
+      {
+        "line": 426,
+        "text": "            cel = os.path.join(papka, \"katalog.html\")"
+      },
+      {
+        "line": 428,
+        "text": "                rezerv, os.path.basename(papka.rstrip(os.sep)) + \"__katalog.html\")"
+      },
+      {
+        "line": 511,
+        "text": "    match = _ua099_re.search(r\"(UA-[0-9]{4})-diag\\.html$\", name, _ua099_re.I)"
+      }
+    ],
+    "publikuy.py": [
+      {
+        "line": 47,
+        "text": "mashiny = sorted([f[:-5] for f in stranicy if re.match(r'^UA-\\d+\\.html$', f)])"
+      },
+      {
+        "line": 49,
+        "text": "bazovye = [f for f in (\"index.html\", \"katalog.html\", \"podbor.html\", \"info.html\")"
+      },
+      {
+        "line": 85,
+        "text": "                     if re.match(r'^UA-\\d+(-\\d+)?\\.(mp4|webm|mov)$', f)])"
+      },
+      {
+        "line": 108,
+        "text": "    for f in perenos_fajly + [\"index.html\", \"katalog.html\", \"podbor.html\", \"info.html\"]:"
+      },
+      {
+        "line": 118,
+        "text": "        if re.match(r'^ua-v\\d+\\.css$', f) or re.match(r'^UA-\\d+(-diag)?\\.html$', f):"
+      },
+      {
+        "line": 156,
+        "text": "glav = open(os.path.join(VIDEO, \"index.html\"), encoding=\"utf-8\", errors=\"ignore\").read()"
+      },
+      {
+        "line": 157,
+        "text": "kat  = open(os.path.join(VIDEO, \"katalog.html\"), encoding=\"utf-8\", errors=\"ignore\").read()"
+      },
+      {
+        "line": 193,
+        "text": "p(\"Сайт: https://www.uaart.com.ua/video/index.html\")"
+      }
+    ],
+    "publish_transaction_guard.py": [
+      {
+        "line": 39,
+        "text": "ID_RE = re.compile(r\"^UA-[0-9]{4,}$\")"
+      },
+      {
+        "line": 138,
+        "text": "    paths: set[pathlib.Path] = {root / \"katalog.html\" for root in ROOTS}"
+      },
+      {
+        "line": 245,
+        "text": "    if re.search(r\"UA-[0-9]{4,}\", text) and any("
+      },
+      {
+        "line": 246,
+        "text": "        other != code for other in set(re.findall(r\"UA-[0-9]{4,}\", text, re.I))"
+      },
+      {
+        "line": 275,
+        "text": "        r\"(UA-[0-9]{4,})\\.html(?:\\?[^'\\\"]*)?['\\\"]\","
+      },
+      {
+        "line": 348,
+        "text": "        value.upper() for value in re.findall(r\"UA-[0-9]{4,}\", source, re.I)"
+      },
+      {
+        "line": 405,
+        "text": "        path = root / \"katalog.html\""
+      },
+      {
+        "line": 412,
+        "text": "        path = root / \"katalog.html\""
+      },
+      {
+        "line": 455,
+        "text": "        path = root / \"katalog.html\""
+      },
+      {
+        "line": 640,
+        "text": "        _path = _root / \"katalog.html\""
+      },
+      {
+        "line": 647,
+        "text": "        _path = _root / \"katalog.html\""
+      },
+      {
+        "line": 671,
+        "text": "    paths = {root / \"katalog.html\" for root in ROOTS}"
+      },
+      {
+        "line": 756,
+        "text": "            path = folder / 'index.html'"
+      },
+      {
+        "line": 824,
+        "text": "        path = root / 'katalog.html'"
+      }
+    ],
+    "spec84_collector.py": [
+      {
+        "line": 45,
+        "text": "UID_RE = re.compile(r\"^UA-\\d{4,6}$\")"
+      },
+      {
+        "line": 418,
+        "text": "    if (not re.fullmatch(r\"UA-\\d{4,6}\", uid)"
+      }
+    ],
+    "spec_emergency_install_pages_20260910_r1.py": [
+      {
+        "line": 85,
+        "text": "        urljoin(url,response.get('location',''))=='https://www.uaart.com.ua/video/index.html'"
+      },
+      {
+        "line": 499,
+        "text": "        require(response.get('redirected_final_url')=='https://www.uaart.com.ua/video/index.html' and"
+      },
+      {
+        "line": 511,
+        "text": "            urljoin(url,response.get('location',''))=='https://www.uaart.com.ua/video/index.html'"
+      }
+    ],
+    "spec_emergency_install_pages_20260910_r2.py": [
+      {
+        "line": 122,
+        "text": "        require(response.get('redirected_final_url')=='https://www.uaart.com.ua/video/index.html' and"
+      },
+      {
+        "line": 134,
+        "text": "            urljoin(url,response.get('location',''))=='https://www.uaart.com.ua/video/index.html'"
+      }
+    ],
+    "spec_retry84.py": [
+      {
+        "line": 75,
+        "text": "    if not re.fullmatch(r\"UA-\\d{4,6}\", uid) or not re.fullmatch(r\"[A-Z0-9-]{5,30}\", vin):"
+      }
+    ],
+    "srochno.py": [
+      {
+        "line": 38,
+        "text": "put_glav = os.path.join(VIDEO, \"index.html\")"
+      },
+      {
+        "line": 60,
+        "text": "pv = os.path.join(PREV, \"index.html\")"
+      },
+      {
+        "line": 65,
+        "text": "        put = os.path.join(PREV, d, \"index.html\")"
+      },
+      {
+        "line": 70,
+        "text": "        for hv in (\"video/index.html\", \"index.html\"):"
+      },
+      {
+        "line": 74,
+        "text": "et = os.path.join(DOM, \"etalon_dizayna\", \"index.html\")"
+      },
+      {
+        "line": 103,
+        "text": "        zapis(os.path.join(koren, \"index.html\"), tekst_ist)"
+      },
+      {
+        "line": 120,
+        "text": "    if not re.match(r\"^UA-\\d+$\", kod):"
+      },
+      {
+        "line": 146,
+        "text": "    put = os.path.join(koren, \"index.html\")"
+      }
+    ],
+    "stage_exact_preview_20260922.py": [
+      {
+        "line": 184,
+        "text": "                type(p) is str and re.fullmatch(r'(?:foto/UA-[0-9]{4,}/[0-9]{3}|diag/UA-[0-9]{4,}/m/[0-9]{2})\\.jpg',p)"
+      },
+      {
+        "line": 299,
+        "text": "                all(re.fullmatch(r'UA-[0-9]{4,}',c) for c in codes), 'EXACT_CURRENT_PUBLISHED_SET_REQUIRED')"
+      },
+      {
+        "line": 368,
+        "text": "    allowed = {'video/info.html','video/podbor.html',*('video/'+c+'-diag.html' for c in codes)}"
+      },
+      {
+        "line": 374,
+        "text": "            if target is None or not target.endswith('.html') or target in html or target == 'site/index.html':"
+      },
+      {
+        "line": 408,
+        "text": "    require(oldmanifest.get('redirects',{}).get('/site/index.html') is not None, 'REVIEWED_LEGACY_REDIRECT_REQUIRED')"
+      },
+      {
+        "line": 423,
+        "text": "        'files':files,'home_route':'/video/index.html','viewport_harness':harness_spec,"
+      }
+    ],
+    "start_safe.py": [
+      {
+        "line": 197,
+        "text": "        found = re.search(r\"(UA-\\d+)\\.html$\", name, re.IGNORECASE)"
+      }
+    ],
+    "storozh_dizayna.py": [
+      {
+        "line": 12,
+        "text": "glav_put = os.path.join(VIDEO, \"index.html\")"
+      }
+    ],
+    "stranica.py": [
+      {
+        "line": 1113,
+        "text": "        c.append(\"<a class='dejstvie' href='podbor.html?v=%d'>Хочу такую же под заказ</a>\""
+      },
+      {
+        "line": 1127,
+        "text": "    c.append(\"<a class='vtoraya' href='katalog.html?v=%d'>← Все машины</a>\" % int(time.time()))"
+      },
+      {
+        "line": 1195,
+        "text": "    c.append(\"<a class='vtoraya' href='podbor.html?v=%d'>Нужно другое — подберём под заказ</a>\""
+      },
+      {
+        "line": 1197,
+        "text": "    c.append(\"<a class='vtoraya' href='index.html?v=%d'>← На главную</a>\" % int(time.time()))"
+      },
+      {
+        "line": 1228,
+        "text": "    c.append('<!-- UA-ART-SHARE-20260928 -->\\n<meta property=\"og:url\" content=\"https://www.uaart.com.ua/video/index.html\">\\n<meta property=\"og:site_name\" content=\"UA ART COMPANY\">\\n<meta property=\"og:image\" content=\"https://www.uaart.com.ua"
+      },
+      {
+        "line": 1247,
+        "text": "    c.append(\"<a class='dejstvie' href='katalog.html?v=%d'>Смотреть авто — %d в наличии и в пути</a>\""
+      },
+      {
+        "line": 1251,
+        "text": "        c.append(\"<a class='vtoraya' href='podbor.html?strana=%s&v=%d'>%s %s</a>\""
+      },
+      {
+        "line": 1659,
+        "text": "    c.append(\"<a class='dejstvie' href='katalog.html?v=%d'>Смотреть авто в наличии</a>\" % int(time.time()))"
+      },
+      {
+        "line": 1660,
+        "text": "    c.append(\"<a class='vtoraya' href='podbor.html?v=%d'>Подобрать под заказ</a>\" % int(time.time()))"
+      },
+      {
+        "line": 1661,
+        "text": "    c.append(\"<a class='vtoraya' href='index.html?v=%d'>← На главную</a>\" % int(time.time()))"
+      },
+      {
+        "line": 1871,
+        "text": "    print(\"  ГЛАВНАЯ:  %s/index.html?v=%d\" % (sajt(), metka))"
+      },
+      {
+        "line": 1872,
+        "text": "    print(\"  каталог:  %s/katalog.html?v=%d\" % (sajt(), metka))"
+      },
+      {
+        "line": 1873,
+        "text": "    print(\"  подбор:   %s/podbor.html?v=%d\" % (sajt(), metka))"
+      },
+      {
+        "line": 1884,
+        "text": "    return (\"<div onclick=\\\"location.href='index.html'\\\" \""
+      },
+      {
+        "line": 1892,
+        "text": "    \"onclick=\\\"if(history.length>1){history.back();}else{location.href='index.html';}\""
+      },
+      {
+        "line": 1894,
+        "text": "    \"<a class='vtoraya' href='index.html' style='margin:0'>На главную</a>\""
+      },
+      {
+        "line": 1909,
+        "text": "        for _imya in (\"index.html\", \"katalog.html\"):"
+      },
+      {
+        "line": 1928,
+        "text": "        _ind = os.path.join(_papka, \"index.html\")"
+      },
+      {
+        "line": 1929,
+        "text": "        _kat = os.path.join(_papka, \"katalog.html\")"
+      },
+      {
+        "line": 1941,
+        "text": "        _kart = len(set(re.findall(r\"(UA-\\d{4})\\.html\", _t)))"
+      },
+      {
+        "line": 1956,
+        "text": "                _kk = len(set(re.findall(r\"(UA-\\d{4})\\.html\", _tk)))"
+      },
+      {
+        "line": 2956,
+        "text": "                    not in (\"index.html\", \"katalog.html\", \"podbor.html\", \"info.html\"))"
+      },
+      {
+        "line": 2970,
+        "text": "_UA_SEO068_DIAG = _ua_seo068_re.compile(r'<a\\b(?=[^>]*(?:\\bclass\\s*=\\s*[\"\\'][^\"\\']*\\bmcf-diag-cta\\b[^\"\\']*[\"\\']|\\bhref\\s*=\\s*[\"\\'][^\"\\']*UA-[0-9]{4,}-diag\\.html[^\"\\']*[\"\\']))[^>]*>.*?</a\\s*>\\s*', _ua_seo068_re.I | _ua_seo068_re.S)"
+      },
+      {
+        "line": 3017,
+        "text": "            match = _ua_seo068_re.search(r'(UA-[0-9]{4,}-diag\\.html)(?:[?#]|$)', href, _ua_seo068_re.I)"
+      },
+      {
+        "line": 3046,
+        "text": "    if not _ua_seo068_re.fullmatch(r'UA-[0-9]{4,}', identifier):"
+      },
+      {
+        "line": 3052,
+        "text": "    return _ua_seo068_normalize(_ua_seo068_original_sobrat_katalog(spisok, kadry_po_nomeru, legkie_po_nomeru), 'katalog.html')"
+      },
+      {
+        "line": 3642,
+        "text": "    match = _ua068_re.search(r\"UA-[0-9]{4,}\", block, _ua068_re.I)"
+      },
+      {
+        "line": 3777,
+        "text": "        found = _ua068_re.search(r\"UA-[0-9]{4,}\", block, _ua068_re.I)"
+      },
+      {
+        "line": 3792,
+        "text": "        r'<a\\b(?=[^>]*href=[\"\\'][^\"\\']*UA-[0-9]{4,}\\.html(?:\\?[^\"\\']*)?[\"\\'])[^>]*>.*?</a\\s*>',"
+      },
+      {
+        "line": 3843,
+        "text": "        r'href=([\"\\'])([^\"\\']*UA-[0-9]{4,}\\.html)(?:\\?[^\"\\']*)?\\1',"
+      }
+    ],
+    "stranica_klienta.py": [
+      {
+        "line": 479,
+        "text": "    m = re.match(r\"(UA-\\d{3,6})\\.html$\", imya, re.I)"
+      },
+      {
+        "line": 544,
+        "text": "        m = re.match(r\"(UA-\\d{3,6})\\.html$\", imya, re.I)"
+      }
+    ],
+    "stroy3.py": [
+      {
+        "line": 3,
+        "text": "# Пишет ТОЛЬКО два файла: /home/Carix/video/proba-katalog.html и proba-index.html"
+      },
+      {
+        "line": 4,
+        "text": "# плюс текстовый отчёт. Production (index.html, katalog.html, UA-XXXX.html),"
+      },
+      {
+        "line": 104,
+        "text": "        if not re.match(r\"^UA-\\d{3,5}$\", kod):"
+      },
+      {
+        "line": 236,
+        "text": "        if not re.match(r\"^UA-\\d{3,5}$\", kod or \"\"):"
+      },
+      {
+        "line": 461,
+        "text": "        kody = sorted(set(re.findall(r\"UA-\\d{4}\", frag)))"
+      },
+      {
+        "line": 471,
+        "text": "        sboy(\"в katalog.html не найдено ни одной карточки <article> — сборка отменена\")"
+      },
+      {
+        "line": 624,
+        "text": "            novoe = re.sub(r\"(/?video/foto/)UA-\\d{4}/[^\\\"'\\s>]+\","
+      },
+      {
+        "line": 825,
+        "text": "    p(\"production не трогается: пишутся только proba-katalog.html и proba-index.html\")"
+      },
+      {
+        "line": 827,
+        "text": "    kat_ishod = chitat(os.path.join(P_VIDEO, \"katalog.html\"))"
+      },
+      {
+        "line": 828,
+        "text": "    ind_ishod = chitat(os.path.join(P_VIDEO, \"index.html\"))"
+      },
+      {
+        "line": 830,
+        "text": "    for imya in (\"katalog.html\", \"index.html\"):"
+      },
+      {
+        "line": 864,
+        "text": "            for imya, text in ((\"proba-katalog.html\", novyy_kat),"
+      },
+      {
+        "line": 865,
+        "text": "                               (\"proba-index.html\", novyy_ind)):"
+      },
+      {
+        "line": 873,
+        "text": "            p(\"  %s/video/proba-katalog.html\" % SAJT)"
+      },
+      {
+        "line": 874,
+        "text": "            p(\"  %s/video/proba-index.html\" % SAJT)"
+      },
+      {
+        "line": 884,
+        "text": "    for imya in (\"katalog.html\", \"index.html\"):"
+      }
+    ],
+    "stroy6.py": [
+      {
+        "line": 5,
+        "text": "# Пишет только /video/proba2-katalog.html, /video/proba2-index.html и отчёт."
+      },
+      {
+        "line": 44,
+        "text": "    if imya == \"index.html\":"
+      },
+      {
+        "line": 60,
+        "text": "    for imya in (\"index.html\", \"katalog.html\"):"
+      },
+      {
+        "line": 249,
+        "text": "        sboy(\"в утверждённом katalog.html не найдено ни одной карточки <article>\")"
+      },
+      {
+        "line": 350,
+        "text": "        sboy(\"в утверждённом index.html не найдено карточек этапов\")"
+      },
+      {
+        "line": 372,
+        "text": "            novoe = re.sub(r\"(/?(?:video/)?foto/)UA-\\d{4}/[^\\\"'\\s>]+\","
+      },
+      {
+        "line": 547,
+        "text": "        p(\"положите утверждённые index.html и katalog.html в /home/Carix/shablon_utv\")"
+      },
+      {
+        "line": 550,
+        "text": "    etalon_ind = vybor[\"index.html\"][1]"
+      },
+      {
+        "line": 551,
+        "text": "    etalon_kat = vybor[\"katalog.html\"][1]"
+      },
+      {
+        "line": 585,
+        "text": "            zapisat(\"proba2-katalog.html\", novyy_kat)"
+      },
+      {
+        "line": 586,
+        "text": "            zapisat(\"proba2-index.html\", novyy_ind)"
+      },
+      {
+        "line": 588,
+        "text": "            p(\"  %s/video/proba2-index.html\" % SAJT)"
+      },
+      {
+        "line": 589,
+        "text": "            p(\"  %s/video/proba2-katalog.html\" % SAJT)"
+      },
+      {
+        "line": 602,
+        "text": "    p(\"боевые index.html и katalog.html донором НЕ служат и не изменяются\")"
+      },
+      {
+        "line": 605,
+        "text": "    for imya in (\"katalog.html\", \"index.html\"):"
+      },
+      {
+        "line": 618,
+        "text": "    for imya in (\"katalog.html\", \"index.html\"):"
+      }
+    ],
+    "svezhiy_hesh.py": [
+      {
+        "line": 16,
+        "text": "RE_ZAKRYTAYA = re.compile(r\"^(UA-\\d{3,6})-[0-9a-fA-F]{4,}\\.html$\")"
+      }
+    ],
+    "ua0009.py": [
+      {
+        "line": 674,
+        "text": "    p(\"   /video/index.html    — счётчик стадии и блок с новой машиной\")"
+      },
+      {
+        "line": 675,
+        "text": "    p(\"   /video/katalog.html  — карточка в списке\")"
+      }
+    ],
+    "ua0009_release_gate.py": [
+      {
+        "line": 77,
+        "text": "            if p.name.lower() in {\"index.html\",\"catalog.html\",\"katalog.html\"}:homehtml.append(p)"
+      }
+    ],
+    "ua0009_v2.py": [
+      {
+        "line": 711,
+        "text": "    p(\"   /video/index.html    — счётчик стадии и блок с новой машиной\")"
+      },
+      {
+        "line": 712,
+        "text": "    p(\"   /video/katalog.html  — карточка в списке\")"
+      }
+    ],
+    "ua0009_v3.py": [
+      {
+        "line": 460,
+        "text": "            if isinstance(v, str) and re.match(r\"^UA-\\d{4}$\", v.strip() or \"\"):"
+      },
+      {
+        "line": 827,
+        "text": "    p(\"   /video/index.html    — счётчик стадии и блок с новой машиной\")"
+      },
+      {
+        "line": 828,
+        "text": "    p(\"   /video/katalog.html  — карточка в списке\")"
+      }
+    ],
+    "ua0009_v4.py": [
+      {
+        "line": 499,
+        "text": "            if isinstance(v, str) and re.match(r\"^UA-\\d{4}$\", v.strip() or \"\"):"
+      },
+      {
+        "line": 968,
+        "text": "    p(\"   /video/index.html    — счётчик стадии и блок с новой машиной\")"
+      },
+      {
+        "line": 969,
+        "text": "    p(\"   /video/katalog.html  — карточка в списке\")"
+      }
+    ],
+    "ua_art_home_ge_001_install.py": [
+      {
+        "line": 112,
+        "text": "    index = video / 'index.html'"
+      },
+      {
+        "line": 127,
+        "text": "            old = (backup / 'index.html').read_bytes()"
+      },
+      {
+        "line": 148,
+        "text": "        (backup / 'index.html').write_bytes(before)"
+      },
+      {
+        "line": 181,
+        "text": "PAYLOAD = {'baseline': '<!doctype html><html lang=\"ru\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\"><meta name=\"theme-color\" content=\"#07111e\"><meta name=\"color-scheme\" co"
+      }
+    ],
+    "ua_art_site_ge_002_install.py": [
+      {
+        "line": 25,
+        "text": "REQUIRED_HTML = tuple(['video/index.html', 'video/katalog.html', 'video/podbor.html', 'video/info.html'] +"
+      }
+    ],
+    "ua_card_finance.py": [
+      {
+        "line": 24,
+        "text": "CODE = re.compile(r'(UA-[0-9]{4,})\\.html$', re.I)"
+      }
+    ],
+    "ua_card_lang.py": [
+      {
+        "line": 19,
+        "text": "CARD = re.compile(r'UA-[0-9]{4,}\\.html')"
+      },
+      {
+        "line": 41,
+        "text": "    (r'^UA ART COMPANY LLC · диагностика (UA-\\d+)$', lambda m: 'UA ART COMPANY LLC · діагностика ' + m[1]),"
+      }
+    ],
+    "ua_card_lang_job.py": [
+      {
+        "line": 22,
+        "text": "        published = ua_seo_sitemap.CatalogLinks((root/'katalog.html').read_text(encoding='utf-8')).names"
+      }
+    ],
+    "ua_crm_catalog_folders.py": [
+      {
+        "line": 12,
+        "text": "_CAR_NUMBER = re.compile(r\"UA-[0-9]{4,}\\Z\")"
+      }
+    ],
+    "ua_finance_crm.py": [
+      {
+        "line": 39,
+        "text": "    if re.fullmatch(r'UA-[0-9]{4,}', card):"
+      }
+    ],
+    "ua_home_photo_site.py": [
+      {
+        "line": 4,
+        "text": "first-screen <picture> of video/index.html at it. Only that <picture> and one"
+      },
+      {
+        "line": 5,
+        "text": "CSS block change; every other byte of the page stays. index.html is backed up"
+      },
+      {
+        "line": 19,
+        "text": "HOME = BASE + '/video/index.html'"
+      },
+      {
+        "line": 49,
+        "text": "    \"\"\"index.html text with the first-screen photo set to url; the rest unchanged.\"\"\""
+      }
+    ],
+    "ua_homepage.py": [
+      {
+        "line": 6,
+        "text": "PAGE = Path('/home/Carix/video/index.html')"
+      },
+      {
+        "line": 68,
+        "text": "                   '<a href=\"/video/index.html\">Відкрити головну</a>'"
+      }
+    ],
+    "ua_photo_copies.py": [
+      {
+        "line": 11,
+        "text": "PHOTO = re.compile(r'(?P<prefix>(?:(?:[URL])?/video/)?)(?P<card>foto/UA-[0-9]{4,})/(?:[ms]/)?(?P<name>[^/?#]+\\.jpe?g)')"
+      }
+    ],
+    "ua_price_html_v2.py": [
+      {
+        "line": 9,
+        "text": "TOP = re.compile(r'(<div\\b[^>]*\\bclass=[\\\"\\']catalog-top[\\\"\\'][^>]*>\\s*<span\\b[^>]*>\\s*(UA-\\d{4})\\s*</span>\\s*)<b\\b[^>]*>.*?</b>',re.S | re.I)"
+      },
+      {
+        "line": 16,
+        "text": "    canonical=re.search(r'[URL])\\.html',source)"
+      },
+      {
+        "line": 24,
+        "text": "        code=re.search(r'href=[\\\"\\'](?:[^\\\"\\']*/)?(UA-\\d{4})\\.html(?:[?\\\"\\'])',part)"
+      }
+    ],
+    "ua_public_freshness.py": [
+      {
+        "line": 13,
+        "text": "    if not re.fullmatch(r'UA-[0-9]{4,}', code):"
+      },
+      {
+        "line": 29,
+        "text": "    for name in (code + '.html', 'katalog.html'):"
+      },
+      {
+        "line": 34,
+        "text": "        if name == 'katalog.html':"
+      }
+    ],
+    "ua_seo_catalog.py": [
+      {
+        "line": 11,
+        "text": "CODE = re.compile(r'href=\"(UA-[0-9]{4,})\\.html\"')"
+      }
+    ],
+    "ua_seo_finance.py": [
+      {
+        "line": 132,
+        "text": "            '<h2>%s</h2>%s<p><a href=\"/video/katalog.html\">%s</a> · <a href=\"/video/podbor.html\">%s</a></p>') % ("
+      }
+    ],
+    "ua_seo_header.py": [
+      {
+        "line": 3,
+        "text": "The same block as the home page (video/index.html <header class=\"site-header\">, styles from video/ua-v203.css and"
+      },
+      {
+        "line": 17,
+        "text": "GEORGIAN = '/video/index.html?lang=ka'"
+      },
+      {
+        "line": 75,
+        "text": "        '<a href=\"/video/index.html\" class=\"brand\" aria-label=\"{}\"><span class=\"brand-mark\">UA</span>'.format("
+      }
+    ],
+    "ua_seo_index.py": [
+      {
+        "line": 40,
+        "text": "    cars = ua_seo_catalog.cars((root/'katalog.html').read_text(encoding='utf-8'))"
+      }
+    ],
+    "ua_seo_landings.py": [
+      {
+        "line": 309,
+        "text": "def _process(lang, order_href='/video/podbor.html'):"
+      },
+      {
+        "line": 318,
+        "text": "    return '/video/podbor.html?strana=korea&model=%s-%s&lang=%s' % (slug(key[0]), slug(key[1]), lang)"
+      },
+      {
+        "line": 335,
+        "text": "    body = ('<p>%s</p><h2>%s</h2>%s<h2>%s</h2>%s<p><a href=\"/video/katalog.html\">%s</a></p>%s%s' % ("
+      },
+      {
+        "line": 341,
+        "text": "                       schema.breadcrumbs([(t['home'], ORIGIN + '/video/index.html'), (t['hub_h1'], url(path(lang)))]),"
+      },
+      {
+        "line": 350,
+        "text": "    countries = ''.join('<li><a href=\"/video/podbor.html?strana=%s&amp;lang=%s\">%s</a></li>' % (c, lang, escape(t['country'][c]))"
+      },
+      {
+        "line": 361,
+        "text": "                       schema.breadcrumbs([(t['home'], ORIGIN + '/video/index.html'), (t['order_h1'], url(path(lang, ORDER)))]),"
+      },
+      {
+        "line": 410,
+        "text": "                       schema.breadcrumbs([(t['home'], ORIGIN + '/video/index.html'), (t['price_h1'], url(path(lang, PRICE)))]),"
+      },
+      {
+        "line": 445,
+        "text": "    nodes = [schema.breadcrumbs([(t['home'], ORIGIN + '/video/index.html'), (t['hub_h1'], url(path(lang))),"
+      },
+      {
+        "line": 460,
+        "text": "            '<a class=\"cta\" href=\"/video/podbor.html?strana=japan&amp;lang=%s\">%s</a><h2>%s</h2>%s'"
+      },
+      {
+        "line": 467,
+        "text": "                       schema.breadcrumbs([(t['home'], ORIGIN + '/video/index.html'),"
+      },
+      {
+        "line": 498,
+        "text": "                       schema.breadcrumbs([(t['home'], ORIGIN + '/video/index.html'), parent, (page['h1'], url(path(lang, name)))]),"
+      },
+      {
+        "line": 505,
+        "text": "    page = finance.page(lang, T[lang]['home'], ORIGIN + '/video/index.html', url(path(lang, FINANCE)))"
+      }
+    ],
+    "ua_seo_metadata.py": [
+      {
+        "line": 19,
+        "text": "CORE = ('index.html', 'katalog.html', 'podbor.html', 'info.html')"
+      },
+      {
+        "line": 20,
+        "text": "CARD = re.compile(r'UA-[0-9]{4,}\\.html', re.I)"
+      },
+      {
+        "line": 87,
+        "text": "        return 'katalog.html'"
+      },
+      {
+        "line": 89,
+        "text": "        return 'podbor.html'"
+      },
+      {
+        "line": 92,
+        "text": "    return 'index.html' if 'ua art company' in title else ''"
+      },
+      {
+        "line": 102,
+        "text": "        'index.html': ("
+      },
+      {
+        "line": 107,
+        "text": "        'katalog.html': ("
+      },
+      {
+        "line": 112,
+        "text": "        'podbor.html': ("
+      },
+      {
+        "line": 185,
+        "text": "        ('UA ART COMPANY', ORIGIN + '/video/index.html'),"
+      },
+      {
+        "line": 186,
+        "text": "        ('Каталог', ORIGIN + '/video/katalog.html'), (facts['name'], facts['url'])]))"
+      },
+      {
+        "line": 208,
+        "text": "        if re.fullmatch(r'UA-[0-9]{4,}-diag\\.html', name, re.I) and 'name=\"robots\"' not in source:"
+      },
+      {
+        "line": 220,
+        "text": "    if name == 'podbor.html' and 'id=\"ua-order\"' in source:"
+      },
+      {
+        "line": 234,
+        "text": "    if name == 'podbor.html' and html and lang == 'uk':"
+      },
+      {
+        "line": 286,
+        "text": "    if name == 'podbor.html' and 'id=\"ua-seo-order-intro\"' not in source:"
+      }
+    ],
+    "ua_seo_order_models.py": [
+      {
+        "line": 3,
+        "text": "Pure data, no logic. The models are those the order page (podbor.html) offers and the ads advertise"
+      },
+      {
+        "line": 155,
+        "text": "            cta='Підібрати Nissan Note', href='/video/podbor.html?strana=japan&model=nissan-note&lang=uk',"
+      },
+      {
+        "line": 170,
+        "text": "            cta='Подобрать Nissan Note', href='/video/podbor.html?strana=japan&model=nissan-note&lang=ru',"
+      },
+      {
+        "line": 192,
+        "text": "            cta='Підібрати авто на газу', href='/video/podbor.html?strana=korea&lang=uk',"
+      },
+      {
+        "line": 209,
+        "text": "            cta='Подобрать авто на газе', href='/video/podbor.html?strana=korea&lang=ru',"
+      }
+    ],
+    "ua_seo_schema.py": [
+      {
+        "line": 14,
+        "text": "            'url': ORIGIN + '/video/index.html', 'telephone': PHONE, 'hasMap': MAP,"
+      }
+    ],
+    "ua_seo_sitemap.py": [
+      {
+        "line": 16,
+        "text": "CORE = ('index.html', 'katalog.html', 'podbor.html', 'info.html')"
+      },
+      {
+        "line": 17,
+        "text": "CARD = re.compile(r'UA-[0-9]{4,}\\.html', re.I)"
+      },
+      {
+        "line": 47,
+        "text": "        catalog = (root/'katalog.html').read_text(encoding='utf-8')"
+      },
+      {
+        "line": 85,
+        "text": "    if path.name != 'katalog.html' or path.parent.name not in ('video', 'site'):"
+      }
+    ],
+    "ua_site_counters.py": [
+      {
+        "line": 94,
+        "text": "CLIENT_SCRIPT = '/* UA-SITE-COUNTERS-123: one published-catalog snapshot for vehicle counts. */\\n(function () {\\n  \\'use strict\\';\\n  const aliases = {kiev:\\'kiev\\',kyiv:\\'kiev\\',georgia:\\'georgia\\',gruzia:\\'georgia\\',\\n    sea:\\'sea\\',more"
+      },
+      {
+        "line": 125,
+        "text": "                    if not re.fullmatch(r'UA-[0-9]{4,}', value):"
+      },
+      {
+        "line": 134,
+        "text": "                match = re.search(r'(?:^|/)(UA-[0-9]{4,})\\.html(?:[?#].*)?$', href, re.I)"
+      },
+      {
+        "line": 244,
+        "text": "        path = root/'katalog.html'"
+      },
+      {
+        "line": 252,
+        "text": "        home = root/'index.html'"
+      }
+    ],
+    "ua_spec_permanent.py": [
+      {
+        "line": 46,
+        "text": "    _require(bool(re.fullmatch(r\"UA-\\d{4,}\", value)) and int(value[3:]) > 0,"
+      },
+      {
+        "line": 53,
+        "text": "    match = re.fullmatch(r\"(UA-\\d{4,})\\.html\", PurePath(str(path)).name)"
+      }
+    ],
+    "ua_stage_catalog_sync.py": [
+      {
+        "line": 90,
+        "text": "        if not re.fullmatch(r'UA-[0-9]{4,}', code) or code not in rows or code in seen:"
+      },
+      {
+        "line": 147,
+        "text": "            path = root / 'katalog.html'"
+      },
+      {
+        "line": 159,
+        "text": "            home = root / 'index.html'"
+      },
+      {
+        "line": 206,
+        "text": "                _validate_snapshot(counter, (root / 'katalog.html').read_text(encoding='utf-8'), expected)"
+      }
+    ],
+    "uaart_bridge_selftest.py": [
+      {
+        "line": 420,
+        "text": "        resp = call_wsgi(wrapped, make_environ(\"/video/index.html\", \"GET\"))"
+      }
+    ],
+    "uaart_connection_monitor.py": [
+      {
+        "line": 46,
+        "text": "    Endpoint(\"apex_root\", \"https://uaart.com.ua/\", \"https://www.uaart.com.ua/video/index.html\"),"
+      },
+      {
+        "line": 47,
+        "text": "    Endpoint(\"www_root\", \"https://www.uaart.com.ua/\", \"https://www.uaart.com.ua/video/index.html\"),"
+      },
+      {
+        "line": 48,
+        "text": "    Endpoint(\"homepage\", \"https://www.uaart.com.ua/video/index.html\", \"https://www.uaart.com.ua/video/index.html\"),"
+      },
+      {
+        "line": 49,
+        "text": "    Endpoint(\"catalog\", \"https://www.uaart.com.ua/video/katalog.html\", \"https://www.uaart.com.ua/video/katalog.html\"),"
+      }
+    ],
+    "uaart_public_prices_v1.py": [
+      {
+        "line": 19,
+        "text": "            if not re.fullmatch(r'UA-[0-9]{4}',code or '') or code in result:"
+      }
+    ],
+    "uaart_public_renderer_v1.py": [
+      {
+        "line": 100,
+        "text": "    elif type(car_id) is not str or not re.fullmatch(r\"UA-[0-9]{4}\", car_id):"
+      },
+      {
+        "line": 141,
+        "text": "    if not isinstance(article, str) or set(re.findall(r\"UA-[0-9]{4,}\", article)) != {code}:"
+      }
+    ],
+    "video_edino.py": [
+      {
+        "line": 193,
+        "text": "    m = re.match(r\"(UA-\\d{4})\", os.path.basename(imya))"
+      }
+    ],
+    "vitrina.py": [
+      {
+        "line": 206,
+        "text": "    return \"%s/katalog.html?v=%d\" % (sajt(), int(time.time()))"
+      },
+      {
+        "line": 210,
+        "text": "    put = os.path.join(PAPKA_VID, \"katalog.html\")"
+      },
+      {
+        "line": 255,
+        "text": "              \"%s/podbor.html?strana=%s&v=%d\" % (sajt(), kod, t))]"
+      },
+      {
+        "line": 355,
+        "text": "                                 web_app=WebAppInfo(url=\"%s/index.html\" % sajt()))]],"
+      },
+      {
+        "line": 492,
+        "text": "                        \"%s/podbor.html?v=%d\" % (sajt(), int(time.time())))])"
+      },
+      {
+        "line": 769,
+        "text": "                    najdeno = re.search(r\"\\bUA-\\d{3,5}\\b\", tekst)"
+      },
+      {
+        "line": 841,
+        "text": "                \"web_app\": {\"url\": \"%s/index.html\" % sajt()},"
+      }
+    ],
+    "vosstan.py": [
+      {
+        "line": 113,
+        "text": "        \"foto\": len(set(re.findall(r\"foto/UA-\\d{4}/(?:[ms]/)?\\d+\\.jpg\", html))),"
+      }
+    ],
+    "vse.py": [
+      {
+        "line": 9,
+        "text": "  1) пакет линии: katalog.html + ua-v203.css + i18n.js в обе папки,"
+      },
+      {
+        "line": 67,
+        "text": "    nuzhnye = [\"video/katalog.html\", \"video/ua-v203.css\", \"video/i18n.js\","
+      },
+      {
+        "line": 68,
+        "text": "               \"video/preview/v4/katalog.html\", \"video/preview/v4/ua-v203.css\","
+      },
+      {
+        "line": 108,
+        "text": "    put_kat = os.path.join(koren, \"katalog.html\")"
+      },
+      {
+        "line": 187,
+        "text": "    if r and any(isinstance(v, str) and re.match(r'^UA-\\d+$', v) for v in tuple(r)):"
+      },
+      {
+        "line": 229,
+        "text": "    if kod and re.match(r'^UA-\\d+$', str(kod)):"
+      },
+      {
+        "line": 301,
+        "text": "est_stranicy = set(f[:-5] for f in os.listdir(VIDEO) if re.match(r'^UA-\\d+\\.html$', f))"
+      },
+      {
+        "line": 302,
+        "text": "kat_tek = open(os.path.join(VIDEO, \"katalog.html\"), encoding=\"utf-8\", errors=\"ignore\").read()"
+      },
+      {
+        "line": 399,
+        "text": "        put_kat = os.path.join(koren, \"katalog.html\")"
+      },
+      {
+        "line": 450,
+        "text": "na_sajte = set(f[:-5] for f in os.listdir(VIDEO) if re.match(r'^UA-\\d+\\.html$', f))"
+      },
+      {
+        "line": 460,
+        "text": "        put = os.path.join(koren, \"index.html\")"
+      },
+      {
+        "line": 497,
+        "text": "    glav = open(os.path.join(koren, \"index.html\"), encoding=\"utf-8\", errors=\"ignore\").read()"
+      },
+      {
+        "line": 498,
+        "text": "    kat = open(os.path.join(koren, \"katalog.html\"), encoding=\"utf-8\", errors=\"ignore\").read()"
+      }
+    ],
+    "yadro.py": [
+      {
+        "line": 291,
+        "text": "def hdr(nazad=\"index.html\", pod=True):"
+      },
+      {
+        "line": 365,
+        "text": "    return (\"<a class=\\\"knp\\\" href=\\\"index.html\\\">← %s</a>\""
+      },
+      {
+        "line": 399,
+        "text": "    adres = ADRES_SAYTA + \"index.html\""
+      },
+      {
+        "line": 437,
+        "text": "    c.append(\"<a class=\\\"knp zol\\\" href=\\\"podbor.html\\\">%s</a>\""
+      },
+      {
+        "line": 456,
+        "text": "        c.append(\"<a class=\\\"etp\\\" href=\\\"katalog.html?f=%s\\\">\" % klyuch)"
+      },
+      {
+        "line": 471,
+        "text": "    c.append(\"<a class=\\\"knp ram\\\" href=\\\"katalog.html\\\">%s</a>\""
+      },
+      {
+        "line": 499,
+        "text": "    adres = ADRES_SAYTA + \"katalog.html\""
+      },
+      {
+        "line": 503,
+        "text": "    c.append(hdr(nazad=\"index.html\", pod=False))"
+      },
+      {
+        "line": 549,
+        "text": "    c.append(\"<a class=\\\"knp zol\\\" href=\\\"podbor.html\\\">%s</a>\""
+      },
+      {
+        "line": 932,
+        "text": "    c.append(hdr(nazad=\"katalog.html\", pod=False))"
+      },
+      {
+        "line": 1021,
+        "text": "             \"<a class=\\\"knp\\\" href=\\\"katalog.html\\\">← %s</a>\""
+      },
+      {
+        "line": 1022,
+        "text": "             \"<a class=\\\"knp\\\" href=\\\"index.html\\\">← %s</a></div>\""
+      },
+      {
+        "line": 1211,
+        "text": "    c.append(\"<a class=\\\"knp\\\" href=\\\"katalog.html\\\">← %s</a>\""
+      },
+      {
+        "line": 1309,
+        "text": "    adres = ADRES_SAYTA + \"podbor.html\""
+      },
+      {
+        "line": 1314,
+        "text": "    c.append(hdr(nazad=\"index.html\", pod=False))"
+      },
+      {
+        "line": 1545,
+        "text": "    c.append(hdr(nazad=\"index.html\", pod=False))"
+      },
+      {
+        "line": 1602,
+        "text": "             \"<a class=\\\"knp zol\\\" href=\\\"katalog.html\\\">%s</a>\""
+      },
+      {
+        "line": 1603,
+        "text": "             \"<a class=\\\"knp ram\\\" href=\\\"podbor.html\\\">%s</a></div>\""
+      },
+      {
+        "line": 1641,
+        "text": "                              (\"на главную\", \"index.html\"),"
+      },
+      {
+        "line": 1650,
+        "text": "                             (\"на главную\", \"index.html\"))"
+      },
+      {
+        "line": 1656,
+        "text": "                             (\"подбор\", \"podbor.html\"),"
+      },
+      {
+        "line": 1662,
+        "text": "                                (\"на главную\", \"index.html\"))"
+      },
+      {
+        "line": 1673,
+        "text": "                               (\"на главную\", \"index.html\"))"
+      },
+      {
+        "line": 1678,
+        "text": "                             (\"на главную\", \"index.html\"))"
+      },
+      {
+        "line": 1716,
+        "text": "_UA_SEO068_DIAG = _ua_seo068_re.compile(r'<a\\b(?=[^>]*(?:\\bclass\\s*=\\s*[\"\\'][^\"\\']*\\bmcf-diag-cta\\b[^\"\\']*[\"\\']|\\bhref\\s*=\\s*[\"\\'][^\"\\']*UA-[0-9]{4,}-diag\\.html[^\"\\']*[\"\\']))[^>]*>.*?</a\\s*>\\s*', _ua_seo068_re.I | _ua_seo068_re.S)"
+      },
+      {
+        "line": 1763,
+        "text": "            match = _ua_seo068_re.search(r'(UA-[0-9]{4,}-diag\\.html)(?:[?#]|$)', href, _ua_seo068_re.I)"
+      },
+      {
+        "line": 1792,
+        "text": "    if not _ua_seo068_re.fullmatch(r'UA-[0-9]{4,}', identifier):"
+      },
+      {
+        "line": 1798,
+        "text": "    return _ua_seo068_normalize(_ua_seo068_original_katalog_html(spisok, foto_po_nomeru, video_po_nomeru), 'katalog.html')"
+      },
+      {
+        "line": 2387,
+        "text": "    match = _ua068_re.search(r\"UA-[0-9]{4,}\", block, _ua068_re.I)"
+      },
+      {
+        "line": 2522,
+        "text": "        found = _ua068_re.search(r\"UA-[0-9]{4,}\", block, _ua068_re.I)"
+      },
+      {
+        "line": 2537,
+        "text": "        r'<a\\b(?=[^>]*href=[\"\\'][^\"\\']*UA-[0-9]{4,}\\.html(?:\\?[^\"\\']*)?[\"\\'])[^>]*>.*?</a\\s*>',"
+      },
+      {
+        "line": 2588,
+        "text": "        r'href=([\"\\'])([^\"\\']*UA-[0-9]{4,}\\.html)(?:\\?[^\"\\']*)?\\1',"
+      }
+    ]
+  },
+  "status": "PASS",
+  "task_id": "CARD-LANG-PROBE-20261108-R2"
+}
