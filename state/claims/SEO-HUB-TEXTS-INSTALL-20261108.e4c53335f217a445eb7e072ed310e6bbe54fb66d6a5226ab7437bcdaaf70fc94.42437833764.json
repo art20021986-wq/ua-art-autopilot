@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "1060186ecfceb17dadbac70dafce25620424ab2e14c1f560d832058315a2b082",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-08T02:22:03Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-08T02:26:57Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42437833764",
     "task_id": "SEO-HUB-TEXTS-INSTALL-20261108",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42437833764-e4c53335f217a445",
   "production_transaction_path": "state/transactions/SEO-HUB-TEXTS-INSTALL-20261108.e4c53335f217a445eb7e072ed310e6bbe54fb66d6a5226ab7437bcdaaf70fc94.42437833764.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-7d28059bb1bea1b9-cc36ccc303c43974",
   "receipt_path": "state/receipts/SEO-HUB-TEXTS-INSTALL-20261108.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/seo_hub_texts_001/ua_seo_hub_texts.py": "87ad5d078d1a71f53a45530b4d390ae6b06dc6a1687a3667c6f8a7fb3e5ff16b"
     }
   },
-  "updated_at": "2026-11-08T02:22:03Z"
+  "updated_at": "2026-11-08T02:26:57Z"
 }
