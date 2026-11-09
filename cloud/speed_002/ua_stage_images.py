@@ -15,7 +15,7 @@ QUALITY = 78
 SIZES = '(max-width: 700px) 50vw, 660px'
 STAGE_CARD = re.compile(r'<a\b[^>]*\bclass="stage-card\b.*?</a>', re.S)
 PICTURE_SOURCE = re.compile(r'<source srcset="(/video/[^"\s,]+\.webp)" type="image/webp">')
-LIVE_IMAGE = re.compile(r'(<img\b(?=[^>]*\bclass="stage-live")[^>]*?\bsrc="(/video/stage/[^"?]+\.webp)(?:\?[^"]*)?")')
+LIVE_IMAGE = re.compile(r'(<img\b(?=[^>]*\bclass="stage-live")[^>]*?\bsrc="(/video/stage/[^"?]+\.webp)(?:\?[^"]*)?")([^>]*>)')
 
 
 def copy_url(url):
@@ -73,15 +73,16 @@ def apply(html, find=ensure):
             found[0], WIDTH, match[1], found[1], SIZES)
 
     def live(match):
+        if 'srcset=' in match[0]:
+            return match[0]  # already done
         found = find(match[2])
         if not found:
             return match[0]
         src = re.search(r'\bsrc="([^"]+)"', match[1])[1]
-        return '%s srcset="%s %dw, %s %dw" sizes="%s"' % (match[1], found[0], WIDTH, src, found[1], SIZES)
+        return '%s srcset="%s %dw, %s %dw" sizes="%s"%s' % (match[1], found[0], WIDTH, src, found[1], SIZES, match[3])
 
     def card(match):
-        if 'srcset="/video/opt/s/' in match[0]:
-            return match[0]  # already done
+        # Each picture on its own: the home stage button rewrites one live photo without its srcset.
         block = PICTURE_SOURCE.sub(source, match[0])
         return LIVE_IMAGE.sub(live, block)
 
