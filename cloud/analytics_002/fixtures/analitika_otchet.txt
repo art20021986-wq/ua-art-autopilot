@@ -1,0 +1,345 @@
+# -*- coding: utf-8 -*-
+# UA-ANALIT-OTCHET-V2 — построение отчётов поверх СУЩЕСТВУЮЩЕЙ analytics.db.
+# Новых таблиц и второй базы нет. crm.db открывается только на чтение.
+import os, re, time, sqlite3
+
+KOREN = "/home/Carix"
+BAZA = os.path.join(KOREN, "analytics.db")
+CRM = os.path.join(KOREN, "crm.db")
+
+E = {'vremya': 'ts', 'tip': 'tip', 'stranica': 'stranica', 'posetitel': 'vid', 'sessiya': 'sid', 'avto': 'avto'}
+S = {'sessiya': 'sid', 'posetitel': 'vid', 'istochnik': 'istochnik', 'utm_source': 'utm_source', 'utm_campaign': 'utm_campaign', 'utm_medium': 'utm_medium', 'referrer': None, 'vremya': 'nachalo'}
+
+IMENA_PERIODOV = {"today": "Сегодня", "yesterday": "Вчера",
+                  "7d": "Последние 7 дней", "30d": "Последние 30 дней"}
+
+ISTOCHNIKI = [
+    ("tiktok", "TikTok"), ("instagram", "Instagram"), ("facebook", "Facebook"),
+    ("fb.", "Facebook"), ("google", "Google"), ("t.me", "Telegram"),
+    ("telegram", "Telegram"), ("whatsapp", "WhatsApp"), ("wa.me", "WhatsApp"),
+    ("auto.ria", "AUTO.RIA"), ("autoria", "AUTO.RIA"), ("youtube", "YouTube"),
+    ("olx", "OLX"), ("bing", "Bing"), ("yandex", "Yandex"),
+]
+
+DEYSTVIYA = [
+    ("whatsapp", "WhatsApp"), ("telegram", "Telegram"), ("tel", "Позвонить"),
+    ("phone", "Позвонить"), ("diag", "Диагностика"), ("video", "Видео"),
+    ("share", "Поделиться"), ("zakaz", "Авто под заказ"), ("podbor", "Авто под заказ"),
+    ("etap", "Этап"), ("obyavlenie", "Открыть объявление"), ("card", "Открыть карточку"),
+    ("bron", "Бронь"), ("zayavka", "Заявка"),
+]
+
+SISTEMNYE = ("start", "init", "ping", "heartbeat", "session_start")
+
+
+def _ro(put):
+    return sqlite3.connect("file:%s?mode=ro" % put, uri=True, timeout=10)
+
+
+def _kiev():  # UA-OWN-COUNTER-001
+    from zoneinfo import ZoneInfo
+    for imya in ("Europe/Kyiv", "Europe/Kiev"):
+        try:
+            return ZoneInfo(imya)
+        except Exception:
+            pass
+    raise RuntimeError("KIEV_TIMEZONE")
+
+
+def granicy(period):
+    """Начало и конец периода в секундах. Сутки — по времени Киева (зимой и летом)."""
+    import datetime
+    teper = time.time()
+    kiev = _kiev()
+    segodnya = datetime.datetime.fromtimestamp(teper, kiev).date()
+
+    def polnoch(dney_nazad):
+        den = segodnya - datetime.timedelta(days=dney_nazad)
+        return datetime.datetime(den.year, den.month, den.day, tzinfo=kiev).timestamp()
+    if period == "yesterday":
+        return polnoch(1), polnoch(0)
+    nazad = {"7d": 6, "30d": 29}.get(period, 0)
+    return polnoch(nazad), teper
+
+
+def _mashiny():
+    """Человеческие названия авто из CRM (только чтение)."""
+    itog = {}
+    try:
+        s = _ro(CRM)
+        s.row_factory = sqlite3.Row
+        for r in s.execute("select * from cars"):
+            d = dict(r)
+            nom = str(d.get("auto_number") or "").strip()
+            if not nom:
+                continue
+            imya = " ".join(str(x) for x in (d.get("brand"), d.get("model"), d.get("year")) if x)
+            itog[nom] = imya or nom
+        s.close()
+    except Exception:
+        pass
+    return itog
+
+
+def nomer_iz_adresa(adres):
+    """Карточка авто узнаётся по адресу — новые UA-0009 и дальше попадут сами."""
+    m = re.search(r"(UA-\d{3,5})", adres or "")
+    return m.group(1) if m else None
+
+
+def imya_stranicy(adres, mashiny):
+    a = (adres or "").split("?")[0]
+    nom = nomer_iz_adresa(a)
+    if nom:
+        nazvanie = mashiny.get(nom, nom)
+        if "-diag" in a or "diag" in a.rsplit("/", 1)[-1]:
+            return "Диагностика · " + nazvanie
+        return nazvanie
+    hvost = a.rstrip("/").rsplit("/", 1)[-1].lower()
+    if hvost in ("", "index.html"):
+        return "Главная"
+    if hvost.startswith("katalog"):
+        return "Каталог"
+    if hvost.startswith("info"):
+        return "Условия и гарантии"
+    if hvost.startswith("podbor"):
+        return "Подбор под заказ"
+    return hvost or "Страница"
+
+
+def imya_deystviya(tip, adres, mashiny):
+    t = (tip or "").lower()
+    for klyuch, imya in DEYSTVIYA:
+        if klyuch in t:
+            return imya
+    if t in ("page", "page_view", "view", "stranica"):
+        return None
+    return t
+
+
+def klass_istochnika(istochnik, referrer, utm_source):
+    for znach in (utm_source, istochnik, referrer):
+        z = (znach or "").strip().lower()
+        if not z:
+            continue
+        for klyuch, imya in ISTOCHNIKI:
+            if klyuch in z:
+                return imya
+        if z in ("direct", "(direct)", "pryamoy", "pryamaya"):
+            return "Прямая ссылка"
+        if z.startswith("http"):
+            try:
+                domen = z.split("//", 1)[1].split("/")[0]
+            except Exception:
+                domen = z
+            if "uaart" in domen:
+                return "Прямая ссылка"
+            return "Другой сайт: " + domen
+        if "uaart" in z:  # UA-OWN-COUNTER-001: the site itself is not a source
+            return "Прямая ссылка"
+        if z not in ("unknown", "none", "null"):
+            return z[:24]
+    return "Неизвестно"
+
+
+def _sobytiya(soed, ot, do):
+    polya = [E["vremya"], E["tip"], E["stranica"], E["posetitel"], E["sessiya"]]
+    imena = [x for x in polya if x]
+    zapros = "select %s from events where %s >= ? and %s < ? order by %s" % (
+        ", ".join(imena), E["vremya"], E["vremya"], E["vremya"])
+    stroki = []
+    for r in soed.execute(zapros, (ot, do)):
+        d = dict(zip(imena, r))
+        stroki.append({
+            "kogda": d.get(E["vremya"]),
+            "tip": (d.get(E["tip"]) or ""),
+            "adres": (d.get(E["stranica"]) or "") if E["stranica"] else "",
+            "kto": (d.get(E["posetitel"]) or "") if E["posetitel"] else "",
+            "sess": (d.get(E["sessiya"]) or "") if E["sessiya"] else "",
+        })
+    return stroki
+
+
+def _sessii(soed, ot, do):
+    if not S.get("sessiya"):
+        return {}
+    imena = [x for x in (S.get("sessiya"), S.get("posetitel"), S.get("istochnik"),
+                         S.get("utm_source"), S.get("utm_campaign"), S.get("referrer"),
+                         S.get("vremya")) if x]
+    itog = {}
+    try:
+        for r in soed.execute("select %s from sessions" % ", ".join(imena)):
+            d = dict(zip(imena, r))
+            itog[str(d.get(S["sessiya"]))] = {
+                "kto": d.get(S.get("posetitel")),
+                "istochnik": d.get(S.get("istochnik")),
+                "utm_source": d.get(S.get("utm_source")),
+                "utm_campaign": d.get(S.get("utm_campaign")),
+                "referrer": d.get(S.get("referrer")),
+            }
+    except Exception:
+        pass
+    return itog
+
+
+def sklonenie(n, odna, dve, mnogo):
+    n = int(n)
+    if n % 10 == 1 and n % 100 != 11:
+        return odna
+    if n % 10 in (2, 3, 4) and n % 100 not in (12, 13, 14):
+        return dve
+    return mnogo
+
+
+def _verh(schet, skolko=5):
+    return sorted(schet.items(), key=lambda x: (-x[1], x[0]))[:skolko]
+
+
+def otchet(period="today"):
+    imya_perioda = IMENA_PERIODOV.get(period, period)
+    ot, do = granicy(period)
+    try:
+        soed = _ro(BAZA)
+    except Exception as e:
+        return "📊 UA ART — Аналитика\n%s\n\nБаза недоступна: %s" % (imya_perioda, e)
+
+    mashiny = _mashiny()
+    try:
+        sobytiya = _sobytiya(soed, ot, do)
+        sessii = _sessii(soed, ot, do)
+    except Exception as e:
+        soed.close()
+        return "📊 UA ART — Аналитика\n%s\n\nНе удалось прочитать события: %s" % (
+            imya_perioda, e)
+    soed.close()
+
+    if not sobytiya:
+        return ("📊 <b>UA ART — Аналитика</b>\n%s\n\n"
+                "👥 Посетителей: 0\n🔄 Сессий: 0\n👁 Просмотров: 0\n\n"
+                "Данных за выбранный период пока нет." % imya_perioda)
+
+    lyudi, sessii_mn, prosmotry = set(), set(), 0
+    stranicy, deystviya, istochniki, reklama = {}, {}, {}, {}
+    avto_prosmotry, avto_kontakty = {}, {}
+    smotreli_avto, otkryli_kartochku, kontakt = set(), set(), set()
+    marshruty = {}
+
+    for s in sobytiya:
+        kto = str(s["kto"] or s["sess"] or "?")
+        lyudi.add(kto)
+        if s["sess"]:
+            sessii_mn.add(str(s["sess"]))
+        tip = (s["tip"] or "").lower()
+        if tip in SISTEMNYE:
+            continue
+
+        nomer = nomer_iz_adresa(s["adres"])
+        deystvie = imya_deystviya(tip, s["adres"], mashiny)
+
+        if deystvie is None:          # просмотр страницы
+            prosmotry += 1
+            nazvanie = imya_stranicy(s["adres"], mashiny)
+            stranicy[nazvanie] = stranicy.get(nazvanie, 0) + 1
+            if nomer:                 # карточка авто = просмотр автомобиля
+                smotreli_avto.add(kto)
+                otkryli_kartochku.add(kto)
+                imya_avto = mashiny.get(nomer, nomer)
+                avto_prosmotry[imya_avto] = avto_prosmotry.get(imya_avto, 0) + 1
+            marshruty.setdefault(kto, []).append(nazvanie)
+        else:
+            deystviya[deystvie] = deystviya.get(deystvie, 0) + 1
+            if deystvie in ("WhatsApp", "Telegram", "Позвонить", "Заявка", "Бронь"):
+                kontakt.add(kto)
+                if nomer:
+                    imya_avto = mashiny.get(nomer, nomer)
+                    avto_kontakty.setdefault(imya_avto, set()).add(kto)
+            marshruty.setdefault(kto, []).append(deystvie)
+
+        sved = sessii.get(str(s["sess"]), {})
+        istochnik = klass_istochnika(sved.get("istochnik"), sved.get("referrer"),
+                                     sved.get("utm_source"))
+        istochniki[istochnik] = istochniki.get(istochnik, 0) + 1
+        if sved.get("utm_source"):
+            klyuch = "%s / %s" % (klass_istochnika(None, None, sved.get("utm_source")),
+                                  sved.get("utm_campaign") or "без кампании")
+            reklama.setdefault(klyuch, set()).add(kto)
+
+    # источники считаем по людям, а не по событиям
+    lyudi_istochnik = {}
+    for s in sobytiya:
+        kto = str(s["kto"] or s["sess"] or "?")
+        sved = sessii.get(str(s["sess"]), {})
+        lyudi_istochnik[kto] = klass_istochnika(sved.get("istochnik"), sved.get("referrer"),
+                                               sved.get("utm_source"))
+    po_istochnikam = {}
+    for kto, ist in lyudi_istochnik.items():
+        po_istochnikam[ist] = po_istochnikam.get(ist, 0) + 1
+
+    stroki = ["📊 <b>UA ART — Аналитика</b>", imya_perioda, ""]
+    stroki.append("👥 Посетителей: %d" % len(lyudi))
+    stroki.append("🔄 Сессий: %d" % (len(sessii_mn) or len(lyudi)))
+    stroki.append("👁 Просмотров страниц: %d" % prosmotry)
+
+    stroki.append("")
+    stroki.append("📥 <b>ОТКУДА ПРИШЛИ</b>")
+    for imya, n in _verh(po_istochnikam, 8):
+        stroki.append("%s — %d" % (imya, n))
+
+    if reklama:
+        stroki.append("")
+        stroki.append("🎯 <b>РЕКЛАМА (UTM)</b>")
+        for imya, kto_mn in _verh(dict((k, len(v)) for k, v in reklama.items()), 6):
+            stroki.append("%s — %d" % (imya, kto_mn))
+
+    if stranicy:
+        stroki.append("")
+        stroki.append("👀 <b>ЧТО СМОТРЕЛИ</b>")
+        for imya, n in _verh(stranicy, 8):
+            stroki.append("%s — %d" % (imya, n))
+
+    if deystviya:
+        stroki.append("")
+        stroki.append("➡️ <b>ЧТО НАЖИМАЛИ</b>")
+        for imya, n in _verh(deystviya, 8):
+            stroki.append("%s — %d" % (imya, n))
+
+    if avto_prosmotry:
+        stroki.append("")
+        stroki.append("🚗 <b>ИНТЕРЕС К АВТО</b>")
+        for imya, n in _verh(avto_prosmotry, 5):
+            k = len(avto_kontakty.get(imya, ()))
+            stroki.append("%s — %d %s / %d %s" % (
+                imya, n, sklonenie(n, "просмотр", "просмотра", "просмотров"),
+                k, sklonenie(k, "контакт", "контакта", "контактов")))
+
+    stroki.append("")
+    stroki.append("🔥 <b>КОНВЕРСИЯ</b>")
+    stroki.append("Посетителей: %d" % len(lyudi))
+    stroki.append("Смотрели авто: %d" % len(smotreli_avto))
+    stroki.append("Открыли карточку: %d" % len(otkryli_kartochku))
+    stroki.append("Нажали контакт: %d" % len(kontakt))
+    if lyudi:
+        stroki.append("Посетитель → контакт: %.1f%%" % (100.0 * len(kontakt) / len(lyudi)))
+    if otkryli_kartochku:
+        stroki.append("Карточка → контакт: %.1f%%" % (
+            100.0 * len(kontakt & otkryli_kartochku) / len(otkryli_kartochku)))
+
+    cepochki = {}
+    for kto, shagi in marshruty.items():
+        chistye = []
+        for sh in shagi:
+            if chistye and chistye[-1] == sh:
+                continue
+            chistye.append(sh)
+        if not chistye:
+            continue
+        nachalo = lyudi_istochnik.get(kto, "Неизвестно")
+        cepochka = nachalo + " → " + " → ".join(chistye[:5])
+        cepochki[cepochka] = cepochki.get(cepochka, 0) + 1
+    if cepochki:
+        stroki.append("")
+        stroki.append("🧭 <b>ТОП МАРШРУТОВ</b>")
+        for imya, n in _verh(cepochki, 5):
+            stroki.append("%s — %d" % (imya, n))
+
+    return "\n".join(stroki)
