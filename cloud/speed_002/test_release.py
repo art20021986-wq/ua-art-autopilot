@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """SPEED-002: card URL versions, stage picture copies, order page styles and the exact edits."""
 from io import BytesIO
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -65,6 +66,14 @@ class StageImageTests(unittest.TestCase):
         self.assertIn('src="/video/stage/UA-0002.webp?v=034537" srcset="/video/opt/s/stage_UA-0002.webp 600w, '
                       '/video/stage/UA-0002.webp?v=034537 880w"', done)
         self.assertEqual(stage.apply(done, find=find), done)
+        # The home stage button sets a new live photo (?v=) and drops its srcset: it is added back.
+        repicked = re.sub(r'(class="stage-live"[^>]*?)src="[^"]*" srcset="[^"]*" sizes="[^"]*"',
+                          r'\1src="/video/stage/UA-0009.webp?v=1a2b3c4d"', done)
+        self.assertNotIn('stage_UA-0009', repicked)
+        again = stage.apply(repicked, find=find)
+        self.assertIn('src="/video/stage/UA-0009.webp?v=1a2b3c4d" srcset="/video/opt/s/stage_UA-0009.webp 600w, '
+                      '/video/stage/UA-0009.webp?v=1a2b3c4d 880w"', again)
+        self.assertEqual(again.count('srcset="/video/opt/s/'), 2)
         self.assertEqual(stage.apply(HOME, find=lambda url: None), HOME)
         self.assertEqual(stage.apply('<p>other page</p>'), '<p>other page</p>')
 
