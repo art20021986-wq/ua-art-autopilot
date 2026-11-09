@@ -251,6 +251,9 @@ class PublicVerificationTests(unittest.TestCase):
         self.assertEqual(result,{path:'PASS' for path in controller.EXPECTED})
         self.assertEqual(fetch.call_count,len(controller.EXPECTED))
 
+    def test_only_public_folder_is_checked(self):
+        self.assertTrue(all(path.startswith('/video/') for path in controller.EXPECTED))
+
     def test_missing_change_is_not_success(self):
         def old(request,timeout):
             response=BytesIO(b'<html>'+b'x'*300+b'</html>')
