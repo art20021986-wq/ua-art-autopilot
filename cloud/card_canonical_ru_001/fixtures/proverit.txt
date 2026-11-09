@@ -1,0 +1,36 @@
+_ua_seo068_original_proverit = proverit
+def proverit(html, kod=''):
+    errors = list(_ua_seo068_original_proverit(html, kod) or [])
+    file_name = (str(kod).upper() + '.html') if kod else _ua_seo068_core_path(html)
+    if file_name:
+        expected = _UA_SEO068_ORIGIN + '/video/' + file_name
+        # CARD-CANONICAL-FIX-001: a card with language versions names its Ukrainian version (CARD-LANG-001).
+        allowed = [expected, _UA_SEO068_ORIGIN + '/video/ua/' + file_name] if kod else [expected]
+        canonicals = _ua_seo068_re.findall(r'<link\b(?=[^>]*\brel\s*=\s*["\'][^"\']*canonical[^"\']*["\'])(?=[^>]*\bhref\s*=\s*["\']([^"\']+)["\'])[^>]*>', str(html), _ua_seo068_re.I)
+        if len(canonicals) != 1 or canonicals[0] not in allowed:
+            errors.append('SEO068 canonical')
+        if _ua_seo068_re.search(r'<meta\b(?=[^>]*\bname\s*=\s*["\'](?:robots|googlebot)["\'])[^>]*\bcontent\s*=\s*["\'][^"\']*(?:noindex|nofollow)', str(html), _ua_seo068_re.I):
+            errors.append('SEO068 robots')
+        if kod:
+            identifier = str(kod).upper()
+            primary = []
+            for found in _UA_SEO068_ACTION.finditer(str(html)):
+                opening = found.group(1)
+                visible = _ua_seo068_strip(found.group('inner'))
+                if 'kn_kupit' in _ua_seo068_attr(opening, 'class').split() or _UA_SEO068_CTA_RE.search(visible):
+                    primary.append(visible)
+            if primary != [_UA_SEO068_CTA]:
+                errors.append('SEO068 CTA')
+            diagnostics = []
+            for tag in _ua_seo068_re.findall(r'<a\b[^>]*>', str(html), _ua_seo068_re.I):
+                href = _ua_seo068_attr(tag, 'href')
+                match = _ua_seo068_re.search(r'(UA-[0-9]{4,}-diag\.html)(?:[?#]|$)', href, _ua_seo068_re.I)
+                if match:
+                    diagnostics.append(match.group(1).upper())
+            if diagnostics != [identifier + '-DIAG.HTML']:
+                errors.append('SEO068 diagnostics')
+    result = []
+    for error in errors:
+        if error not in result:
+            result.append(error)
+    return result
