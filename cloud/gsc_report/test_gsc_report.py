@@ -98,6 +98,11 @@ class RemoteTests(unittest.TestCase):
         self.assertNotIn('extra', value['sitemaps']['entries'][0])
         self.assertEqual(value['inspection']['video/UA-0018.html']['coverageState'], 'Indexed')
         self.assertEqual(len(value['inspection']), remote.MAX_PAGES)
+        self.assertEqual(list(value['inspection_extra']), list(remote.CANDIDATES))
+
+    def test_extra_lists_old_card_addresses_then_candidates(self):
+        listed = ['video/index.html', 'video/ua/UA-0001.html', 'video/ru/UA-0001.html', 'video/ru/UA-0003.html', 'index.html']
+        self.assertEqual(remote.extra(listed), ['video/UA-0001.html', 'video/UA-0003.html', '', 'video', 'video/', 'katalog.html'])
 
 
 if __name__ == '__main__':

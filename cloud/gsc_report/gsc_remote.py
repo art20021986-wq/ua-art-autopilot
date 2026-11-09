@@ -1,7 +1,8 @@
 """Weekly read-only Search Console report on the server, where the service account key lives.
 
 GET/query only: properties and permission, sitemaps, top queries and pages for 28 days, daily totals for 90 days,
-and the index status of every page in the sitemap. The key itself never leaves the server.
+and the index status of every page in the sitemap, of the old card addresses and of the usual redirect candidates
+(GSC 2026-11-09: «copy, Google chose another canonical» and «page with redirect»). The key itself never leaves the server.
 """
 import argparse
 import datetime
@@ -24,11 +25,20 @@ API = 'https://www.googleapis.com/webmasters/v3/sites/'
 INSPECT = 'https://searchconsole.googleapis.com/v1/urlInspection/index:inspect'
 SITEMAP = HOME/'video/sitemap.xml'
 MAX_PAGES = 80
+# Addresses outside the sitemap that GSC may list as copies or redirects: the site root, the /video folder and
+# the short catalogue address.
+CANDIDATES = ('', 'video', 'video/', 'index.html', 'katalog.html')
 
 
 def pages():
     found = re.findall(r'<loc>' + re.escape(SITE) + r'([^<]+)</loc>', SITEMAP.read_text(encoding='utf-8'))
     return found[:MAX_PAGES]
+
+
+def extra(listed):
+    """The old /video/UA-XXXX.html address of every card version in the sitemap, then the redirect candidates."""
+    old = sorted({re.sub(r'^video/(?:ua|ru)/', 'video/', p) for p in listed if re.fullmatch(r'video/(?:ua|ru)/UA-\d{4}\.html', p)})
+    return old + [p for p in CANDIDATES if p not in listed]
 
 
 def token(key):
@@ -83,6 +93,7 @@ def report():
         return {'status': 'FAIL', 'error': 'TOKEN:' + type(error).__name__ + ':' + str(error)[:160]}
     status, sites = call(bearer, API.rstrip('/'))
     status_map, sitemaps = call(bearer, API + urllib.parse.quote(SITE, safe='') + '/sitemaps')
+    listed = pages()
     end = datetime.date.today() - datetime.timedelta(days=2)
     start = end - datetime.timedelta(days=27)
     value = {'status': 'PASS', 'service_account': email,
@@ -92,7 +103,8 @@ def report():
                                                           for s in sitemaps.get('sitemap', [])] if status_map == 200 else sitemaps},
              'window': [str(start), str(end)], 'queries': rows(bearer, 'query', start, end),
              'pages': rows(bearer, 'page', start, end),
-             'dates': rows(bearer, 'date', end - datetime.timedelta(days=89), end, 100), 'inspection': {p: inspect(bearer, p) for p in pages()}}
+             'dates': rows(bearer, 'date', end - datetime.timedelta(days=89), end, 100), 'inspection': {p: inspect(bearer, p) for p in listed},
+             'inspection_extra': {p: inspect(bearer, p) for p in extra(listed)}}
     full = [e for e in value['sites']['entries'] if isinstance(e, dict) and e.get('siteUrl') == SITE] \
         if isinstance(value['sites']['entries'], list) else []
     value['permission'] = full[0].get('permissionLevel') if full else None
