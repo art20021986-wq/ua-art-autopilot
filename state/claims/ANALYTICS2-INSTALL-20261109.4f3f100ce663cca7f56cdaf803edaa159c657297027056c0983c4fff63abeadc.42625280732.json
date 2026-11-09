@@ -17,6 +17,15 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "106397a6e7ae9aea"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-09T14:50:23.507365+00:00",
+      "class": "ROLLED_BACK_VERIFIED",
+      "evidence_path": "state/reconciliations/ANALYTICS2-INSTALL-20261109.42625280732.authenticated-evidence.json",
+      "message": "Public verification after install opened /site/UA-0018-diag.html (not public, 404); rollback restored the previous release and was verified. Owner-authorized halt recovery; the install is redone as ANALYTICS2-INSTALL-20261109-R2.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-09T13:32:35Z",
@@ -119,5 +128,5 @@
       "cloud/analytics_002/ua_server_visits.py": "d83ce7c4054a45eb908cc8180208df4e78d04e1d48377f2f6f78d1c8f1097101"
     }
   },
-  "updated_at": "2026-11-09T13:50:12Z"
+  "updated_at": "2026-11-09T14:50:23.507365+00:00"
 }
