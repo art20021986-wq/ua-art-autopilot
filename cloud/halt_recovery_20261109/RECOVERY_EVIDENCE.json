@@ -1,0 +1,40 @@
+{
+  "after_clear_mode_validation": {
+    "allow_halt_for_recovery": false,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "authorization_scope": "Archive the ANALYTICS2-INSTALL-20261109 halt (public verification hit a non-public /site/ path; verified rollback restored the previous release); preserve all protection policies, Gate B, backup and operator data",
+  "before_clear_mode_validation": {
+    "allow_halt_for_recovery": true,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "before_error": "404 /site/UA-0018-diag.html at public_verify; backup PASS; rollback PASS, live_verify PASS, crm_unchanged",
+  "claim_archive": "state/halt_history/ANALYTICS2-INSTALL-20261109.42625280732/claim.before.json",
+  "contract": "OWNER-AUTHORIZED-REPOSITORY-HALT-RECOVERY-EVIDENCE-1",
+  "credentials_read_or_changed": false,
+  "execution_mode_bytes_changed": false,
+  "existing_launch_markers_replayed": false,
+  "halt_archive": "state/halt_history/ANALYTICS2-INSTALL-20261109.42625280732/halt.json",
+  "halt_sha256": "8ebb26f7785e1b21fbbd6fe8e28c62f6f3ffb8f8c79f2adca88fb31a43089e0b",
+  "historical_halt": {
+    "halted_at": "2026-11-09T13:50:12Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "CRITICAL Production pipeline failed; GitHub Actions run 42625280732; rollback reserved true; rollback performed true",
+    "request_path": "tasks/requests/ANALYTICS2-INSTALL-20261109.json",
+    "request_sha256": "4f3f100ce663cca7f56cdaf803edaa159c657297027056c0983c4fff63abeadc",
+    "run_id": "42625280732",
+    "status": "EMERGENCY_HALT",
+    "task_id": "ANALYTICS2-INSTALL-20261109"
+  },
+  "owner_statement": "разберись и сними остановку",
+  "precedent": "cloud/halt_recovery_20261103/RECOVERY_EVIDENCE.json",
+  "production_launch_created": false,
+  "production_transaction_opened": false,
+  "reconciliation_evidence": "state/reconciliations/ANALYTICS2-INSTALL-20261109.42625280732.authenticated-evidence.json",
+  "recorded_at": "2026-11-09T14:49:34.627680+00:00",
+  "required_production_gates_weakened": false,
+  "runtime_code_changed": false,
+  "site_or_crm_written": false
+}

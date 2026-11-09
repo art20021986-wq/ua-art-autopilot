@@ -1,0 +1,27 @@
+{
+  "backup_receipt": "state/receipts/ANALYTICS2-INSTALL-20261109-BACKUP.json",
+  "backup_started": true,
+  "claim_before_sha256": "9d6d4e01224e3fe20c5d8ca469b4f7634e36781042700b13b9a2b8f6902c97eb",
+  "claim_status_before": {
+    "critical_gate_status": "PASS_PRODUCTION",
+    "package_compile_status": "PASS",
+    "production_transaction_status": "ROLLED_BACK",
+    "task_execution_status": "ROLLED_BACK"
+  },
+  "crm_unchanged": true,
+  "error": "404 on /site/UA-0018-diag.html in public verification (not a public path)",
+  "failed_step": "execute / critical / controller_production: public_verify (after install)",
+  "halt_archive": "state/halt_history/ANALYTICS2-INSTALL-20261109.42625280732/halt.json",
+  "live_verify": "PASS",
+  "owner_statement": "разберись и сними остановку",
+  "precedent": "state/reconciliations/SPEED-INSTALL-20261101.41316386480.authenticated-evidence.json",
+  "production_transaction_status": "ROLLED_BACK",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-09T14:49:34.627680+00:00",
+  "rollback_receipt": "state/receipts/ANALYTICS2-INSTALL-20261109-ROLLBACK.json",
+  "rollback_status": "ROLLED_BACK",
+  "run_id": "42625280732",
+  "site_state_after": "pre-install release, restored and verified by the rollback",
+  "task_id": "ANALYTICS2-INSTALL-20261109",
+  "workflow_conclusion": "failure"
+}
