@@ -21,6 +21,9 @@ STAGES = ('kiev', 'georgia', 'sea', 'korea')
 CODE = re.compile(r'UA-\d{4}')
 LIVE_IMG = re.compile(r'<img\b[^>]*\bclass="stage-live"[^>]*>')
 SRC = re.compile(r'\bsrc="[^"]*"')
+# Phone-size copies (srcset/sizes, SPEED-002) belong to the previous car; they are dropped
+# so the browser shows the new src, and the site's own image step adds them again later.
+RESPONSIVE = re.compile(r'\s(?:srcset|sizes)="[^"]*"')
 
 
 class SiteError(RuntimeError):
@@ -41,9 +44,9 @@ def edit_home(text, stage, url):
         raise SiteError('STAGE:%s' % stage)
     tile = _tile(text, stage)
     images = LIVE_IMG.findall(tile)
-    if len(images) != 1 or len(SRC.findall(images[0])) != 1:
+    if len(images) != 1 or len(SRC.findall(images[0])) != 1:  # \bsrc never matches srcset
         raise SiteError('HOME_LIVE_PHOTO:%s' % stage)
-    image = SRC.sub(lambda m: 'src="%s"' % url, images[0], count=1)
+    image = RESPONSIVE.sub('', SRC.sub(lambda m: 'src="%s"' % url, images[0], count=1))
     return text.replace(tile, tile.replace(images[0], image, 1), 1)
 
 

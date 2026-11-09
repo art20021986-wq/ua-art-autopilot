@@ -74,6 +74,15 @@ class EditTests(unittest.TestCase):
             self.assertEqual(len(old), 1)
             self.assertEqual(len(edited) - len(PAGE), len(url) - len(old[0].split('"')[0]))
 
+    def test_drops_phone_copies_of_the_previous_car(self):
+        page = PAGE.replace('src="/video/stage/UA-0002.webp?v=034537"',
+                            'src="/video/stage/UA-0002.webp?v=034537" srcset="/video/opt/s/UA-0002.webp 600w, '
+                            '/video/stage/UA-0002.webp 880w" sizes="50vw"')
+        edited = site.edit_home(page, 'kiev', '/video/stage/UA-0009.webp?v=1')
+        self.assertNotIn('UA-0002', edited.split('data-stage="kiev"')[1].split('</a>')[0])
+        self.assertIn('src="/video/stage/UA-0009.webp?v=1"', edited)
+        self.assertEqual(site.current(edited, 'georgia'), 'UA-0001')
+
     def test_refuses_unknown_stage_or_broken_page(self):
         with self.assertRaises(site.SiteError):
             site.edit_home(PAGE, 'moon', '/x')
