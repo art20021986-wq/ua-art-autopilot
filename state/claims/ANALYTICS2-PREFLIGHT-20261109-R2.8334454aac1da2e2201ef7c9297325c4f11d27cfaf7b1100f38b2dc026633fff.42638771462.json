@@ -7,21 +7,23 @@
   "created_at": "2026-11-09T15:06:59Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-09T15:06:59Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-09T15:13:50Z",
+  "heartbeat_at": "2026-11-09T15:13:50Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "42638771462",
     "task_id": "ANALYTICS2-PREFLIGHT-20261109-R2",
     "task_sha256": "8334454aac1da2e2201ef7c9297325c4f11d27cfaf7b1100f38b2dc026633fff"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-413387bfbdad2174-103eb5ed906d9494",
   "receipt_path": "state/receipts/ANALYTICS2-PREFLIGHT-20261109-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "39f20e4452516a3713097fcd6229309a06dbba3dfcf006289671bc0fac6f71bf",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ANALYTICS2-PREFLIGHT-20261109-R2.json",
   "request_sha256": "8334454aac1da2e2201ef7c9297325c4f11d27cfaf7b1100f38b2dc026633fff",
   "resource_locks": [
@@ -29,8 +31,34 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "7cf627c2b9ed253aac12ff50b0f770448dee4c15",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92824522752,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.1
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-09T15:06:59Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "cd71d22ea6f2c1596ecdcc7aef5bd1a80db50178ac74c7b5b03451307c5b1bda",
+    "file_sha256": {
+      "cloud/analytics_002/candidate_builder.py": "00ef1cdb0b7e44ee08a46868bf1234785392069d9d199dcb5ba5047823736a7b",
+      "cloud/analytics_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/analytics_002/deployment_bootstrap.py": "3576ec316e54f95f5382a9f94df28ace797741950d3c9b7681c746ada3e8684b",
+      "cloud/analytics_002/deployment_remote.py": "ec3350af17afa49a0c1287c575813bb200d044b3e3f090b058ce719a6e3e0a25",
+      "cloud/analytics_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/analytics_002/deployment_transport.py": "3a5e7ff78b49c724a77c20c849d20de3cc54187d03d025cf73dcb54123e7a4d5",
+      "cloud/analytics_002/make_release.py": "339da8fbdb6a7e3bb03576f2f545e8bb943c11c77255d44b748161fbb2cd15fe",
+      "cloud/analytics_002/release_constants.py": "cc163412b06c507e3fec1655a161b3e45dc0846ae37f541a912dce7cae52ac05",
+      "cloud/analytics_002/test_deployment.py": "51a7c1343f1437421cb768ec6d44aa20f4c8b79aafdf462d3fb4f8e916dfdd73",
+      "cloud/analytics_002/test_release.py": "3ec059f13c8ca1dade72b2af924fa494f2864b175c26c6fc41c09a564b8acff6",
+      "cloud/analytics_002/ua_google_tag.py": "f5f0a30489d20d7f7d973c27bd31e583e9827fb5a6d1e24a97fb35d1e6a3b6d4",
+      "cloud/analytics_002/ua_server_visits.py": "d83ce7c4054a45eb908cc8180208df4e78d04e1d48377f2f6f78d1c8f1097101"
+    }
+  },
+  "updated_at": "2026-11-09T15:13:50Z"
 }
