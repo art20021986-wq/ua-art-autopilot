@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "bde4b6055dfc958f34c922ac128b18614cdbeba8fe3912b760186f770dd667e7",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "STOP_AFTER_VERIFIED_ROLLBACK",
+      "at": "2026-11-09T13:50:12Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 42625280732",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "106397a6e7ae9aea"
+    }
+  ],
   "heartbeat_at": "2026-11-09T13:32:35Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -43,7 +54,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42625280732-4f3f100ce663cca7",
   "production_transaction_path": "state/transactions/ANALYTICS2-INSTALL-20261109.4f3f100ce663cca7f56cdaf803edaa159c657297027056c0983c4fff63abeadc.42625280732.json",
-  "production_transaction_status": "ROLLING_BACK",
+  "production_transaction_status": "ROLLED_BACK",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/ANALYTICS2-INSTALL-20261109.json",
   "receipt_validation_status": "PENDING",
@@ -90,7 +101,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "ROLLED_BACK",
   "trusted_package": {
     "controller_sha256": "e968b90be02582950909ccc9d71036e219ad716e82c88e7b1f00730f5bf9eaad",
     "file_sha256": {
@@ -108,5 +119,5 @@
       "cloud/analytics_002/ua_server_visits.py": "d83ce7c4054a45eb908cc8180208df4e78d04e1d48377f2f6f78d1c8f1097101"
     }
   },
-  "updated_at": "2026-11-09T13:41:10Z"
+  "updated_at": "2026-11-09T13:50:12Z"
 }
