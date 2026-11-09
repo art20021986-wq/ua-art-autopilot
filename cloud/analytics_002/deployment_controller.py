@@ -14,10 +14,10 @@ ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 # Public evidence of each change: path -> text the page must contain.
 TAG = 'G-6SRBQK6GY4'
+# Only /video/ is public (static files); /site/ pages are not served (R1 halted on a 404 there).
 EXPECTED = {'/video/index.html': TAG,
             '/video/UA-0018.html': TAG,
             '/video/UA-0018-diag.html': TAG,
-            '/site/UA-0018-diag.html': TAG,
             '/video/privacy.html': TAG}
 
 
