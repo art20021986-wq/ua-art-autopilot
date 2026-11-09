@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "d79d81d952ff04c33c6e42914f5ad1af8a33fdc3aabcfe891cb7cc70f0c6f892",
   "autostart_source_commit": "adb77a9fe10eec64fe813b0e99e0ac77bb813de4",
   "created_at": "2026-11-09T13:26:21Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "bde4b6055dfc958f34c922ac128b18614cdbeba8fe3912b760186f770dd667e7",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-09T13:26:21Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-09T13:27:40Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42625280732",
     "task_id": "ANALYTICS2-INSTALL-20261109",
     "task_sha256": "4f3f100ce663cca7f56cdaf803edaa159c657297027056c0983c4fff63abeadc"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 41.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 30.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42625280732-4f3f100ce663cca7",
+  "production_transaction_path": "state/transactions/ANALYTICS2-INSTALL-20261109.4f3f100ce663cca7f56cdaf803edaa159c657297027056c0983c4fff63abeadc.42625280732.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "card-ua-0001-0b6ded74667e170d",
   "receipt_path": "state/receipts/ANALYTICS2-INSTALL-20261109.json",
   "receipt_validation_status": "PENDING",
@@ -50,8 +75,38 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "66e647ef8932a6e5da70aad08d61a685d94d4eb0",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 411.982,
+    "allowed": true,
+    "evidence_path": "state/storage/ANALYTICS2-INSTALL-20261109.json",
+    "evidence_sha256": "4c6a6db80d7d14c58b4f8b0d94e7f206a7e44f82fc6f0ad0a24afb4310d22274",
+    "free_bytes": 23588728320,
+    "heavy": true,
+    "measured_at": "2026-11-09T13:20:45.800363+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 32.60363337142857
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-09T13:26:21Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "e968b90be02582950909ccc9d71036e219ad716e82c88e7b1f00730f5bf9eaad",
+    "file_sha256": {
+      "cloud/analytics_002/candidate_builder.py": "00ef1cdb0b7e44ee08a46868bf1234785392069d9d199dcb5ba5047823736a7b",
+      "cloud/analytics_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/analytics_002/deployment_bootstrap.py": "3576ec316e54f95f5382a9f94df28ace797741950d3c9b7681c746ada3e8684b",
+      "cloud/analytics_002/deployment_remote.py": "ec3350af17afa49a0c1287c575813bb200d044b3e3f090b058ce719a6e3e0a25",
+      "cloud/analytics_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/analytics_002/deployment_transport.py": "3a5e7ff78b49c724a77c20c849d20de3cc54187d03d025cf73dcb54123e7a4d5",
+      "cloud/analytics_002/make_release.py": "339da8fbdb6a7e3bb03576f2f545e8bb943c11c77255d44b748161fbb2cd15fe",
+      "cloud/analytics_002/release_constants.py": "9a349a5ca128bdd762691946e494e7960a8685c9485206809471a05f7276462b",
+      "cloud/analytics_002/test_deployment.py": "1dbeb69daae7e7ab50540f89af9ebdac01be2b8ca657de0dbd584b38ef55b3fc",
+      "cloud/analytics_002/test_release.py": "3ec059f13c8ca1dade72b2af924fa494f2864b175c26c6fc41c09a564b8acff6",
+      "cloud/analytics_002/ua_google_tag.py": "f5f0a30489d20d7f7d973c27bd31e583e9827fb5a6d1e24a97fb35d1e6a3b6d4",
+      "cloud/analytics_002/ua_server_visits.py": "d83ce7c4054a45eb908cc8180208df4e78d04e1d48377f2f6f78d1c8f1097101"
+    }
+  },
+  "updated_at": "2026-11-09T13:27:40Z"
 }
