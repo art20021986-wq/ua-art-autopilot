@@ -1,0 +1,14 @@
+import re as _ua_seo068_re
+_UA_SEO068_ORIGIN = 'https://www.uaart.com.ua'
+_UA_SEO068_ACTION = _ua_seo068_re.compile(r'(<a\b[^>]*>)(?P<inner>.*?)</a>', _ua_seo068_re.S)
+_UA_SEO068_CTA_RE = _ua_seo068_re.compile('Завдаток')
+_UA_SEO068_CTA = 'Завдаток 500 $'
+def _ua_seo068_strip(value):
+    return _ua_seo068_re.sub(r'<[^>]+>', '', value).strip()
+def _ua_seo068_attr(tag, name):
+    found = _ua_seo068_re.search(name + r'\s*=\s*["\']([^"\']*)["\']', tag)
+    return found.group(1) if found else ''
+def _ua_seo068_core_path(html):
+    return ''
+def proverit(html, kod=''):
+    return []

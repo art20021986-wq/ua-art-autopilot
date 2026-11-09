@@ -14,3 +14,11 @@
 ## Шаг 1 (только чтение)
 GSC-REPORT-20261109: отчёт Search Console + проверка старых адресов карточек и типовых адресов
 с переадресацией (inspection_extra), чтобы увидеть, какие адреса Google отметил «с переадресацией».
+
+## Шаг 2 — исправление «копий» (владелец: «Да согласен», 2026-11-09)
+Пакет `cloud/card_canonical_ru_001` (CARD-CANONICAL-RU-001), три правки по одной на модуль:
+- `edit_card_lang.py` — ua_card_lang.canonical: старая страница → /video/ru/UA-XXXX.html;
+- `edit_guard.py` — master_card proverit (SEO068) принимает и /video/ru/ своей карточки;
+- `edit_metadata.py` — SEO_REVISION CARD-CANONICAL-RU-001 (CRM-синхронизация перепубликует карточки).
+Пробный прогон CARD-CANONICAL-RU-PREFLIGHT-20261109 проверяет все карточки (canonical = ru при двух версиях,
+иначе сама карточка; проверка публикации не отказывает). Затем установка CRITICAL с бэкапом и откатом.
