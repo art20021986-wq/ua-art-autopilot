@@ -101,14 +101,16 @@ class TickerTest(unittest.TestCase):
         self.assertIn('class="kt-lead"', html)
         self.assertIn('<b>2 382</b>', html)
         self.assertNotIn('"><script>', html)
-        self.assertEqual(html.count('class="kt-item"'), 2)  # duplicated track for a seamless loop
+        self.assertEqual(html.count('class="kt-item"'), 1)  # a slider: each card once
+        self.assertEqual((html.count('kt-arrow kt-prev'), html.count('kt-arrow kt-next')), (1, 1))
+        self.assertIn('},2000);', html)  # a step every 2 seconds (owner 2026-11-10)
 
     def test_owner_cars_mixed_in(self):
         own = {'code': 'UA-0018', 'title': 'Kia K5 2023', 'stage': 'kiev', 'price_usd': 20300,
                'photo': 'https://www.uaart.com.ua/video/foto/UA-0018/001.jpg',
                'url': 'https://www.uaart.com.ua/video/ua/UA-0018.html'}
         html = ticker.render({'lots_on_date': 5, 'items': [self.ITEM, self.ITEM], 'own': [own]})
-        self.assertEqual(html.count('class="kt-item kt-own"'), 2)  # once per (duplicated) track
+        self.assertEqual(html.count('class="kt-item kt-own"'), 1)
         self.assertIn('★ У нас · у Києві', html)
         self.assertIn('$20 300</b>', html)
         self.assertIn('href="https://www.uaart.com.ua/video/ua/UA-0018.html"', html)

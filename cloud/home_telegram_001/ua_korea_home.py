@@ -9,7 +9,8 @@ apply(html) on the home page (the «Авто під замовлення» hero 
   4. the page order (owner 2026-11-10): «Аукціони онлайн» block, the ticker, the hero (individual order:
      its button reads «Індивідуальне замовлення»), cars in stock (#stages), then the remaining blocks.
      Applied only to the known structure; any other structure keeps its order;
-  5. the hero has no «Написати в Telegram» button (owner 2026-11-10).
+  5. the hero has no «Написати в Telegram» button; the auctions block button reads «Дивитися аукціони»
+     (owner 2026-11-10).
 Each addition is applied once and independently (a page from an earlier version gets the missing ones);
 remove() takes all of them back. Any other page is returned unchanged.
 """
@@ -121,6 +122,7 @@ def _ordered(html):
 
 def _unordered(html):
     """Inverse of _ordered (the page keeps the mark, flag link and ticker slot)."""
+    html = html.replace(GO_TO, GO_FROM, 1)
     found = _blocks(html) if LAYOUT in html else None
     if found is None:
         return html
@@ -131,9 +133,16 @@ def _unordered(html):
     return new.replace(PICK_TO, PICK_FROM + ('' if PICK_TO + TELEGRAM in new else TELEGRAM), 1)
 
 
+GO_FROM = _t('a', 'Дивитися онлайн', 'Смотреть онлайн', 'ონლაინ ნახვა', ' class="go" href="korea.html"')
+GO_TO = _t('a', 'Дивитися аукціони', 'Смотреть аукционы', 'აუქციონების ნახვა', ' class="go" href="korea.html"')
+
+
 def _without_telegram(html):
-    """The ordered page's hero without the Telegram button (it follows the individual order button)."""
-    return html.replace(PICK_TO + TELEGRAM, PICK_TO, 1) if LAYOUT in html else html
+    """The ordered page: no Telegram button in the hero (it follows the individual order button), the auctions
+    block button reads «Дивитися аукціони»."""
+    if LAYOUT not in html:
+        return html
+    return html.replace(PICK_TO + TELEGRAM, PICK_TO, 1).replace(GO_FROM, GO_TO, 1)
 
 
 def apply(html):

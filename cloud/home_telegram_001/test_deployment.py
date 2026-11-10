@@ -113,7 +113,7 @@ class RecoveryTests(unittest.TestCase):
         import ua_korea_home as home
         live = (Path(__file__).resolve().parent/'fixtures'/'index_live.html').read_text()
         after = home.apply(live)
-        before = after.replace(home.PICK_TO, home.PICK_TO + home.TELEGRAM, 1)  # as installed by HOME-ORDER
+        before = after.replace(home.PICK_TO, home.PICK_TO + home.TELEGRAM, 1).replace(home.GO_TO, home.GO_FROM)
         self.plan['files']['video/index.html'] = {'before': sha(before.encode()), 'after': sha(after.encode()),
                                                   'mode': 0o644, 'page': True}
         remote.atomic(self.root/'video/index.html', before.encode())

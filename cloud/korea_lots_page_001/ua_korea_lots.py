@@ -4,7 +4,8 @@ apply(html) on video/korea.html:
   1. after the «Два способи купити авто» block — the lot list (#lots): search by make, model, year, mileage and
      price, cards, and a lot card with photos, data and «Зв'язатися з менеджером» (the site's manager dialog,
      with the chosen lot). Data: /video/korea/lots.json, written by the server job (korea_auction.public).
-  2. the «Дивитися онлайн» buttons lead to the list instead of opening the dialog.
+  2. the «Дивитися онлайн» buttons lead to the list instead of opening the dialog and read «Дивитися аукціони»
+     (owner 2026-11-10).
 remove(html) takes both back. Texts carry the site's data-uk / data-ru / data-ka attributes (ua-site-languages.js
 translates them, also in the cards the script adds).
 """
@@ -16,6 +17,9 @@ AFTER = '<section class="kr-sec"><div class="kr-card kr-two">'
 WATCH_FROM = '<a class="kr-btn" href="#online" data-quick-lead-auction="korea" data-quick-lead-title="— аукціони Кореї онлайн">'
 WATCH_TO = '<a class="kr-btn" href="#lots" data-ua-kr-lots="1">'
 DATA = '/video/korea/lots.json'
+LABEL_FROM = '<span data-uk="Дивитися онлайн" data-ru="Смотреть онлайн" data-ka="ონლაინ ნახვა">Дивитися онлайн</span>'
+LABEL_TO = ('<span data-uk="Дивитися аукціони" data-ru="Смотреть аукционы" data-ka="აუქციონების ნახვა">'
+            'Дивитися аукціони</span>')
 
 
 def _t(uk, ru, ka, tag='span', attrs=''):
@@ -149,7 +153,7 @@ def apply(html):
         return html
     start = html.index(AFTER)
     end = html.index('</section>', start) + len('</section>')
-    return (html[:end] + BLOCK + html[end:]).replace(WATCH_FROM, WATCH_TO)
+    return (html[:end] + BLOCK + html[end:]).replace(WATCH_FROM, WATCH_TO).replace(LABEL_FROM, LABEL_TO)
 
 
 def remove(html):
@@ -158,4 +162,4 @@ def remove(html):
         return html
     start = html.index(MARK)
     end = html.index(END, start) + len(END)
-    return (html[:start] + html[end:]).replace(WATCH_TO, WATCH_FROM)
+    return (html[:start] + html[end:]).replace(WATCH_TO, WATCH_FROM).replace(LABEL_TO, LABEL_FROM)

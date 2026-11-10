@@ -15,9 +15,9 @@ from deployment_transport import API, HERE, INBOX, TransportError, canonical, sh
 
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
-# The live site after the install: the home ticker slot, the Korea page with its dialog opener, the shared dialog
-# script with the auction enquiry, the selection page heading; the catalogue and order page stay healthy.
-EXPECTED = {'/video/index.html': 'UA-HOME-ORDER-V1', '/video/korea.html': 'data-quick-lead-auction="korea"',
+# The live site after the install: the home page with the renamed auctions button; the Korea page, catalogue and
+# order page stay healthy.
+EXPECTED = {'/video/index.html': '>Дивитися аукціони<', '/video/korea.html': '',
             '/video/katalog.html': '', '/video/podbor.html': ''}
 # ...and what must be gone from it.
 ABSENT = {'/video/index.html': 'data-uk="Написати в Telegram"'}

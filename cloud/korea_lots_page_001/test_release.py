@@ -69,6 +69,7 @@ class CandidateTests(unittest.TestCase):
         self.assertEqual(ua_korea_lots.remove(page), PAGE)
         self.assertEqual(page.count(ua_korea_lots.WATCH_TO), 2)
         self.assertNotIn(ua_korea_lots.WATCH_FROM, page)
+        self.assertEqual((page.count(ua_korea_lots.LABEL_TO), page.count('Дивитися онлайн')), (2, 0))
         self.assertNotIn('beforward', page.lower())
         self.assertIn('/video/korea/lots.json', page)
         self.assertIn('data-quick-lead-lot', page)
