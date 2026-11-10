@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "cc704e906c6da9ab2ba32f5ee1f59a463cc8140b7bed68319a9129807b7db4ca",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T18:22:52Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-10T18:28:48Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42874071084",
     "task_id": "HOME-TELEGRAM-INSTALL-20261110",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42874071084-28ee706f13304c5b",
   "production_transaction_path": "state/transactions/HOME-TELEGRAM-INSTALL-20261110.28ee706f13304c5b33f3032706f74065b987970a21e2a77953dfe327052952c9.42874071084.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-TELEGRAM-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/home_telegram_001/ua_korea_home.py": "2549a9289919abbd55316208e2d28a11bfa3d98da22e33ab634056032dcff96e"
     }
   },
-  "updated_at": "2026-11-10T18:22:52Z"
+  "updated_at": "2026-11-10T18:28:48Z"
 }
