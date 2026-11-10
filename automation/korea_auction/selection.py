@@ -28,11 +28,14 @@ def next_auction_date(lots, now=None):
     return dates[0] if dates else None
 
 
-def candidates(lots, date, rng=random):
-    """Top-model lots of that date, shuffled (random order each run)."""
-    picked = [l for l in lots if auction_date(l) == date and top_model(l) and l['photos']]
-    rng.shuffle(picked)
-    return picked
+def candidates(lots, date, is_own=lambda lot: False, rng=random):
+    """Lots of that date: the owner's models first, then other top models; each group shuffled."""
+    day = [l for l in lots if auction_date(l) == date and l['photos']]
+    own = [l for l in day if is_own(l)]
+    top = [l for l in day if not is_own(l) and top_model(l)]
+    rng.shuffle(own)
+    rng.shuffle(top)
+    return own + top
 
 
 def is_hot(start_price, market_sold):

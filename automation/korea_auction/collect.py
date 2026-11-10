@@ -5,11 +5,12 @@ Usage: python3 -I -m korea_auction.collect OUT.json   (env JPAUTO_EMAIL, JPAUTO_
 """
 import json
 import os
+import random
 import re
 import sys
 from datetime import datetime
 
-from . import lots, nbu, selection
+from . import catalog, lots, nbu, selection
 from .session import Session
 
 SEARCH_PAGE = '/vehicle-search/kr/'
@@ -57,7 +58,8 @@ def fetch_all_lots(s):
 def display_name(maker, model):
     """'KIA', 'SANTA FE' -> 'Kia Santa Fe'; words with digits stay as is ('K5', 'G80')."""
     words = (maker + ' ' + model).split()
-    return ' '.join(w if any(c.isdigit() for c in w) else w.capitalize() for w in words)
+    return ' '.join(w if any(c.isdigit() for c in w) else '-'.join(p.capitalize() for p in w.split('-'))
+                    for w in words)
 
 
 def ticker_item(lot, detail, rates):
@@ -65,7 +67,7 @@ def ticker_item(lot, detail, rates):
     return {
         'id': lot['id'],
         'title': display_name(lot['maker'], lot['model']),
-        'model': selection.top_model(lot),
+        'model': selection.top_model(lot) or lot['model'],
         'year': lot['year'], 'mileage_km': lot['mileage_km'], 'score': lot['score'],
         'fuel': detail['fuel'], 'start_price_krw': price,
         'start_price_usd': nbu.krw_to_usd(price, rates),
@@ -75,14 +77,28 @@ def ticker_item(lot, detail, rates):
     }
 
 
+OWN_IN_TICKER = 8
+
+
+def _own_for_ticker(cars, rng=random):
+    """Owner's cars with photo and price, absolute links, random order, at most OWN_IN_TICKER."""
+    ready = [dict(c, title=display_name(*c['title'].split(' ', 1)), photo=catalog.absolute(c['photo']),
+                  url=catalog.absolute(c['url']))
+             for c in cars if c['photo'] and c['price_usd']]
+    rng.shuffle(ready)
+    return ready[:OWN_IN_TICKER]
+
+
 def collect(email, password, now=None):
     s = Session()
     s.login(email, password)
     total, all_lots = fetch_all_lots(s)
     date = selection.next_auction_date(all_lots, now)
     rates = nbu.fetch_rates()
+    own_cars = catalog.parse(catalog.fetch())
+    rules = catalog.model_rules(own_cars)
     items, details = [], 0
-    for lot in selection.candidates(all_lots, date) if date else []:
+    for lot in selection.candidates(all_lots, date, lambda l: catalog.same_model(l, rules)) if date else []:
         if len(items) >= TICKER_SIZE or details >= MAX_DETAILS:
             break
         details += 1
@@ -97,6 +113,7 @@ def collect(email, password, now=None):
         'lots_on_date': sum(1 for l in all_lots if selection.auction_date(l) == date),
         'nbu': {'date': rates['date'], 'usd_uah': rates['USD'], 'krw_uah': rates['KRW']},
         'items': items, 'requests': s.requests,
+        'own': _own_for_ticker(own_cars),
     }
 
 

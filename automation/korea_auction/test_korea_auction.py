@@ -3,7 +3,7 @@ import random
 import unittest
 from datetime import datetime
 
-from korea_auction import lots, nbu, selection, ticker
+from korea_auction import catalog, lots, nbu, selection, ticker
 
 FIX = pathlib.Path(__file__).with_name('fixtures')
 
@@ -45,12 +45,35 @@ class SelectionTest(unittest.TestCase):
                  {'model': 'MORNING', 'auction_start': '2026/11/11 13:00', 'photos': [1]}]
         date = selection.next_auction_date(lots_, datetime(2026, 11, 10, 10, tzinfo=selection.JST))
         self.assertEqual(date, '2026/11/11')
-        self.assertEqual([l['model'] for l in selection.candidates(lots_, date, random.Random(0))], ['TUCSON'])
+        self.assertEqual([l['model'] for l in selection.candidates(lots_, date, rng=random.Random(0))], ['TUCSON'])
+
+    def test_owner_models_first(self):
+        lots_ = [{'maker': 'HYUNDAI', 'model': 'TUCSON', 'auction_start': '2026/11/11 13:00', 'photos': [1]},
+                 {'maker': 'KIA', 'model': 'K5', 'auction_start': '2026/11/11 13:00', 'photos': [1]}]
+        own = selection.candidates(lots_, '2026/11/11', lambda l: l['model'] == 'K5', random.Random(0))
+        self.assertEqual([l['model'] for l in own], ['K5', 'TUCSON'])
 
     def test_hot(self):
         self.assertTrue(selection.is_hot(1_000_000, [1_500_000, 1_400_000]))
         self.assertFalse(selection.is_hot(1_300_000, [1_500_000, 1_400_000]))
         self.assertFalse(selection.is_hot(1_000_000, [2_000_000]))
+
+
+class CatalogTest(unittest.TestCase):
+    def test_owner_catalog_and_models(self):
+        cars = catalog.parse((FIX / 'katalog_live.html').read_text())
+        self.assertEqual(len(cars), 19)
+        k5 = next(c for c in cars if c['code'] == 'UA-0018')
+        self.assertEqual((k5['title'], k5['stage'], k5['price_usd']), ('Kia K5 2023', 'kiev', 20300))
+        rules = catalog.model_rules(cars)
+        same = lambda maker, model: catalog.same_model({'maker': maker, 'model': model}, rules)
+        self.assertTrue(same('KIA', 'THE NEW K5'))
+        self.assertTrue(same('HYUNDAI', 'SONATA'))
+        self.assertTrue(same('MERCEDES-BENZ', 'B Class'))
+        self.assertTrue(same('MERCEDES-BENZ', 'E Class'))
+        self.assertFalse(same('MERCEDES-BENZ', 'GLS Class'))
+        self.assertFalse(same('KIA', 'K50'))
+        self.assertEqual(catalog.absolute('ua/UA-0018.html'), 'https://www.uaart.com.ua/video/ua/UA-0018.html')
 
 
 class NbuTest(unittest.TestCase):
@@ -77,6 +100,16 @@ class TickerTest(unittest.TestCase):
         self.assertIn('<b>2 382</b>', html)
         self.assertNotIn('"><script>', html)
         self.assertEqual(html.count('class="kt-item"'), 2)  # duplicated track for a seamless loop
+
+    def test_owner_cars_mixed_in(self):
+        own = {'code': 'UA-0018', 'title': 'Kia K5 2023', 'stage': 'kiev', 'price_usd': 20300,
+               'photo': 'https://www.uaart.com.ua/video/foto/UA-0018/001.jpg',
+               'url': 'https://www.uaart.com.ua/video/ua/UA-0018.html'}
+        html = ticker.render({'lots_on_date': 5, 'items': [self.ITEM, self.ITEM], 'own': [own]})
+        self.assertEqual(html.count('class="kt-item kt-own"'), 2)  # once per (duplicated) track
+        self.assertIn('★ У нас · у Києві', html)
+        self.assertIn('$20 300</b>', html)
+        self.assertIn('href="https://www.uaart.com.ua/video/ua/UA-0018.html"', html)
 
     def test_empty(self):
         self.assertEqual(ticker.render({'lots_on_date': 0, 'items': []}), '')
