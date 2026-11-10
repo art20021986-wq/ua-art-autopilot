@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "dfdeb156ad32771c28a3511d8b3c5d27943d8fce1e4a8e71ffccef92b4c084e8",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T13:35:46Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-10T13:37:42Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42825499296",
     "task_id": "KOREA-TICKER-INSTALL-20261110",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42825499296-f1ade690c4897d96",
   "production_transaction_path": "state/transactions/KOREA-TICKER-INSTALL-20261110.f1ade690c4897d96a2bb73bd9fb82025453017fc12cec6bc7b2aedaa375e22a9.42825499296.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-TICKER-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -104,5 +104,5 @@
       "cloud/korea_ticker_001/test_release.py": "f32bf2e12d212fcf02d3d53acdf53ff1634ea1f44211f97ab065906371b233c0"
     }
   },
-  "updated_at": "2026-11-10T13:35:46Z"
+  "updated_at": "2026-11-10T13:37:42Z"
 }
