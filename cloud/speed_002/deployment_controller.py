@@ -17,8 +17,11 @@ from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 EXPECTED = {'/video/katalog.html': lambda body: re.search(r'href="ua/UA-[0-9]{4,}\.html"', body) is not None,
             '/video/index.html': lambda body: 'srcset="/video/opt/s/' in body,
             '/video/podbor.html': lambda body: 'media="print" onload=' in body,
-            '/video/seo/ua/kia-k5-koreya-kyiv.html': lambda body: re.search(
-                r'<ul class="cars">.*?href="https://www\.uaart\.com\.ua/video/ua/UA-', body, re.S) is not None}
+            # A model page may have no cars on sale (R1: K5 had none): no tile may link the old card address.
+            '/video/seo/ua/kia-k5-koreya-kyiv.html': lambda body: '<body' in body and OLD_CARD_LINK.search(body) is None,
+            '/video/seo/ru/avto-iz-korei-v-kiev-pod-kluch.html': lambda body: '<body' in body
+            and OLD_CARD_LINK.search(body) is None}
+OLD_CARD_LINK = re.compile(r'href="(?:https://www\.uaart\.com\.ua)?/video/UA-[0-9]{4,}\.html"')
 
 
 def context():
