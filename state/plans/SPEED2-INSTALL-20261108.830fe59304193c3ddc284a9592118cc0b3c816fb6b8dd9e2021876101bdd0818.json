@@ -1,0 +1,30 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SPEED2-INSTALL-20261108.830fe59304193c3ddc284a9592118cc0b3c816fb6b8dd9e2021876101bdd0818.json",
+  "autostart_ledger_sha256": "ccb23e96d38a65835655f5e5797478393c0409e44ec3cc3ffb30a5ca46210689",
+  "autostart_source_commit": "e1eede8e42dd78ad7a1177dd77dd56fd9f13dcf0",
+  "created_at": "2026-11-10T03:20:33Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42748648983",
+    "task_id": "SPEED2-INSTALL-20261108",
+    "task_sha256": "830fe59304193c3ddc284a9592118cc0b3c816fb6b8dd9e2021876101bdd0818"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "card-ua-0001-59fb15d3888564e2",
+  "request_path": "tasks/requests/SPEED2-INSTALL-20261108.json",
+  "resource_locks": [
+    "CARD:UA-0001",
+    "CARD:UA-0002",
+    "CARD:UA-0003",
+    "CARD:UA-0005",
+    "CATALOG_RENDERER",
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

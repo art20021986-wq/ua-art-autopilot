@@ -1,0 +1,41 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SPEED2-INSTALL-20261108.830fe59304193c3ddc284a9592118cc0b3c816fb6b8dd9e2021876101bdd0818.json",
+  "autostart_ledger_sha256": "ccb23e96d38a65835655f5e5797478393c0409e44ec3cc3ffb30a5ca46210689",
+  "autostart_source_commit": "e1eede8e42dd78ad7a1177dd77dd56fd9f13dcf0",
+  "created_at": "2026-11-10T03:20:33Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-10T03:20:33Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "42748648983",
+    "task_id": "SPEED2-INSTALL-20261108",
+    "task_sha256": "830fe59304193c3ddc284a9592118cc0b3c816fb6b8dd9e2021876101bdd0818"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "card-ua-0001-59fb15d3888564e2",
+  "receipt_path": "state/receipts/SPEED2-INSTALL-20261108.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/SPEED2-INSTALL-20261108.json",
+  "request_sha256": "830fe59304193c3ddc284a9592118cc0b3c816fb6b8dd9e2021876101bdd0818",
+  "resource_locks": [
+    "CARD:UA-0001",
+    "CARD:UA-0002",
+    "CARD:UA-0003",
+    "CARD:UA-0005",
+    "CATALOG_RENDERER",
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "0d38e6cec012d9e0387b30408ba9af4a32d9ba6b",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-10T03:20:33Z"
+}
