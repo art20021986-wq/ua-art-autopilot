@@ -1,0 +1,48 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-AUCTION-INSTALL-20261110.8927e729d0c3efa3014d05161dd348451c8af4cced947d24111f88e10d779bca.json",
+  "autostart_ledger_sha256": "923ecf6e3119390f6bf63acbde10efb123c0cb267c890fdd85ad4f02fc7f5aa6",
+  "autostart_source_commit": "2c2d1f5475b82eb0dc38dad8d8dcf9b769e60a90",
+  "created_at": "2026-11-10T08:53:58Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-11-10T08:55:28Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 42786047168",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "beb6cc8c381d5f07"
+    }
+  ],
+  "heartbeat_at": "2026-11-10T08:53:58Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "42786047168",
+    "task_id": "KOREA-AUCTION-INSTALL-20261110",
+    "task_sha256": "8927e729d0c3efa3014d05161dd348451c8af4cced947d24111f88e10d779bca"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "crm_db-704180d39a439a0c",
+  "receipt_path": "state/receipts/KOREA-AUCTION-INSTALL-20261110.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/KOREA-AUCTION-INSTALL-20261110.json",
+  "request_sha256": "8927e729d0c3efa3014d05161dd348451c8af4cced947d24111f88e10d779bca",
+  "resource_locks": [
+    "CRM_DB",
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "05cb0372ce17305b8f1c82e15ea7532cbac033ae",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "updated_at": "2026-11-10T08:55:28Z"
+}
