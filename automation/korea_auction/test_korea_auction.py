@@ -73,6 +73,8 @@ class TickerTest(unittest.TestCase):
         self.assertIn('₩11,7 млн', html)
         self.assertIn('data-ka="ხვალ აუქციონი"', html)
         self.assertIn('Завтра на торгах 2 382 авто', html)
+        self.assertIn('class="kt-lead"', html)
+        self.assertIn('<b>2 382</b>', html)
         self.assertNotIn('"><script>', html)
         self.assertEqual(html.count('class="kt-item"'), 2)  # duplicated track for a seamless loop
 

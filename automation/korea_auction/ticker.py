@@ -19,6 +19,8 @@ T = {
     'count': ('Завтра на торгах {n} авто — доступ після договору',
               'Завтра на торгах {n} авто — доступ после договора',
               'ხვალ ვაჭრობაზე {n} ავტო — წვდომა ხელშეკრულების შემდეგ'),
+    'lead': ('Завтра на торгах', 'Завтра на торгах', 'ხვალ ვაჭრობაზე'),
+    'cars': ('авто', 'авто', 'ავტო'),
     'note': ('Ціни — в Кореї. Ваша ціна під ключ — у менеджера',
              'Цены — в Корее. Ваша цена под ключ — у менеджера',
              'ფასები — კორეაში. თქვენი ფასი გასაღებით — მენეჯერთან'),
@@ -62,7 +64,9 @@ def render(data, tomorrow=True):
     items = [i for i in data.get('items', []) if i.get('start_price_usd')]
     if not items:
         return ''
-    track = ''.join(_item(i, tomorrow) for i in items)
+    lead = ('<span class="kt-lead">● %s <b>%s</b> %s</span>'
+            % (_t('lead'), _num(data['lots_on_date']), _t('cars')))
+    track = lead + ''.join(_item(i, tomorrow) for i in items)
     tail = ('<span class="kt-end"><span>%s</span><small>%s</small><a class="kt-btn" href="%s">%s</a></span>'
             % (_t('count', n=_num(data['lots_on_date'])), _t('note'), LINK, _t('want')))
     return ('<section class="korea-ticker" aria-label="Korea online auction">'
@@ -82,6 +86,10 @@ CSS = (
     '.kt-body{display:flex;flex-direction:column;gap:4px;font-size:14px;min-width:190px}'
     '.kt-body strong{font-size:18px}.kt-live{color:#ff5a5a;font-weight:600}'
     '.kt-hot{color:#ffb020}.kt-price b{font-size:22px;color:#4ade80}.kt-left{opacity:.8}'
+    '.kt-lead{display:flex;align-items:center;gap:8px;padding:0 22px;border-radius:12px;'
+    'font-size:20px;font-weight:700;color:#0B1524;white-space:nowrap;'
+    'background:linear-gradient(135deg,#ffd200,#ff8a00)}'
+    '.kt-lead b{font-size:34px}'
     '.kt-end{display:flex;flex-direction:column;justify-content:center;gap:8px;max-width:300px;'
     'padding:0 12px;font-size:15px}'
     '.kt-btn{display:inline-block;background:#4ade80;color:#0B1524;font-weight:700;'
