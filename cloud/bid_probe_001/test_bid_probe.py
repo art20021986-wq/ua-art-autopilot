@@ -84,6 +84,10 @@ class RemoteTests(unittest.TestCase):
         self.assertNotIn('20261111000123', ' '.join(lines))
         self.assertEqual(remote.endpoints(self.PAGE), ['/api/bid/confirm', '/bid/place/[N]'])
 
+    def test_tables_are_cleaned(self):
+        html = '<table><tr><th>Lot</th><th>Bid</th></tr><tr><td>20261112000123</td><td>1,005</td></tr></table>'
+        self.assertEqual(remote.tables(html), [[['Lot', 'Bid'], ['[N]', '1,005']]])
+
     def test_login_file_is_needed(self):
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / 'login.txt'
