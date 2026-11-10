@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "ba460d5a1caa16fe6ffbd0f17d5410e75d39dff79f63974e496fc50a5f19374c",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T19:02:45Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-10T19:18:01Z",
+  "heartbeat_at": "2026-11-10T19:18:01Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "42880139626",
     "task_id": "AUCTION-CLIENTS-INSTALL-20261110",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 655.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 276.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 269.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-42880139626-9c75c91fe0decd86",
   "production_transaction_path": "state/transactions/AUCTION-CLIENTS-INSTALL-20261110.9c75c91fe0decd8667c2adc74dc689a638996e5765beb336dcb7e6a26a77ed2f.42880139626.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/AUCTION-CLIENTS-INSTALL-20261110.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "466646e26895592e929d4aa809eabc0efd23c79ebf722b9ca6fc0a8ca931aa95",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AUCTION-CLIENTS-INSTALL-20261110.json",
   "request_sha256": "9c75c91fe0decd8667c2adc74dc689a638996e5765beb336dcb7e6a26a77ed2f",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "02ace67d8d925f074d3d5bd650f3ed06dbbf90e3ffc86ceb0c6d7afdae39baa3",
     "file_sha256": {
@@ -103,5 +134,5 @@
       "cloud/auction_clients_001/ua_korea_login.py": "2dca8d9533438786c1e929e4f184c395ed5460ae2787841cae7b41d113b1f420"
     }
   },
-  "updated_at": "2026-11-10T19:02:45Z"
+  "updated_at": "2026-11-10T19:18:01Z"
 }
