@@ -106,5 +106,22 @@ class IntakeEditTest(unittest.TestCase):
             e.build(e.CONTRACT, out)
 
 
+
+
+class OrderStringsEditTest(unittest.TestCase):
+    def test_only_titles_change(self):
+        import json
+        import edit_order_strings as e
+        live = pathlib.Path(__file__).with_name('fixtures').joinpath('order-strings_live.json').read_bytes()
+        out = e.build(live)
+        old, new = json.loads(live), json.loads(out)
+        changed = [(lang, key) for lang in old for key in old[lang] if old[lang][key] != new[lang][key]]
+        self.assertEqual(sorted(changed), [('ka', 'title'), ('ru', 'title'), ('uk', 'title')])
+        self.assertEqual(new['uk']['title'], 'Індивідуальне замовлення автомобіля')
+        self.assertEqual(len(out.splitlines()), len(live.splitlines()))
+        with self.assertRaises(ValueError):
+            e.build(out)
+
+
 if __name__ == '__main__':
     unittest.main()
