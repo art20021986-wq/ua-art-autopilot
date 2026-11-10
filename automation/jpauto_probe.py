@@ -24,7 +24,7 @@ class Page(HTMLParser):
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.forms, self.links, self.headings, self.tables = [], [], [], []
+        self.forms, self.links, self.headings, self.tables, self.imgs = [], [], [], [], []
         self._form = None
         self._select = None
         self._option = None
@@ -61,6 +61,8 @@ class Page(HTMLParser):
         elif tag in ('h1', 'h2', 'h3', 'h4', 'label', 'legend'):
             self._heading = {'tag': tag, 'for': a.get('for'), 'text': ''}
             self.headings.append(self._heading)
+        elif tag == 'img' and (a.get('src') or a.get('data-src')):
+            self.imgs.append(a.get('data-src') or a.get('src'))
         elif tag == 'table':
             self.tables.append([])
         elif tag == 'th' and self.tables:
@@ -87,6 +89,11 @@ class Page(HTMLParser):
                 sink['text'] += data
         if self._th is not None:
             self._th += data
+
+
+def page_text(html, limit):
+    text = ' '.join(re.sub(r'(?s)<(script|style).*?</\1>|<[^>]+>', ' ', html).split())
+    return text[:limit]
 
 
 def parse(html):
@@ -146,6 +153,38 @@ def summarize_form(form):
     return out
 
 
+def probe_results(c, kp, nav_hrefs):
+    """Submit the Korea search for one maker and read the first lot card."""
+    form = next((f for f in kp.forms if f.get('id') == 'purchase_search_form'), None)
+    if not form:
+        return {'error': 'SEARCH_FORM_NOT_FOUND'}, None
+    data = [(f['name'], f.get('value') or '') for f in form['fields']
+            if f['tag'] == 'input' and f.get('name') and (f['type'] or '').lower() == 'hidden'
+            and f['name'] not in ('history_idx_url', 'koreafavoriteurl', 'koreahistoryurl')]
+    maker = next((f for f in form['fields'] if f.get('name') == 'maker[]'), {'options': []})
+    hyundai = next((o['value'] for o in maker['options'] if o['text'].upper() == 'HYUNDAI'), None)
+    if hyundai:
+        data.append(('maker[]', hyundai))
+    url, status, html = c.get(form['action'], data)
+    rp = parse(html)
+    lots = [l for l in rp.links if l['href'] not in nav_hrefs and re.search(r'\d{5,}', l['href'])
+            and (not l['href'].startswith(('http://', 'https://')) or l['href'].startswith(BASE))]
+    results = {'url': url.replace(BASE, ''), 'http': status, 'maker_value': hyundai,
+               'table_headers': [t for t in rp.tables if t][:5],
+               'text': page_text(html, 3500),
+               'lot_links': [{'text': l['text'][:80], 'href': l['href'].replace(BASE, '')} for l in lots[:15]],
+               'img_samples': rp.imgs[:15]}
+    if not lots:
+        return results, None
+    lurl, lstatus, lhtml = c.get(lots[0]['href'])
+    lp = parse(lhtml)
+    lot = {'url': lurl.replace(BASE, ''), 'http': lstatus,
+           'headings': [h['text'] for h in lp.headings if h['text']][:60],
+           'table_headers': [t for t in lp.tables if t][:8],
+           'text': page_text(lhtml, 3500), 'imgs': lp.imgs[:25]}
+    return results, lot
+
+
 def main():
     email = os.environ.get('JPAUTO_EMAIL', '').strip()
     password = os.environ.get('JPAUTO_PASSWORD', '').strip()
@@ -166,8 +205,7 @@ def main():
                         for form in home_page.forms for f in form['fields'])
     report = {'login_ok': logged_in, 'after_login_url': url.replace(BASE, ''), 'http': status}
     if not logged_in:
-        text = ' '.join(re.sub(r'(?s)<(script|style).*?</\1>|<[^>]+>', ' ', home).split())
-        report['page_text'] = text.replace(email, '<email>')[:600]
+        report['page_text'] = page_text(home, 600).replace(email, '<email>')
         report['trace'] = c.trace
         report['hidden_fields_sent'] = sorted(k for k in data if not k.startswith('data[Bidder]'))
         report['secrets'] = {'password_set': bool(password),
@@ -198,6 +236,7 @@ def main():
                            'dates_seen': sorted(set(re.findall(r'20\d\d[-/.]\d{1,2}[-/.]\d{1,2}', khtml)))[:40],
                            'weekdays_seen': sorted(set(re.findall(
                                r'\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*\b', khtml)))}
+        report['results'], report['lot'] = probe_results(c, kp, {l['href'] for l in nav})
     report['requests_made'] = c.requests
     text = json.dumps(report, ensure_ascii=False, indent=1)
     text = text.replace(email, '<email>')
