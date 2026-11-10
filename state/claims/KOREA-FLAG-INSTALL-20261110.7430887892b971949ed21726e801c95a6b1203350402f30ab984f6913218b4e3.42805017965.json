@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "53a96d48fba2c74d7993c25e315cf573b1d703a705a4bc5e262676328bfd8de9",
   "autostart_source_commit": "30443a4a591bc82beba84f321f71d92c11ea8922",
   "created_at": "2026-11-10T11:15:57Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "e3fb313a3de453cf43e0628dd84ddca270cbb7eb8b5593bc59c962aa48214535",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T11:15:57Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-10T11:17:12Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42805017965",
     "task_id": "KOREA-FLAG-INSTALL-20261110",
     "task_sha256": "7430887892b971949ed21726e801c95a6b1203350402f30ab984f6913218b4e3"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 156.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 129.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42805017965-7430887892b97194",
+  "production_transaction_path": "state/transactions/KOREA-FLAG-INSTALL-20261110.7430887892b971949ed21726e801c95a6b1203350402f30ab984f6913218b4e3.42805017965.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/KOREA-FLAG-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "22b60c55bdae0cfeceab8743744b27e9024869fc",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 667.575,
+    "allowed": true,
+    "evidence_path": "state/storage/KOREA-FLAG-INSTALL-20261110.json",
+    "evidence_sha256": "20b0e94ec3da7f7d9afed5ef742ed85f3c08598e320bc2a4d06a52082f38ead3",
+    "free_bytes": 23545458176,
+    "heavy": true,
+    "measured_at": "2026-11-10T11:06:03.069685+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 32.72726235428571
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-10T11:15:57Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "5887234b25c287d04810ebc71ca83fe88f6d5effde0a36a8e73066684dc6d29b",
+    "file_sha256": {
+      "cloud/korea_flag_001/candidate_builder.py": "c0ac177cf73b727b9eab1afc6041d7ca709da6dedfa8fe45efa3ee350a4a47ab",
+      "cloud/korea_flag_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/korea_flag_001/deployment_bootstrap.py": "b617f86bfe553c6d09a955d017346137aba6fabe9fe0cc3bdc1b0fe9b4bb7b7a",
+      "cloud/korea_flag_001/deployment_remote.py": "b0b8cd4dc4f973d1840f19137c9928043aa9c3e59d202dd28f6b1f44dabe20e3",
+      "cloud/korea_flag_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/korea_flag_001/deployment_transport.py": "37bf3b76bae3d6f524dabf68edd89f1f521cab5942115c3c95b2d9033ee68af1",
+      "cloud/korea_flag_001/make_release.py": "ed60947e157efd61e240e311cd7d191ca8f19684f9e42329a661437b1d04d97b",
+      "cloud/korea_flag_001/release_constants.py": "65b3afb0e4717a67eda997dec6025820b79e5eba52fbab0e1d21f770a00540cd",
+      "cloud/korea_flag_001/test_deployment.py": "610cad743fe2c8a2e07b5f7be8f8ae64602b60bfb7303f4f7e8b693842455c70",
+      "cloud/korea_flag_001/test_release.py": "51e01b70dedc2c375ad7cf7cc8ed7ac4a7796fa9572865e215982315473d344d",
+      "cloud/korea_flag_001/ua_korea_home.py": "4510ce630d8428d6cd1956761c3e8238ddfaf1d877096545785ce015bdd87c26"
+    }
+  },
+  "updated_at": "2026-11-10T11:17:12Z"
 }
