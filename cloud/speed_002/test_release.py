@@ -106,7 +106,8 @@ class BuildTests(unittest.TestCase):
             video = Path(folder)
             (video/'ua').mkdir()
             (video/'ua/UA-0001.html').write_text('x')
-            with patch.object(urls, 'VIDEO', video), patch.object(stage, 'small', lambda data: (b'copy', 1320)):
+            # By name: another test may re-import these modules (deployment_remote.installed_modules).
+            with patch('ua_card_urls.VIDEO', video), patch('ua_stage_images.small', lambda data: (b'copy', 1320)):
                 result = builder.build(source, {}, lambda url: b'original')
         for name, edits in builder.EDITS.items():
             for _, new in edits:
