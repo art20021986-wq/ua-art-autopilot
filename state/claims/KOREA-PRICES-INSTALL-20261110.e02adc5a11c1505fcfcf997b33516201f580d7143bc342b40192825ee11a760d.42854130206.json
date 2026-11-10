@@ -5,20 +5,53 @@
   "autostart_ledger_sha256": "cb524745dcd6b1f145f3550b049cded23d1898fb92a951fac566d648ecfd8099",
   "autostart_source_commit": "4d74154780b9c40384371517df4383abea7c4bfa",
   "created_at": "2026-11-10T16:25:26Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "5822eee2547dd80f04512ee0da334e2ba3499669ab3fce17c71cd1829f767716",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T16:25:26Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-10T16:26:54Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42854130206",
     "task_id": "KOREA-PRICES-INSTALL-20261110",
     "task_sha256": "e02adc5a11c1505fcfcf997b33516201f580d7143bc342b40192825ee11a760d"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 318.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 334.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 274.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42854130206-e02adc5a11c1505f",
+  "production_transaction_path": "state/transactions/KOREA-PRICES-INSTALL-20261110.e02adc5a11c1505fcfcf997b33516201f580d7143bc342b40192825ee11a760d.42854130206.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-PRICES-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +62,49 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "35e98bf61f5879753b4ca90b63352b11b40e57f9",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 400.991,
+    "allowed": true,
+    "evidence_path": "state/storage/KOREA-PRICES-INSTALL-20261110.json",
+    "evidence_sha256": "e7341d9cd67c902dc58af09949bd34d371d522feea2692c4e4c296752d2eb3bb",
+    "free_bytes": 23126527488,
+    "heavy": true,
+    "measured_at": "2026-11-10T16:20:10.575591+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 33.924207177142854
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-10T16:25:26Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "c9d4c033911e0f9003b0eb9dc32da8afaca8731e8a1fe433735cbc2ddeb64859",
+    "file_sha256": {
+      "cloud/korea_prices_001/candidate_builder.py": "b845cfbe1da1776602622e3676e6dce1f47e4fd39d6380b0dc6d243f43af26ff",
+      "cloud/korea_prices_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/korea_prices_001/deployment_bootstrap.py": "214709e60c988389c87a18070ad10e3a5b42cdb090ab3f92ffcf50161e0ffca2",
+      "cloud/korea_prices_001/deployment_remote.py": "e1b23af461cd40f3774970cfec8c4fcfd9ed74969b11bc90d9e638645f7cd959",
+      "cloud/korea_prices_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/korea_prices_001/deployment_transport.py": "759281c4b8092b242439e83db896c7b4fd2b755ebb33799dd2eb3c4a1ae4e57f",
+      "cloud/korea_prices_001/korea_auction/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cloud/korea_prices_001/korea_auction/catalog.py": "8bd5fb28edade7696228c43826831d856aa9bd9b1b2e620cfc1c652992b40f3c",
+      "cloud/korea_prices_001/korea_auction/collect.py": "53b64c3a8ace10b8fe5eeb1e7a68a202a4be07aff254eb1d1b97b9a6d0b71227",
+      "cloud/korea_prices_001/korea_auction/html_tools.py": "2baacd8a4ed1402b352c70c14475954eedd0c1aff98aa602fcab1a6ad20a9802",
+      "cloud/korea_prices_001/korea_auction/job.py": "e58271d3328ca8d840c389f13897db440737740da6ece58a54246212ff95c08b",
+      "cloud/korea_prices_001/korea_auction/lots.py": "9a764841f379dbdaaff5dda0e5c69e82b23826561ae8624a1314478b1cbc7ae9",
+      "cloud/korea_prices_001/korea_auction/nbu.py": "0b1abeb8a940b3ccd70e31a4eecc8e8e5cbcaf24c528fc38ac9d56152f148b25",
+      "cloud/korea_prices_001/korea_auction/prices.py": "271e13cc1e68e2cc3481c13c22e3b4a0fd42549cca8a414adc41624a3f145d3e",
+      "cloud/korea_prices_001/korea_auction/public.py": "a79d07b3914c2edaba432a8ff24630557ad9da07b7694f38651be0ac655459d9",
+      "cloud/korea_prices_001/korea_auction/selection.py": "5ee9f1ea5ff533994bcd7560449d5881aee7a06ac001e514ebc69ec1fd510ae7",
+      "cloud/korea_prices_001/korea_auction/session.py": "a39f03ec675ad2f8817efbcd76ef81e3d11bfd647ed4992ec65a1b2db79c18f9",
+      "cloud/korea_prices_001/korea_auction/test_korea_auction.py": "bf01c3dd7575b78f0496738c0326689d800be67bac8b84512b17f6ed3b8dd858",
+      "cloud/korea_prices_001/korea_auction/ticker.py": "2edff46271f21474df93c213befc659b8c7b7026d48ba10f59fc2102957fabd4",
+      "cloud/korea_prices_001/make_release.py": "7d3d93e71849779831f259eaa571f21af74bf4485fa634414e2d5bd97b449740",
+      "cloud/korea_prices_001/release_constants.py": "680a997bb10ace69f2a3a573668edd68e413e96e627846176a5b7beb87e9a8f5",
+      "cloud/korea_prices_001/test_deployment.py": "7c28718892fa9cc7056a94d91aef3d0c935980c78812034a389f2ff94e60bee4",
+      "cloud/korea_prices_001/test_release.py": "ff4923dfe2a48773a8923ca8183ed387ca518c057ac3e23656c0c6f2104528bb"
+    }
+  },
+  "updated_at": "2026-11-10T16:26:54Z"
 }
