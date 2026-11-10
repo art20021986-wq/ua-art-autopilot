@@ -13,4 +13,4 @@
 | 4 | Скорость — сделано SPEED-001 (07.11) | готово |
 | 5 | Mercedes E-Class: убрать из карты сайта, если машины нет | после 0 |
 | 6 | Русские названия моделей на украинских карточках («Б-КЛАССА») | после 0 |
-| 7 | Соцсети: Instagram ua_artcompany_llc, Telegram uaart_auto, YouTube @beetleua, TikTok @llc_ua_art_company (владелец 2026-11-09) — значки в фирменных цветах внизу всех страниц + sameAs; пакет cloud/social_links_001 | предпросмотр, ждёт «да» на макет |
+| 7 | Соцсети: Instagram ua_artcompany_llc, Telegram uaart_auto, YouTube @beetleua, TikTok @llc_ua_art_company (владелец 2026-11-09) — значки в фирменных цветах внизу всех страниц + sameAs; пакет cloud/social_links_001 | УСТАНОВЛЕНО 2026-11-10 (SOCIAL-INSTALL-20261110, live PASS); карточки — после републикации CRM (проверить) |
