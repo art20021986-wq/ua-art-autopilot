@@ -1,7 +1,8 @@
 """Home-page ticker HTML (uk/ru/ka via the site's data-* language attributes).
 
 Pure function of the collected JSON: no network, no site access. Self-contained block:
-scoped CSS (pure CSS marquee, pauses on hover, respects reduced motion) + tiny countdown script.
+scoped CSS + a small script. A slider (owner 2026-11-10): one card on from the next every 2 seconds, arrows to page
+by hand; a touch, hover or arrow pauses the automatic step for a few seconds; reduced motion: no automatic step.
 """
 from html import escape
 
@@ -98,18 +99,23 @@ def render(data, tomorrow=True):
     track = lead + ''.join(_own(i) if 'stage' in i else _item(i, tomorrow) for i in _mix(items, own))
     tail = ('<span class="kt-end"><span>%s</span><small>%s</small><a class="kt-btn" href="%s">%s</a></span>'
             % (_t('count', n=_num(data['lots_on_date'])), _t('note'), LINK, _t('want')))
-    return ('<section class="korea-ticker" aria-label="Korea online auction">'
-            '<style>%s</style><div class="kt-track">%s%s%s%s</div>'
-            '<script>%s</script></section>') % (CSS, track, tail, track, tail, JS)
+    return ('<section class="korea-ticker" aria-label="Korea online auction"><style>%s</style>'
+            '<button class="kt-arrow kt-prev" type="button" aria-label="‹">‹</button>'
+            '<div class="kt-track">%s%s</div>'
+            '<button class="kt-arrow kt-next" type="button" aria-label="›">›</button>'
+            '<script>%s</script></section>') % (CSS, track, tail, JS)
 
 
 CSS = (
-    '.korea-ticker{overflow:hidden;padding:14px 0;background:#0B1524;color:#fff}'
-    '.kt-track{display:flex;gap:16px;width:max-content;animation:kt-run 90s linear infinite}'
-    '.korea-ticker:hover .kt-track{animation-play-state:paused}'
-    '@keyframes kt-run{from{transform:translateX(-50%)}to{transform:translateX(0)}}'  # left -> right
-    '@media (prefers-reduced-motion:reduce){.kt-track{animation:none;overflow-x:auto}}'
-    '.kt-item,.kt-lead,.kt-end{flex:0 0 auto}'
+    '.korea-ticker{position:relative;padding:14px 0;background:#0B1524;color:#fff}'
+    '.kt-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;'
+    'scrollbar-width:none;padding:0 56px}.kt-track::-webkit-scrollbar{display:none}'
+    '@media (prefers-reduced-motion:reduce){.kt-track{scroll-behavior:auto}}'
+    '.kt-item,.kt-lead,.kt-end{flex:0 0 auto;scroll-snap-align:start;scroll-margin-left:56px}'
+    '.kt-arrow{position:absolute;top:50%;z-index:2;transform:translateY(-50%);width:44px;height:44px;'
+    'border:0;border-radius:50%;cursor:pointer;font-size:30px;line-height:40px;font-weight:700;color:#0B1524;'
+    'background:linear-gradient(135deg,#ffd200,#ff8a00);box-shadow:0 4px 14px rgba(0,0,0,.45)}'
+    '.kt-arrow:hover{filter:brightness(1.1)}.kt-prev{left:6px}.kt-next{right:6px}'
     '.kt-item{display:flex;gap:12px;align-items:center;color:inherit;text-decoration:none;'
     'background:#13233a;border-radius:12px;padding:8px 14px 8px 8px}'
     # !important: the site's photo-fit script styles catalogue photos inline; the ticker keeps its own size
@@ -128,13 +134,34 @@ CSS = (
     'padding:0 12px;font-size:15px}'
     '.kt-btn{display:inline-block;background:#4ade80;color:#0B1524;font-weight:700;'
     'padding:10px 16px;border-radius:10px;text-decoration:none;text-align:center}'
-    '@media (max-width:600px){.korea-ticker .kt-item img{width:180px!important;height:135px!important}}'
+    '@media (max-width:600px){.kt-track{padding:0 40px;gap:12px}.kt-item,.kt-lead,.kt-end{scroll-margin-left:40px}'
+    '.kt-item{flex-direction:column;align-items:stretch;width:74vw;padding:8px}'
+    '.korea-ticker .kt-item img{width:100%!important;height:auto!important;aspect-ratio:4/3}'
+    '.kt-body{min-width:0}.kt-lead{width:60vw;flex-wrap:wrap;justify-content:center;white-space:normal;'
+    'text-align:center}.kt-arrow{width:38px;height:38px;font-size:26px;line-height:34px}'
+    '.kt-prev{left:2px}.kt-next{right:2px}}'
 )
 
-# Countdown «до торгів N год»: start time is Japan/Korea time (UTC+9).
+# Countdown «до торгів N год» (start time is Japan/Korea time, UTC+9) and the slider: a step every STEP_MS,
+# arrows step by one card, any touch/hover/arrow pauses the automatic step for PAUSE_MS.
+STEP_MS, PAUSE_MS = 2000, 6000
 JS = (
     "(function(){var n=Date.now();document.querySelectorAll('.korea-ticker [data-kt-start]')"
     ".forEach(function(e){var s=e.getAttribute('data-kt-start').replace(/\\//g,'-').replace(' ','T')+':00+09:00';"
     "var h=Math.round((Date.parse(s)-n)/36e5);var i=e.querySelector('i');"
-    "if(h>0&&i){i.textContent=h;}else{e.style.display='none';}});})();"
+    "if(h>0&&i){i.textContent=h;}else{e.style.display='none';}});"
+    "document.querySelectorAll('.korea-ticker').forEach(function(box){"
+    "var t=box.querySelector('.kt-track'),hold=0;"
+    "function card(){var c=t.children[0];return c?c.getBoundingClientRect().width+16:300;}"
+    "function go(d){var end=t.scrollLeft+t.clientWidth>=t.scrollWidth-4;"
+    "if(d>0&&end){t.scrollTo({left:0});}else if(d<0&&t.scrollLeft<=4){t.scrollTo({left:t.scrollWidth});}"
+    "else{t.scrollBy({left:d*card()});}}"
+    "function pause(){hold=Date.now()+" + str(PAUSE_MS) + ";}"
+    "box.querySelector('.kt-prev').addEventListener('click',function(){pause();go(-1);});"
+    "box.querySelector('.kt-next').addEventListener('click',function(){pause();go(1);});"
+    "['pointerdown','wheel','touchstart','mouseenter','focusin'].forEach(function(ev){"
+    "t.addEventListener(ev,pause,{passive:true});});"
+    "if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;"
+    "setInterval(function(){if(!document.hidden&&Date.now()>hold)go(1);}," + str(STEP_MS) + ");"
+    "});})();"
 )
