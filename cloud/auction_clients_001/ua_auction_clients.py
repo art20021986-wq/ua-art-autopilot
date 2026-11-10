@@ -55,7 +55,8 @@ def _now():
     return datetime.now(timezone.utc).isoformat(timespec='seconds')
 
 
-def _connect(db):
+def _connect(db=None):
+    db = db or DB
     db.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     connection = sqlite3.connect(db, timeout=10)
     connection.row_factory = sqlite3.Row
@@ -70,7 +71,8 @@ def _text(value, field, maximum=80):
     return value
 
 
-def _deposit(value):
+def deposit(value):
+    """Deposit in whole dollars, at least one step (2 000 $)."""
     try:
         amount = int(str(value).replace(' ', '').replace('$', ''))
     except ValueError:
@@ -80,10 +82,10 @@ def _deposit(value):
     return amount
 
 
-def create(surname, name, phone_number, email, city, deposit_usd, manager_id, db=DB):
+def create(surname, name, phone_number, email, city, deposit_usd, manager_id, db=None):
     """New client -> (client dict, password shown once). A phone already registered is refused."""
     record = {'phone': phone(phone_number), 'surname': _text(surname, 'surname'), 'name': _text(name, 'name'),
-              'email': _text(email, 'email', 120), 'city': _text(city, 'city'), 'deposit_usd': _deposit(deposit_usd)}
+              'email': _text(email, 'email', 120), 'city': _text(city, 'city'), 'deposit_usd': deposit(deposit_usd)}
     if '@' not in record['email']:
         raise ClientError('email')
     password, salt = new_password(), secrets.token_bytes(16)
@@ -100,13 +102,13 @@ def create(surname, name, phone_number, email, city, deposit_usd, manager_id, db
     return get(record['phone'], db), password
 
 
-def get(phone_number, db=DB):
+def get(phone_number, db=None):
     with closing(_connect(db)) as connection:
         row = connection.execute('SELECT * FROM clients WHERE phone = ?', (phone(phone_number),)).fetchone()
     return None if row is None else {key: row[key] for key in PUBLIC} | {'limit_usd': limit_usd(row['deposit_usd'])}
 
 
-def all_clients(db=DB):
+def all_clients(db=None):
     with closing(_connect(db)) as connection:
         rows = connection.execute('SELECT * FROM clients ORDER BY created_at DESC').fetchall()
     return [{key: row[key] for key in PUBLIC} | {'limit_usd': limit_usd(row['deposit_usd'])} for row in rows]
@@ -123,22 +125,22 @@ def _update(phone_number, db, **fields):
     return get(phone_number, db)
 
 
-def reset_password(phone_number, db=DB):
+def reset_password(phone_number, db=None):
     """New password (shown once); the old one stops working at once."""
     password, salt = new_password(), secrets.token_bytes(16)
     _update(phone_number, db, salt=salt, password_hash=_hash(password, salt))
     return password
 
 
-def set_blocked(phone_number, blocked, db=DB):
+def set_blocked(phone_number, blocked, db=None):
     return _update(phone_number, db, blocked=1 if blocked else 0)
 
 
-def set_deposit(phone_number, deposit_usd, db=DB):
-    return _update(phone_number, db, deposit_usd=_deposit(deposit_usd))
+def set_deposit(phone_number, deposit_usd, db=None):
+    return _update(phone_number, db, deposit_usd=deposit(deposit_usd))
 
 
-def verify(phone_number, password, db=DB):
+def verify(phone_number, password, db=None):
     """The client for a correct login of an active client, else None (same work either way)."""
     try:
         key = phone(phone_number)
