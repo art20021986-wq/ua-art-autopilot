@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-TICKER-PREFLIGHT-20261110-R4.9ded4d37bc8230bebf64ceb7d3ecff33ff8f4f84198a0d797740f1cc1f6734e1.json",
+  "autostart_ledger_sha256": "2f44c013e5b4a5a126761caae4761f324ec98f270acdcd73d61aca1619e141fe",
+  "autostart_source_commit": "a8082b1226314608625fae69de8cb0d7f4d747c8",
+  "created_at": "2026-11-10T13:25:48Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42824201849",
+    "task_id": "KOREA-TICKER-PREFLIGHT-20261110-R4",
+    "task_sha256": "9ded4d37bc8230bebf64ceb7d3ecff33ff8f4f84198a0d797740f1cc1f6734e1"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-500b8028f72cd965-c1b6d8a4e948deae",
+  "request_path": "tasks/requests/KOREA-TICKER-PREFLIGHT-20261110-R4.json",
+  "resource_locks": [
+    "PATH_SCOPE:500b8028f72cd965"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
