@@ -98,9 +98,7 @@ def main(argv):
     result = collect(os.environ['JPAUTO_EMAIL'], os.environ['JPAUTO_PASSWORD'])
     with open(argv[1], 'w', encoding='utf-8') as fh:
         json.dump(result, fh, ensure_ascii=False, indent=1)
-    summary = {k: v for k, v in result.items() if k != 'items'}
-    summary['items'] = [(i['title'], i['year'], i['start_price_usd'], i['hot']) for i in result['items']]
-    print(json.dumps(summary, ensure_ascii=False, indent=1))
+    print(json.dumps(result, ensure_ascii=False))  # auction lot data only; no account details
     if not result['items']:
         raise SystemExit('NO_TICKER_ITEMS')
 
