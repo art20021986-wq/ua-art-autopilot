@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-ORDER-INSTALL-20261110.1638ded99beb11da8c8967160c222871c109b6c42b2ae1907358ef9a46b81c78.json",
+  "autostart_ledger_sha256": "482aad4f6d42ba2287b9aa1f432c58d763916b8bd018133fd085d41758024d42",
+  "autostart_source_commit": "aafe4469b757f83b7ba42930d618530c0ef49365",
+  "created_at": "2026-11-10T12:27:43Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42815151349",
+    "task_id": "HOME-ORDER-INSTALL-20261110",
+    "task_sha256": "1638ded99beb11da8c8967160c222871c109b6c42b2ae1907358ef9a46b81c78"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "homepage-68ed6564ebea221c",
+  "request_path": "tasks/requests/HOME-ORDER-INSTALL-20261110.json",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
