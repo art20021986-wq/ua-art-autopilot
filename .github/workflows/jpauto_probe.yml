@@ -1,0 +1,39 @@
+name: JP Auto Korea Read-Only Probe
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jpauto-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Read-only probe of the auction account (JPAUTO-KOREA-001)
+        env:
+          JPAUTO_EMAIL: ${{ secrets.JPAUTO_EMAIL }}
+          JPAUTO_PASSWORD: ${{ secrets.JPAUTO_PASSWORD }}
+          JPAUTO_REPORT: jpauto_probe_report.json
+        run: python3 -I automation/jpauto_probe.py
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: jpauto-probe-report
+          path: jpauto_probe_report.json
+          if-no-files-found: ignore
+          retention-days: 7
