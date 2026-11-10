@@ -252,7 +252,7 @@ class PublicVerificationTests(unittest.TestCase):
         body=('<html><head></head><body>'+'x'*300+'<a href="ua/UA-0001.html">'
               '<source srcset="/video/opt/s/stage_UA-0001.webp 600w, /video/stage/UA-0001.webp 880w">'
               '<link rel="stylesheet" href="order/gallery.css" media="print" onload="this.media=\'all\'">'
-              '<ul class="cars"><li><a href="https://www.uaart.com.ua/video/ua/UA-0014.html">x</a></li></ul></body></html>')
+              '<ul class="cars"><li><a href="https://www.uaart.com.ua/video/ru/UA-0014.html">x</a></li></ul></body></html>')
         response=BytesIO(body.encode())
         response.url=request.full_url;response.status=200
         return response

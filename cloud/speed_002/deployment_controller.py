@@ -17,11 +17,10 @@ from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 EXPECTED = {'/video/katalog.html': lambda body: re.search(r'href="ua/UA-[0-9]{4,}\.html"', body) is not None,
             '/video/index.html': lambda body: 'srcset="/video/opt/s/' in body,
             '/video/podbor.html': lambda body: 'media="print" onload=' in body,
-            # A model page may have no cars on sale (R1: K5 had none): no tile may link the old card address.
-            '/video/seo/ua/kia-k5-koreya-kyiv.html': lambda body: '<body' in body and OLD_CARD_LINK.search(body) is None,
-            '/video/seo/ru/avto-iz-korei-v-kiev-pod-kluch.html': lambda body: '<body' in body
-            and OLD_CARD_LINK.search(body) is None}
-OLD_CARD_LINK = re.compile(r'href="(?:https://www\.uaart\.com\.ua)?/video/UA-[0-9]{4,}\.html"')
+            # Landing tiles: proven by the refresh having rewritten pages (run()); a card whose versions are not
+            # written yet keeps its old link (R6 preview: one), and a model page may have no cars (R1: K5).
+            '/video/seo/ru/avto-iz-korei-v-kiev-pod-kluch.html': lambda body: '<body' in body,
+            '/video/seo/ua/kia-k5-koreya-kyiv.html': lambda body: '<body' in body}
 
 
 def context():
@@ -130,6 +129,8 @@ def run(operation=None):
         raise RuntimeError('INSTALL_OR_RESUME_INCOMPLETE')
     if value.get('seo_refresh', {}).get('status') != 'PASS':
         raise RuntimeError('SEO_REFRESH_INCOMPLETE')
+    if not value['seo_refresh'].get('landings_changed'):
+        raise RuntimeError('LANDING_LINKS_NOT_REWRITTEN')
     verified = api.run('verify', run_id, bundle, plan_sha, backup_sha)
     accepted(verified, 'verify', run_id, backup_sha)
     if verified.get('code_sha256') != {name: item['after'] for name, item in plan['files'].items()}:
