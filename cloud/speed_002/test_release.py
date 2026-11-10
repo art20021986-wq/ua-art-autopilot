@@ -134,6 +134,8 @@ class BuildTests(unittest.TestCase):
             builder.build({'video/podbor.html': ORDER.replace('gallery', 'other').encode()}, {}, lambda url: None)
         with self.assertRaisesRegex(ValueError, 'SPEED2_UNCHANGED'):
             builder.build({'video/index.html': HOME.encode()}, {}, lambda url: None)
+        self.assertEqual(set(builder.build({'site/index.html': b'<p>no stage cards</p>'}, {}, lambda url: None)),
+                         set(builder.NEW_MODULES))
 
 
 if __name__ == '__main__':
