@@ -3,7 +3,9 @@ import random
 import unittest
 from datetime import datetime
 
-from korea_auction import catalog, lots, nbu, selection, ticker
+import tempfile
+
+from korea_auction import catalog, job, lots, nbu, selection, ticker
 
 FIX = pathlib.Path(__file__).with_name('fixtures')
 
@@ -113,6 +115,38 @@ class TickerTest(unittest.TestCase):
 
     def test_empty(self):
         self.assertEqual(ticker.render({'lots_on_date': 0, 'items': []}), '')
+
+
+
+class JobTest(unittest.TestCase):
+    def test_due(self):
+        at = lambda d, h: datetime(2026, 11, d, h, 7, tzinfo=selection.JST)  # 2026-11-09 is a Monday
+        self.assertTrue(job.due(at(10, 10), True))
+        self.assertFalse(job.due(at(10, 11), True))
+        self.assertTrue(job.due(at(10, 20), False))      # missing ticker: built at the next run
+        self.assertFalse(job.due(at(15, 10), False))     # Sunday: nothing
+
+    def test_photos_copied_to_site_and_old_removed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = pathlib.Path(tmp)
+            (folder / 'old.jpg').write_bytes(b'x')
+            def fetch(url):
+                if 'bad' in url:
+                    raise OSError('down')
+                return b'jpg'
+            items = [{'id': '1', 'photo': 'https://cdn.example/a'}, {'id': '2', 'photo': 'https://cdn.example/bad'}]
+            kept = job.localize_photos(items, folder, fetch)
+            self.assertEqual(kept, [{'id': '1', 'photo': '/video/korea/img/1.jpg'}])
+            self.assertEqual(sorted(p.name for p in folder.iterdir()), ['1.jpg'])
+
+    def test_login_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = pathlib.Path(tmp) / 'login.txt'
+            path.write_text(' a@b.c \n\n secret \n')
+            self.assertEqual(job.read_login(path), ('a@b.c', 'secret'))
+            path.write_text('a@b.c')
+            with self.assertRaises(RuntimeError):
+                job.read_login(path)
 
 
 if __name__ == '__main__':
