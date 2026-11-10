@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-FLAG-INSTALL-20261110.7430887892b971949ed21726e801c95a6b1203350402f30ab984f6913218b4e3.json",
+  "autostart_ledger_sha256": "53a96d48fba2c74d7993c25e315cf573b1d703a705a4bc5e262676328bfd8de9",
+  "autostart_source_commit": "30443a4a591bc82beba84f321f71d92c11ea8922",
+  "created_at": "2026-11-10T11:15:57Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42805017965",
+    "task_id": "KOREA-FLAG-INSTALL-20261110",
+    "task_sha256": "7430887892b971949ed21726e801c95a6b1203350402f30ab984f6913218b4e3"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "homepage-68ed6564ebea221c",
+  "request_path": "tasks/requests/KOREA-FLAG-INSTALL-20261110.json",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
