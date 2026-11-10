@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-LOTS-PREFLIGHT-20261110.8902d01c3e4bbb75b112bcb24a79717f122e045903323f0ee4531cfc4a292b44.json",
+  "autostart_ledger_sha256": "2ef2236e801a4b5bb313621c4ffe2d827828f6a8da064af53da7770773fc2c1e",
+  "autostart_source_commit": "32dd3d4f44866e6611b9215e089cabd083036719",
+  "created_at": "2026-11-10T13:50:31Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42828019972",
+    "task_id": "KOREA-LOTS-PREFLIGHT-20261110",
+    "task_sha256": "8902d01c3e4bbb75b112bcb24a79717f122e045903323f0ee4531cfc4a292b44"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-2430b04cc4e2832d-cdfaaa13c0bc1f21",
+  "request_path": "tasks/requests/KOREA-LOTS-PREFLIGHT-20261110.json",
+  "resource_locks": [
+    "PATH_SCOPE:2430b04cc4e2832d"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
