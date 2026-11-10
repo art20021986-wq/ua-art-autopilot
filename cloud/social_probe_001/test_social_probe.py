@@ -88,5 +88,22 @@ class RemoteTests(unittest.TestCase):
         self.assertIsNone(value['footers']['video/info.html'])
         self.assertEqual(value['counts']['video/ua'], 1)
 
+    def test_r2_rows(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'video/ua').mkdir(parents=True)
+            (home / 'video/UA-0001.html').write_text('<body>x<!--UA-SOCIAL-V1--></body>')
+            (home / 'video/UA-0002.html').write_text('<body>x</body>')
+            (home / 'video/UA-0001-diag.html').write_text('<!--UA-SOCIAL-V1--><!--UA-SOCIAL-V1-->')
+            (home / 'video/index.html').write_text('<!--UA-SOCIAL-V1-->')
+            (home / 'video/ua/UA-0001.html').write_text('<!--UA-SOCIAL-V1-->')
+            rows = remote.report_r2(home)['rows']
+        self.assertEqual((rows['cards']['pages'], rows['cards']['with_row'], rows['cards']['missing']), (2, 1, ['UA-0002.html']))
+        self.assertEqual(rows['diag']['double'], ['UA-0001-diag.html'])
+        self.assertEqual((rows['top']['pages'], rows['top']['with_row']), (1, 1))
+        self.assertEqual(rows['cards_ua']['with_row'], 1)
+        self.assertEqual(rows['cards_ru']['pages'], 0)
+
+
 if __name__ == '__main__':
     unittest.main()
