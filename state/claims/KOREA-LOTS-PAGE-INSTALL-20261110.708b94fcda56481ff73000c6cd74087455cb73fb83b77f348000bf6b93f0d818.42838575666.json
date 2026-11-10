@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-LOTS-PAGE-INSTALL-20261110.708b94fcda56481ff73000c6cd74087455cb73fb83b77f348000bf6b93f0d818.json",
+  "autostart_ledger_sha256": "15ef182e812cc45855b4ccd17cf25cf28ce66bbf70b903d0395be085b8759a7d",
+  "autostart_source_commit": "17f7cde33f6ff148a61213700673d0eaf67f4d30",
+  "created_at": "2026-11-10T14:54:34Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-10T14:54:34Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "42838575666",
+    "task_id": "KOREA-LOTS-PAGE-INSTALL-20261110",
+    "task_sha256": "708b94fcda56481ff73000c6cd74087455cb73fb83b77f348000bf6b93f0d818"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-3a0202bf3379eaa5-e120450c7410ae9d",
+  "receipt_path": "state/receipts/KOREA-LOTS-PAGE-INSTALL-20261110.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/KOREA-LOTS-PAGE-INSTALL-20261110.json",
+  "request_sha256": "708b94fcda56481ff73000c6cd74087455cb73fb83b77f348000bf6b93f0d818",
+  "resource_locks": [
+    "PATH_SCOPE:3a0202bf3379eaa5"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "39ef62235a7a3b82311ee736aa6e327ab061f713",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-10T14:54:34Z"
+}
