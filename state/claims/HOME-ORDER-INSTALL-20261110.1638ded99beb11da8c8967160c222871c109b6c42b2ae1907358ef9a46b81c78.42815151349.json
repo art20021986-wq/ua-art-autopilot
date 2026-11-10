@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "3439106a6727a1a17f79ed2808093f844c12df06cac4fd498db4c684db91d50c",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T12:29:05Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-10T12:33:55Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42815151349",
     "task_id": "HOME-ORDER-INSTALL-20261110",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42815151349-1638ded99beb11da",
   "production_transaction_path": "state/transactions/HOME-ORDER-INSTALL-20261110.1638ded99beb11da8c8967160c222871c109b6c42b2ae1907358ef9a46b81c78.42815151349.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-ORDER-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/home_order_001/ua_korea_home.py": "fa29e4087cadfd2b8ae7c0299c8562f8743177ccda4156ebb96b0860383c74b9"
     }
   },
-  "updated_at": "2026-11-10T12:29:05Z"
+  "updated_at": "2026-11-10T12:33:55Z"
 }
