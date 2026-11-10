@@ -8,8 +8,10 @@ import re
 from html import escape
 
 URL = 'https://www.uaart.com.ua/video/korea.html'
-ONLINE = 'https://t.me/UA_artcompany_LLC_bot?start=korea_online'  # until partner login exists (stage 2)
-TELEGRAM = 'https://t.me/UA_artcompany_LLC_bot'
+ORDER = 'podbor.html'  # «Індивідуальне замовлення автомобіля» (the existing selection form)
+# The site's own manager dialog (video/order/quick-lead.*): name + phone, the manager writes in Viber/Telegram.
+QUICK_ASSETS = ('<link rel="stylesheet" href="/video/order/quick-lead.css?v=korea-auction-1">'
+                '<script src="/video/order/quick-lead.js?v=korea-auction-1" defer></script>')
 
 
 def t(uk, ru, ka, tag='span', cls=''):
@@ -90,8 +92,14 @@ CSS = (
     '.kr-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}'
     '.kr-list li::before{content:"✓ ";color:#4ade80;font-weight:800}'
     '.kr-biz{border:1px dashed #f2b544}'
+    '.kr-two strong{display:block;font-size:18px;color:#f2b544;margin-top:8px}.kr-two p{margin:6px 0}'
+    '.kr-link{color:#f2b544;font-weight:700;text-decoration:none}'
     '</style>'
 )
+
+
+# The site's own «Зв'язатися з менеджером» dialog, verbatim from the live car card pages (three languages built in).
+_DIALOG = '<dialog class="ua-quick-dialog" id="quick-lead-dialog"><form class="ua-quick" data-ua-quick-lead><h2><span data-ru="Связаться с менеджером" data-uk="Зв&#x27;язатися з менеджером" data-ka="მენეჯერთან დაკავშირება">Связаться с менеджером</span> <span data-quick-model-title></span></h2><div data-fields><label><span data-ru="Имя" data-uk="Ім&#x27;я" data-ka="სახელი">Имя</span><input name="customer_name" autocomplete="name" required minlength="2" maxlength="80"></label><label><span data-ru="Телефон" data-uk="Телефон" data-ka="ტელეფონი">Телефон</span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="30"></label><button type="submit" data-ru="Получить предложение от UA ART в мессенджере" data-uk="Отримати пропозицію від UA ART в месенджері" data-ka="UA ART-ისგან შეთავაზების მიღება მესენჯერში">Получить предложение от UA ART в мессенджере</button><p class="note" data-ru="Менеджер напишет вам в Viber или Telegram." data-uk="Менеджер напише вам у Viber або Telegram." data-ka="მენეჯერი მოგწერთ Viber-ში ან Telegram-ში.">Менеджер напишет вам в Viber или Telegram.</p><p class="consent" data-consent data-ru="Нажимая кнопку, вы соглашаетесь на обработку персональных данных." data-uk="Натискаючи кнопку, ви погоджуєтесь на обробку персональних даних." data-ka="ღილაკზე დაჭერით თქვენ ეთანხმებით პერსონალური მონაცემების დამუშავებას.">Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</p><a class="privacy" href="/video/privacy.html#ru" data-uk-href="/video/privacy.html" data-ru="Политика конфиденциальности" data-uk="Політика конфіденційності" data-ka="კონფიდენციალურობის პოლიტიკა">Политика конфиденциальности</a></div><p class="status" data-status role="status" hidden></p><span data-msg="ok" data-ru="Спасибо! Заявка {number} принята. Менеджер напишет вам в Viber или Telegram." data-uk="Дякуємо! Заявку {number} прийнято. Менеджер напише вам у Viber або Telegram." data-ka="გმადლობთ! განაცხადი {number} მიღებულია. მენეჯერი მოგწერთ Viber-ში ან Telegram-ში." hidden>Спасибо! Заявка {number} принята. Менеджер напишет вам в Viber или Telegram.</span><span data-msg="error" data-ru="Не удалось отправить заявку. Позвоните нам: +380 99 222 20 02." data-uk="Не вдалося надіслати заявку. Зателефонуйте нам: +380 99 222 20 02." data-ka="განაცხადის გაგზავნა ვერ მოხერხდა. დაგვირეკეთ: +380 99 222 20 02." hidden>Не удалось отправить заявку. Позвоните нам: +380 99 222 20 02.</span><span data-msg="bad_phone" data-ru="Проверьте номер телефона." data-uk="Перевірте номер телефону." data-ka="შეამოწმეთ ტელეფონის ნომერი." hidden>Проверьте номер телефона.</span><span data-msg="bad_name" data-ru="Укажите имя." data-uk="Вкажіть ім&#x27;я." data-ka="მიუთითეთ სახელი." hidden>Укажите имя.</span><button type="button" class="ua-quick-close" data-quick-close data-ru="Закрыть" data-uk="Закрити" data-ka="დახურვა">Закрыть</button></form></dialog>'
 
 
 def _main():
@@ -100,10 +108,8 @@ def _main():
     auctions = ''.join('<div class="kr-card"><b>%s</b>%s</div>' % (escape(name), t(*desc))
                        for name, desc in AUCTIONS)
     why = ''.join('<li>%s</li>' % t(*w) for w in WHY)
-    online = ('<a class="kr-btn" href="%s" target="_blank" rel="noopener">%s</a>'
-              % (ONLINE, t('Дивитися онлайн', 'Смотреть онлайн', 'ონლაინ ნახვა')))
-    write = ('<a class="kr-btn ghost" href="%s" target="_blank" rel="noopener">%s</a>'
-             % (TELEGRAM, t('Написати в Telegram', 'Написать в Telegram', 'მოგვწერეთ Telegram-ში')))
+    online = ('<a class="kr-btn" href="#online" data-quick-lead-auction="korea" data-quick-lead-title="%s">%s</a>'
+              % (escape('— аукціони Кореї онлайн'), t('Дивитися онлайн', 'Смотреть онлайн', 'ონლაინ ნახვა')))
     return (
         '<main id="main-content">' + CSS + '<div class="kr-wrap" id="online">'
         '<section class="kr-hero">'
@@ -122,7 +128,7 @@ def _main():
             'ონლაინ აუქციონები: ახლა — კორეა. მალე — იაპონია და სხვა ქვეყნები.', cls='kr-next')
         + '<span class="kr-live">● ' + t('Торги щодня з понеділка по суботу', 'Торги каждый день с понедельника по субботу',
                                           'ვაჭრობა ყოველდღე ორშაბათიდან შაბათამდე') + '</span>'
-        + '<div class="kr-actions">' + online + write + '</div></section>'
+        + '<div class="kr-actions">' + online + '</div></section>'
         '<section class="kr-sec"><div class="kr-deposit">'
         + t('Депозит 2000 $ — входить у вартість авто', 'Депозит 2000 $ — входит в стоимость авто',
             'დეპოზიტი 2000 $ — შედის ავტომობილის ღირებულებაში', tag='strong')
@@ -150,8 +156,25 @@ def _main():
             'ავტობიზნესმენებისთვის ინდივიდუალური პირობებით შესაძლებელი იქნება ავტომობილების დამოუკიდებლად შეძენა. '
             'მოგვწერეთ — განვიხილავთ პირობებს.')
         + '</div></section>'
-        '<section class="kr-sec"><div class="kr-actions">' + online + write + '</div></section>'
-        '</div></main>'
+        '<section class="kr-sec"><div class="kr-card kr-two">'
+        + t('Два способи купити авто з UA ART', 'Два способа купить авто с UA ART', 'ავტომობილის ყიდვის ორი გზა', tag='b')
+        + '<div class="kr-grid"><div>'
+        + t('Аукціони онлайн', 'Аукционы онлайн', 'ონლაინ აუქციონები', tag='strong')
+        + t('Ви самі обираєте конкретне авто на торгах Кореї та суму ставки — ми купуємо його для вас.',
+            'Вы сами выбираете конкретное авто на торгах Кореи и сумму ставки — мы покупаем его для вас.',
+            'თქვენ თავად ირჩევთ კონკრეტულ ავტომობილს კორეის ვაჭრობაზე და ფსონს — ჩვენ ვყიდულობთ თქვენთვის.', tag='p')
+        + '</div><div>'
+        + t('Індивідуальне замовлення автомобіля', 'Индивидуальный заказ автомобиля', 'ავტომობილის ინდივიდუალური შეკვეთა',
+            tag='strong')
+        + t('Вказуєте свої критерії — модель, бюджет, країну — і менеджер сам підбирає авто під вас.',
+            'Указываете свои критерии — модель, бюджет, страну — и менеджер сам подбирает авто под вас.',
+            'მიუთითებთ კრიტერიუმებს — მოდელს, ბიუჯეტს, ქვეყანას — და მენეჯერი თავად შეგირჩევთ ავტომობილს.', tag='p')
+        + '<a class="kr-link" href="%s">%s</a>' % (ORDER, t('Перейти до індивідуального замовлення →',
+                                                          'Перейти к индивидуальному заказу →',
+                                                          'ინდივიდუალურ შეკვეთაზე გადასვლა →'))
+        + '</div></div></div></section>'
+        '<section class="kr-sec"><div class="kr-actions">' + online + '</div></section>'
+        '</div>' + _DIALOG + '</main>'
     )
 
 
@@ -164,4 +187,5 @@ def build(home_html):
         % tuple(escape(x) for x in (DESCRIPTION[0],) + DESCRIPTION)), html, count=1)
     html = re.sub(r'<link rel="canonical"[^>]*>', '<link rel="canonical" href="%s">' % URL, html, count=1)
     html = re.sub(r'<script type="application/ld\+json"[^>]*>.*?</script>', '', html, flags=re.S)
+    html = html.replace('</head>', QUICK_ASSETS + '</head>', 1)
     return html
