@@ -94,6 +94,19 @@ def endpoints(html):
     return [clean(p) for p in paths][:40]
 
 
+def tables(html):
+    """Every table: its header cells and up to 3 rows of cell texts (cleaned)."""
+    found = []
+    for table in re.findall(r'<table\b.*?</table>', html, re.I | re.S)[:6]:
+        rows = []
+        for row in re.findall(r'<tr\b.*?</tr>', table, re.I | re.S)[:4]:
+            cells = [clean(re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', c)).strip())[:80]
+                     for c in re.findall(r'<t[hd]\b.*?</t[hd]>', row, re.I | re.S)]
+            rows.append(cells[:16])
+        found.append(rows)
+    return found
+
+
 def login_pair():
     lines = [line.strip() for line in LOGIN.read_text(encoding='utf-8').splitlines() if line.strip()]
     if len(lines) < 2:
@@ -125,7 +138,14 @@ def report():
             'lot_page': {'forms': forms(lot), 'bid_lines': bid_lines(lot), 'endpoints': endpoints(lot),
                          'scripts': [clean(s) for s in re.findall(r'<script[^>]+src="([^"]+)"', lot)][:30],
                          'length': len(lot)},
-            'results_page': {'endpoints': endpoints(results), 'bid_lines': bid_lines(results)[:20]}}
+            'results_page': {'endpoints': endpoints(results), 'bid_lines': bid_lines(results)[:20]},
+            'orders_page': orders(browser)}
+
+
+def orders(browser):
+    """The account's Korea orders page (read only): its tables, the place where a placed bid shows."""
+    _, html = browser.fetch('/bids/kr/')
+    return {'tables': tables(html), 'length': len(html), 'bid_lines': bid_lines(html)[:20]}
 
 
 def main():
