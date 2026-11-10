@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "6d6222aefe6e7c718a0282197fc48b729f6ce5a2da260f1931cb34754519a451",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T14:32:29Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-10T14:45:21Z",
+  "heartbeat_at": "2026-11-10T14:45:21Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "42833947275",
     "task_id": "KOREA-LOTS-INSTALL-20261110",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 802.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 137.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 94.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-42833947275-353e99a806cca65d",
   "production_transaction_path": "state/transactions/KOREA-LOTS-INSTALL-20261110.353e99a806cca65d3d3e4319ad8b6c474bc81b47da63b15591f770d6dbca9f2d.42833947275.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-LOTS-INSTALL-20261110.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "01a16b2b23928a9e47e78ad9a69af6002e872179489d82ddbe0b4fe9652f6d63",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-LOTS-INSTALL-20261110.json",
   "request_sha256": "353e99a806cca65d3d3e4319ad8b6c474bc81b47da63b15591f770d6dbca9f2d",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "c9d4c033911e0f9003b0eb9dc32da8afaca8731e8a1fe433735cbc2ddeb64859",
     "file_sha256": {
@@ -105,5 +136,5 @@
       "cloud/korea_lots_001/test_release.py": "cff8e31e874033d80c52a3ded0863760a4d956d94536063ffc662a65e24d6728"
     }
   },
-  "updated_at": "2026-11-10T14:32:29Z"
+  "updated_at": "2026-11-10T14:45:21Z"
 }
