@@ -153,3 +153,19 @@ def verify(phone_number, password, db=None):
     if not row or not ok or row['blocked']:
         return None
     return {key: row[key] for key in PUBLIC} | {'limit_usd': limit_usd(row['deposit_usd'])}
+
+
+def session_key(phone_number, db=None):
+    """A short fingerprint of the current password of an active client, or None.
+
+    Signed into the site's login cookie: a new password or a block ends every open session at once.
+    """
+    try:
+        key = phone(phone_number)
+    except ClientError:
+        return None
+    with closing(_connect(db)) as connection:
+        row = connection.execute('SELECT password_hash, blocked FROM clients WHERE phone = ?', (key,)).fetchone()
+    if row is None or row['blocked']:
+        return None
+    return hashlib.sha256(row['password_hash']).hexdigest()[:16]
