@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUCTION-BIDS-PREFLIGHT-20261110.4f1489b869029af7a639c69351d61e63144a09761e18edb5b50b778c65e7aa51.json",
+  "autostart_ledger_sha256": "4ddcc880ac7df4c8c2847d64516ea8f50aa0f15c5418b03ce1f99697cf56d0d9",
+  "autostart_source_commit": "2ff423383d79feaa1a749d0260c9c670c95f628e",
+  "created_at": "2026-11-10T19:33:24Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42886172726",
+    "task_id": "AUCTION-BIDS-PREFLIGHT-20261110",
+    "task_sha256": "4f1489b869029af7a639c69351d61e63144a09761e18edb5b50b778c65e7aa51"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-facae93e07828c7e-fe34d53a1157b585",
+  "request_path": "tasks/requests/AUCTION-BIDS-PREFLIGHT-20261110.json",
+  "resource_locks": [
+    "PATH_SCOPE:facae93e07828c7e"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
