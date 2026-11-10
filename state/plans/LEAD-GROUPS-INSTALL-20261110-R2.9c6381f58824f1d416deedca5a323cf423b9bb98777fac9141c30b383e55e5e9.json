@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/LEAD-GROUPS-INSTALL-20261110-R2.9c6381f58824f1d416deedca5a323cf423b9bb98777fac9141c30b383e55e5e9.json",
+  "autostart_ledger_sha256": "e439ccb91256bf14b86da55331be0d211f4a24d7c08ed02b6425e05267d0fde0",
+  "autostart_source_commit": "f2f09082b555efdd6bf421228a8ca9d3570582fd",
+  "created_at": "2026-11-10T10:15:53Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42797451674",
+    "task_id": "LEAD-GROUPS-INSTALL-20261110-R2",
+    "task_sha256": "9c6381f58824f1d416deedca5a323cf423b9bb98777fac9141c30b383e55e5e9"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/LEAD-GROUPS-INSTALL-20261110-R2.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
