@@ -26,7 +26,7 @@ class KoreaPageTest(unittest.TestCase):
 
     def test_owner_content_three_languages(self):
         for text in ('Дивитися онлайн', 'Депозит 2000 $ — входить у вартість авто',
-                     'індивідуальних умовах', 'data-ka="ონლაინ ნახვა"', 'id="online"'):
+                     'індивідуальних умовах', 'Незабаром — Японія та інші країни', 'data-ka="ონლაინ ნახვა"', 'id="online"'):
             self.assertIn(text, self.page)
 
     def test_platform_never_named(self):

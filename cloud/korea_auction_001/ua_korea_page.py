@@ -73,6 +73,8 @@ CSS = (
     '.kr-hero h1{margin:0;font-size:clamp(28px,4vw,44px);line-height:1.15}'
     '.kr-hero p{margin:0;font-size:18px;opacity:.9;max-width:760px}'
     '.kr-live{display:inline-flex;align-items:center;gap:8px;color:#ff4d4d;font-weight:700}'
+    '.kr-next{display:inline-block;width:fit-content;padding:8px 14px;border-radius:10px;font-weight:700;'
+    'background:#13233a;border:1px solid #f2b544;color:#f2b544}'
     '.kr-actions{display:flex;flex-wrap:wrap;gap:12px}'
     '.kr-btn{display:inline-block;padding:16px 26px;border-radius:14px;font-weight:800;font-size:18px;'
     'text-decoration:none;background:linear-gradient(135deg,#ffd200,#ff8a00);color:#0B1524}'
@@ -115,6 +117,9 @@ def _main():
             'выбираете авто и сумму, а мы покупаем его для вас и везём под ключ.',
             'ათასობით ავტომობილი ვაჭრობაზე ყოველკვირა. ხედავთ ფოტოს, შეფასებას, გარბენს და საწყის ფასს — '
             'ირჩევთ ავტომობილს და თანხას, ჩვენ კი ვყიდულობთ და ჩამოგვაქვს.', tag='p')
+        + t('Аукціони онлайн: зараз — Корея. Незабаром — Японія та інші країни.',
+            'Аукционы онлайн: сейчас — Корея. Скоро — Япония и другие страны.',
+            'ონლაინ აუქციონები: ახლა — კორეა. მალე — იაპონია და სხვა ქვეყნები.', cls='kr-next')
         + '<span class="kr-live">● ' + t('Торги щодня з понеділка по суботу', 'Торги каждый день с понедельника по субботу',
                                           'ვაჭრობა ყოველდღე ორშაბათიდან შაბათამდე') + '</span>'
         + '<div class="kr-actions">' + online + write + '</div></section>'
