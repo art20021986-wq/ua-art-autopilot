@@ -7,21 +7,23 @@
   "created_at": "2026-11-10T14:46:11Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T14:46:11Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-10T14:51:39Z",
+  "heartbeat_at": "2026-11-10T14:51:39Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "42834097217",
     "task_id": "KOREA-LOTS-PAGE-PREFLIGHT-20261110",
     "task_sha256": "f2e8291875de1a89f74c8b49bb93ab272bb76d36435f41c46e7ea4e76bdd3c6f"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-aab959633d7f21a0-2b066f07908f8f79",
   "receipt_path": "state/receipts/KOREA-LOTS-PAGE-PREFLIGHT-20261110.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "ad8a489561bc05720b5eab1ea1b79fc9a8a1369d7a6a82c85d5f2a76588149b0",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-LOTS-PAGE-PREFLIGHT-20261110.json",
   "request_sha256": "f2e8291875de1a89f74c8b49bb93ab272bb76d36435f41c46e7ea4e76bdd3c6f",
   "resource_locks": [
@@ -29,8 +31,35 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "bdfc146196739a164c521ff196fd1d539a0fb5a9",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92815134720,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.106
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-10T14:46:11Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "30bfeffc4b9472d25079941296dc2c49723adb38a42884ac8cd365f46cbca735",
+    "file_sha256": {
+      "cloud/korea_lots_page_001/auction.py": "4259e81c8a93929bb623cbc0618fb33faef9f2a6e221582060b89bc0107d9c48",
+      "cloud/korea_lots_page_001/candidate_builder.py": "4333d798453e6a80a40c391284a02a88fbd9dd5817044b08e3845b92893c0174",
+      "cloud/korea_lots_page_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/korea_lots_page_001/deployment_bootstrap.py": "0e1ff442e5bf3487fe812b18a977bee0ee1905073e1992b8d71d7d3ef9c604b2",
+      "cloud/korea_lots_page_001/deployment_remote.py": "aff1d53518bcc2b9584b12d6d39991735d681002def083d54c17ec3ffd6b7a19",
+      "cloud/korea_lots_page_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/korea_lots_page_001/deployment_transport.py": "783e7b8236c8f5611dc0e873a4047bc3d11f89c2ddd5cc91ff8ed8644a45341e",
+      "cloud/korea_lots_page_001/edit_quick_js.py": "4c64d2189b06e7b01f07656858e21f3862d07b16c4098a3da65ba65d6f3296a9",
+      "cloud/korea_lots_page_001/make_release.py": "4c2aaebb5e84fb9f39d2dd0d1e63b0180459643ffcc6eb6ec4f1e9838b8f4662",
+      "cloud/korea_lots_page_001/release_constants.py": "4cd0f3772ed482247d0e009832bb42c976a4dbcdb92fd57186ee1c64d5906d66",
+      "cloud/korea_lots_page_001/test_deployment.py": "9a215e4b4aee05ffc6c8f999d3e5bd7361a034575e3cd5eebb2883d19981584d",
+      "cloud/korea_lots_page_001/test_release.py": "1863445048bd13480bc77e094566686573b97159df575c254030a4d0ac3ffe6e",
+      "cloud/korea_lots_page_001/ua_korea_lots.py": "abda935d55f63ad571ff4d80c892097aa044b63a55359be7e84e4a99706ab1ab"
+    }
+  },
+  "updated_at": "2026-11-10T14:51:39Z"
 }
