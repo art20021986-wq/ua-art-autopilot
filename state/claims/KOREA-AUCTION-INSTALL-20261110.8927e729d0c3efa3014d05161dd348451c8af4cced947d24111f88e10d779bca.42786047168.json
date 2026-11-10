@@ -16,6 +16,15 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "beb6cc8c381d5f07"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-10T09:20:00+00:00",
+      "class": "FAILED_BEFORE_PRODUCTION",
+      "evidence_path": "state/reconciliations/KOREA-AUCTION-INSTALL-20261110.42786047168.authenticated-evidence.json",
+      "message": "Storage probe older than 30 minutes at the install start; stopped in prepare before any production step. Owner-authorized halt recovery (\u00ab\u0414\u0430\u00bb); reinstall as KOREA-AUCTION-INSTALL-20261110-R2 right after a fresh preview.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-10T08:53:58Z",
@@ -44,5 +53,5 @@
   "storage_preflight_status": "PENDING",
   "task_class": "CRITICAL",
   "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-10T08:55:28Z"
+  "updated_at": "2026-11-10T09:20:00+00:00"
 }

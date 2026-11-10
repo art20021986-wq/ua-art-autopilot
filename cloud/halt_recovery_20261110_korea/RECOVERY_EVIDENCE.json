@@ -1,0 +1,35 @@
+{
+  "after_clear_mode_validation": {
+    "allow_halt_for_recovery": false,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "authorization_scope": "Archive the KOREA-AUCTION-INSTALL-20261110 halt (stale storage probe; stopped in prepare before any production step); preserve all protection policies, Gate B, backup and operator data",
+  "before_error": "STORAGE_PROBE_STALE_OR_FUTURE at storage_preflight; no backup, no production write, no rollback needed",
+  "claim_archive": "state/halt_history/KOREA-AUCTION-INSTALL-20261110.42786047168/claim.before.json",
+  "contract": "OWNER-AUTHORIZED-REPOSITORY-HALT-RECOVERY-EVIDENCE-1",
+  "credentials_read_or_changed": false,
+  "execution_mode_bytes_changed": false,
+  "existing_launch_markers_replayed": false,
+  "halt_archive": "state/halt_history/KOREA-AUCTION-INSTALL-20261110.42786047168/halt.json",
+  "halt_sha256": "76158016c27b9a48d6c4ca84046c0992b4839d1425d1bccde4756a5f80f09724",
+  "historical_halt": {
+    "halted_at": "2026-11-10T08:55:28Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "CRITICAL Production pipeline failed; GitHub Actions run 42786047168; rollback reserved false; rollback performed false",
+    "request_path": "tasks/requests/KOREA-AUCTION-INSTALL-20261110.json",
+    "request_sha256": "8927e729d0c3efa3014d05161dd348451c8af4cced947d24111f88e10d779bca",
+    "run_id": "42786047168",
+    "status": "EMERGENCY_HALT",
+    "task_id": "KOREA-AUCTION-INSTALL-20261110"
+  },
+  "owner_statement": "Да",
+  "precedent": "cloud/halt_recovery_20261110/RECOVERY_EVIDENCE.json",
+  "production_launch_created": false,
+  "production_transaction_opened": false,
+  "reconciliation_evidence": "state/reconciliations/KOREA-AUCTION-INSTALL-20261110.42786047168.authenticated-evidence.json",
+  "recorded_at": "2026-11-10T09:20:00+00:00",
+  "required_production_gates_weakened": false,
+  "runtime_code_changed": false,
+  "site_or_crm_written": false
+}
