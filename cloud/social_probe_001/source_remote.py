@@ -100,6 +100,34 @@ def report(home=None):
             'footers': {p: footer(p) for p in PAGES}, 'counts': counts()}
 
 
+# R2 (SOCIAL-LINKS-001 installed 2026-11-10): which public pages carry the icon row now.
+ROW = '<!--UA-SOCIAL-V1-->'
+GROUPS = {'cards': ('video', r'UA-[0-9]{4,}\.html'), 'diag': ('video', r'UA-[0-9]{4,}-diag\.html'),
+          'cards_ua': ('video/ua', r'UA-[0-9]{4,}\.html'), 'cards_ru': ('video/ru', r'UA-[0-9]{4,}\.html'),
+          'landings_ua': ('video/seo/ua', r'.+\.html'), 'landings_ru': ('video/seo/ru', r'.+\.html'),
+          'landings_gu': ('video/seo/gu', r'.+\.html'), 'top': ('video', r'(?!UA-).+\.html')}
+
+
+def report_r2(home=None):
+    global HOME
+    if home is not None:
+        HOME = home
+    result = {}
+    for group, (folder, pattern) in GROUPS.items():
+        base = HOME / folder
+        names = sorted(p.name for p in base.glob('*.html') if re.fullmatch(pattern, p.name)) if base.is_dir() else []
+        missing, double = [], []
+        for name in names:
+            count = (text_of(base / name) or '').count(ROW)
+            if count == 0:
+                missing.append(name)
+            elif count > 1:
+                double.append(name)
+        result[group] = {'pages': len(names), 'with_row': len(names) - len(missing) - len(double),
+                         'missing': missing[:40], 'double': double}
+    return {'status': 'PASS', 'rows': result}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -113,7 +141,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report()
+        value = report_r2()  # R2; report() R1
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
