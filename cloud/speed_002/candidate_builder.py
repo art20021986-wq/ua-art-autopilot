@@ -15,9 +15,11 @@ import re
 
 HERE = Path(__file__).resolve().parent
 NEW_MODULES = ('ua_card_urls.py', 'ua_stage_images.py')
-CATALOG_PAGES = ('video/katalog.html', 'site/katalog.html')
-HOME_PAGES = ('video/index.html', 'site/index.html')
-ORDER_PAGES = ('video/podbor.html', 'site/podbor.html')
+# Public pages only: site/ is not served (ANALYTICS2-INSTALL-20261109: /site/ 404) and its copies differ (R2, R4);
+# writers that also fill site/ apply the modules there at their next write.
+CATALOG_PAGES = ('video/katalog.html',)
+HOME_PAGES = ('video/index.html',)
+ORDER_PAGES = ('video/podbor.html',)
 LATER_STYLES = ('model-note', 'model-price', 'finance-link', 'gallery', 'quick-lead')
 STYLE_LINK = re.compile(r'<link rel="stylesheet" href="(order/(%s)\.css\?v=[0-9.]+)">' % '|'.join(LATER_STYLES))
 EDITS = {
@@ -71,7 +73,7 @@ def defer_styles(html):
     """The later blocks' style links load without blocking; exactly the five, each once."""
     found = STYLE_LINK.findall(html)
     if sorted(name for _, name in found) != sorted(LATER_STYLES):
-        raise ValueError('SPEED2_STYLES:' + ','.join(name for _, name in found))
+        raise ValueError('SPEED2_STYLES:found=' + ','.join(name for _, name in found))
     return STYLE_LINK.sub(lambda m: '<link rel="stylesheet" href="%s" media="print" onload="this.media=\'all\'">'
                           '<noscript><link rel="stylesheet" href="%s"></noscript>' % (m[1], m[1]), html)
 
@@ -102,8 +104,6 @@ def build(source, dependencies, read_original):
         else:
             changed = defer_styles(text).encode('utf-8')
         if changed == value:
-            if name.startswith('site/'):
-                continue  # the site/ copy may lack the block (R2: site/index.html has no stage cards)
             raise ValueError('SPEED2_UNCHANGED:' + name)
         result[name] = changed
     for relative, data in copies.items():

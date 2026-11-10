@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "d0e96f5a1ae309f920a8f0febd27d40265551656b39cc2ba4dcb4dd344e69156",
+  "error": "REMOTE_PREVIEW:ValueError:SPEED2_STYLES: \u2014 no later-block style links found in a page copy (site/podbor.html; the public video/podbor.html had all five on 2026-11-08)",
+  "failed_step": "execute / standard / execute: remote preview candidate build (read-only), before any plan or write",
+  "precedent": "state/reconciliations/SPEED2-PREFLIGHT-20261108-R2.42622825023.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-10T03:09:32+00:00",
+  "remote_mode": "preview (reads only)",
+  "retry": "SPEED2-PREFLIGHT-20261108-R5: the release touches only the public /video/ pages (site/ is not served)",
+  "run_id": "42746746531",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "SPEED2-PREFLIGHT-20261108-R4"
+}
