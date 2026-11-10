@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "2c313b9dc67221211c954bedbe7bdb36c7436e17e7ba6ad976c5f50daf15c529",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T04:28:16Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-10T04:34:08Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42755806093",
     "task_id": "SPEED2-INSTALL-20261108-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42755806093-0bad2ec800738e98",
   "production_transaction_path": "state/transactions/SPEED2-INSTALL-20261108-R2.0bad2ec800738e98ed6a0075257190e32d3cbab8a9b5b001928627bc0849651f.42755806093.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "card-ua-0001-59fb15d3888564e2",
   "receipt_path": "state/receipts/SPEED2-INSTALL-20261108-R2.json",
   "receipt_validation_status": "PENDING",
@@ -92,5 +92,5 @@
       "cloud/speed_002/ua_stage_images.py": "9698da21737fc5f3212224e065ffd1d9ed139a709117f2ff150f00dc11ff4c99"
     }
   },
-  "updated_at": "2026-11-10T04:28:16Z"
+  "updated_at": "2026-11-10T04:34:08Z"
 }
