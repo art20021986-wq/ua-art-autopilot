@@ -3,7 +3,7 @@ import random
 import unittest
 from datetime import datetime
 
-from korea_auction import lots, nbu, selection
+from korea_auction import lots, nbu, selection, ticker
 
 FIX = pathlib.Path(__file__).with_name('fixtures')
 
@@ -60,6 +60,24 @@ class NbuTest(unittest.TestCase):
         self.assertEqual(nbu.krw_to_usd(11_700_000, rates), 8909)
         with self.assertRaises(ValueError):
             nbu.parse_rates([{'cc': 'USD', 'rate': 41.5, 'exchangedate': 'x'}])
+
+
+class TickerTest(unittest.TestCase):
+    ITEM = {'title': 'Kia K5', 'year': 2022, 'mileage_km': 48000, 'score': 'AA', 'start_price_krw': 11700000,
+            'start_price_usd': 8909, 'photo': 'https://x/1"><script>', 'auction_start_jst': '2026/11/11 13:00',
+            'hot': True}
+
+    def test_render_three_languages_and_escaping(self):
+        html = ticker.render({'lots_on_date': 2382, 'items': [self.ITEM]})
+        self.assertIn('$8 909', html)
+        self.assertIn('₩11,7 млн', html)
+        self.assertIn('data-ka="ხვალ აუქციონი"', html)
+        self.assertIn('Завтра на торгах 2 382 авто', html)
+        self.assertNotIn('"><script>', html)
+        self.assertEqual(html.count('class="kt-item"'), 2)  # duplicated track for a seamless loop
+
+    def test_empty(self):
+        self.assertEqual(ticker.render({'lots_on_date': 0, 'items': []}), '')
 
 
 if __name__ == '__main__':
