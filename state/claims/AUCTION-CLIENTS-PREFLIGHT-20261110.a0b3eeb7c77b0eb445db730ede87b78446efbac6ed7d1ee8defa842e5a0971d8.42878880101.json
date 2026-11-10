@@ -7,21 +7,23 @@
   "created_at": "2026-11-10T18:49:44Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T18:49:44Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-10T18:54:38Z",
+  "heartbeat_at": "2026-11-10T18:54:38Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "42878880101",
     "task_id": "AUCTION-CLIENTS-PREFLIGHT-20261110",
     "task_sha256": "a0b3eeb7c77b0eb445db730ede87b78446efbac6ed7d1ee8defa842e5a0971d8"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-6642cdb8b77f7c96-b043df54836efad1",
   "receipt_path": "state/receipts/AUCTION-CLIENTS-PREFLIGHT-20261110.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "ac6df8b85773268ad37172b9aa53330b83c4a795f087f98bf25942796090af47",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AUCTION-CLIENTS-PREFLIGHT-20261110.json",
   "request_sha256": "a0b3eeb7c77b0eb445db730ede87b78446efbac6ed7d1ee8defa842e5a0971d8",
   "resource_locks": [
@@ -29,8 +31,42 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "22809e5b0c83535003a6d3b2d69d17a87a1f18e1",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92810985472,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.109
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-10T18:49:44Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "02ace67d8d925f074d3d5bd650f3ed06dbbf90e3ffc86ceb0c6d7afdae39baa3",
+    "file_sha256": {
+      "cloud/auction_clients_001/candidate_builder.py": "94da2fe194d99bafc327f6f63cde4b63369b279136aec494b89bfe003ff23dea",
+      "cloud/auction_clients_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/auction_clients_001/deployment_bootstrap.py": "2e219c6fa1e5502223c007d08743ff604bc748a0564e5c947c3873cf9b90a60a",
+      "cloud/auction_clients_001/deployment_remote.py": "a0e35cb116860ae41607ce627cfad3a2afb9c9e1157980dfbf10ab55a8652ecc",
+      "cloud/auction_clients_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/auction_clients_001/deployment_transport.py": "c6b6c6e517e24255d4f2f497933278cd2978db925a72940240e597839a72de9e",
+      "cloud/auction_clients_001/edit_crm_orders.py": "7a9a1684ad8fbdd1c41174127cbcef212ed7f9063565b41323b030461396c686",
+      "cloud/auction_clients_001/edit_order_host.py": "0e4be90bf837468f80ab544da60d639684bacd0739243f093a17cb2b57a0264e",
+      "cloud/auction_clients_001/make_release.py": "f768c2e8c2b4e362d8a156f64b7707ac88df3831f58da4110a60fb07ac1e98de",
+      "cloud/auction_clients_001/release_constants.py": "dcac08490825df69a49437890dd37988ed4f509c9ca7d61d99153b0e6597ba75",
+      "cloud/auction_clients_001/test_auction_clients.py": "b6e136fa7f288101dd40488e9061862e72efd61bfdfd9045a1ac896e22490c9c",
+      "cloud/auction_clients_001/test_auction_clients_bot.py": "dd3b1def4b816057788482fe315ae231db7ef2e23709147472d9b2db55a11cd6",
+      "cloud/auction_clients_001/test_auction_web.py": "aeb47b75d03472022914e19d5bd10f08560547445b59af175071a3ba33a09dd2",
+      "cloud/auction_clients_001/test_deployment.py": "d5aa83e9aa5ef1c3f45f790577cc7a6283fc56584d8c985c83305a9f2b9155a1",
+      "cloud/auction_clients_001/test_release.py": "b9e87edea990c9b7280e2674bd42a652f52aa48f6ded75701b7953d702e568b4",
+      "cloud/auction_clients_001/ua_auction_clients.py": "3d54afd110e28f170b0e88ca1a4c387d07a48941307024f1bddc90853f414a5d",
+      "cloud/auction_clients_001/ua_auction_clients_bot.py": "27e96d235af265616800916af0064de1fadd35d2d3f3a419347a3ac59a3acf08",
+      "cloud/auction_clients_001/ua_auction_clients_view.py": "c12ae834af8e9dbb1fda7354a6705df8db870af90d9ce8f6fa9d658bd8ff2442",
+      "cloud/auction_clients_001/ua_auction_web.py": "0ed7807b2911775c242aac337dc1b38452fbac6eddade270094ffdad0465f78b",
+      "cloud/auction_clients_001/ua_korea_login.py": "2dca8d9533438786c1e929e4f184c395ed5460ae2787841cae7b41d113b1f420"
+    }
+  },
+  "updated_at": "2026-11-10T18:54:38Z"
 }
