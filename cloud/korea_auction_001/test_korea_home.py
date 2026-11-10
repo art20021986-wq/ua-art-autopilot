@@ -1,0 +1,38 @@
+import pathlib
+import unittest
+
+import ua_korea_home as m
+
+LIVE = (pathlib.Path(__file__).parent / 'fixtures' / 'index_live.html').read_text()
+
+
+class KoreaHomeTest(unittest.TestCase):
+    def test_adds_mark_and_slot_once(self):
+        out = m.apply(LIVE)
+        self.assertEqual(out.count(m.MARK), 1)
+        self.assertEqual(out.count('id="ua-korea-ticker"'), 1)
+        self.assertEqual(out.count('class="ua-kr-live"'), 1)
+        self.assertEqual(m.apply(out), out)  # idempotent
+
+    def test_badge_inside_korea_flag_link(self):
+        out = m.apply(LIVE)
+        link = out[out.index(m.FLAG):]
+        self.assertLess(link.index('ua-kr-live'), link.index('</a>'))
+
+    def test_slot_right_after_hero(self):
+        out = m.apply(LIVE)
+        hero_end = out.index('</section>', out.index(m.HERO)) + len('</section>')
+        self.assertTrue(out[hero_end:].startswith(m.MARK))
+
+    def test_only_additions(self):
+        out = m.apply(LIVE)
+        restored = out.replace(m.BADGE, '').replace(m.MARK + m.STYLE + m.SLOT, '')
+        self.assertEqual(restored, LIVE)
+
+    def test_other_pages_unchanged(self):
+        for page in ('<html><body>katalog</body></html>', None, ''):
+            self.assertEqual(m.apply(page), page)
+
+
+if __name__ == '__main__':
+    unittest.main()
