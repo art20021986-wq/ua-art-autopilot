@@ -136,6 +136,7 @@ def smoke(directory):
              'layout_kept': home.count(ua_korea_home.LAYOUT) == 1,
              'only_the_buttons': undo(home) == live,
              'watch_auctions': home.count(ua_korea_home.GO_TO) == 1,
+             'photo_above_stages': home.index(ua_korea_home.PHOTO) < home.index(ua_korea_home.STAGES),
              'mark_kept': home.count(ua_korea_home.MARK) == 1}
     if not all(value.values()):
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value))
@@ -144,7 +145,7 @@ def smoke(directory):
 
 def undo(html):
     """The home page with the Telegram button back (rollback keeps the order, mark, flag link and ticker slot)."""
-    html = html.replace(ua_korea_home.GO_TO, ua_korea_home.GO_FROM, 1)
+    html = ua_korea_home._photo_back(html).replace(ua_korea_home.GO_TO, ua_korea_home.GO_FROM, 1)
     if ua_korea_home.TELEGRAM in html:
         return html
     return html.replace(ua_korea_home.PICK_TO, ua_korea_home.PICK_TO + ua_korea_home.TELEGRAM, 1)

@@ -13,7 +13,6 @@ T = {
     'auction': ('Аукціон', 'Аукцион', 'აუქციონი'),
     'start': ('старт', 'старт', 'საწყისი'),
     'left': ('до торгів', 'до торгов', 'ვაჭრობამდე'),
-    'hours': ('год', 'ч', 'სთ'),
     'hot': ('Нижче звичайної ціни', 'Ниже обычной цены', 'ჩვეულებრივ ფასზე იაფი'),
     'score': ('оцінка', 'оценка', 'შეფასება'),
     'km': ('км', 'км', 'კმ'),
@@ -55,15 +54,15 @@ def _item(it, tomorrow):
     return (
         '<a class="kt-item" href="%s">'
         '<img src="%s" alt="%s" width="240" height="180" decoding="async">'
-        '<span class="kt-body"><span class="kt-live">● %s</span>%s'
+        '<span class="kt-body"><span class="kt-top"><span class="kt-live">● %s</span>'
+        '<span class="kt-clock" data-kt-start="%s">%s <i></i></span></span>%s'
         '<strong>%s %d</strong>'
         '<span>%s %s · %s %s</span>'
-        '<span class="kt-price">%s <b>$%s</b> <small>(%s)</small></span>'
-        '<span class="kt-left" data-kt-start="%s">%s <i></i> %s</span></span></a>'
-    ) % (LINK, escape(it['photo']), escape(it['title']), _t('tomorrow' if tomorrow else 'auction'), hot,
+        '<span class="kt-price">%s <b>$%s</b> <small>(%s)</small></span></span></a>'
+    ) % (LINK, escape(it['photo']), escape(it['title']), _t('tomorrow' if tomorrow else 'auction'),
+         escape(it['auction_start_jst']), _t('left'), hot,
          escape(it['title']), it['year'], _num(it['mileage_km']), _t('km'), _t('score'), escape(it['score']),
-         _t('start'), _num(it['start_price_usd']), _krw(it['start_price_krw']),
-         escape(it['auction_start_jst']), _t('left'), _t('hours'))
+         _t('start'), _num(it['start_price_usd']), _krw(it['start_price_krw']))
 
 
 def _own(car):
@@ -125,7 +124,10 @@ CSS = (
     '.kt-body strong{font-size:18px}.kt-live{color:#ff5a5a;font-weight:600}'
     '.kt-own{background:#1c1606;border:2px solid #f2b544}'
     '.kt-star{color:#f2b544;font-weight:700}.kt-see{color:#f2b544;font-weight:700}'
-    '.kt-hot{color:#ffb020}.kt-price b{font-size:22px;color:#4ade80}.kt-left{opacity:.8}'
+    '.kt-hot{color:#ffb020}.kt-price b{font-size:22px;color:#4ade80}'
+    '.kt-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px}'
+    '.kt-clock{font-size:13px;opacity:.9;white-space:nowrap}.kt-clock i{font-style:normal;font-weight:800;'
+    'font-size:16px;color:#ffd200;font-variant-numeric:tabular-nums}'
     '.kt-lead{display:flex;align-items:center;gap:8px;padding:0 22px;border-radius:12px;'
     'font-size:20px;font-weight:700;color:#0B1524;white-space:nowrap;'
     'background:linear-gradient(135deg,#ffd200,#ff8a00)}'
@@ -142,14 +144,18 @@ CSS = (
     '.kt-prev{left:2px}.kt-next{right:2px}}'
 )
 
-# Countdown «до торгів N год» (start time is Japan/Korea time, UTC+9) and the slider: a step every STEP_MS,
+# Countdown «до торгів ГГ:ХХ:СС», live every second (owner 2026-11-10; start time is Japan/Korea time, UTC+9),
+# and the slider: a step every STEP_MS,
 # arrows step by one card, any touch/hover/arrow pauses the automatic step for PAUSE_MS.
 STEP_MS, PAUSE_MS = 2000, 6000
 JS = (
-    "(function(){var n=Date.now();document.querySelectorAll('.korea-ticker [data-kt-start]')"
-    ".forEach(function(e){var s=e.getAttribute('data-kt-start').replace(/\\//g,'-').replace(' ','T')+':00+09:00';"
-    "var h=Math.round((Date.parse(s)-n)/36e5);var i=e.querySelector('i');"
-    "if(h>0&&i){i.textContent=h;}else{e.style.display='none';}});"
+    "(function(){var clocks=[].map.call(document.querySelectorAll('.korea-ticker [data-kt-start]'),function(e){"
+    "return [e,Date.parse(e.getAttribute('data-kt-start').replace(/\\//g,'-').replace(' ','T')+':00+09:00')];});"
+    "function two(v){return (v<10?'0':'')+v;}"
+    "function tick(){var now=Date.now();clocks.forEach(function(c){var left=Math.floor((c[1]-now)/1000);"
+    "if(!(left>0)){c[0].style.display='none';return;}"
+    "c[0].querySelector('i').textContent=Math.floor(left/3600)+':'+two(Math.floor(left%3600/60))+':'+two(left%60);});}"
+    "tick();setInterval(tick,1000);"
     "document.querySelectorAll('.korea-ticker').forEach(function(box){"
     "var t=box.querySelector('.kt-track'),hold=0;"
     "function card(){var c=t.children[0];return c?c.getBoundingClientRect().width+16:300;}"

@@ -74,11 +74,11 @@ def preview():
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Preview of HOME-TELEGRAM (JPAUTO-KOREA-001): reads the live home page and ua_korea_home.py, '
-                            'builds the candidate (the hero without the Telegram button) and checks that only that button '
-                            'changes; measures storage. No application source, CRM, HTML, media or bot state changes.',
+                            'builds the candidate (no Telegram button, «Дивитися аукціони», photo above the cars in stock) and '
+                            'checks it is exactly reversible; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview home without Telegram button'}
+             'title': 'Preview home buttons and photo'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -131,9 +131,11 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved (2026-11-10, answer 1а): the home hero has no «Написати в Telegram» button; '
-                              'ua_korea_home.py keeps it so at every home rewrite (site_ge_inject.inject_html). The header '
-                              'contact line is not changed. Rollback restores the button. No CRM '
+               'description': 'Owner approved (2026-11-10): on the home page the hero has no «Написати в Telegram» button, '
+                              'the auctions block button reads «Дивитися аукціони», and the hero photo stands right above '
+                              'the cars in stock; ua_korea_home.py keeps it so at every home rewrite '
+                              '(site_ge_inject.inject_html). The header contact line is not changed. Rollback restores all '
+                              'three. No CRM '
                               'data change. Existing backup, bot pause, writer locks, data-preservation, rollback and public '
                               'health checks are kept.',
                'execution': execution(task, True),
@@ -141,7 +143,7 @@ def install():
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/podbor.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install home without Telegram button'}
+               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install home buttons and photo'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),

@@ -9,8 +9,8 @@ apply(html) on the home page (the «Авто під замовлення» hero 
   4. the page order (owner 2026-11-10): «Аукціони онлайн» block, the ticker, the hero (individual order:
      its button reads «Індивідуальне замовлення»), cars in stock (#stages), then the remaining blocks.
      Applied only to the known structure; any other structure keeps its order;
-  5. the hero has no «Написати в Telegram» button; the auctions block button reads «Дивитися аукціони»
-     (owner 2026-11-10).
+  5. the hero has no «Написати в Telegram» button; the auctions block button reads «Дивитися аукціони»;
+     the hero photo stands on its own right above the cars in stock (owner 2026-11-10).
 Each addition is applied once and independently (a page from an earlier version gets the missing ones);
 remove() takes all of them back. Any other page is returned unchanged.
 """
@@ -122,7 +122,7 @@ def _ordered(html):
 
 def _unordered(html):
     """Inverse of _ordered (the page keeps the mark, flag link and ticker slot)."""
-    html = html.replace(GO_TO, GO_FROM, 1)
+    html = _photo_back(html).replace(GO_TO, GO_FROM, 1)
     found = _blocks(html) if LAYOUT in html else None
     if found is None:
         return html
@@ -135,6 +135,40 @@ def _unordered(html):
 
 GO_FROM = _t('a', 'Дивитися онлайн', 'Смотреть онлайн', 'ონლაინ ნახვა', ' class="go" href="korea.html"')
 GO_TO = _t('a', 'Дивитися аукціони', 'Смотреть аукционы', 'აუქციონების ნახვა', ' class="go" href="korea.html"')
+
+
+PHOTO = '<!--UA-HOME-PHOTO-V1--><div class="ua-home-photo">'
+PHOTO_END = '</div><!--/UA-HOME-PHOTO-V1-->'
+PHOTO_STYLE = ('<style id="ua-home-photo-v1">.ua-home-photo{display:flex;justify-content:center;background:#060f1b}'
+               '.ua-home-photo picture{display:block;width:100%;max-width:885px}'
+               '.ua-home-photo img{display:block;width:100%;height:auto}'
+               '.ua-order-first:not(:has(>picture)){display:block}'
+               '.ua-order-first:not(:has(>picture)) .ua-order-shade{display:none}</style>')
+
+
+def _photo_moved(html):
+    """The hero photo as its own block right before the cars in stock (#stages)."""
+    if PHOTO in html or LAYOUT not in html or html.count(STAGES) != 1 or HERO not in html:
+        return html
+    hero = html.index(HERO) + len(HERO)
+    if not html.startswith('<picture>', hero):
+        return html
+    end = html.index('</picture>', hero) + len('</picture>')
+    picture = html[hero:end]
+    html = html[:hero] + html[end:]
+    at = html.index(STAGES)
+    return html[:at] + PHOTO + PHOTO_STYLE + picture + PHOTO_END + html[at:]
+
+
+def _photo_back(html):
+    if PHOTO not in html:
+        return html
+    start = html.index(PHOTO)
+    end = html.index(PHOTO_END, start) + len(PHOTO_END)
+    picture = html[start + len(PHOTO) + len(PHOTO_STYLE):end - len(PHOTO_END)]
+    html = html[:start] + html[end:]
+    hero = html.index(HERO) + len(HERO)
+    return html[:hero] + picture + html[hero:]
 
 
 def _without_telegram(html):
@@ -159,7 +193,7 @@ def apply(html):
         hero = html.index(HERO)
         end_hero = html.index('</section>', hero) + len('</section>')
         html = html[:end_hero] + MARK + STYLE + SLOT + html[end_hero:]
-    return _without_telegram(_ordered(html))
+    return _photo_moved(_without_telegram(_ordered(html)))
 
 
 def remove(html):
