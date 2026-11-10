@@ -1,4 +1,5 @@
 """The HOME-ORDER candidate from the home page and module as installed by KOREA-FLAG-INSTALL-20261110."""
+import importlib.machinery
 import importlib.util
 from pathlib import Path
 import sys
@@ -14,9 +15,11 @@ INSTALLED_MODULE = (HERE / 'fixtures' / 'ua_korea_home_installed.txt').read_byte
 
 
 def installed_module():
-    spec = importlib.util.spec_from_loader('installed_home', loader=None)
-    module = importlib.util.module_from_spec(spec)
-    exec(INSTALLED_MODULE, module.__dict__)
+    """The flag release's module, loaded from its fixture as a regular source file."""
+    path = str(HERE / 'fixtures' / 'ua_korea_home_installed.txt')
+    loader = importlib.machinery.SourceFileLoader('installed_home', path)
+    module = importlib.util.module_from_spec(importlib.util.spec_from_loader('installed_home', loader))
+    loader.exec_module(module)
     return module
 
 

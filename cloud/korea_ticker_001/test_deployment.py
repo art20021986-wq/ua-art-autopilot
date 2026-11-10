@@ -295,7 +295,7 @@ class SmokeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             here, work = Path(tmp)/'pkg', Path(tmp)/'work'
             here.mkdir()
-            source = Path(__file__).resolve().parents[2]/'automation'/'korea_auction'
+            source = Path(__file__).resolve().parent/'korea_auction'
             for module in candidate_builder.MODULES:
                 shutil.copy(source/(module+'.py'), here/('kauc_%s.py' % module))
             plan = {'files': {name: {} for name in candidate_builder.build({}, {}, here=here)}}

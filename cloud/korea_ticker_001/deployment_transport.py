@@ -21,7 +21,7 @@ INBOX = '/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin'
 BOT_ID = 266084
 BOT_COMMAND = 'python3.10 /home/Carix/start_safe.py'
 HERE = Path(__file__).resolve().parent
-COLLECTOR = HERE.parents[1]/'automation'/'korea_auction'  # zipped flat as kauc_<module>.py
+COLLECTOR = HERE/'korea_auction'  # zipped flat as kauc_<module>.py
 # The hourly server task of the home ticker (korea_auction.job decides when to work).
 JOB_COMMAND = 'python3.10 /home/Carix/korea_ticker_job.py'
 JOB_MINUTE = 7
