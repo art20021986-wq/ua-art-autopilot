@@ -4,6 +4,7 @@ apply(html) on video/korea.html:
   1. after the «Два способи купити авто» block — the lot list (#lots): search by make, model, year, mileage and
      price, cards, and a lot card with photos, data and «Зв'язатися з менеджером» (the site's manager dialog,
      with the chosen lot). Data: /video/korea/lots.json, written by the server job (korea_auction.public).
+     A link korea.html#lot-<id> (the home ticker) opens that lot's card.
   2. the «Дивитися онлайн» buttons lead to the list instead of opening the dialog and read «Дивитися аукціони»
      (owner 2026-11-10).
 remove(html) takes both back. Texts carry the site's data-uk / data-ru / data-ka attributes (ua-site-languages.js
@@ -141,7 +142,10 @@ SCRIPT = (
     '$("kl-more").addEventListener("click",more);'
     'fetch("' + DATA + '",{cache:"no-cache"}).then(function(r){return r.ok?r.json():{lots:[]};})'
     '.then(function(d){lots=d.lots||[];opt($("kl-maker"),uniq(lots.map(function(l){return l.maker;})));models();'
-    'filter();}).catch(function(){});'
+    'filter();hash();}).catch(function(){});'
+    'function hash(){var m=/^#lot-(\\d+)$/.exec(location.hash);if(m&&lots.length){'
+    '$("lots").scrollIntoView();open(m[1]);}}'
+    'window.addEventListener("hashchange",hash);'
     '})();</script>')
 
 BLOCK = MARK + STYLE + SECTION + SCRIPT + END
