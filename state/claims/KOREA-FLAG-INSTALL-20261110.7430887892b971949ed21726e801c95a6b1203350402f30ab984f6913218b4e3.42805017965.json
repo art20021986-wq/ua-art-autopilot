@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "e3fb313a3de453cf43e0628dd84ddca270cbb7eb8b5593bc59c962aa48214535",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T11:17:12Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-10T11:21:03Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42805017965",
     "task_id": "KOREA-FLAG-INSTALL-20261110",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42805017965-7430887892b97194",
   "production_transaction_path": "state/transactions/KOREA-FLAG-INSTALL-20261110.7430887892b971949ed21726e801c95a6b1203350402f30ab984f6913218b4e3.42805017965.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/KOREA-FLAG-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/korea_flag_001/ua_korea_home.py": "4510ce630d8428d6cd1956761c3e8238ddfaf1d877096545785ce015bdd87c26"
     }
   },
-  "updated_at": "2026-11-10T11:17:12Z"
+  "updated_at": "2026-11-10T11:21:03Z"
 }
