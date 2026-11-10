@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "729348143001c942fb720efe4dca01fadae749c1cf5af66b38e675e8c0d20157",
+  "error": "REMOTE_PREVIEW:ValueError:SPEED2_UNCHANGED:site/index.html \u2014 the site/ copy of the home page has no stage cards, so the read-only candidate build refused it",
+  "failed_step": "execute / standard / execute: remote preview candidate build (read-only), before any plan or write",
+  "precedent": "state/reconciliations/ORDER-CONTACT-PREFLIGHT-20261106-R2.42203434386.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-10T03:01:07+00:00",
+  "remote_mode": "preview (reads only; the bundle's own run folder holds the failed receipt)",
+  "retry": "SPEED2-PREFLIGHT-20261108-R4 with the builder fix (unchanged site/ copies are left out, tested); R3 was refused RESOURCE_BUSY by this blocked claim and created no claim",
+  "run_id": "42622825023",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "SPEED2-PREFLIGHT-20261108-R2"
+}

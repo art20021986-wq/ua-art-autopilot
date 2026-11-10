@@ -102,6 +102,8 @@ def build(source, dependencies, read_original):
         else:
             changed = defer_styles(text).encode('utf-8')
         if changed == value:
+            if name.startswith('site/'):
+                continue  # the site/ copy may lack the block (R2: site/index.html has no stage cards)
             raise ValueError('SPEED2_UNCHANGED:' + name)
         result[name] = changed
     for relative, data in copies.items():
