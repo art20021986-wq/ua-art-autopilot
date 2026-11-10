@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "88cb4df37d6e105a212d9d6ac360e75d36ab9a33238241be4d1e0ed9c2aad10d",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T17:52:57Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-10T17:56:04Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42868894870",
     "task_id": "KOREA-FUEL-INSTALL-20261110",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42868894870-35759b3e26ad216f",
   "production_transaction_path": "state/transactions/KOREA-FUEL-INSTALL-20261110.35759b3e26ad216f4c983e4acc87a20d1edaa383d27003351a24d6fc83edf89d.42868894870.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-FUEL-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -106,5 +106,5 @@
       "cloud/korea_fuel_001/test_release.py": "f504691397dbb875db8fc3831840a36fb03c0c1dae0cbd39294d01d1181a5bcf"
     }
   },
-  "updated_at": "2026-11-10T17:52:57Z"
+  "updated_at": "2026-11-10T17:56:04Z"
 }
