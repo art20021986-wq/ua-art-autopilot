@@ -1,6 +1,6 @@
 """Build the KOREA-TICKER candidate: the collector package and its launcher as new files in /home/Carix.
 
-The collector modules come from automation/korea_auction (zipped flat as kauc_<module>.py by the transport).
+The collector modules come from korea_auction/ in this package (zipped flat as kauc_<module>.py by the transport).
 Nothing existing changes: no page, no CRM module; the job itself writes only video/korea/ticker.html and video/korea/img/.
 """
 from pathlib import Path

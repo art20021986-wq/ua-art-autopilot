@@ -7,10 +7,8 @@ import zipfile
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-sys.path.insert(0, str(HERE.parents[1] / 'automation'))
 import candidate_builder  # noqa: E402
 import deployment_transport  # noqa: E402
-from korea_auction.test_korea_auction import *  # noqa: E402,F401,F403  the collector's own tests run here too
 
 
 class FakeAPI:
@@ -41,7 +39,7 @@ class CandidateTests(unittest.TestCase):
         files = candidate_builder.build({}, {}, here=unpacked)
         self.assertEqual(set(files), {'korea_auction/__init__.py', 'korea_ticker_job.py'}
                          | {'korea_auction/%s.py' % m for m in candidate_builder.MODULES})
-        source = HERE.parents[1] / 'automation' / 'korea_auction'
+        source = HERE / 'korea_auction'
         for module in candidate_builder.MODULES:
             self.assertEqual(files['korea_auction/%s.py' % module], (source / (module + '.py')).read_bytes())
         for name, value in files.items():
