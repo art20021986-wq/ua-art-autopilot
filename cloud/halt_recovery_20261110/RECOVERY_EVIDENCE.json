@@ -1,0 +1,40 @@
+{
+  "after_clear_mode_validation": {
+    "allow_halt_for_recovery": false,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "authorization_scope": "Archive the SPEED2-INSTALL-20261108 halt (public verification expected a car tile on a model page without cars; verified rollback restored the previous release); preserve all protection policies, Gate B, backup and operator data",
+  "before_clear_mode_validation": {
+    "allow_halt_for_recovery": true,
+    "mode": "AUTOMATIC",
+    "status": "PASS"
+  },
+  "before_error": "PUBLIC_CHANGE_MISSING:/video/seo/ua/kia-k5-koreya-kyiv.html at public_verify; backup PASS; rollback PASS, live_verify PASS, crm_unchanged",
+  "claim_archive": "state/halt_history/SPEED2-INSTALL-20261108.42748648983/claim.before.json",
+  "contract": "OWNER-AUTHORIZED-REPOSITORY-HALT-RECOVERY-EVIDENCE-1",
+  "credentials_read_or_changed": false,
+  "execution_mode_bytes_changed": false,
+  "existing_launch_markers_replayed": false,
+  "halt_archive": "state/halt_history/SPEED2-INSTALL-20261108.42748648983/halt.json",
+  "halt_sha256": "33aca8c8ca69ca4361724deeabd5cb3c2567ceabaef462be15e2d6c37b88bfd2",
+  "historical_halt": {
+    "halted_at": "2026-11-10T03:46:29Z",
+    "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+    "reason": "CRITICAL Production pipeline failed; GitHub Actions run 42748648983; rollback reserved true; rollback performed true",
+    "request_path": "tasks/requests/SPEED2-INSTALL-20261108.json",
+    "request_sha256": "830fe59304193c3ddc284a9592118cc0b3c816fb6b8dd9e2021876101bdd0818",
+    "run_id": "42748648983",
+    "status": "EMERGENCY_HALT",
+    "task_id": "SPEED2-INSTALL-20261108"
+  },
+  "owner_statement": "\u0421\u043d\u0438\u043c\u0438 \u043e\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0443",
+  "precedent": "cloud/halt_recovery_20261109/RECOVERY_EVIDENCE.json",
+  "production_launch_created": false,
+  "production_transaction_opened": false,
+  "reconciliation_evidence": "state/reconciliations/SPEED2-INSTALL-20261108.42748648983.authenticated-evidence.json",
+  "recorded_at": "2026-11-10T04:13:42.959137+00:00",
+  "required_production_gates_weakened": false,
+  "runtime_code_changed": false,
+  "site_or_crm_written": false
+}
