@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-TELEGRAM-PREFLIGHT-20261110.c6ae45a09e6e1240bb19d5ae797a452dc8cda0ad1cba474009f4a389dec78435.json",
+  "autostart_ledger_sha256": "d77857675990246f9ea008469d7d27217bb79cc7434ba56bd8c59a2892566cc9",
+  "autostart_source_commit": "280a8d71b4823ae1c4b4dead950ee63176d55ef0",
+  "created_at": "2026-11-10T18:12:50Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42872637108",
+    "task_id": "HOME-TELEGRAM-PREFLIGHT-20261110",
+    "task_sha256": "c6ae45a09e6e1240bb19d5ae797a452dc8cda0ad1cba474009f4a389dec78435"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-22d69196f013467a-c6037447678194ec",
+  "request_path": "tasks/requests/HOME-TELEGRAM-PREFLIGHT-20261110.json",
+  "resource_locks": [
+    "PATH_SCOPE:22d69196f013467a"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
