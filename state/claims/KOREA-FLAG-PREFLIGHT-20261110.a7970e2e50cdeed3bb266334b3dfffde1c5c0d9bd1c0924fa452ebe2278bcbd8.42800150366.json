@@ -7,21 +7,23 @@
   "created_at": "2026-11-10T10:34:54Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T10:34:54Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-10T10:38:06Z",
+  "heartbeat_at": "2026-11-10T10:38:06Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "42800150366",
     "task_id": "KOREA-FLAG-PREFLIGHT-20261110",
     "task_sha256": "a7970e2e50cdeed3bb266334b3dfffde1c5c0d9bd1c0924fa452ebe2278bcbd8"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-5ebb43235c800597-65d7342cbdde8f33",
   "receipt_path": "state/receipts/KOREA-FLAG-PREFLIGHT-20261110.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "9e7b1e5881b9f0944ee8c91075977f03b41149b027ee582312558c29eed6a35a",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-FLAG-PREFLIGHT-20261110.json",
   "request_sha256": "a7970e2e50cdeed3bb266334b3dfffde1c5c0d9bd1c0924fa452ebe2278bcbd8",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "dd71c8851994b884448f08253e232adcecbf9bef",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92820520960,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.103
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-10T10:34:54Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "5887234b25c287d04810ebc71ca83fe88f6d5effde0a36a8e73066684dc6d29b",
+    "file_sha256": {
+      "cloud/korea_flag_001/candidate_builder.py": "c0ac177cf73b727b9eab1afc6041d7ca709da6dedfa8fe45efa3ee350a4a47ab",
+      "cloud/korea_flag_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/korea_flag_001/deployment_bootstrap.py": "b617f86bfe553c6d09a955d017346137aba6fabe9fe0cc3bdc1b0fe9b4bb7b7a",
+      "cloud/korea_flag_001/deployment_remote.py": "b0b8cd4dc4f973d1840f19137c9928043aa9c3e59d202dd28f6b1f44dabe20e3",
+      "cloud/korea_flag_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/korea_flag_001/deployment_transport.py": "37bf3b76bae3d6f524dabf68edd89f1f521cab5942115c3c95b2d9033ee68af1",
+      "cloud/korea_flag_001/make_release.py": "ed60947e157efd61e240e311cd7d191ca8f19684f9e42329a661437b1d04d97b",
+      "cloud/korea_flag_001/release_constants.py": "89d9fd19bf6024a36e2a9986befaab6a739ca89be9b0423da253e0743021c850",
+      "cloud/korea_flag_001/test_deployment.py": "610cad743fe2c8a2e07b5f7be8f8ae64602b60bfb7303f4f7e8b693842455c70",
+      "cloud/korea_flag_001/test_release.py": "51e01b70dedc2c375ad7cf7cc8ed7ac4a7796fa9572865e215982315473d344d",
+      "cloud/korea_flag_001/ua_korea_home.py": "4510ce630d8428d6cd1956761c3e8238ddfaf1d877096545785ce015bdd87c26"
+    }
+  },
+  "updated_at": "2026-11-10T10:38:06Z"
 }
