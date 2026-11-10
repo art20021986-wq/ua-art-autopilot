@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "78971adb81db935f5c16330c340d841d550cde85ad110cf907625a2ee35cbb1b",
   "autostart_source_commit": "8d2f3cef3761c734ecf2a4e1c4df98912fb53dfb",
   "created_at": "2026-11-10T18:21:13Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "cc704e906c6da9ab2ba32f5ee1f59a463cc8140b7bed68319a9129807b7db4ca",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T18:21:13Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-10T18:22:52Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42874071084",
     "task_id": "HOME-TELEGRAM-INSTALL-20261110",
     "task_sha256": "28ee706f13304c5b33f3032706f74065b987970a21e2a77953dfe327052952c9"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 293.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 278.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42874071084-28ee706f13304c5b",
+  "production_transaction_path": "state/transactions/HOME-TELEGRAM-INSTALL-20261110.28ee706f13304c5b33f3032706f74065b987970a21e2a77953dfe327052952c9.42874071084.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-TELEGRAM-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "661017217bc1e147dcd0383354764375d430e62a",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 394.422,
+    "allowed": true,
+    "evidence_path": "state/storage/HOME-TELEGRAM-INSTALL-20261110.json",
+    "evidence_sha256": "42e75ad51eca07e433757504aab6726686c8d4f03575d2565c74873b8bd2f617",
+    "free_bytes": 23078051328,
+    "heavy": true,
+    "measured_at": "2026-11-10T18:16:14.689270+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 34.06271049142857
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-10T18:21:13Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "93c0d86828140de7383d17b07b29e2f3b8e333ed602e3e84fa75749dc2548ce5",
+    "file_sha256": {
+      "cloud/home_telegram_001/candidate_builder.py": "381236eaac1360f0fb53f98c9cd043fc599222cab3efd6999a7903e96624c913",
+      "cloud/home_telegram_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_telegram_001/deployment_bootstrap.py": "9c132dcec11bb1cae85e5ed963b4ba73d4da591858f5ab9bebc1a2db148bcb25",
+      "cloud/home_telegram_001/deployment_remote.py": "7211dc73ba951412f8404c5212d1d65929666d108eed8e598fccccc434a42475",
+      "cloud/home_telegram_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_telegram_001/deployment_transport.py": "02439fd03d73656bc7a7ac1627232e56b14e0cf303fed78820ee30abeee39039",
+      "cloud/home_telegram_001/make_release.py": "fbca0a1732b755a21576ef0c8afefc215f3da24209e51d8d77f4d2050f4f3cb5",
+      "cloud/home_telegram_001/release_constants.py": "5b3ec260f5a66ec56486f01ef6e10d167601ecc1b12f9b72f31288c0e629de58",
+      "cloud/home_telegram_001/test_deployment.py": "4a717c0a0153d9bdf103a59a1fd9d1991ce73457006b2550fe608e3d09528642",
+      "cloud/home_telegram_001/test_release.py": "5dcacf99ded190886e93c80d9cc1cbf546fd719972f8701c8f0e423e7899fd21",
+      "cloud/home_telegram_001/ua_korea_home.py": "2549a9289919abbd55316208e2d28a11bfa3d98da22e33ab634056032dcff96e"
+    }
+  },
+  "updated_at": "2026-11-10T18:22:52Z"
 }
