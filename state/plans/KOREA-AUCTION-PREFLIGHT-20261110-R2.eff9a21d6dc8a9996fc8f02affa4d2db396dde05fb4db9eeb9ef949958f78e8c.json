@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-AUCTION-PREFLIGHT-20261110-R2.eff9a21d6dc8a9996fc8f02affa4d2db396dde05fb4db9eeb9ef949958f78e8c.json",
+  "autostart_ledger_sha256": "3463282d1c277e0219692b38c9698409e8e830fda1c3d431266988b3c83e97a4",
+  "autostart_source_commit": "0eef2d3a7d3fe4f92c5add4c5906ea86822bc3ad",
+  "created_at": "2026-11-10T09:16:47Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42789144027",
+    "task_id": "KOREA-AUCTION-PREFLIGHT-20261110-R2",
+    "task_sha256": "eff9a21d6dc8a9996fc8f02affa4d2db396dde05fb4db9eeb9ef949958f78e8c"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-e30a7e1569ab9b56-7d3fdcd543ae7556",
+  "request_path": "tasks/requests/KOREA-AUCTION-PREFLIGHT-20261110-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:e30a7e1569ab9b56"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
