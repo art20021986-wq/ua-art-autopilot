@@ -21,6 +21,7 @@ EXPECTED = {'/video/index.html': '>Дивитися аукціони<', '/video/
             '/video/katalog.html': '', '/video/podbor.html': ''}
 # ...and what must be gone from it.
 ABSENT = {'/video/index.html': 'data-uk="Написати в Telegram"'}
+# ...and the moved photo (checked by the remote smoke and verify; the public check asks for the button text)
 SITE = 'https://www.uaart.com.ua'
 AGENT = 'UAART-HomeTelegram-Verify/1'
 # The live order API's answer to an auction enquiry with an invalid phone: the installed auction schema rejects the

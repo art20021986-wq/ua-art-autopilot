@@ -34,8 +34,10 @@ class CandidateTests(unittest.TestCase):
         self.assertNotIn(home.TELEGRAM, new)
         self.assertNotIn('Написати в Telegram', new)
         self.assertEqual(new, home.apply(LIVE))
-        self.assertEqual(new.replace(home.PICK_TO, home.PICK_TO + home.TELEGRAM, 1).replace(home.GO_TO, home.GO_FROM),
-                         self.home)
+        back = home._photo_back(new).replace(home.PICK_TO, home.PICK_TO + home.TELEGRAM, 1)
+        self.assertEqual(back.replace(home.GO_TO, home.GO_FROM), self.home)
+        self.assertLess(new.index(home.PHOTO), new.index(home.STAGES))
+        self.assertNotIn('<section class="hero ua-order-first"><picture>', new)
         self.assertEqual((new.count('>Дивитися аукціони<'), new.count('Дивитися онлайн')), (1, 0))
         self.assertEqual(home.apply(new), new)
         self.assertIn('header-telegram', new)  # the header contact line stays
