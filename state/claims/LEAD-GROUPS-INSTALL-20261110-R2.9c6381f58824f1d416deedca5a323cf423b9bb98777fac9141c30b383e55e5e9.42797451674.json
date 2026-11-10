@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "f13b19965acf4d791ae783bbb4af1ee5887ce94d67884509acdb73c77b3e1bbe",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T10:17:15Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-10T10:20:09Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42797451674",
     "task_id": "LEAD-GROUPS-INSTALL-20261110-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42797451674-9c6381f58824f1d4",
   "production_transaction_path": "state/transactions/LEAD-GROUPS-INSTALL-20261110-R2.9c6381f58824f1d416deedca5a323cf423b9bb98777fac9141c30b383e55e5e9.42797451674.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/LEAD-GROUPS-INSTALL-20261110-R2.json",
   "receipt_validation_status": "PENDING",
@@ -92,5 +92,5 @@
       "cloud/lead_groups_001/ua_lead_folders.py": "7f8bcdd715977bba71dd915b70f56dad174fffd6aed4fa16cd440b7788e904f2"
     }
   },
-  "updated_at": "2026-11-10T10:17:15Z"
+  "updated_at": "2026-11-10T10:20:09Z"
 }
