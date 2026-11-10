@@ -11,8 +11,8 @@
     {
       "action": "CLASSIFY_ROOT_CAUSE",
       "at": "2026-11-10T14:14:56Z",
-      "class": "UNKNOWN",
-      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 42830650874",
+      "class": "FAILED_BEFORE_PRODUCTION",
+      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 42830650874 Root cause: the package files on main changed while this read-only preview ran (ticker countdown merged), so the persist step saw TEST_SHA_MISMATCH. Nothing was written to production. Closed as FAILED (terminal) so its PATH_SCOPE lock is released, as in the SPEED2 and KOREA-AUCTION R1 reconciliations; replaced by KOREA-LOTS-PREFLIGHT-20261110-R5.",
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "f4dc838edd5072e5"
@@ -42,6 +42,6 @@
   "source_commit": "a38b07e0b2ac9deeadf205f94458a00969f84cdc",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-10T14:14:56Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-10T14:20:00Z"
 }
