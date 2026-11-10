@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "5822eee2547dd80f04512ee0da334e2ba3499669ab3fce17c71cd1829f767716",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T16:26:54Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-10T16:29:59Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42854130206",
     "task_id": "KOREA-PRICES-INSTALL-20261110",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42854130206-e02adc5a11c1505f",
   "production_transaction_path": "state/transactions/KOREA-PRICES-INSTALL-20261110.e02adc5a11c1505fcfcf997b33516201f580d7143bc342b40192825ee11a760d.42854130206.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-PRICES-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -106,5 +106,5 @@
       "cloud/korea_prices_001/test_release.py": "ff4923dfe2a48773a8923ca8183ed387ca518c057ac3e23656c0c6f2104528bb"
     }
   },
-  "updated_at": "2026-11-10T16:26:54Z"
+  "updated_at": "2026-11-10T16:29:59Z"
 }
