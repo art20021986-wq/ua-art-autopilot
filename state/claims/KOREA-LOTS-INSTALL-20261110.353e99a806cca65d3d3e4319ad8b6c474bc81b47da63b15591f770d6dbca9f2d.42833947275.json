@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "6d6222aefe6e7c718a0282197fc48b729f6ce5a2da260f1931cb34754519a451",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T14:28:27Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-10T14:32:29Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42833947275",
     "task_id": "KOREA-LOTS-INSTALL-20261110",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42833947275-353e99a806cca65d",
   "production_transaction_path": "state/transactions/KOREA-LOTS-INSTALL-20261110.353e99a806cca65d3d3e4319ad8b6c474bc81b47da63b15591f770d6dbca9f2d.42833947275.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-LOTS-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -105,5 +105,5 @@
       "cloud/korea_lots_001/test_release.py": "cff8e31e874033d80c52a3ded0863760a4d956d94536063ffc662a65e24d6728"
     }
   },
-  "updated_at": "2026-11-10T14:28:27Z"
+  "updated_at": "2026-11-10T14:32:29Z"
 }
