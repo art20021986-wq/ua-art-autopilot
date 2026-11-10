@@ -155,7 +155,7 @@ def summarize_form(form):
 
 def _rows_sample(html):
     """Raw HTML of the results table header and first two rows (for the parser design)."""
-    start = html.find('AuctionStart')
+    start = html.find('Close Time')
     if start < 0:
         return ''
     table = html.rfind('<table', 0, start)
@@ -188,7 +188,9 @@ def probe_results(c, kp, nav_hrefs):
                'img_samples': rp.imgs[:6], 'url_patterns': patterns,
                'results_count': re.findall(r'([\d,]+) Results', html)[:1],
                'view_links': [l for l in rp.links if 'View' in l['text'] or re.fullmatch(r'\d{2,4}', l['text'])][:12],
-               'row_html_sample': _rows_sample(html)}
+               'row_html_sample': _rows_sample(html),
+               'view_html': [re.sub(r'\s+', ' ', html[max(0, m.start() - 700):m.start() + 300])
+                             for m in re.finditer(r'2000', html)][:2]}
     if not lots:
         return results, None
     detail = next((l for l in lots if not l['href'].rstrip('/').endswith(('/kr', '/index'))), lots[0])
