@@ -1,0 +1,26 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-AUCTION-INSTALL-20261110.8927e729d0c3efa3014d05161dd348451c8af4cced947d24111f88e10d779bca.json",
+  "autostart_ledger_sha256": "923ecf6e3119390f6bf63acbde10efb123c0cb267c890fdd85ad4f02fc7f5aa6",
+  "autostart_source_commit": "2c2d1f5475b82eb0dc38dad8d8dcf9b769e60a90",
+  "created_at": "2026-11-10T08:53:58Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42786047168",
+    "task_id": "KOREA-AUCTION-INSTALL-20261110",
+    "task_sha256": "8927e729d0c3efa3014d05161dd348451c8af4cced947d24111f88e10d779bca"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "crm_db-704180d39a439a0c",
+  "request_path": "tasks/requests/KOREA-AUCTION-INSTALL-20261110.json",
+  "resource_locks": [
+    "CRM_DB",
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
