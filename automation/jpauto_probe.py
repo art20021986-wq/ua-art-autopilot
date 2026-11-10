@@ -113,8 +113,10 @@ class Client:
             time.sleep(3)  # be gentle: few, spaced requests
         self.requests += 1
         body = urllib.parse.urlencode(data).encode() if data is not None else None
-        req = urllib.request.Request(urllib.parse.urljoin(BASE, url), data=body,
-                                     headers={'User-Agent': UA, 'Accept-Language': 'en,ru;q=0.8'})
+        headers = {'User-Agent': UA, 'Accept-Language': 'en,ru;q=0.8'}
+        if body is not None:
+            headers.update({'Referer': BASE + '/', 'Origin': BASE})
+        req = urllib.request.Request(urllib.parse.urljoin(BASE, url), data=body, headers=headers)
         with urllib.request.urlopen(req, timeout=40) as r:
             return r.geturl(), r.status, r.read(8 * 1024 * 1024).decode('utf-8', 'replace')
 
@@ -140,7 +142,8 @@ def summarize_form(form):
 
 
 def main():
-    email, password = os.environ.get('JPAUTO_EMAIL', ''), os.environ.get('JPAUTO_PASSWORD', '')
+    email = os.environ.get('JPAUTO_EMAIL', '').strip()
+    password = os.environ.get('JPAUTO_PASSWORD', '').strip()
     if not email or not password:
         raise SystemExit('JPAUTO_SECRETS_MISSING')
     c = Client()
@@ -158,6 +161,12 @@ def main():
                         for form in home_page.forms for f in form['fields'])
     report = {'login_ok': logged_in, 'after_login_url': url.replace(BASE, ''), 'http': status}
     if not logged_in:
+        text = ' '.join(re.sub(r'(?s)<(script|style).*?</\1>|<[^>]+>', ' ', home).split())
+        report['page_text'] = text.replace(email, '<email>')[:600]
+        report['cookies'] = sorted(ck.name for ck in c.jar)
+        report['hidden_fields_sent'] = sorted(k for k in data if not k.startswith('data[Bidder]'))
+        report['secrets'] = {'password_set': bool(password),
+                                    'email_has_at': '@' in email}
         print(json.dumps(report, ensure_ascii=False, indent=1))
         raise SystemExit('LOGIN_FAILED')
 
