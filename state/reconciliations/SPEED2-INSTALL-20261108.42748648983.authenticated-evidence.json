@@ -1,0 +1,27 @@
+{
+  "backup_receipt": "state/receipts/SPEED2-INSTALL-20261108-BACKUP.json",
+  "backup_started": true,
+  "claim_before_sha256": "cf61df97deedfebdacafcd3a07639a9163d3a09a3bc3ce6f4c7ab49a854e1b14",
+  "claim_status_before": {
+    "critical_gate_status": "PASS_PRODUCTION",
+    "package_compile_status": "PASS",
+    "production_transaction_status": "ROLLED_BACK",
+    "task_execution_status": "ROLLED_BACK"
+  },
+  "crm_unchanged": true,
+  "error": "PUBLIC_CHANGE_MISSING:/video/seo/ua/kia-k5-koreya-kyiv.html \u2014 the check expected a car tile linking the ua version, but the K5 model page has no cars on sale",
+  "failed_step": "execute / critical / controller_production: public_verify (after install)",
+  "halt_archive": "state/halt_history/SPEED2-INSTALL-20261108.42748648983/halt.json",
+  "live_verify": "PASS",
+  "owner_statement": "\u0421\u043d\u0438\u043c\u0438 \u043e\u0441\u0442\u0430\u043d\u043e\u0432\u043a\u0443",
+  "precedent": "state/reconciliations/ANALYTICS2-INSTALL-20261109.42625280732.authenticated-evidence.json",
+  "production_transaction_status": "ROLLED_BACK",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-10T04:13:42.959137+00:00",
+  "rollback_receipt": "state/receipts/SPEED2-INSTALL-20261108-ROLLBACK.json",
+  "rollback_status": "ROLLED_BACK",
+  "run_id": "42748648983",
+  "site_state_after": "pre-install release, restored and verified by the rollback",
+  "task_id": "SPEED2-INSTALL-20261108",
+  "workflow_conclusion": "failure"
+}
