@@ -54,11 +54,17 @@ def fetch_all_lots(s):
     return total, found
 
 
+def display_name(maker, model):
+    """'KIA', 'SANTA FE' -> 'Kia Santa Fe'; words with digits stay as is ('K5', 'G80')."""
+    words = (maker + ' ' + model).split()
+    return ' '.join(w if any(c.isdigit() for c in w) else w.capitalize() for w in words)
+
+
 def ticker_item(lot, detail, rates):
     price = detail['start_price_krw'] or lot['start_price_krw']
     return {
         'id': lot['id'],
-        'title': '%s %s' % (lot['maker'].title(), lot['model']),
+        'title': display_name(lot['maker'], lot['model']),
         'model': selection.top_model(lot),
         'year': lot['year'], 'mileage_km': lot['mileage_km'], 'score': lot['score'],
         'fuel': detail['fuel'], 'start_price_krw': price,
