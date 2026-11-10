@@ -107,6 +107,7 @@ class Client:
         self.jar = http.cookiejar.CookieJar()
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.jar))
         self.requests = 0
+        self.trace = []
 
     def get(self, url, data=None):
         if self.requests:
@@ -117,8 +118,12 @@ class Client:
         if body is not None:
             headers.update({'Referer': BASE + '/', 'Origin': BASE})
         req = urllib.request.Request(urllib.parse.urljoin(BASE, url), data=body, headers=headers)
-        with urllib.request.urlopen(req, timeout=40) as r:
-            return r.geturl(), r.status, r.read(8 * 1024 * 1024).decode('utf-8', 'replace')
+        with self.opener.open(req, timeout=40) as r:
+            html = r.read(8 * 1024 * 1024).decode('utf-8', 'replace')
+            self.trace.append({'url': r.geturl().replace(BASE, ''), 'http': r.status, 'bytes': len(html),
+                               'set_cookie': [h.split('=', 1)[0] for h in r.headers.get_all('Set-Cookie') or []],
+                               'jar': sorted(ck.name for ck in self.jar)})
+            return r.geturl(), r.status, html
 
 
 def summarize_form(form):
@@ -163,7 +168,7 @@ def main():
     if not logged_in:
         text = ' '.join(re.sub(r'(?s)<(script|style).*?</\1>|<[^>]+>', ' ', home).split())
         report['page_text'] = text.replace(email, '<email>')[:600]
-        report['cookies'] = sorted(ck.name for ck in c.jar)
+        report['trace'] = c.trace
         report['hidden_fields_sent'] = sorted(k for k in data if not k.startswith('data[Bidder]'))
         report['secrets'] = {'password_set': bool(password),
                                     'email_has_at': '@' in email}
