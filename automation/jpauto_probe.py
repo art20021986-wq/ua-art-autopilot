@@ -167,21 +167,24 @@ def probe_results(c, kp, nav_hrefs):
         data.append(('maker[]', hyundai))
     url, status, html = c.get(form['action'], data)
     rp = parse(html)
-    lots = [l for l in rp.links if l['href'] not in nav_hrefs and re.search(r'\d{5,}', l['href'])
-            and (not l['href'].startswith(('http://', 'https://')) or l['href'].startswith(BASE))]
+    lots = [l for l in rp.links if l['href'] not in nav_hrefs and 'page=' not in l['href']
+            and not l['href'].startswith(('#', 'javascript', 'http://', 'https://'))]
+    patterns = sorted(set(re.findall(r'/vehicle-search/kr/[A-Za-z_-]+', html)))
     results = {'url': url.replace(BASE, ''), 'http': status, 'maker_value': hyundai,
                'table_headers': [t for t in rp.tables if t][:5],
-               'text': page_text(html, 3500),
+               'text': page_text(html, 200000)[-4000:],
                'lot_links': [{'text': l['text'][:80], 'href': l['href'].replace(BASE, '')} for l in lots[:15]],
-               'img_samples': rp.imgs[:15]}
+               'img_samples': rp.imgs[:6], 'url_patterns': patterns,
+               'results_count': re.findall(r'([\d,]+) Results', html)[:1]}
     if not lots:
         return results, None
-    lurl, lstatus, lhtml = c.get(lots[0]['href'])
+    detail = next((l for l in lots if not l['href'].rstrip('/').endswith(('/kr', '/index'))), lots[0])
+    lurl, lstatus, lhtml = c.get(detail['href'])
     lp = parse(lhtml)
     lot = {'url': lurl.replace(BASE, ''), 'http': lstatus,
            'headings': [h['text'] for h in lp.headings if h['text']][:60],
            'table_headers': [t for t in lp.tables if t][:8],
-           'text': page_text(lhtml, 3500), 'imgs': lp.imgs[:25]}
+           'text': page_text(lhtml, 6000)[-3500:], 'imgs': lp.imgs[:25]}
     return results, lot
 
 
