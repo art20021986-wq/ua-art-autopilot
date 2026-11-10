@@ -153,6 +153,17 @@ def summarize_form(form):
     return out
 
 
+def _rows_sample(html):
+    """Raw HTML of the results table header and first two rows (for the parser design)."""
+    start = html.find('AuctionStart')
+    if start < 0:
+        return ''
+    table = html.rfind('<table', 0, start)
+    rows = [m.start() for m in re.finditer(r'<tr[\s>]', html[table:])][:4]
+    end = table + rows[3] if len(rows) > 3 else table + 6000
+    return re.sub(r'\s+', ' ', html[table:end])[:9000]
+
+
 def probe_results(c, kp, nav_hrefs):
     """Submit the Korea search for one maker and read the first lot card."""
     form = next((f for f in kp.forms if f.get('id') == 'purchase_search_form'), None)
@@ -175,7 +186,9 @@ def probe_results(c, kp, nav_hrefs):
                'text': page_text(html, 200000)[-4000:],
                'lot_links': [{'text': l['text'][:80], 'href': l['href'].replace(BASE, '')} for l in lots[:15]],
                'img_samples': rp.imgs[:6], 'url_patterns': patterns,
-               'results_count': re.findall(r'([\d,]+) Results', html)[:1]}
+               'results_count': re.findall(r'([\d,]+) Results', html)[:1],
+               'view_links': [l for l in rp.links if 'View' in l['text'] or re.fullmatch(r'\d{2,4}', l['text'])][:12],
+               'row_html_sample': _rows_sample(html)}
     if not lots:
         return results, None
     detail = next((l for l in lots if not l['href'].rstrip('/').endswith(('/kr', '/index'))), lots[0])
