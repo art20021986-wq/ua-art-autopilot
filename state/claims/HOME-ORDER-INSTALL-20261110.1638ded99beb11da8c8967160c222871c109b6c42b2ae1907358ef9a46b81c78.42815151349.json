@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "482aad4f6d42ba2287b9aa1f432c58d763916b8bd018133fd085d41758024d42",
   "autostart_source_commit": "aafe4469b757f83b7ba42930d618530c0ef49365",
   "created_at": "2026-11-10T12:27:43Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "3439106a6727a1a17f79ed2808093f844c12df06cac4fd498db4c684db91d50c",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T12:27:43Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-10T12:29:05Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42815151349",
     "task_id": "HOME-ORDER-INSTALL-20261110",
     "task_sha256": "1638ded99beb11da8c8967160c222871c109b6c42b2ae1907358ef9a46b81c78"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 100.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 47.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42815151349-1638ded99beb11da",
+  "production_transaction_path": "state/transactions/HOME-ORDER-INSTALL-20261110.1638ded99beb11da8c8967160c222871c109b6c42b2ae1907358ef9a46b81c78.42815151349.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-ORDER-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "a0e81e396d3393d120470556a41a3c811de77f22",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 549.899,
+    "allowed": true,
+    "evidence_path": "state/storage/HOME-ORDER-INSTALL-20261110.json",
+    "evidence_sha256": "ec1ee50ecb9ebfa18f4d71df3b5efd41ea5b14623e4597ae114d5dfd69bab164",
+    "free_bytes": 23528099328,
+    "heavy": true,
+    "measured_at": "2026-11-10T12:19:53.233328+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 32.77685906285714
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-10T12:27:43Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "a2c1849d9b2c4a4bb5931e65bd357c11235537250c4f2795b420b112956261b7",
+    "file_sha256": {
+      "cloud/home_order_001/candidate_builder.py": "0bd4df3703e7035f34f41327145ba74e62b55c3860a949472f1e609640a3f34b",
+      "cloud/home_order_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_order_001/deployment_bootstrap.py": "8734f4f9db8354138408314304117230470a4c9d8a1eb2abeea67b63df01c469",
+      "cloud/home_order_001/deployment_remote.py": "5f38e60da8f5a9f5cbb5f4af6aabdaa48b9cedf539a8fbf936d05ed3d90ea913",
+      "cloud/home_order_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_order_001/deployment_transport.py": "94d38f4e83da1ca2bed3d09bb46253b31d5aae1d787f377f2f6e55ef1eefb055",
+      "cloud/home_order_001/make_release.py": "d3642cba5acdeffb73dce6977876d060c9997c0097915cf52671f1484b4ff871",
+      "cloud/home_order_001/release_constants.py": "1a543791f1be9e55f11e39c4a08346d21ed07b3e2b8674d7f3569a7eba1a6c09",
+      "cloud/home_order_001/test_deployment.py": "306e3d036d889b146c82a5113f3cff382eb0c2ad64b8f151a07c90401bae7377",
+      "cloud/home_order_001/test_release.py": "1369521637885176b2940bc9af362ce22755b88270a97e61e7d226684840a94e",
+      "cloud/home_order_001/ua_korea_home.py": "fa29e4087cadfd2b8ae7c0299c8562f8743177ccda4156ebb96b0860383c74b9"
+    }
+  },
+  "updated_at": "2026-11-10T12:29:05Z"
 }
