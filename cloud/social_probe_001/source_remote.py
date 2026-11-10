@@ -128,6 +128,35 @@ def report_r2(home=None):
     return {'status': 'PASS', 'rows': result}
 
 
+# R3: why cards did not get the row — the card builder's approved external hosts, the CRM sync ledger
+# (pending retries with their errors, last success) and card page times.
+def report_r3(home=None):
+    global HOME
+    if home is not None:
+        HOME = home
+    import ast
+    hosts = None
+    spec = text_of(HOME / 'ua_additional_spec.py')
+    if spec:
+        for node in ast.parse(spec).body:
+            if isinstance(node, ast.Assign) and any(getattr(t, 'id', '') == '_UA115_APPROVED_HOSTS' for t in node.targets):
+                hosts = sorted(ast.literal_eval(node.value))
+    state = {}
+    raw = text_of(HOME / '.crm_public_sync_state.json')
+    if raw:
+        value = json.loads(raw)
+        state = {'last_success': value.get('last_success'), 'catalog_retry': {k: v for k, v in (value.get('catalog_retry') or {}).items()
+                                                                                if k != 'source_revision'},
+                 'retry': {k: {f: (sanitized_line(str(v)) [:300] if f in ('error', 'message', 'last_error') else v)
+                               for f, v in item.items() if f != 'sha256'} for k, item in (value.get('retry') or {}).items()}}
+    times = {}
+    for folder in ('video', 'video/ua', 'video/ru'):
+        base = HOME / folder
+        if base.is_dir():
+            times[folder] = {p.name: round(p.stat().st_mtime) for p in sorted(base.glob('UA-*.html'))}
+    return {'status': 'PASS', 'approved_hosts': hosts, 'sync': state, 'times': times, 'rows': report_r2(HOME)['rows']}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -141,7 +170,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r2()  # R2; report() R1
+        value = report_r3()  # R3; report_r2() R2, report() R1
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
