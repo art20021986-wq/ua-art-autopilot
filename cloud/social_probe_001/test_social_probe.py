@@ -105,5 +105,20 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(rows['cards_ru']['pages'], 0)
 
 
+    def test_r3_hosts_and_sync(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'video').mkdir()
+            (home / 'ua_additional_spec.py').write_text('_UA115_APPROVED_HOSTS = {"t.me", "schema.org"}\n')
+            (home / '.crm_public_sync_state.json').write_text(json.dumps({'version': 1, 'last_success': {'code': 'UA-0001', 'at': 5},
+                'retry': {'7': {'sha256': 'x', 'count': 3, 'error': 'UA115:www.tiktok.com +380 99 222 20 02'}}}))
+            (home / 'video/UA-0001.html').write_text('<body></body>')
+            value = remote.report_r3(home)
+        self.assertEqual(value['approved_hosts'], ['schema.org', 't.me'])
+        self.assertEqual(value['sync']['retry']['7']['count'], 3)
+        self.assertNotIn('222 20 02', value['sync']['retry']['7']['error'])
+        self.assertIn('UA-0001.html', value['times']['video'])
+
+
 if __name__ == '__main__':
     unittest.main()
