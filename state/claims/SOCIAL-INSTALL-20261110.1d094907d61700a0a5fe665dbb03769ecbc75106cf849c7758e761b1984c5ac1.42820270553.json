@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "5c9aaa98e5bbc83fa1d9305f8829d19ca8b79023f8cab7b5ba4a786d35842953",
   "autostart_source_commit": "3207864d1e96daf60f721d57b30ff4e550d1fb1e",
   "created_at": "2026-11-10T13:04:12Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "6817f481cbbe9d99924102c5c4c597546f071e4221869e78370b3925f0a786cb",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T13:04:12Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-10T13:05:37Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42820270553",
     "task_id": "SOCIAL-INSTALL-20261110",
     "task_sha256": "1d094907d61700a0a5fe665dbb03769ecbc75106cf849c7758e761b1984c5ac1"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 277.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 275.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42820270553-1d094907d61700a0",
+  "production_transaction_path": "state/transactions/SOCIAL-INSTALL-20261110.1d094907d61700a0a5fe665dbb03769ecbc75106cf849c7758e761b1984c5ac1.42820270553.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "catalog_renderer-516734deb9ea5607",
   "receipt_path": "state/receipts/SOCIAL-INSTALL-20261110.json",
   "receipt_validation_status": "PENDING",
@@ -30,8 +55,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "9bdde68676faca849d80415e50a6873a6be6451e",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 623.154,
+    "allowed": true,
+    "evidence_path": "state/storage/SOCIAL-INSTALL-20261110.json",
+    "evidence_sha256": "f4459e687cdc37b3b3e640ee69f3ccfffbb15d8b3b85a60156a1114da046240e",
+    "free_bytes": 23518359040,
+    "heavy": true,
+    "measured_at": "2026-11-10T12:55:11.021786+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 32.80468845714286
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-10T13:04:12Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "2d213c9135a665e694b50fb2f58f33fbeb844664cecec929146b2bce73744596",
+    "file_sha256": {
+      "cloud/social_links_001/candidate_builder.py": "85548ff4731bd9125ce7d53be1d195e759852cc5756bfbd5d2e04424334ffdac",
+      "cloud/social_links_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/social_links_001/deployment_bootstrap.py": "2a61e920474590d2b7410d02314d72f43b2f7639ae32f1a1e3bc9c1af5edf5cf",
+      "cloud/social_links_001/deployment_remote.py": "57b7556d1690e191e323ce432bd8aa28f7c1cc698460575df93e53c3e19e4263",
+      "cloud/social_links_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/social_links_001/deployment_transport.py": "62608a46574beee05890e73ab29249e8b2958ce6e3381ea67f82944c6f7b88fc",
+      "cloud/social_links_001/make_release.py": "19cdbc8211dae6f2e31370c01c61c002a770e36d58575bea2a8781c5f62265d5",
+      "cloud/social_links_001/release_constants.py": "25c74152a80b0983aa5f5e8203a58824a81aeca0d82e8d9e1bfc9374e1b17a25",
+      "cloud/social_links_001/test_deployment.py": "d0c358533093354c08ab0942fc0085efd349d30d6a3862c4f5b50d24125a7444",
+      "cloud/social_links_001/test_release.py": "805525c035e318d76aa9fb1f6afe0dec1ea1032d023c56497af70ab9168bc21a",
+      "cloud/social_links_001/ua_social_links.py": "637021bb35a8e67042fd119a5e51cb48af13e17cb57055a1dcf2d48cad92f60c"
+    }
+  },
+  "updated_at": "2026-11-10T13:05:37Z"
 }
