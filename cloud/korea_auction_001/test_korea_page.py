@@ -29,6 +29,11 @@ class KoreaPageTest(unittest.TestCase):
                      'індивідуальних умовах', 'Незабаром — Японія та інші країни', 'data-ka="ონლაინ ნახვა"', 'id="online"'):
             self.assertIn(text, self.page)
 
+    def test_two_ways_right_under_hero(self):
+        main = self.page[self.page.index('<div class="kr-wrap"'):]
+        self.assertLess(main.index('class="kr-hero"'), main.index('kr-card kr-two'))
+        self.assertLess(main.index('kr-card kr-two'), main.index('class="kr-deposit"'))
+
     def test_platform_never_named(self):
         low = self.page.lower()
         self.assertNotIn('beforward', low)
