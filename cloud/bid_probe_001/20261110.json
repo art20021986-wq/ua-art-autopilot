@@ -1,0 +1,252 @@
+{
+  "lot_page": {
+    "bid_lines": [
+      "<span class=\"mobile-bid-limit\"><i class=\"fa fa-tags\"></i> Today Bid : <span class=\"label today-bid-count\">0</span> / Day Limit : <span class=\"label\">30</span></span>",
+      "<li><a href=\"/bids\">Japan</a></li>",
+      "<li><a href=\"/bids/kr/\">Korea</a></li>",
+      "<a href=\"/stock-offer\"><i class=\"fa fa-list fa-small\"></i> Stock Offer</a>",
+      "data-bidder-id=\"7509\"",
+      "<i class=\"fa fa-tags\"></i> Today Bid : <span class=\"label today-bid-count\">0</span> / Day Limit : <span class=\"label\">30</span>",
+      "<a href=\"/bidding/WUTE[N]P.do\" target=\"_blank\">Auction Sheet <i class=\"fa fa-clone\"></i></a>",
+      "<th>Your<br>Bidder Rank</th>",
+      "<th>Total<br>Bid</th>",
+      "Bidding Close Time:<br>",
+      "<div class=\"order-headline\">Your Bid</div>",
+      "<script type=\"text/javascript\" src=\"/js/bid_nonpopup.js?_=MTc4MTY4MzM4NQ==\"></script>",
+      "<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/bid_nonpopup.css?_=MTc5MTI3Njk5MQ==\" />",
+      "<form action=\"/bids/bid/[N]/\" method=\"post\" class=\"bid-form form-horizontal\" id=\"bidding\">",
+      "<h4 id=\"exampleModalLabel\">Bidding</h4>",
+      "<div class=\"bid-nonpopup\">",
+      "<p class=\"red bold\">Please Bid at least 50,000KRW higher than the start price.<br>",
+      "(Ex:The minimum bid amount will be 550,000KRW if the start price is 500,000KRW)</p>",
+      "<label for=\"bid-amount\" class=\"control-label bold line-height-label\">",
+      "<span class=\"badge badge-important\">Required</span> Bid Price",
+      "<input type=\"text\" class=\"form-control input-small text-right form-wide krw-calculation\" name=\"bid_price\" id=\"bid-amount\" required maxlength=\"6\">",
+      "Bid price must be higher than the starting price.",
+      "<div class=\"bid-nonpopup\">",
+      "<div class=\"bid-option-box\">",
+      "<p class=\"bid-update-list-indent\">Please tick the item(s) you need details.</p>",
+      "<ul class=\"support-item-table support-item-list bid-option-list-align clearfix\">",
+      "<p class=\"text-error bid-update-list-indent\">",
+      "$('#bidding-button').on('click', function(){",
+      "<button id=\"bidding-button\" type=\"submit\" class=\"btn btn-primary\">Bidding</button>",
+      "<th>Bidder Rank</th>",
+      "<th>Bid Status</th>",
+      "<th>Bid Date & Time</th>",
+      "<tr><td>There Is No Bidder Ranking Data.</td></tr>",
+      "<script type=\"text/javascript\" src=\"/gjs/bid.js\"></script>",
+      "<a href=\"/bids\"><i class=\"fa fa-tag\"></i> My Orders</a>",
+      "<a href=\"/bids/kr/\"><i class=\"fa fa-tag\"></i> My Orders (Korea)</a>"
+    ],
+    "endpoints": [
+      "/bids",
+      "/bids/bid/[N]/",
+      "/bids/kr/",
+      "/css/bid_nonpopup",
+      "/gjs/bid",
+      "/js/bid_nonpopup",
+      "/stock-offer"
+    ],
+    "forms": [
+      {
+        "action": "/bids/bid/[N]/",
+        "class": "bid-form form-horizontal",
+        "controls": [
+          {
+            "class": "form-control input-small text-right form-wide krw-calculation",
+            "id": "bid-amount",
+            "name": "bid_price",
+            "tag": "input",
+            "type": "text",
+            "value_length": 0
+          },
+          {
+            "class": "",
+            "id": "jpy-rate-calculation",
+            "name": "jpy-rate",
+            "tag": "input",
+            "type": "hidden",
+            "value_length": 8
+          },
+          {
+            "class": "",
+            "id": "usd-rate-calculation",
+            "name": "usd-rate",
+            "tag": "input",
+            "type": "hidden",
+            "value_length": 11
+          },
+          {
+            "class": "",
+            "id": "eur-rate-calculation",
+            "name": "eur_rate_kr",
+            "tag": "input",
+            "type": "hidden",
+            "value_length": 11
+          },
+          {
+            "class": "",
+            "id": "",
+            "name": "korea_auction_flg",
+            "tag": "input",
+            "type": "hidden",
+            "value_length": 1
+          },
+          {
+            "class": "form-control",
+            "id": "message-content",
+            "name": "content",
+            "tag": "textarea",
+            "type": "",
+            "value_length": 0
+          },
+          {
+            "class": "select-group",
+            "id": "",
+            "name": "group",
+            "tag": "select",
+            "type": "",
+            "value_length": 0
+          },
+          {
+            "class": "select-wish-num",
+            "id": "",
+            "name": "wish_num",
+            "tag": "select",
+            "type": "",
+            "value_length": 0
+          },
+          {
+            "class": "",
+            "id": "need-to-support",
+            "name": "need_to_support",
+            "tag": "input",
+            "type": "checkbox",
+            "value_length": 0
+          },
+          {
+            "class": "support_item",
+            "id": "support_item[1]",
+            "name": "support_item[]",
+            "tag": "input",
+            "type": "checkbox",
+            "value_length": 1
+          },
+          {
+            "class": "support_item",
+            "id": "support_item[2]",
+            "name": "support_item[]",
+            "tag": "input",
+            "type": "checkbox",
+            "value_length": 1
+          },
+          {
+            "class": "support_item",
+            "id": "support_item[3]",
+            "name": "support_item[]",
+            "tag": "input",
+            "type": "checkbox",
+            "value_length": 1
+          },
+          {
+            "class": "support_item",
+            "id": "support_item[4]",
+            "name": "support_item[]",
+            "tag": "input",
+            "type": "checkbox",
+            "value_length": 1
+          },
+          {
+            "class": "support_item",
+            "id": "support_item[5]",
+            "name": "support_item[]",
+            "tag": "input",
+            "type": "checkbox",
+            "value_length": 1
+          },
+          {
+            "class": "btn btn-primary",
+            "id": "bidding-button",
+            "name": "",
+            "tag": "button",
+            "type": "submit",
+            "value_length": 0
+          }
+        ],
+        "id": "bidding",
+        "mentions_bid": true,
+        "method": "post",
+        "text": "Bidding Please Bid at least 50,000KRW higher than the start price. (Ex:The minimum bid amount will be 550,000KRW if the start price is 500,000KRW) Required Bid Price 0,000 KRW (Approx. 0 USD) (Approx. 0 JPY) (Approx. 0 EUR) Message Group group KA KB KC KD KE KF KG KH KI KJ KK KL KM KN KO KP KQ KR KS KT KU KV KW KX KY KZ wish number 1 2 3 4 5 vehicle(s) Bid price must be higher than the starting pr"
+      }
+    ],
+    "length": 52790,
+    "scripts": [
+      "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js",
+      "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js",
+      "/js/bootstrap.js",
+      "/js/paginator.js",
+      "/js/customer_search_reset.js",
+      "/js/customer_search.js",
+      "/js/customer_common.js",
+      "/js/jquery.cookie.min.js",
+      "/js/jquery.keep-position.js",
+      "/gjs/common.js",
+      "/gjs/notifications_common.js",
+      "/js/jquery.fastconfirm.js",
+      "/js/highslide-full.packed.js",
+      "/js/highslide_setting_for_jp_auto_auction.js",
+      "/js/jquery.toast.error.js?_=MTYxODgxNjQ4NQ==",
+      "/js/cusotmer_extension.js?_=MTYyNzI4NDQxOA==",
+      "/js/customer_polling.js?_=MTYyNzI4NDQxOA==",
+      "/js/customer_detail_polling.js?_=MTYyNzI4NDQxOA==",
+      "/gjs/jquery.multiselect.js",
+      "/js/jquery.multiselect.filter.js?_=MTUzMDE0OTcyMA==",
+      "/js/bid_nonpopup.js?_=MTc4MTY4MzM4NQ==",
+      "/js/zoom-img.js?_=MTYyNzI4NDQxOA==",
+      "/gjs/bid.js",
+      "/js/jquery.magnific-popup.min.js?_=MTUzMDE0OTcyMA==",
+      "/js/highcharts.js?_=MTUzMDE0OTcyMA==",
+      "/gjs/graph_chart.js",
+      "/js/chassis-no.js?_=MTUzMDE0OTcyMA==",
+      "/js/timeLeft.js?_=MTUzNDgyMDc0Mw=="
+    ]
+  },
+  "mode": "probe",
+  "no_bid_placed": true,
+  "remote_write_count": 0,
+  "requests": 5,
+  "results_page": {
+    "bid_lines": [
+      "<span class=\"mobile-bid-limit\"><i class=\"fa fa-tags\"></i> Today Bid : <span class=\"label today-bid-count\">0</span> / Day Limit : <span class=\"label\">30</span></span>",
+      "<li><a href=\"/bids\">Japan</a></li>",
+      "<li><a href=\"/bids/kr/\">Korea</a></li>",
+      "<a href=\"/stock-offer\"><i class=\"fa fa-list fa-small\"></i> Stock Offer</a>",
+      "data-bidder-id=\"7509\"",
+      "<i class=\"fa fa-tags\"></i> Today Bid : <span class=\"label today-bid-count\">0</span> / Day Limit : <span class=\"label\">30</span>",
+      "<script type=\"text/javascript\" src=\"/gjs/bid.js\"></script>",
+      "<input type=\"text\" name=\"bid\" class=\"nobid-input\" value=\"\" tabindex=\"18\"/>",
+      "<input type=\"hidden\" name=\"history_idx_url\" value=\"grade_en=&bid=&maker%5B%5D=HD&model_year_en_from=&model_year_en_to=&mileage_num_from=&mileage_num_to=&displacement_num_from=&displacement_num_to=&start_price_krw_from=&start_price_krw_to=&auction_country_id=28\">",
+      "<input type=\"hidden\" name=\"history_idx_url\" value=\"grade_en=&bid=&maker%5B%5D=HD&model_year_en_from=&model_year_en_to=&mileage_num_from=&mileage_num_to=&displacement_num_from=&displacement_num_to=&start_price_krw_from=&start_price_krw_to=&auction_country_id=28\">",
+      "<input type=\"hidden\" name=\"history_idx_url\" value=\"grade_en=&bid=&maker%5B%5D=HD&model_year_en_from=&model_year_en_to=&mileage_num_from=&mileage_num_to=&displacement_num_from=&displacement_num_to=&start_price_krw_from=&start_price_krw_to=&auction_country_id=28\">",
+      "<input type=\"hidden\" name=\"history_idx_url\" value=\"grade_en=&bid=&maker%5B%5D=HD&model_year_en_from=&model_year_en_to=&mileage_num_from=&mileage_num_to=&displacement_num_from=&displacement_num_to=&start_price_krw_from=&start_price_krw_to=&auction_country_id=28\">",
+      "<span class=\"serch_list_slash\"> / </span>\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"serch_list_conditions\">Display order closed bid.</span>",
+      "<input type=\"hidden\" name=\"history_idx_url\" value=\"grade_en=&bid=&maker%5B%5D=LX&model%5B%5D=LX07&model_year_en_from=&model_year_en_to=&mileage_num_from=&mileage_num_to=&displacement_num_from=&displacement_num_to=&start_price_krw_from=&start_price_krw_to=&auction_country_id=28&order_closed%5B%5D=1\">",
+      "<span class=\"serch_list_slash\"> / </span>\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"serch_list_conditions\">Display order closed bid.</span>",
+      "<input type=\"hidden\" name=\"history_idx_url\" value=\"grade_en=&bid=&maker%5B%5D=LX&model%5B%5D=LX07&model_year_en_from=&model_year_en_to=&mileage_num_from=&mileage_num_to=&displacement_num_from=&displacement_num_to=&start_price_krw_from=&start_price_krw_to=&auction_country_id=28&order_closed%5B%5D=1\">",
+      "<span class=\"serch_list_slash\"> / </span>\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"serch_list_conditions\">Display order closed bid.</span>",
+      "<input type=\"hidden\" name=\"history_idx_url\" value=\"grade_en=&bid=&maker%5B%5D=KA&model%5B%5D=KA01&model_year_en_from=2021&model_year_en_to=2023&mileage_num_from=&mileage_num_to=&displacement_num_from=&displacement_num_to=&start_price_krw_from=&start_price_krw_to=&auction_country_id=28&order_closed%5",
+      "<span class=\"serch_list_slash\"> / </span>\t\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"serch_list_conditions\">Display order closed bid.</span>",
+      "<input type=\"hidden\" name=\"history_idx_url\" value=\"grade_en=&bid=&maker%5B%5D=KA&model%5B%5D=KA01&model_year_en_from=2021&model_year_en_to=2023&mileage_num_from=&mileage_num_to=&displacement_num_from=&displacement_num_to=&start_price_krw_from=&start_price_krw_to=&auction_country_id=28&order_closed%5"
+    ],
+    "endpoints": [
+      "/bids",
+      "/bids/kr/",
+      "/gjs/bid",
+      "/stock-offer"
+    ]
+  },
+  "run_id": "42877707887",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "BID-PROBE-20261110"
+}
