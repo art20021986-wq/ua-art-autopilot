@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "cc704e906c6da9ab2ba32f5ee1f59a463cc8140b7bed68319a9129807b7db4ca",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-10T18:28:48Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-10T18:40:41Z",
+  "heartbeat_at": "2026-11-10T18:40:41Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "42874071084",
     "task_id": "HOME-TELEGRAM-INSTALL-20261110",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 638.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 196.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-42874071084-28ee706f13304c5b",
   "production_transaction_path": "state/transactions/HOME-TELEGRAM-INSTALL-20261110.28ee706f13304c5b33f3032706f74065b987970a21e2a77953dfe327052952c9.42874071084.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-TELEGRAM-INSTALL-20261110.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "41682526643caf4a335404ff4ce4123bc9263d17af9c59f1829a21c4b32eb84a",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-TELEGRAM-INSTALL-20261110.json",
   "request_sha256": "28ee706f13304c5b33f3032706f74065b987970a21e2a77953dfe327052952c9",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "93c0d86828140de7383d17b07b29e2f3b8e333ed602e3e84fa75749dc2548ce5",
     "file_sha256": {
@@ -86,5 +109,5 @@
       "cloud/home_telegram_001/ua_korea_home.py": "2549a9289919abbd55316208e2d28a11bfa3d98da22e33ab634056032dcff96e"
     }
   },
-  "updated_at": "2026-11-10T18:28:48Z"
+  "updated_at": "2026-11-10T18:40:41Z"
 }
