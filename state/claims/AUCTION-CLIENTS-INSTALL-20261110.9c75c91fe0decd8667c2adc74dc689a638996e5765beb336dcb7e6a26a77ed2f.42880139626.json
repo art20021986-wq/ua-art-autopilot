@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUCTION-CLIENTS-INSTALL-20261110.9c75c91fe0decd8667c2adc74dc689a638996e5765beb336dcb7e6a26a77ed2f.json",
+  "autostart_ledger_sha256": "b376f8234629b6386734c77fe513239d837307ba6b094efcc62e851fb5135fa7",
+  "autostart_source_commit": "d6cc37864830732902a03c451ee21cc7d577545b",
+  "created_at": "2026-11-10T18:57:19Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-10T18:57:19Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "42880139626",
+    "task_id": "AUCTION-CLIENTS-INSTALL-20261110",
+    "task_sha256": "9c75c91fe0decd8667c2adc74dc689a638996e5765beb336dcb7e6a26a77ed2f"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/AUCTION-CLIENTS-INSTALL-20261110.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/AUCTION-CLIENTS-INSTALL-20261110.json",
+  "request_sha256": "9c75c91fe0decd8667c2adc74dc689a638996e5765beb336dcb7e6a26a77ed2f",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "b9336c5565d8341ffc543acba402df4cdbdc6e49",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-10T18:57:19Z"
+}
