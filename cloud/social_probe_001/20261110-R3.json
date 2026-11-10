@@ -1,0 +1,316 @@
+{
+  "approved_hosts": [
+    "ecomm.one-line.com",
+    "maps.app.goo.gl",
+    "schema.org",
+    "t.me",
+    "telegram.org",
+    "uaart.com.ua",
+    "wa.me",
+    "www.googletagmanager.com",
+    "www.searates.com",
+    "www.uaart.com.ua",
+    "www.w3.org"
+  ],
+  "mode": "probe",
+  "remote_write_count": 0,
+  "rows": {
+    "cards": {
+      "double": [],
+      "missing": [
+        "UA-0001.html",
+        "UA-0003.html",
+        "UA-0004.html",
+        "UA-0005.html",
+        "UA-0006.html",
+        "UA-0007.html",
+        "UA-0008.html",
+        "UA-0009.html",
+        "UA-0010.html",
+        "UA-0011.html",
+        "UA-0012.html",
+        "UA-0013.html",
+        "UA-0014.html",
+        "UA-0015.html",
+        "UA-0016.html",
+        "UA-0017.html",
+        "UA-0018.html",
+        "UA-0019.html",
+        "UA-0020.html",
+        "UA-0021.html",
+        "UA-0022.html",
+        "UA-0023.html"
+      ],
+      "pages": 22,
+      "with_row": 0
+    },
+    "cards_ru": {
+      "double": [],
+      "missing": [
+        "UA-0022.html"
+      ],
+      "pages": 1,
+      "with_row": 0
+    },
+    "cards_ua": {
+      "double": [],
+      "missing": [
+        "UA-0022.html"
+      ],
+      "pages": 1,
+      "with_row": 0
+    },
+    "diag": {
+      "double": [],
+      "missing": [
+        "UA-0001-diag.html",
+        "UA-0003-diag.html",
+        "UA-0004-diag.html",
+        "UA-0005-diag.html",
+        "UA-0006-diag.html",
+        "UA-0007-diag.html",
+        "UA-0008-diag.html",
+        "UA-0009-diag.html",
+        "UA-0010-diag.html",
+        "UA-0011-diag.html",
+        "UA-0012-diag.html",
+        "UA-0013-diag.html",
+        "UA-0014-diag.html",
+        "UA-0015-diag.html",
+        "UA-0016-diag.html",
+        "UA-0017-diag.html",
+        "UA-0018-diag.html",
+        "UA-0019-diag.html",
+        "UA-0020-diag.html",
+        "UA-0021-diag.html",
+        "UA-0022-diag.html",
+        "UA-0023-diag.html"
+      ],
+      "pages": 22,
+      "with_row": 0
+    },
+    "landings_gu": {
+      "double": [],
+      "missing": [],
+      "pages": 3,
+      "with_row": 3
+    },
+    "landings_ru": {
+      "double": [],
+      "missing": [],
+      "pages": 15,
+      "with_row": 15
+    },
+    "landings_ua": {
+      "double": [],
+      "missing": [],
+      "pages": 15,
+      "with_row": 15
+    },
+    "top": {
+      "double": [],
+      "missing": [
+        "google609494476a22f741.html",
+        "izmeritel.html",
+        "korea.html",
+        "otchet_recovery_88703a64.html",
+        "otchet_v180_94ba0eb9.html",
+        "otchet_v181_cafffe71.html",
+        "otchet_v183_45d2d61d.html",
+        "otchet_v184_5c0abec3.html",
+        "otchet_v186_f1c69371.html",
+        "proba-index.html",
+        "proba-katalog.html",
+        "proba2-index.html",
+        "proba2-katalog.html",
+        "proverka.html"
+      ],
+      "pages": 19,
+      "with_row": 5
+    }
+  },
+  "run_id": "42843517889",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "sync": {
+    "catalog_retry": {},
+    "last_success": {
+      "at": 1794207214.3413146,
+      "code": "UA-0017"
+    },
+    "retry": {
+      "10": {
+        "after": 1794324481.2849207,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0004:Публикация отменена: сборщик не смог собрать UA-0004 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0004:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "11": {
+        "after": 1794324487.01734,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0005:Публикация отменена: сборщик не смог собрать UA-0005 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0005:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "12": {
+        "after": 1794324491.0463948,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0006:Публикация отменена: сборщик не смог собрать UA-0006 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0006:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "13": {
+        "after": 1794324495.7542102,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0007:Публикация отменена: сборщик не смог собрать UA-0007 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0007:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "15": {
+        "after": 1794324500.0222049,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0009:Публикация отменена: сборщик не смог собрать UA-0009 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0009:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "16": {
+        "after": 1794324502.741989,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0010:Публикация отменена: сборщик не смог собрать UA-0010 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0010:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "18": {
+        "after": 1794324505.5695524,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0011:Публикация отменена: сборщик не смог собрать UA-0011 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0011:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "19": {
+        "after": 1794324508.2888947,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0012:Публикация отменена: сборщик не смог собрать UA-0012 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0012:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "20": {
+        "after": 1794324511.1891317,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0013:Публикация отменена: сборщик не смог собрать UA-0013 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0013:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "21": {
+        "after": 1794324514.1194296,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0014:Публикация отменена: сборщик не смог собрать UA-0014 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0014:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "22": {
+        "after": 1794324517.710458,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0015:Публикация отменена: сборщик не смог собрать UA-0015 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0015:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "25": {
+        "after": 1794324521.00282,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0016:Публикация отменена: сборщик не смог собрать UA-0016 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0016:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "26": {
+        "after": 1794324525.0176675,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0017:Публикация отменена: сборщик не смог собрать UA-0017 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0017:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "28": {
+        "after": 1794324528.150298,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0018:Публикация отменена: сборщик не смог собрать UA-0018 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0018:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "31": {
+        "after": 1794324531.723131,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0021:Публикация отменена: сборщик не смог собрать UA-0021 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0021:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "32": {
+        "after": 1794324535.3228555,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0022:Публикация отменена: сборщик не смог собрать UA-0022 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0022:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "33": {
+        "after": 1794324538.9044845,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0023:Публикация отменена: сборщик не смог собрать UA-0023 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0023:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "7": {
+        "after": 1794324473.8164759,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0001:Публикация отменена: сборщик не смог собрать UA-0001 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0001:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      },
+      "9": {
+        "after": 1794324477.24204,
+        "count": 13,
+        "error": "RuntimeError: Публикация отменена: BASE_PUBLISH_FAILED:UA-0003:Публикация отменена: сборщик не смог собрать UA-0003 (UA115_UNAPPROVED_EXTERNAL_HOST:UA-0003:www.instagram.com,www.tiktok.com,www.youtube.com). Старая страница цела.. Выполнен полный откат."
+      }
+    }
+  },
+  "task_id": "SOCIAL-PROBE-20261110-R3",
+  "times": {
+    "video": {
+      "UA-0001-00cf71c0.html": 1794295115,
+      "UA-0001-diag.html": 1794323577,
+      "UA-0001.html": 1794295115,
+      "UA-0003-a7bfb532.html": 1794295116,
+      "UA-0003-diag.html": 1794323581,
+      "UA-0003.html": 1794295116,
+      "UA-0004-0edda61a.html": 1794295116,
+      "UA-0004-diag.html": 1794323585,
+      "UA-0004.html": 1794295116,
+      "UA-0005-9e3432b2.html": 1794295116,
+      "UA-0005-diag.html": 1794323591,
+      "UA-0005.html": 1794295116,
+      "UA-0006-diag.html": 1794323595,
+      "UA-0006-ed784b7f.html": 1794295117,
+      "UA-0006.html": 1794295117,
+      "UA-0007-de6e3ebe.html": 1794295117,
+      "UA-0007-diag.html": 1794323599,
+      "UA-0007.html": 1794295117,
+      "UA-0008-87693e0e.html": 1794072565,
+      "UA-0008-diag.html": 1794231932,
+      "UA-0008.html": 1794072565,
+      "UA-0009-372ada15.html": 1794295118,
+      "UA-0009-diag.html": 1794323604,
+      "UA-0009.html": 1794295118,
+      "UA-0010-614505f4.html": 1794295118,
+      "UA-0010-diag.html": 1794323606,
+      "UA-0010.html": 1794295118,
+      "UA-0011-9842913c.html": 1794295118,
+      "UA-0011-diag.html": 1794323609,
+      "UA-0011.html": 1794295118,
+      "UA-0012-453f3da4.html": 1794295119,
+      "UA-0012-diag.html": 1794323612,
+      "UA-0012.html": 1794295119,
+      "UA-0013-d593cad2.html": 1794295119,
+      "UA-0013-diag.html": 1794323615,
+      "UA-0013.html": 1794295119,
+      "UA-0014-568b2491.html": 1794295119,
+      "UA-0014-diag.html": 1794323618,
+      "UA-0014.html": 1794295119,
+      "UA-0015-8d6c4f80.html": 1794295120,
+      "UA-0015-diag.html": 1794323621,
+      "UA-0015.html": 1794295120,
+      "UA-0016-d9c506f8.html": 1794295120,
+      "UA-0016-diag.html": 1794323625,
+      "UA-0016.html": 1794295120,
+      "UA-0017-bf0a6669.html": 1794295121,
+      "UA-0017-diag.html": 1794323629,
+      "UA-0017.html": 1794295121,
+      "UA-0018-bfcd1711.html": 1794295121,
+      "UA-0018-diag.html": 1794323632,
+      "UA-0018.html": 1794295121,
+      "UA-0019-906958ad.html": 1794072565,
+      "UA-0019-diag.html": 1794231931,
+      "UA-0019.html": 1794072565,
+      "UA-0020-bf284c6a.html": 1794072566,
+      "UA-0020-diag.html": 1794231931,
+      "UA-0020.html": 1794072566,
+      "UA-0021-10acf230.html": 1794295121,
+      "UA-0021-diag.html": 1794323635,
+      "UA-0021.html": 1794295121,
+      "UA-0022-diag.html": 1794323639,
+      "UA-0022-fa461c2d.html": 1794295122,
+      "UA-0022.html": 1794295122,
+      "UA-0023-956711ae.html": 1794295122,
+      "UA-0023-diag.html": 1794323643,
+      "UA-0023.html": 1794295122
+    },
+    "video/ru": {
+      "UA-0022.html": 1794295169
+    },
+    "video/ua": {
+      "UA-0022.html": 1794295169
+    }
+  }
+}
