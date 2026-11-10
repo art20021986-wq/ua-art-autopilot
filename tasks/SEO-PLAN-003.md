@@ -13,4 +13,4 @@
 | 4 | Скорость — сделано SPEED-001 (07.11) | готово |
 | 5 | Mercedes E-Class: убрать из карты сайта, если машины нет | после 0 |
 | 6 | Русские названия моделей на украинских карточках («Б-КЛАССА») | после 0 |
-| 7 | Соцсети: Instagram ua_artcompany_llc, Telegram t.me/uaart_auto, YouTube @beetleua — в разметку компании (sameAs) и три значка-ссылки внизу всех страниц (владелец 2026-11-08). Проба SOCIAL-PROBE-20261108: подвал есть только у главной, каталога и SEO-страниц; значки — через site_ge_inject.inject_html + ua_seo_index + золотой каталог; макет показан владельцу. Ждёт установки SPEED-002 (общие файлы) | макет |
+| 7 | Соцсети: Instagram ua_artcompany_llc, Telegram uaart_auto, YouTube @beetleua, TikTok @llc_ua_art_company (владелец 2026-11-09) — значки в фирменных цветах внизу всех страниц + sameAs; пакет cloud/social_links_001 | предпросмотр, ждёт «да» на макет |
