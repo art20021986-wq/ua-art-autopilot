@@ -41,3 +41,8 @@ def apply(html):
     end_hero = html.index('</section>', hero) + len('</section>')
     html = html[:end_hero] + MARK + STYLE + SLOT + html[end_hero:]
     return html
+
+
+def remove(html):
+    """The page without this release's additions (rollback of a home page another writer rewrote since)."""
+    return html.replace(MARK + STYLE + SLOT, '', 1).replace(BADGE, '', 1)

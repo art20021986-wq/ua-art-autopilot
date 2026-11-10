@@ -44,6 +44,11 @@ def normalize(data, catalog, consent_version):
                 source_path=data['source_path'], consent=dict(data['consent']))
 
 
+def label(data):
+    """Plain-text label in the CRM enquiry list (Telegram inline labels are never HTML)."""
+    return 'Аукционы онлайн: ' + {'korea': 'Корея'}.get(data.get('purchase_country_code'), '—')
+
+
 def detail(row, catalog):
     data = row['data']
     fields = [('Заявка', row['number']), ('Тип', 'Доступ к аукционам онлайн'),

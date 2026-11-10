@@ -29,6 +29,9 @@ class KoreaHomeTest(unittest.TestCase):
         restored = out.replace(m.BADGE, '').replace(m.MARK + m.STYLE + m.SLOT, '')
         self.assertEqual(restored, LIVE)
 
+    def test_remove_restores_the_page(self):
+        self.assertEqual(m.remove(m.apply(LIVE)), LIVE)
+
     def test_other_pages_unchanged(self):
         for page in ('<html><body>katalog</body></html>', None, ''):
             self.assertEqual(m.apply(page), page)

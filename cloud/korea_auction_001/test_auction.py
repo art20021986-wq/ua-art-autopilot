@@ -76,6 +76,9 @@ class AuctionLeadTest(unittest.TestCase):
                 'purchase_country_code': 'korea'}
         self.assertEqual(self.m.normalize(sent, Catalog, 'c1')['customer_name'], 'Іван')
 
+    def test_list_label(self):
+        self.assertEqual(self.m.label({'purchase_country_code': 'korea'}), 'Аукционы онлайн: Корея')
+
     def test_inbox_detail(self):
         row = {'number': 'Z-15', 'data': self.m.normalize(self.request(), Catalog, 'c1')}
         text = self.m.detail(row, Catalog)['text']
@@ -104,6 +107,19 @@ class IntakeEditTest(unittest.TestCase):
         self.assertIn(b'ua_order_request.auction.v1', out)
         with self.assertRaises(ValueError):
             e.build(e.CONTRACT, out)
+
+    def test_crm_hooks_on_the_installed_card_version(self):
+        import edit_intake as e
+        crm = ("        if data.get('schema_version') == 'ua_order_request.card.v1':\n"
+               "            from .card_lead import label as card_label\n"
+               "            country = card_label(data)\n"
+               "        else:\n"
+               "            country = preference_summary.country_label(data, catalog)\n"
+               "        return quick_detail(row, catalog)\n").encode()
+        out = e.build(e.CRM, crm).decode()
+        self.assertIn("from .auction import label as auction_label", out)
+        self.assertIn("from .auction import detail as auction_detail", out)
+        compile('def f(data, row, catalog):\n    if True:\n' + out.replace('        return quick_detail', '        x = 1\n        return quick_detail'), 'crm', 'exec')
 
 
 

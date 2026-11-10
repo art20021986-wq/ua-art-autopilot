@@ -17,6 +17,13 @@ EDITS = {
          "        return normalize_auction(data, catalog, consent_version)\n"),
     ),
     CRM: (
+        # the list label: after the card enquiry's own label (installed by CARD-CONTACT-INSTALL-20261106)
+        ("            country = card_label(data)\n        else:\n",
+         "            country = card_label(data)\n"
+         "        elif data.get('schema_version') == " + _SCHEMA + ":\n"
+         "            from .auction import label as auction_label\n"
+         "            country = auction_label(data)\n"
+         "        else:\n"),
         ("        return quick_detail(row, catalog)\n",
          "        return quick_detail(row, catalog)\n"
          "    if data.get('schema_version') == " + _SCHEMA + ":\n"
