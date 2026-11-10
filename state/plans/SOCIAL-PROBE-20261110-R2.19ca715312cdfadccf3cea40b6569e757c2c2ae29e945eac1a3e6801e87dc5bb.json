@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SOCIAL-PROBE-20261110-R2.19ca715312cdfadccf3cea40b6569e757c2c2ae29e945eac1a3e6801e87dc5bb.json",
+  "autostart_ledger_sha256": "d864e07dc41daad2ef9a5e3a114a27df1810dff6b283d68cf0729df81f9bd739",
+  "autostart_source_commit": "78b1129278cfdb8a83af20447a76a1a806e069f4",
+  "created_at": "2026-11-10T15:14:58Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42839233575",
+    "task_id": "SOCIAL-PROBE-20261110-R2",
+    "task_sha256": "19ca715312cdfadccf3cea40b6569e757c2c2ae29e945eac1a3e6801e87dc5bb"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-4cabf1c1897442e9-9805a98b5bc6911d",
+  "request_path": "tasks/requests/SOCIAL-PROBE-20261110-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:4cabf1c1897442e9"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
