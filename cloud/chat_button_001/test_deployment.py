@@ -284,5 +284,21 @@ class PublicVerificationTests(unittest.TestCase):
                 controller.public_verify(None,'a'*64,'b'*64,{})
 
 
+class AccountUsageTests(unittest.TestCase):
+    def run_du(self, code, out, err):
+        with patch.object(remote.subprocess, 'run', return_value=SimpleNamespace(returncode=code, stdout=out, stderr=err)):
+            return remote.account_used_bytes()
+
+    def test_vanished_file_is_tolerated(self):
+        err = "du: cannot access '/home/Carix/x.db-journal': No such file or directory\n"
+        self.assertEqual(self.run_du(1, '100\t/home/Carix\n20\t/tmp\n', err), 120)
+
+    def test_other_errors_refuse(self):
+        with self.assertRaisesRegex(remote.DeploymentError, 'ACCOUNT_USAGE'):
+            self.run_du(1, '100\t/home/Carix\n20\t/tmp\n', "du: cannot read directory '/x': Permission denied\n")
+        with self.assertRaisesRegex(remote.DeploymentError, 'ACCOUNT_USAGE'):
+            self.run_du(1, '100\t/home/Carix\n', "du: cannot access 'y': No such file or directory\n")
+
+
 if __name__ == '__main__':
     unittest.main()
