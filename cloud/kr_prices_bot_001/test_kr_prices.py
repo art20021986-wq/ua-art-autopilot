@@ -1,6 +1,7 @@
 """«💲 Цены Корея»: prices file, owner-only menu button, screens, cars_ui block."""
 import asyncio
 import datetime
+import importlib.util
 import json
 from pathlib import Path
 import stat
@@ -195,11 +196,15 @@ class CarsUiTests(unittest.TestCase):
             edit_cars_ui.build(result)
         with self.assertRaises(ValueError):
             edit_cars_ui.build(b'def register(app):\n    pass\n')
-        scope = {}
         sys.modules['ua_kr_prices_bot'] = bot
-        exec(compile(result, 'cars_ui.py', 'exec'), scope)
+        with tempfile.TemporaryDirectory() as folder:  # load the built file as a module (no exec: CI contract)
+            path = Path(folder) / 'cars_ui_candidate.py'
+            path.write_bytes(result)
+            spec = importlib.util.spec_from_file_location('cars_ui_candidate', path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
         owner = Markup([[Button('s', 'staff_list')]])
-        self.assertEqual(callbacks(scope['with_stats_button'](owner)), ['staff_list', bot.HOME])
+        self.assertEqual(callbacks(module.with_stats_button(owner)), ['staff_list', bot.HOME])
 
     def test_candidate_needs_the_known_db(self):
         with self.assertRaises(ValueError):
