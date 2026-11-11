@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUTORIA-SOLD-INSTALL-20261111.72a2847f36443eaf3b8b1a66243fee058828cdaffbb2fd2ea4acb87bc33aa40c.json",
+  "autostart_ledger_sha256": "4e2390c91f60187afd63a58ada72ac930a0465dae3e01000debe9d4c743ea3f7",
+  "autostart_source_commit": "8fe90022cef8839db52d473b35b41241aa33ec8d",
+  "created_at": "2026-11-11T04:33:18Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-11T04:33:18Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "42959841949",
+    "task_id": "AUTORIA-SOLD-INSTALL-20261111",
+    "task_sha256": "72a2847f36443eaf3b8b1a66243fee058828cdaffbb2fd2ea4acb87bc33aa40c"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-f8a416b1e8441dff-2b8f41c1123fc947",
+  "receipt_path": "state/receipts/AUTORIA-SOLD-INSTALL-20261111.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/AUTORIA-SOLD-INSTALL-20261111.json",
+  "request_sha256": "72a2847f36443eaf3b8b1a66243fee058828cdaffbb2fd2ea4acb87bc33aa40c",
+  "resource_locks": [
+    "PATH_SCOPE:f8a416b1e8441dff"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "17816988095cfe755d9637aad343c3c66da29bff",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-11T04:33:18Z"
+}
