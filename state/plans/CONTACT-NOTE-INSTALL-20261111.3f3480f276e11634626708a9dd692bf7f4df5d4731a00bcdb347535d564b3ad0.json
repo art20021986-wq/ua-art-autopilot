@@ -1,0 +1,43 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CONTACT-NOTE-INSTALL-20261111.3f3480f276e11634626708a9dd692bf7f4df5d4731a00bcdb347535d564b3ad0.json",
+  "autostart_ledger_sha256": "0684c0b9a7432408fecca6ad64c309460072f3a4ed00d23af7b206a05f67a1c3",
+  "autostart_source_commit": "105d31a3cb908218c8077c041b198e0dcf306188",
+  "created_at": "2026-11-11T03:03:17Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42949423273",
+    "task_id": "CONTACT-NOTE-INSTALL-20261111",
+    "task_sha256": "3f3480f276e11634626708a9dd692bf7f4df5d4731a00bcdb347535d564b3ad0"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "card-ua-0001-7c2fd7a763d94227",
+  "request_path": "tasks/requests/CONTACT-NOTE-INSTALL-20261111.json",
+  "resource_locks": [
+    "CARD:UA-0001",
+    "CARD:UA-0003",
+    "CARD:UA-0004",
+    "CARD:UA-0005",
+    "CARD:UA-0006",
+    "CARD:UA-0007",
+    "CARD:UA-0009",
+    "CARD:UA-0010",
+    "CARD:UA-0011",
+    "CARD:UA-0012",
+    "CARD:UA-0013",
+    "CARD:UA-0014",
+    "CARD:UA-0015",
+    "CARD:UA-0016",
+    "CARD:UA-0017",
+    "CARD:UA-0018",
+    "CARD:UA-0021",
+    "CARD:UA-0022",
+    "CARD:UA-0023"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
