@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "7352114e6ac09ef52d11339350741de0b154aa9a99e5ec57f665279b55d0a089",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T11:27:40Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T11:32:36Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43010268154",
     "task_id": "KOREA-SCORE-INSTALL-20261111-R6",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43010268154-915d3fcf63e9fdb3",
   "production_transaction_path": "state/transactions/KOREA-SCORE-INSTALL-20261111-R6.915d3fcf63e9fdb3c0a3ed5afa2f66103f3f8e379a81ccfcd8b77db7e093d5b7.43010268154.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-SCORE-INSTALL-20261111-R6.json",
   "receipt_validation_status": "PENDING",
@@ -106,5 +106,5 @@
       "cloud/korea_score_001/test_release.py": "3857bc7fcc1a99103cb7ee6d63b3bf313bc0f399ce5da06556c8e738cb8b7876"
     }
   },
-  "updated_at": "2026-11-11T11:27:40Z"
+  "updated_at": "2026-11-11T11:32:36Z"
 }
