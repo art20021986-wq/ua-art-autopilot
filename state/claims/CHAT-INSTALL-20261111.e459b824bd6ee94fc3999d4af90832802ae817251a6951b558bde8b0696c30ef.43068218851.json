@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "81d072f745123d2e704255bab735b1b5600c76054457a1ed1869b00cf47c44a8",
   "autostart_source_commit": "e2aaa1f1a33b9d9a37f9a757e15221eac4c4b3e5",
   "created_at": "2026-11-11T17:30:18Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "78ed0ec2be8cdc19ab3ab55ebd6d77c5462ebae72cba1e073e0f3e8e31db1249",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T17:30:18Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-11T17:32:13Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "43068218851",
     "task_id": "CHAT-INSTALL-20261111",
     "task_sha256": "e459b824bd6ee94fc3999d4af90832802ae817251a6951b558bde8b0696c30ef"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 62.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 57.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-43068218851-e459b824bd6ee94f",
+  "production_transaction_path": "state/transactions/CHAT-INSTALL-20261111.e459b824bd6ee94fc3999d4af90832802ae817251a6951b558bde8b0696c30ef.43068218851.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "catalog_renderer-516734deb9ea5607",
   "receipt_path": "state/receipts/CHAT-INSTALL-20261111.json",
   "receipt_validation_status": "PENDING",
@@ -30,8 +55,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "d9ff9d3b98de2619aadbfbec0904f858be18146d",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 489.482,
+    "allowed": true,
+    "evidence_path": "state/storage/CHAT-INSTALL-20261111.json",
+    "evidence_sha256": "651be188d92f4fe2ad5a36f368f2ba247aba0a61b4b2b80a207b9f49efee6d1d",
+    "free_bytes": 22653951488,
+    "heavy": true,
+    "measured_at": "2026-11-11T17:24:01.920393+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 35.27442432
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-11T17:30:18Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "20dfc4dc5f27428851847c05d713393e94910838a31156dc9204374e5e1695f7",
+    "file_sha256": {
+      "cloud/chat_button_001/candidate_builder.py": "b12742a7e775c82f1dec97e4db5556ef4bd5d7d89137663bb7bcec423edf001d",
+      "cloud/chat_button_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/chat_button_001/deployment_bootstrap.py": "0b6c9df51a25e83732f967c1082c26f4787b320ff9da3f8d13c53aecc8c22f55",
+      "cloud/chat_button_001/deployment_remote.py": "3da000231253293ed7db5c51943f7aff66a793e589acf10c0bcd9ab4fbe969aa",
+      "cloud/chat_button_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/chat_button_001/deployment_transport.py": "c731dcafc157d80915a192f53a67254c47c16d733c5257a11385843d17213d8b",
+      "cloud/chat_button_001/make_release.py": "db4e58f0fb101350d61e72abe8042323601acf0d2f15d77fca36a23b36804a55",
+      "cloud/chat_button_001/release_constants.py": "bc0ff0d30f3ae914269edff91d6bb3091c4dbec72ed8aa1f6c6f06b7ea4f3a67",
+      "cloud/chat_button_001/test_deployment.py": "a6a6e7ae93c083708f05265614039598fa1e86fee897979a5655e4cd3fb68976",
+      "cloud/chat_button_001/test_release.py": "af63f6dab9935ed47040ce3bca3d5f65cd0f8d5b923b52abd6cdb71354cba7ee",
+      "cloud/chat_button_001/ua_chat_button.py": "d6514f31c29050b37b6418e15b1d38b631faa2a9852ee128799954fc03593409"
+    }
+  },
+  "updated_at": "2026-11-11T17:32:13Z"
 }
