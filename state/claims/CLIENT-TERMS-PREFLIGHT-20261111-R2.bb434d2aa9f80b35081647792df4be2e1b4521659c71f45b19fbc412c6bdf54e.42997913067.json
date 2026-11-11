@@ -1,0 +1,63 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CLIENT-TERMS-PREFLIGHT-20261111-R2.bb434d2aa9f80b35081647792df4be2e1b4521659c71f45b19fbc412c6bdf54e.json",
+  "autostart_ledger_sha256": "4b19be393cf4aaed9cdfff01723920ae0f56f25122b24edd5389e17f3bd1e8e8",
+  "autostart_source_commit": "e78b1b7c905971b756e6a38e23ad746ebd398a15",
+  "created_at": "2026-11-11T10:06:27Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-11T10:15:51Z",
+  "heartbeat_at": "2026-11-11T10:15:51Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "42997913067",
+    "task_id": "CLIENT-TERMS-PREFLIGHT-20261111-R2",
+    "task_sha256": "bb434d2aa9f80b35081647792df4be2e1b4521659c71f45b19fbc412c6bdf54e"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-f86e58f81704f7a7-d7d2aea789c2aa6b",
+  "receipt_path": "state/receipts/CLIENT-TERMS-PREFLIGHT-20261111-R2.json",
+  "receipt_sha256": "6868068879a8836d24566af66e532d1fbce6191a004eedca91369a428b1dcfaf",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CLIENT-TERMS-PREFLIGHT-20261111-R2.json",
+  "request_sha256": "bb434d2aa9f80b35081647792df4be2e1b4521659c71f45b19fbc412c6bdf54e",
+  "resource_locks": [
+    "PATH_SCOPE:f86e58f81704f7a7"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "086fc7e2bc793bb2a829457a2621e768eae00e79",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92796174336,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.118
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "5fc5148bd39900870a5891e05f5fc415f02d42127f77b07db7c67722d809ff3f",
+    "file_sha256": {
+      "cloud/client_terms_001/candidate_builder.py": "f4e44483165829d8854041756b4715cc23cd7038bdfa90a8e4e6eec623e1aa5c",
+      "cloud/client_terms_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/client_terms_001/deployment_bootstrap.py": "4339cb7e50cdac22571d51ab55954ccbd27cba4a675d41787fbbc0501f1f4ce3",
+      "cloud/client_terms_001/deployment_remote.py": "bc65c77e536714581a91b6ab29fb81ad03f8b49a144808f91eddf2a700baa75f",
+      "cloud/client_terms_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/client_terms_001/deployment_transport.py": "e1a8a7e15cde46d670485e508de9bdafbfd13e8f9597d61a371e2076e583c5b5",
+      "cloud/client_terms_001/edit_vitrina.py": "af8568954e3fdb31d376577bd2557e0c884fe6870393a2e72576556ffd10bb97",
+      "cloud/client_terms_001/make_release.py": "b4496c399e5f76daa3a4e3dead93d3f635db60a2a91214124dcdb8d2ce697dfb",
+      "cloud/client_terms_001/release_constants.py": "b34178eda050f88521e23af9e74a4ba356f6959e9ef98a0ab3bc42838a4806f4",
+      "cloud/client_terms_001/test_deployment.py": "cb4b0088436299083770bd2db9ea1d6f5e02950b0ac9d82b725bfa23bb854be8",
+      "cloud/client_terms_001/test_vitrina_edit.py": "74f1f8b32857bc16fe1f4614ce86ce213994361619e1c86f693eb9aaa73497ed"
+    }
+  },
+  "updated_at": "2026-11-11T10:15:51Z"
+}
