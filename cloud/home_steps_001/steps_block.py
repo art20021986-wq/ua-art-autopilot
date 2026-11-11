@@ -40,6 +40,12 @@ def switcher():
             '%s</div>' % (uk, ru, uk, ka, buttons))
 
 
+def intro():
+    """Above the steps, Korea only: the full cycle and the delivery term."""
+    return ('<div class="ua-kr-intro" data-ua-for="korea">%s%s%s</div>'
+            % (text('h3', T.INTRO_TITLE), text('p', T.INTRO_TEXT), text('p', T.INTRO_TERM, 'ua-kr-term')))
+
+
 def _step(number, title, short, body):
     return ('<li class="ua-kr-step" data-ua-for="korea"><i>%d</i>%s%s<details class="ua-step-more">%s<div>%s</div>'
             '</details></li>' % (number, text('b', title), short, text('summary', T.MORE), body))
@@ -123,6 +129,10 @@ CSS = ('<style id="%s">'
        '.ua-cc button[aria-pressed="true"]{color:var(--gold);border-bottom-color:var(--gold)}'
        '.ua-cc button:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}'
        '.ua-how li:has(>details[open]){grid-column:1/-1}'
+       '.ua-kr-intro{margin:16px 0 0;padding:16px;border:1px solid #314862;border-radius:14px;background:rgba(7,17,30,.6)}'
+       '.ua-kr-intro h3{margin:0 0 8px;font-size:18px;line-height:1.35;color:#fff}'
+       '.ua-kr-intro p{margin:0;font-size:16px;line-height:1.6;color:#e6edf5;max-width:72ch}'
+       '.ua-kr-intro .ua-kr-term{margin-top:10px;font-weight:800;color:var(--gold)}'
        '.ua-kr-n{font-weight:800;color:#fff;white-space:nowrap}'
        '.ua-step-more strong{color:#fff}'
        '.ua-how .ua-step-more li{display:list-item;padding:0;border:0;border-radius:0;background:none;'

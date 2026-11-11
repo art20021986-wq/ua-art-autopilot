@@ -58,7 +58,7 @@ class EditHomeTests(unittest.TestCase):
         self.assertEqual(new_start, start)
         self.assertEqual(result[:new_start] + result[new_end:], LIVE[:start] + LIVE[end:])
         inside = result[new_start:new_end]
-        for piece in (steps_block.switcher(), steps_block.korea_steps(), steps_block.other_note(),
+        for piece in (steps_block.switcher(), steps_block.intro(), steps_block.korea_steps(), steps_block.other_note(),
                       steps_block.signature(), steps_block.SWITCH_SCRIPT, kr_prices.SCRIPT):
             self.assertEqual(inside.count(piece), 1)
             inside = inside.replace(piece, '', 1)
@@ -101,12 +101,12 @@ class EditHomeTests(unittest.TestCase):
         self.assertIn("fetch('/video/korea/logistics.json'", kr_prices.SCRIPT)
 
     def test_owner_wording(self):
-        steps = steps_block.korea_steps() + steps_block.signature()
+        steps = steps_block.intro() + steps_block.korea_steps() + steps_block.signature()
         for text in ('Вартість послуги — 600 $', 'за курсом НБУ', 'AutoPapa', 'вул. Перемоги, 20',
                      'розрахуємо вартість розмитнення', 'Усі наші ціни фіксовані', 'прихованих платежів',
                      'За 10 днів до митного оформлення', 'охоронюваній стоянці', 'UA ART COMPANY',
                      'Стоимость услуги — 600 $', 'Бесплатная парковка AutoPapa', 'პატივისცემით',
-                     'купівля — 600 $, депозит — 1 000 $', 'Оформлення договору', 'Купівля автомобіля, логістика та супутні витрати', 'до завантаження на пором', 'до 7 робочих днів', 'зараховується у витрати на автомобіль'):
+                     'купівля — 600 $, депозит — 1 000 $', 'Оформлення договору', 'Купівля автомобіля, логістика та супутні витрати', 'до завантаження на пором', 'Повний цикл придбання та доставки автомобіля', 'до 4 місяців', 'до 7 робочих днів', 'зараховується у витрати на автомобіль'):
             self.assertIn(text, steps)
         for note in ('Депозит 1 000 $ зараховується', 'Усі наші ціни фіксовані', 'розрахуємо вартість розмитнення', 'За 10 днів до митного',
                      'прихованих платежів', 'Безкоштовна парковка AutoPapa'):
