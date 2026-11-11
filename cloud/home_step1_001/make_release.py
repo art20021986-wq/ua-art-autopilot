@@ -5,8 +5,8 @@ Usage: python3 cloud/home_step1_001/make_release.py preview [SUFFIX]   # PR, mer
        python3 cloud/home_step1_001/make_release.py launch TASK_ID
        python3 cloud/home_step1_001/make_release.py install [SUFFIX]   # right after the preview: writes gate, manifest,
                                                                    # owner approval, storage probe, request and launch
-Texts approved by the owner in chat 2026-11-05 (tasks/ORDER-PROCESS-001.md); install only after the owner's «да»
-(APPROVAL). Task names come from release_constants.py.
+Texts approved by the owner in chat 2026-11-05 (tasks/ORDER-PROCESS-001.md); release 2 (owner 2026-11-11): the price
+range «до 1000 $» -> «до 200 $». Install only after the owner's «да» (APPROVAL). Task names come from release_constants.py.
 """
 import datetime
 import hashlib
@@ -30,7 +30,7 @@ OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 # Live data the install must not touch, besides the source files pinned in the plan.
 LIVE_DATA = ['.crm_publish_requests', 'crm.db']
 # Owner's words in chat, filled in when the owner says «да».
-APPROVAL = '«Размести на сайте пункт 1, заверши до конца» in chat 2026-11-05 after the phone preview'
+APPROVAL = ''
 
 
 def sha(path):
@@ -72,13 +72,13 @@ def preview(suffix):
     task = PREVIEW_TASK + suffix
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of step 1 on the home page (ORDER-PROCESS-001, owner-approved texts 2026-11-05): '
-                            'reads the live video/index.html, builds the candidate (step 1 «Безкоштовна консультація»: '
-                            'short text, details opened by the browser, payment line, «Заповнити заявку» -> podbor.html; '
-                            'uk/ru/ka) and measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of step 1 release 2 on the home page (ORDER-PROCESS-001, owner 2026-11-11): '
+                            'reads the live video/index.html, builds the candidate (in the step 1 details only the price '
+                            'range changes, «до 1000 $» -> «до 200 $», uk/ru/ka) and measures storage. No application '
+                            'source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview home step 1'}
+             'title': 'Preview home step 1 price range'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -133,16 +133,15 @@ def install(suffix):
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved (%s) ORDER-PROCESS-001 step 1 on the home page: in video/index.html only the '
-                              'first step of the «5 steps» block changes (title «Безкоштовна консультація», short text, details '
-                              'opened by the browser, payment line «0 грн», button «Заповнити заявку» -> podbor.html; uk/ru/ka) '
-                              'plus one CSS block; every other byte stays as is. No CRM or car card change. Existing backup, bot '
-                              'pause, writer locks, data-preservation, rollback and public health checks are kept.' % APPROVAL,
+               'description': 'Owner approved (%s) ORDER-PROCESS-001 step 1 release 2 on the home page: in video/index.html '
+                              'only the price-range paragraph of step 1 changes («до 1000 $» -> «до 200 $», uk/ru/ka); every '
+                              'other byte stays as is. No CRM or car card change. Existing backup, bot pause, writer locks, '
+                              'data-preservation, rollback and public health checks are kept.' % APPROVAL,
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/katalog.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 67108864, 'task_id': task, 'title': 'Install home step 1'}
+               'storage_required_bytes': 67108864, 'task_id': task, 'title': 'Install home step 1 price range'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),
