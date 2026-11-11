@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "ed4214edda871c4a1c2b2b1cb65fadaeb0241bbc63c4b63644904418c18809f0",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T06:59:02Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T07:01:55Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42973663757",
     "task_id": "CARD-SYNC-FIX2-INSTALL-20261111-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42973663757-cac1ae433088a0df",
   "production_transaction_path": "state/transactions/CARD-SYNC-FIX2-INSTALL-20261111-R2.cac1ae433088a0df7b033e32fb5bf2017af5760595eeaf58aec21dc238df0d51.42973663757.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-05786f4b2761bab0-c53d2689ec55b29e",
   "receipt_path": "state/receipts/CARD-SYNC-FIX2-INSTALL-20261111-R2.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/card_sync_fix_002/test_release.py": "d5e80333588fac5f1d173a32b99d4940d52c3d71a4bc56294c0cdc378b15c0d0"
     }
   },
-  "updated_at": "2026-11-11T06:59:02Z"
+  "updated_at": "2026-11-11T07:01:55Z"
 }
