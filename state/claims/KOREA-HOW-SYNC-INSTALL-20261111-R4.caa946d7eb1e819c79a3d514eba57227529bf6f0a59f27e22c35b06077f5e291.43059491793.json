@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "00c7e02a9ddcfbc62bbadaccaffb54e572221fcb2a35fbe5fa2661973c0f2a7c",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T16:43:28Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-11T16:57:27Z",
+  "heartbeat_at": "2026-11-11T16:57:27Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43059491793",
     "task_id": "KOREA-HOW-SYNC-INSTALL-20261111-R4",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 482.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 95.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 51.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43059491793-caa946d7eb1e819c",
   "production_transaction_path": "state/transactions/KOREA-HOW-SYNC-INSTALL-20261111-R4.caa946d7eb1e819c79a3d514eba57227529bf6f0a59f27e22c35b06077f5e291.43059491793.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-93b68730fbda2edc-7b95b76621f8f4f8",
   "receipt_path": "state/receipts/KOREA-HOW-SYNC-INSTALL-20261111-R4.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "ee74378c3705051638065943b31bc057b1e089c8d7f6d19803fef071d15baf7b",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-HOW-SYNC-INSTALL-20261111-R4.json",
   "request_sha256": "caa946d7eb1e819c79a3d514eba57227529bf6f0a59f27e22c35b06077f5e291",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "14a202494c553dbfd126b089dab5f4079cadc83a50656f6a26cb2befd86c1fc1",
     "file_sha256": {
@@ -93,5 +124,5 @@
       "cloud/korea_how_sync_001/test_release.py": "bb76c0bf568e218a6cdf762257d9181fa05839a95cd0a453f4fa6a4b815e3342"
     }
   },
-  "updated_at": "2026-11-11T16:43:28Z"
+  "updated_at": "2026-11-11T16:57:27Z"
 }
