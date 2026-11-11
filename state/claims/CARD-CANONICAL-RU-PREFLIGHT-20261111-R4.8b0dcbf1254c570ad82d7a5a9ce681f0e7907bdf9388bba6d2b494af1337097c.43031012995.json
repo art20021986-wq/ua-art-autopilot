@@ -1,0 +1,65 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-CANONICAL-RU-PREFLIGHT-20261111-R4.8b0dcbf1254c570ad82d7a5a9ce681f0e7907bdf9388bba6d2b494af1337097c.json",
+  "autostart_ledger_sha256": "6ebbc958377c2b49ac89b92dbf002d1691e666cf49e57578e86268be811a4c53",
+  "autostart_source_commit": "b34788f9826d076542f0cf23697f4828c438713d",
+  "created_at": "2026-11-11T14:10:10Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-11T14:15:57Z",
+  "heartbeat_at": "2026-11-11T14:15:57Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43031012995",
+    "task_id": "CARD-CANONICAL-RU-PREFLIGHT-20261111-R4",
+    "task_sha256": "8b0dcbf1254c570ad82d7a5a9ce681f0e7907bdf9388bba6d2b494af1337097c"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-608c9d21b4c80e51-0bfdc90212698919",
+  "receipt_path": "state/receipts/CARD-CANONICAL-RU-PREFLIGHT-20261111-R4.json",
+  "receipt_sha256": "0659274047675ee56b386c081da6b0856a42ebbf3252b36e83b87eabb3e9d14a",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CARD-CANONICAL-RU-PREFLIGHT-20261111-R4.json",
+  "request_sha256": "8b0dcbf1254c570ad82d7a5a9ce681f0e7907bdf9388bba6d2b494af1337097c",
+  "resource_locks": [
+    "PATH_SCOPE:608c9d21b4c80e51"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "4ee1f6725d0945533d79850d539d75f8ef9583e6",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92793597952,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.12
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "174a21aa2bd7e174687144782db1710fdbf88c573e6c7087d060caa701a00d3d",
+    "file_sha256": {
+      "cloud/card_canonical_ru_001/candidate_builder.py": "73cd33bf2f2b890970edc4c0ee52fd2e947a5e65b61e70108953483491c21a46",
+      "cloud/card_canonical_ru_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/card_canonical_ru_001/deployment_bootstrap.py": "4bcc16b62f4836a5431a7463ddf45c0931a63861a43d5cb0ac472f526267bd2f",
+      "cloud/card_canonical_ru_001/deployment_remote.py": "aa68100c872d069538c6fe12472cd6107e262329373adbef74ffc15a53e98d9a",
+      "cloud/card_canonical_ru_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/card_canonical_ru_001/deployment_transport.py": "5bf1fa4eae00584aea7a0e70bf3672f7a0306f167c8be241bc05fe9d45c6ff15",
+      "cloud/card_canonical_ru_001/edit_card_lang.py": "046c5dd31d0a83daf83d31313d656481f0a97b1f5d814536f4d91c527d340ad0",
+      "cloud/card_canonical_ru_001/edit_guard.py": "5456a6851ada08a6cc9e292e5d81401b2ddf73abecee2df95e1d1c94fd35c80c",
+      "cloud/card_canonical_ru_001/edit_metadata.py": "435b4bf7c685ce609cdf808d1dca083015bc283bf7344c1059876648b680bbad",
+      "cloud/card_canonical_ru_001/make_release.py": "ea7d1c4bf991cbb9116b92f9244c661b33ceca1c9fc9b39afde3f810f89d18f1",
+      "cloud/card_canonical_ru_001/release_constants.py": "6e3de5090f013bca401b1a63523e96004fb1bcf9f2853124aea9180919e333d8",
+      "cloud/card_canonical_ru_001/test_deployment.py": "272bfeca0f45a280a3208503a10a04bc6c0609f424fb625dd3005e0e33c26bea",
+      "cloud/card_canonical_ru_001/test_release.py": "d1f537a55d540e85a0a742562d7c54734dc959d6580c5c413d0ccfb8008f9f03"
+    }
+  },
+  "updated_at": "2026-11-11T14:15:57Z"
+}

@@ -1,5 +1,6 @@
 """Home reviews release (AUTORIA-REVIEWS-001); no private source in this package.
 
+Release 9 (owner 2026-11-11): years on AUTO.RIA and the reviews count follow AUTO.RIA weekly too (stats_loader).
 Release 8 (owner 2026-11-11): the sold-cars number follows AUTO.RIA weekly (sold_loader + cloud/autoria_sold_001 job).
 Release 7 (owner 2026-11-11): the official AUTO.RIA logo in the button and badge again (release 6 design kept); the
 logo file video/brand/autoria-logo.svg is live since release 1 and is only checked, not written.
@@ -18,8 +19,9 @@ Release 1: HOME-REVIEWS-PREFLIGHT-20261026-R2 / HOME-REVIEWS-INSTALL-20261026 (b
 # release 4 as HOME-REVIEWS-FONT-PREFLIGHT-20261027 / HOME-REVIEWS-FONT-INSTALL-20261027,
 # release 5 as HOME-REVIEWS-BLACK-PREFLIGHT-20261027 / HOME-REVIEWS-BLACK-INSTALL-20261027,
 # release 6 as HOME-REVIEWS-OWN-PREFLIGHT-20261027 / HOME-REVIEWS-OWN-INSTALL-20261027,
-# release 7 as HOME-REVIEWS-LOGO-PREFLIGHT-20261111 / HOME-REVIEWS-LOGO-INSTALL-20261111.
-PREVIEW_TASK = 'HOME-REVIEWS-SOLD-PREFLIGHT-20261111-R5'  # R2-R4 never ran (queue cancel, suffix not in the package, R3 lock)
-INSTALL_TASK = 'HOME-REVIEWS-SOLD-INSTALL-20261111'
+# release 7 as HOME-REVIEWS-LOGO-PREFLIGHT-20261111 / HOME-REVIEWS-LOGO-INSTALL-20261111,
+# release 8 as HOME-REVIEWS-SOLD-PREFLIGHT-20261111-R5 / HOME-REVIEWS-SOLD-INSTALL-20261111.
+PREVIEW_TASK = 'HOME-REVIEWS-FIGURES-PREFLIGHT-20261111-R2'  # R1 passed; its storage probe aged out (one install at a time)
+INSTALL_TASK = 'HOME-REVIEWS-FIGURES-INSTALL-20261111-R2'  # R1 cancelled in the queue before any step
 PACKAGE = 'cloud/home_reviews_001'
 HOME = 'video/index.html'

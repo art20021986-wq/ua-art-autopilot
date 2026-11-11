@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-REVIEWS-FIGURES-PREFLIGHT-20261111.32e8339f5b707d80d46000e5f9fc41451415e3d7143deefe4a41aaedf0db9368.json",
+  "autostart_ledger_sha256": "dec3a20b62b7538f65794ccbe223f95079d25b6d848eb0f5efc842bfa550903f",
+  "autostart_source_commit": "a55bf38cc930edc42e03ff20985f207daf10dca1",
+  "created_at": "2026-11-11T14:16:42Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43035848577",
+    "task_id": "HOME-REVIEWS-FIGURES-PREFLIGHT-20261111",
+    "task_sha256": "32e8339f5b707d80d46000e5f9fc41451415e3d7143deefe4a41aaedf0db9368"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-7cc972291ceb906e-aa5d19f674df7461",
+  "request_path": "tasks/requests/HOME-REVIEWS-FIGURES-PREFLIGHT-20261111.json",
+  "resource_locks": [
+    "PATH_SCOPE:7cc972291ceb906e"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

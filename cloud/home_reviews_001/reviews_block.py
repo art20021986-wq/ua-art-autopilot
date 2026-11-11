@@ -9,13 +9,14 @@ Release 6 (owner 2026-10-27): «AUTO.RIA» is plain text in the site's own desig
 frame on the button and badge, no white plate and no Roboto.
 Release 7 (owner 2026-11-11): the official AUTO.RIA logo again instead of the text «AUTO.RIA» (it links to their
 site); the button and badge keep the release 6 design.
-Release 8 (owner 2026-11-11): the sold-cars number follows AUTO.RIA weekly (sold_loader); the written one is the fallback.
+Release 8 (owner 2026-11-11): the sold-cars number follows AUTO.RIA weekly; the written one is the fallback.
+Release 9 (owner 2026-11-11): years on AUTO.RIA and the reviews count follow AUTO.RIA weekly too (stats_loader).
 """
 from html import escape
 
 import autoria_click
 import reviews_data as data
-import sold_loader
+import stats_loader
 
 MARK = 'ua-autoria-reviews-001'
 LOGO = '/video/brand/autoria-logo.svg'
@@ -68,13 +69,12 @@ def _review(author, date, stars, text):
             % (stars, '★' * stars, escape(text), escape(author), escape(date)))
 
 
-def _stat(index, number, ru, uk, ka):
-    ident = ' id="%s"' % sold_loader.ID if index == data.SOLD else ''
-    return '<li><b%s>%s</b><span %s</span></li>' % (ident, escape(number), _attrs(ru, uk, ka))
+def _stat(name, number, ru, uk, ka):
+    return '<li><b id="%s">%s</b><span %s</span></li>' % (stats_loader.ID % name, escape(number), _attrs(ru, uk, ka))
 
 
 def block():
-    stats = ''.join(_stat(index, *stat) for index, stat in enumerate(data.STATS))
+    stats = ''.join(_stat(name, *stat) for name, stat in zip(data.FIGURES, data.STATS, strict=True))
     reviews = ''.join(_review(*review) for review in data.REVIEWS)
     return ('<section class="ua-reviews section-frame" id="vidguky">'
             '<span class="section-kicker" %s</span><h2 %s</h2><p class="ua-reviews-lead" %s</p>'
@@ -93,7 +93,7 @@ def block():
                _logo(30),
                _attrs('Откроется наша страница на AUTO.RIA', 'Відкриється наша сторінка на AUTO.RIA',
                       'გაიხსნება ჩვენი გვერდი AUTO.RIA‑ზე'),
-               autoria_click.SCRIPT + sold_loader.SCRIPT))
+               autoria_click.SCRIPT + stats_loader.SCRIPT))
 
 
 def badge():
