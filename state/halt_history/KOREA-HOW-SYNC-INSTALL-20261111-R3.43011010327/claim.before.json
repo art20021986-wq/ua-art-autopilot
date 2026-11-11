@@ -1,0 +1,47 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-HOW-SYNC-INSTALL-20261111-R3.2b23a3bd9ad64c4e3989f6e07bbd352b429b66b5de8e278a6d298741c174bb46.json",
+  "autostart_ledger_sha256": "ccbd202fc9c37dbde4047d111b59dd2d6c36db3737244bc98237a48b8f6113e5",
+  "autostart_source_commit": "fea2faba3c5956269546eba6b39004b522ef19ba",
+  "created_at": "2026-11-11T11:48:24Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-11-11T11:50:17Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 43011010327",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "5c0051b8656fb03c"
+    }
+  ],
+  "heartbeat_at": "2026-11-11T11:48:24Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43011010327",
+    "task_id": "KOREA-HOW-SYNC-INSTALL-20261111-R3",
+    "task_sha256": "2b23a3bd9ad64c4e3989f6e07bbd352b429b66b5de8e278a6d298741c174bb46"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-93b68730fbda2edc-7b95b76621f8f4f8",
+  "receipt_path": "state/receipts/KOREA-HOW-SYNC-INSTALL-20261111-R3.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/KOREA-HOW-SYNC-INSTALL-20261111-R3.json",
+  "request_sha256": "2b23a3bd9ad64c4e3989f6e07bbd352b429b66b5de8e278a6d298741c174bb46",
+  "resource_locks": [
+    "PATH_SCOPE:93b68730fbda2edc"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "30646be951b02a5aacafdb427d14921feafddd75",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "updated_at": "2026-11-11T11:50:17Z"
+}
