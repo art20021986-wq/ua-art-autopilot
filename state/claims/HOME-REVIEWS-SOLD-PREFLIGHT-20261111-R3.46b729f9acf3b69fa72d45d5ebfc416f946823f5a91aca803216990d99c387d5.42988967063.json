@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "f52dd956f6617f5d"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-11T12:20:00+00:00",
+      "class": "TASK_NAME_NOT_IN_PACKAGE",
+      "evidence_path": "state/reconciliations/HOME-REVIEWS-SOLD-PREFLIGHT-20261111-R3.42988967063.authenticated-evidence.json",
+      "message": "Read-only preview: the controller refused the suffixed task name (TASK_IDENTITY) before any server step; nothing written. Name fixed in release constants; retried as R5. Closed as FAILED so its PATH_SCOPE lock is released.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-11T08:58:43Z",
@@ -42,6 +51,6 @@
   "source_commit": "6a2ffaae0de6afc9be4b7d6bc124c1d05a6635dc",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-11T08:59:40Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-11T12:20:00+00:00"
 }
