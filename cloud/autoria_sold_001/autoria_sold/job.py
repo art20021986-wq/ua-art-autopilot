@@ -1,8 +1,9 @@
-"""Weekly server job: the AUTO.RIA sold-cars number for the home reviews block (AUTORIA-SOLD-001).
+"""Weekly server job: the owner's AUTO.RIA figures for the home reviews block (AUTORIA-SOLD-001).
 
-Runs daily on PythonAnywhere and works on Mondays (Kyiv time), or on any day while the file is missing.
-Reads one public page of auto.ria.com (robots.txt respected) and writes video/brand/autoria-sold.json,
-{"sold": N, "checked": "YYYY-MM-DD"}. When the number cannot be read nothing is written.
+Runs daily on PythonAnywhere and works on Mondays (Kyiv time), or on any day while the file is missing or lacks a
+figure. Reads one public page of auto.ria.com (robots.txt respected) and writes video/brand/autoria-sold.json,
+{"years": "5+", "sold": N, "reviews": N, "checked": "YYYY-MM-DD"}. A figure that cannot be read keeps its last
+value; when none can be read nothing is written.
 """
 from datetime import datetime
 import json
@@ -23,11 +24,21 @@ ROBOTS = 'https://auto.ria.com/robots.txt'
 AGENT = 'UA-ART-autopilot/1.0 (+https://www.uaart.com.ua/)'
 KYIV = ZoneInfo('Europe/Kyiv')
 MONDAY = 0
+FIELDS = ('years', 'sold', 'reviews')
 MAX_BYTES = 6 * 1024 * 1024
 
 
-def due(now, file_exists):
-    return now.weekday() == MONDAY or not file_exists
+def due(now, last):
+    return now.weekday() == MONDAY or not all(name in last for name in FIELDS)
+
+
+def current(path):
+    """The figures written last time; an unreadable file counts as none."""
+    try:
+        value = json.loads(path.read_text())
+    except (OSError, ValueError):
+        return {}
+    return {name: value[name] for name in FIELDS if name in value} if isinstance(value, dict) else {}
 
 
 def fetch(url):
@@ -58,15 +69,17 @@ def write(path, data):
 
 def main(now=None, out=OUT, get=fetch, robots=allowed):
     now = now or datetime.now(KYIV)
-    if not due(now, out.exists()):
+    last = current(out)
+    if not due(now, last):
         return 0
     if not robots(DEALER_URL):
         print('AUTORIA_ROBOTS_DISALLOWED', file=sys.stderr)
         return 1
-    sold = page.sold_count(get(DEALER_URL))
-    if sold is None:
-        print('AUTORIA_SOLD_NOT_FOUND', file=sys.stderr)
+    found = page.figures(get(DEALER_URL))
+    if not found:
+        print('AUTORIA_FIGURES_NOT_FOUND', file=sys.stderr)
         return 1
-    write(out, json.dumps({'sold': sold, 'checked': now.date().isoformat()}).encode() + b'\n')
-    print('AUTORIA_SOLD', sold)
+    value = {**last, **found, 'checked': now.date().isoformat()}
+    write(out, json.dumps(value, ensure_ascii=False).encode() + b'\n')
+    print('AUTORIA_FIGURES', json.dumps(found))
     return 0

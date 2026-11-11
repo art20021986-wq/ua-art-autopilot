@@ -120,16 +120,17 @@ def prepare(directory):
         atomic(directory/'after'/name,value,mode)
     # A source-only plan stays valid across legitimate operator edits. Actual
     # CRM/page snapshots are captured again under locks at the write boundary.
-    plan = {'schema_version':'AUTORIA-SOLD-INSTALL-1','files':files,'job':JOB,
+    # update: the job is already installed; a rollback then restores its earlier files and keeps the task and its output.
+    plan = {'schema_version':'AUTORIA-SOLD-INSTALL-1','files':files,'job':JOB,'update':bool(SOURCE_FILES),
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'new files only: autoria_sold/ (job) and autoria_sold_job.py; one daily server task that on Mondays writes video/brand/autoria-sold.json; no page or CRM module changes',
+            'site_scope':'job files autoria_sold/ and autoria_sold_job.py replaced (years, sold cars, reviews); the daily server task and video/brand/autoria-sold.json stay; no page or CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
 
 
 def smoke(directory):
-    """The new job imports on the server's Python, reads the sold number from a sample and keeps its schedule; no network."""
+    """The new job imports on the server's Python, reads the figures from a sample and keeps its schedule; no network."""
     after = directory/'after'
     for name in read_names(directory):
         compile(read(after/name), name, 'exec')
@@ -137,9 +138,15 @@ def smoke(directory):
     try:
         from autoria_sold import job, page
         monday = datetime.datetime(2026, 11, 16, 8, 41, tzinfo=job.KYIV)
+        tuesday = monday+datetime.timedelta(days=1)
+        complete = dict.fromkeys(job.FIELDS, 1)
+        sample = ('<div id="elementsWorkWith"><strong>5+ років</strong></div>'
+                  '<div id="elementsSoldCarTitle"><span><!--[-->132<!--]--></span></div>'
+                  '<label for="tabsIdrevs"><span>Відгуки</span><span class="common-badge small">18</span></label>')
         value = {'imports': True,
-                 'reads': page.sold_count('<div id="elementsSoldCarTitle"><span><!--[-->132<!--]--></span></div>') == 132,
-                 'schedule_rule': job.due(monday, True) and not job.due(monday+datetime.timedelta(days=1), True),
+                 'reads': page.figures(sample) == {'years': '5+', 'sold': 132, 'reviews': 18},
+                 'schedule_rule': (job.due(monday, complete) and not job.due(tuesday, complete)
+                                   and job.due(tuesday, {'sold': 1})),
                  'output_path': str(job.OUT) == str(ROOT/OUTPUTS[0])}
     finally:
         sys.path.remove(str(after))
@@ -157,7 +164,7 @@ def live_check(directory):
         from autoria_sold import job, page
         if not job.allowed(job.DEALER_URL):
             return {'robots_allowed': False}
-        return {'robots_allowed': True, 'sold': page.sold_count(job.fetch(job.DEALER_URL))}
+        return {'robots_allowed': True, 'figures': page.figures(job.fetch(job.DEALER_URL))}
     except Exception as error:
         return {'error': type(error).__name__+':'+str(error)[:120]}
     finally:
@@ -281,7 +288,8 @@ def no_bot_processes():
 
 
 def restore(directory, plan, api=None):
-    if api is not None:
+    update = plan.get('update') is True
+    if api is not None and not update:
         api.remove_job()  # first: the job must not write while its files go away
     for relative,digest in plan['protected'].items():
         if sha(read(ROOT/relative)) != digest:
@@ -305,6 +313,8 @@ def restore(directory, plan, api=None):
             if path.exists() or path.is_symlink(): raise DeploymentError('UNEXPECTED_FILE:'+relative)
         elif sha(read(path)) != item['before']:
             raise DeploymentError('FILE_CHANGED:'+relative)
+    if update:
+        return  # the earlier job files are back; its task and output stay
     package=ROOT/'autoria_sold'
     if package.is_dir() and not package.is_symlink():
         for cache in package.glob('__pycache__'):
