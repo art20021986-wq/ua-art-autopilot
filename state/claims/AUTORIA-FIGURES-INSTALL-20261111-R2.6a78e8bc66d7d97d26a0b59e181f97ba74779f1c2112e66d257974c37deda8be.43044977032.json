@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "cbbcfe6fdf7fb0883c62e9c82e16d455d8b37a4567a8a9fd15bfb67161a3a335",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T15:08:58Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T15:13:00Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43044977032",
     "task_id": "AUTORIA-FIGURES-INSTALL-20261111-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43044977032-6a78e8bc66d7d97d",
   "production_transaction_path": "state/transactions/AUTORIA-FIGURES-INSTALL-20261111-R2.6a78e8bc66d7d97d26a0b59e181f97ba74779f1c2112e66d257974c37deda8be.43044977032.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-f8a416b1e8441dff-2b8f41c1123fc947",
   "receipt_path": "state/receipts/AUTORIA-FIGURES-INSTALL-20261111-R2.json",
   "receipt_validation_status": "PENDING",
@@ -89,5 +89,5 @@
       "cloud/autoria_sold_001/test_release.py": "458936b4f2ae3a9991e7a8ef282d8104bf5f42a070314d527db25713ae05983e"
     }
   },
-  "updated_at": "2026-11-11T15:08:58Z"
+  "updated_at": "2026-11-11T15:13:00Z"
 }
