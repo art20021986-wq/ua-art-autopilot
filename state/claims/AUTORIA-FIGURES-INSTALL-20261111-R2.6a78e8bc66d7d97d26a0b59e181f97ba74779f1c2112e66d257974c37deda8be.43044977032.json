@@ -1,0 +1,116 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUTORIA-FIGURES-INSTALL-20261111-R2.6a78e8bc66d7d97d26a0b59e181f97ba74779f1c2112e66d257974c37deda8be.json",
+  "autostart_ledger_sha256": "b0f48dc0517818112e6dece6aad7f37b3ef849daec8202433489b8f2f306cf1c",
+  "autostart_source_commit": "7df1404638783d4ea12a834630e4aa8135b3686a",
+  "created_at": "2026-11-11T15:07:41Z",
+  "critical_gate_evidence_sha256": "cbbcfe6fdf7fb0883c62e9c82e16d455d8b37a4567a8a9fd15bfb67161a3a335",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-11T15:26:51Z",
+  "heartbeat_at": "2026-11-11T15:26:51Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "43044977032",
+    "task_id": "AUTORIA-FIGURES-INSTALL-20261111-R2",
+    "task_sha256": "6a78e8bc66d7d97d26a0b59e181f97ba74779f1c2112e66d257974c37deda8be"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 574.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 137.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 64.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 72.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-43044977032-6a78e8bc66d7d97d",
+  "production_transaction_path": "state/transactions/AUTORIA-FIGURES-INSTALL-20261111-R2.6a78e8bc66d7d97d26a0b59e181f97ba74779f1c2112e66d257974c37deda8be.43044977032.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "path_scope-f8a416b1e8441dff-2b8f41c1123fc947",
+  "receipt_path": "state/receipts/AUTORIA-FIGURES-INSTALL-20261111-R2.json",
+  "receipt_sha256": "fb8ce1d21fde7d1a9a0a3ebaaedb7d48e88a55367d2a7f62a5247ecf0ba8643d",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/AUTORIA-FIGURES-INSTALL-20261111-R2.json",
+  "request_sha256": "6a78e8bc66d7d97d26a0b59e181f97ba74779f1c2112e66d257974c37deda8be",
+  "resource_locks": [
+    "PATH_SCOPE:f8a416b1e8441dff"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "d97c34a18fb1a753f0aea69981a3a1dae3fd27a7",
+  "storage_preflight": {
+    "age_seconds": 331.34,
+    "allowed": true,
+    "evidence_path": "state/storage/AUTORIA-FIGURES-INSTALL-20261111-R2.json",
+    "evidence_sha256": "f2f80b2705eda71c2855ec3b3ba742e19f628f2d169e269d7206f00c54583917",
+    "free_bytes": 22699916800,
+    "heavy": true,
+    "measured_at": "2026-11-11T15:03:25.389163+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 35.143094857142856
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "7016d74c0415f457103c464fa66e3afdd881988398931f69c14790933d029445",
+    "file_sha256": {
+      "cloud/autoria_sold_001/autoria_sold/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cloud/autoria_sold_001/autoria_sold/job.py": "1ba204cb698a570be33ad96776c0a46ea10e4e43470833bb123a1b9b403f38c1",
+      "cloud/autoria_sold_001/autoria_sold/page.py": "ae020c65da19fca65742b6895d6795574f31ad6410b68c5051bbd626179296e5",
+      "cloud/autoria_sold_001/autoria_sold/test_autoria_sold.py": "426d64dfb0edb382dc21d0ae8b4490c7e4e4539d89c466e043a7306a5f9364ce",
+      "cloud/autoria_sold_001/candidate_builder.py": "44784859c1552eb35dcffc3f70d5ca21fb90e064c1605e616f6b028fe156a3a7",
+      "cloud/autoria_sold_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/autoria_sold_001/deployment_bootstrap.py": "bbbf98f6c683fc45c224a6c58b12b35bf0dde5399e5f965c412a5dd8127e661a",
+      "cloud/autoria_sold_001/deployment_remote.py": "66f1cd5f9abeefac73a816a30125f62cecdaea38bc1d97c4014c17fd31adc3ac",
+      "cloud/autoria_sold_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/autoria_sold_001/deployment_transport.py": "e7ba53838a6a83b7d57566e7768b1a14b4958e177f7d7ac3472e38fd509aaae9",
+      "cloud/autoria_sold_001/make_release.py": "6533937a4027eb547286025a28f84963f83abafca1d26f23c3c95be55d2cdb97",
+      "cloud/autoria_sold_001/release_constants.py": "8baad5f5ff2ce33988a6f512ca836b44f7e32d38d9c26f29c07128a6f6a9abbd",
+      "cloud/autoria_sold_001/test_deployment.py": "02a0b1bae50380036fda2bcad2b4367e2b9cd814bd69a803f366643c052810ee",
+      "cloud/autoria_sold_001/test_release.py": "458936b4f2ae3a9991e7a8ef282d8104bf5f42a070314d527db25713ae05983e"
+    }
+  },
+  "updated_at": "2026-11-11T15:26:51Z"
+}

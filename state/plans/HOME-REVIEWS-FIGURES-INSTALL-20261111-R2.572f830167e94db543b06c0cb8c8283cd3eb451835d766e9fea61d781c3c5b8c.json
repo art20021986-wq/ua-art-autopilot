@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-REVIEWS-FIGURES-INSTALL-20261111-R2.572f830167e94db543b06c0cb8c8283cd3eb451835d766e9fea61d781c3c5b8c.json",
+  "autostart_ledger_sha256": "f69289d4e0a6b1cb168000b8e81c327ae09a9c10528d5079b57bd637b29c7c8d",
+  "autostart_source_commit": "773f88a4e090648bedcf1de4c387ed18f683e64d",
+  "created_at": "2026-11-11T15:36:44Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43049828936",
+    "task_id": "HOME-REVIEWS-FIGURES-INSTALL-20261111-R2",
+    "task_sha256": "572f830167e94db543b06c0cb8c8283cd3eb451835d766e9fea61d781c3c5b8c"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "homepage-68ed6564ebea221c",
+  "request_path": "tasks/requests/HOME-REVIEWS-FIGURES-INSTALL-20261111-R2.json",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-HOW-SYNC-INSTALL-20261111-R4.caa946d7eb1e819c79a3d514eba57227529bf6f0a59f27e22c35b06077f5e291.json",
+  "autostart_ledger_sha256": "9a3f398faddc61ed106c48c4c905a5f64106a06bc1a3d9b09d141184b62298fb",
+  "autostart_source_commit": "e7ce0657bd30177f4aade8fb4aa194e19e9438d1",
+  "created_at": "2026-11-11T16:35:01Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43059491793",
+    "task_id": "KOREA-HOW-SYNC-INSTALL-20261111-R4",
+    "task_sha256": "caa946d7eb1e819c79a3d514eba57227529bf6f0a59f27e22c35b06077f5e291"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-93b68730fbda2edc-7b95b76621f8f4f8",
+  "request_path": "tasks/requests/KOREA-HOW-SYNC-INSTALL-20261111-R4.json",
+  "resource_locks": [
+    "PATH_SCOPE:93b68730fbda2edc"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
