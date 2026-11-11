@@ -5,23 +5,71 @@
   "autostart_ledger_sha256": "3f63eefa9ea82922259b70b763edefc75ed04a49f1ee3b57d591bc22c8d115c4",
   "autostart_source_commit": "3d16695d28e764bb739f67c3e41ebb7845afdee6",
   "created_at": "2026-11-11T09:27:55Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "261a680a1b4d9d0452ef9d5b481ccc1b3ca1a11cdef2284b60823e4f5abdf250",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T09:27:55Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-11T09:47:17Z",
+  "heartbeat_at": "2026-11-11T09:47:17Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "42994503550",
     "task_id": "HOME-STEPS-INSTALL-20261111-R2",
     "task_sha256": "b29e595508bf59919b4f676e8dfab07348517f276b1ab84fbd2fb5eff9cdaf9e"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
-  "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 721.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 334.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 305.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 288.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42994503550-b29e595508bf5991",
+  "production_transaction_path": "state/transactions/HOME-STEPS-INSTALL-20261111-R2.b29e595508bf59919b4f676e8dfab07348517f276b1ab84fbd2fb5eff9cdaf9e.42994503550.json",
+  "production_transaction_status": "FINISHED",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-STEPS-INSTALL-20261111-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "64cc0d13d110743de66ab0cf04a8d2c73bc810ef1684e3de21a2f43acfe41f19",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-STEPS-INSTALL-20261111-R2.json",
   "request_sha256": "b29e595508bf59919b4f676e8dfab07348517f276b1ab84fbd2fb5eff9cdaf9e",
   "resource_locks": [
@@ -29,8 +77,40 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "e2343b2033f2cb5b0764c45bca67ad58c56ff27c",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 606.064,
+    "allowed": true,
+    "evidence_path": "state/storage/HOME-STEPS-INSTALL-20261111-R2.json",
+    "evidence_sha256": "5f359a9c77554e43b80815b6866291bb8d94586b2087f8962b982f6c22a18cbc",
+    "free_bytes": 22767226368,
+    "heavy": true,
+    "measured_at": "2026-11-11T09:19:08.764133+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 34.950781805714286
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-11T09:27:55Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "6ce9cd61626fe4db0f495af4920fd194a4a2298bd2040fac30472496e0fb1bb1",
+    "file_sha256": {
+      "cloud/home_steps_001/candidate_builder.py": "8bf35ea238e9981b37f1a5e4978b0109c9255db9ccee16fba8b6923a728a47b5",
+      "cloud/home_steps_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_steps_001/deployment_bootstrap.py": "2208bf853d759f14940a9b7ed5b34debc640bc3e880505e80e8cb76be8b7e870",
+      "cloud/home_steps_001/deployment_remote.py": "6f248e496ef0fc0c8014ecdfb8ffd3f1d06665ac3cae420fdd99796da38b845a",
+      "cloud/home_steps_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_steps_001/deployment_transport.py": "221b3fbd3bcb52c92f96f53cb7b21ccdec68855effa8fddcdb9d25c836238969",
+      "cloud/home_steps_001/edit_home.py": "0563528a0de3eb4daa36599f2dadb1e41cc8dfaa61aecc708b316cb42653782a",
+      "cloud/home_steps_001/kr_prices.py": "e9e708780a225df2ead74557c35e8656cf3ca686ff26c483130f3eeadcd8abdd",
+      "cloud/home_steps_001/make_release.py": "12c0016fb76c6af9b4c35a319c9530d3ff467cf85e8689fe6fe91f536c84e4ac",
+      "cloud/home_steps_001/release_constants.py": "1be418e897d3c63c52037ceea301b372ee0c652938e2ec801d96a9bc157b6db1",
+      "cloud/home_steps_001/steps_block.py": "18f4d29f0cf604e6989da92f8ea8543720ad92aab9508eb1f6c7a1a2be829292",
+      "cloud/home_steps_001/steps_text.py": "e592c2ec685b6c88cdb7cfde9161bde96f2a53434c76a0450faaf89b1e9eda03",
+      "cloud/home_steps_001/test_deployment.py": "0677f21b5721f091ec8567eb12cfd1b19291b797a9b7f6bf61bfe95fbd959faa",
+      "cloud/home_steps_001/test_edit_home.py": "d63d0076405748b26b78649642715445db3e54814b404356baba5f95dc741aaa"
+    }
+  },
+  "updated_at": "2026-11-11T09:47:17Z"
 }
