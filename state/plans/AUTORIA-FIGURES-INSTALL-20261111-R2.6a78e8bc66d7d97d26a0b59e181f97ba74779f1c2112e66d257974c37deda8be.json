@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUTORIA-FIGURES-INSTALL-20261111-R2.6a78e8bc66d7d97d26a0b59e181f97ba74779f1c2112e66d257974c37deda8be.json",
+  "autostart_ledger_sha256": "b0f48dc0517818112e6dece6aad7f37b3ef849daec8202433489b8f2f306cf1c",
+  "autostart_source_commit": "7df1404638783d4ea12a834630e4aa8135b3686a",
+  "created_at": "2026-11-11T15:07:41Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43044977032",
+    "task_id": "AUTORIA-FIGURES-INSTALL-20261111-R2",
+    "task_sha256": "6a78e8bc66d7d97d26a0b59e181f97ba74779f1c2112e66d257974c37deda8be"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-f8a416b1e8441dff-2b8f41c1123fc947",
+  "request_path": "tasks/requests/AUTORIA-FIGURES-INSTALL-20261111-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:f8a416b1e8441dff"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
