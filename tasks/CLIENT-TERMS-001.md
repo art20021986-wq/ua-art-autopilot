@@ -9,6 +9,13 @@
 - Источник: vitrina.py после LEAD-DESK-FIX-INSTALL-20261107 (sha256 935ce5f0…).
 - Порядок: preview `make_release.py preview` → запуск → «да» владельца → `make_release.py install`.
 
-## Сайт (ссылки на info.html) — уточняется у владельца
-Ссылки на live (11.11): верхнее меню «Умови» (главная, каталог, korea.html, карточки, SEO-страницы),
-«Умови, строки та гарантії» на главной, «Умови купівлі та доставки» на podbor.html.
+## Сайт (пакет cloud/terms_links_001, TERMS-LINKS-001) — владелец «да» 11.11: убрать со всех мест
+- Новый ua_terms_links.apply(html): убирает каждую ссылку <a href=".../info.html"> (с текстом); пустое меню SEO-страниц
+  (<header><nav></nav></header>) тоже. Сама страница info.html остаётся.
+- Хвост в site_ge_inject.inject_html (каждая запись страницы) и в ua_seo_landings.pages (SEO-страницы; при установке
+  ua_seo_index.refresh перезаписывает их).
+- Сейчас: главная (меню «Умови», «Умови, строки та гарантії»), каталог, podbor («Умови купівлі та доставки»; блок
+  ua-seo-order-intro остаётся, поэтому ua_seo_metadata ссылку не вернёт), korea.html, golden-каталог, 30 SEO-страниц.
+- Карточки авто ссылки не имеют (проверено по sitemap 11.11).
+- ВАЖНО другим сессиям: меняются video/index.html, katalog.html, podbor.html, korea.html — пакеты, собранные по старым
+  страницам (HOME-STEPS, KOREA-HOW-SYNC, KOREA-DAYS-PAGE, CHAT-BUTTON), после установки нужно заново прогнать preview.
