@@ -1,3 +1,10 @@
+QUEUE NOTE (2026-11-11, HOME-STEPS session): KOREA-SCORE-R5 halt recovered (owner «Да», PR #1078). HOME-STEPS-PREFLIGHT-R3
+PASS (run 42986928529); its install R1 waited in the new autostart queue and was cancelled before any step (storage
+probe would pass 30 min). Lesson: launch a CRITICAL install only when the autostart queue is empty, right after its
+preview. Next: HOME-STEPS-PREFLIGHT-20261111-R4 → INSTALL-R2; KR-PRICES-PREFLIGHT-20261111-R2 → INSTALL.
+
+CLIENT-TERMS-001 (2026-11-11, владелец): убрать «Условия и гарантии». Клиентский бот: пакет cloud/client_terms_001 (vitrina.py — со стартового экрана клиента убрана единственная кнопка «Условия и гарантии» → info.html; остальное без изменений; тесты 22/22 + 2/2) и заявка CLIENT-TERMS-PREFLIGHT-20261111 в main, НЕ запущена (очередь автопилота занята HOME-STEPS-R3 и CARD-CANONICAL-RU — новый запуск вытеснил бы ожидающий). Production не менялся. Дальше: запуск пробы → «да» владельца → make_release.py install. Сайт: ссылки на info.html (меню «Умови», «Умови, строки та гарантії» на главной, «Умови купівлі та доставки» на podbor) — ждёт уточнения владельца, что именно убрать. Задача tasks/CLIENT-TERMS-001.md.
+
 KR-PRICES (2026-11-11, владелец): кнопка «💲 Цены Корея» в главном меню CRM-бота (только владелец) — цены логистики
 Кореи по месяцам → video/korea/logistics.json → блок «5 шагов» на главной. Пакет cloud/kr_prices_bot_001, тесты 34/34,
 заявка KR-PRICES-PREFLIGHT-20261111 (не запускалась). Ждёт: снятия остановки автопилота (владелец подтвердил «Да»,

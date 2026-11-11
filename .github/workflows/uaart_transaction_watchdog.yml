@@ -38,6 +38,7 @@ permissions:
 concurrency:
   group: ua-art-production-writer
   cancel-in-progress: false
+  queue: max
 
 jobs:
   discover:
