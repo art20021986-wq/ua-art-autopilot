@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "7352114e6ac09ef52d11339350741de0b154aa9a99e5ec57f665279b55d0a089",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T11:32:36Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-11T11:47:32Z",
+  "heartbeat_at": "2026-11-11T11:47:32Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43010268154",
     "task_id": "KOREA-SCORE-INSTALL-20261111-R6",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 417.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 56.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 83.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43010268154-915d3fcf63e9fdb3",
   "production_transaction_path": "state/transactions/KOREA-SCORE-INSTALL-20261111-R6.915d3fcf63e9fdb3c0a3ed5afa2f66103f3f8e379a81ccfcd8b77db7e093d5b7.43010268154.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-SCORE-INSTALL-20261111-R6.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "8c0b24517d6051dee07a79ae88e1f17deaad7aad76d77298274286a5be58d6e7",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-SCORE-INSTALL-20261111-R6.json",
   "request_sha256": "915d3fcf63e9fdb3c0a3ed5afa2f66103f3f8e379a81ccfcd8b77db7e093d5b7",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "c9d4c033911e0f9003b0eb9dc32da8afaca8731e8a1fe433735cbc2ddeb64859",
     "file_sha256": {
@@ -106,5 +137,5 @@
       "cloud/korea_score_001/test_release.py": "3857bc7fcc1a99103cb7ee6d63b3bf313bc0f399ce5da06556c8e738cb8b7876"
     }
   },
-  "updated_at": "2026-11-11T11:32:36Z"
+  "updated_at": "2026-11-11T11:47:32Z"
 }
