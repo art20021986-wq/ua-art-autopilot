@@ -1,0 +1,37 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TERMS-LINKS-INSTALL-20261111-R3.3416367f9a0b2d9c980d691c8af04377a11f2a31b0abd33ee3a9f893dae31f12.json",
+  "autostart_ledger_sha256": "e6f67e783a793c8fc6fd9d84ee061dc943b73bd3dbb37b440ad5d9594c486d17",
+  "autostart_source_commit": "3ecfd6e085eb4dbadeb643eef9064b2a6fe00f7a",
+  "created_at": "2026-11-11T18:04:13Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-11T18:04:13Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43073985305",
+    "task_id": "TERMS-LINKS-INSTALL-20261111-R3",
+    "task_sha256": "3416367f9a0b2d9c980d691c8af04377a11f2a31b0abd33ee3a9f893dae31f12"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "catalog_renderer-516734deb9ea5607",
+  "receipt_path": "state/receipts/TERMS-LINKS-INSTALL-20261111-R3.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TERMS-LINKS-INSTALL-20261111-R3.json",
+  "request_sha256": "3416367f9a0b2d9c980d691c8af04377a11f2a31b0abd33ee3a9f893dae31f12",
+  "resource_locks": [
+    "CATALOG_RENDERER",
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "1b89f839c3648f13aa3cedbf7013d21307ec71fa",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-11T18:04:13Z"
+}
