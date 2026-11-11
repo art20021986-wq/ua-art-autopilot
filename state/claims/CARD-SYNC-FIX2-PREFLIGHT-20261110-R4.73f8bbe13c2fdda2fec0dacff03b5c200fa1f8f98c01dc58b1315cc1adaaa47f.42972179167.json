@@ -7,21 +7,23 @@
   "created_at": "2026-11-11T06:30:07Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T06:30:07Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-11T06:36:06Z",
+  "heartbeat_at": "2026-11-11T06:36:06Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "42972179167",
     "task_id": "CARD-SYNC-FIX2-PREFLIGHT-20261110-R4",
     "task_sha256": "73f8bbe13c2fdda2fec0dacff03b5c200fa1f8f98c01dc58b1315cc1adaaa47f"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-c459dd24bb5388f8-2cf7e039e2f4a69c",
   "receipt_path": "state/receipts/CARD-SYNC-FIX2-PREFLIGHT-20261110-R4.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "2feb8ebfea39e08fac6517ad26aa89f283117ebb4e4b198eab4cb10631c8da7e",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CARD-SYNC-FIX2-PREFLIGHT-20261110-R4.json",
   "request_sha256": "73f8bbe13c2fdda2fec0dacff03b5c200fa1f8f98c01dc58b1315cc1adaaa47f",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "0156a9acc67c9bd2fa586a20803db19d834261b1",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92801548288,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.115
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-11T06:30:07Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "3520e0c3d39df91eb41c166c926ed70bf744dd616665699366297f5cde33d075",
+    "file_sha256": {
+      "cloud/card_sync_fix_002/candidate_builder.py": "07d076e507b6c6cb58f8b5f70de1fd0c27cee23abe447e63ce86f4a4a720c37a",
+      "cloud/card_sync_fix_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/card_sync_fix_002/deployment_bootstrap.py": "51d64c791fe2ac7990b9985c352020eb42758df2371f979836c973a6a42265dd",
+      "cloud/card_sync_fix_002/deployment_remote.py": "3ca535363404821b82268192fd8d4906d9da46989f1cb95071b200d3598989c3",
+      "cloud/card_sync_fix_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/card_sync_fix_002/deployment_transport.py": "8efb0fd962382a041a60bfcab18906b01a877a8a484710a020dba74e2becb768",
+      "cloud/card_sync_fix_002/edit_spec.py": "e798c70f139eb9e0b7b97d5429f716057d5edc0539f7470150fe42c631a43da5",
+      "cloud/card_sync_fix_002/make_release.py": "889eca52e96507b5ca3ddc216d1f2c35c766d2a2db781b1e0348508d238981dd",
+      "cloud/card_sync_fix_002/release_constants.py": "63011b742903526ea1db8c468ad48804c0ce88372506f80bfeae9823cdd128f3",
+      "cloud/card_sync_fix_002/test_deployment.py": "7ad9839679538cb07a999b9570b43db3af2cb3e21281a4249663a509fc44a13d",
+      "cloud/card_sync_fix_002/test_release.py": "d5e80333588fac5f1d173a32b99d4940d52c3d71a4bc56294c0cdc378b15c0d0"
+    }
+  },
+  "updated_at": "2026-11-11T06:36:06Z"
 }
