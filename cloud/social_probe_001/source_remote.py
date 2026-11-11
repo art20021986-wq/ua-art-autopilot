@@ -157,6 +157,32 @@ def report_r3(home=None):
     return {'status': 'PASS', 'approved_hosts': hosts, 'sync': state, 'times': times, 'rows': report_r2(HOME)['rows']}
 
 
+# R4: card language versions — catalogue link forms and their targets, versions on disk, sitemap card URLs.
+def report_r4(home=None):
+    global HOME
+    if home is not None:
+        HOME = home
+    video = HOME / 'video'
+    catalog = text_of(video / 'katalog.html') or ''
+    hrefs = re.findall(r'href=["\']((?:[^"\']*/)?UA-[0-9]{4,}\.html)["\']', catalog)
+    forms = {}
+    for href in hrefs:
+        forms.setdefault('ua/' if href.startswith('ua/') else 'other' if '/' in href else 'plain', set()).add(href)
+    broken = sorted(h for h in set(hrefs) if not (video / h.split('/video/')[-1]).is_file())
+    sitemap = text_of(video / 'sitemap.xml') or ''
+    locs = re.findall(r'<loc>([^<]+)</loc>', sitemap)
+    cards = [l for l in locs if re.search(r'UA-[0-9]{4,}\.html$', l)]
+    by_form = {}
+    for loc in cards:
+        key = '/video/ua/' if '/video/ua/' in loc else '/video/ru/' if '/video/ru/' in loc else '/video/'
+        by_form[key] = by_form.get(key, 0) + 1
+    return {'status': 'PASS',
+            'catalog_links': {k: sorted(v) for k, v in forms.items()}, 'catalog_links_broken': broken,
+            'versions': {d: sorted(p.name for p in (video / d).glob('UA-*.html')) for d in ('ua', 'ru') if (video / d).is_dir()},
+            'sitemap': {'urls': len(locs), 'card_urls': by_form, 'cards': sorted(cards)[:80]},
+            'katalog_mtime': round((video / 'katalog.html').stat().st_mtime) if (video / 'katalog.html').is_file() else None}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -170,7 +196,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r3()  # R3; report_r2() R2, report() R1
+        value = report_r4()  # R4; report_r3() R3, report_r2() R2, report() R1
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
