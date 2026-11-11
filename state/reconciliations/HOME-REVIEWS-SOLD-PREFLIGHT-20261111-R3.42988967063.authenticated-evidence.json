@@ -1,0 +1,15 @@
+{
+  "claim_before_sha256": "aec127678793db3a6ea5e83d1481730d694b0701fb1e219d95683711a354e90e",
+  "claim_status_before": "BLOCKED_ROOT_CAUSE",
+  "crm_unchanged": true,
+  "error": "RuntimeError:TASK_IDENTITY — deployment_controller accepts only the task names in release_constants; the R3 request used a suffixed name",
+  "failed_step": "execute / standard / execute: controller context check (before any server call)",
+  "owner_statement": "Owner «Да» to show the weekly AUTO.RIA sold-cars number on the home page (2026-11-11)",
+  "precedent": "state/reconciliations/KR-PRICES-PREFLIGHT-20261111-R3.43002737402.authenticated-evidence.json",
+  "production_write": false,
+  "recorded_at": "2026-11-11T12:20:00+00:00",
+  "retry": "HOME-REVIEWS-SOLD-PREFLIGHT-20261111-R5 (R4 refused RESOURCE_BUSY on this claim, run 43001629898)",
+  "run_id": "42988967063",
+  "site_state_after": "unchanged; read-only preview",
+  "task_id": "HOME-REVIEWS-SOLD-PREFLIGHT-20261111-R3"
+}
