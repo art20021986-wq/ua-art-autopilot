@@ -1,3 +1,21 @@
+KR-PRICES (2026-11-11, владелец «Да»): УСТАНОВЛЕНО, KR-PRICES-INSTALL-20261111 run 43027863881 FINISHED (13:42 UTC).
+В главном меню CRM-бота у владельца — «💲 Цены Корея»: месяц (этот и 2 следующих) → 6 чисел (FOB, контейнер, порт Грузия,
+автовоз, брокер, сертификация) → video/korea/logistics.json → блок «5 шагов» на главной берёт цены текущего месяца.
+Бэкап PASS, CRM не менялась, защищённые файлы не менялись, бот запущен; сайт 200. Файл цен появится после первого ввода
+(до этого на сайте цены ноября из страницы). Проверка кнопки руками — у владельца в боте.
+ЗА ДЕНЬ: остановки KOREA-SCORE-R5 и KOREA-HOW-SYNC-R3 сняты (владелец «Да»; обе — устаревший замер места в новой очереди).
+Предложено владельцу (ждёт ответа): свежий замер места прямо перед установкой. Договор купли-продажи (ТОВ продавец,
+растаможка на ТОВ) — документ Claude Docs, ждёт проверки бухгалтером (НДС) и юристом.
+
+KOREA-SCORE (2026-11-11, 11:50 UTC) — УСТАНОВЛЕНО на production (KOREA-SCORE-INSTALL-20261111-R6, PASS; CRM не менялась).
+Жёлтая плитка ленты Кореи («Завтра на торгах N авто») теперь объясняет оценку лота: две колонки «1-я буква — аварии»
+(A–F) и «2-я буква — внешний вид сейчас» (A, B, C, D, F), по правилам аукциона Auto Hub; uk/ru/ka. Код:
+cloud/korea_score_001 (ticker.py, _legend). На сайте появится при следующем запуске сборщика (10/12/14 KST пн–сб).
+ПРОВЕРИТЬ: video/korea/ticker.html содержит kt-legend.
+По пути: R1 превью упал (код заменён во время очереди), R5 install остановил автопилот (замер места старше 30 мин,
+ничего не записано; стоп снят в #1078 с «да» владельца). Урок: install запускать только когда очередь установок пуста,
+сразу после превью (лимит замера 30 мин).
+
 HOME-STEPS (2026-11-11, владелец «да»): УСТАНОВЛЕНО, HOME-STEPS-INSTALL-20261111-R2 run 42994503550 FINISHED (09:47 UTC).
 На главной блок «5 шагов»: переключатель 8 стран (Корея первой), над пунктами «Полный цикл…» и срок до 4 месяцев,
 шаги 2–5 Кореи (договор 600 $ + депозит 1 000 $; покупка авто до 7 раб. дней, логистика 3 450 $ с разбивкой; контроль
@@ -15,7 +33,10 @@ PASS (run 42986928529); its install R1 waited in the new autostart queue and was
 probe would pass 30 min). Lesson: launch a CRITICAL install only when the autostart queue is empty, right after its
 preview. Next: HOME-STEPS-PREFLIGHT-20261111-R4 → INSTALL-R2; KR-PRICES-PREFLIGHT-20261111-R2 → INSTALL.
 
-CLIENT-TERMS-001 (2026-11-11, владелец): убрать «Условия и гарантии». Клиентский бот: пакет cloud/client_terms_001 (vitrina.py — со стартового экрана клиента убрана единственная кнопка «Условия и гарантии» → info.html; остальное без изменений; тесты 22/22 + 2/2) и заявка CLIENT-TERMS-PREFLIGHT-20261111 в main, НЕ запущена (очередь автопилота занята HOME-STEPS-R3 и CARD-CANONICAL-RU — новый запуск вытеснил бы ожидающий). Production не менялся. Дальше: запуск пробы → «да» владельца → make_release.py install. Сайт: ссылки на info.html (меню «Умови», «Умови, строки та гарантії» на главной, «Умови купівлі та доставки» на podbor) — ждёт уточнения владельца, что именно убрать. Задача tasks/CLIENT-TERMS-001.md.
+CLIENT-TERMS-001 / TERMS-LINKS-001 (2026-11-11, владелец «да»: убрать «Условия и гарантии» из клиентского бота и ссылку на info.html со всего сайта).
+БОТ — УСТАНОВЛЕНО: CLIENT-TERMS-INSTALL-20261111-R2 FINISHED (vitrina.py 935ce5f0 → 0ed9544a; со стартового экрана клиента убрана кнопка «Условия и гарантии»; бэкап, CRM не менялась, защищённые файлы не менялись, бот running, публичные проверки PASS). /terms (показывает «Как мы работаем») не трогали.
+САЙТ — пакет cloud/terms_links_001 в main, НЕ установлен: ua_terms_links.apply убирает <a href=…info.html> (меню «Умови», «Умови, строки та гарантії» на главной, «Умови купівлі та доставки» на podbor, меню korea.html и SEO-страниц); хвосты в site_ge_inject.inject_html и ua_seo_landings.pages; страница info.html остаётся. Тесты 30/30. R1 preview отклонён (exec в тесте запрещён контрактом — исправлено), R2 TERMS-LINKS-PREFLIGHT-20261111-R2 принят 11:32, но автопилот в EMERGENCY_HALT от KOREA-HOW-SYNC-INSTALL-20261111-R3 (чужая сессия, 11:50). Дальше: после снятия остановки — preview R3 (если R2 не выполнился) → make_release.py install (установка и запуск — ДВУМЯ отдельными PR: файл запуска должен быть единственным в пуше) . Владелец «да» на сайт уже дал.
+Уроки: (1) установочный набор и файл запуска в одном пуше → intake FAIL; (2) тесты пакета без exec/eval; (3) перед запуском удалять __pycache__ из пакета (PACKAGE_IMPORT_CACHE_FORBIDDEN).
 
 KR-PRICES (2026-11-11, владелец): кнопка «💲 Цены Корея» в главном меню CRM-бота (только владелец) — цены логистики
 Кореи по месяцам → video/korea/logistics.json → блок «5 шагов» на главной. Пакет cloud/kr_prices_bot_001, тесты 34/34,
@@ -56,10 +77,14 @@ VIBER-REMINDER (2026-11-11, владелец): Viber не даёт програ�
 AUTORIA-LOGO (2026-11-11): УСТАНОВЛЕНО (владелец «да»), HOME-REVIEWS-LOGO-INSTALL-20261111 run 42955282183 FINISHED: на главной
 в кнопке отзывов и значке «Ми на» снова официальный логотип AUTO.RIA (файл video/brand/autoria-logo.svg с релиза 1, не менялся);
 бэкап PASS, CRM не менялась, бот работает, проверки главной/логотипа/каталога PASS.
-AUTORIA-SOLD (2026-11-11, владелец: «обновление раз в неделю по количеству проданных машин»): пакет cloud/autoria_sold_001
-(задача на сервере раз в сутки 06:41 UTC, работает по понедельникам → video/brand/autoria-sold.json) — в main, предпросмотр
-AUTORIA-SOLD-PREFLIGHT-20261111 запущен. Релиз 8 home_reviews_001 (число «проданих авто» берётся из файла, без файла — 132) —
-запрос HOME-REVIEWS-SOLD-PREFLIGHT-20261111. Дальше: оба предпросмотра → «да» владельца → установка сборщика, затем главной.
+AUTORIA-SOLD (2026-11-11, владелец: «обновление раз в неделю по количеству проданных машин»): УСТАНОВЛЕНО (владелец «да»).
+Сборщик AUTORIA-SOLD-INSTALL-20261111 run 42959841949 FINISHED: задача PythonAnywhere id 1577248, ежедневно 06:41 UTC, пишет
+video/brand/autoria-sold.json по понедельникам (Киев) или если файла нет; первый запуск 11.11 записал {"sold": 136}.
+Главная, релиз 8 HOME-REVIEWS-SOLD-INSTALL-20261111 run 43028762185 FINISHED (превью R5 PASS run 43026481588): у цифры
+«проданих авто» id="ua-autoria-sold", скрипт берёт число из json, без файла — 132. Бэкап PASS, CRM не менялась, бот 266084
+работает, проверки главной/логотипа/каталога PASS; в браузере (iPhone 13) на живой главной 136.
+Урок: имя задачи с суффиксом (-R2…) должно быть в release_constants пакета, иначе TASK_IDENTITY; R3 закрыт вручную (замок).
+Не делалось (предложить отдельно): авто-обновление «років на AUTO.RIA» и числа отзывов.
 Подробно: tasks/AUTORIA-REVIEWS-001.md.
 
 KOREA-DAYS-PAGE + окно лота (2026-11-11): владелец — карточка лота на korea.html должна открываться у него перед глазами, а не там, где кликнул. Причина: .kl-dialog{position:relative} — окно прилипало к верху страницы. Исправлено в пакете cloud/korea_days_page_001 (ещё не на сайте): position:fixed (по центру экрана) + каждая карточка с начала (scrollTop=0); тесты 24/24, проверка в браузере (iPhone 13). Суммы в tasks/requests/KOREA-DAYS-PAGE-PREFLIGHT-20261111.json обновлены. Production не менялся. Дальше: проба KOREA-DAYS-PAGE-PREFLIGHT (после CONTACT-NOTE-INSTALL) → «да» владельца → установка.
@@ -587,3 +612,4 @@ VERIFIED (CRM-VIDEO-PROBE-20261012-R6, read-only): video/UA-0020-diag.html now h
 NOT_CLAIMED: manual Telegram test of entering link/description after media upload not done by Claude. UA-0020 diag link/description from 11:24–11:38 were not saved then — owner must resend.
 LEARNED: autostart launch must be a single non-merge commit (use rebase-merge PR); tests may not call exec/eval; storage probe in install request must be <30 min old at run time.
 OPTIONAL_NOT_DONE: human labels for diag_link/diag_text in edit prompt; same race may exist for regular card videos (media rows stay pending).
+ANALYTICS2_002: INSTALLED_LIVE_VERIFIED 2026-11-11 (owner «Да делай что можешь» 2026-11-09, ANALYTICS-AUDIT-001 points 2 and 4). CRITICAL ANALYTICS2-INSTALL-20261109-R6 run 43000853889 FINISHED: backup PASS, live_verify PASS, rollback ready, CRM unchanged, unexpected_changes 0. GA4 G-6SRBQK6GY4 now on 23 video/ + 22 site/ diag pages and video/privacy.html; new /home/Carix/ua_server_visits.py + analitika_otchet line «🖥 Все посетители по журналу сервера» (IP+browser hashed in memory, daily totals in server_visits.db; log keeps ~10 days). Preview R4 lost to the mid-run workflow change (claim closed FAILED, #1113), R5 blocked by it; R6 PASS. Open owner actions: point 5 enable Google Analytics Data API (project 374430388402) and reply «включил»; point 6 send Microsoft Clarity Project ID. Proposals waiting: remove junk public pages; counter/tag hook for future diag pages.

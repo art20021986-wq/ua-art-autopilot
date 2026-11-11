@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-REVIEWS-SOLD-PREFLIGHT-20261111-R5.df3943b63180e0e9f9f0f85252c859badd0e49b6ac93667f42e7da5884282d33.json",
+  "autostart_ledger_sha256": "cce522835387ba2bfab1002e3535f733fd351a11a52b0b57f61a05b01dd8bd97",
+  "autostart_source_commit": "bf6d1714d7ce927bf60852b9e95c8de5d55d64d0",
+  "created_at": "2026-11-11T13:17:48Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43026481588",
+    "task_id": "HOME-REVIEWS-SOLD-PREFLIGHT-20261111-R5",
+    "task_sha256": "df3943b63180e0e9f9f0f85252c859badd0e49b6ac93667f42e7da5884282d33"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-7cc972291ceb906e-aa5d19f674df7461",
+  "request_path": "tasks/requests/HOME-REVIEWS-SOLD-PREFLIGHT-20261111-R5.json",
+  "resource_locks": [
+    "PATH_SCOPE:7cc972291ceb906e"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
