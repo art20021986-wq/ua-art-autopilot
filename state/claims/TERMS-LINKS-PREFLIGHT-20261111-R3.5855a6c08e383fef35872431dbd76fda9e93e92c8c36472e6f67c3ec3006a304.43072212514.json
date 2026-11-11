@@ -7,21 +7,23 @@
   "created_at": "2026-11-11T17:53:55Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T17:53:55Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-11T18:01:43Z",
+  "heartbeat_at": "2026-11-11T18:01:43Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43072212514",
     "task_id": "TERMS-LINKS-PREFLIGHT-20261111-R3",
     "task_sha256": "5855a6c08e383fef35872431dbd76fda9e93e92c8c36472e6f67c3ec3006a304"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-627646372e3bed8a-c3998e0be69ab11a",
   "receipt_path": "state/receipts/TERMS-LINKS-PREFLIGHT-20261111-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "ae5939f9d7f213d6b8ec5a98302e249825e0bd9eed888b00f4f7cce1ee89d4b9",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/TERMS-LINKS-PREFLIGHT-20261111-R3.json",
   "request_sha256": "5855a6c08e383fef35872431dbd76fda9e93e92c8c36472e6f67c3ec3006a304",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "74656a7fddb615aad5f228de1bc8f8f8c540b426",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92791414784,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.121
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-11T17:53:55Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "cc74a63134f27de4f24e563ce0079e9c336d05f3917724512c60c2dcacff0e49",
+    "file_sha256": {
+      "cloud/terms_links_001/candidate_builder.py": "3300f11b689103513fcee75387b117944d246522d0832ee6e3a75da5b7da4a37",
+      "cloud/terms_links_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/terms_links_001/deployment_bootstrap.py": "3a073b891bb51aa16d92f825b64a4d20568d18f23742599d90804eb9a85286c1",
+      "cloud/terms_links_001/deployment_remote.py": "e128b02d48dd63023cdb89ff4416df8bbe30966b2c0ae3ab69328df853bf42cb",
+      "cloud/terms_links_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/terms_links_001/deployment_transport.py": "adab51935b8a1213f1dcb7c55d8bb579305f74a33f10a139369b1cc06062c1bc",
+      "cloud/terms_links_001/make_release.py": "419d7fc0cdea1595a966c0d2f918008ff25e459b2212472e661a4f21c4561244",
+      "cloud/terms_links_001/release_constants.py": "a739788d5d63dd0dd98c9e0736408bf8f57fc3bd59b09399071c2574b22c101e",
+      "cloud/terms_links_001/test_deployment.py": "255fe6f2391a424e25d39f6013f7ef5b1c5dca05b7cd3aa8cce78fda7243b18e",
+      "cloud/terms_links_001/test_release.py": "f22ef40cb6eeb3c2ea0bb67aa0fc24057c884fd467936f13a90385b057f04d89",
+      "cloud/terms_links_001/ua_terms_links.py": "adb3e32a9d9e765b22435f2aaea70cb94bf92fe14821fe433d543e6efa88b3c5"
+    }
+  },
+  "updated_at": "2026-11-11T18:01:43Z"
 }
