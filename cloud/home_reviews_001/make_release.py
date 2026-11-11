@@ -26,7 +26,7 @@ P = 'cloud/home_reviews_001/'
 DEPENDENCIES = [P + n for n in ('autoria_click.py', 'candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py', 'edit_home.py',
                                 'make_release.py', 'release_constants.py', 'reviews_block.py', 'reviews_data.py',
-                                'sold_loader.py')]
+                                'stats_loader.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_edit_home.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 # Live data the install must not touch, besides the source files pinned in the plan.
@@ -72,11 +72,11 @@ def preview(suffix):
     task = PREVIEW_TASK + suffix
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of home reviews release 8 (owner request 2026-11-11): reads the live '
+             'description': 'Preview of home reviews release 9 (owner request 2026-11-11): reads the live '
                             'video/index.html, builds the candidate (the installed AUTO.RIA reviews block, footer badge '
-                            'and CSS replaced in place: the sold-cars figure gets id="ua-autoria-sold" and a small script '
-                            'fills it from /video/brand/autoria-sold.json, written weekly by the AUTORIA-SOLD job; the '
-                            'written number stays as the fallback) and measures storage. No application source, CRM, HTML, media or bot state '
+                            'and CSS replaced in place: the years and reviews figures get ids like the sold-cars one and the '
+                            'small script fills all three from /video/brand/autoria-sold.json, written weekly by the '
+                            'AUTORIA-SOLD job; the written numbers stay as the fallback) and measures storage. No application source, CRM, HTML, media or bot state '
                             'changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
@@ -133,11 +133,12 @@ def install(suffix):
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved (2026-11-11) AUTORIA-REVIEWS-001 release 8: in '
+               'description': 'Owner approved (2026-11-11) AUTORIA-REVIEWS-001 release 9: in '
                               'video/index.html the installed AUTO.RIA reviews block, footer badge and their CSS are '
-                              'replaced in place; the only difference is the sold-cars figure: id="ua-autoria-sold" and a '
-                              'small script that shows the number from /video/brand/autoria-sold.json (weekly AUTORIA-SOLD '
-                              'job), keeping the written number when the file is missing; every other byte stays as is. No CRM or car card change. Existing backup, bot '
+                              'replaced in place; the only difference is the years and reviews figures: ids '
+                              'ua-autoria-years / ua-autoria-reviews and the small script now shows all three numbers from '
+                              '/video/brand/autoria-sold.json (weekly AUTORIA-SOLD job), keeping each written number when '
+                              'its value is missing; every other byte stays as is. No CRM or car card change. Existing backup, bot '
                               'pause, writer locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/katalog.html'],

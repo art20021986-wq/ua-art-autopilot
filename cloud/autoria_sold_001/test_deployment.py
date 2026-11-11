@@ -96,6 +96,22 @@ class RecoveryTests(unittest.TestCase):
         self.assertFalse((self.root/'autoria_sold').exists())
         self.assertEqual((self.root/'video/brand/autoria-logo.svg').read_bytes(), b'<svg>')  # the rest of the folder stays
 
+    def test_update_rollback_restores_the_earlier_job_and_keeps_its_task_and_output(self):
+        self.plan['update'] = True
+        self.plan_sha = sha(canonical(self.plan))
+        self.manifest = {'plan': self.plan, 'plan_sha256': self.plan_sha, 'run_id': '123'}
+        self.lifecycle('install')
+        (self.root/'video/brand').mkdir(parents=True)
+        (self.root/'video/brand/autoria-sold.json').write_bytes(b'{"sold": 136}')
+        (self.root/'autoria_sold').mkdir()
+        (self.root/'autoria_sold/job.py').write_bytes(b'earlier job')
+        result = self.lifecycle('rollback')
+        self.assertTrue(result['restored'])
+        remote.verify_files(self.plan, False)
+        self.assertEqual(self.jobs, 1)
+        self.assertEqual((self.root/'video/brand/autoria-sold.json').read_bytes(), b'{"sold": 136}')
+        self.assertTrue((self.root/'autoria_sold/job.py').exists())
+
     def test_interrupted_install_restores_and_resumes(self):
         remote.atomic(self.root/'new_module.py', b'policy')
         remote.atomic(self.saved/'journal-install.json', canonical({
