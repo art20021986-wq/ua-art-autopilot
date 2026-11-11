@@ -136,5 +136,17 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(value['sitemap']['card_urls'], {'/video/ua/': 1})
 
 
+    def test_r5_combines(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'video/ua').mkdir(parents=True)
+            (home / 'video/katalog.html').write_text('<a href="ua/UA-0001.html">a</a>')
+            (home / 'video/ua/UA-0001.html').write_text('<!--UA-SOCIAL-V1-->')
+            value = remote.report_r5(home)
+        self.assertEqual(value['rows']['cards_ua']['with_row'], 1)
+        self.assertEqual(value['catalog_links_broken'], [])
+        self.assertEqual(value['versions']['ua'], ['UA-0001.html'])
+
+
 if __name__ == '__main__':
     unittest.main()
