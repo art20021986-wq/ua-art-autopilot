@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "ebc9c5f0b1619b7c"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-11T11:26:39+00:00",
+      "class": "PACKAGE_CHECK_TOO_STRICT",
+      "evidence_path": "state/reconciliations/KR-PRICES-PREFLIGHT-20261111-R3.43002737402.authenticated-evidence.json",
+      "message": "Read-only preview: the smoke compared the candidate copy path with the live prices path; nothing written. Check made relative; retried as R5. Closed as FAILED so its PATH_SCOPE lock is released.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-11T11:00:53Z",
@@ -42,6 +51,6 @@
   "source_commit": "5560cdde3d5afeb5f1ccc818c2e2437e6a38f9b2",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-11T11:06:31Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-11T11:26:39+00:00"
 }
