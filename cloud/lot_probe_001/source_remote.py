@@ -1,5 +1,7 @@
 """Read-only probe on the server for JPAUTO-KOREA-001 (owner 2026-11-11: auction day choice, VIN and all photos).
 
+R2 (2026-11-11): the lot page markup differs from the collector's pattern, so every image address shape,
+the table labels and the chassis/VIN lines (a 17-character VIN masked as [VIN17]) are reported too.
 Uses the collector already installed on the server (/home/Carix/korea_auction) with the owner's login file, as the
 hourly job does: reads the whole Korea search (lots per auction day), three lot pages (how many photos, whether the
 specs have the chassis number — only its length is reported) and downloads three photos of one lot to measure their
@@ -63,10 +65,18 @@ def report():
         detail = lots.parse_detail(html)
         chassis = detail['specs'].get('Chassis No.', '')
         all_imgs = re.findall(r'<img[^>]+src="([^"]+)"', html)
+        labels = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', m)).strip()[:40]
+                  for m in re.findall(r'<(?:th|dt)\b[^>]*>(.*?)</(?:th|dt)>', html, re.S | re.I)]
+        vin_lines = [LONG_NUMBER.sub('[N]', re.sub(r'[A-HJ-NPR-Z0-9]{17}', '[VIN17]', re.sub(r'\s+', ' ', line)))[:200]
+                     for line in html.splitlines() if re.search(r'(?i)chassis|\bvin\b|차대', line)][:15]
+        img_attrs = sorted({shape(m) for m in re.findall(r'(?:data-src|data-original|data-lazy|href)="(https?://[^"]+\.(?:jpe?g|png|webp)[^"]*)"', html, re.I)})[:12]
         pages.append({'detail_photos': len(detail['photos']), 'results_photos': len(lot['photos']),
                       'chassis_length': len(chassis), 'chassis_looks_like_vin': bool(re.fullmatch(r'[A-HJ-NPR-Z0-9]{17}', chassis)),
                       'spec_labels': sorted(detail['specs'])[:40], 'img_tags': len(all_imgs),
                       'photo_shapes': sorted({shape(u) for u in detail['photos']})[:6],
+                      'img_shapes': sorted({shape(u) for u in all_imgs})[:60], 'other_photo_links': img_attrs,
+                      'labels': labels[:80], 'vin_lines': vin_lines,
+                      'same_as_results': sum(1 for u in all_imgs if any(u.split('?')[0].endswith(r.rsplit('/', 1)[-1]) for r in lot['photos'])),
                       'results_photo_shapes': sorted({shape(u) for u in lot['photos']})[:3]})
         if not measured and detail['photos']:
             sizes = []
