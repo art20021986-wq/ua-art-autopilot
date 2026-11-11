@@ -22,16 +22,23 @@ T = {
               'ხვალ ვაჭრობაზე {n} ავტო — წვდომა ხელშეკრულების შემდეგ'),
     'lead': ('Завтра на торгах', 'Завтра на торгах', 'ხვალ ვაჭრობაზე'),
     'cars': ('авто', 'авто', 'ავტო'),
-    # what the lot score means, on the yellow tile (owner 2026-11-11). Auction house rules (Auto Hub): the first letter
-    # is the accident grade (A: no part replaced), the second the exterior grade (A: no panel to repair, B: 1-3, C: 4-6 ...)
-    'score_what': ('Що означає оцінка, напр. AB:', 'Что значит оценка, напр. AB:', 'რას ნიშნავს შეფასება, მაგ. AB:'),
-    'score_1': ('1-ша літера — аварії: A — без аварій, B–D — був ремонт кузова',
-                '1-я буква — аварии: A — без аварий, B–D — был ремонт кузова',
-                '1-ლი ასო — ავარია: A — უავარიო, B–D — ძარა შეკეთებულია'),
-    'score_2': ('2-га літера — зовнішній вигляд: A — без дефектів, B — 1–3 деталі під ремонт, C — 4–6, далі більше',
-                '2-я буква — внешний вид: A — без дефектов, B — 1–3 детали под ремонт, C — 4–6, дальше больше',
-                'მე-2 ასო — გარეგნობა: A — დეფექტების გარეშე, B — 1–3 დეტალი შესაკეთებელი, C — 4–6, შემდეგ მეტი'),
-    'score_best': ('AA — найкращий стан', 'AA — лучшее состояние', 'AA — საუკეთესო მდგომარეობა'),
+    # what the lot score means, on the yellow tile (owner 2026-11-11), per the auction house rules (Auto Hub):
+    # first letter = accident grade A-F, second = exterior grade (panels to repair now) A, B, C, D, F (no E)
+    'acc': ('1-ша літера оцінки — аварії', '1-я буква оценки — аварии', 'შეფასების 1-ლი ასო — ავარია'),
+    'acc_A': ('без аварій, деталі не мінялись', 'без аварий, детали не менялись', 'უავარიო, დეტალები არ შეცვლილა'),
+    'acc_B': ('рихтували зовнішні деталі', 'рихтовали наружные детали', 'გარე დეტალები გასწორებულია'),
+    'acc_C': ('міняли зовнішні деталі або рихтували каркас', 'меняли наружные детали или рихтовали каркас',
+              'გარე დეტალები შეცვლილია ან ჩონჩხი გასწორებულია'),
+    'acc_D': ('міняли другорядні деталі каркаса', 'меняли второстепенные детали каркаса',
+              'ჩონჩხის მეორეხარისხოვანი დეტალები შეცვლილია'),
+    'acc_E': ('міняли основні деталі каркаса', 'меняли основные детали каркаса', 'ჩონჩხის მთავარი დეტალები შეცვლილია'),
+    'acc_F': ('утоплений, тотал, розпил', 'утопленник, тотал, распил', 'წყალში ნამყოფი, ტოტალი, ნაწილებისგან აწყობილი'),
+    'ext': ('2-га літера — зовнішній вигляд зараз', '2-я буква — внешний вид сейчас', 'მე-2 ასო — გარეგნობა ახლა'),
+    'ext_A': ('ремонт не потрібен', 'ремонт не нужен', 'შეკეთება არ სჭირდება'),
+    'ext_B': ('1–3 деталі під ремонт', '1–3 детали под ремонт', '1–3 დეტალი შესაკეთებელი'),
+    'ext_C': ('4–6 деталей під ремонт', '4–6 деталей под ремонт', '4–6 დეტალი შესაკეთებელი'),
+    'ext_D': ('7–9 деталей під ремонт', '7–9 деталей под ремонт', '7–9 დეტალი შესაკეთებელი'),
+    'ext_F': ('10 і більше деталей під ремонт', '10 и больше деталей под ремонт', '10 და მეტი დეტალი შესაკეთებელი'),
     'kiev': ('★ У нас · у Києві', '★ У нас · в Киеве', '★ ჩვენთან · კიევში'),
     'georgia': ('★ У нас · в дорозі, у Грузії', '★ У нас · в пути, в Грузии', '★ ჩვენთან · გზაში, საქართველოში'),
     'sea': ('★ У нас · в дорозі, на поромі', '★ У нас · в пути, на пароме', '★ ჩვენთან · გზაში, ბორანზე'),
@@ -96,10 +103,15 @@ def _item(it, tomorrow):
          _t('start'), _num(it['start_price_usd']), _krw(it['start_price_krw']))
 
 
+LEGEND = (('acc', 'ABCDEF'), ('ext', 'ABCDF'))  # score letter groups: T key prefix, letters in order
+
+
 def _legend():
-    """What the lot score letters mean (the yellow tile)."""
-    return '<span class="kt-legend"><b>%s</b>%s</span>' % (
-        _t('score_what'), ''.join(_t(k) for k in ('score_1', 'score_2', 'score_best')))
+    """What the lot score letters mean (the yellow tile): one column per letter, a row per value."""
+    return '<div class="kt-legend">%s</div>' % ''.join(
+        '<div><b>%s</b><dl>%s</dl></div>' % (_t(key), ''.join(
+            '<dt>%s</dt><dd>%s</dd>' % (letter, _t('%s_%s' % (key, letter))) for letter in letters))
+        for key, letters in LEGEND)
 
 
 def _own(car):
@@ -129,7 +141,7 @@ def render(data, tomorrow=True):
     items = [i for i in data.get('items', []) if i.get('start_price_usd')]
     if not items:
         return ''
-    lead = ('<span class="kt-lead"><span class="kt-count">● %s <b>%s</b> %s</span>%s</span>'
+    lead = ('<div class="kt-lead"><span class="kt-count">● %s <b>%s</b> %s</span>%s</div>'
             % (_t('lead'), _num(data['lots_on_date']), _t('cars'), _legend()))
     own = [c for c in data.get('own', []) if c.get('price_usd') and c.get('photo')]
     track = lead + ''.join(_own(i) if 'stage' in i else _item(i, tomorrow) for i in _mix(items, own))
@@ -165,12 +177,14 @@ CSS = (
     '.kt-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px}'
     '.kt-clock{font-size:13px;opacity:.9;white-space:nowrap}.kt-clock i{font-style:normal;font-weight:800;'
     'font-size:16px;color:#ffd200;font-variant-numeric:tabular-nums}'
-    '.kt-lead{display:flex;flex-direction:column;justify-content:center;gap:10px;width:340px;padding:12px 20px;'
+    '.kt-lead{display:flex;flex-direction:column;justify-content:center;gap:8px;width:640px;padding:10px 18px;'
     'border-radius:12px;color:#0B1524;background:linear-gradient(135deg,#ffd200,#ff8a00)}'
     '.kt-count{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:700;white-space:nowrap}'
-    '.kt-count b{font-size:34px}'
-    '.kt-legend{display:flex;flex-direction:column;gap:3px;font-size:13px;line-height:1.3}'
-    '.kt-legend>span:last-child{font-weight:700}'
+    '.kt-count b{font-size:30px}'
+    '.kt-legend{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:12.5px;line-height:1.25}'
+    '.kt-legend b{display:block;margin-bottom:4px;font-size:13px}'
+    '.kt-legend dl{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;margin:0}'
+    '.kt-legend dt{font-weight:800}.kt-legend dd{margin:0}'
     '.kt-end{display:flex;flex-direction:column;justify-content:center;gap:8px;max-width:300px;'
     'padding:0 12px;font-size:15px}'
     '.kt-btn{display:inline-block;background:#4ade80;color:#0B1524;font-weight:700;'
@@ -178,7 +192,8 @@ CSS = (
     '@media (max-width:600px){.kt-track{padding:0 7vw;gap:10px}.kt-item,.kt-lead,.kt-end{scroll-margin-left:7vw}'
     '.kt-item{flex-direction:column;align-items:stretch;width:86vw;padding:6px}'
     '.korea-ticker .kt-item img{width:100%!important;height:auto!important;aspect-ratio:4/3}'
-    '.kt-body{min-width:0}.kt-lead{width:70vw}.kt-count{flex-wrap:wrap;white-space:normal}.kt-arrow{width:38px;height:38px;font-size:26px;line-height:34px}'
+    '.kt-body{min-width:0}.kt-lead{width:86vw;box-sizing:border-box}.kt-count{flex-wrap:wrap;white-space:normal}'
+    '.kt-legend{grid-template-columns:1fr}.kt-arrow{width:38px;height:38px;font-size:26px;line-height:34px}'
     '.kt-prev{left:2px}.kt-next{right:2px}}'
 )
 

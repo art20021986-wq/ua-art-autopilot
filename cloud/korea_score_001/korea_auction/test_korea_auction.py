@@ -119,9 +119,12 @@ class TickerTest(unittest.TestCase):
         html = ticker.render({'lots_on_date': 5, 'items': [self.ITEM]})
         lead = html[html.index('class="kt-lead"'):html.index('class="kt-item"')]
         self.assertIn('class="kt-legend"', lead)
-        for key in ('score_what', 'score_1', 'score_2', 'score_best'):
-            uk, ru, ka = ticker.T[key]
-            self.assertIn('data-uk="%s" data-ru="%s" data-ka="%s"' % (uk, ru, ka), lead)
+        for key, letters in ticker.LEGEND:
+            for k in [key] + ['%s_%s' % (key, letter) for letter in letters]:
+                uk, ru, ka = ticker.T[k]
+                self.assertIn('data-uk="%s" data-ru="%s" data-ka="%s"' % (uk, ru, ka), lead)
+        self.assertIn('<dt>F</dt>', lead)
+        self.assertNotIn('ext_E', ticker.T)  # the exterior grade has no E
 
     def test_owner_cars_mixed_in(self):
         own = {'code': 'UA-0018', 'title': 'Kia K5 2023', 'stage': 'kiev', 'price_usd': 20300,
