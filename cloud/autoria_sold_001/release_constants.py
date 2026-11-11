@@ -4,6 +4,6 @@ Release 1 (AUTORIA-SOLD-PREFLIGHT/INSTALL-20261111): the sold-cars number. Relea
 2026-11-11): also years on AUTO.RIA and the reviews count; the installed job files are replaced.
 """
 # One place for the task names: make_release.py writes the requests, the controller accepts only these.
-PREVIEW_TASK = 'AUTORIA-FIGURES-PREFLIGHT-20261111'
-INSTALL_TASK = 'AUTORIA-FIGURES-INSTALL-20261111'
+PREVIEW_TASK = 'AUTORIA-FIGURES-PREFLIGHT-20261111-R2'  # R1 passed; its storage probe aged out (one install at a time)
+INSTALL_TASK = 'AUTORIA-FIGURES-INSTALL-20261111-R2'  # R1 cancelled in the queue before any step
 PACKAGE = 'cloud/autoria_sold_001'
