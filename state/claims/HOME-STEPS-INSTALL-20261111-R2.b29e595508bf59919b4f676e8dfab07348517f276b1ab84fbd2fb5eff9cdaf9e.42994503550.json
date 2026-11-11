@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "261a680a1b4d9d0452ef9d5b481ccc1b3ca1a11cdef2284b60823e4f5abdf250",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T09:29:17Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T09:33:12Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42994503550",
     "task_id": "HOME-STEPS-INSTALL-20261111-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42994503550-b29e595508bf5991",
   "production_transaction_path": "state/transactions/HOME-STEPS-INSTALL-20261111-R2.b29e595508bf59919b4f676e8dfab07348517f276b1ab84fbd2fb5eff9cdaf9e.42994503550.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-STEPS-INSTALL-20261111-R2.json",
   "receipt_validation_status": "PENDING",
@@ -89,5 +89,5 @@
       "cloud/home_steps_001/test_edit_home.py": "d63d0076405748b26b78649642715445db3e54814b404356baba5f95dc741aaa"
     }
   },
-  "updated_at": "2026-11-11T09:29:17Z"
+  "updated_at": "2026-11-11T09:33:12Z"
 }
