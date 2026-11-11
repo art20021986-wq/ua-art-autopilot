@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "84ae382d7d7193665d80c41012a64a1e7a2c52b0513d49c98e0b117c95078268",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T18:05:28Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T18:09:21Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43073985305",
     "task_id": "TERMS-LINKS-INSTALL-20261111-R3",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43073985305-3416367f9a0b2d9c",
   "production_transaction_path": "state/transactions/TERMS-LINKS-INSTALL-20261111-R3.3416367f9a0b2d9c980d691c8af04377a11f2a31b0abd33ee3a9f893dae31f12.43073985305.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-516734deb9ea5607",
   "receipt_path": "state/receipts/TERMS-LINKS-INSTALL-20261111-R3.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/terms_links_001/ua_terms_links.py": "adb3e32a9d9e765b22435f2aaea70cb94bf92fe14821fe433d543e6efa88b3c5"
     }
   },
-  "updated_at": "2026-11-11T18:05:28Z"
+  "updated_at": "2026-11-11T18:09:21Z"
 }
