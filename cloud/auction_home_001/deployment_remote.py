@@ -388,7 +388,10 @@ def account_used_bytes():
     result = subprocess.run(['du', '-s', '-B1', str(ROOT), '/tmp'], capture_output=True, text=True,
                             timeout=600, check=False)
     sizes = [int(line.split('\t')[0]) for line in result.stdout.splitlines() if line.strip()]
-    if result.returncode != 0 or len(sizes) != 2:
+    # A file another program removes while du walks the tree (a SQLite -journal) is only "No such file":
+    # du still totals everything else; any other error refuses the measurement.
+    vanished = all(line.endswith('No such file or directory') for line in result.stderr.strip().splitlines())
+    if (result.returncode != 0 and not (result.returncode == 1 and result.stderr.strip() and vanished)) or len(sizes) != 2:
         raise DeploymentError('ACCOUNT_USAGE:'+result.stderr[-160:])
     return sum(sizes)
 
