@@ -30,7 +30,7 @@ OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 # Live data the install must not touch, besides the source files pinned in the plan.
 LIVE_DATA = ['.crm_publish_requests', 'crm.db']
 # Owner's words in chat, filled in when the owner says «да».
-APPROVAL = ''
+APPROVAL = '«Да, подтверждаю, параллельно с CRM … сделай, чтобы я мог там менять стоимость» in chat 2026-11-11'
 
 
 def sha(path):
