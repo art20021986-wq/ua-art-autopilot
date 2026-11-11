@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-HOW-PREFLIGHT-20261111.47796aecaddcfc4adac1bc15fff674e054185a5014444501962039d316bd9161.json",
+  "autostart_ledger_sha256": "839bb664ef43d11732861aecec9565d807cf90abe976b28ef64fe59b257dcc87",
+  "autostart_source_commit": "cb2e2b6d7def66c131a80accb21cb76a9ff7d069",
+  "created_at": "2026-11-11T06:23:39Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42971249165",
+    "task_id": "KOREA-HOW-PREFLIGHT-20261111",
+    "task_sha256": "47796aecaddcfc4adac1bc15fff674e054185a5014444501962039d316bd9161"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-5d3a8c3c1e4d4c73-7008fc2dbf86112e",
+  "request_path": "tasks/requests/KOREA-HOW-PREFLIGHT-20261111.json",
+  "resource_locks": [
+    "PATH_SCOPE:5d3a8c3c1e4d4c73"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
