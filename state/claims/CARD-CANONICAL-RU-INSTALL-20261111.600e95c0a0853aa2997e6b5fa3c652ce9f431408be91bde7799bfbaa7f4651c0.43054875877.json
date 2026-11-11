@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "10f8eb847e0c4b62ae5351649fdbd676a9eb825036a6dae2e4d0c3a54522845e",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T16:13:36Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-11T16:24:21Z",
+  "heartbeat_at": "2026-11-11T16:24:21Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43054875877",
     "task_id": "CARD-CANONICAL-RU-INSTALL-20261111",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 527.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 116.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43054875877-600e95c0a0853aa2",
   "production_transaction_path": "state/transactions/CARD-CANONICAL-RU-INSTALL-20261111.600e95c0a0853aa2997e6b5fa3c652ce9f431408be91bde7799bfbaa7f4651c0.43054875877.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-b4062ed3881012a8-64180e3bc2d4c096",
   "receipt_path": "state/receipts/CARD-CANONICAL-RU-INSTALL-20261111.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "f467c01a3d07241bdf7b473ca86326ec1e0bca7ed83b91f3bf82758900107570",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CARD-CANONICAL-RU-INSTALL-20261111.json",
   "request_sha256": "600e95c0a0853aa2997e6b5fa3c652ce9f431408be91bde7799bfbaa7f4651c0",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "174a21aa2bd7e174687144782db1710fdbf88c573e6c7087d060caa701a00d3d",
     "file_sha256": {
@@ -88,5 +111,5 @@
       "cloud/card_canonical_ru_001/test_release.py": "d1f537a55d540e85a0a742562d7c54734dc959d6580c5c413d0ccfb8008f9f03"
     }
   },
-  "updated_at": "2026-11-11T16:13:36Z"
+  "updated_at": "2026-11-11T16:24:21Z"
 }
