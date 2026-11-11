@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "3d32e26b39625fdf9d50b61f7db3e1f0988da112e4f3648848dcbf4b7239b718",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T03:52:50Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T03:58:36Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42955282183",
     "task_id": "HOME-REVIEWS-LOGO-INSTALL-20261111",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42955282183-2a7f617e2d109117",
   "production_transaction_path": "state/transactions/HOME-REVIEWS-LOGO-INSTALL-20261111.2a7f617e2d1091174aaea83a21d982873bb37292dd12fe613de589cc4f692c17.42955282183.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-REVIEWS-LOGO-INSTALL-20261111.json",
   "receipt_validation_status": "PENDING",
@@ -89,5 +89,5 @@
       "cloud/home_reviews_001/test_edit_home.py": "44751500f377111e3452c13674d965f3d5fbfb54479ae3a659a2e388e379169a"
     }
   },
-  "updated_at": "2026-11-11T03:52:50Z"
+  "updated_at": "2026-11-11T03:58:36Z"
 }
