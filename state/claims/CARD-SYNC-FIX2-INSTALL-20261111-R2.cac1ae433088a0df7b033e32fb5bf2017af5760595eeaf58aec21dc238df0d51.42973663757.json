@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-SYNC-FIX2-INSTALL-20261111-R2.cac1ae433088a0df7b033e32fb5bf2017af5760595eeaf58aec21dc238df0d51.json",
+  "autostart_ledger_sha256": "fd08d2eb9582f1b01a9e0deca538807adbe492ee1aeefa86c74e2838d123ce22",
+  "autostart_source_commit": "5a792ee4f855f190b17dbab1b94072c39ff0c9e4",
+  "created_at": "2026-11-11T06:57:12Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-11T06:57:12Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "42973663757",
+    "task_id": "CARD-SYNC-FIX2-INSTALL-20261111-R2",
+    "task_sha256": "cac1ae433088a0df7b033e32fb5bf2017af5760595eeaf58aec21dc238df0d51"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-05786f4b2761bab0-c53d2689ec55b29e",
+  "receipt_path": "state/receipts/CARD-SYNC-FIX2-INSTALL-20261111-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CARD-SYNC-FIX2-INSTALL-20261111-R2.json",
+  "request_sha256": "cac1ae433088a0df7b033e32fb5bf2017af5760595eeaf58aec21dc238df0d51",
+  "resource_locks": [
+    "PATH_SCOPE:05786f4b2761bab0"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "6ddb6f45cedc24d06a87056a538b5ecc1ec14df4",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-11T06:57:12Z"
+}
