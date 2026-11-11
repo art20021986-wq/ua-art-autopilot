@@ -1,0 +1,62 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SITEMAP-FIX-PREFLIGHT-20261111.6114d4a90ce4c598c3f09736a264f71d13dc0ba731a25628adc746bbbc2c863c.json",
+  "autostart_ledger_sha256": "f722a81f24302e976a19b9a9d43c3ca5561575c8215b40b4378e16477369a42f",
+  "autostart_source_commit": "ffa856124579ebdd60016bcbf9eae272cc7b26da",
+  "created_at": "2026-11-11T04:25:30Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-11T04:31:17Z",
+  "heartbeat_at": "2026-11-11T04:31:17Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "42958884510",
+    "task_id": "SITEMAP-FIX-PREFLIGHT-20261111",
+    "task_sha256": "6114d4a90ce4c598c3f09736a264f71d13dc0ba731a25628adc746bbbc2c863c"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-678b382b5ca98e37-54a60133d700f3a0",
+  "receipt_path": "state/receipts/SITEMAP-FIX-PREFLIGHT-20261111.json",
+  "receipt_sha256": "6c1cc3e8f5b8e7f82774c650dd5b4725762205d50f6d0a1dd75919bee05224df",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/SITEMAP-FIX-PREFLIGHT-20261111.json",
+  "request_sha256": "6114d4a90ce4c598c3f09736a264f71d13dc0ba731a25628adc746bbbc2c863c",
+  "resource_locks": [
+    "PATH_SCOPE:678b382b5ca98e37"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "797100db6e4d0bf9e70a0b08d2578488de691c55",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92803944448,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.113
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "2a9166f655008da7bd218fae93aa02388993e84739219bd1f557a744bf92490e",
+    "file_sha256": {
+      "cloud/sitemap_fix_001/candidate_builder.py": "c66920046ab75caa68590f150c3340a04436d5f1cfe671eb6a2ffe24cf75a378",
+      "cloud/sitemap_fix_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/sitemap_fix_001/deployment_bootstrap.py": "bf36b323e093ea8952d8577d1a5260a761b9a2542aace9929bc86c4771b81460",
+      "cloud/sitemap_fix_001/deployment_remote.py": "683e3906a4a7b8dcdec00264e020ce17411d9a0ecef6ae396487367bd63f4d30",
+      "cloud/sitemap_fix_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/sitemap_fix_001/deployment_transport.py": "99b4dfa9b8439c3d7dcb5103ad6c449008746ee000383acf8b6e20d962b6500e",
+      "cloud/sitemap_fix_001/make_release.py": "5532455c828fdf8ecf915072b37b8fe55ae19f33467d01d2c60d381305232b19",
+      "cloud/sitemap_fix_001/release_constants.py": "a870c7e93554c1f827b51940a180e3d7d8db2ab7ce8613d1bd056cd6321e10a2",
+      "cloud/sitemap_fix_001/test_deployment.py": "cc73841b9b441c739f09398dbe7b98387951273f54065c8aa6a1c3a168382960",
+      "cloud/sitemap_fix_001/test_release.py": "4633c0c8337ef64b5ba328227ed557f0f333074eaaf5e13e3207d50cfb9db223"
+    }
+  },
+  "updated_at": "2026-11-11T04:31:17Z"
+}

@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import resource
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -25,6 +26,9 @@ API = 'https://www.googleapis.com/webmasters/v3/sites/'
 INSPECT = 'https://searchconsole.googleapis.com/v1/urlInspection/index:inspect'
 SITEMAP = HOME/'video/sitemap.xml'
 MAX_PAGES = 80
+# The controller waits 13 minutes for the receipt: stop inspecting in time and report what was checked.
+BUDGET_SECONDS = 540
+STARTED = time.monotonic()
 # Addresses outside the sitemap that GSC may list as copies or redirects: the site root, the /video folder and
 # the short catalogue address.
 CANDIDATES = ('', 'video', 'video/', 'index.html', 'katalog.html')
@@ -39,6 +43,14 @@ def extra(listed):
     """The old /video/UA-XXXX.html address of every card version in the sitemap, then the redirect candidates."""
     old = sorted({re.sub(r'^video/(?:ua|ru)/', 'video/', p) for p in listed if re.fullmatch(r'video/(?:ua|ru)/UA-\d{4}\.html', p)})
     return old + [p for p in CANDIDATES if p not in listed]
+
+
+def inspect_all(bearer, paths, clock=time.monotonic):
+    """Inspect in order until the time budget runs out; the rest is marked, never silently dropped."""
+    result = {}
+    for page in paths:
+        result[page] = inspect(bearer, page) if clock() - STARTED < BUDGET_SECONDS else {'skipped': 'TIME_BUDGET'}
+    return result
 
 
 def token(key):
@@ -103,8 +115,8 @@ def report():
                                                           for s in sitemaps.get('sitemap', [])] if status_map == 200 else sitemaps},
              'window': [str(start), str(end)], 'queries': rows(bearer, 'query', start, end),
              'pages': rows(bearer, 'page', start, end),
-             'dates': rows(bearer, 'date', end - datetime.timedelta(days=89), end, 100), 'inspection': {p: inspect(bearer, p) for p in listed},
-             'inspection_extra': {p: inspect(bearer, p) for p in extra(listed)}}
+             'dates': rows(bearer, 'date', end - datetime.timedelta(days=89), end, 100), 'inspection': inspect_all(bearer, listed),
+             'inspection_extra': inspect_all(bearer, extra(listed))}
     full = [e for e in value['sites']['entries'] if isinstance(e, dict) and e.get('siteUrl') == SITE] \
         if isinstance(value['sites']['entries'], list) else []
     value['permission'] = full[0].get('permissionLevel') if full else None

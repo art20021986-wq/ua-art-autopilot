@@ -11,8 +11,8 @@
     {
       "action": "CLASSIFY_ROOT_CAUSE",
       "at": "2026-11-11T03:02:38Z",
-      "class": "UNKNOWN",
-      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 42948772129",
+      "class": "FAILED_BEFORE_PRODUCTION",
+      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 42948772129 Root cause: the package files on main changed while this read-only preview waited (KOREA-SCORE R2 merged), so the persist step saw TEST_SHA_MISMATCH. Nothing was written to production. Closed as FAILED (terminal) so its PATH_SCOPE lock is released, as in the KOREA-LOTS R3 reconciliation; replaced by KOREA-SCORE-PREFLIGHT-20261111-R3.",
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "0e5c4cd82ae3116b"
@@ -42,6 +42,6 @@
   "source_commit": "15262b5eab92b0daef6f4c07b0565f6a234c0cb0",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-11T03:02:38Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-11T03:45:00Z"
 }

@@ -26,7 +26,8 @@ class CandidateTests(unittest.TestCase):
         new = candidate_builder.build({'video/korea.html': page.encode()}, {})['video/korea.html'].decode()
         self.assertEqual(new.count(ua_korea_lots.MARK), 1)
         for part in ('"Усі дні"', 'id="kl-days"', 'value="date"', 'row("vin",l.vin)', 'kl-tbd',
-                     '.kl-more[hidden]{display:none}'):
+                     '.kl-more[hidden]{display:none}',
+                     '.kl-dialog{position:fixed;', '$("kl-card").scrollTop=0;'):
             self.assertIn(part, new)
         cut = lambda h: h[:h.index(ua_korea_lots.MARK)] + h[h.index(ua_korea_lots.END):]
         self.assertEqual(cut(new), cut(page))

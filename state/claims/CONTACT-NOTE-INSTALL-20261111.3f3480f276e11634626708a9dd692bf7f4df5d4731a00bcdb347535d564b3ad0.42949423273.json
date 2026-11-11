@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "05035ab4060aa21217f79726481c66fcfd88f289475149ead3f46b2116415efa",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T03:09:14Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-11T03:19:49Z",
+  "heartbeat_at": "2026-11-11T03:19:49Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "42949423273",
     "task_id": "CONTACT-NOTE-INSTALL-20261111",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 648.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 167.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 216.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-42949423273-3f3480f276e11634",
   "production_transaction_path": "state/transactions/CONTACT-NOTE-INSTALL-20261111.3f3480f276e11634626708a9dd692bf7f4df5d4731a00bcdb347535d564b3ad0.42949423273.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "card-ua-0001-7c2fd7a763d94227",
   "receipt_path": "state/receipts/CONTACT-NOTE-INSTALL-20261111.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "e522021f75a98603e24a4335cf7e2afa3ca4294df3b6822ab5b38ea19de49341",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CONTACT-NOTE-INSTALL-20261111.json",
   "request_sha256": "3f3480f276e11634626708a9dd692bf7f4df5d4731a00bcdb347535d564b3ad0",
   "resource_locks": [
@@ -95,7 +126,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "e40932cf7691c976cea540bc4b712c203fba51beecb19ed587cfbd0f7e13851e",
     "file_sha256": {
@@ -111,5 +142,5 @@
       "cloud/contact_note_001/test_release.py": "625d2ebedb2bc37a5b9eb3aefc389b08507a450bef983db246018f2c72b43b15"
     }
   },
-  "updated_at": "2026-11-11T03:09:14Z"
+  "updated_at": "2026-11-11T03:19:49Z"
 }

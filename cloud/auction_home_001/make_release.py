@@ -24,9 +24,10 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'ua_auction_clients_bot.py',
-                                'ua_auction_clients_view.py', 'ua_auction_stats.py', 'ua_menu_extra.py')]
-TESTS = [P + n for n in ('test_deployment.py', 'test_auction_home.py')]
+                                'make_release.py', 'release_constants.py', 'ua_auction_bids.py', 'ua_auction_bids_bot.py',
+                                'ua_auction_clients_bot.py', 'ua_auction_clients_view.py', 'ua_auction_stats.py',
+                                'ua_menu_extra.py')]
+TESTS = [P + n for n in ('test_deployment.py', 'test_auction_home.py', 'test_bids_vin.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'master_card.py',
              'publication_fence.py', 'publikaciya.py', 'run_all.py', 'site_ge_inject.py',
@@ -77,7 +78,7 @@ def preview():
              'description': 'Preview of AUCTION-HOME (JPAUTO-KOREA-001): reads the live main menu and auction client '
                             'modules (exact installed versions), builds the candidate, imports it with the bots\' interpreter, '
                             'builds the main menu and the «🔨 Клиенты аукциона» screen from the live clients and bids (read only, '
-                            'counts only); measures storage. No application source, CRM, HTML, media or bot state changes.',
+                            'counts only), checks the VIN column on a temporary ledger; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
              'title': 'Preview auction clients screen'}
@@ -138,12 +139,16 @@ def install():
                               'in the CRM bot main menu (same roles): statistics (clients, deposits, limits, bids today / 7 '
                               'days / all, placed / failed, sum placed in 7 days), «➕ Создать клиента», «👥 Клиенты с доступом», '
                               '«📋 Ставки по датам» (a date opens all its bids), and the client card lists the client\'s bids '
-                              'by date. ua_menu_extra, ua_auction_clients_view, ua_auction_clients_bot, ua_auction_stats (new). '
-                              'The bot is paused for the file change and resumed. No CRM, client, bid, page or table change. '
+                              'by date; every bid shows its car, lot and VIN (the bids ledger now records the VIN; older '
+                              'ledgers get the column, existing bids are kept). ua_menu_extra, ua_auction_clients_view, '
+                              'ua_auction_clients_bot, ua_auction_bids, ua_auction_bids_bot, ua_auction_stats (new). The bot '
+                              'is paused for the file change and resumed; the web app is reloaded. No CRM, client, page or '
+                              'table change. '
                               'Existing backup, bot pause, writer locks, data-preservation, rollback and public health checks are '
                               'kept.',
                'execution': execution(task, True),
-               'health_checks': ['https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/katalog.html'],
+               'health_checks': ['https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/katalog.html',
+                                 'https://www.uaart.com.ua/video/korea.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
                'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install auction clients screen'}

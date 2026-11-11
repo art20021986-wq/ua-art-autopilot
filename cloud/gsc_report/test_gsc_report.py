@@ -100,6 +100,12 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(len(value['inspection']), remote.MAX_PAGES)
         self.assertEqual(list(value['inspection_extra']), list(remote.CANDIDATES))
 
+    def test_time_budget_marks_the_rest(self):
+        ticks = iter([0, 0, remote.BUDGET_SECONDS + 1])
+        with patch.object(remote, 'STARTED', 0), patch.object(remote, 'inspect', return_value={'verdict': 'PASS'}):
+            value = remote.inspect_all('t', ['a', 'b', 'c'], clock=lambda: next(ticks))
+        self.assertEqual(value, {'a': {'verdict': 'PASS'}, 'b': {'verdict': 'PASS'}, 'c': {'skipped': 'TIME_BUDGET'}})
+
     def test_extra_lists_old_card_addresses_then_candidates(self):
         listed = ['video/index.html', 'video/ua/UA-0001.html', 'video/ru/UA-0001.html', 'video/ru/UA-0003.html', 'index.html']
         self.assertEqual(remote.extra(listed), ['video/UA-0001.html', 'video/UA-0003.html', '', 'video', 'video/', 'katalog.html'])

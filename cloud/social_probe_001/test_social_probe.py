@@ -120,5 +120,21 @@ class RemoteTests(unittest.TestCase):
         self.assertIn('UA-0001.html', value['times']['video'])
 
 
+    def test_r4_versions(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'video/ua').mkdir(parents=True)
+            (home / 'video/ru').mkdir()
+            (home / 'video/katalog.html').write_text('<a href="ua/UA-0001.html">a</a><a href="ua/UA-0022.html">b</a><a href="UA-0003.html">c</a>')
+            (home / 'video/ua/UA-0022.html').write_text('x')
+            (home / 'video/UA-0003.html').write_text('x')
+            (home / 'video/sitemap.xml').write_text('<loc>https://www.uaart.com.ua/video/ua/UA-0022.html</loc><loc>https://www.uaart.com.ua/video/index.html</loc>')
+            value = remote.report_r4(home)
+        self.assertEqual(value['catalog_links']['ua/'], ['ua/UA-0001.html', 'ua/UA-0022.html'])
+        self.assertEqual(value['catalog_links_broken'], ['ua/UA-0001.html'])
+        self.assertEqual(value['versions'], {'ua': ['UA-0022.html'], 'ru': []})
+        self.assertEqual(value['sitemap']['card_urls'], {'/video/ua/': 1})
+
+
 if __name__ == '__main__':
     unittest.main()

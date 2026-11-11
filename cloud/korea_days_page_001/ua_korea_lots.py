@@ -7,6 +7,7 @@ apply(html) on video/korea.html:
      A link korea.html#lot-<id> (the home ticker) opens that lot's card.
      Owner 2026-11-11: the auction days on top (weekday, date, number of cars; «Усі дні» first), the auction day
      and time on every card, «За датою торгів» in the sorting, and the VIN in the lot card.
+     Owner 2026-11-11: the lot card opens on screen where the visitor is (fixed, centred), from its top.
   2. the «Дивитися онлайн» buttons lead to the list instead of opening the dialog and read «Дивитися аукціони»
      (owner 2026-11-10).
 remove(html) takes both back. A page with an older version of the list gets the new one in its place.
@@ -69,7 +70,7 @@ STYLE = (
     '.kl-item>b,.kl-item>span{padding:0 12px}.kl-item>b{font-size:17px}.kl-item>span{opacity:.85;font-size:14px}'
     '.kl-usd{color:#4ade80;font-weight:800;font-size:18px}.kl-tbd{color:#f2b544;font-weight:700}'
     '.kl-more{margin:16px auto 0;display:block;border:0;cursor:pointer}.kl-more[hidden]{display:none}'
-    '.kl-dialog{position:relative;width:min(760px,96vw);max-height:92vh;padding:0;border:0;border-radius:18px;'
+    '.kl-dialog{position:fixed;width:min(760px,96vw);max-height:92vh;padding:0;border:0;border-radius:18px;'
     'background:#0B1524;color:#fff}.kl-dialog::backdrop{background:rgba(0,0,0,.7)}'
     '.kl-photos{display:flex;gap:6px;overflow-x:auto;scroll-snap-type:x mandatory}'
     '.kl-photos img{flex:0 0 100%;width:100%;aspect-ratio:4/3;object-fit:cover;scroll-snap-align:start}'
@@ -169,7 +170,7 @@ SCRIPT = (
     'month:"long"},i)+", "+String(l.auction_start).slice(11,16);}))+"</dl>"'
     '+\'<a class="kr-btn" href="#lots" data-quick-lead-auction="korea" data-quick-lead-lot="\'+esc(l.id)'
     '+\'" data-quick-lead-lot-title="\'+esc(l.title+" "+l.year)+\'" data-quick-lead-title="— \'+esc(l.title+" "+l.year)'
-    '+\'">\'+t("contact")+"</a></div>";$("kl-card").showModal();}'
+    '+\'">\'+t("contact")+"</a></div>";$("kl-card").showModal();$("kl-card").scrollTop=0;}'
     'document.addEventListener("click",function(e){var c=e.target.closest&&e.target.closest("[data-kl-lot]");'
     'if(c){open(c.getAttribute("data-kl-lot"));return;}'
     'var dd=e.target.closest&&e.target.closest("[data-kl-day]");'

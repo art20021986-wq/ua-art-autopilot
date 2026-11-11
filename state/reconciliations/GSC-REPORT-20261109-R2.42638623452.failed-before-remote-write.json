@@ -1,0 +1,35 @@
+{
+    "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-1",
+    "semantic_outcome": "FAILED_NO_PRODUCTION_WRITE",
+    "task_id": "GSC-REPORT-20261109-R2",
+    "original_run_id": "42638623452",
+    "request_sha256": "cdcfcb5828df6bfd6513839ecdf3dd93ea28c889bf512a5c916eec5abe238108",
+    "prepared_at": "2026-11-11T04:31:07.469592+00:00",
+    "owner_statement": "Продолжай (weekly GSC report requested by the owner 2026-10-20)",
+    "original_failure_preserved": true,
+    "original_failure_code": "GSC_REPORT_STOP:TransportError (remote receipt not received within 13 minutes)",
+    "failure_stage": "STANDARD read-only report: the server-side report outran the controller wait (≈125 inspections); fixed by a time budget in #1019",
+    "task_class": "STANDARD",
+    "production_required": false,
+    "transaction_created": false,
+    "production_backup_executed": false,
+    "production_install_controller_executed": false,
+    "production_write_executed": false,
+    "production_rollback_executed": false,
+    "production_service_reload_executed": false,
+    "metadata_terminal_status": "FAILED",
+    "metadata_terminal_status_meaning": "Read-only report failed; the claim kept its PATH_SCOPE lock (RESOURCE_BUSY for GSC-REPORT-20261111 runs 42952940756 and 42957411016). Successor uses a new task id.",
+    "successor_installation_authorized_by_this_record": false,
+    "precedent": "state/reconciliations/CRM-FIELD-INPUT-PREFLIGHT-20261012-R2.38206266916.failed-before-remote-write.json",
+    "before_sha256": {
+        "state/claims/GSC-REPORT-20261109-R2.cdcfcb5828df6bfd6513839ecdf3dd93ea28c889bf512a5c916eec5abe238108.42638623452.json": "8837704b80724aa2ccf88078d8a5a317271c87354b43ca58c4c879b079577341"
+    },
+    "after_sha256": {
+        "state/claims/GSC-REPORT-20261109-R2.cdcfcb5828df6bfd6513839ecdf3dd93ea28c889bf512a5c916eec5abe238108.42638623452.json": "d648dcdc3ff62cf120cc65582f9510597ca6f5b06a1d845c41fec64c43ffddeb"
+    },
+    "claim_archive": {
+        "path": "state/halt_history/GSC-REPORT-20261109-R2.42638623452/claim.before.json",
+        "sha256": "8837704b80724aa2ccf88078d8a5a317271c87354b43ca58c4c879b079577341",
+        "byte_identical_required": true
+    }
+}

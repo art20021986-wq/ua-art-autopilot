@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUTORIA-SOLD-PREFLIGHT-20261111.720f845ae425b55d86985ca905523cb5319707b9d84ccf771553bd096306874d.json",
+  "autostart_ledger_sha256": "590df5a6691be78d26fc7254d72f11714428277fa352ae3569f0f3d7fb9628ec",
+  "autostart_source_commit": "220a295f85f193f5a64ea2e953a0e19fc8076891",
+  "created_at": "2026-11-11T04:11:56Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42957438584",
+    "task_id": "AUTORIA-SOLD-PREFLIGHT-20261111",
+    "task_sha256": "720f845ae425b55d86985ca905523cb5319707b9d84ccf771553bd096306874d"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-a22a284722f4e050-cfee6d260dbe76c8",
+  "request_path": "tasks/requests/AUTORIA-SOLD-PREFLIGHT-20261111.json",
+  "resource_locks": [
+    "PATH_SCOPE:a22a284722f4e050"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
