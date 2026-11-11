@@ -7,21 +7,23 @@
   "created_at": "2026-11-11T02:49:54Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T02:49:54Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-11T02:55:33Z",
+  "heartbeat_at": "2026-11-11T02:55:33Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "42948516432",
     "task_id": "CONTACT-NOTE-PREFLIGHT-20261111",
     "task_sha256": "d63d01804ab119ad166fa11d6130cccf7b3a1a6c810d7d2729e58861d985dbfd"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-4ae3edce0b7f5d74-e50fd52607897dc5",
   "receipt_path": "state/receipts/CONTACT-NOTE-PREFLIGHT-20261111.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "671f45888df764d6fe7eeec3bd000de58ae3a96edd1b7b62a25d2f8a467d5ac7",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CONTACT-NOTE-PREFLIGHT-20261111.json",
   "request_sha256": "d63d01804ab119ad166fa11d6130cccf7b3a1a6c810d7d2729e58861d985dbfd",
   "resource_locks": [
@@ -29,8 +31,32 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "b69d323947616e1a7ed9d7a65a40fabcc432796d",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92808404992,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.11
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-11T02:49:54Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "e40932cf7691c976cea540bc4b712c203fba51beecb19ed587cfbd0f7e13851e",
+    "file_sha256": {
+      "cloud/contact_note_001/candidate_builder.py": "85a7323f40c62327fbc51e6eec7fe3133e87cc783d4818ae4cdb1afb325ce2fe",
+      "cloud/contact_note_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/contact_note_001/deployment_bootstrap.py": "7251993fcfd50ad1b890820017e68a5630c5e0e54095a6feafb75c75e8d52ccf",
+      "cloud/contact_note_001/deployment_remote.py": "7c773710d3cd827c5e2e819ac7cf213469af60c8d80e1a633f5219b1b11a9319",
+      "cloud/contact_note_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/contact_note_001/deployment_transport.py": "52687816f964179c14c50bc00cbc1e1efc86df0e74c9a51cdff53365760fd126",
+      "cloud/contact_note_001/make_release.py": "1d97c8ec310475c7362efb82f2e13ce44c7ac0c2875b90907cf061b481cafd62",
+      "cloud/contact_note_001/release_constants.py": "2c41ad30b3ee7f4d937b462f196475f40642b28b99ac3958fb160f3ce4cfd89d",
+      "cloud/contact_note_001/test_deployment.py": "fd8c7dcaafbe9230f92da09d5b803e623d00a2d2584ff01f9421b93c886fa6f6",
+      "cloud/contact_note_001/test_release.py": "625d2ebedb2bc37a5b9eb3aefc389b08507a450bef983db246018f2c72b43b15"
+    }
+  },
+  "updated_at": "2026-11-11T02:55:33Z"
 }
