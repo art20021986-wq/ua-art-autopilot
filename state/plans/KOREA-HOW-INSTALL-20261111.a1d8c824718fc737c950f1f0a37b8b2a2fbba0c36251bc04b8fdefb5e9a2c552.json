@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-HOW-INSTALL-20261111.a1d8c824718fc737c950f1f0a37b8b2a2fbba0c36251bc04b8fdefb5e9a2c552.json",
+  "autostart_ledger_sha256": "393740ec5f40e421c0570c21a265c123cc2b73a260356e8d1903425ace1e1148",
+  "autostart_source_commit": "8cfe8d83222364ed8d99685436fcbe9b739f1f8a",
+  "created_at": "2026-11-11T06:36:44Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42972901505",
+    "task_id": "KOREA-HOW-INSTALL-20261111",
+    "task_sha256": "a1d8c824718fc737c950f1f0a37b8b2a2fbba0c36251bc04b8fdefb5e9a2c552"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-4a4df7dc1ece9f30-f2096f4917377701",
+  "request_path": "tasks/requests/KOREA-HOW-INSTALL-20261111.json",
+  "resource_locks": [
+    "PATH_SCOPE:4a4df7dc1ece9f30"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
