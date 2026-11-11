@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "6d6d8a37e008fab78036855c994c020f5d715e3223f1e6dcd2cfeaaac31be542",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T13:43:59Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T13:47:57Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43028762185",
     "task_id": "HOME-REVIEWS-SOLD-INSTALL-20261111",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43028762185-6bfde093097b4058",
   "production_transaction_path": "state/transactions/HOME-REVIEWS-SOLD-INSTALL-20261111.6bfde093097b40589af237e74b5b0535c3479e4c4ffaa450120203dc1f4d9e98.43028762185.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-REVIEWS-SOLD-INSTALL-20261111.json",
   "receipt_validation_status": "PENDING",
@@ -90,5 +90,5 @@
       "cloud/home_reviews_001/test_edit_home.py": "0c6e26ac75669b42080ffadfe6dbcc8d0e132a62bb81e07e1fa9f8637d47e7c7"
     }
   },
-  "updated_at": "2026-11-11T13:43:59Z"
+  "updated_at": "2026-11-11T13:47:57Z"
 }
