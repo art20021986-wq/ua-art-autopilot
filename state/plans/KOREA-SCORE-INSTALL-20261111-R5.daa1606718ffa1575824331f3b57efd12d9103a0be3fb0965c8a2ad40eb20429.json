@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-SCORE-INSTALL-20261111-R5.daa1606718ffa1575824331f3b57efd12d9103a0be3fb0965c8a2ad40eb20429.json",
+  "autostart_ledger_sha256": "af69f5012626061f2aaaee902fe1a05d2293af23e661cf93df539bf110a8fa5d",
+  "autostart_source_commit": "ca985a165fe60b7df6f838653e2960129035fc76",
+  "created_at": "2026-11-11T07:12:41Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42976091800",
+    "task_id": "KOREA-SCORE-INSTALL-20261111-R5",
+    "task_sha256": "daa1606718ffa1575824331f3b57efd12d9103a0be3fb0965c8a2ad40eb20429"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "request_path": "tasks/requests/KOREA-SCORE-INSTALL-20261111-R5.json",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
