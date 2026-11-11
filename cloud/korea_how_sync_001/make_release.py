@@ -131,7 +131,7 @@ def install():
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner asked (2026-11-11, point 1): the «5 кроків до вашого авто» block on video/korea.html follows '
-                              'the home page: a small script after it loads video/index.html and puts the home block in its '
+                              'the home page: a small script after it loads video/index.html and puts the home block (only its Korea part) in its '
                               'place (the page keeps its own copy on any failure). Nothing else on the page changes. No CRM data change. Existing backup, bot pause, '
                               'writer locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
