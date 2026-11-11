@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CLIENT-TERMS-INSTALL-20261111-R2.94c96bdbe8f1e92bd7d77dbf5b0765dac108914c2992d44310d862bdae1f55af.json",
+  "autostart_ledger_sha256": "826e21bca6c84ab278427fd615f712095d1df0a7c7570bb3ec548e6228f138c0",
+  "autostart_source_commit": "682a87ae3ff9ba9a65ec43d157684eb6bb069bb9",
+  "created_at": "2026-11-11T10:40:29Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43002261540",
+    "task_id": "CLIENT-TERMS-INSTALL-20261111-R2",
+    "task_sha256": "94c96bdbe8f1e92bd7d77dbf5b0765dac108914c2992d44310d862bdae1f55af"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-33a4a90097dc2361-90b70f6747ecd86e",
+  "request_path": "tasks/requests/CLIENT-TERMS-INSTALL-20261111-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:33a4a90097dc2361"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

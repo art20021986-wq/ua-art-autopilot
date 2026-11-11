@@ -67,3 +67,8 @@ Google Data API выключен — отчёты Google автопилоту н
 - R2 preview (run 42638771462) отчитался PASS, хотя замер места упал (du: исчез временный файл другой программы) —
   статус ставился до замера; установку тогда не успел запустить. R3 отменён автопилотом (одновременные запуски).
   R4: du терпит только исчезнувший файл; PASS ставится после всех проверок предпросмотра (+тест).
+- 2026-11-11: R4 preview ran but persistence was rejected (autopilot workflows changed mid-run by the queue update);
+  stale R4 claim closed as FAILED (#1113). R6 preview PASS (run 42997718155, storage probe ok, server log 10 days read).
+  ANALYTICS2-INSTALL-20261109-R6 FINISHED (run 43000853889): backup/install/live_verify/rollback-ready PASS, CRM unchanged,
+  unexpected_changes 0. Live: GA4 tag on video/privacy.html and diag pages (checked UA-0005/UA-0018). Points 2 and 4 DONE.
+  Open: point 5 (owner enables GA4 Data API, reply «включил»), point 6 (Clarity Project ID).
