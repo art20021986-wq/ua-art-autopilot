@@ -1,6 +1,9 @@
 """Home page, «5 steps» block: step 1 becomes «Бесплатная консультация» with owner-approved details
 (ORDER-PROCESS-001, texts in tasks/ORDER-PROCESS-001.md).
 
+Release 2 (owner 2026-11-11): on the live step 1 only the price-range paragraph changes, «до 1000 $» -> «до 200 $»
+in all three languages; every other byte stays.
+
 Only the first <li> of the steps list and one small CSS block change; every other byte stays. Each text element
 holds its three languages in data-ru / data-uk / data-ka with the Ukrainian text inside, as the site's language
 script expects (one text node per element). Details open with the browser's own <details>, no script.
@@ -34,13 +37,13 @@ LINES = (
      'განაცხადებს ვამუშავებთ მკაცრად შემოსვლის რიგით. შესაძლოა, იმავე დღეს გიპასუხოთ; '
      'მაქსიმუმ — 3 სამუშაო დღე (ყველა დღე, გარდა კვირისა და დღესასწაულებისა).'),
     ('В ответ вы получите предварительный расчёт стоимости авто. Это ориентировочная цена: итоговая может '
-     'отличаться до 1000 $ в большую или меньшую сторону (цена на аукционе, курс, доставка). '
+     'отличаться до 200 $ в большую или меньшую сторону (цена на аукционе, курс, доставка). '
      'Окончательная цена фиксируется в договоре.',
      'У відповідь ви отримаєте попередній розрахунок вартості авто. Це орієнтовна ціна: остаточна може '
-     'відрізнятися до 1000 $ у більший або менший бік (ціна на аукціоні, курс, доставка). '
+     'відрізнятися до 200 $ у більший або менший бік (ціна на аукціоні, курс, доставка). '
      'Остаточна ціна фіксується в договорі.',
      'პასუხად მიიღებთ ავტომობილის ღირებულების წინასწარ გაანგარიშებას. ეს მიახლოებითი ფასია: საბოლოო შეიძლება '
-     'განსხვავდებოდეს 1000 $-მდე მეტად ან ნაკლებად (აუქციონის ფასი, კურსი, მიწოდება). '
+     'განსხვავდებოდეს 200 $-მდე მეტად ან ნაკლებად (აუქციონის ფასი, კურსი, მიწოდება). '
      'საბოლოო ფასი ფიქსირდება ხელშეკრულებაში.'),
     ('Заявка — не договор и ни к чему вас не обязывает.',
      'Заявка — не договір і ні до чого вас не зобов’язує.',
@@ -48,8 +51,10 @@ LINES = (
 )
 PAY = ('Оплата на этом шаге: 0 грн', 'Оплата на цьому кроці: 0 грн', 'გადახდა ამ ეტაპზე: 0')
 BUTTON = ('Заполнить заявку', 'Заповнити заявку', 'განაცხადის შევსება')
+# Release 1 wording of the price-range paragraph (LINES[2]), replaced in place by release 2.
+OLD_PRICE = tuple(t.replace('200 $', '1000 $') for t in LINES[2])
 # Public proof that this release is live.
-CHECK = '>Безкоштовна консультація</b>'
+CHECK = 'відрізнятися до 200 $ у більший'
 
 
 def _text(tag, words, cls=''):
@@ -89,7 +94,12 @@ CSS = ('<style id="%s">'
 
 def build(source):
     text = source.decode('utf-8')
-    if MARK in text or text.count(OLD_STEP) != 1:
+    if MARK in text:
+        old = _text('p', OLD_PRICE)
+        if text.count(old) != 1:
+            raise ValueError('HOME_STEP1_PRICE_ANCHOR')
+        return text.replace(old, _text('p', LINES[2]), 1).encode('utf-8')
+    if text.count(OLD_STEP) != 1:
         raise ValueError('HOME_STEP1_ANCHOR')
     if len(HEAD.findall(text)) != 1:
         raise ValueError('HOME_HEAD')

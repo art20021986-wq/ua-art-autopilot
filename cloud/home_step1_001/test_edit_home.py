@@ -56,10 +56,23 @@ class EditHomeTests(unittest.TestCase):
 
     def test_owner_wording(self):
         step = edit_home.step()
-        for text in ('Безкоштовна консультація', '3 робочі дні', 'до 1000 $', 'Оплата на цьому кроці: 0 грн',
+        for text in ('Безкоштовна консультація', '3 робочі дні', 'до 200 $', 'Оплата на цьому кроці: 0 грн',
                      'не договір', 'href="podbor.html"', 'Заповнити заявку', 'Бесплатная консультация',
                      'უფასო კონსულტაცია'):
             self.assertIn(text, step)
+
+    def test_release_two_changes_only_the_price_range(self):
+        new = edit_home.build(LIVE.encode()).decode()
+        old_p, new_p = edit_home._text('p', edit_home.OLD_PRICE), edit_home._text('p', edit_home.LINES[2])
+        release_one = new.replace(new_p, old_p, 1)
+        self.assertIn('до 1000 $', release_one)
+        result = edit_home.build(release_one.encode()).decode()
+        self.assertEqual(result, new)
+        self.assertEqual(result.replace(new_p, old_p, 1), release_one)
+        self.assertNotIn('1000 $', result)
+        for text in ('отличаться до 200 $', 'відрізнятися до 200 $', '200 $-მდე'):
+            self.assertIn(text, result)
+        self.assertIn(edit_home.CHECK, result)
 
     def test_refuses_second_run_and_missing_anchor(self):
         once = edit_home.build(LIVE.encode())

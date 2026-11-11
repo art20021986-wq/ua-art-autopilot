@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "b42b990eb65b46fec30ea6aff52896ad7dea21b7b1f6cc83c25cdad5866f60b4",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T04:34:42Z",
-  "heartbeat_sequence": 6,
+  "finished_at": "2026-11-11T04:54:35Z",
+  "heartbeat_at": "2026-11-11T04:54:35Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "42959841949",
     "task_id": "AUTORIA-SOLD-INSTALL-20261111",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 451.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 125.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-42959841949-72a2847f36443eaf",
   "production_transaction_path": "state/transactions/AUTORIA-SOLD-INSTALL-20261111.72a2847f36443eaf3b8b1a66243fee058828cdaffbb2fd2ea4acb87bc33aa40c.42959841949.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-f8a416b1e8441dff-2b8f41c1123fc947",
   "receipt_path": "state/receipts/AUTORIA-SOLD-INSTALL-20261111.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "e32944d04a143ae5773b4e595968204a3b769ee9f5975b9b967f076725096d1c",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AUTORIA-SOLD-INSTALL-20261111.json",
   "request_sha256": "72a2847f36443eaf3b8b1a66243fee058828cdaffbb2fd2ea4acb87bc33aa40c",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "c1def1424f3947ba022c8301fc5030ca1983e5794f59953c09f5dc4cd2e0ce2a",
     "file_sha256": {
@@ -89,5 +112,5 @@
       "cloud/autoria_sold_001/test_release.py": "aa75749dffc5984b95869a16a34b22ca8fb87dc28c654f5c825f403773855914"
     }
   },
-  "updated_at": "2026-11-11T04:34:42Z"
+  "updated_at": "2026-11-11T04:54:35Z"
 }
