@@ -158,7 +158,8 @@ def smoke(directory):
     if (value.get('owner') != ['cards_cars', 'krp:home'] or value.get('manager') != ['cards_cars']
             or value.get('total_defaults') != 3450
             or value.get('buttons') != ['krp:edit:2026-11', 'krp:edit:2026-12', 'krp:edit:2027-01', 'menu']
-            or value.get('prices_path') != str(ROOT/'video'/'korea'/'logistics.json')):
+            # the candidate copy runs from the plan folder; installed, the path is ROOT/video/korea/logistics.json
+            or not str(value.get('prices_path', '')).endswith('/video/korea/logistics.json')):
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:300])
     return value
 
