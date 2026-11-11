@@ -51,7 +51,7 @@ def _note(words, cls='ua-kr-note'):
 
 def step2():
     body = (''.join(text('p', line) for line in T.S2_LINES) + text('p', T.S2_PAY, 'ua-step-pay')
-            + text('p', T.S2_AFTER))
+            + text('p', T.S2_AFTER) + text('p', T.S2_TOTAL, 'ua-step-pay') + _note(T.S2_DEPOSIT))
     return _step(2, T.S2_TITLE, text('small', T.S2_SHORT), body)
 
 
