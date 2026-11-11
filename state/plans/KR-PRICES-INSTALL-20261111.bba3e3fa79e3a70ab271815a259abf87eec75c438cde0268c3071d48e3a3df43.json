@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KR-PRICES-INSTALL-20261111.bba3e3fa79e3a70ab271815a259abf87eec75c438cde0268c3071d48e3a3df43.json",
+  "autostart_ledger_sha256": "c7d21e78a9f4624fe0897f6a8d35de21c1351096628744d85cff1310b0a8023c",
+  "autostart_source_commit": "ebe3783a78f0a7e92f2d6735b8846ed9946ff2eb",
+  "created_at": "2026-11-11T13:23:38Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43027863881",
+    "task_id": "KR-PRICES-INSTALL-20261111",
+    "task_sha256": "bba3e3fa79e3a70ab271815a259abf87eec75c438cde0268c3071d48e3a3df43"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-df5400b3dc3d0802-48d438bc619d9c32",
+  "request_path": "tasks/requests/KR-PRICES-INSTALL-20261111.json",
+  "resource_locks": [
+    "PATH_SCOPE:df5400b3dc3d0802"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
