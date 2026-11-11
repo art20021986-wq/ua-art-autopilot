@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "b42b990eb65b46fec30ea6aff52896ad7dea21b7b1f6cc83c25cdad5866f60b4",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T04:34:42Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T04:39:48Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42959841949",
     "task_id": "AUTORIA-SOLD-INSTALL-20261111",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42959841949-72a2847f36443eaf",
   "production_transaction_path": "state/transactions/AUTORIA-SOLD-INSTALL-20261111.72a2847f36443eaf3b8b1a66243fee058828cdaffbb2fd2ea4acb87bc33aa40c.42959841949.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-f8a416b1e8441dff-2b8f41c1123fc947",
   "receipt_path": "state/receipts/AUTORIA-SOLD-INSTALL-20261111.json",
   "receipt_validation_status": "PENDING",
@@ -89,5 +89,5 @@
       "cloud/autoria_sold_001/test_release.py": "aa75749dffc5984b95869a16a34b22ca8fb87dc28c654f5c825f403773855914"
     }
   },
-  "updated_at": "2026-11-11T04:34:42Z"
+  "updated_at": "2026-11-11T04:39:48Z"
 }
