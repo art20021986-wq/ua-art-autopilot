@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "c7d21e78a9f4624fe0897f6a8d35de21c1351096628744d85cff1310b0a8023c",
   "autostart_source_commit": "ebe3783a78f0a7e92f2d6735b8846ed9946ff2eb",
   "created_at": "2026-11-11T13:23:38Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "ed0716843a02fd2e67f9f9b0ee06ded02627d660ed372b15e84237f16da35c20",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T13:23:38Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-11T13:24:52Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "43027863881",
     "task_id": "KR-PRICES-INSTALL-20261111",
     "task_sha256": "bba3e3fa79e3a70ab271815a259abf87eec75c438cde0268c3071d48e3a3df43"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 174.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 160.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-43027863881-bba3e3fa79e3a70a",
+  "production_transaction_path": "state/transactions/KR-PRICES-INSTALL-20261111.bba3e3fa79e3a70ab271815a259abf87eec75c438cde0268c3071d48e3a3df43.43027863881.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-df5400b3dc3d0802-48d438bc619d9c32",
   "receipt_path": "state/receipts/KR-PRICES-INSTALL-20261111.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,39 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "a247077690c8686c9b81ba3926df760f7d9b4d18",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 665.942,
+    "allowed": true,
+    "evidence_path": "state/storage/KR-PRICES-INSTALL-20261111.json",
+    "evidence_sha256": "6dcb0c6a318bd3f93fccb2181be1e6c5a3c0c3ac32d7372843710f5b07f39185",
+    "free_bytes": 22725905920,
+    "heavy": true,
+    "measured_at": "2026-11-11T13:13:44.099726+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 35.06884022857143
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-11T13:23:38Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/kr_prices_bot_001/candidate_builder.py": "4ac7b1e48b316297c9d827d7edb9f1cab0062af9e62a0058eb71efbad523e37a",
+      "cloud/kr_prices_bot_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/kr_prices_bot_001/deployment_bootstrap.py": "aed5379adc549d0559e0054fa58b36790efd5c219b00965c56f1fb2b0cad920a",
+      "cloud/kr_prices_bot_001/deployment_remote.py": "09a74c4e706cff1fb79c356c3f51f256e9da37e409ac63c53b4ea7ff8b911e81",
+      "cloud/kr_prices_bot_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/kr_prices_bot_001/deployment_transport.py": "6dc9dcb5f54f26080016aa8a2a2e4c95d28bace951abf395bca229ee05327624",
+      "cloud/kr_prices_bot_001/edit_cars_ui.py": "3fb10d1fa691381597c8286f9a5b258c61da7c41e44221e76510687bf766f6dc",
+      "cloud/kr_prices_bot_001/make_release.py": "6dd4921167ecb74a2247461bdc005656f9c8c61648549599fd2f8d59aa710f68",
+      "cloud/kr_prices_bot_001/release_constants.py": "811b33d97cdf363805660384414b1a7d1076436ca6714989d27ff37fc2b570a8",
+      "cloud/kr_prices_bot_001/test_deployment.py": "a050019b1a3e46a0bbc7c60bfb78185b10c2ea6104e3073a67f6e0c90cc7d95b",
+      "cloud/kr_prices_bot_001/test_kr_prices.py": "be826c7fdaf9e3aef080a0c74d59e9aca157d1acb2f60e24e8ebd04b3afc5b74",
+      "cloud/kr_prices_bot_001/ua_kr_prices_bot.py": "34783cd46945577ad3952a4748bf9deeed36ad8a21d3fb24949b75756a0f8640",
+      "cloud/kr_prices_bot_001/ua_kr_prices_store.py": "15cdc9a6b23fa12d023134fd8046a0b5d642b7974d794d0c5b653baba70d56f4"
+    }
+  },
+  "updated_at": "2026-11-11T13:24:52Z"
 }
