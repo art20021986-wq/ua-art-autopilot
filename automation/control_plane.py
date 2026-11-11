@@ -2086,7 +2086,7 @@ def _verify_nonce_copy_runtime_activation(
 
 
 QUEUE_ACTIVATION_PREFIX = "state/runtime_activations/AUTOSTART-QUEUE-20261111"
-QUEUE_ACTIVATION_OWNER_COMMAND = "OWNER_APPROVAL_PENDING"
+QUEUE_ACTIVATION_OWNER_COMMAND = "Да"
 QUEUE_CHANGED_RUNTIME_PATHS = (
     ".github/workflows/uaart_critical.yml", ".github/workflows/uaart_fast.yml",
     ".github/workflows/uaart_orchestrator.yml", ".github/workflows/uaart_standard.yml",
