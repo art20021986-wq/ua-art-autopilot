@@ -7,21 +7,23 @@
   "created_at": "2026-11-11T11:19:16Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T11:19:16Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-11T11:24:51Z",
+  "heartbeat_at": "2026-11-11T11:24:51Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43007896293",
     "task_id": "AUCTION-HOME-PREFLIGHT-20261111-R3",
     "task_sha256": "893c65b3db91ef6849df65a08319ba129998a9845efa36b3368ee10e2b6da269"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-6743de5f2c417480-fcc3b58e42b0a0fd",
   "receipt_path": "state/receipts/AUCTION-HOME-PREFLIGHT-20261111-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "89850edd74109355fee9846652aa8b9d63da16b000c8fe52eb699fcd3cab4302",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AUCTION-HOME-PREFLIGHT-20261111-R3.json",
   "request_sha256": "893c65b3db91ef6849df65a08319ba129998a9845efa36b3368ee10e2b6da269",
   "resource_locks": [
@@ -29,8 +31,39 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "053579e54e429d471805016dd77b6228cc13d9e8",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92795166720,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.119
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-11T11:19:16Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "c31588a3be70268e22a235c628a86727a090e38adaaa9b57e8b587b813de8f0e",
+    "file_sha256": {
+      "cloud/auction_home_001/candidate_builder.py": "200ef8a603ae0ef0363a7d913e3a0697850ab4cff9a042014e2fca5d54802a70",
+      "cloud/auction_home_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/auction_home_001/deployment_bootstrap.py": "7ffc5b4d7201fc823c75783c6029634220684f7dc60762a3dfcf17a5da1277cb",
+      "cloud/auction_home_001/deployment_remote.py": "f5f951e61b67969cf9e26f4a82dd15a5246296846716996f55cd72a838b84b2e",
+      "cloud/auction_home_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/auction_home_001/deployment_transport.py": "1d8969da7091527b836540a0b0537beaa3c0993d7a377f143948905a8be83502",
+      "cloud/auction_home_001/make_release.py": "d18181ac05509e5066687b27ba1f69f480097e6d2417b2844002448bef312b06",
+      "cloud/auction_home_001/release_constants.py": "7bf35b62872a880cafc712e9b2a400c8c125d25ef95503f3455c8a10311d6d5f",
+      "cloud/auction_home_001/test_auction_home.py": "c20b48e95f28ba07b446eeb3f01f754063e48e8a1626ea7f8b79c22c1b7aacf0",
+      "cloud/auction_home_001/test_bids_vin.py": "38ee2e35c297ff57ea08ae64588619f51b125d3a299da84eb771d8d95fd493e5",
+      "cloud/auction_home_001/test_deployment.py": "1f6cd0a882ee441a93129a899f1860cf2fd5e7b1e75f36eba9035756bf123a1e",
+      "cloud/auction_home_001/ua_auction_bids.py": "934ae8642946ea66c7c7782c1bc550f8df7adf65dee96e8a8fc61af48965ecb4",
+      "cloud/auction_home_001/ua_auction_bids_bot.py": "11e3d27c5227c9d333169437b2981643b3a1230c737ff6ce178ec230c1a5dd87",
+      "cloud/auction_home_001/ua_auction_clients_bot.py": "76ab27475cc83c9fa3c47cfb27e7d4f020faee2a23f2beb1591da181c4a2cc19",
+      "cloud/auction_home_001/ua_auction_clients_view.py": "85a8381c23254ff595f48e12f1fbafa7180a1a67eddf28dff1b5b48c70e1c8d5",
+      "cloud/auction_home_001/ua_auction_stats.py": "268e9299c8004b55db8784e85675e6319042163f4d0179457ed4e50ae1a019db",
+      "cloud/auction_home_001/ua_menu_extra.py": "3672fef09b6e37aaf5b5e0005c6ccede0fd0a7191b936398dd3d09c36d6c9e41"
+    }
+  },
+  "updated_at": "2026-11-11T11:24:51Z"
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """TERMS-LINKS-001: the candidate on the live sources (pages fetched 2026-11-11, module fixtures of the installed chain)."""
+import importlib.util
 from pathlib import Path
 import re
 import sys
@@ -73,19 +74,28 @@ class Release(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'TERMS_ALREADY_APPLIED'):
                 candidate_builder.edit(name, self.result[name])
 
+    def load(self, folder, name, base):
+        """The appended tail run on top of a stand-in base definition, imported as a module."""
+        code = self.result[name].decode()
+        path = Path(folder) / ('chain_' + name)
+        path.write_text(base + code[code.index('# TERMS-LINKS-001'):], encoding='utf-8')
+        spec = importlib.util.spec_from_file_location('chain_' + name[:-3], path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
     def test_chains_run(self):
         with tempfile.TemporaryDirectory() as folder:
             (Path(folder) / 'ua_terms_links.py').write_bytes(self.result['ua_terms_links.py'])
             sys.path.insert(0, folder)
             try:
-                namespace = {'inject_html': lambda s: s + '<a href="info.html">x</a>'}
-                code = self.result['site_ge_inject.py'].decode()
-                exec(code[code.index('# TERMS-LINKS-001'):], namespace)
-                self.assertEqual(namespace['inject_html']('<p>'), '<p>')
-                namespace = {'pages': lambda *a, **k: {'seo/ua/x.html': '<header><nav><a href="/video/info.html">Умови</a></nav></header><h1>x</h1>'}}
-                code = self.result['ua_seo_landings.py'].decode()
-                exec(code[code.index('# TERMS-LINKS-001'):], namespace)
-                self.assertEqual(namespace['pages']([], set(), set()), {'seo/ua/x.html': '<h1>x</h1>'})
+                inject = self.load(folder, 'site_ge_inject.py',
+                                   'def inject_html(source):\n    return source + \'<a href="info.html">x</a>\'\n')
+                self.assertEqual(inject.inject_html('<p>'), '<p>')
+                landings = self.load(folder, 'ua_seo_landings.py',
+                                     'def pages(*a, **k):\n    return {"seo/ua/x.html": \'<header><nav><a href="/video/info.html">'
+                                     'Умови</a></nav></header><h1>x</h1>\'}\n')
+                self.assertEqual(landings.pages([], set(), set()), {'seo/ua/x.html': '<h1>x</h1>'})
             finally:
                 sys.path.remove(folder)
 
