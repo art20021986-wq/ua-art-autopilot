@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "00c7e02a9ddcfbc62bbadaccaffb54e572221fcb2a35fbe5fa2661973c0f2a7c",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T16:36:28Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T16:43:28Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43059491793",
     "task_id": "KOREA-HOW-SYNC-INSTALL-20261111-R4",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43059491793-caa946d7eb1e819c",
   "production_transaction_path": "state/transactions/KOREA-HOW-SYNC-INSTALL-20261111-R4.caa946d7eb1e819c79a3d514eba57227529bf6f0a59f27e22c35b06077f5e291.43059491793.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-93b68730fbda2edc-7b95b76621f8f4f8",
   "receipt_path": "state/receipts/KOREA-HOW-SYNC-INSTALL-20261111-R4.json",
   "receipt_validation_status": "PENDING",
@@ -93,5 +93,5 @@
       "cloud/korea_how_sync_001/test_release.py": "bb76c0bf568e218a6cdf762257d9181fa05839a95cd0a453f4fa6a4b815e3342"
     }
   },
-  "updated_at": "2026-11-11T16:36:28Z"
+  "updated_at": "2026-11-11T16:43:28Z"
 }
