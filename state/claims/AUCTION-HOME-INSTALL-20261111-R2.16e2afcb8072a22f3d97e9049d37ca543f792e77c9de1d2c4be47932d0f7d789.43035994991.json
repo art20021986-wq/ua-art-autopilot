@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "e77c885cf68a1e7f5515ad44bc77f6157d70abbca46ffd9c827d1831251f4052",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T14:35:11Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-11T14:49:18Z",
+  "heartbeat_at": "2026-11-11T14:49:18Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43035994991",
     "task_id": "AUCTION-HOME-INSTALL-20261111-R2",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 686.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 307.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 295.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43035994991-16e2afcb8072a22f",
   "production_transaction_path": "state/transactions/AUCTION-HOME-INSTALL-20261111-R2.16e2afcb8072a22f3d97e9049d37ca543f792e77c9de1d2c4be47932d0f7d789.43035994991.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-167a5da75cfd7a98-d9eaee951a5cf350",
   "receipt_path": "state/receipts/AUCTION-HOME-INSTALL-20261111-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "35dcb646931adaad3d8895381b097f162f06f12bcf8c763cf0d3e02ce7c092a8",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AUCTION-HOME-INSTALL-20261111-R2.json",
   "request_sha256": "16e2afcb8072a22f3d97e9049d37ca543f792e77c9de1d2c4be47932d0f7d789",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "c31588a3be70268e22a235c628a86727a090e38adaaa9b57e8b587b813de8f0e",
     "file_sha256": {
@@ -100,5 +131,5 @@
       "cloud/auction_home_001/ua_menu_extra.py": "3672fef09b6e37aaf5b5e0005c6ccede0fd0a7191b936398dd3d09c36d6c9e41"
     }
   },
-  "updated_at": "2026-11-11T14:35:11Z"
+  "updated_at": "2026-11-11T14:49:18Z"
 }
