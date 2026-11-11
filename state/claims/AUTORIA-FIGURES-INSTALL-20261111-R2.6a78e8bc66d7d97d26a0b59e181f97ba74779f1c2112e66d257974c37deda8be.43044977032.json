@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "cbbcfe6fdf7fb0883c62e9c82e16d455d8b37a4567a8a9fd15bfb67161a3a335",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T15:13:00Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-11T15:26:51Z",
+  "heartbeat_at": "2026-11-11T15:26:51Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43044977032",
     "task_id": "AUTORIA-FIGURES-INSTALL-20261111-R2",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 574.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 137.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43044977032-6a78e8bc66d7d97d",
   "production_transaction_path": "state/transactions/AUTORIA-FIGURES-INSTALL-20261111-R2.6a78e8bc66d7d97d26a0b59e181f97ba74779f1c2112e66d257974c37deda8be.43044977032.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-f8a416b1e8441dff-2b8f41c1123fc947",
   "receipt_path": "state/receipts/AUTORIA-FIGURES-INSTALL-20261111-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "fb8ce1d21fde7d1a9a0a3ebaaedb7d48e88a55367d2a7f62a5247ecf0ba8643d",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AUTORIA-FIGURES-INSTALL-20261111-R2.json",
   "request_sha256": "6a78e8bc66d7d97d26a0b59e181f97ba74779f1c2112e66d257974c37deda8be",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "7016d74c0415f457103c464fa66e3afdd881988398931f69c14790933d029445",
     "file_sha256": {
@@ -89,5 +112,5 @@
       "cloud/autoria_sold_001/test_release.py": "458936b4f2ae3a9991e7a8ef282d8104bf5f42a070314d527db25713ae05983e"
     }
   },
-  "updated_at": "2026-11-11T15:13:00Z"
+  "updated_at": "2026-11-11T15:26:51Z"
 }
