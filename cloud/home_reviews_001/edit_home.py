@@ -15,7 +15,7 @@ BLOCK = re.compile(r'<section class="ua-reviews section-frame" id="vidguky">.*?<
 BADGE = re.compile(r'<a class="ua-autoria-badge" [^>]*>.*?</a>', re.S)
 CSS = re.compile(r'<style id="%s">.*?</style>' % reviews_block.MARK, re.S)
 # Public proof that this release is live.
-CHECK = 'class="ua-autoria-mark"'
+CHECK = 'src="%s"' % reviews_block.LOGO
 
 
 def _once(pattern, text, new):

@@ -7,6 +7,8 @@ Release 4: the mark is plain letters on the white button, «AUTO» red and «.RI
 Release 5 (owner 2026-10-27): the same mark in one colour, black, with no AUTO.RIA brand colours.
 Release 6 (owner 2026-10-27): «AUTO.RIA» is plain text in the site's own design: site font, gold text and thin gold
 frame on the button and badge, no white plate and no Roboto.
+Release 7 (owner 2026-11-11): the official AUTO.RIA logo again instead of the text «AUTO.RIA» (it links to their
+site); the button and badge keep the release 6 design.
 """
 from html import escape
 
@@ -14,6 +16,7 @@ import autoria_click
 import reviews_data as data
 
 MARK = 'ua-autoria-reviews-001'
+LOGO = '/video/brand/autoria-logo.svg'
 
 CSS = '''<style id="%s">
 .ua-reviews p{margin:0}
@@ -29,7 +32,7 @@ CSS = '''<style id="%s">
 .ua-review blockquote{margin:0;color:#dce4ef;font-size:14px;line-height:1.5;flex:1}
 .ua-review figcaption{color:#9fb0c4;font-size:12px}
 .ua-reviews-button{margin-top:16px;display:flex;align-items:center;justify-content:center;gap:12px;min-height:56px;padding:8px 16px;border:1px solid var(--gold);border-radius:14px;color:var(--gold);font-weight:800;font-size:15px;text-decoration:none}
-.ua-autoria-mark{white-space:nowrap}
+.ua-autoria-mark{display:block;width:auto}
 .ua-reviews-note{margin-top:8px!important;color:#9fb0c4;font-size:12px;text-align:center}
 .ua-autoria-badge{margin-top:16px;display:inline-flex;align-items:center;gap:10px;padding:7px 12px;border:1px solid var(--gold);border-radius:10px;color:var(--gold);font-size:13px;font-weight:700;text-decoration:none}
 @media (max-width:700px){
@@ -51,8 +54,10 @@ def _link(placement):
         escape(data.DEALER_URL), autoria_click.ATTRIBUTE, placement)
 
 
-# Not a [data-ru] node: the language switch leaves it as is.
-MARK_HTML = '<span class="ua-autoria-mark">AUTO.RIA</span>'
+def _logo(height):
+    """Official AUTO.RIA logo (header SVG of auto.ria.com, 135x40, live since release 1)."""
+    return '<img class="ua-autoria-mark" src="%s" alt="AUTO.RIA" width="%d" height="%d" loading="lazy" decoding="async">' % (
+        LOGO, round(height * 135 / 40), height)
 
 
 def _review(author, date, stars, text):
@@ -78,7 +83,7 @@ def block():
                       'იქვეა ყველა ავტომობილი, რომელიც უკვე გავყიდეთ.'),
                stats, reviews, _link(autoria_click.BLOCK),
                _attrs('Все отзывы и проданные авто', 'Усі відгуки та продані авто', 'ყველა შეფასება და გაყიდული ავტომობილი'),
-               MARK_HTML,
+               _logo(30),
                _attrs('Откроется наша страница на AUTO.RIA', 'Відкриється наша сторінка на AUTO.RIA',
                       'გაიხსნება ჩვენი გვერდი AUTO.RIA‑ზე'),
                autoria_click.SCRIPT))
@@ -86,4 +91,4 @@ def block():
 
 def badge():
     return '<a class="ua-autoria-badge" %s><span %s</span>%s</a>' % (
-        _link(autoria_click.BADGE), _attrs('Мы на', 'Ми на', 'გვიპოვეთ'), MARK_HTML)
+        _link(autoria_click.BADGE), _attrs('Мы на', 'Ми на', 'გვიპოვეთ'), _logo(26))
