@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "e77c885cf68a1e7f5515ad44bc77f6157d70abbca46ffd9c827d1831251f4052",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T14:30:16Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T14:35:11Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43035994991",
     "task_id": "AUCTION-HOME-INSTALL-20261111-R2",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43035994991-16e2afcb8072a22f",
   "production_transaction_path": "state/transactions/AUCTION-HOME-INSTALL-20261111-R2.16e2afcb8072a22f3d97e9049d37ca543f792e77c9de1d2c4be47932d0f7d789.43035994991.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-167a5da75cfd7a98-d9eaee951a5cf350",
   "receipt_path": "state/receipts/AUCTION-HOME-INSTALL-20261111-R2.json",
   "receipt_validation_status": "PENDING",
@@ -100,5 +100,5 @@
       "cloud/auction_home_001/ua_menu_extra.py": "3672fef09b6e37aaf5b5e0005c6ccede0fd0a7191b936398dd3d09c36d6c9e41"
     }
   },
-  "updated_at": "2026-11-11T14:30:16Z"
+  "updated_at": "2026-11-11T14:35:11Z"
 }
