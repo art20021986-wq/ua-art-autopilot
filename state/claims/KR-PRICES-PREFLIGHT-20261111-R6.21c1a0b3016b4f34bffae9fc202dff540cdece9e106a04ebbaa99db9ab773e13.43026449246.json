@@ -1,0 +1,65 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KR-PRICES-PREFLIGHT-20261111-R6.21c1a0b3016b4f34bffae9fc202dff540cdece9e106a04ebbaa99db9ab773e13.json",
+  "autostart_ledger_sha256": "328ee52a0e02f874b0685b00a14ac8df8ac50f015e0726fb9fa093a6ccd74841",
+  "autostart_source_commit": "90ec250739b485ecf175dcb98b78c5525f6f4f48",
+  "created_at": "2026-11-11T13:09:58Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-11T13:16:46Z",
+  "heartbeat_at": "2026-11-11T13:16:46Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43026449246",
+    "task_id": "KR-PRICES-PREFLIGHT-20261111-R6",
+    "task_sha256": "21c1a0b3016b4f34bffae9fc202dff540cdece9e106a04ebbaa99db9ab773e13"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-ae027642884bf618-38f33a0657ae2c00",
+  "receipt_path": "state/receipts/KR-PRICES-PREFLIGHT-20261111-R6.json",
+  "receipt_sha256": "29f59ac8b818b887807a5f27ec3e0eeb9371773decd301edf4dec7b9e76d9cee",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/KR-PRICES-PREFLIGHT-20261111-R6.json",
+  "request_sha256": "21c1a0b3016b4f34bffae9fc202dff540cdece9e106a04ebbaa99db9ab773e13",
+  "resource_locks": [
+    "PATH_SCOPE:ae027642884bf618"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "a6d753cf66a1648386d08a7af698595f4fe09302",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92794486784,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 40.119
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/kr_prices_bot_001/candidate_builder.py": "4ac7b1e48b316297c9d827d7edb9f1cab0062af9e62a0058eb71efbad523e37a",
+      "cloud/kr_prices_bot_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/kr_prices_bot_001/deployment_bootstrap.py": "aed5379adc549d0559e0054fa58b36790efd5c219b00965c56f1fb2b0cad920a",
+      "cloud/kr_prices_bot_001/deployment_remote.py": "09a74c4e706cff1fb79c356c3f51f256e9da37e409ac63c53b4ea7ff8b911e81",
+      "cloud/kr_prices_bot_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/kr_prices_bot_001/deployment_transport.py": "6dc9dcb5f54f26080016aa8a2a2e4c95d28bace951abf395bca229ee05327624",
+      "cloud/kr_prices_bot_001/edit_cars_ui.py": "3fb10d1fa691381597c8286f9a5b258c61da7c41e44221e76510687bf766f6dc",
+      "cloud/kr_prices_bot_001/make_release.py": "5cec815d2bdab3fc5b4124a9cdab8237a073f15f2157eaecbe99f04510fdafa3",
+      "cloud/kr_prices_bot_001/release_constants.py": "811b33d97cdf363805660384414b1a7d1076436ca6714989d27ff37fc2b570a8",
+      "cloud/kr_prices_bot_001/test_deployment.py": "a050019b1a3e46a0bbc7c60bfb78185b10c2ea6104e3073a67f6e0c90cc7d95b",
+      "cloud/kr_prices_bot_001/test_kr_prices.py": "be826c7fdaf9e3aef080a0c74d59e9aca157d1acb2f60e24e8ebd04b3afc5b74",
+      "cloud/kr_prices_bot_001/ua_kr_prices_bot.py": "34783cd46945577ad3952a4748bf9deeed36ad8a21d3fb24949b75756a0f8640",
+      "cloud/kr_prices_bot_001/ua_kr_prices_store.py": "15cdc9a6b23fa12d023134fd8046a0b5d642b7974d794d0c5b653baba70d56f4"
+    }
+  },
+  "updated_at": "2026-11-11T13:16:46Z"
+}

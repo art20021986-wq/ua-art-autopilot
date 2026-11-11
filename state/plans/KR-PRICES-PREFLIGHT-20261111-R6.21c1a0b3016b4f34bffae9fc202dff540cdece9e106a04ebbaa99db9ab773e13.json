@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KR-PRICES-PREFLIGHT-20261111-R6.21c1a0b3016b4f34bffae9fc202dff540cdece9e106a04ebbaa99db9ab773e13.json",
+  "autostart_ledger_sha256": "328ee52a0e02f874b0685b00a14ac8df8ac50f015e0726fb9fa093a6ccd74841",
+  "autostart_source_commit": "90ec250739b485ecf175dcb98b78c5525f6f4f48",
+  "created_at": "2026-11-11T13:09:58Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43026449246",
+    "task_id": "KR-PRICES-PREFLIGHT-20261111-R6",
+    "task_sha256": "21c1a0b3016b4f34bffae9fc202dff540cdece9e106a04ebbaa99db9ab773e13"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-ae027642884bf618-38f33a0657ae2c00",
+  "request_path": "tasks/requests/KR-PRICES-PREFLIGHT-20261111-R6.json",
+  "resource_locks": [
+    "PATH_SCOPE:ae027642884bf618"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
