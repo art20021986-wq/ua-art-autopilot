@@ -3,7 +3,7 @@
 Reads only. The card page generator and the modules that touch card HTML, the sitemap and the language
 script's loader are returned in full, sanitized (credential-like lines redacted, foreign URLs and long numbers
 masked). R1 read the card generator and sample pages; R2 read the language script and the card
-writers; R3 lists every Google Maps link in the top-level modules and public pages; R4 reads the files and image sizes for the speed work; R5 the routing, sitemap, home and order page sources; R6 the catalogue readers and page writers. Each file's sha256 is kept for a later exact edit.
+writers; R3 lists every Google Maps link in the top-level modules and public pages; R4 reads the files and image sizes for the speed work; R5 the routing, sitemap, home and order page sources; R6 the catalogue readers and page writers; R7 the landing and sitemap sources for SEO-KOREA-001. Each file's sha256 is kept for a later exact edit.
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -16,8 +16,9 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-# R6 (20261108): the catalogue/landing readers and the home writer, in full.
-FULL = ('ua_seo_catalog.py', 'ua_seo_index.py', 'ua_crm_public_sync.py', 'ua_public_freshness.py')
+# R7 (20261111): landing writer, hub texts, order models, sitemap and metadata modules, korea.html, for SEO-KOREA-001.
+FULL = ('ua_seo_landings.py', 'ua_seo_hub_texts.py', 'ua_seo_order_models.py', 'ua_seo_sitemap.py', 'ua_seo_metadata.py',
+        'ua_seo_index.py', 'video/korea.html', 'video/seo/ua/kia-sportage-koreya-kyiv.html')
 # R3 (MAPS): every Google Maps link in the top-level modules and public pages (public URLs, not masked).
 MAPS = re.compile(r'https?://(?:maps\.app\.goo\.gl|goo\.gl/maps|(?:www\.)?google\.[a-z.]+/maps|maps\.google\.[a-z.]+)[^\s\'"<>)\\]*')
 PARTIAL = {name: re.compile(r'web_app|WebAppInfo|telegram-web-app') for name in
