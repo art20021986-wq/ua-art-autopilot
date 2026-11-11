@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "10f8eb847e0c4b62ae5351649fdbd676a9eb825036a6dae2e4d0c3a54522845e",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T16:08:38Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T16:13:36Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43054875877",
     "task_id": "CARD-CANONICAL-RU-INSTALL-20261111",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43054875877-600e95c0a0853aa2",
   "production_transaction_path": "state/transactions/CARD-CANONICAL-RU-INSTALL-20261111.600e95c0a0853aa2997e6b5fa3c652ce9f431408be91bde7799bfbaa7f4651c0.43054875877.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-b4062ed3881012a8-64180e3bc2d4c096",
   "receipt_path": "state/receipts/CARD-CANONICAL-RU-INSTALL-20261111.json",
   "receipt_validation_status": "PENDING",
@@ -88,5 +88,5 @@
       "cloud/card_canonical_ru_001/test_release.py": "d1f537a55d540e85a0a742562d7c54734dc959d6580c5c413d0ccfb8008f9f03"
     }
   },
-  "updated_at": "2026-11-11T16:08:38Z"
+  "updated_at": "2026-11-11T16:13:36Z"
 }
