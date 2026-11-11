@@ -29,6 +29,7 @@ permissions:
 concurrency:
   group: uaart-intake-main
   cancel-in-progress: false
+  queue: max
 
 jobs:
   validate:

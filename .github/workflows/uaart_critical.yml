@@ -33,6 +33,7 @@ permissions:
 concurrency:
   group: ${{ inputs.production_required == 'true' && 'ua-art-production-writer' || format('uaart-resource-{0}', inputs.lock_key) }}
   cancel-in-progress: false
+  queue: max
 
 env:
   UAART_RUNTIME_PINNED_PATHS: >-
