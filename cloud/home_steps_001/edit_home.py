@@ -1,7 +1,7 @@
 """Home page «5 кроків» block: steps 2–5 with the country switcher and the Korea terms (ORDER-PROCESS-001, owner
 2026-11-11; texts in steps_text.py).
 
-Inside the block only: the switcher goes under the heading, the Korea steps 2–5 before today's steps 2–5, which stay
+Inside the block only: the switcher and the Korea intro go under the heading, the Korea steps 2–5 before today's steps 2–5, which stay
 byte for byte but are marked data-ua-for="other" hidden (shown when another country is chosen), and the note,
 signature and scripts after the list. One CSS block goes before </head>. Step 1 and every other byte stay. Each anchor
 must occur exactly once and the release must not be live yet, otherwise nothing is changed.
@@ -39,7 +39,7 @@ def build(source):
     for anchor in (HEADING,) + OLD_STEPS:
         if block.count(anchor) != 1:
             raise ValueError('HOME_STEPS_ANCHOR')
-    block = block.replace(HEADING, HEADING + steps_block.switcher(), 1)
+    block = block.replace(HEADING, HEADING + steps_block.switcher() + steps_block.intro(), 1)
     block = block.replace(OLD_STEPS[0], steps_block.korea_steps() + OLD_STEPS[0], 1)
     for number, anchor in enumerate(OLD_STEPS, 2):
         block = block.replace(anchor, HIDDEN % number, 1)
