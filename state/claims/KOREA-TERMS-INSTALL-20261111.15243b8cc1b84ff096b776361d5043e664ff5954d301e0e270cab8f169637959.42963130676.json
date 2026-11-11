@@ -1,0 +1,128 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-TERMS-INSTALL-20261111.15243b8cc1b84ff096b776361d5043e664ff5954d301e0e270cab8f169637959.json",
+  "autostart_ledger_sha256": "7aab11b11c90adf999ce8d5e5c8042d312dad83db14170a39d499c96336a3dcc",
+  "autostart_source_commit": "94e662d9fae9b64f26590d34d4eccf4e17761cc3",
+  "created_at": "2026-11-11T05:06:39Z",
+  "critical_gate_evidence_sha256": "b53b81ef22623ea2f6c5cb6461aa09ab5e68b44e09ee8121830fc71d0d993f26",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-11T05:23:39Z",
+  "heartbeat_at": "2026-11-11T05:23:39Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "42963130676",
+    "task_id": "KOREA-TERMS-INSTALL-20261111",
+    "task_sha256": "15243b8cc1b84ff096b776361d5043e664ff5954d301e0e270cab8f169637959"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 428.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 52.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 60.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 42.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 54.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 62.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-42963130676-15243b8cc1b84ff0",
+  "production_transaction_path": "state/transactions/KOREA-TERMS-INSTALL-20261111.15243b8cc1b84ff096b776361d5043e664ff5954d301e0e270cab8f169637959.42963130676.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "path_scope-5257f47ec6adb102-f6cfb8e041d1b0df",
+  "receipt_path": "state/receipts/KOREA-TERMS-INSTALL-20261111.json",
+  "receipt_sha256": "27444f0b8734e0223d0f129e337dda9059d3aca2c69aed5a5e41421501bc2cef",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/KOREA-TERMS-INSTALL-20261111.json",
+  "request_sha256": "15243b8cc1b84ff096b776361d5043e664ff5954d301e0e270cab8f169637959",
+  "resource_locks": [
+    "PATH_SCOPE:5257f47ec6adb102"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "d839800bdf6889202622435c0a18943230c00257",
+  "storage_preflight": {
+    "age_seconds": 665.73,
+    "allowed": true,
+    "evidence_path": "state/storage/KOREA-TERMS-INSTALL-20261111.json",
+    "evidence_sha256": "b324affabcfdca86763f89475655f00f20c2d3e234cd6decf3a8b39440c1ccc6",
+    "free_bytes": 22853418496,
+    "heavy": true,
+    "measured_at": "2026-11-11T04:56:48.219075+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 34.70451858285714
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "43ecad4faee1d406ed133bd9cd7c4bb4442c084326217fe100197063b027e41f",
+    "file_sha256": {
+      "cloud/korea_terms_001/candidate_builder.py": "79ed23b06dc855e355cfc60bb8e9ff9beac7cb2880936fcd44dbe90244d71555",
+      "cloud/korea_terms_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/korea_terms_001/deployment_bootstrap.py": "214b0052e41631f4835adb7f7b9f3de20b3bae5f05935212fd80385ee542bf97",
+      "cloud/korea_terms_001/deployment_remote.py": "fa873ef265315a66c2e59f4519d5b3a7a395bc5f1b2b1ce74fa8aee6b9931a9d",
+      "cloud/korea_terms_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/korea_terms_001/deployment_transport.py": "4e7dceaa8616156445d418d76d11b6ebff3e95a74b505becd8b71ad4a994d3e4",
+      "cloud/korea_terms_001/make_release.py": "0a098d5b64674ecd6574e86abac4c1b00299e32af6de6f4b49ea46083e5245c2",
+      "cloud/korea_terms_001/release_constants.py": "b09823e73e09b53a17e63adcecda61379d737ac5af46b84003c787501b8a3135",
+      "cloud/korea_terms_001/test_deployment.py": "03c7864333cfd7c38f57f24e6dc0c2a23539b9f728322094c68437552a6ffe39",
+      "cloud/korea_terms_001/test_release.py": "40d85ec3babe91f52e1d5d1e3bd42f9a7057b48b0043721fd55ba6ccfff2df18"
+    }
+  },
+  "updated_at": "2026-11-11T05:23:39Z"
+}
