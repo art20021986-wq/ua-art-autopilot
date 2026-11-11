@@ -1,4 +1,4 @@
-"""The AUTORIA-SOLD candidate: the job as new files, zipped flat and rebuilt on the server."""
+"""The AUTORIA-SOLD candidate: the job files, zipped flat and rebuilt on the server."""
 import io
 from pathlib import Path
 import sys
@@ -31,7 +31,7 @@ class CandidateTests(unittest.TestCase):
             self.assertIn('asold_%s.py' % module, names)
         self.assertTrue(all('/' not in name for name in names))
 
-    def test_candidate_is_new_files_only(self):
+    def test_candidate_is_the_job_files_only(self):
         archive = self.bundle()
         unpacked = Path(self._tmp())
         for name in archive.namelist():
@@ -45,6 +45,7 @@ class CandidateTests(unittest.TestCase):
         for name, value in files.items():
             compile(value, name, 'exec')
         self.assertFalse(any(candidate_builder.is_page(name) for name in files))
+        self.assertEqual(set(candidate_builder.SOURCE_FILES), set(files))  # release 2 replaces exactly these
 
     def _tmp(self):
         import tempfile
