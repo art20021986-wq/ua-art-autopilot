@@ -39,6 +39,9 @@ AI_STATUSES = {"NOT_REQUESTED", "PENDING", "RECEIVED", "FAILED"}
 SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 TASK_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{1,79}$")
 MAX_STORAGE_PROBE_AGE_SECONDS = 30 * 60
+# A production request leaves the intake queue only with at least half of the probe's life left, so the short
+# production-writer queue before `prepare` cannot age it past MAX_STORAGE_PROBE_AGE_SECONDS (which would HALT).
+CLAIM_STORAGE_PROBE_MAX_AGE_SECONDS = 15 * 60
 EXECUTION_MODE_SCHEMA = "UA-ART-EXECUTION-MODE-1"
 AUTOMATIC_APPROVAL_SCHEMA = "UA-ART-AUTOMATIC-MODE-APPROVAL-1"
 RUNTIME_MANIFEST_SCHEMA = "UA-ART-AUTOPILOT-RUNTIME-MANIFEST-1"
@@ -2155,6 +2158,73 @@ def _verify_queue_runtime_activation(
     return registered
 
 
+STORAGE_CLAIM_ACTIVATION_PREFIX = "state/runtime_activations/STORAGE-AT-CLAIM-20261111"
+STORAGE_CLAIM_ACTIVATION_OWNER_COMMAND = "Да, конечно, исправ, как считаешь."
+STORAGE_CLAIM_CHANGED_RUNTIME_PATHS = ("automation/control_plane.py",)
+
+
+def _verify_storage_claim_runtime_activation(
+    *, root: pathlib.Path, mode: Mapping[str, Any], approval: Mapping[str, Any],
+    runtime: Mapping[str, Any], runtime_sha: str,
+) -> dt.datetime:
+    """Validate the claim-time storage freshness change: a production request whose pinned probe is older than
+    CLAIM_STORAGE_PROBE_MAX_AGE_SECONDS is refused at claim; no gate is relaxed, no HALT or production policy
+    changes. Chains to the queue activation it was registered on."""
+    prefix = STORAGE_CLAIM_ACTIVATION_PREFIX
+    path = _runtime_activation_file(root, prefix + ".json")
+    if sha256_file(path) != require_sha(mode.get("runtime_activation_sha256"), "storage_claim_activation"):
+        raise ControlPlaneError("STORAGE_CLAIM_ACTIVATION_SHA")
+    activation = _runtime_activation_json(path)
+    expected = {
+        "schema_version": "UA-ART-STORAGE-CLAIM-REGISTRATION-1",
+        "task_id": "STORAGE-AT-CLAIM-20261111",
+        "scope": "CLAIM_TIME_STORAGE_FRESHNESS_ONLY",
+        "owner_command": STORAGE_CLAIM_ACTIVATION_OWNER_COMMAND,
+        "owner_actor_id": "321059821",
+        "repository": "art20021986-wq/ua-art-autopilot",
+        "mode_epoch": mode.get("mode_epoch"),
+        "halt_removed": False,
+        "application_write_allowed": False,
+        "previous_manifest_path": prefix + ".previous-manifest.json",
+        "previous_manifest_sha256": "8c68bc9503895ad68e205b63041a586e963fbe87057011f52af01ad37bb1a316",
+        "previous_mode_path": prefix + ".previous-mode.json",
+        "previous_mode_sha256": "efdb660a098dafc5f9497bc6fb082a24c4cd7e735738b6aff396a5035e4fff11",
+        "runtime_manifest_path": RUNTIME_MANIFEST_PATH,
+        "runtime_manifest_sha256": runtime_sha,
+        "changed_runtime_paths": sorted(STORAGE_CLAIM_CHANGED_RUNTIME_PATHS),
+    }
+    if set(activation) != set(expected) | {"registered_at", "source_commit"}:
+        raise ControlPlaneError("STORAGE_CLAIM_ACTIVATION_KEYS")
+    if any(activation.get(key) != value for key, value in expected.items()):
+        raise ControlPlaneError("STORAGE_CLAIM_ACTIVATION_SCOPE")
+    if not re.fullmatch(r"[0-9a-f]{40}", str(activation.get("source_commit", ""))):
+        raise ControlPlaneError("STORAGE_CLAIM_ACTIVATION_SOURCE_COMMIT")
+    previous = {}
+    for kind in ("mode", "manifest"):
+        snapshot = _runtime_activation_file(root, activation["previous_" + kind + "_path"])
+        if sha256_file(snapshot) != activation["previous_" + kind + "_sha256"]:
+            raise ControlPlaneError("STORAGE_CLAIM_ACTIVATION_PREVIOUS_" + kind.upper())
+        previous[kind] = _runtime_activation_json(snapshot)
+    old_mode, old_runtime = previous["mode"], previous["manifest"]
+    preserved = dict(mode)
+    for key in ("runtime_manifest_sha256", "runtime_activation_path", "runtime_activation_sha256"):
+        preserved[key] = old_mode[key]
+    if preserved != old_mode:
+        raise ControlPlaneError("STORAGE_CLAIM_ACTIVATION_MODE_POLICY_DRIFT")
+    old_time = _verify_runtime_activation(
+        root=root, mode=old_mode, approval=approval, runtime=old_runtime,
+        runtime_sha=activation["previous_manifest_sha256"])
+    files = runtime.get("files")
+    if (not isinstance(files, dict) or set(files) != set(RUNTIME_PINNED_PATHS)
+            or {name for name in files if files[name] != old_runtime["files"][name]}
+            != set(STORAGE_CLAIM_CHANGED_RUNTIME_PATHS)):
+        raise ControlPlaneError("STORAGE_CLAIM_ACTIVATION_RUNTIME_SCOPE")
+    registered = parse_utc(str(activation["registered_at"]))
+    if registered < old_time:
+        raise ControlPlaneError("STORAGE_CLAIM_ACTIVATION_TIME_ORDER")
+    return registered
+
+
 def _verify_runtime_activation(
     *, root: pathlib.Path, mode: Mapping[str, Any], approval: Mapping[str, Any],
     runtime: Mapping[str, Any], runtime_sha: str,
@@ -2166,6 +2236,9 @@ def _verify_runtime_activation(
     The dependency order is code -> manifest -> registration -> mode, with no
     hash of a file embedded into itself.
     """
+    if mode.get("runtime_activation_path") == STORAGE_CLAIM_ACTIVATION_PREFIX + ".json":
+        return _verify_storage_claim_runtime_activation(
+            root=root, mode=mode, approval=approval, runtime=runtime, runtime_sha=runtime_sha)
     if mode.get("runtime_activation_path") == QUEUE_ACTIVATION_PREFIX + ".json":
         return _verify_queue_runtime_activation(
             root=root, mode=mode, approval=approval, runtime=runtime, runtime_sha=runtime_sha)
@@ -2789,6 +2862,11 @@ def claim_request(
         result["idempotent"] = True
         return result
 
+    if bool(raw.get("production_required", False)) and isinstance(raw.get("storage_probe"), dict):
+        # STORAGE-AT-CLAIM-20261111: refuse before any claim or lock exists (no HALT, nothing to reconcile) when
+        # the queue already aged the pinned target probe; `prepare` keeps its own 30-minute check unchanged.
+        _production_storage_probe(raw, root=root, max_age_seconds=CLAIM_STORAGE_PROBE_MAX_AGE_SECONDS)
+
     for path in _claim_files(root):
         other = read_json(path)
         other_identity = other.get("identity") or {}
@@ -3244,6 +3322,7 @@ def _production_storage_probe(
     *,
     root: pathlib.Path,
     now: dt.datetime | None = None,
+    max_age_seconds: int = MAX_STORAGE_PROBE_AGE_SECONDS,
 ) -> dict[str, Any]:
     """Load a recent, immutable read-only measurement of the production target.
 
@@ -3270,7 +3349,7 @@ def _production_storage_probe(
     measured_at = parse_utc(str(probe.get("measured_at", "")))
     current = (now or dt.datetime.now(dt.timezone.utc)).astimezone(dt.timezone.utc)
     age_seconds = (current - measured_at).total_seconds()
-    if age_seconds < -120 or age_seconds > MAX_STORAGE_PROBE_AGE_SECONDS:
+    if age_seconds < -120 or age_seconds > max_age_seconds:
         raise ControlPlaneError("STORAGE_PROBE_STALE_OR_FUTURE")
 
     try:

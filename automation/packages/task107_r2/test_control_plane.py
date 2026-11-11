@@ -1143,6 +1143,46 @@ class ControlPlaneTests(unittest.TestCase):
             self.assertEqual(result["status"], "PASS")
             self.assertEqual(result["measurement_scope"], "production_target_read_only_probe")
 
+    def _probe_request(self, root, task_id, minutes_old):
+        probe_rel = "state/storage/%s.json" % task_id
+        probe_path = root / probe_rel
+        probe_path.parent.mkdir(parents=True, exist_ok=True)
+        measured = dt.datetime.now(dt.timezone.utc) - dt.timedelta(minutes=minutes_old)
+        probe = {
+            "target_environment": "production",
+            "read_only": True,
+            "measured_at": measured.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "total_bytes": 1_000_000_000,
+            "used_bytes": 600_000_000,
+            "free_bytes": 400_000_000,
+        }
+        probe_path.write_text(json.dumps(probe, sort_keys=True) + "\n", encoding="utf-8")
+        probe_sha = hashlib.sha256(probe_path.read_bytes()).hexdigest()
+        return self.write_request(
+            root, task_id, production=True,
+            storage_probe={"evidence_path": probe_rel, "evidence_sha256": probe_sha},
+        )
+
+    def test_claim_refuses_production_probe_aged_in_the_queue(self):
+        # STORAGE-AT-CLAIM-20261111: a probe older than 15 minutes is refused at claim, before any claim exists.
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            request = self._probe_request(root, "TASK-STORAGE-AGED", minutes_old=20)
+            with self.assertRaisesRegex(CP.ControlPlaneError, "STORAGE_PROBE_STALE_OR_FUTURE"):
+                CP.claim_request(request, "run-1", root=root)
+            self.assertEqual(list(CP._claim_files(root)), [])
+
+    def test_claim_accepts_fresh_production_probe_and_prepare_keeps_30_minutes(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder)
+            request = self._probe_request(root, "TASK-STORAGE-FRESH", minutes_old=10)
+            CP.claim_request(request, "run-1", root=root)
+            later = dt.datetime.now(dt.timezone.utc) + dt.timedelta(minutes=15)
+            raw = CP.read_json(root / request)
+            self.assertEqual(CP._production_storage_probe(raw, root=root, now=later)["free_bytes"], 400_000_000)
+            with self.assertRaisesRegex(CP.ControlPlaneError, "STORAGE_PROBE_STALE_OR_FUTURE"):
+                CP._production_storage_probe(raw, root=root, now=later + dt.timedelta(minutes=10))
+
     def test_pre_and_post_health_record_pass(self):
         with tempfile.TemporaryDirectory() as folder:
             root = pathlib.Path(folder)
