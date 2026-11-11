@@ -1,0 +1,26 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CHAT-INSTALL-20261111.e459b824bd6ee94fc3999d4af90832802ae817251a6951b558bde8b0696c30ef.json",
+  "autostart_ledger_sha256": "81d072f745123d2e704255bab735b1b5600c76054457a1ed1869b00cf47c44a8",
+  "autostart_source_commit": "e2aaa1f1a33b9d9a37f9a757e15221eac4c4b3e5",
+  "created_at": "2026-11-11T17:30:18Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43068218851",
+    "task_id": "CHAT-INSTALL-20261111",
+    "task_sha256": "e459b824bd6ee94fc3999d4af90832802ae817251a6951b558bde8b0696c30ef"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "catalog_renderer-516734deb9ea5607",
+  "request_path": "tasks/requests/CHAT-INSTALL-20261111.json",
+  "resource_locks": [
+    "CATALOG_RENDERER",
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
