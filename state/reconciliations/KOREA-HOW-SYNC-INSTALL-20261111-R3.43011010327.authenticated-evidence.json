@@ -1,0 +1,25 @@
+{
+  "backup_started": false,
+  "claim_before_sha256": "9a51347f42505f030e8aa9d0ec970addcb06a302a326a27bdac5db2ed86e5ce6",
+  "claim_status_before": {
+    "critical_gate_status": "PENDING",
+    "package_compile_status": "PENDING",
+    "production_transaction_status": null,
+    "task_execution_status": "BLOCKED_ROOT_CAUSE"
+  },
+  "crm_unchanged": true,
+  "error": "STORAGE_PROBE_STALE_OR_FUTURE — the storage probe was older than 30 minutes when the install started",
+  "failed_step": "execute / critical / prepare: storage_preflight (before any production step)",
+  "halt_archive": "state/halt_history/KOREA-HOW-SYNC-INSTALL-20261111-R3.43011010327/halt.json",
+  "live_verify": "PASS: video/index.html, video/katalog.html, video/korea.html 200 (11:5x UTC); no prepare/open transaction commit for this task on main",
+  "owner_statement": "Да (2026-11-11, after the halt report)",
+  "precedent": "state/reconciliations/KOREA-AUCTION-INSTALL-20261110.42786047168.authenticated-evidence.json",
+  "production_transaction_status": "NOT_OPENED",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-11T13:07:21+00:00",
+  "rollback_status": "NOT_NEEDED (no production write)",
+  "run_id": "43011010327",
+  "site_state_after": "unchanged; no production step ran",
+  "task_id": "KOREA-HOW-SYNC-INSTALL-20261111-R3",
+  "workflow_conclusion": "failure"
+}
