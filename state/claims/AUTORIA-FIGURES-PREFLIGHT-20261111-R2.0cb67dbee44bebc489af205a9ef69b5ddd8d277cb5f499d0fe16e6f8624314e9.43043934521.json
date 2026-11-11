@@ -7,21 +7,23 @@
   "created_at": "2026-11-11T15:01:38Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T15:01:38Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-11T15:05:22Z",
+  "heartbeat_at": "2026-11-11T15:05:22Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43043934521",
     "task_id": "AUTORIA-FIGURES-PREFLIGHT-20261111-R2",
     "task_sha256": "0cb67dbee44bebc489af205a9ef69b5ddd8d277cb5f499d0fe16e6f8624314e9"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-a22a284722f4e050-cfee6d260dbe76c8",
   "receipt_path": "state/receipts/AUTORIA-FIGURES-PREFLIGHT-20261111-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "21a2196452dcc1ec321b94b0f23504ee8222a802d3396c78f4defdfad233d945",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AUTORIA-FIGURES-PREFLIGHT-20261111-R2.json",
   "request_sha256": "0cb67dbee44bebc489af205a9ef69b5ddd8d277cb5f499d0fe16e6f8624314e9",
   "resource_locks": [
@@ -29,8 +31,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "37a25c86b5f2b23d127dd81631f87c3cb9446cfe",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92792832000,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.12
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-11T15:01:38Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "7016d74c0415f457103c464fa66e3afdd881988398931f69c14790933d029445",
+    "file_sha256": {
+      "cloud/autoria_sold_001/autoria_sold/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cloud/autoria_sold_001/autoria_sold/job.py": "1ba204cb698a570be33ad96776c0a46ea10e4e43470833bb123a1b9b403f38c1",
+      "cloud/autoria_sold_001/autoria_sold/page.py": "ae020c65da19fca65742b6895d6795574f31ad6410b68c5051bbd626179296e5",
+      "cloud/autoria_sold_001/autoria_sold/test_autoria_sold.py": "426d64dfb0edb382dc21d0ae8b4490c7e4e4539d89c466e043a7306a5f9364ce",
+      "cloud/autoria_sold_001/candidate_builder.py": "44784859c1552eb35dcffc3f70d5ca21fb90e064c1605e616f6b028fe156a3a7",
+      "cloud/autoria_sold_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/autoria_sold_001/deployment_bootstrap.py": "bbbf98f6c683fc45c224a6c58b12b35bf0dde5399e5f965c412a5dd8127e661a",
+      "cloud/autoria_sold_001/deployment_remote.py": "66f1cd5f9abeefac73a816a30125f62cecdaea38bc1d97c4014c17fd31adc3ac",
+      "cloud/autoria_sold_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/autoria_sold_001/deployment_transport.py": "e7ba53838a6a83b7d57566e7768b1a14b4958e177f7d7ac3472e38fd509aaae9",
+      "cloud/autoria_sold_001/make_release.py": "6533937a4027eb547286025a28f84963f83abafca1d26f23c3c95be55d2cdb97",
+      "cloud/autoria_sold_001/release_constants.py": "8baad5f5ff2ce33988a6f512ca836b44f7e32d38d9c26f29c07128a6f6a9abbd",
+      "cloud/autoria_sold_001/test_deployment.py": "02a0b1bae50380036fda2bcad2b4367e2b9cd814bd69a803f366643c052810ee",
+      "cloud/autoria_sold_001/test_release.py": "458936b4f2ae3a9991e7a8ef282d8104bf5f42a070314d527db25713ae05983e"
+    }
+  },
+  "updated_at": "2026-11-11T15:05:22Z"
 }
