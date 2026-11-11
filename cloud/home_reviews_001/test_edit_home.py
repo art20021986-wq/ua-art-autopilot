@@ -70,9 +70,10 @@ class EditHomeTests(unittest.TestCase):
         self.assertTrue(block.endswith(autoria_click.SCRIPT + '</section>'))
         self.assertIn('Перевірте нас на AUTO.RIA', block)
         self.assertIn('Проверьте нас на AUTO.RIA', block)
-        self.assertNotIn('<img', block + reviews_block.badge())
-        self.assertEqual(block.count(reviews_block.MARK_HTML), 1)
-        self.assertEqual(reviews_block.badge().count(reviews_block.MARK_HTML), 1)
+        self.assertEqual(block.count('<img class="ua-autoria-mark" src="/video/brand/autoria-logo.svg" alt="AUTO.RIA" '
+                                     'width="101" height="30"'), 1)
+        self.assertEqual(reviews_block.badge().count('<img class="ua-autoria-mark" src="/video/brand/autoria-logo.svg" '
+                                                     'alt="AUTO.RIA" width="88" height="26"'), 1)
 
     def test_every_translated_node_has_georgian(self):
         for markup in (reviews_block.block(), reviews_block.badge()):
@@ -110,12 +111,12 @@ class EditHomeTests(unittest.TestCase):
     def test_candidate(self):
         self.assertEqual(candidate_builder.build({HOME: PAGE}, {}), {HOME: edit_home.build(PAGE)})
 
-    def test_mark_is_plain_text_in_site_design(self):
+    def test_official_logo_in_site_design(self):
         css = reviews_block.CSS
         for absent in ('Roboto', '@font-face', '#fff', 'url('):
             self.assertNotIn(absent, css)
         self.assertEqual(css.count('border:1px solid var(--gold)'), 2)  # button and badge
-        self.assertEqual(reviews_block.MARK_HTML, '<span class="ua-autoria-mark">AUTO.RIA</span>')
+        self.assertNotIn('>AUTO.RIA</span>', reviews_block.block() + reviews_block.badge())
 
 
 if __name__ == '__main__':

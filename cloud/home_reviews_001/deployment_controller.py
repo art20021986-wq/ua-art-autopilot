@@ -10,12 +10,14 @@ import urllib.request
 
 from deployment_transport import API, HERE, INBOX, canonical, sha, upload_package
 import edit_home
+import reviews_block
 
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 
 # Public evidence of each change: path -> text the page must contain.
 EXPECTED = {'/video/index.html': edit_home.CHECK,
+            reviews_block.LOGO: '<svg',
             '/video/katalog.html': ''}
 
 
