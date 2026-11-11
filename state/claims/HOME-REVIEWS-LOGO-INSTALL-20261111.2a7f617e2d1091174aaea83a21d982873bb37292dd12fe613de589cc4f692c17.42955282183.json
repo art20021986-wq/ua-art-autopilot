@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "fb01850cf74c5224243f3b1dd9a5b566c2bd657438f619dd01ec12efef035b6c",
   "autostart_source_commit": "19e31c52458e867951e9ecfa05af305eb8a4a972",
   "created_at": "2026-11-11T03:51:11Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "3d32e26b39625fdf9d50b61f7db3e1f0988da112e4f3648848dcbf4b7239b718",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T03:51:11Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-11T03:52:50Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "42955282183",
     "task_id": "HOME-REVIEWS-LOGO-INSTALL-20261111",
     "task_sha256": "2a7f617e2d1091174aaea83a21d982873bb37292dd12fe613de589cc4f692c17"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 292.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 257.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-42955282183-2a7f617e2d109117",
+  "production_transaction_path": "state/transactions/HOME-REVIEWS-LOGO-INSTALL-20261111.2a7f617e2d1091174aaea83a21d982873bb37292dd12fe613de589cc4f692c17.42955282183.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-REVIEWS-LOGO-INSTALL-20261111.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,40 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "3b81ab83f76de652e2269ffa23c49c866c831141",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 296.972,
+    "allowed": true,
+    "evidence_path": "state/storage/HOME-REVIEWS-LOGO-INSTALL-20261111.json",
+    "evidence_sha256": "5f1d0c32c0058918a9d58e12fff935eb8535edda111e32792b653d5787e56ef7",
+    "free_bytes": 22886682112,
+    "heavy": true,
+    "measured_at": "2026-11-11T03:47:50.631851+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 34.60947968
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-11T03:51:11Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "2fa9f8c259c319389eccf61c3dda2baddd2d2b614005895659396e7d9129f73e",
+    "file_sha256": {
+      "cloud/home_reviews_001/autoria_click.py": "7e7895ef860611bd59aace6ace767f2c229e9ebeb3d008b45ec43245133293b6",
+      "cloud/home_reviews_001/candidate_builder.py": "15bf271794021f6eb65bd3d430fc569341fdb04ebaec4a1f9975781125ab0c51",
+      "cloud/home_reviews_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_reviews_001/deployment_bootstrap.py": "c5770ffe84de4064875f78c8ede7ea93236aca3bcc9ee0f9ce8283d445889674",
+      "cloud/home_reviews_001/deployment_remote.py": "c7a194820bc62c13ab054c077ab118d12c3484a7cf23e75344f5d83ca7d731de",
+      "cloud/home_reviews_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_reviews_001/deployment_transport.py": "fdb26254ef62f9bb3c867c3d739412c6a1caeb5ddc625cd1da60c814f840e541",
+      "cloud/home_reviews_001/edit_home.py": "b9d7e11a3ed984bb6f5d47a5269b626d7379fdff9a1a587506718ee229557cc2",
+      "cloud/home_reviews_001/make_release.py": "88756dc8ac12c465df6855e72f8424077141dae4f7f42fece1cfbd5571426531",
+      "cloud/home_reviews_001/release_constants.py": "e40c966979e548cb5cbecc8800ae35b1457c377e78cb6810589f953935d661ea",
+      "cloud/home_reviews_001/reviews_block.py": "d810fdfc73b470aa28e15ac365b4ca8b3327beedfbbfaef4647a6e74484feb79",
+      "cloud/home_reviews_001/reviews_data.py": "eb5dc93f32aa88799e37ffb7ad0d5cfea78b7e93f02ca693bb3c4b22797b88f8",
+      "cloud/home_reviews_001/test_deployment.py": "5893ab24012e3cbdee64be1b146cb24f4ee3d956c0595c6bfafe4a283854ab55",
+      "cloud/home_reviews_001/test_edit_home.py": "44751500f377111e3452c13674d965f3d5fbfb54479ae3a659a2e388e379169a"
+    }
+  },
+  "updated_at": "2026-11-11T03:52:50Z"
 }
