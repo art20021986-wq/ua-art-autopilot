@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-CANONICAL-RU-PREFLIGHT-20261111-R2.3c6b25e275430835f3bd16e4d5b556671bea24936fa047ef6103dd6fa2ed82e4.json",
+  "autostart_ledger_sha256": "7e6a871b5c8acedc656e9775dd6ee0998898f7f676d966fa7a4d521160a87aa9",
+  "autostart_source_commit": "21a52594927e59ccffd2dc23402208f4090a9584",
+  "created_at": "2026-11-11T09:55:56Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42995593739",
+    "task_id": "CARD-CANONICAL-RU-PREFLIGHT-20261111-R2",
+    "task_sha256": "3c6b25e275430835f3bd16e4d5b556671bea24936fa047ef6103dd6fa2ed82e4"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-608c9d21b4c80e51-0bfdc90212698919",
+  "request_path": "tasks/requests/CARD-CANONICAL-RU-PREFLIGHT-20261111-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:608c9d21b4c80e51"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
