@@ -11,8 +11,8 @@
     {
       "action": "CLASSIFY_ROOT_CAUSE",
       "at": "2026-11-11T09:07:46Z",
-      "class": "UNKNOWN",
-      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 42989946528",
+      "class": "FAILED_BEFORE_PRODUCTION",
+      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 42989946528 Root cause: the read-only preview controller hit a network timeout to the PythonAnywhere API (deployment_transport NETWORK_TimeoutError). Nothing was written to production. Closed as FAILED (terminal) so its lock is released, as in the KOREA-SCORE R1 reconciliation; replaced by KOREA-SCORE-PREFLIGHT-20261111-R5.",
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "21d4d097f9283805"
@@ -42,6 +42,6 @@
   "source_commit": "50d3de3936fd418efa520a75ec7516afbd8aa8a3",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-11T09:07:46Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-11T09:25:00Z"
 }
