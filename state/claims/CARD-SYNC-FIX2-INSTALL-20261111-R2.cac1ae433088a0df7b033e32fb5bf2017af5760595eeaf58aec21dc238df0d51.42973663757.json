@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "ed4214edda871c4a1c2b2b1cb65fadaeb0241bbc63c4b63644904418c18809f0",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T07:01:55Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-11T07:11:41Z",
+  "heartbeat_at": "2026-11-11T07:11:41Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "42973663757",
     "task_id": "CARD-SYNC-FIX2-INSTALL-20261111-R2",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 743.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 286.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-42973663757-cac1ae433088a0df",
   "production_transaction_path": "state/transactions/CARD-SYNC-FIX2-INSTALL-20261111-R2.cac1ae433088a0df7b033e32fb5bf2017af5760595eeaf58aec21dc238df0d51.42973663757.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-05786f4b2761bab0-c53d2689ec55b29e",
   "receipt_path": "state/receipts/CARD-SYNC-FIX2-INSTALL-20261111-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "406a6ee05ef2f920e971339e62de081fe9ebba556e03c26c63821f75f5e32545",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CARD-SYNC-FIX2-INSTALL-20261111-R2.json",
   "request_sha256": "cac1ae433088a0df7b033e32fb5bf2017af5760595eeaf58aec21dc238df0d51",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "3520e0c3d39df91eb41c166c926ed70bf744dd616665699366297f5cde33d075",
     "file_sha256": {
@@ -86,5 +109,5 @@
       "cloud/card_sync_fix_002/test_release.py": "d5e80333588fac5f1d173a32b99d4940d52c3d71a4bc56294c0cdc378b15c0d0"
     }
   },
-  "updated_at": "2026-11-11T07:01:55Z"
+  "updated_at": "2026-11-11T07:11:41Z"
 }
