@@ -10,7 +10,7 @@ from deployment_transport import API, HERE, canonical, sha, upload_package
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 # The live site after the install is unchanged: the home page with its AUTO.RIA reviews block and the catalogue stay
-# healthy. The number file appears after the job's first run (the next 06:41 UTC).
+# healthy. The figures file is completed by the job's next run (06:41 UTC), as it still lacks years and reviews.
 EXPECTED = {'/video/index.html': 'id="vidguky"', '/video/katalog.html': ''}
 SITE = 'https://www.uaart.com.ua'
 AGENT = 'UAART-AutoriaSold-Verify/1'

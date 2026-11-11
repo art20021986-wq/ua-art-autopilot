@@ -74,13 +74,14 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of AUTORIA-SOLD-001: builds the job files (new autoria_sold/ and autoria_sold_job.py), '
+             'description': 'Preview of AUTORIA-SOLD-001 release 2: builds the job files (autoria_sold/ and autoria_sold_job.py, '
+                            'replacing the installed ones; years, sold cars and reviews), '
                             'checks they import and read a sample on the server Python, reads the live AUTO.RIA dealer page '
                             'once with the new code (robots.txt respected, nothing written), lists the scheduled tasks (read '
                             'only); measures storage. No source, CRM, HTML, media, task or bot change.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview AUTO.RIA sold-cars job'}
+             'title': 'Preview AUTO.RIA figures job'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -133,17 +134,17 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved (2026-11-11): weekly AUTO.RIA sold-cars number. New files only (autoria_sold/ '
-                              'job, autoria_sold_job.py) and one daily server task (06:41 UTC) that on Mondays, Kyiv time '
-                              '(or while the file is missing), reads the public AUTO.RIA dealer page and writes '
-                              'video/brand/autoria-sold.json. No page changes. Rollback removes '
-                              'the task, the files and their output. No CRM data change. Existing backup, bot pause, writer '
+               'description': 'Owner approved (2026-11-11): weekly AUTO.RIA figures, release 2. The installed job files '
+                              '(autoria_sold/, autoria_sold_job.py) are replaced so the job also reads years on AUTO.RIA and the '
+                              'reviews count; the daily server task (06:41 UTC) and video/brand/autoria-sold.json stay. No page '
+                              'changes. Rollback restores the earlier job files and keeps the task and its output. No CRM data '
+                              'change. Existing backup, bot pause, writer '
                               'locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/katalog.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install AUTO.RIA sold-cars job'}
+               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install AUTO.RIA figures job (release 2)'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),
