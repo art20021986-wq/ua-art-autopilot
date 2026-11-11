@@ -1,0 +1,27 @@
+{
+  "application_write_allowed": false,
+  "changed_runtime_paths": [
+    ".github/workflows/uaart_critical.yml",
+    ".github/workflows/uaart_fast.yml",
+    ".github/workflows/uaart_orchestrator.yml",
+    ".github/workflows/uaart_standard.yml",
+    ".github/workflows/uaart_transaction_watchdog.yml",
+    "automation/control_plane.py"
+  ],
+  "halt_removed": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "owner_actor_id": "321059821",
+  "owner_command": "Да",
+  "previous_manifest_path": "state/runtime_activations/AUTOSTART-QUEUE-20261111.previous-manifest.json",
+  "previous_manifest_sha256": "04bed14bb530b1c42d56fe37e6a0661dbc57a5d94adf54257a5e4e69fd660a58",
+  "previous_mode_path": "state/runtime_activations/AUTOSTART-QUEUE-20261111.previous-mode.json",
+  "previous_mode_sha256": "019c89b78bfcd0e1d14949a9ba8a332ce8076b8c0f0c71fc1d86ea3a110f2160",
+  "registered_at": "2026-11-11T08:34:41Z",
+  "repository": "art20021986-wq/ua-art-autopilot",
+  "runtime_manifest_path": "state/AUTOPILOT_RUNTIME_MANIFEST.json",
+  "runtime_manifest_sha256": "8c68bc9503895ad68e205b63041a586e963fbe87057011f52af01ad37bb1a316",
+  "schema_version": "UA-ART-QUEUE-REGISTRATION-1",
+  "scope": "CONCURRENCY_QUEUE_MAX_ONLY",
+  "source_commit": "0c264e02da3852b124415b16a6de0f8eef517770",
+  "task_id": "AUTOSTART-QUEUE-20261111"
+}
