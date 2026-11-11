@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-SCORE-PREFLIGHT-20261111.d7a1d466b3a0c1a6825360b26bb2099227b5ff9c381d3d1ef3ba3542f8bb00b3.json",
+  "autostart_ledger_sha256": "fc33a446d870848a09459b10ed6fcce6f1f251c2dd58b7095a799e29aa2fbf95",
+  "autostart_source_commit": "8a217c604b48f836c1c47d16bc703ef6652b2558",
+  "created_at": "2026-11-11T02:56:11Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42948772129",
+    "task_id": "KOREA-SCORE-PREFLIGHT-20261111",
+    "task_sha256": "d7a1d466b3a0c1a6825360b26bb2099227b5ff9c381d3d1ef3ba3542f8bb00b3"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-4e3f51a80745fce4-a87d63cbe190468e",
+  "request_path": "tasks/requests/KOREA-SCORE-PREFLIGHT-20261111.json",
+  "resource_locks": [
+    "PATH_SCOPE:4e3f51a80745fce4"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
