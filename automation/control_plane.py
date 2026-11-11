@@ -151,13 +151,13 @@ GITHUB_WRITE_CREDENTIAL_RE = re.compile(
 )
 DATA_ONLY_ARTIFACT_VALIDATION_MARKER = "UAART_DATA_ONLY_ARTIFACT_VALIDATED"
 ORCHESTRATOR_WORKFLOW_SHA256 = (
-    "0bab939f235f3e03fd5c847814ae654e1ee585712b5d5c3b572f31a4779fd236"
+    "ee9836b9447dd56d5271b5422db95b4dfee7c5460f6fc96f29f7b42e250c7ca8"
 )
 CRITICAL_WORKFLOW_SHA256 = (
-    "e878ee2dc8dc5022db095eb5a88d34acd7c262228ee592671ed4e691e3cac198"
+    "dc90eec1d9f1a23db1aae3e4b51bb633727390fdba73dccb5ee4488b72740c76"
 )
 WATCHDOG_WORKFLOW_SHA256 = (
-    "ad183ff63e4bf779591e2cc773aa1074c8005af399fedce810212e75b3dd7726"
+    "812113aa53c60125810bf1f6d4f13df9a886f6b23e8e55fde1d08718d95c9aaf"
 )
 PYTHON_INTERPRETER_RE = re.compile(
     r"(?<![A-Za-z0-9_./-])(?:/usr/bin/)?python(?:3(?:\.\d+)?)?"
@@ -2085,6 +2085,76 @@ def _verify_nonce_copy_runtime_activation(
     return registered
 
 
+QUEUE_ACTIVATION_PREFIX = "state/runtime_activations/AUTOSTART-QUEUE-20261111"
+QUEUE_ACTIVATION_OWNER_COMMAND = "OWNER_APPROVAL_PENDING"
+QUEUE_CHANGED_RUNTIME_PATHS = (
+    ".github/workflows/uaart_critical.yml", ".github/workflows/uaart_fast.yml",
+    ".github/workflows/uaart_orchestrator.yml", ".github/workflows/uaart_standard.yml",
+    ".github/workflows/uaart_transaction_watchdog.yml", "automation/control_plane.py",
+)
+
+
+def _verify_queue_runtime_activation(
+    *, root: pathlib.Path, mode: Mapping[str, Any], approval: Mapping[str, Any],
+    runtime: Mapping[str, Any], runtime_sha: str,
+) -> dt.datetime:
+    """Validate the queue-only change: waiting runs queue (queue: max) instead of
+    replacing each other; no gate, lock, HALT or production policy changes."""
+    prefix = QUEUE_ACTIVATION_PREFIX
+    path = _runtime_activation_file(root, prefix + ".json")
+    if sha256_file(path) != require_sha(mode.get("runtime_activation_sha256"), "queue_activation"):
+        raise ControlPlaneError("QUEUE_ACTIVATION_SHA")
+    activation = _runtime_activation_json(path)
+    expected = {
+        "schema_version": "UA-ART-QUEUE-REGISTRATION-1",
+        "task_id": "AUTOSTART-QUEUE-20261111",
+        "scope": "CONCURRENCY_QUEUE_MAX_ONLY",
+        "owner_command": QUEUE_ACTIVATION_OWNER_COMMAND,
+        "owner_actor_id": "321059821",
+        "repository": "art20021986-wq/ua-art-autopilot",
+        "mode_epoch": mode.get("mode_epoch"),
+        "halt_removed": False,
+        "application_write_allowed": False,
+        "previous_manifest_path": prefix + ".previous-manifest.json",
+        "previous_manifest_sha256": "04bed14bb530b1c42d56fe37e6a0661dbc57a5d94adf54257a5e4e69fd660a58",
+        "previous_mode_path": prefix + ".previous-mode.json",
+        "previous_mode_sha256": "019c89b78bfcd0e1d14949a9ba8a332ce8076b8c0f0c71fc1d86ea3a110f2160",
+        "runtime_manifest_path": RUNTIME_MANIFEST_PATH,
+        "runtime_manifest_sha256": runtime_sha,
+        "changed_runtime_paths": sorted(QUEUE_CHANGED_RUNTIME_PATHS),
+    }
+    if set(activation) != set(expected) | {"registered_at", "source_commit"}:
+        raise ControlPlaneError("QUEUE_ACTIVATION_KEYS")
+    if any(activation.get(key) != value for key, value in expected.items()):
+        raise ControlPlaneError("QUEUE_ACTIVATION_SCOPE")
+    if not re.fullmatch(r"[0-9a-f]{40}", str(activation.get("source_commit", ""))):
+        raise ControlPlaneError("QUEUE_ACTIVATION_SOURCE_COMMIT")
+    previous = {}
+    for kind in ("mode", "manifest"):
+        snapshot = _runtime_activation_file(root, activation["previous_" + kind + "_path"])
+        if sha256_file(snapshot) != activation["previous_" + kind + "_sha256"]:
+            raise ControlPlaneError("QUEUE_ACTIVATION_PREVIOUS_" + kind.upper())
+        previous[kind] = _runtime_activation_json(snapshot)
+    old_mode, old_runtime = previous["mode"], previous["manifest"]
+    preserved = dict(mode)
+    for key in ("runtime_manifest_sha256", "runtime_activation_path", "runtime_activation_sha256"):
+        preserved[key] = old_mode[key]
+    if preserved != old_mode:
+        raise ControlPlaneError("QUEUE_ACTIVATION_MODE_POLICY_DRIFT")
+    old_time = _verify_runtime_activation(
+        root=root, mode=old_mode, approval=approval, runtime=old_runtime,
+        runtime_sha=activation["previous_manifest_sha256"])
+    files = runtime.get("files")
+    if (not isinstance(files, dict) or set(files) != set(RUNTIME_PINNED_PATHS)
+            or {name for name in files if files[name] != old_runtime["files"][name]}
+            != set(QUEUE_CHANGED_RUNTIME_PATHS)):
+        raise ControlPlaneError("QUEUE_ACTIVATION_RUNTIME_SCOPE")
+    registered = parse_utc(str(activation["registered_at"]))
+    if registered < old_time:
+        raise ControlPlaneError("QUEUE_ACTIVATION_TIME_ORDER")
+    return registered
+
+
 def _verify_runtime_activation(
     *, root: pathlib.Path, mode: Mapping[str, Any], approval: Mapping[str, Any],
     runtime: Mapping[str, Any], runtime_sha: str,
@@ -2096,6 +2166,9 @@ def _verify_runtime_activation(
     The dependency order is code -> manifest -> registration -> mode, with no
     hash of a file embedded into itself.
     """
+    if mode.get("runtime_activation_path") == QUEUE_ACTIVATION_PREFIX + ".json":
+        return _verify_queue_runtime_activation(
+            root=root, mode=mode, approval=approval, runtime=runtime, runtime_sha=runtime_sha)
     if mode.get("runtime_activation_path") == "state/runtime_activations/CRM-ROLLBACK-NONCE-20260927.json":
         return _verify_nonce_copy_runtime_activation(
             root=root, mode=mode, approval=approval, runtime=runtime, runtime_sha=runtime_sha)
