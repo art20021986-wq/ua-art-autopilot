@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "ed0716843a02fd2e67f9f9b0ee06ded02627d660ed372b15e84237f16da35c20",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T13:24:52Z",
-  "heartbeat_sequence": 6,
+  "finished_at": "2026-11-11T13:41:49Z",
+  "heartbeat_at": "2026-11-11T13:41:49Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43027863881",
     "task_id": "KR-PRICES-INSTALL-20261111",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 688.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 308.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43027863881-bba3e3fa79e3a70a",
   "production_transaction_path": "state/transactions/KR-PRICES-INSTALL-20261111.bba3e3fa79e3a70ab271815a259abf87eec75c438cde0268c3071d48e3a3df43.43027863881.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-df5400b3dc3d0802-48d438bc619d9c32",
   "receipt_path": "state/receipts/KR-PRICES-INSTALL-20261111.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "7102bd426c7baf9c327d59c28df2ba53085c461686d70926e5507d5259c1c421",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KR-PRICES-INSTALL-20261111.json",
   "request_sha256": "bba3e3fa79e3a70ab271815a259abf87eec75c438cde0268c3071d48e3a3df43",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
     "file_sha256": {
@@ -88,5 +111,5 @@
       "cloud/kr_prices_bot_001/ua_kr_prices_store.py": "15cdc9a6b23fa12d023134fd8046a0b5d642b7974d794d0c5b653baba70d56f4"
     }
   },
-  "updated_at": "2026-11-11T13:24:52Z"
+  "updated_at": "2026-11-11T13:41:49Z"
 }
