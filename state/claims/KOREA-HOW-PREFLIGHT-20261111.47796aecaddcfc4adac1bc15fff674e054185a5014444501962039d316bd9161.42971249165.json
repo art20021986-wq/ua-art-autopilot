@@ -1,0 +1,62 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-HOW-PREFLIGHT-20261111.47796aecaddcfc4adac1bc15fff674e054185a5014444501962039d316bd9161.json",
+  "autostart_ledger_sha256": "839bb664ef43d11732861aecec9565d807cf90abe976b28ef64fe59b257dcc87",
+  "autostart_source_commit": "cb2e2b6d7def66c131a80accb21cb76a9ff7d069",
+  "created_at": "2026-11-11T06:23:39Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-11T06:29:22Z",
+  "heartbeat_at": "2026-11-11T06:29:22Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "42971249165",
+    "task_id": "KOREA-HOW-PREFLIGHT-20261111",
+    "task_sha256": "47796aecaddcfc4adac1bc15fff674e054185a5014444501962039d316bd9161"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-5d3a8c3c1e4d4c73-7008fc2dbf86112e",
+  "receipt_path": "state/receipts/KOREA-HOW-PREFLIGHT-20261111.json",
+  "receipt_sha256": "e73db8016ea5bca10d66e2f0ed754745765d79db70846ac83b3641ea78adb7aa",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/KOREA-HOW-PREFLIGHT-20261111.json",
+  "request_sha256": "47796aecaddcfc4adac1bc15fff674e054185a5014444501962039d316bd9161",
+  "resource_locks": [
+    "PATH_SCOPE:5d3a8c3c1e4d4c73"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "1ef9c3bfd4993267f3cc121eb8255f2fb83d8819",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92801724416,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.115
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "dc73e2166a9aff55c4c89de280081d7cb9594c65f520ff5797d36dac41b9f0ab",
+    "file_sha256": {
+      "cloud/korea_how_001/candidate_builder.py": "5af6f19a5b31b1bf8617155bf1721140f7b69b7f36a88c6a4fd6747e33af4cc7",
+      "cloud/korea_how_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/korea_how_001/deployment_bootstrap.py": "0968eeddf59a255f6d0c8be2b0d430e2ccef4346c820d942b56d59fae7720351",
+      "cloud/korea_how_001/deployment_remote.py": "8f3ea0f6c3d59d6629892984fbab9f99286abc37c7d21ac9d86166803ae41f59",
+      "cloud/korea_how_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/korea_how_001/deployment_transport.py": "5dfeeed941a40175a74e00a4956da8d5b38957400da27040efce82122c66bad3",
+      "cloud/korea_how_001/make_release.py": "634b75557046566a36339067d7fd257cefba6abf4f37add1c36cc21db1fda3f9",
+      "cloud/korea_how_001/release_constants.py": "091dd1ad6eb878ad04cfbdcb8b40dfec40c94b3c096c786d755e1ea1626c12b2",
+      "cloud/korea_how_001/test_deployment.py": "159df88e5443b0c8338d5ba3902da07d51b9f361cf724aa92d8c92b489db7c66",
+      "cloud/korea_how_001/test_release.py": "69712d4123bac5d6fe883d9eba007c8299dcf54b7e0339a271b3fb1ba267b57a"
+    }
+  },
+  "updated_at": "2026-11-11T06:29:22Z"
+}
