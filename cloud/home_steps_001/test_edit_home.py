@@ -106,12 +106,18 @@ class EditHomeTests(unittest.TestCase):
                      'розрахуємо вартість розмитнення', 'Усі наші ціни фіксовані', 'прихованих платежів',
                      'Encar', 'За 10 днів до митного оформлення', 'охоронюваній стоянці', 'UA ART COMPANY',
                      'Стоимость услуги — 600 $', 'Бесплатная парковка AutoPapa', 'პატივისცემით',
-                     'купівля — 600 $, депозит — 1 000 $', 'Логістика та супутні витрати', 'Оформлення договору', 'до завантаження на пором', 'зараховується у витрати на автомобіль'):
+                     'купівля — 600 $, депозит — 1 000 $', 'Оформлення договору', 'Купівля автомобіля, логістика та супутні витрати', 'до завантаження на пором', 'зараховується у витрати на автомобіль'):
             self.assertIn(text, steps)
         for note in ('Депозит 1 000 $ зараховується', 'Усі наші ціни фіксовані', 'розрахуємо вартість розмитнення', 'За 10 днів до митного',
                      'прихованих платежів', 'Безкоштовна парковка AutoPapa'):
             at = steps.index(note)
             self.assertIn('ua-kr-note', steps[steps.rindex('<', 0, steps.rindex('class=', 0, at)) - 60:at])
+
+    def test_step_three_starts_with_the_car_purchase(self):
+        step = steps_block.step3()
+        body = step[step.index('</summary><div>') + len('</summary><div>'):]
+        self.assertTrue(body.startswith('<p data-ru="После покупки выбранного'))
+        self.assertLess(step.index('прихованих платежів'), step.index('Логістика з Кореї до Києва'))
 
     def test_refuses_second_run_and_missing_anchor(self):
         with self.assertRaises(ValueError):
