@@ -72,7 +72,7 @@ def _item(key, unit, title, lines, note):
 
 def step3():
     short = '<small>%s · %s</small>' % (usd('total'), text('span', T.S3_SHORT))
-    body = (text('p', T.S3_CAR) + _note(T.S3_OPEN)  # owner 2026-11-11: the car purchase first
+    body = (text('p', T.S3_CAR) + text('p', T.S3_CAR_TERM, 'ua-step-pay') + _note(T.S3_OPEN)  # the car purchase first
             + '<p>%s <strong>%s</strong> %s</p>' % (text('span', T.S3_LEAD), usd('total'), text('span', T.S3_RATE))
             + '<p>%s %s</p>' % (text('span', T.S3_MONTH), num('month'))
             + text('p', T.S3_INCLUDES)
