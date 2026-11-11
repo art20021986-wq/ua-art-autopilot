@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-TERMS-INSTALL-20261111.15243b8cc1b84ff096b776361d5043e664ff5954d301e0e270cab8f169637959.json",
+  "autostart_ledger_sha256": "7aab11b11c90adf999ce8d5e5c8042d312dad83db14170a39d499c96336a3dcc",
+  "autostart_source_commit": "94e662d9fae9b64f26590d34d4eccf4e17761cc3",
+  "created_at": "2026-11-11T05:06:39Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42963130676",
+    "task_id": "KOREA-TERMS-INSTALL-20261111",
+    "task_sha256": "15243b8cc1b84ff096b776361d5043e664ff5954d301e0e270cab8f169637959"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-5257f47ec6adb102-f6cfb8e041d1b0df",
+  "request_path": "tasks/requests/KOREA-TERMS-INSTALL-20261111.json",
+  "resource_locks": [
+    "PATH_SCOPE:5257f47ec6adb102"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

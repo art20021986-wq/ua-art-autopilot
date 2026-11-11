@@ -26,13 +26,13 @@
     "task_sha256": "cdcfcb5828df6bfd6513839ecdf3dd93ea28c889bf512a5c916eec5abe238108"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "NOT_REACHED",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-d9ce891d7afeb2d6-1b6981d0b5bc1f3c",
   "receipt_path": "state/receipts/GSC-REPORT-20261109-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_validation_status": "NOT_CREATED",
   "request_path": "tasks/requests/GSC-REPORT-20261109-R2.json",
   "request_sha256": "cdcfcb5828df6bfd6513839ecdf3dd93ea28c889bf512a5c916eec5abe238108",
   "resource_locks": [
@@ -40,8 +40,9 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "2e053a09fec8af8122c29bfbcc0ab629d0b85017",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight_status": "NOT_REQUIRED_FAILED",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-09T15:06:17Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-09T15:06:17Z",
+  "reconciliation_path": "state/reconciliations/GSC-REPORT-20261109-R2.42638623452.failed-before-remote-write.json"
 }

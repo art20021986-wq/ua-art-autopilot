@@ -1,0 +1,63 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-STEP1-PRICE-PREFLIGHT-20261111.07b78385ee185f02222e0cc0bfdf08cc81b35590f6c3f98e8829230de2b20f86.json",
+  "autostart_ledger_sha256": "4b1018e990bbc85181afff89e2e33ac3e1407ca63eb1f4bcfa3e184cd723ebda",
+  "autostart_source_commit": "8ba38d18c8afec40d7d64c0f926a223ba64d5e90",
+  "created_at": "2026-11-11T04:59:56Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-11T05:05:46Z",
+  "heartbeat_at": "2026-11-11T05:05:46Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "42962672633",
+    "task_id": "HOME-STEP1-PRICE-PREFLIGHT-20261111",
+    "task_sha256": "07b78385ee185f02222e0cc0bfdf08cc81b35590f6c3f98e8829230de2b20f86"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-88de759c63eae4d6-e089b1b0189cdd90",
+  "receipt_path": "state/receipts/HOME-STEP1-PRICE-PREFLIGHT-20261111.json",
+  "receipt_sha256": "49be7b049bf3a77861f50694b2d156cdb78afc7bfaff294608335fcb99e10ddb",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/HOME-STEP1-PRICE-PREFLIGHT-20261111.json",
+  "request_sha256": "07b78385ee185f02222e0cc0bfdf08cc81b35590f6c3f98e8829230de2b20f86",
+  "resource_locks": [
+    "PATH_SCOPE:88de759c63eae4d6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "aef7636e68f2fdb6c4f40dc9e66f59f1fd9c0b32",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 19184295936,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "WARN_70",
+    "usage_percent": 75.024
+  },
+  "storage_preflight_status": "WARN_70",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "9261046ab5698b580407dfa411dee599732e56efb2a61322cb0295fad4d027c7",
+    "file_sha256": {
+      "cloud/home_step1_001/candidate_builder.py": "071f5af84dbd110a0bab267caf973c3f12ce991c6ece4385991af8492df43706",
+      "cloud/home_step1_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_step1_001/deployment_bootstrap.py": "11c61784e7c04b905776d0dadebcca77c5e80722792441c9868e82c8a7d27bb2",
+      "cloud/home_step1_001/deployment_remote.py": "dee7bf2cede02092d4a889a6ce4680765ab2d89188f9f68de6438d0186fa813b",
+      "cloud/home_step1_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_step1_001/deployment_transport.py": "fbbaa860b8a2b1a8a759674e782c3a53ebec80fb3cabea9dbc8cbb17ab2e463e",
+      "cloud/home_step1_001/edit_home.py": "772301a23a9771bead7934be4684d9d072688d48b491ba6be68a1b75f36cca8a",
+      "cloud/home_step1_001/make_release.py": "9044c71fec782c287bfb5490361e3fcbc85dd8fe3a14db6b7520a8d3b9534ea1",
+      "cloud/home_step1_001/release_constants.py": "e51132fb7b8856a667c42021faa56c9d280be44c1fbacbbc69959bafbb66db83",
+      "cloud/home_step1_001/test_deployment.py": "0677f21b5721f091ec8567eb12cfd1b19291b797a9b7f6bf61bfe95fbd959faa",
+      "cloud/home_step1_001/test_edit_home.py": "eea3a2b4241f77c589994be64cc0d93f970a84544389ba254a94b5dedfd1265a"
+    }
+  },
+  "updated_at": "2026-11-11T05:05:46Z"
+}

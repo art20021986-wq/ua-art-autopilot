@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SITEMAP-FIX-PREFLIGHT-20261111.6114d4a90ce4c598c3f09736a264f71d13dc0ba731a25628adc746bbbc2c863c.json",
+  "autostart_ledger_sha256": "f722a81f24302e976a19b9a9d43c3ca5561575c8215b40b4378e16477369a42f",
+  "autostart_source_commit": "ffa856124579ebdd60016bcbf9eae272cc7b26da",
+  "created_at": "2026-11-11T04:25:30Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42958884510",
+    "task_id": "SITEMAP-FIX-PREFLIGHT-20261111",
+    "task_sha256": "6114d4a90ce4c598c3f09736a264f71d13dc0ba731a25628adc746bbbc2c863c"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-678b382b5ca98e37-54a60133d700f3a0",
+  "request_path": "tasks/requests/SITEMAP-FIX-PREFLIGHT-20261111.json",
+  "resource_locks": [
+    "PATH_SCOPE:678b382b5ca98e37"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

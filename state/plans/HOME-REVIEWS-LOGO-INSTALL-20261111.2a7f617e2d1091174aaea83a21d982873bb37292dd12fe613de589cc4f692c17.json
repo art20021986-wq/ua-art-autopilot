@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-REVIEWS-LOGO-INSTALL-20261111.2a7f617e2d1091174aaea83a21d982873bb37292dd12fe613de589cc4f692c17.json",
+  "autostart_ledger_sha256": "fb01850cf74c5224243f3b1dd9a5b566c2bd657438f619dd01ec12efef035b6c",
+  "autostart_source_commit": "19e31c52458e867951e9ecfa05af305eb8a4a972",
+  "created_at": "2026-11-11T03:51:11Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42955282183",
+    "task_id": "HOME-REVIEWS-LOGO-INSTALL-20261111",
+    "task_sha256": "2a7f617e2d1091174aaea83a21d982873bb37292dd12fe613de589cc4f692c17"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "homepage-68ed6564ebea221c",
+  "request_path": "tasks/requests/HOME-REVIEWS-LOGO-INSTALL-20261111.json",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

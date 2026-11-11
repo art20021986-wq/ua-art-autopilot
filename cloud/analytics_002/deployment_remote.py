@@ -360,7 +360,10 @@ def account_used_bytes():
     result = subprocess.run(['du', '-s', '-B1', str(ROOT), '/tmp'], capture_output=True, text=True,
                             timeout=600, check=False)
     sizes = [int(line.split('\t')[0]) for line in result.stdout.splitlines() if line.strip()]
-    if result.returncode != 0 or len(sizes) != 2:
+    # du exits 1 when a temporary file (e.g. a SQLite journal) vanishes while it walks; the totals are still
+    # printed and differ by that file only. Any other complaint still fails.
+    vanished = all('No such file or directory' in line for line in result.stderr.splitlines() if line.strip())
+    if (result.returncode != 0 and not (result.returncode == 1 and vanished)) or len(sizes) != 2:
         raise DeploymentError('ACCOUNT_USAGE:'+result.stderr[-160:])
     return sum(sizes)
 
@@ -419,9 +422,10 @@ def main():
         try:
             if args.mode == 'preview':
                 plan = prepare(work/'preview')
-                value.update(status='PASS', plan=plan, plan_sha256=sha(canonical(plan)))
+                value.update(plan=plan, plan_sha256=sha(canonical(plan)))
                 value['server_visits'] = server_visits(work/'preview'/'after'/'ua_server_visits.py')
                 value['storage_probe'] = storage_probe()
+                value['status'] = 'PASS'  # only after every preview check (R2 reported PASS without a storage probe)
             elif args.mode == 'backup':
                 value.update(backup(args.run, args.plan), status='PASS')
             elif args.mode in ('install', 'rollback'):
