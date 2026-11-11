@@ -72,11 +72,12 @@ def _item(key, unit, title, lines, note):
 
 def step3():
     short = '<small>%s · %s</small>' % (usd('total'), text('span', T.S3_SHORT))
-    body = ('<p>%s <strong>%s</strong> %s</p>' % (text('span', T.S3_LEAD), usd('total'), text('span', T.S3_RATE))
+    body = (text('p', T.S3_CAR) + _note(T.S3_OPEN)  # owner 2026-11-11: the car purchase first
+            + '<p>%s <strong>%s</strong> %s</p>' % (text('span', T.S3_LEAD), usd('total'), text('span', T.S3_RATE))
             + '<p>%s %s</p>' % (text('span', T.S3_MONTH), num('month'))
             + text('p', T.S3_INCLUDES)
             + '<ol class="ua-kr-list">%s</ol>' % ''.join(_item(*item) for item in T.S3_ITEMS)
-            + _note(T.S3_FIXED, 'ua-kr-note ua-kr-key') + text('p', T.S3_CAR) + _note(T.S3_OPEN))
+            + _note(T.S3_FIXED, 'ua-kr-note ua-kr-key'))
     return _step(3, T.S3_TITLE, short, body)
 
 
