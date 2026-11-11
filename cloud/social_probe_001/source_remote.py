@@ -183,6 +183,13 @@ def report_r4(home=None):
             'katalog_mtime': round((video / 'katalog.html').stat().st_mtime) if (video / 'katalog.html').is_file() else None}
 
 
+# R5 (after CARD-SYNC-FIX2-INSTALL-20261111-R2): rows, sync retries and versions in one read.
+def report_r5(home=None):
+    r3, r4 = report_r3(home), report_r4(home)
+    return {'status': 'PASS', 'rows': r3['rows'], 'sync': r3['sync'], 'approved_hosts': r3['approved_hosts'],
+            'versions': r4['versions'], 'catalog_links_broken': r4['catalog_links_broken'], 'sitemap': r4['sitemap']}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -196,7 +203,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r4()  # R4; report_r3() R3, report_r2() R2, report() R1
+        value = report_r5()  # R5; report_r4() R4, report_r3() R3, report_r2() R2, report() R1
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
