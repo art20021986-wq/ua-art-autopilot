@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "add039ea034ad187fbb4abe6e00076cdce510266c801370db3e825a5b8187372",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T05:57:22Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-11T06:02:23Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "42968801271",
     "task_id": "SITEMAP-FIX-INSTALL-20261111-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-42968801271-a7dc46a1123a7e5f",
   "production_transaction_path": "state/transactions/SITEMAP-FIX-INSTALL-20261111-R2.a7dc46a1123a7e5f8c4f6a837490616bf943e0c5af12c6d0d429b9e45ed67c2e.42968801271.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-dcec2c5a48977f39-09cb93bf44902fc1",
   "receipt_path": "state/receipts/SITEMAP-FIX-INSTALL-20261111-R2.json",
   "receipt_validation_status": "PENDING",
@@ -85,5 +85,5 @@
       "cloud/sitemap_fix_001/test_release.py": "4633c0c8337ef64b5ba328227ed557f0f333074eaaf5e13e3207d50cfb9db223"
     }
   },
-  "updated_at": "2026-11-11T05:57:22Z"
+  "updated_at": "2026-11-11T06:02:23Z"
 }
