@@ -13,7 +13,7 @@ import edit_metadata
 
 HERE = Path(__file__).resolve().parent
 LIVE = (HERE / 'fixtures' / 'proverit.txt').read_text(encoding='utf-8')
-CARD_LANG = (HERE / 'fixtures' / 'ua_card_lang.py').read_bytes()
+CARD_LANG = (HERE / 'fixtures' / 'ua_card_lang.txt').read_bytes()
 ORIGIN = 'https://www.uaart.com.ua'
 # Enough of master_card.py's own names for the check to run (stand-ins, not the live code).
 PRELUDE = (HERE / 'fixtures' / 'prelude.txt').read_text(encoding='utf-8')
