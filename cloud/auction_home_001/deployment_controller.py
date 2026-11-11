@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import re
 import tempfile
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -12,9 +13,13 @@ from deployment_transport import API, HERE, INBOX, TransportError, canonical, sh
 
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
-# The site stays healthy (this release changes the bots only).
-EXPECTED = {'/video/index.html': '', '/video/katalog.html': '', '/video/podbor.html': ''}
+# The site stays healthy (this release changes the CRM bot and the bids ledger module the web app also imports).
+EXPECTED = {'/video/index.html': '', '/video/katalog.html': '', '/video/korea.html': '', '/video/podbor.html': ''}
 SITE = 'https://www.uaart.com.ua'
+AGENT = 'UAART-AuctionHome-Verify/1'
+# The live bid endpoint answers a bid without a login with 401 «login» before and after (the web app reloads to take
+# the new ua_auction_bids, which records the VIN); nothing is stored.
+INTAKE_FIELD = {'install': 'login_api', 'rollback': 'login_api'}
 
 
 def context():
@@ -66,6 +71,43 @@ def public_verify(api, bundle, backup_sha, plan):
     return results
 
 
+def intake_field():
+    """'login_api' when the live site answers a bid without a login as the bid endpoint does (401, error login)."""
+    body = json.dumps({'lot': '0', 'krw': 0}).encode()
+    request = urllib.request.Request(SITE+'/api/auction/bid', data=body, method='POST', headers={
+        'Cache-Control': 'no-cache', 'User-Agent': AGENT, 'Origin': SITE, 'Content-Type': 'application/json'})
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return 'unexpected_'+str(response.status)
+    except urllib.error.HTTPError as error:
+        try:
+            answer = json.loads(error.read(4096))
+        except ValueError:
+            return 'absent'
+        return 'login_api' if error.code == 401 and answer.get('error') == 'login' else 'absent'
+
+
+def reload_and_check(api, mode):
+    """Reload the web app (it imports ua_auction_web); a slow reload can outlive its request, so the live bid
+    endpoint decides."""
+    try:
+        api.reload_webapp()
+        reload = 'PASS'
+    except TransportError as error:
+        reload = 'UNCONFIRMED:'+str(error)
+    deadline = time.monotonic()+300
+    while True:
+        try:
+            field = intake_field()
+        except (OSError, ValueError, RuntimeError) as error:
+            field = 'ERROR:'+str(error)[:120]
+        if field == INTAKE_FIELD[mode]:
+            return {'reload': reload, 'intake_check': field}
+        if time.monotonic() >= deadline:
+            raise RuntimeError('WEBAPP_'+mode.upper()+'_NOT_LIVE:'+reload+':'+str(field))
+        time.sleep(15)
+
+
 def run(operation=None):
     env, request = context()
     api = API(env['PYTHONANYWHERE_API_TOKEN'])
@@ -107,6 +149,7 @@ def run(operation=None):
         accepted(value, 'rollback', run_id, backup_sha)
         if value.get('restored') is not True or value.get('crm_unchanged') is not True or value.get('crm_resume', {}).get('enabled') is not True:
             raise RuntimeError('ROLLBACK_INCOMPLETE')
+        value['webapp'] = reload_and_check(api, 'rollback')
         receipt = {**bindings, 'schema_version': 'UA-ART-PRODUCTION-ROLLBACK-RECEIPT-1',
                    'operation': 'rollback', 'status': 'ROLLED_BACK', 'rollback': 'PASS',
                    'restored': True, 'unexpected_changes': 0, 'protected_files_unchanged': True,
@@ -123,6 +166,7 @@ def run(operation=None):
     accepted(verified, 'verify', run_id, backup_sha)
     if verified.get('code_sha256') != {name: item['after'] for name, item in plan['files'].items()}:
         raise RuntimeError('VERIFIED_CODE_HASH')
+    webapp = reload_and_check(api, 'install')
     public = public_verify(api, bundle, backup_sha, plan)
     receipt = {**bindings, 'contract_id': 'UA-ART-CRITICAL-ADAPTER-V1.0', 'status': 'FINISHED',
                'task_class': 'CRITICAL', 'target_environment': 'production',
@@ -130,7 +174,7 @@ def run(operation=None):
                'backup': 'PASS', 'backup_manifest_sha256': backup_sha, 'rollback': 'PASS',
                'rollback_ready': True, 'live_verify': 'PASS', 'unexpected_changes': 0,
                'protected_files_unchanged': True, 'crm_unchanged': True,
-               'public_checks':public,'restart':value['crm_resume'],
+               'public_checks':public,'restart':value['crm_resume'],'webapp':webapp,
                'code_sha256':verified['code_sha256'],
                'sync_after_resume':verified.get('sync'),
                'acceptance_scope':'FILES_INSTALLATION_BOT_RESUME_AND_PUBLIC_HEALTH',

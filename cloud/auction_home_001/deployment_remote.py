@@ -119,7 +119,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'AUCTION-HOME-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'CRM bot only, no page: «🔨 Клиенты аукциона» under «👤 Клиенты» in the main menu (statistics, clients, bids by date); ua_menu_extra, ua_auction_clients_view, ua_auction_clients_bot, ua_auction_stats (new)',
+            'site_scope':'CRM bot and bids ledger module, no page: «🔨 Клиенты аукциона» under «👤 Клиенты» in the main menu (statistics, clients, bids by date with car and VIN); the ledger records the VIN; ua_menu_extra, ua_auction_clients_view, ua_auction_clients_bot, ua_auction_bids, ua_auction_bids_bot, ua_auction_stats (new); web app reloaded',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -134,6 +134,15 @@ after, root = sys.argv[1], sys.argv[2]
 sys.path[:0] = [after, root]
 from telegram import InlineKeyboardButton as B, InlineKeyboardMarkup as M
 import ua_menu_extra, ua_auction_stats as stats, ua_auction_clients_view as view, ua_auction_clients_bot
+import sqlite3, tempfile, pathlib, ua_auction_bids as bids, ua_auction_bids_bot
+with tempfile.TemporaryDirectory() as folder:  # an older ledger (no VIN column) on a temporary copy of the schema
+    old = pathlib.Path(folder) / 'bids.db'
+    connection = sqlite3.connect(old)
+    connection.execute(bids.SCHEMA.replace(", vin TEXT NOT NULL DEFAULT ''", ''))
+    connection.close()
+    bids.record({'phone': '+380000000000'}, {'lot': {'id': '1', 'title': 'Test', 'year': 2020, 'vin': 'VIN1'},
+                 'krw': 1, 'usd': 1}, 'failed', 'test', old)
+    vin_kept = bids.unnotified(old)[0]['vin'] == 'VIN1'
 full = M([[B('a', callback_data='cards_cars')], [B('b', callback_data='cards_clients')], [B('c', callback_data='staff_list')]])
 menu = ua_menu_extra.with_buttons(full, M([[B('a', callback_data='cards_cars')]]))
 numbers = stats.summary()
@@ -141,7 +150,8 @@ home = view.home(numbers)
 days = stats.days()
 print(json.dumps({'menu': [[b.callback_data for b in row] for row in menu.inline_keyboard],
                   'home_buttons': [row[0][1] for row in home['buttons']], 'numbers': numbers,
-                  'dates': len(days), 'first_day_bids': len(stats.on_day(days[0][0])) if days else 0}))
+                  'dates': len(days), 'first_day_bids': len(stats.on_day(days[0][0])) if days else 0,
+                  'ledger_vin_on_old_schema': vin_kept}))
 """
 
 
@@ -152,7 +162,8 @@ def smoke(directory):
         raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
     if (value.get('menu') != [['cards_cars'], ['cards_clients'], ['ac:home'], ['staff_list']]
-            or value.get('home_buttons') != ['ac:new', 'ac:list', 'ac:days', 'menu']):
+            or value.get('home_buttons') != ['ac:new', 'ac:list', 'ac:days', 'menu']
+            or value.get('ledger_vin_on_old_schema') is not True):
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:300])
     return value
 

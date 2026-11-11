@@ -67,8 +67,9 @@ def _bid_line(bid, who=None):
     head = '%s %s' % (state, escape(bid['created_at'][11:16]))
     if who is not None:
         head += ' · ' + escape(who)
-    return '%s · %s · лот %s · ₩%s ≈ $%s' % (head, escape(bid['title']), escape(bid['lot_id']), _money(bid['krw']),
-                                            _money(bid['usd']))
+    return '%s\n   🚗 %s · VIN %s · лот %s\n   ₩%s ≈ $%s' % (
+        head, escape(bid['title']), escape(bid.get('vin') or '—'), escape(bid['lot_id']), _money(bid['krw']),
+        _money(bid['usd']))
 
 
 def card(client, bids=()):
