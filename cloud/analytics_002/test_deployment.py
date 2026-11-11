@@ -206,6 +206,16 @@ class StorageProbeTests(unittest.TestCase):
         self.assertTrue(probe['account_quota_measured'])
         self.assertEqual(probe['shared_filesystem']['used_bytes'], 5*10**12)
 
+    def test_vanished_temporary_file_is_not_a_failure(self):
+        done = SimpleNamespace(returncode=1, stdout='100\t/home/Carix\n20\t/tmp\n',
+                               stderr="du: cannot access '/home/Carix/x.db-journal': No such file or directory\n")
+        with patch.object(remote.subprocess, 'run', return_value=done):
+            self.assertEqual(remote.account_used_bytes(), 120)
+        other = SimpleNamespace(returncode=1, stdout='100\t/home/Carix\n20\t/tmp\n', stderr='du: Permission denied\n')
+        with patch.object(remote.subprocess, 'run', return_value=other):
+            with self.assertRaisesRegex(remote.DeploymentError, 'ACCOUNT_USAGE'):
+                remote.account_used_bytes()
+
     def test_incomplete_measurement_fails_closed(self):
         for result in (self.du('8000000000\t/home/Carix\n', 0), self.du('1\t/home/Carix\n2\t/tmp\n', 1)):
             with patch.object(remote.subprocess, 'run', return_value=result):
