@@ -113,3 +113,8 @@ INSTALLED_LIVE_VERIFIED 2026-10-26: превью R2 run 40287513653 PASS, уст
 - Главная, релиз 9: у годов и отзывов `id="ua-autoria-years"` / `id="ua-autoria-reviews"`; модуль `stats_loader.py`
   (бывший `sold_loader.py`) подставляет все три числа; каждое проверяется отдельно, иначе остаётся записанное.
 - Задачи: AUTORIA-FIGURES-PREFLIGHT/INSTALL-20261111, HOME-REVIEWS-FIGURES-PREFLIGHT/INSTALL-20261111.
+- 11.11 14:30 UTC: обе пробы R1 PASS (сборщик прочитал с AUTO.RIA 5+/136/18), установки R1 запущены, но тут же отменены в
+  очереди (до старта, ничего не записано): координатор по поручению владельца ввёл порядок «по одной установке»,
+  эта задача — шаг 7. В свою очередь: свежие пробы R2 → AUTORIA-FIGURES-INSTALL-R2 → HOME-REVIEWS-FIGURES-INSTALL-R2.
+- Итог 11.11 (шаг 7 очереди): AUTORIA-FIGURES-INSTALL-R2 run 43044977032 и HOME-REVIEWS-FIGURES-INSTALL-R2 run 43049828936
+  FINISHED (бэкап PASS, CRM без изменений, бот работает). На живой главной 5+ | 136 | 18; годы и отзывы в файле — с 12.11 06:41 UTC.
