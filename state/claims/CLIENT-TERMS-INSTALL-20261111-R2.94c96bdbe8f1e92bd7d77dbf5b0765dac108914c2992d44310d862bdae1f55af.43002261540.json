@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "17f3736cc9a588602e915d17dc235395d70113dc1cd7212d1ebcbcb8c6a1e2bb",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-11T10:42:08Z",
-  "heartbeat_sequence": 6,
+  "finished_at": "2026-11-11T10:59:59Z",
+  "heartbeat_at": "2026-11-11T10:59:59Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43002261540",
     "task_id": "CLIENT-TERMS-INSTALL-20261111-R2",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 729.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 278.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43002261540-94c96bdbe8f1e92b",
   "production_transaction_path": "state/transactions/CLIENT-TERMS-INSTALL-20261111-R2.94c96bdbe8f1e92bd7d77dbf5b0765dac108914c2992d44310d862bdae1f55af.43002261540.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-33a4a90097dc2361-90b70f6747ecd86e",
   "receipt_path": "state/receipts/CLIENT-TERMS-INSTALL-20261111-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "9be5133c3af2ed5e5e9216393197f0264575892674dea66aa9397f0a4e4a3d7f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CLIENT-TERMS-INSTALL-20261111-R2.json",
   "request_sha256": "94c96bdbe8f1e92bd7d77dbf5b0765dac108914c2992d44310d862bdae1f55af",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "5fc5148bd39900870a5891e05f5fc415f02d42127f77b07db7c67722d809ff3f",
     "file_sha256": {
@@ -86,5 +109,5 @@
       "cloud/client_terms_001/test_vitrina_edit.py": "74f1f8b32857bc16fe1f4614ce86ce213994361619e1c86f693eb9aaa73497ed"
     }
   },
-  "updated_at": "2026-11-11T10:42:08Z"
+  "updated_at": "2026-11-11T10:59:59Z"
 }
