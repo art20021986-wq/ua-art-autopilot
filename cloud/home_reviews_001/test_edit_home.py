@@ -10,7 +10,7 @@ import candidate_builder  # noqa: E402
 import edit_home  # noqa: E402
 import reviews_block  # noqa: E402
 import reviews_data  # noqa: E402
-import sold_loader  # noqa: E402
+import stats_loader  # noqa: E402
 from release_constants import HOME  # noqa: E402
 
 STEPS = '<section class="ua-how section-frame"><h2>5 кроків</h2><ol><li>1</li></ol></section>'
@@ -38,7 +38,7 @@ class EditHomeTests(unittest.TestCase):
 
     def test_block_after_steps_badge_before_signature_css_in_head(self):
         text = self.result
-        self.assertEqual(text.count(edit_home.CHECK), 1)  # the sold-cars figure
+        self.assertEqual(text.count(edit_home.CHECK), 1)  # the reviews figure
         self.assertEqual(text.count('src="%s"' % reviews_block.LOGO), 2)  # button and badge
         css = '<style id="%s">' % reviews_block.MARK
         self.assertLess(text.index(STEPS), text.index('class="ua-reviews'))
@@ -69,7 +69,7 @@ class EditHomeTests(unittest.TestCase):
         self.assertEqual(block.count(link + '"reviews_block"'), 1)
         self.assertEqual(reviews_block.badge().count(link + '"footer_badge"'), 1)
         self.assertEqual(block.count(autoria_click.SCRIPT), 1)
-        self.assertTrue(block.endswith(autoria_click.SCRIPT + sold_loader.SCRIPT + '</section>'))
+        self.assertTrue(block.endswith(autoria_click.SCRIPT + stats_loader.SCRIPT + '</section>'))
         self.assertIn('Перевірте нас на AUTO.RIA', block)
         self.assertIn('Проверьте нас на AUTO.RIA', block)
         self.assertEqual(block.count('<img class="ua-autoria-mark" src="/video/brand/autoria-logo.svg" alt="AUTO.RIA" '
@@ -121,18 +121,22 @@ class EditHomeTests(unittest.TestCase):
         self.assertNotIn('>AUTO.RIA</span>', reviews_block.block() + reviews_block.badge())
 
 
-class SoldLoaderTests(unittest.TestCase):
-    def test_sold_figure_carries_the_id_and_the_written_number(self):
-        number = reviews_data.STATS[reviews_data.SOLD][0]
-        self.assertIn('<b id="ua-autoria-sold">%s</b><span data-ru="проданных авто"' % number, reviews_block.block())
-        self.assertEqual(reviews_block.block().count('<b id='), 1)
+class StatsLoaderTests(unittest.TestCase):
+    def test_each_figure_carries_its_id_and_the_written_number(self):
+        block = reviews_block.block()
+        for name, (number, ru, uk, ka) in zip(('years', 'sold', 'reviews'), reviews_data.STATS):
+            self.assertIn('<b id="ua-autoria-%s">%s</b><span data-ru="%s"' % (name, number, ru), block)
+        self.assertEqual(block.count('<b id='), 3)
+        self.assertEqual(reviews_data.FIGURES, stats_loader.FIELDS)
 
-    def test_script_reads_only_our_file_and_keeps_the_number_otherwise(self):
-        script = sold_loader.SCRIPT
+    def test_script_reads_only_our_file_and_keeps_the_numbers_otherwise(self):
+        script = stats_loader.SCRIPT
         self.assertIn("fetch('/video/brand/autoria-sold.json',{cache:'no-cache'})", script)
-        self.assertIn('Number.isInteger(d.sold)&&d.sold>0', script)
+        self.assertIn("var ok={years:/^[1-9][0-9]?\\+?$/,sold:/^[1-9][0-9]{0,5}$/,reviews:/^[1-9][0-9]{0,5}$/}", script)
+        self.assertIn("document.getElementById('ua-autoria-'+k)", script)
         self.assertIn('.catch(function(){})', script)
         self.assertNotIn('innerHTML', script)
+        self.assertNotIn('</', script[len('<script>'):-len('</script>')])  # cannot end the block early
 
 
 if __name__ == '__main__':
