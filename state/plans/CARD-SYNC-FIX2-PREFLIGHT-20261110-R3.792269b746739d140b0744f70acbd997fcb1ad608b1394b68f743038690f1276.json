@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-SYNC-FIX2-PREFLIGHT-20261110-R3.792269b746739d140b0744f70acbd997fcb1ad608b1394b68f743038690f1276.json",
+  "autostart_ledger_sha256": "1bce2d1aa1ad1a9a51571f1f3b5d7c168b293d01d050878e5a5bfd815c77bdf2",
+  "autostart_source_commit": "2468be06643bb5f9c8d0c1cbb06f15ad240c5962",
+  "created_at": "2026-11-11T06:17:26Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42971233879",
+    "task_id": "CARD-SYNC-FIX2-PREFLIGHT-20261110-R3",
+    "task_sha256": "792269b746739d140b0744f70acbd997fcb1ad608b1394b68f743038690f1276"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-c459dd24bb5388f8-2cf7e039e2f4a69c",
+  "request_path": "tasks/requests/CARD-SYNC-FIX2-PREFLIGHT-20261110-R3.json",
+  "resource_locks": [
+    "PATH_SCOPE:c459dd24bb5388f8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
