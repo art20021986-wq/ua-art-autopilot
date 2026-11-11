@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "84ae382d7d7193665d80c41012a64a1e7a2c52b0513d49c98e0b117c95078268",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "STOP_AFTER_VERIFIED_ROLLBACK",
+      "at": "2026-11-11T18:29:41Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 43073985305",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "b8c092155d0e7c05"
+    }
+  ],
   "heartbeat_at": "2026-11-11T18:09:21Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -43,7 +54,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43073985305-3416367f9a0b2d9c",
   "production_transaction_path": "state/transactions/TERMS-LINKS-INSTALL-20261111-R3.3416367f9a0b2d9c980d691c8af04377a11f2a31b0abd33ee3a9f893dae31f12.43073985305.json",
-  "production_transaction_status": "ROLLING_BACK",
+  "production_transaction_status": "ROLLED_BACK",
   "queue_key": "catalog_renderer-516734deb9ea5607",
   "receipt_path": "state/receipts/TERMS-LINKS-INSTALL-20261111-R3.json",
   "receipt_validation_status": "PENDING",
@@ -70,7 +81,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "ROLLED_BACK",
   "trusted_package": {
     "controller_sha256": "cc74a63134f27de4f24e563ce0079e9c336d05f3917724512c60c2dcacff0e49",
     "file_sha256": {
@@ -87,5 +98,5 @@
       "cloud/terms_links_001/ua_terms_links.py": "adb3e32a9d9e765b22435f2aaea70cb94bf92fe14821fe433d543e6efa88b3c5"
     }
   },
-  "updated_at": "2026-11-11T18:20:27Z"
+  "updated_at": "2026-11-11T18:29:41Z"
 }
