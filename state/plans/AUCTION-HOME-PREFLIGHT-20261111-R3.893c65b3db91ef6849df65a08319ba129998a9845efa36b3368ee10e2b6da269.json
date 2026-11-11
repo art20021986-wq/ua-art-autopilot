@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUCTION-HOME-PREFLIGHT-20261111-R3.893c65b3db91ef6849df65a08319ba129998a9845efa36b3368ee10e2b6da269.json",
+  "autostart_ledger_sha256": "daacb2be39524005dd5eed82e6f9c9bda2f525a3be2eb5ca2ea97a572cd9f4a8",
+  "autostart_source_commit": "2c66ab9b55d7b610b72e3440431307caf6bf1823",
+  "created_at": "2026-11-11T11:19:16Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43007896293",
+    "task_id": "AUCTION-HOME-PREFLIGHT-20261111-R3",
+    "task_sha256": "893c65b3db91ef6849df65a08319ba129998a9845efa36b3368ee10e2b6da269"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-6743de5f2c417480-fcc3b58e42b0a0fd",
+  "request_path": "tasks/requests/AUCTION-HOME-PREFLIGHT-20261111-R3.json",
+  "resource_locks": [
+    "PATH_SCOPE:6743de5f2c417480"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
