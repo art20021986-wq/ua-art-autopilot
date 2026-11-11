@@ -1,3 +1,5 @@
+KOREA-DAYS-PAGE + окно лота (2026-11-11): владелец — карточка лота на korea.html должна открываться у него перед глазами, а не там, где кликнул. Причина: .kl-dialog{position:relative} — окно прилипало к верху страницы. Исправлено в пакете cloud/korea_days_page_001 (ещё не на сайте): position:fixed (по центру экрана) + каждая карточка с начала (scrollTop=0); тесты 24/24, проверка в браузере (iPhone 13). Суммы в tasks/requests/KOREA-DAYS-PAGE-PREFLIGHT-20261111.json обновлены. Production не менялся. Дальше: проба KOREA-DAYS-PAGE-PREFLIGHT (после CONTACT-NOTE-INSTALL) → «да» владельца → установка.
+
 JPAUTO-KOREA-001 (2026-11-10, 20:05 UTC) — итог дня. УСТАНОВЛЕНО на production (все проверки PASS):
 KOREA-LOTS-INSTALL (листалка 2 с + стрелки, отсчёт ч:мм:сс, крупные фото на телефоне, все лоты → video/korea/lots.json),
 KOREA-LOTS-PAGE-INSTALL (выбор авто в Корее на korea.html, лот в заявке менеджеру), KOREA-TICKER-LINK-INSTALL (клик в ленте →
