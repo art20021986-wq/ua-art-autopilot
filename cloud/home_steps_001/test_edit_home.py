@@ -58,7 +58,7 @@ class EditHomeTests(unittest.TestCase):
         self.assertEqual(new_start, start)
         self.assertEqual(result[:new_start] + result[new_end:], LIVE[:start] + LIVE[end:])
         inside = result[new_start:new_end]
-        for piece in (steps_block.switcher(), steps_block.korea_steps(), steps_block.other_note(),
+        for piece in (steps_block.switcher(), steps_block.intro(), steps_block.korea_steps(), steps_block.other_note(),
                       steps_block.signature(), steps_block.SWITCH_SCRIPT, kr_prices.SCRIPT):
             self.assertEqual(inside.count(piece), 1)
             inside = inside.replace(piece, '', 1)
@@ -101,16 +101,28 @@ class EditHomeTests(unittest.TestCase):
         self.assertIn("fetch('/video/korea/logistics.json'", kr_prices.SCRIPT)
 
     def test_owner_wording(self):
-        steps = steps_block.korea_steps() + steps_block.signature()
+        steps = steps_block.intro() + steps_block.korea_steps() + steps_block.signature()
         for text in ('Вартість послуги — 600 $', 'за курсом НБУ', 'AutoPapa', 'вул. Перемоги, 20',
                      'розрахуємо вартість розмитнення', 'Усі наші ціни фіксовані', 'прихованих платежів',
-                     'Encar', 'За 10 днів до митного оформлення', 'охоронюваній стоянці', 'UA ART COMPANY',
-                     'Стоимость услуги — 600 $', 'Бесплатная парковка AutoPapa', 'პატივისცემით'):
+                     'За 10 днів до митного оформлення', 'охоронюваній стоянці', 'UA ART COMPANY',
+                     'Стоимость услуги — 600 $', 'Бесплатная парковка AutoPapa', 'პატივისცემით',
+                     'купівля — 600 $, депозит — 1 000 $', 'Оформлення договору', 'Купівля автомобіля, логістика та супутні витрати', 'до завантаження на пором', 'Повний цикл придбання та доставки автомобіля', 'до 4 місяців', 'до 7 робочих днів', 'зараховується у витрати на автомобіль'):
             self.assertIn(text, steps)
-        for note in ('Усі наші ціни фіксовані', 'розрахуємо вартість розмитнення', 'За 10 днів до митного',
+        for note in ('Депозит 1 000 $ зараховується', 'Усі наші ціни фіксовані', 'розрахуємо вартість розмитнення', 'За 10 днів до митного',
                      'прихованих платежів', 'Безкоштовна парковка AutoPapa'):
             at = steps.index(note)
             self.assertIn('ua-kr-note', steps[steps.rindex('<', 0, steps.rindex('class=', 0, at)) - 60:at])
+
+    def test_step_three_starts_with_the_car_purchase(self):
+        step = steps_block.step3()
+        body = step[step.index('</summary><div>') + len('</summary><div>'):]
+        self.assertTrue(body.startswith('<p data-ru="После покупки выбранного'))
+        self.assertLess(step.index('прихованих платежів'), step.index('Логістика з Кореї до Києва'))
+
+    def test_step_four_has_three_stages_without_encar(self):
+        step = steps_block.step4()
+        self.assertEqual(step.count('<li><strong'), 3)
+        self.assertNotIn('Encar', step)
 
     def test_refuses_second_run_and_missing_anchor(self):
         with self.assertRaises(ValueError):

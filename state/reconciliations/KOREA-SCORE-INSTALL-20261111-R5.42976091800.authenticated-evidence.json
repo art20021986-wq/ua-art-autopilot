@@ -1,0 +1,25 @@
+{
+  "backup_started": false,
+  "claim_before_sha256": "e070efe72645e3b2010c2e697a1a65842b6a16022cd898e6842c95fc36c5f7b5",
+  "claim_status_before": {
+    "critical_gate_status": "PENDING",
+    "package_compile_status": "PENDING",
+    "production_transaction_status": null,
+    "task_execution_status": "BLOCKED_ROOT_CAUSE"
+  },
+  "crm_unchanged": true,
+  "error": "STORAGE_PROBE_STALE_OR_FUTURE — the storage probe was older than 30 minutes when the install started",
+  "failed_step": "execute / critical / prepare: storage_preflight (before any production step)",
+  "halt_archive": "state/halt_history/KOREA-SCORE-INSTALL-20261111-R5.42976091800/halt.json",
+  "live_verify": "PASS: video/index.html, video/katalog.html, video/korea.html 200; no prepare/open transaction commit for this task on main",
+  "owner_statement": "Да, подтверждаю",
+  "precedent": "state/reconciliations/KOREA-AUCTION-INSTALL-20261110.42786047168.authenticated-evidence.json",
+  "production_transaction_status": "NOT_OPENED",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-11T08:24:52+00:00",
+  "rollback_status": "NOT_NEEDED (no production write)",
+  "run_id": "42976091800",
+  "site_state_after": "unchanged; no production step ran",
+  "task_id": "KOREA-SCORE-INSTALL-20261111-R5",
+  "workflow_conclusion": "failure"
+}

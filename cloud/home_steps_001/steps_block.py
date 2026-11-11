@@ -40,6 +40,12 @@ def switcher():
             '%s</div>' % (uk, ru, uk, ka, buttons))
 
 
+def intro():
+    """Above the steps, Korea only: the full cycle and the delivery term."""
+    return ('<div class="ua-kr-intro" data-ua-for="korea">%s%s%s</div>'
+            % (text('h3', T.INTRO_TITLE), text('p', T.INTRO_TEXT), text('p', T.INTRO_TERM, 'ua-kr-term')))
+
+
 def _step(number, title, short, body):
     return ('<li class="ua-kr-step" data-ua-for="korea"><i>%d</i>%s%s<details class="ua-step-more">%s<div>%s</div>'
             '</details></li>' % (number, text('b', title), short, text('summary', T.MORE), body))
@@ -51,7 +57,7 @@ def _note(words, cls='ua-kr-note'):
 
 def step2():
     body = (''.join(text('p', line) for line in T.S2_LINES) + text('p', T.S2_PAY, 'ua-step-pay')
-            + text('p', T.S2_AFTER))
+            + text('p', T.S2_AFTER) + text('p', T.S2_TOTAL, 'ua-step-pay') + _note(T.S2_DEPOSIT))
     return _step(2, T.S2_TITLE, text('small', T.S2_SHORT), body)
 
 
@@ -72,11 +78,12 @@ def _item(key, unit, title, lines, note):
 
 def step3():
     short = '<small>%s · %s</small>' % (usd('total'), text('span', T.S3_SHORT))
-    body = ('<p>%s <strong>%s</strong> %s</p>' % (text('span', T.S3_LEAD), usd('total'), text('span', T.S3_RATE))
+    body = (text('p', T.S3_CAR) + text('p', T.S3_CAR_TERM, 'ua-step-pay') + _note(T.S3_OPEN)  # the car purchase first
+            + '<p>%s <strong>%s</strong> %s</p>' % (text('span', T.S3_LEAD), usd('total'), text('span', T.S3_RATE))
             + '<p>%s %s</p>' % (text('span', T.S3_MONTH), num('month'))
             + text('p', T.S3_INCLUDES)
             + '<ol class="ua-kr-list">%s</ol>' % ''.join(_item(*item) for item in T.S3_ITEMS)
-            + _note(T.S3_FIXED, 'ua-kr-note ua-kr-key') + text('p', T.S3_CAR) + _note(T.S3_OPEN))
+            + _note(T.S3_FIXED, 'ua-kr-note ua-kr-key'))
     return _step(3, T.S3_TITLE, short, body)
 
 
@@ -122,6 +129,10 @@ CSS = ('<style id="%s">'
        '.ua-cc button[aria-pressed="true"]{color:var(--gold);border-bottom-color:var(--gold)}'
        '.ua-cc button:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}'
        '.ua-how li:has(>details[open]){grid-column:1/-1}'
+       '.ua-kr-intro{margin:16px 0 0;padding:16px;border:1px solid #314862;border-radius:14px;background:rgba(7,17,30,.6)}'
+       '.ua-kr-intro h3{margin:0 0 8px;font-size:18px;line-height:1.35;color:#fff}'
+       '.ua-kr-intro p{margin:0;font-size:16px;line-height:1.6;color:#e6edf5;max-width:72ch}'
+       '.ua-kr-intro .ua-kr-term{margin-top:10px;font-weight:800;color:var(--gold)}'
        '.ua-kr-n{font-weight:800;color:#fff;white-space:nowrap}'
        '.ua-step-more strong{color:#fff}'
        '.ua-how .ua-step-more li{display:list-item;padding:0;border:0;border-radius:0;background:none;'
