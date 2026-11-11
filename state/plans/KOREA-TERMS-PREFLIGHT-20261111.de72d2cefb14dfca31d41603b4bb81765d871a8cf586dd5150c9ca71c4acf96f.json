@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-TERMS-PREFLIGHT-20261111.de72d2cefb14dfca31d41603b4bb81765d871a8cf586dd5150c9ca71c4acf96f.json",
+  "autostart_ledger_sha256": "d36c64966415b493a540c1c8c8184cdccd1427df990c303a71d55f2c97d64936",
+  "autostart_source_commit": "d2a4e83e8681317df7ef5c1063a096f4ebc93e0b",
+  "created_at": "2026-11-11T04:55:18Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "42961383892",
+    "task_id": "KOREA-TERMS-PREFLIGHT-20261111",
+    "task_sha256": "de72d2cefb14dfca31d41603b4bb81765d871a8cf586dd5150c9ca71c4acf96f"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-7a244c3a6280d9c7-ed9c872d1dae82df",
+  "request_path": "tasks/requests/KOREA-TERMS-PREFLIGHT-20261111.json",
+  "resource_locks": [
+    "PATH_SCOPE:7a244c3a6280d9c7"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
