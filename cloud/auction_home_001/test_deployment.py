@@ -268,5 +268,17 @@ class PublicVerificationTests(unittest.TestCase):
                 controller.public_verify(None, 'a'*64, 'b'*64, {})
 
 
+class WebappTests(unittest.TestCase):
+    def test_reload_waits_for_the_bid_endpoint(self):
+        answers = iter(['ERROR:down', 'login_api'])
+        with patch.object(controller, 'intake_field', side_effect=lambda: next(answers)), \
+             patch.object(controller.time, 'sleep'):
+            value = controller.reload_and_check(SimpleNamespace(reload_webapp=lambda: None), 'install')
+        self.assertEqual(value, {'reload': 'PASS', 'intake_check': 'login_api'})
+
+    def test_the_bid_endpoint_stays_after_a_rollback(self):
+        self.assertEqual(controller.INTAKE_FIELD, {'install': 'login_api', 'rollback': 'login_api'})
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -101,14 +101,17 @@ class ViewTests(Ledger):
         self.assertEqual(screen['buttons'][0], [('Ср 11.11.2026 · ставок: 2', 'ac:day:2026-11-11')])
         day = view.day_view('2026-11-11', stats.on_day('2026-11-11', self.db), {'+380991112233': 'Иванов Иван'})
         self.assertIn('Ставки за Ср 11.11.2026', day['text'])
-        self.assertIn('✅ 10:05 · Иванов Иван (+380991112233) · Kia K5 2021 · лот 1001 · ₩20 000 000 ≈ $15 000', day['text'])
+        self.assertIn('✅ 10:05 · Иванов Иван (+380991112233)\n   🚗 Kia K5 2021 · VIN — · лот 1001\n   ₩20 000 000 ≈ $15 000',
+                      day['text'])  # a ledger made before the VIN column: «—»
         self.assertIn('❌ 10:20', day['text'])
 
     def test_card_lists_bids_by_date(self):
         text = view.card(CLIENTS[0], stats.of_client('+380991112233', self.db))['text']
         self.assertIn('Ставки</b> (время Кореи): 3', text)
         self.assertLess(text.index('Ср 11.11.2026'), text.index('Пт 30.10.2026'))
-        self.assertIn('❌ 10:20 · Kia Sorento 2020 · лот 1002', text)
+        self.assertIn('❌ 10:20\n   🚗 Kia Sorento 2020 · VIN — · лот 1002', text)
+        self.assertIn('VIN KNAG541BBNA169806', view.card(CLIENTS[0], [dict(stats.of_client('+380991112233', self.db)[0],
+                                                                         vin='KNAG541BBNA169806')])['text'])
         self.assertIn('пока нет', view.card(CLIENTS[1])['text'])
 
     def test_long_history_fits_telegram(self):
