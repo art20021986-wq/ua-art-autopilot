@@ -210,6 +210,18 @@ class JobTest(unittest.TestCase):
             kept = job.localize_photos(items, pathlib.Path(tmp), lambda url: b'jpg')
             self.assertEqual([k['id'] for k in kept], [str(n) for n in range(10)])
 
+    def test_failed_run_keeps_the_live_ticker_photos(self):
+        """TICKER-FIX2-001: no items, or no photo copied — the photos the live ticker shows stay."""
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = pathlib.Path(tmp)
+            (folder / 'live.jpg').write_bytes(b'x')
+            with self.assertRaises(RuntimeError):
+                job.build({'items': [], 'auction_date': '2026/11/12'}, datetime(2026, 11, 12, 13, 7, tzinfo=selection.JST), folder)
+            def down(url):
+                raise OSError('down')
+            self.assertEqual(job.localize_photos([{'id': '1', 'photo': 'u'}], folder, down), [])
+            self.assertEqual([p.name for p in folder.iterdir()], ['live.jpg'])
+
     def test_login_file(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = pathlib.Path(tmp) / 'login.txt'

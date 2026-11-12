@@ -104,6 +104,8 @@ def localize_photos(items, folder, fetch=fetch_photo):
 
     with ThreadPoolExecutor(PHOTO_WORKERS) as pool:
         kept = [item for item in pool.map(one, items) if item]
+    if not kept:  # TICKER-FIX2-001: nothing copied — keep the photos the live ticker still shows
+        return kept
     names = {it['photo'].rsplit('/', 1)[1] for it in kept}
     for old in folder.glob('*.jpg'):
         if old.name not in names:
@@ -160,6 +162,8 @@ def publish_lots(data, now, folder):
 
 
 def build(data, now, folder):
+    if not data['items']:  # TICKER-FIX2-001: before the photo copy, which removes the photos it doesn't keep
+        raise RuntimeError('NO_TICKER_ITEMS')
     data = dict(data, items=localize_photos(data['items'], folder))
     if not data['items']:
         raise RuntimeError('NO_TICKER_ITEMS')
