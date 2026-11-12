@@ -111,6 +111,19 @@ class Release(unittest.TestCase):
             finally:
                 sys.path.remove(folder)
 
+    def test_language_script(self):
+        script = ('var d={"ru":{"Підбір":"Подбор","Підібрати авто":"Подобрать авто"},"ka":{"Подбор":"შერჩევა",'
+                  '"Підбір":"შერჩевა","Подобрать авто":"ავტომობილის შერჩევა","Автомобиль уже в пути — не нужно ждать '
+                  'подбора и покупки на аукционе.":"ავტომობილი უკვე გზაშია — შერჩევისა და აუქციონზე შეძენის ლოდინი '
+                  'საჭირო არ არის."}};').replace('შერჩевა', 'შერჩევა')
+        after = W.apply(script)
+        self.assertFalse(W.has_word(after), after)
+        self.assertIn('"Замовити авто":"Заказать авто"', after)
+        self.assertIn('"Заказать авто":"ავტომობილის შეკვეთა"', after)
+        self.assertIn('"Замовити авто":"ავტომობილის შეკვეთა"', after)
+        self.assertIn('ждать покупки на аукционе.":"ავტომობილი უკვე გზაშია — აუქციონზე შეძენის ლოდინი', after)
+        self.assertIn('video/ua-site-languages.js', candidate_builder.PAGES)
+
     def test_untouched(self):
         for html in ('<a href="podbor.html">k</a>', '<p>депозит 500 $</p>', '<p>Подробнее</p>'):
             self.assertEqual(W.apply(html), html)
