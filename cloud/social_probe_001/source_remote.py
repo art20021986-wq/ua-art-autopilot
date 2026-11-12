@@ -399,6 +399,47 @@ def report_r12(home=None):
             'search_page_hint': lots_hint(page), 'requests': s.requests}
 
 
+# R14: lots are found again (FIX4) but every ticker photo copy fails — what the photo URLs are and what fetching
+# them returns (in memory, nothing written). Hosts and paths only; no account data.
+def report_r14(home=None):
+    import sys as _sys
+    import urllib.parse
+    import urllib.request
+    _sys.path.insert(0, str(HOME))
+    from korea_auction import collect, job, lots as lots_mod, selection, session
+    from datetime import datetime
+    now = datetime.now(selection.JST)
+    s = session.Session()
+    s.login(*job.read_login())
+    total, found = collect.fetch_all_lots(s)
+    date = selection.next_auction_date(found, now)
+    day = [l for l in found if selection.auction_date(l) == date][:3]
+    out = []
+    for lot in day:
+        _, html = s.fetch(lot['detail_url'])
+        detail = lots_mod.parse_detail(html)
+        for label, url in (('list', (lot['photos'] or [None])[0]), ('detail', (detail['photos'] or [None])[0])):
+            item = {'from': label, 'url': None}
+            if url:
+                parts = urllib.parse.urlsplit(url)
+                item['url'] = {'scheme': parts.scheme, 'host': parts.netloc, 'path': parts.path[:80]}
+                try:
+                    data = job.fetch_photo(url)
+                    item['fetch'] = {'ok': True, 'bytes': len(data)}
+                except Exception as error:
+                    item['fetch'] = {'ok': False, 'error': type(error).__name__ + ':' + str(error)[:120]}
+                try:  # the same request, raw: status and content type
+                    request = urllib.request.Request(urllib.parse.urljoin(session.BASE, url),
+                                                     headers={'User-Agent': session._UA, 'Referer': session.BASE + '/'})
+                    with urllib.request.urlopen(request, timeout=30) as response:
+                        item['raw'] = {'status': response.status, 'type': response.headers.get('Content-Type', ''),
+                                       'length': response.headers.get('Content-Length')}
+                except Exception as error:
+                    item['raw'] = {'error': type(error).__name__ + ':' + str(error)[:120]}
+            out.append(item)
+    return {'status': 'PASS', 'total': total, 'parsed': len(found), 'date': date, 'photos': out}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -412,7 +453,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r6()  # R13: collector state + log after TICKER-FIX4 (report_r6); R10 auction shape, R9 dry run
+        value = report_r14()  # R14 photo fetch; report_r6() R6–R8/R13, report_r10() R10, report_r9() R9
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
