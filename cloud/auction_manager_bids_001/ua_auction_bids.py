@@ -1,37 +1,40 @@
-"""Client bids on the Korea auction from the owner's account (JPAUTO-KOREA-001 step В, owner 2026-11-10).
+"""Client bids on the Korea auction: requests from the site, placed by a person (JPAUTO-KOREA-001, owner 2026-11-12).
 
-check() refuses a bid before anything is sent: unknown lot, unknown start price, below start + 50 000 ₩, not a whole
-10 000 ₩, or the account's 30 bids a day used up (no client bid limit, owner 2026-11-12); the USD amount is by the
-NBU rate of the lot list.
-place() then sends it from the owner's auction account (the lot page's own bid form), reads the account's Korea
-orders page to confirm it, and writes every attempt to the ledger, with the lot's VIN (owner 2026-11-11: the bids
-show which car, with its VIN; a ledger made before that gets the column, older bids keep it empty). The CRM bot reads the ledger to tell the manager
-(ua_auction_bids_bot); this module never talks to Telegram.
-A manager may bid for a client from the CRM bot (owner 2026-11-12): the ledger keeps who placed each bid (placed_by:
-0 — the client on the site, otherwise the manager's Telegram id; older ledgers get the column, older bids stay 0).
-place() sends one bid at a time across the web app and the bot (a lock file next to the ledger), so two bids never
-share the auction account's session.
+Owner 2026-11-12 (variant А): nothing is sent to the auction from the server. A bid is placed by the owner or a
+manager themselves, in their own browser, as a personal click.
+- request(): a logged-in client's bid from the site becomes a request ('requested'); the CRM bot shows it to the staff
+  with «Открыть лот», «✅ Поставил», «❌ Не поставил»; mark() records the answer once ('placed' / 'not_placed').
+- by_manager(): a manager's bid for a client from the CRM bot, placed by them on the auction, recorded as 'placed'.
+check() refuses a bid before it is recorded: unknown lot, unknown start price, below start + 50 000 ₩, not a whole
+10 000 ₩, or the account's 30 bids a day used up (placed and waiting ones count); the USD amount is by the NBU rate of
+the lot list. Every bid keeps the lot's VIN, who started it (placed_by: 0 — the client on the site, otherwise the
+manager's Telegram id) and who answered it (handled_by, handled_at). Older ledgers get the columns; their bids stay
+as they were ('placed' / 'failed'). This module never talks to Telegram or to the auction.
 """
 from contextlib import closing
 from datetime import datetime, timedelta, timezone
-import fcntl
 import json
 from pathlib import Path
 import re
 import sqlite3
-import time
 
 LOTS = Path('/home/Carix/video/korea/lots.json')
 DB = Path('/home/Carix/auction_clients/bids.db')
-STEP_KRW = 10000          # the auction's bid field is in units of 10 000 ₩ (its page script adds "0000")
+LOT_URL = 'https://jpauto.auction/vehicle-detail/kr/%s'  # the lot page on the auction, opened by the person who bids
+STEP_KRW = 10000          # the auction's bid field is in units of 10 000 ₩
 MIN_ABOVE_START = 50000   # «Please Bid at least 50,000KRW higher than the start price»
 DAY_LIMIT = 30            # the account's «Day Limit : 30»
-LOCK_WAIT = 300           # seconds a bid waits for the one before it (one bid takes up to a few minutes)
 KST = timezone(timedelta(hours=9))
 SCHEMA = '''CREATE TABLE IF NOT EXISTS bids (
     id INTEGER PRIMARY KEY, phone TEXT NOT NULL, lot_id TEXT NOT NULL, title TEXT NOT NULL, krw INTEGER NOT NULL,
     usd INTEGER NOT NULL, status TEXT NOT NULL, message TEXT NOT NULL, created_at TEXT NOT NULL,
-    notified INTEGER NOT NULL DEFAULT 0, vin TEXT NOT NULL DEFAULT '', placed_by INTEGER NOT NULL DEFAULT 0)'''
+    notified INTEGER NOT NULL DEFAULT 0, vin TEXT NOT NULL DEFAULT '', placed_by INTEGER NOT NULL DEFAULT 0,
+    handled_by INTEGER NOT NULL DEFAULT 0, handled_at TEXT NOT NULL DEFAULT '')'''
+# Columns added after the first ledgers: (name, definition).
+ADDED = (('vin', "TEXT NOT NULL DEFAULT ''"), ('placed_by', 'INTEGER NOT NULL DEFAULT 0'),
+         ('handled_by', 'INTEGER NOT NULL DEFAULT 0'), ('handled_at', "TEXT NOT NULL DEFAULT ''"))
+# The staff messages of a request (one per chat), so an answer updates all of them.
+NOTICES = 'CREATE TABLE IF NOT EXISTS notices (bid_id INTEGER NOT NULL, chat INTEGER NOT NULL, message_id INTEGER NOT NULL)'
 
 
 class BidError(ValueError):
@@ -44,12 +47,16 @@ def _connect(db=None):
     connection = sqlite3.connect(db, timeout=10)
     connection.row_factory = sqlite3.Row
     connection.execute(SCHEMA)
+    connection.execute(NOTICES)
     columns = {row[1] for row in connection.execute('PRAGMA table_info(bids)')}
-    if 'vin' not in columns:
-        connection.execute("ALTER TABLE bids ADD COLUMN vin TEXT NOT NULL DEFAULT ''")
-    if 'placed_by' not in columns:
-        connection.execute('ALTER TABLE bids ADD COLUMN placed_by INTEGER NOT NULL DEFAULT 0')
+    for name, definition in ADDED:
+        if name not in columns:
+            connection.execute('ALTER TABLE bids ADD COLUMN %s %s' % (name, definition))
     return connection
+
+
+def _now(now=None):
+    return (now or datetime.now(KST)).astimezone(KST).isoformat(timespec='seconds')
 
 
 def lot_info(lot_id, lots_path=None):
@@ -66,10 +73,11 @@ def usd(krw, nbu):
 
 
 def today_count(db=None, now=None):
-    day = (now or datetime.now(KST)).astimezone(KST).strftime('%Y-%m-%d')
+    """Today's bids (Korea time) that use the account's day limit: placed ones and those still waiting."""
+    day = _now(now)[:10]
     with closing(_connect(db)) as connection:
-        return connection.execute("SELECT count(*) FROM bids WHERE status = 'placed' AND substr(created_at, 1, 10) = ?",
-                                  (day,)).fetchone()[0]
+        return connection.execute("SELECT count(*) FROM bids WHERE status IN ('placed', 'requested') "
+                                  "AND substr(created_at, 1, 10) = ?", (day,)).fetchone()[0]
 
 
 def check(client, lot_id, krw, lots_path=None, db=None, now=None):
@@ -93,96 +101,39 @@ def check(client, lot_id, krw, lots_path=None, db=None, now=None):
     return {'lot': lot, 'krw': krw, 'usd': amount_usd}
 
 
-def bid_form(html, lot_id):
-    """The lot page's bid form: (action, hidden fields), or BidError('form')."""
-    found = re.search(r'<form[^>]*action="(/bids/bid/%s/?)"[^>]*id="bidding"[^>]*>(.*?)</form>' % re.escape(lot_id),
-                      html, re.S)
-    if not found:
-        raise BidError('form')
-    fields = []
-    for tag in re.findall(r'<input[^>]*type="hidden"[^>]*>', found.group(2)):
-        name = re.search(r'name="([^"]+)"', tag)
-        value = re.search(r'value="([^"]*)"', tag)
-        if name:
-            fields.append((name.group(1), value.group(1) if value else ''))
-    return found.group(1), fields
-
-
-def confirmed(orders_html, lot_id, krw):
-    """Whether the account's Korea orders page lists this lot with this amount."""
-    at = orders_html.find(lot_id)
-    if at < 0:
-        return False
-    near = orders_html[at + len(lot_id):at + len(lot_id) + 2000]  # the row of that lot
-    amounts = {int(a.replace(',', '')) for a in re.findall(r'([0-9][0-9,]{2,})', near)}
-    return krw in amounts or krw // 1000 in amounts or krw // STEP_KRW in amounts
-
-
-def record(client, bid, status, message, db=None, now=None, placed_by=0):
+def _insert(client, bid, status, placed_by, handled_by, db, now):
+    stamp = _now(now)
     with closing(_connect(db)) as connection, connection:
-        cursor = connection.execute(
-            'INSERT INTO bids (phone, lot_id, title, krw, usd, status, message, created_at, vin, placed_by) '
-            'VALUES (?,?,?,?,?,?,?,?,?,?)',
+        return connection.execute(
+            'INSERT INTO bids (phone, lot_id, title, krw, usd, status, message, created_at, vin, placed_by, handled_by, '
+            'handled_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
             (client['phone'], bid['lot']['id'], '%s %s' % (bid['lot']['title'], bid['lot']['year']), bid['krw'],
-             bid['usd'], status, message[:200], (now or datetime.now(KST)).astimezone(KST).isoformat(timespec='seconds'),
-             str(bid['lot'].get('vin') or '')[:40], int(placed_by)))
-        return cursor.lastrowid
+             bid['usd'], status, '', stamp, str(bid['lot'].get('vin') or '')[:40], int(placed_by), int(handled_by),
+             stamp if handled_by else '')).lastrowid
 
 
-class _OneAtATime:
-    """An exclusive lock file next to the ledger, shared by the web app and the bot; BidError('busy') after LOCK_WAIT."""
-
-    def __init__(self, db=None, wait=None):
-        self.path = (db or DB).parent / 'bids.lock'
-        self.wait = LOCK_WAIT if wait is None else wait
-
-    def __enter__(self):
-        self.path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-        self.handle = open(self.path, 'a')
-        deadline = time.monotonic() + self.wait
-        while True:
-            try:
-                fcntl.flock(self.handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                return self
-            except BlockingIOError:
-                if time.monotonic() >= deadline:
-                    self.handle.close()
-                    raise BidError('busy') from None
-                time.sleep(0.5)
-
-    def __exit__(self, *exc):
-        fcntl.flock(self.handle, fcntl.LOCK_UN)
-        self.handle.close()
+def request(client, bid, db=None, now=None):
+    """A client's checked bid from the site, waiting for a person to place it; -> its id."""
+    return _insert(client, bid, 'requested', 0, 0, db, now)
 
 
-def place(client, bid, browser, login, db=None, placed_by=0):
-    """Send the checked bid from the owner's account; -> 'placed' or 'failed'. Every attempt is in the ledger.
-    `placed_by`: 0 — the client on the site, otherwise the manager's Telegram id."""
-    try:
-        with _OneAtATime(db):
-            return _place(client, bid, browser, login, db, placed_by)
-    except BidError as error:  # still busy after LOCK_WAIT: reported like any failed attempt
-        record(client, bid, 'failed', str(error), db, placed_by=placed_by)
-        return 'failed', str(error)
+def by_manager(client, bid, manager, db=None, now=None):
+    """A manager's checked bid for a client, placed by them on the auction; -> its id."""
+    return _insert(client, bid, 'placed', manager, manager, db, now)
 
 
-def _place(client, bid, browser, login, db, placed_by):
-    lot_id = bid['lot']['id']
-    try:
-        browser.login(*login)
-        _, page = browser.fetch('/vehicle-detail/kr/%s' % lot_id)
-        action, fields = bid_form(page, lot_id)
-        fields = [(k, v) for k, v in fields] + [('bid_price', str(bid['krw'] // STEP_KRW))]
-        browser.fetch(action, fields)
-        _, orders = browser.fetch('/bids/kr/')
-        ok = confirmed(orders, lot_id, bid['krw'])
-        status, message = ('placed', '') if ok else ('failed', 'not_confirmed')
-    except BidError as error:
-        status, message = 'failed', str(error)
-    except Exception as error:  # network or site errors are reported, never raised to the page
-        status, message = 'failed', type(error).__name__
-    record(client, bid, status, message, db, placed_by=placed_by)
-    return status, message
+def mark(bid_id, manager, placed, db=None, now=None):
+    """A person's answer to a waiting request; True only for the first answer (a second tap changes nothing)."""
+    with closing(_connect(db)) as connection, connection:
+        return connection.execute(
+            "UPDATE bids SET status = ?, handled_by = ?, handled_at = ? WHERE id = ? AND status = 'requested'",
+            ('placed' if placed else 'not_placed', int(manager), _now(now), int(bid_id))).rowcount == 1
+
+
+def get(bid_id, db=None):
+    with closing(_connect(db)) as connection:
+        row = connection.execute('SELECT * FROM bids WHERE id = ?', (int(bid_id),)).fetchone()
+        return dict(row) if row else None
 
 
 def unnotified(db=None):
@@ -193,3 +144,16 @@ def unnotified(db=None):
 def mark_notified(bid_id, db=None):
     with closing(_connect(db)) as connection, connection:
         connection.execute('UPDATE bids SET notified = 1 WHERE id = ?', (bid_id,))
+
+
+def add_notice(bid_id, chat, message_id, db=None):
+    with closing(_connect(db)) as connection, connection:
+        connection.execute('INSERT INTO notices (bid_id, chat, message_id) VALUES (?,?,?)',
+                           (int(bid_id), int(chat), int(message_id)))
+
+
+def notices(bid_id, db=None):
+    """[(chat, message_id)] of the staff messages of a request."""
+    with closing(_connect(db)) as connection:
+        return [(r['chat'], r['message_id']) for r in connection.execute(
+            'SELECT chat, message_id FROM notices WHERE bid_id = ?', (int(bid_id),))]
