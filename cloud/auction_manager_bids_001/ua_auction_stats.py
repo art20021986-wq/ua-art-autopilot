@@ -4,6 +4,7 @@ Read only: the clients (ua_auction_clients) and the bids ledger (ua_auction_bids
 (Korea time, as the auction). Pure queries; texts are in ua_auction_clients_view.
 Who placed a bid (owner 2026-11-12): placed_by 0 — the client on the site, otherwise the manager's Telegram id; a
 client belongs to the manager who created it (clients.created_by). A ledger without the column reads as all 0.
+A client's request waiting for a person ('requested', variant А) is neither placed nor failed.
 """
 from contextlib import closing
 from datetime import datetime, timedelta
@@ -35,7 +36,7 @@ def summary(now=None, db=None, people=None):
             'bids_week': sum(1 for r in rows if r['day'] >= week), 'bids_all': len(rows),
             'bids_self': sum(1 for r in rows if not _by(r)), 'bids_manager': sum(1 for r in rows if _by(r)),
             'placed': sum(1 for r in rows if r['status'] == 'placed'),
-            'failed': sum(1 for r in rows if r['status'] != 'placed'),
+            'failed': sum(1 for r in rows if r['status'] not in ('placed', 'requested')),
             'placed_usd_week': sum(r['usd'] for r in rows if r['day'] >= week and r['status'] == 'placed')}
 
 

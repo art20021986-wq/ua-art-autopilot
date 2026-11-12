@@ -1,12 +1,11 @@
-"""AUCTION-MGR-BIDS-001: a manager's bid for a client, who placed every bid, statistics by manager.
-
-The auction site, Telegram, the CRM staff table and the lot list are stand-ins; nothing is sent anywhere.
+"""AUCTION-MGR-BIDS-001: variant А (a person places every bid), a manager's bid for a client, statistics by manager,
+«Мій кабінет». Telegram, the CRM staff table and the lot list are stand-ins; nothing is sent anywhere.
 """
 import asyncio
 from contextlib import closing
 from datetime import datetime, timedelta, timezone
+import io
 import json
-import multiprocessing
 from pathlib import Path
 import sqlite3
 import sys
@@ -29,7 +28,18 @@ class BadRequest(Exception):
     """telegram.error.BadRequest"""
 
 
+class Button:
+    def __init__(self, text, callback_data=None, url=None):
+        self.text, self.callback_data, self.url = text, callback_data, url
+
+
+class Markup:
+    def __init__(self, rows):
+        self.inline_keyboard = rows
+
+
 telegram = types.ModuleType('telegram')
+telegram.InlineKeyboardButton, telegram.InlineKeyboardMarkup = Button, Markup
 telegram_ext = types.ModuleType('telegram.ext')
 telegram_ext.ApplicationHandlerStop = Stop
 telegram_error = types.ModuleType('telegram.error')
@@ -40,21 +50,26 @@ orders.markup = lambda rows: rows
 staff_db = types.ModuleType('db')
 STAFF = [{'user_id': 11, 'full_name': 'Иван', 'username': 'ivan'}, {'user_id': 22, 'full_name': '', 'username': 'olga'},
          {'user_id': 33, 'full_name': None, 'username': None}]
-staff_db.list_staff = lambda active_only=False: STAFF
+staff_db.list_staff = lambda active_only=False: [dict(s, role='manager') for s in STAFF]
+staff_db.ROLE_OWNER, staff_db.ROLE_ADMIN, staff_db.ROLE_MANAGER = 'owner', 'admin', 'manager'
 sys.modules.update({'telegram': telegram, 'telegram.ext': telegram_ext, 'telegram.error': telegram_error,
                     'ua_crm_orders': orders, 'db': staff_db})
 
+import candidate_builder  # noqa: E402
 import ua_auction_bids as bids  # noqa: E402
+import ua_auction_bids_bot as notify  # noqa: E402
 import ua_auction_clients as store  # noqa: E402
 import ua_auction_clients_bot as bot  # noqa: E402
 import ua_auction_clients_view as view  # noqa: E402
 import ua_auction_stats as stats  # noqa: E402
+import ua_auction_web as web  # noqa: E402
+import ua_client_cabinet as cabinet  # noqa: E402
 
 KST = timezone(timedelta(hours=9))
 NOW = datetime(2026, 11, 12, 10, 0, tzinfo=KST)
 LOT = {'id': '20261112000123', 'title': 'Kia K5', 'year': 2021, 'start_krw': 10000000, 'vin': 'KNAGT41BBKA000001'}
 NBU = {'usd_uah': 41.0, 'krw_uah': 0.03}
-OLD_SCHEMA = bids.SCHEMA.replace(', placed_by INTEGER NOT NULL DEFAULT 0', '')
+OLD_SCHEMA = bids.SCHEMA.split(', placed_by')[0] + ')'  # the ledger before 2026-11-12
 
 
 def client(phone='+380991112233', created_by=11, blocked=0, surname='Иванов', name='Иван'):
@@ -76,131 +91,95 @@ class Folder(unittest.TestCase):
         self.lots.write_text(json.dumps({'nbu': NBU, 'lots': [LOT]}))
 
 
-class Browser:
-    """The auction site: confirms every bid; counts how many bids are inside it at once."""
-    inside = 0
-    most = 0
-    guard = threading.Lock()
-
-    def __init__(self, pause=0.0, fail=False):
-        self.pause, self.fail = pause, fail
-
-    def login(self, email, password):
-        with Browser.guard:
-            Browser.inside += 1
-            Browser.most = max(Browser.most, Browser.inside)
-        time.sleep(self.pause)
-        with Browser.guard:
-            Browser.inside -= 1
-        if self.fail:
-            raise OSError('down')
-
-    def fetch(self, path, data=None):
-        if path == '/bids/kr/':
-            return path, '%s ... 1,005' % LOT['id']
-        return path, ('<form action="/bids/bid/%s/" id="bidding"><input type="hidden" name="a" value="1"></form>'
-                      % LOT['id'])
-
-
-def _place_in_process(db, results):
-    bid = {'lot': LOT, 'krw': 10050000, 'usd': 7354}
-    results.put(bids.place({'phone': '+380991112233'}, bid, Browser(0.3), ('e', 'p'), db, placed_by=11)[0])
+def put(db, phone, placed_by=0, status='placed', handled_by=0, now=NOW):
+    return bids._insert({'phone': phone}, a_bid(), status, placed_by, handled_by, db, now)
 
 
 class LedgerTest(Folder):
-    def test_new_ledger_records_who_placed(self):
-        bids.record({'phone': '+1'}, a_bid(), 'placed', '', self.db, NOW)
-        bids.record({'phone': '+1'}, a_bid(), 'placed', '', self.db, NOW, placed_by=11)
-        self.assertEqual([r['placed_by'] for r in stats.of_client('+1', self.db)], [11, 0])
+    def test_request_waits_and_the_first_answer_counts(self):
+        asked = bids.request({'phone': '+1'}, a_bid(), self.db, NOW)
+        self.assertEqual(bids.get(asked, self.db)['status'], 'requested')
+        self.assertTrue(bids.mark(asked, 11, True, self.db, NOW))
+        self.assertFalse(bids.mark(asked, 22, False, self.db, NOW))  # a second answer changes nothing
+        row = bids.get(asked, self.db)
+        self.assertEqual((row['status'], row['placed_by'], row['handled_by']), ('placed', 0, 11))
+        refused = bids.request({'phone': '+1'}, a_bid(), self.db, NOW)
+        self.assertTrue(bids.mark(refused, 22, False, self.db, NOW))
+        self.assertEqual(bids.get(refused, self.db)['status'], 'not_placed')
 
-    def test_old_ledger_gets_the_column_and_keeps_its_bids(self):
-        with closing(sqlite3.connect(self.db)) as connection, connection:
-            connection.execute(OLD_SCHEMA)
-            connection.execute("INSERT INTO bids (phone, lot_id, title, krw, usd, status, message, created_at, vin) "
-                               "VALUES ('+1', '1', 'Old', 1, 1, 'placed', '', '2026-11-11T10:00:00+09:00', 'V')")
-        self.assertEqual(stats.summary(NOW, self.db, [])['bids_self'], 1)  # read only: no column yet
-        bids.record({'phone': '+1'}, a_bid(), 'placed', '', self.db, NOW, placed_by=22)
-        rows = stats.of_client('+1', self.db)
-        self.assertEqual([(r['title'], r['placed_by'], r['vin']) for r in rows],
-                         [('Kia K5 2021', 22, LOT['vin']), ('Old', 0, 'V')])
-        bids.record({'phone': '+1'}, a_bid(), 'placed', '', self.db, NOW)  # a second open does not migrate again
-        self.assertEqual(len(stats.of_client('+1', self.db)), 3)
+    def test_answers_at_the_same_moment_give_one_winner(self):
+        asked = bids.request({'phone': '+1'}, a_bid(), self.db, NOW)
+        results, start = [], threading.Barrier(16)
 
-    def test_place_records_the_manager_placed_or_failed(self):
-        self.assertEqual(bids.place({'phone': '+1'}, a_bid(LOT['id'], 10050000), Browser(), ('e', 'p'), self.db,
-                                    placed_by=11), ('placed', ''))
-        self.assertEqual(bids.place({'phone': '+1'}, a_bid(LOT['id']), Browser(fail=True), ('e', 'p'), self.db,
-                                    placed_by=11), ('failed', 'OSError'))
-        self.assertEqual(bids.place({'phone': '+1'}, a_bid(LOT['id']), Browser(), ('e', 'p'), self.db), ('placed', ''))
-        self.assertEqual([(r['status'], r['placed_by']) for r in stats.of_client('+1', self.db)],
-                         [('placed', 0), ('failed', 11), ('placed', 11)])
-
-    def test_bids_from_threads_go_one_at_a_time(self):
-        Browser.most = 0
-        threads = [threading.Thread(target=bids.place, args=({'phone': '+%d' % i}, a_bid(LOT['id']), Browser(0.05),
-                                                             ('e', 'p'), self.db), kwargs={'placed_by': i % 2 * 11})
-                   for i in range(12)]
+        def tap(manager):
+            start.wait()
+            results.append(bids.mark(asked, manager, manager % 2 == 0, self.db, NOW))
+        threads = [threading.Thread(target=tap, args=(i,)) for i in range(16)]
         for t in threads:
             t.start()
         for t in threads:
             t.join()
-        self.assertEqual(Browser.most, 1)
-        self.assertEqual(stats.summary(NOW, self.db, [])['bids_all'], 12)
-        self.assertEqual(stats.summary(NOW, self.db, [])['placed'], 12)
+        self.assertEqual(sorted(results), [False] * 15 + [True])
 
-    def test_bids_from_processes_go_one_at_a_time(self):
-        """The web app and the bot are separate processes: the lock file keeps their bids apart."""
-        context = multiprocessing.get_context('fork')
-        results = context.Queue()
-        started = time.monotonic()
-        workers = [context.Process(target=_place_in_process, args=(self.db, results)) for _ in range(3)]
-        for w in workers:
-            w.start()
-        for w in workers:
-            w.join(30)
-        self.assertEqual(sorted(results.get(timeout=5) for _ in workers), ['placed'] * 3)
-        self.assertGreaterEqual(time.monotonic() - started, 0.9)  # 3 × 0.3 s, never side by side
-        self.assertEqual(stats.summary(NOW, self.db, [])['bids_manager'], 3)
+    def test_manager_bid_is_placed_by_the_manager(self):
+        bid_id = bids.by_manager({'phone': '+1'}, a_bid(), 11, self.db, NOW)
+        row = bids.get(bid_id, self.db)
+        self.assertEqual((row['status'], row['placed_by'], row['handled_by']), ('placed', 11, 11))
+        self.assertFalse(bids.mark(bid_id, 22, False, self.db, NOW))
 
-    def test_a_bid_still_waiting_is_reported_busy(self):
-        with bids._OneAtATime(self.db):
-            with patch.object(bids, 'LOCK_WAIT', 0.2):
-                self.assertEqual(bids.place({'phone': '+1'}, a_bid(), Browser(), ('e', 'p'), self.db, placed_by=11),
-                                 ('failed', 'busy'))
-        self.assertEqual([(r['message'], r['placed_by']) for r in stats.of_client('+1', self.db)], [('busy', 11)])
-        self.assertEqual(bids.place({'phone': '+1'}, a_bid(LOT['id']), Browser(), ('e', 'p'), self.db)[0], 'placed')
+    def test_old_ledger_gets_the_columns_and_keeps_its_bids(self):
+        with closing(sqlite3.connect(self.db)) as connection, connection:
+            connection.execute(OLD_SCHEMA)
+            connection.execute("INSERT INTO bids (phone, lot_id, title, krw, usd, status, message, created_at, vin) "
+                               "VALUES ('+1', '1', 'Old', 1, 1, 'failed', 'OSError', '2026-11-11T10:00:00+09:00', 'V')")
+        self.assertEqual(stats.summary(NOW, self.db, [])['failed'], 1)  # read only: no columns yet
+        bids.request({'phone': '+1'}, a_bid(), self.db, NOW)
+        rows = stats.of_client('+1', self.db)
+        self.assertEqual([(r['title'], r['status'], r['placed_by'], r['handled_by']) for r in rows],
+                         [('Kia K5 2021', 'requested', 0, 0), ('Old', 'failed', 0, 0)])
+        bids.request({'phone': '+1'}, a_bid(), self.db, NOW)  # a second open does not migrate again
+        self.assertEqual(len(stats.of_client('+1', self.db)), 3)
+
+    def test_day_limit_counts_placed_and_waiting(self):
+        for status in ['placed'] * 10 + ['requested'] * 20 + ['not_placed'] * 5:
+            put(self.db, '+1', status=status)
+        self.assertEqual(bids.today_count(self.db, NOW), 30)
+        with self.assertRaisesRegex(bids.BidError, 'day_limit'):
+            bids.check(client(), LOT['id'], 25000000, self.lots, self.db, NOW)
+        self.assertEqual(bids.today_count(self.db, NOW + timedelta(days=1)), 0)
+
+    def test_nothing_talks_to_the_auction(self):
+        for name in ('place', 'bid_form', 'confirmed', '_OneAtATime'):
+            self.assertFalse(hasattr(bids, name), name)
+
+    def test_notices(self):
+        bids.add_notice(5, 11, 100, self.db)
+        bids.add_notice(5, 22, 200, self.db)
+        bids.add_notice(6, 11, 300, self.db)
+        self.assertEqual(sorted(bids.notices(5, self.db)), [(11, 100), (22, 200)])
 
 
 class StatsTest(Folder):
-    def fill(self, rows):
-        for phone, placed_by, status in rows:
-            bids.record({'phone': phone}, a_bid(), status, '', self.db, NOW, placed_by=placed_by)
-
     def test_counts_by_who_placed_and_by_manager(self):
         people = [client('+1', 11), client('+2', 11), client('+3', 22)]
-        self.fill([('+1', 0, 'placed'), ('+1', 11, 'placed'), ('+2', 0, 'failed'), ('+3', 11, 'placed'),
-                   ('+3', 0, 'placed'), ('+9', 0, 'placed')])  # +9: a client no longer in the list
+        put(self.db, '+1', 0, 'placed', 33)
+        put(self.db, '+1', 11, 'placed', 11)
+        put(self.db, '+2', 0, 'not_placed', 22)
+        put(self.db, '+3', 11, 'placed', 11)
+        put(self.db, '+3', 0, 'requested')
+        put(self.db, '+9', 0, 'placed')  # a client no longer in the list
         n = stats.summary(NOW, self.db, people)
-        self.assertEqual((n['bids_all'], n['bids_self'], n['bids_manager']), (6, 4, 2))
+        self.assertEqual((n['bids_all'], n['bids_self'], n['bids_manager'], n['placed'], n['failed']), (6, 4, 2, 4, 1))
         self.assertEqual(stats.managers(people, self.db), [
             {'id': 11, 'clients': 2, 'for_clients': 2, 'clients_self': 2},
             {'id': 22, 'clients': 1, 'for_clients': 0, 'clients_self': 1}])
-        self.assertEqual([(r['phone'], r['placed_by']) for r in stats.of_manager(11, people, self.db)],
-                         [('+3', 11), ('+2', 0), ('+1', 11), ('+1', 0)])
         self.assertEqual([(r['phone'], r['placed_by']) for r in stats.of_manager(22, people, self.db)], [('+3', 0)])
-
-    def test_manager_who_only_placed_bids_is_listed(self):
-        self.fill([('+1', 33, 'placed')])
-        self.assertEqual(stats.managers([client('+1', 11)], self.db), [
-            {'id': 33, 'clients': 0, 'for_clients': 1, 'clients_self': 0},
-            {'id': 11, 'clients': 1, 'for_clients': 0, 'clients_self': 0}])
 
     def test_empty_and_missing_ledger(self):
         missing = self.dir / 'none.db'
         self.assertEqual(stats.managers([], missing), [])
         self.assertEqual(stats.of_manager(11, [], missing), [])
-        n = stats.summary(NOW, missing, [])
-        self.assertEqual((n['bids_self'], n['bids_manager'], n['clients']), (0, 0, 0))
+        self.assertEqual(stats.summary(NOW, missing, [])['bids_all'], 0)
         self.assertFalse(missing.exists())  # reading never creates the ledger
 
     def test_ten_thousand_bids_stay_fast(self):
@@ -210,7 +189,7 @@ class StatsTest(Folder):
             connection.executemany(
                 'INSERT INTO bids (phone, lot_id, title, krw, usd, status, message, created_at, placed_by) '
                 'VALUES (?,?,?,?,?,?,?,?,?)',
-                [('+%d' % (i % 500), str(i), 'Car', 10000000, 7000, 'placed' if i % 5 else 'failed', '',
+                [('+%d' % (i % 500), str(i), 'Car', 10000000, 7000, ('placed', 'requested', 'not_placed')[i % 3], '',
                   (NOW - timedelta(minutes=i)).isoformat(), 0 if i % 3 else 11 + i % 7) for i in range(10000)])
         started = time.monotonic()
         n = stats.summary(NOW, self.db, people)
@@ -219,7 +198,6 @@ class StatsTest(Folder):
         screens = [view.home(n), view.managers_view(rows, {}), view.manager_view(11, 72, mine, {}, {})]
         self.assertLess(time.monotonic() - started, 2.0)
         self.assertEqual(n['bids_self'] + n['bids_manager'], 10000)
-        self.assertEqual(sum(m['for_clients'] + m['clients_self'] for m in rows), 10000)
         self.assertTrue(all(len(s['text']) <= 4096 for s in screens))
 
 
@@ -245,7 +223,7 @@ class ViewTest(unittest.TestCase):
         screen = view.card(client(created_by=22), rows, STAFF_NAMES)
         self.assertIn('Логин: +380991112233\nОформил: @olga\n', screen['text'])
         self.assertIn('13:05 · ставил: менеджер Иван', screen['text'])
-        self.assertIn('12:40 · сам', screen['text'])
+        self.assertIn('12:40 · сам', screen['text'])  # a bid from before variant А
         self.assertIn([('🔨 Ставка за клиента', 'ac:bid:+380991112233')], screen['buttons'])
         self.assertEqual(screen['buttons'][-1], [('К списку клиентов', 'ac:list')])
 
@@ -279,20 +257,29 @@ class ViewTest(unittest.TestCase):
         self.assertIn('Петров П. (+1) · ставил: менеджер Иван', view.day_view('2026-11-12', [row], {'+1': 'Петров П.'},
                                                                              STAFF_NAMES)['text'])
 
-    def test_bid_screens_and_results(self):
+    def test_statuses_and_who_answered(self):
+        base = dict(phone='+1', lot_id='1', title='Kia', krw=1, usd=1, vin='', created_at='2026-11-12T13:05:00+09:00')
+        waiting = view.card(client(), [dict(base, status='requested', placed_by=0, handled_by=0)], STAFF_NAMES)['text']
+        self.assertIn('⏳ 13:05 · заявка клиента · ждёт менеджера', waiting)
+        done = view.card(client(), [dict(base, status='placed', placed_by=0, handled_by=11)], STAFF_NAMES)['text']
+        self.assertIn('✅ 13:05 · заявка клиента · поставил Иван', done)
+        refused = view.card(client(), [dict(base, status='not_placed', placed_by=0, handled_by=22)], STAFF_NAMES)['text']
+        self.assertIn('❌ 13:05 · заявка клиента · не поставил @olga', refused)
+
+    def test_bid_screens(self):
         c = client()
         self.assertIn('Шаг 1 из 2: номер лота', view.bid_lot_prompt(c)['text'])
         amount = view.bid_amount_prompt(c, LOT)['text']
         self.assertIn('старт ₩10 000 000', amount)
         self.assertIn('от ₩10 050 000', amount)
-        confirm = view.bid_confirm(c, {'lot': LOT, 'krw': 25000000, 'usd': 18293})
+        confirm = view.bid_confirm(c, {'lot': LOT, 'krw': 25000000, 'usd': 18293}, bids.LOT_URL % LOT['id'])
         self.assertIn('₩25 000 000 ≈ $18 293', confirm['text'])
-        self.assertEqual(confirm['buttons'], [[('✅ Поставить', 'ac:bidok'), ('✖ Отмена', 'ac:c:+380991112233')]])
-        self.assertTrue(view.bid_result('placed', '').startswith('✅'))
-        for code in ('busy', 'not_confirmed', 'OSError', 'day_limit'):
-            self.assertTrue(view.bid_result('failed', code).startswith('❌ Ставка не прошла: '))
-        self.assertEqual(set(view.BID_ERRORS) >= {'lot', 'amount', 'step', 'too_low', 'day_limit', 'blocked',
-                                                  'no_start_price'}, True)
+        self.assertIn('поставьте сами на аукционе', confirm['text'])
+        self.assertEqual(confirm['buttons'], [[('🔗 Открыть лот на аукционе', 'https://jpauto.auction/vehicle-detail/kr/' + LOT['id'])],
+                                              [('✅ Поставил', 'ac:bidok'), ('✖ Отмена', 'ac:c:+380991112233')]])
+        self.assertTrue(view.BID_RECORDED.startswith('✅'))
+        self.assertTrue(set(view.BID_ERRORS) >= {'lot', 'amount', 'step', 'too_low', 'day_limit', 'blocked',
+                                                 'no_start_price'})
 
 
 class Message:
@@ -305,10 +292,10 @@ class Message:
 
 class Query:
     def __init__(self, data, message):
-        self.data, self.message, self.edits = data, message, []
+        self.data, self.message, self.edits, self.answers = data, message, [], []
 
     async def answer(self, *a, **kw):
-        pass
+        self.answers.append(a[0] if a else '')
 
     async def edit_message_text(self, text, **kw):
         self.edits.append(text)
@@ -318,26 +305,28 @@ class Query:
 
 
 class BotTest(Folder):
-    """The manager's dialogue end to end, with the clients, the lot list and the auction as stand-ins."""
+    """The manager's dialogue end to end, with the clients and the lot list as stand-ins."""
 
     def setUp(self):
         super().setUp()
         self.clients = {'+380991112233': client(), '+380671112233': client('+380671112233', blocked=1)}
-        self.sent = []
         patches = [patch.object(store, 'get', lambda phone, db=None: self.clients.get(phone)),
                    patch.object(store, 'all_clients', lambda db=None: list(self.clients.values())),
-                   patch.object(bids, 'LOTS', self.lots), patch.object(bids, 'DB', self.db),
-                   patch.object(bot, '_send', self.fake_send)]
+                   patch.object(bids, 'LOTS', self.lots), patch.object(bids, 'DB', self.db)]
         for p in patches:
             p.start()
             self.addCleanup(p.stop)
         self.context = types.SimpleNamespace(user_data={})
         self.message = Message()
+        self.shown = []
+        real_show = bot._show
 
-    def fake_send(self, phone, bid, manager):
-        time.sleep(0.2)  # the auction takes a while; the bot must not wait for it
-        self.sent.append((phone, bid['krw'], manager))
-        return 'placed', ''
+        async def show(message, screen, edit=None):
+            self.shown.append(screen)
+            await real_show(message, screen, None)
+        patcher = patch.object(bot, '_show', show)
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def update(self, data=None, text=None):
         return types.SimpleNamespace(callback_query=Query(data, self.message) if data else None,
@@ -367,12 +356,15 @@ class BotTest(Folder):
         self.assertEqual(self.say('10 000 000'), view.BID_ERRORS['too_low'])
         self.assertEqual(self.say('10 055 000'), view.BID_ERRORS['step'])
         self.assertIn('Проверьте ставку', self.say('₩25,000,000'))
+        self.assertEqual(self.shown[-1]['buttons'][0][0][1], bids.LOT_URL % LOT['id'])  # the link button
         query = self.tap('ac:bidok')
         self.assertEqual(query.edits, ['no buttons'])
-        self.assertTrue(self.message.sent[-1].startswith('✅ Ставка поставлена на аукционе.'))
-        self.tap('ac:bidok')  # a second tap: nothing more is sent
-        self.assertEqual(self.message.sent[-1], 'Ставка уже отправлена или отменена.')
-        self.assertEqual(self.sent, [('+380991112233', 25000000, 11)])
+        self.assertTrue(self.message.sent[-1].startswith(view.BID_RECORDED))
+        self.tap('ac:bidok')  # a second tap: nothing more is recorded
+        self.assertEqual(self.message.sent[-1], 'Ставка уже отмечена или отменена.')
+        rows = stats.of_client('+380991112233', self.db)
+        self.assertEqual([(r['krw'], r['status'], r['placed_by'], r['handled_by']) for r in rows],
+                         [(25000000, 'placed', 11, 11)])
 
     def test_cancel_and_other_buttons_end_the_dialogue(self):
         self.tap('ac:bid:+380991112233')
@@ -380,7 +372,7 @@ class BotTest(Folder):
         self.say('25000000')
         self.tap('ac:c:+380991112233')  # «✖ Отмена» opens the card
         self.tap('ac:bidok')
-        self.assertEqual(self.sent, [])
+        self.assertEqual(stats.of_client('+380991112233', self.db), [])
 
     def test_blocked_and_unknown_clients(self):
         self.tap('ac:bid:+380671112233')
@@ -391,85 +383,183 @@ class BotTest(Folder):
 
     def test_day_limit_ends_the_dialogue(self):
         for i in range(bids.DAY_LIMIT):
-            bids.record({'phone': '+1'}, a_bid(), 'placed', '', self.db)
+            bids.request({'phone': '+1'}, a_bid(), self.db)
         self.tap('ac:bid:+380991112233')
         self.say('20261112000123')
         self.assertEqual(self.say('25000000'), view.BID_ERRORS['day_limit'])
         self.assertNotIn(bot.WAIT, self.context.user_data)
 
-    def test_the_bot_keeps_answering_while_a_bid_is_sent(self):
-        self.tap('ac:bid:+380991112233')
-        self.say('20261112000123')
-        self.say('25000000')
-        ticks = []
-
-        async def both():
-            async def other():
-                for _ in range(5):
-                    ticks.append(time.monotonic())
-                    await asyncio.sleep(0.02)
-            try:
-                await asyncio.gather(bot.callback(self.update(data='ac:bidok'), self.context), other())
-            except Stop:
-                pass
-        started = time.monotonic()
-        asyncio.run(both())
-        self.assertEqual(len(ticks), 5)
-        self.assertLess(ticks[-1] - started, 0.2)  # the other work ran while the 0.2 s send was in progress
-
     def test_managers_screens(self):
-        bids.record({'phone': '+380991112233'}, a_bid(), 'placed', '', self.db, placed_by=22)
-        self.tap('ac:mgrs')
-        self.tap('ac:mgr:22')
-        self.tap('ac:mgr:x')  # a broken id shows the list again
-        self.tap('ac:home')
-        self.tap('ac:c:+380991112233')
+        put(self.db, '+380991112233', 22, 'placed', 22)
+        for data in ('ac:mgrs', 'ac:mgr:22', 'ac:mgr:x', 'ac:home', 'ac:c:+380991112233', 'ac:list', 'ac:cancel'):
+            self.tap(data)
+
+    def test_link_buttons(self):
+        markup = bot._markup([[('🔗 Открыть', 'https://jpauto.auction/vehicle-detail/kr/1')], [('A', 'ac:x'), ('B', 'ac:y')]])
+        first, (a, b) = markup.inline_keyboard
+        self.assertEqual((first[0].url, first[0].callback_data, a.callback_data, b.url), (
+            'https://jpauto.auction/vehicle-detail/kr/1', None, 'ac:x', None))
+
+    def test_no_duplicate_buttons(self):
+        self.assertEqual(bot.folder_rows(), [])  # «👤 Клиенты → Аукционы онлайн → Корея» adds nothing
+        self.assertNotIn([view.NEW], view.list_view([client()], view.HOME[1])['buttons'])
+        home = view.home(stats.summary(NOW, self.db, []))['buttons']
+        labels = [b for row in home for b in row]
+        self.assertEqual(len(labels), len(set(labels)))
 
     def test_staff_names(self):
         self.assertEqual(bot._staff(), {11: 'Иван', 22: '@olga', 33: '33'})
 
 
+class Sent:
+    def __init__(self):
+        self.messages, self.edits, self.next_id = [], [], 100
+
+    async def send_message(self, chat, message, **kw):
+        self.next_id += 1
+        self.messages.append((chat, message, kw.get('reply_markup')))
+        return types.SimpleNamespace(message_id=self.next_id)
+
+    async def edit_message_text(self, message, chat_id, message_id, **kw):
+        self.edits.append((chat_id, message_id, message))
+
+
 class NoticeTest(Folder):
-    """The staff message about a bid: a manager's bid is named as such and not sent back to that manager."""
+    """The staff message about a bid and the answer buttons of a request."""
 
     def setUp(self):
         super().setUp()
-        import ua_auction_bids_bot as notify
-        self.notify = notify
-        staff_db.ROLE_OWNER, staff_db.ROLE_ADMIN, staff_db.ROLE_MANAGER = 'owner', 'admin', 'manager'
         patches = [patch.object(bids, 'DB', self.db), patch.object(notify, 'recipients', lambda: [11, 22, 33]),
                    patch.object(store, 'get', lambda phone, db=None: client(phone))]
         for p in patches:
             p.start()
             self.addCleanup(p.stop)
+        self.bot = Sent()
+        self.context = types.SimpleNamespace(bot=self.bot)
 
-    def run_notify(self):
-        sent = []
+    def answer(self, data, user):
+        update = types.SimpleNamespace(callback_query=Query(data, Message()), effective_user=types.SimpleNamespace(id=user))
+        with self.assertRaises(Stop):
+            asyncio.run(notify.answer(update, self.context))
+        return update.callback_query
 
-        async def send_message(chat, message, **kw):
-            sent.append((chat, message))
-        asyncio.run(self.notify.notify(types.SimpleNamespace(bot=types.SimpleNamespace(send_message=send_message))))
-        return sent
+    def test_request_goes_to_all_with_buttons_and_the_first_answer_shows_everywhere(self):
+        asked = bids.request({'phone': '+1'}, a_bid(LOT['id']), self.db, NOW)
+        asyncio.run(notify.notify(self.context))
+        self.assertEqual([m[0] for m in self.bot.messages], [11, 22, 33])
+        chat, message, markup = self.bot.messages[0]
+        self.assertTrue(message.startswith('<b>🔨 Заявка на ставку</b>\nПоставьте сами на аукционе и отметьте.'))
+        link, (ok, no) = markup.inline_keyboard
+        self.assertEqual((link[0].url, ok.callback_data, no.callback_data),
+                         (bids.LOT_URL % LOT['id'], 'ab:ok:%d' % asked, 'ab:no:%d' % asked))
+        self.assertEqual(len(bids.notices(asked, self.db)), 3)
+        query = self.answer('ab:ok:%d' % asked, 22)
+        self.assertEqual(query.answers, ['Отмечено'])
+        self.assertEqual(sorted(e[0] for e in self.bot.edits), [11, 22, 33])
+        self.assertTrue(all('✅ поставил @olga' in e[2] for e in self.bot.edits))
+        query = self.answer('ab:no:%d' % asked, 11)  # late answer: nothing changes
+        self.assertTrue(query.answers[0].startswith('Уже отмечено: ✅ поставил @olga'))
+        self.assertEqual(bids.get(asked, self.db)['status'], 'placed')
+        asyncio.run(notify.notify(self.context))
+        self.assertEqual(len(self.bot.messages), 3)  # each bid is told once
 
-    def test_client_and_manager_bids(self):
-        bids.record({'phone': '+1'}, a_bid(), 'placed', '', self.db, NOW)
-        bids.record({'phone': '+2'}, a_bid(), 'failed', 'busy', self.db, NOW, placed_by=11)
-        sent = self.run_notify()
-        self.assertEqual([chat for chat, _ in sent], [11, 22, 33, 22, 33])
-        self.assertTrue(sent[0][1].startswith('<b>🔨 Ставка клиента</b>'))
-        self.assertTrue(sent[3][1].startswith('<b>🔨 Ставка менеджера Иван за клиента</b>'))
-        self.assertIn('аукцион был занят другой ставкой', sent[3][1])
-        self.assertEqual(self.run_notify(), [])  # each bid is told once
+    def test_strangers_cannot_answer(self):
+        asked = bids.request({'phone': '+1'}, a_bid(), self.db, NOW)
+        self.assertEqual(self.answer('ab:ok:%d' % asked, 99).answers, ['Недостаточно прав'])
+        self.assertEqual(bids.get(asked, self.db)['status'], 'requested')
 
-    def test_no_dead_limit_reason(self):
-        self.assertNotIn('limit', self.notify.REASONS)
+    def test_manager_bid_is_information_for_the_others(self):
+        bids.by_manager({'phone': '+1'}, a_bid(), 11, self.db, NOW)
+        asyncio.run(notify.notify(self.context))
+        self.assertEqual([m[0] for m in self.bot.messages], [22, 33])
+        self.assertTrue(self.bot.messages[0][1].startswith('<b>🔨 Ставка менеджера Иван за клиента</b>\n✅ поставил Иван'))
+        self.assertIsNone(self.bot.messages[0][2])
+
+
+class WebTest(Folder):
+    """The site: a bid becomes a request (nothing goes to the auction); «Мій кабінет» shows only the client's own."""
+
+    def setUp(self):
+        super().setUp()
+        self.me = client('+380991112233')
+        patches = [patch.object(bids, 'DB', self.db), patch.object(bids, 'LOTS', self.lots),
+                   patch.object(web, 'current_client', lambda environ, key: self.me), patch.object(web, '_key', lambda p: b'k')]
+        for p in patches:
+            p.start()
+            self.addCleanup(p.stop)
+        self.app = web.AuctionApp(lambda environ, start: [b'site'])
+
+    def call(self, path, method='GET', body=None):
+        data = json.dumps(body).encode() if body is not None else b''
+        environ = {'PATH_INFO': '/api/auction/' + path, 'REQUEST_METHOD': method, 'CONTENT_LENGTH': str(len(data)),
+                   'CONTENT_TYPE': 'application/json', 'HTTP_ORIGIN': web.ORIGIN, 'wsgi.input': io.BytesIO(data),
+                   'REMOTE_ADDR': '1.2.3.4'}
+        status = []
+        out = self.app(environ, lambda s, h: status.append(s))
+        return status[0], json.loads(b''.join(out))
+
+    def test_bid_becomes_a_request(self):
+        status, answer = self.call('bid', 'POST', {'lot': LOT['id'], 'krw': 25000000})
+        self.assertEqual((status, answer['status']), ('200 OK', 'requested'))
+        self.assertEqual(self.call('bid', 'POST', {'lot': LOT['id'], 'krw': 10000})[1], {'error': 'too_low'})
+        self.assertEqual([r['status'] for r in stats.of_client(self.me['phone'], self.db)], ['requested'])
+
+    def test_cabinet_shows_only_the_clients_own(self):
+        put(self.db, self.me['phone'], 0, 'placed', 11)
+        put(self.db, '+380000000000', 0, 'placed', 11)  # someone else's
+        status, page = self.call('my')
+        self.assertEqual(status, '200 OK')
+        self.assertEqual(page['client'], {'name': 'Иван', 'surname': 'Иванов', 'phone': '+380991112233', 'deposit_usd': 1000})
+        self.assertEqual(len(page['bids']), 1)
+        self.assertEqual(set(page['bids'][0]), set(web.BID_FIELDS))  # no manager ids or other columns
+        self.assertEqual(page['cars'], [])
+        self.me = None
+        self.assertEqual(self.call('my'), ('401 Unauthorized', {'error': 'login'}))
+
+
+class PageTest(unittest.TestCase):
+    """The Korea page after AUCTION-LIMIT (the live page restored by KOREA-CARD) and «Мій кабінет»."""
+
+    def setUp(self):
+        self.page = (HERE / 'fixtures' / 'korea_after_limit.html').read_text(encoding='utf-8')
+
+    def test_korea_page(self):
+        new = candidate_builder.korea(self.page)
+        self.assertEqual(new.count('id="kc-cab"'), 1)
+        self.assertIn('href="/video/kabinet.html"', new)
+        self.assertIn('r.status==="requested"', new)
+        self.assertNotIn('Розміщуємо ставку на аукціоні', new)
+        self.assertEqual(new.count('<!--UA-KOREA-BID-V1-->'), 1)
+        self.assertEqual(new.count('<!--UA-KOREA-LOGIN-V1-->'), 1)
+        outside = lambda html: html[:html.index('<!--UA-KOREA-LOGIN-V1-->')]
+        self.assertEqual(outside(new), outside(self.page))  # nothing before the login block changes
+
+    def test_page_before_auction_limit_stops(self):
+        with self.assertRaisesRegex(ValueError, 'KOREA_PAGE_BEFORE_AUCTION_LIMIT'):
+            candidate_builder.korea(self.page.replace('id="kc-name"', 'id="kc-name"></b><b id="kc-limit"', 1))
+        with self.assertRaisesRegex(ValueError, 'KOREA_LOGIN_LINE'):
+            cabinet.link('<html></html>')
+
+    def test_cabinet_shows_payments_deadlines_and_penalties(self):
+        html = cabinet.page(candidate_builder.korea(self.page))
+        for key in ('pay_car', 'left', 'overdue', 'penalty_now', 'penalty_head', 'daily', 'annual', 'fine_after',
+                    'роб. дн.', 'від простроченої суми за кожен день'):
+            self.assertIn(key, html)
+
+    def test_cabinet_page(self):
+        html = cabinet.page(candidate_builder.korea(self.page))
+        for part in ('noindex', 'id="cab-bids"', 'id="cab-cars"', 'id="cab-login"', '<header class="site-header">',
+                     'ua-site-languages.js', '/api/auction/my', 'Мій кабінет'):
+            self.assertIn(part, html)
+        self.assertEqual(html.count('<header'), 1)
 
 
 class BuildTest(unittest.TestCase):
     def test_other_installed_version_stops(self):
-        import candidate_builder
+        source = {name: b'other' for name in candidate_builder.MODULES}
+        source[candidate_builder.PAGE] = b''
         with self.assertRaisesRegex(ValueError, 'INPUT_HASH'):
-            candidate_builder.build({name: b'other' for name in candidate_builder.SOURCE_FILES}, {})
+            candidate_builder.build(source, {})
 
 
 if __name__ == '__main__':

@@ -250,7 +250,7 @@ class TransportTests(unittest.TestCase):
 
 
 class PublicVerificationTests(unittest.TestCase):
-    body = b'<html><div id="kc-who"></div>' + b'x'*300 + b'</html>'
+    body = b'<html><a id="kc-cab"></a><div id="cab-bids"></div>' + b'x'*300 + b'</html>'
 
     def response(self, request, timeout):
         response = BytesIO(self.body)
