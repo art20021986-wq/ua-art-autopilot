@@ -1,10 +1,16 @@
 """Parse auction lot data: the Korea search results table and a lot detail page."""
 import re
+from urllib.parse import urljoin
 
 from . import html_tools
+from .session import BASE
 
 _COLUMNS = ('start', 'close', 'house_lot', 'score', 'mileage', 'year', 'start_price',
             'photo', 'maker', 'model', 'model_code', 'trim', 'engine', 'transmission')
+
+
+# The lot photos on a lot page (two storage layouts seen 2026-11-11); site icons are not lot photos.
+PHOTO_PATH = re.compile(r'/(?:cha_auction|auction/IMAGE_UPLOAD)/.+\.jpe?g$', re.I)
 
 
 def _int(value):
@@ -56,7 +62,7 @@ def _pairs(table_html):
 
 
 def parse_detail(html):
-    """Lot detail page -> start price, specs, photos, market sold prices."""
+    """Lot detail page -> start price, specs, VIN, photos (page order, as written), market sold prices."""
     page = html_tools.text(html)
     prices = [_int(p) for p in re.findall(r'Starting Price ([\d,]+) KRW', page)]
     specs = _pairs(html_tools.table_containing(html, 'Chassis No.'))
@@ -69,9 +75,11 @@ def parse_detail(html):
             if sold:
                 market.append(sold)
     photos = []
-    for src in re.findall(r'<img[^>]+src="(https://image-cdn-hub\.beforward\.jp/[^"]+)"', html):
-        if src not in photos:
+    for src in re.findall(r'<img[^>]+src="([^"]+)"', html):
+        src = urljoin(BASE, src)  # the page writes them site-relative; the ticker and the copies need full addresses
+        if PHOTO_PATH.search(src) and src not in photos:
             photos.append(src)
-    return {'start_price_krw': max(prices or [0]), 'specs': specs,
+    vin = re.search(r'id="chassis_no_value"[^>]*>\s*([A-Za-z0-9-]{5,20})\s*<', html)
+    return {'start_price_krw': max(prices or [0]), 'specs': specs, 'vin': vin.group(1).upper() if vin else '',
             'fuel': extra.get('Fuel', '').strip(), 'history': extra.get('Vehicle History', '').strip(),
             'body': extra.get('Type', '').strip(), 'market_sold_krw': market, 'photos': photos}

@@ -5,7 +5,7 @@ from datetime import datetime
 
 import tempfile
 
-from korea_auction import catalog, job, lots, nbu, prices, public, selection, ticker
+from korea_auction import catalog, job, lots, model_lots, nbu, prices, public, selection, ticker
 
 FIX = pathlib.Path(__file__).with_name('fixtures')
 
@@ -27,13 +27,18 @@ class LotsTest(unittest.TestCase):
                 '<table><tr><th>Manufacturer</th><td>HYUNDAI</td></tr><tr><th>Chassis No.</th><td>KMH</td></tr></table>'
                 '<table><tr><th>Date</th><th>Sold Price</th></tr>'
                 '<tr><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td><td>1,900,000</td></tr></table>'
-                '<img src="https://image-cdn-hub.beforward.jp/a/1"><img src="https://image-cdn-hub.beforward.jp/a/1">')
+                '<img src="/img/icon.png"><img src="/cha_auction/2026/1110/5/a5_1.jpg">'
+                '<img src="/cha_auction/2026/1110/5/a5_1.jpg"><img src="https://cdn.example/auction/IMAGE_UPLOAD/CAR/1/CA9/CA9x_2.JPG">'
+                '<input id="chassis_no_input" value=""><td><div id="chassis_no_value"> kmhd341cbnu123456 </div></td>')
         d = lots.parse_detail(html)
         self.assertEqual(d['start_price_krw'], 2100000)
         self.assertEqual((d['fuel'], d['history'], d['body']), ('Gasoline', 'For Private Use', 'SEDAN'))
         self.assertEqual(d['specs']['Chassis No.'], 'KMH')
         self.assertEqual(d['market_sold_krw'], [1900000])
-        self.assertEqual(len(d['photos']), 1)
+        self.assertEqual(d['photos'], ['https://jpauto.auction/cha_auction/2026/1110/5/a5_1.jpg',
+                                       'https://cdn.example/auction/IMAGE_UPLOAD/CAR/1/CA9/CA9x_2.JPG'])  # no icon
+        self.assertEqual(d['vin'], 'KMHD341CBNU123456')
+        self.assertEqual(lots.parse_detail('<div id="chassis_no_value"></div>')['vin'], '')
 
 
 class SelectionTest(unittest.TestCase):
@@ -293,6 +298,14 @@ class JobTest(unittest.TestCase):
 
 
 
+class UpcomingTest(unittest.TestCase):
+    def test_upcoming_days(self):
+        lots_ = [{'auction_start': d} for d in ('2026/11/09 13:00', '2026/11/10 13:00', '2026/11/11 10:00',
+                                                 '2026/11/13 09:00')]
+        now = datetime(2026, 11, 10, 22, tzinfo=selection.JST)
+        self.assertEqual(selection.upcoming(lots_, now), lots_[1:])  # today's lots too, not yesterday's
+
+
 class PublicLotsTest(unittest.TestCase):
     LOT = {'id': '7', 'maker': 'KIA', 'model': 'SORENTO', 'trim': 'Signature', 'year': 2021, 'mileage_km': 40000,
            'score': 'A', 'engine_cc': 2497, 'transmission': 'AT', 'house': 'Auto Hub Auction', 'lot_no': '3001',
@@ -309,11 +322,18 @@ class PublicLotsTest(unittest.TestCase):
         self.assertEqual(lot['start_usd'], round(20000000 * 0.03 / 41.0))
         self.assertEqual(lot['photos'], ['/video/korea/lots/7-1.jpg', '/video/korea/lots/7-2.jpg'])
         self.assertNotIn('cdn.example', str(value))
+        self.assertEqual(lot['vin'], '')
+        self.assertEqual(public.build([dict(self.LOT, vin='KNA1')], '', self.RATES, {'7': ['7-1.jpg']}, '')['lots'][0]['vin'],
+                         'KNA1')
+        name = public.photo_name('7', 'https://cdn.example/a')
+        self.assertRegex(name, r'^7-[0-9a-f]{12}\.jpg$')
+        self.assertNotEqual(name, public.photo_name('7', 'https://cdn.example/b'))
 
     def test_copy_lot_photos_keeps_existing_and_removes_old(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder = pathlib.Path(tmp)
-            (folder / '7-1.jpg').write_bytes(b'kept')
+            name = lambda url: public.photo_name('7', 'https://cdn.example/' + url)
+            (folder / name('a')).write_bytes(b'kept')
             (folder / '99-1.jpg').write_bytes(b'old')
             fetched = []
             def fetch(url):
@@ -321,12 +341,39 @@ class PublicLotsTest(unittest.TestCase):
                 if url.endswith('/c'):
                     raise OSError('down')
                 return b'jpg'
-            photos = job.copy_lot_photos([self.LOT], folder, fetch)
-            self.assertEqual(photos, {'7': ['7-1.jpg', '7-2.jpg']})
-            self.assertEqual(sorted(fetched), ['https://cdn.example/b', 'https://cdn.example/c'])  # 3 per lot
-            self.assertEqual((folder / '7-1.jpg').read_bytes(), b'kept')
+            photos, left = job.copy_lot_photos([self.LOT], folder, fetch)
+            self.assertEqual(photos, {'7': [name('a'), name('b'), name('d')]})  # every photo, in the lot's order
+            self.assertEqual(sorted(fetched), ['https://cdn.example/b', 'https://cdn.example/c', 'https://cdn.example/d'])
+            self.assertFalse(left)
+            self.assertEqual((folder / name('a')).read_bytes(), b'kept')
             self.assertFalse((folder / '99-1.jpg').exists())
 
+    def test_photos_copied_gradually_first_photos_first(self):
+        other = dict(self.LOT, id='8', photos=['https://cdn.example/%s8' % c for c in 'abcd'])
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = pathlib.Path(tmp)
+            fetched = []
+            def fetch(url):
+                fetched.append(url)
+                return b'jpg'
+            photos, left = job.copy_lot_photos([self.LOT, other], folder, fetch, limit=6)
+            self.assertTrue(left)  # 2 photos for the next run
+            self.assertEqual(sorted(fetched), sorted(['https://cdn.example/a', 'https://cdn.example/b',
+                                                      'https://cdn.example/c', 'https://cdn.example/a8',
+                                                      'https://cdn.example/b8', 'https://cdn.example/c8']))
+            self.assertEqual((len(photos['7']), len(photos['8'])), (3, 3))
+            fetched.clear()
+            photos, left = job.copy_lot_photos([self.LOT, other], folder, fetch, limit=6)
+            self.assertEqual((sorted(fetched), left), (['https://cdn.example/d', 'https://cdn.example/d8'], False))
+            self.assertEqual((len(photos['7']), len(photos['8'])), (4, 4))
+
+    def test_pending_marker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = pathlib.Path(tmp) / 'd' / 'pending'
+            job.mark_pending(True, path)
+            self.assertTrue(path.exists())
+            job.mark_pending(False, path)
+            self.assertFalse(path.exists())
 
 
 class PricesTest(unittest.TestCase):
@@ -336,26 +383,35 @@ class PricesTest(unittest.TestCase):
 
         def fetch(self, url):
             self.urls.append(url)
-            return url, 'Starting Price 9,400,000 KRW'
+            return url, ('Starting Price 9,400,000 KRW<td><div id="chassis_no_value">KNAG541BBNA169806</div></td>'
+                         '<img src="/cha_auction/2026/1110/1/a1_1.jpg"><img src="https://cdn.example/cha_auction/1/a1_2.jpg">')
 
     def test_each_lot_page_read_once_and_remembered(self):
         day = [{'id': str(n), 'detail_url': '/vehicle-detail/kr/%d' % n, 'start_price_krw': 0} for n in range(5)]
         browser = self.Browser()
-        known, left = prices.fill(browser, day, {'0': 5000000, 'gone': 1}, limit=3)
+        old = {'0': {'krw': 5000000, 'vin': '', 'photos': []}, 'gone': {'krw': 1}}
+        known, left = prices.fill(browser, day, old, limit=3)
         self.assertEqual((len(browser.urls), left), (3, 1))  # 3 new pages read, 1 left for the next run
         self.assertNotIn('gone', known)                       # a lot that left the auction is forgotten
-        self.assertEqual(known['1'], 9400000)
-        self.assertEqual([l['start_price_krw'] for l in prices.apply(day, known)][:2], [5000000, 9400000])
+        self.assertEqual(known['1'], {'krw': 9400000, 'vin': 'KNAG541BBNA169806',
+                                      'photos': ['https://jpauto.auction/cha_auction/2026/1110/1/a1_1.jpg',
+                                                 'https://cdn.example/cha_auction/1/a1_2.jpg']})
+        shown = prices.apply([dict(l, photos=['t']) for l in day], known)
+        self.assertEqual([l['start_price_krw'] for l in shown][:2], [5000000, 9400000])
+        self.assertEqual((shown[1]['vin'], len(shown[1]['photos']), shown[0]['photos'], shown[4]['vin']),
+                         ('KNAG541BBNA169806', 2, ['t'], ''))  # unread lot: the table's photos, no VIN yet
         with tempfile.TemporaryDirectory() as tmp:
             path = pathlib.Path(tmp) / 'p.json'
             prices.save(known, path)
             self.assertEqual(prices.load(path), known)
             self.assertEqual(prices.load(pathlib.Path(tmp) / 'none.json'), {})
+            path.write_text('{"5": 9400000}')  # the price-only cache of the previous version: read again once
+            self.assertEqual(prices.load(path), {})
 
     def test_unread_prices_make_the_next_hour_due(self):
         night = datetime(2026, 11, 10, 22, 7, tzinfo=selection.JST)
         self.assertFalse(job.due(night, True))
-        self.assertTrue(job.due(night, True, prices_pending=True))
+        self.assertTrue(job.due(night, True, pending=True))
 
 
 class Fix4Test(unittest.TestCase):
@@ -408,6 +464,50 @@ class Fix4Test(unittest.TestCase):
         self.assertNotIn('Завтра на торгах', html)
 
 
+class ModelLotsTest(unittest.TestCase):
+    LOT = {'id': '1', 'maker': 'KIA', 'model': 'K5', 'year': 2023, 'mileage_km': 50000,
+           'score': 'BB', 'auction_start': '2026/11/13 12:00', 'start_usd': 15000}
+    NOW = '2026/11/12 20:00'
+
+    def pick(self, lots_, photos=None):
+        photos = photos if photos is not None else {l['id']: ['/video/korea/lots/%s-x.jpg' % l['id']] for l in lots_}
+        return model_lots.select(lots_, model_lots.KOREA, photos, self.NOW, '/video/korea.html')['models']
+
+    def test_grade_rank(self):
+        self.assertEqual([model_lots.grade_rank(g) for g in ('AA', 'AB', 'BA', 'A2', 'BB', 'B1', 'CD', '', 'A', 'X1')],
+                         [0, 1, 1, 1.5, 2, 3.5, 5, 99, 99, 99])
+
+    def test_generation_and_order(self):
+        lots_ = [dict(self.LOT, id='bb'), dict(self.LOT, id='aa', score='AA'), dict(self.LOT, id='ba', score='BA'),
+                 dict(self.LOT, id='ab', score='AB', mileage_km=10000),
+                 dict(self.LOT, id='old', model='K5', year=2019),                        # change-over year: left out
+                 dict(self.LOT, id='a2', score='A2', mileage_km=1000),                    # after AB, before BB
+                 dict(self.LOT, id='sold', auction_start='2026/11/12 10:00'),            # started already
+                 dict(self.LOT, id='tuc', maker='HYUNDAI', model='TUCSON')]
+        found = self.pick(lots_)
+        self.assertEqual([l['id'] for l in found['kia-k5']], ['aa', 'ab', 'ba', 'a2', 'bb'])  # AA, AB/BA, A2, BB
+        self.assertEqual([l['id'] for l in found['hyundai-tucson']], ['tuc'])
+        self.assertEqual(set(found), {'kia-k5', 'hyundai-tucson'})                       # no lots: no entry
+        self.assertEqual(found['kia-k5'][0], {'id': 'aa', 'href': '/video/korea.html#lot-aa',
+                                              'photo': '/video/korea/lots/aa-x.jpg', 'date': '13.11',
+                                              'start': '2026/11/13 12:00', 'score': 'AA', 'year': 2023, 'km': 50000,
+                                              'usd': 15000})
+
+    def test_six_per_model_photo_and_price_first(self):
+        lots_ = [dict(self.LOT, id=str(n), mileage_km=n) for n in range(9)]
+        lots_.append(dict(self.LOT, id='free', score='AA', start_usd=0))
+        found = self.pick(lots_, {l['id']: ['p'] for l in lots_ if l['id'] != '0'})
+        self.assertEqual([l['id'] for l in found['kia-k5']], ['1', '2', '3', '4', '5', '6'])  # no photo: left out
+
+    def test_same_grade_newer_year_first(self):
+        lots_ = [dict(self.LOT, id='a', year=2021), dict(self.LOT, id='b', year=2024)]
+        self.assertEqual([l['id'] for l in self.pick(lots_)['kia-k5']], ['b', 'a'])
+
+    def test_santa_fe_tm_only(self):
+        fe = dict(self.LOT, maker='HYUNDAI', model='SANTA FE', year=2021)
+        found = self.pick([dict(fe, id='tm'), dict(fe, id='mx5', year=2024), dict(fe, id='dm', year=2018)])
+        self.assertEqual([l['id'] for l in found['hyundai-santa-fe']], ['tm'])
+
 
 class KoreaTimeTests(unittest.TestCase):
     """KOREA-TIME-001 (owner 2026-11-12): each ticker lot card shows the auction start in Korea and Kyiv time."""
@@ -435,6 +535,7 @@ class KoreaTimeTests(unittest.TestCase):
         html = ticker.render({'lots_on_date': 1, 'own': [], 'items': [item]})
         self.assertEqual(html.count('class="kt-when"'), 1)
         self.assertIn('data-kt-start="2026/11/18 12:00"', html)
+
 
 if __name__ == '__main__':
     unittest.main()

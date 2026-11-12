@@ -295,7 +295,9 @@ class SmokeTests(unittest.TestCase):
             source = Path(__file__).resolve().parent/'korea_auction'
             for module in candidate_builder.MODULES:
                 shutil.copy(source/(module+'.py'), here/('kauc_%s.py' % module))
-            page = {candidate_builder.PAGE: (Path(__file__).resolve().parent/'fixtures'/'korea_lots_live.txt').read_bytes()}
+            import test_time_pages
+            page = {name: (Path(__file__).resolve().parent/'fixtures'/fixture).read_bytes()
+                    for name, fixture in test_time_pages.FIXTURES.items()}
             plan = {'files': {name: {} for name in candidate_builder.build(page, {}, here=here)}}
             for name, value in candidate_builder.build(page, {}, here=here).items():
                 remote.atomic(work/'after'/name, value)
@@ -304,7 +306,7 @@ class SmokeTests(unittest.TestCase):
                                                   'login_path': True, 'public_list': True, 'today_fallback': True,
                                           'today_wording': True, 'stale_rerun': True, 'waiting_tile': True,
                                   'search_checked_boxes': True, 'day_counts': True,
-                                  'ticker_kyiv_time': True, 'page_kyiv_time': True})
+                                  'ticker_kyiv_time': True, 'page_kyiv_time': True, 'order_kyiv_time': True})
 
 
 
