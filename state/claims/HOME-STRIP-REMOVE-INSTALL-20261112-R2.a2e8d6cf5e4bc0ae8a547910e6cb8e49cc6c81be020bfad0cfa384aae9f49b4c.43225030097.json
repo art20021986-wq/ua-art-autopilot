@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "92c6c33bcaa2c821647ee5f7533b8ca4edaa22bd6b3625b6f75da52bdaaa8572",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T13:18:28Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-12T13:24:31Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43225030097",
     "task_id": "HOME-STRIP-REMOVE-INSTALL-20261112-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43225030097-a2e8d6cf5e4bc0ae",
   "production_transaction_path": "state/transactions/HOME-STRIP-REMOVE-INSTALL-20261112-R2.a2e8d6cf5e4bc0ae8a547910e6cb8e49cc6c81be020bfad0cfa384aae9f49b4c.43225030097.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-STRIP-REMOVE-INSTALL-20261112-R2.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/home_strip_remove_001/test_edit_home.py": "90d2dbfd358e84813280f2160313c93eae2d0079e04081fd69c92215b17d11c3"
     }
   },
-  "updated_at": "2026-11-12T13:18:28Z"
+  "updated_at": "2026-11-12T13:24:31Z"
 }
