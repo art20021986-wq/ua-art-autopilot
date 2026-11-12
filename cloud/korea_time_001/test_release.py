@@ -12,8 +12,8 @@ import deployment_transport  # noqa: E402
 
 
 def installed():
-    """The collector as TICKER-FIX6-INSTALL-20261112-R2 installed it (its package in this repository), live korea.html."""
-    ticker = HERE.parent / 'korea_ticker_fix6_001' / 'korea_auction'
+    """The collector as KOREA-LOTS-FULL-INSTALL installed it (its package in this repository), live korea.html."""
+    ticker = HERE.parent / 'korea_lots_full_001' / 'korea_auction'
     files = {name: (ticker / name.split('/')[1]).read_bytes() for name in candidate_builder.INSTALLED_SHA256}
     import test_time_pages
     for name, fixture in test_time_pages.FIXTURES.items():

@@ -25,7 +25,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
                                 'make_release.py', 'release_constants.py', 'time_pages.py')] + [
-    P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'collect', 'html_tools', 'job', 'lots', 'nbu', 'prices', 'public',
+    P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'collect', 'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public',
                                                    'selection', 'session', 'ticker')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_time_pages.py', 'korea_auction/test_korea_auction.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'

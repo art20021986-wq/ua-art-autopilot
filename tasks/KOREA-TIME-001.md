@@ -20,7 +20,7 @@ KOREA-LOTS-FULL (очередь координатора: HOME-STRIP → KOREA-L
 обновить INSTALLED_SHA256/MODULES (model_lots) и korea_auction/ из её пакета + мой ticker.py, фикстуры — с живых файлов.
 Тесты 73/73; браузер (iPhone 13) на копиях страниц «после 02 + правка»: uk/ru/ka, ошибок JS нет.
 Лента главной — согласовано с сессией 03 (она ticker.py не меняет; строит поверх моей версии).
-Заявки: KOREA-TIME-PREFLIGHT-20261112 → «да» владельца дано в чате → KOREA-TIME-INSTALL-20261112.
+Заявки: KOREA-TIME-PREFLIGHT-20261112-R2 → KOREA-TIME-INSTALL-20261112-R2 (R1 собрана до KOREA-LOTS-FULL, не запускалась). «Да» владельца — в чате.
 
 ## Важно другим сессиям
 Будущие пакеты, пересобирающие список лотов на korea.html (`ua_korea_lots.py`, например KOREA-DAYS-PAGE), должны
