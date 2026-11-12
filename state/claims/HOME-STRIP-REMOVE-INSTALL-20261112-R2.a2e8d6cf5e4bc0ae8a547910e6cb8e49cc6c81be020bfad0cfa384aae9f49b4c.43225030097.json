@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-STRIP-REMOVE-INSTALL-20261112-R2.a2e8d6cf5e4bc0ae8a547910e6cb8e49cc6c81be020bfad0cfa384aae9f49b4c.json",
+  "autostart_ledger_sha256": "821a79aeb13741c982db1367b782542b9bc5ccdfe76d7663cdd99f4f21b19e01",
+  "autostart_source_commit": "6410dbfe7b57093456a60b34a6ca21899e17a52f",
+  "created_at": "2026-11-12T13:17:08Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-12T13:17:08Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43225030097",
+    "task_id": "HOME-STRIP-REMOVE-INSTALL-20261112-R2",
+    "task_sha256": "a2e8d6cf5e4bc0ae8a547910e6cb8e49cc6c81be020bfad0cfa384aae9f49b4c"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "homepage-68ed6564ebea221c",
+  "receipt_path": "state/receipts/HOME-STRIP-REMOVE-INSTALL-20261112-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/HOME-STRIP-REMOVE-INSTALL-20261112-R2.json",
+  "request_sha256": "a2e8d6cf5e4bc0ae8a547910e6cb8e49cc6c81be020bfad0cfa384aae9f49b4c",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "52639f726d39602723bbb0752662c2b78c650725",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-12T13:17:08Z"
+}
