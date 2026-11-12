@@ -16,7 +16,7 @@ ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 
 # Public evidence of each change: path -> text the page must contain.
-EXPECTED = {'/video/index.html': edit_home.STEP2,
+EXPECTED = {'/video/index.html': edit_home.CHECK,
             '/video/katalog.html': '',
             '/video/korea.html': ''}
 # Text a page must no longer contain.
@@ -81,7 +81,7 @@ def public_verify(api, bundle, backup_sha, plan):
     for path,expected in EXPECTED.items():
         body=fetch('https://www.uaart.com.ua'+path,path)
         if len(body)<100: raise RuntimeError('EMPTY_PUBLIC_PAGE:'+path)
-        if expected not in body or ABSENT.get(path,'\0') in body: raise RuntimeError('PUBLIC_CHANGE_MISSING:'+path)
+        if expected not in body or any(w in body for w in ABSENT.get(path,())): raise RuntimeError('PUBLIC_CHANGE_MISSING:'+path)
         results[path]='PASS'
     return results
 

@@ -24,13 +24,13 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 P = 'cloud/home_step2_fix_001/'
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py', 'edit_home.py',
-                                'make_release.py', 'release_constants.py')]
+                                'make_release.py', 'release_constants.py', 'service_text.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_edit_home.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 # Live data the install must not touch, besides the source files pinned in the plan.
 LIVE_DATA = ['.crm_publish_requests', 'crm.db']
 # Owner's words in chat, filled in when the owner says «да».
-APPROVAL = ''
+APPROVAL = '«Немедленно измени формулировку, утверждаю, что ты написал на всех автомобилей аукционных, которые 8 стран» in chat 2026-11-12 (service text sent to the owner in Russian)'
 
 
 def sha(path):
@@ -73,8 +73,8 @@ def preview(suffix):
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Preview of the step 2 text fix on the home page (HOME-STEP2-FIX-001, owner '
-                            '2026-11-12): reads the live video/index.html and video/korea.html, builds the candidate without '
-                            'the old line «Підбираємо, перевіряємо і купуємо…» (uk/ru/ka) and measures storage. No '
+                            '2026-11-12): reads the live video/index.html and video/korea.html, builds the candidate with '
+                            'the owner-approved service text in step 2 (uk/ru/ka) and measures storage. No '
                             'application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
@@ -134,9 +134,10 @@ def install(suffix):
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner approved (%s) HOME-STEP2-FIX-001 on the home page: in video/index.html step 2 '
-                              '«Оформлення договору» loses the old line «Підбираємо, перевіряємо і купуємо автомобіль на '
-                              'корейських аукціонах» (uk/ru/ka), and so does the no-JS copy on video/korea.html if it holds '
-                              'it; every other byte stays. No CRM or car card change. '
+                              '«Оформлення договору» the old line «Підбираємо, перевіряємо і купуємо…» becomes the owner-approved '
+                              'service text (full support of the car, auction to Kyiv) and the other countries\' step 2 title '
+                              '«Підбір і перевірка» becomes «Супровід автомобіля» (uk/ru/ka), also in the no-JS copy on '
+                              'video/korea.html where present; every other byte stays. No CRM or car card change. '
                               'Existing backup, bot pause, writer locks, data-preservation, rollback and public health '
                               'checks are kept.' % APPROVAL,
                'execution': execution(task, True),
