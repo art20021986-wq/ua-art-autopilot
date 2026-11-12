@@ -181,6 +181,11 @@ class BotHelpers(unittest.TestCase):
         import ua_pay_bot as bot
         self.assertEqual(bot.parse_nbu_rate([{'value': 15.5, 'dt': '20260101'}, {'value': 14, 'dt': '20251201'}]),
                          0.155)
+        rows = [{'id_api': 'KEY_PolicyRate', 'dt': '20261112', 'value': 15.5},
+                {'id_api': 'KEY_OvernightCreditRate', 'dt': '20261112', 'value': 18.5}]
+        self.assertEqual(bot.parse_nbu_rate(rows), 0.155)
+        with self.assertRaises(ValueError):
+            bot.parse_nbu_rate(rows[1:])
         with self.assertRaises(ValueError):
             bot.parse_nbu_rate([])
         self.assertEqual(bot.number('1 500,50 $'), 1500.5)

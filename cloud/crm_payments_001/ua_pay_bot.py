@@ -47,9 +47,13 @@ def _rate():
 
 
 def parse_nbu_rate(payload):
-    """NBU JSON list -> the latest discount rate as a fraction (0.155), or ValueError."""
+    """NBU JSON list -> the latest key policy rate (= the discount rate) as a fraction (0.155). The «key» set also lists
+    the standing facility rates: when rows carry id_api, only KEY_PolicyRate is used; otherwise ValueError."""
+    rows = payload if isinstance(payload, list) else []
+    if any(isinstance(row, dict) and row.get('id_api') for row in rows):
+        rows = [row for row in rows if isinstance(row, dict) and row.get('id_api') == 'KEY_PolicyRate']
     best = None
-    for row in payload if isinstance(payload, list) else []:
+    for row in rows:
         for key in ('value', 'rate'):
             try:
                 value = float(row.get(key))
