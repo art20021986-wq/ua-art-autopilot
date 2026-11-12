@@ -23,7 +23,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'ua_auction_bids.py', 'ua_auction_clients.py',
+                                'make_release.py', 'release_constants.py', 'ua_auction_bids.py', 'ua_auction_bids_bot.py', 'ua_auction_clients.py',
                                 'ua_auction_clients_bot.py', 'ua_auction_clients_view.py', 'ua_auction_stats.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_manager_bids.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'

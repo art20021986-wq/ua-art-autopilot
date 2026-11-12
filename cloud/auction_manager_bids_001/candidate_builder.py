@@ -7,6 +7,8 @@ Owner 2026-11-12: a manager bids for a client from the CRM bot, and the bot show
 - ua_auction_stats.py: clients-themselves / managers-for-clients counts, statistics by manager, a manager's bids.
 - ua_auction_clients_view.py / ua_auction_clients_bot.py: «🔨 Ставка за клиента» in the client card, «👔 По менеджерам»
   on the «🔨 Клиенты аукциона» screen, «Оформил» and who placed each bid in the card and the bids of a date.
+- ua_auction_bids_bot.py: the staff message names a manager's bid as such and skips the manager who placed it;
+  the dead «выше лимита клиента» reason is gone (AUCTION-LIMIT).
 No page, web app or table change beyond the new ledger column.
 """
 import hashlib
@@ -20,6 +22,7 @@ SOURCE_SHA256 = {
     'ua_auction_clients_bot.py': '0b6841451c8c7b4f883645344f9c0b0b4e66c4df0ecfe3d05e6b495258359af1',
     'ua_auction_bids.py': 'c4aef73f74b39b0809b5caa096db8ede009149abdbff2774338f1f1133102ba5',
     'ua_auction_stats.py': 'b03636c7768a9b7314a89138737b031f36fdb1d11058ab139f95233db4b379e7',
+    'ua_auction_bids_bot.py': '11e3d27c5227c9d333169437b2981643b3a1230c737ff6ce178ec230c1a5dd87',
 }
 SOURCE_FILES = tuple(SOURCE_SHA256)
 DEPENDENCY_SHA256 = {}

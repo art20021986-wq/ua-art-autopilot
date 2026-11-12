@@ -429,6 +429,42 @@ class BotTest(Folder):
         self.assertEqual(bot._staff(), {11: 'Иван', 22: '@olga', 33: '33'})
 
 
+class NoticeTest(Folder):
+    """The staff message about a bid: a manager's bid is named as such and not sent back to that manager."""
+
+    def setUp(self):
+        super().setUp()
+        import ua_auction_bids_bot as notify
+        self.notify = notify
+        staff_db.ROLE_OWNER, staff_db.ROLE_ADMIN, staff_db.ROLE_MANAGER = 'owner', 'admin', 'manager'
+        patches = [patch.object(bids, 'DB', self.db), patch.object(notify, 'recipients', lambda: [11, 22, 33]),
+                   patch.object(store, 'get', lambda phone, db=None: client(phone))]
+        for p in patches:
+            p.start()
+            self.addCleanup(p.stop)
+
+    def run_notify(self):
+        sent = []
+
+        async def send_message(chat, message, **kw):
+            sent.append((chat, message))
+        asyncio.run(self.notify.notify(types.SimpleNamespace(bot=types.SimpleNamespace(send_message=send_message))))
+        return sent
+
+    def test_client_and_manager_bids(self):
+        bids.record({'phone': '+1'}, a_bid(), 'placed', '', self.db, NOW)
+        bids.record({'phone': '+2'}, a_bid(), 'failed', 'busy', self.db, NOW, placed_by=11)
+        sent = self.run_notify()
+        self.assertEqual([chat for chat, _ in sent], [11, 22, 33, 22, 33])
+        self.assertTrue(sent[0][1].startswith('<b>🔨 Ставка клиента</b>'))
+        self.assertTrue(sent[3][1].startswith('<b>🔨 Ставка менеджера Иван за клиента</b>'))
+        self.assertIn('аукцион был занят другой ставкой', sent[3][1])
+        self.assertEqual(self.run_notify(), [])  # each bid is told once
+
+    def test_no_dead_limit_reason(self):
+        self.assertNotIn('limit', self.notify.REASONS)
+
+
 class BuildTest(unittest.TestCase):
     def test_other_installed_version_stops(self):
         import candidate_builder

@@ -130,10 +130,7 @@ async def callback(update, context):
                 store.create, v['surname'], v['name'], v['phone'], v['email'], v['city'], v['deposit_usd'],
                 update.effective_user.id)
             await _created(query.message, *view.created(client, password))
-        elif action == 'cancel':
-            context.user_data.pop(WAIT, None)
-            await _show(query.message, view.list_view(await asyncio.to_thread(store.all_clients), BACK), query)
-        elif action == 'list':
+        elif action in ('cancel', 'list'):
             context.user_data.pop(WAIT, None)
             await _show(query.message, view.list_view(await asyncio.to_thread(store.all_clients), BACK), query)
         elif action == 'c':
