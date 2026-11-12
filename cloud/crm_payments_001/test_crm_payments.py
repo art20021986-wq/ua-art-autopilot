@@ -86,7 +86,7 @@ class Store(unittest.TestCase):
         self.assertGreater(kinds['car']['penalty_usd'], 0)
         self.assertEqual(kinds['logistics']['days_left'], 1)  # due 24.11
         self.assertEqual(cars[0]['penalty']['annual_percent'], 36.0)
-        self.assertEqual([x['state'] for x in cars[0]['stages']], ['done', 'current', 'todo', 'todo', 'todo', 'todo'])
+        self.assertEqual([x['state'] for x in cars[0]['stages']], ['done', 'current'] + ['todo'] * 6)
         self.assertEqual(cars[0]['stages'][1]['label'], 'Авто викуплено на аукціоні')
         self.assertEqual(payst.purchased_cars('+380509999999', self.path), [])
 
@@ -144,6 +144,20 @@ class Photos(unittest.TestCase):
                                base='https://s/', token='abc')
         self.assertEqual(urls, ['https://s/5-abc/1.jpg', 'https://s/5-abc/3.jpg'])
         self.assertEqual(sorted(written), ['/r/5-abc/1.jpg', '/r/5-abc/3.jpg'])
+
+
+class OrderStages(unittest.TestCase):
+    def test_eight_stages_keep_old_keys(self):
+        import edit_order_book
+        source = (HERE.parent / 'lead_folders_001' / 'ua_order_book.py').read_bytes()
+        ns = {}
+        exec(compile(edit_order_book.build(source), 'ua_order_book.py', 'exec'), ns)
+        keys = [k for k, _ in ns['STAGES']]
+        self.assertEqual(keys, [k for k, _ in payst.STAGES])
+        self.assertTrue({'contract', 'bought', 'transit', 'georgia', 'ukraine', 'delivered'} <= set(keys))
+        self.assertEqual(ns['next_stage']('bought'), 'korea_port')
+        with self.assertRaises(ValueError):
+            edit_order_book.build(source + b'#')
 
 
 class Edit(unittest.TestCase):

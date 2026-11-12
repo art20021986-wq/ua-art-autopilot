@@ -27,8 +27,9 @@ SCHEMA = (
 CAR_FIELDS = ('lot_url', 'lot_id', 'vin', 'title', 'year', 'mileage', 'color', 'fuel', 'photos', 'price_krw',
               'price_usd')
 # The order stages the CRM marks (ua_order_book.STAGES), in Ukrainian for the client cabinet.
-STAGES = (('contract', 'Договір підписано'), ('bought', 'Авто викуплено на аукціоні'), ('transit', 'В дорозі'),
-          ('georgia', 'У Грузії'), ('ukraine', 'В Україні'), ('delivered', 'Видано клієнту'))
+STAGES = (('contract', 'Договір підписано'), ('bought', 'Авто викуплено на аукціоні'), ('korea_port', 'У порту Кореї'),
+          ('transit', 'На поромі до Грузії'), ('georgia', 'У порту Грузії'), ('truck', 'Автовоз до Києва'),
+          ('ukraine', 'Розмитнення і сертифікація'), ('delivered', 'Видано клієнту'))
 STAGE_LABELS = dict(STAGES)
 
 

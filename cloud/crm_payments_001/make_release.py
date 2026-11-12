@@ -23,7 +23,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 P = 'cloud/crm_payments_001/'
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'edit_cars_ui.py', 'make_release.py', 'release_constants.py', 'ua_pay_bot.py',
+                                'edit_cars_ui.py', 'edit_order_book.py', 'make_release.py', 'release_constants.py', 'ua_pay_bot.py',
                                 'ua_pay_lot.py', 'ua_pay_rules.py', 'ua_pay_store.py', 'ua_pay_view.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_crm_payments.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
