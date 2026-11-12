@@ -127,12 +127,13 @@ def prepare(directory):
 
 
 def smoke(directory):
-    """Only the deposit sentence leaves the Korea page description; nothing else changes; nothing is written."""
+    """Only the deposit sentence of the Korea page description changes (to the prepayment); nothing is written."""
     page = read(directory/'after'/'video/korea.html').decode('utf-8')
     live = read(ROOT/'video/korea.html').decode('utf-8')
     old, new = (candidate_builder.META.findall(p) for p in (live, page))
     value = {'one_description': len(old) == len(new) == 1,
              'no_deposit': not any(s in new[0] for s in candidate_builder.SENTENCES) if new else False,
+             'prepayment': all(n in new[0] for o, n in candidate_builder.REPLACE[:2]) if new else False,
              'only_the_description': bool(old and new) and page == live.replace(old[0], new[0], 1),
              'page_platform_unnamed': not any(w in page.lower() for w in ('beforward', 'be forward', 'jpauto', 'jp auto'))}
     if not all(value.values()):
