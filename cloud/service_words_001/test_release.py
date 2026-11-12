@@ -61,6 +61,12 @@ class Release(unittest.TestCase):
         self.assertIn('Передоплата 1 000 $ зараховується у вартість авто', home)
         self.assertIn('Предоплата 1 000 $ засчитывается в стоимость авто', home)
 
+    def test_korea_prepayment(self):
+        korea = self.result['video/korea.html'].decode()
+        self.assertNotIn('2000 $', korea)
+        self.assertEqual(korea.count('Передоплата 1 000 $ зараховується у вартість авто'), 2)
+        self.assertIn('Предоплата 1 000 $ засчитывается в стоимость авто', korea)
+
     def test_only_listed_phrases_change(self):
         for name, value in self.source.items():
             if name not in self.result or not name.endswith('.html'):
