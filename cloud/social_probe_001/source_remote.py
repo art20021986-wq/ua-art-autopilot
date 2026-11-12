@@ -237,6 +237,39 @@ def report_r6(home=None):
             'job_script': sanitized(job)[:2000] if job else None, 'logs': logs, 'var_log': var_log}
 
 
+# R9: a dry run of the Korea collector's selection on the server (logs in, reads the lot list, no write): where do
+# the ticker items get lost? Counts only — no account data, no lot text beyond dates and model names.
+def report_r9(home=None):
+    import collections
+    import sys as _sys
+    _sys.path.insert(0, str(HOME))
+    from korea_auction import catalog, collect, job, lots as lots_mod, selection, session
+    from datetime import datetime
+    now = datetime.now(selection.JST)
+    s = session.Session()
+    s.login(*job.read_login())
+    total, found = collect.fetch_all_lots(s)
+    dates = collections.Counter(selection.auction_date(l) for l in found)
+    photos = collections.Counter(selection.auction_date(l) for l in found if l['photos'])
+    top = collections.Counter(selection.auction_date(l) for l in found if l['photos'] and selection.top_model(l))
+    date = selection.next_auction_date(found, now)
+    own_cars = catalog.parse(catalog.fetch())
+    rules = catalog.model_rules(own_cars)
+    cands = selection.candidates(found, date, lambda l: catalog.same_model(l, rules)) if date else []
+    priced = []
+    for lot in cands[:3]:
+        _, html = s.fetch(lot['detail_url'])
+        detail = lots_mod.parse_detail(html)
+        priced.append({'list_price': lot['start_price_krw'], 'detail_price': detail['start_price_krw'],
+                       'detail_photos': len(detail['photos'])})
+    sample = [{'start': l['auction_start'], 'photos': len(l['photos']), 'model': l['model'][:30],
+               'price': l['start_price_krw']} for l in found[:5]]
+    return {'status': 'PASS', 'now_jst': now.isoformat(timespec='minutes'), 'total': total, 'parsed': len(found),
+            'dates': dict(sorted(dates.items())), 'with_photos': dict(sorted(photos.items())),
+            'top_with_photos': dict(sorted(top.items())), 'chosen_date': date, 'candidates': len(cands),
+            'first_candidates': priced, 'sample': sample, 'requests': s.requests}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -250,7 +283,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r6()  # R6 ticker; report_r5() R5, report_r4() R4, report_r3() R3, report_r2() R2, report() R1
+        value = report_r9()  # R9 collector dry run; report_r6() R6–R8 ticker, report_r5()…report() R1–R5
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
