@@ -54,6 +54,46 @@ class SelectionTest(unittest.TestCase):
         self.assertEqual(date, '2026/11/11')
         self.assertEqual([l['model'] for l in selection.candidates(lots_, date, rng=random.Random(0))], ['TUCSON'])
 
+    def test_today_before_next_day_is_listed(self):
+        """TICKER-FIX-001: mornings before the next day's lots are listed — today's lots that have not started."""
+        lots_ = [{'model': 'K5', 'auction_start': '2026/11/12 13:00', 'photos': [1]}]
+        morning = datetime(2026, 11, 12, 10, 7, tzinfo=selection.JST)
+        self.assertEqual(selection.next_auction_date(lots_, morning), '2026/11/12')
+        evening = datetime(2026, 11, 12, 14, 7, tzinfo=selection.JST)
+        self.assertEqual(selection.next_auction_date(lots_, evening), '2026/11/12')  # FIX2: started lots still shown
+        self.assertIsNone(selection.next_auction_date([], evening))
+
+    def test_today_wording_and_legend(self):
+        html = ticker.render({'lots_on_date': 7, 'items': [TickerTest.ITEM]}, tomorrow=False)
+        self.assertIn('Сьогодні на торгах', html)
+        self.assertNotIn('Завтра на торгах', html)
+        self.assertIn('kt-legend', html)
+        self.assertIn('Завтра на торгах', ticker.render({'lots_on_date': 7, 'items': [TickerTest.ITEM]}, tomorrow=True))
+
+    def test_waiting_tile_without_lots(self):
+        """TICKER-FIX3-001: the auction lists no lots — the tile with the legend and the owner's cars, no lot photos."""
+        own = {'stage': 'sea', 'title': 'Kia K5 2021', 'url': 'https://www.uaart.com.ua/video/ua/UA-0001.html',
+               'photo': 'https://www.uaart.com.ua/video/foto/UA-0001/001.jpg', 'price_usd': 15000}
+        html = ticker.render({'lots_on_date': 0, 'items': [], 'own': [own]})
+        self.assertIn('kt-legend', html)
+        self.assertIn('Нові лоти аукціону', html)
+        self.assertIn('/video/foto/UA-0001/001.jpg', html)
+        self.assertNotIn('/video/korea/img/', html)
+        self.assertEqual(ticker.render({'lots_on_date': 0, 'items': [], 'own': []}), '')
+
+    def test_stale_ticker_is_due_next_hour(self):
+        import os, tempfile
+        night = datetime(2026, 11, 12, 11, 7, tzinfo=selection.JST)
+        self.assertTrue(job.due(night, True, stale=True))
+        with tempfile.TemporaryDirectory() as temp:
+            page = pathlib.Path(temp) / "ticker.html"
+            page.write_text('x')
+            os.utime(page, (0, 0))
+            self.assertTrue(job.stale(page))
+            os.utime(page, None)
+            self.assertFalse(job.stale(page))
+            self.assertFalse(job.stale(pathlib.Path(temp) / "none.html"))
+
     def test_owner_models_first(self):
         lots_ = [{'maker': 'HYUNDAI', 'model': 'TUCSON', 'auction_start': '2026/11/11 13:00', 'photos': [1]},
                  {'maker': 'KIA', 'model': 'K5', 'auction_start': '2026/11/11 13:00', 'photos': [1]}]
@@ -167,6 +207,37 @@ class JobTest(unittest.TestCase):
             self.assertEqual(kept, [{'id': '1', 'photo': '/video/korea/img/1.jpg'}])
             self.assertEqual(sorted(p.name for p in folder.iterdir()), ['1.jpg'])
 
+    def test_ticker_photo_light_and_order_kept(self):
+        """TICKER-PHOTO-001: a wide original becomes a 480 px JPEG; unreadable bytes stay as they are; order kept."""
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest('Pillow not installed here')
+        import io
+        big = io.BytesIO()
+        Image.new('RGB', (1600, 1200), (200, 30, 30)).save(big, 'JPEG', quality=95)
+        small = job.ticker_photo(big.getvalue())
+        with Image.open(io.BytesIO(small)) as image:
+            self.assertEqual(image.size, (480, 360))
+        self.assertLess(len(small), len(big.getvalue()))
+        self.assertEqual(job.ticker_photo(b'not an image'), b'not an image')
+        with tempfile.TemporaryDirectory() as tmp:
+            items = [{'id': str(n), 'photo': 'https://cdn.example/%d' % n} for n in range(10)]
+            kept = job.localize_photos(items, pathlib.Path(tmp), lambda url: b'jpg')
+            self.assertEqual([k['id'] for k in kept], [str(n) for n in range(10)])
+
+    def test_failed_run_keeps_the_live_ticker_photos(self):
+        """TICKER-FIX2-001: no items, or no photo copied — the photos the live ticker shows stay."""
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = pathlib.Path(tmp)
+            (folder / 'live.jpg').write_bytes(b'x')
+            with self.assertRaises(RuntimeError):
+                job.build({'items': [], 'auction_date': '2026/11/12'}, datetime(2026, 11, 12, 13, 7, tzinfo=selection.JST), folder)
+            def down(url):
+                raise OSError('down')
+            self.assertEqual(job.localize_photos([{'id': '1', 'photo': 'u'}], folder, down), [])
+            self.assertEqual([p.name for p in folder.iterdir()], ['live.jpg'])
+
     def test_login_file(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = pathlib.Path(tmp) / 'login.txt'
@@ -180,9 +251,10 @@ class JobTest(unittest.TestCase):
 
 class UpcomingTest(unittest.TestCase):
     def test_upcoming_days(self):
-        lots_ = [{'auction_start': d} for d in ('2026/11/10 13:00', '2026/11/11 10:00', '2026/11/13 09:00')]
+        lots_ = [{'auction_start': d} for d in ('2026/11/09 13:00', '2026/11/10 13:00', '2026/11/11 10:00',
+                                                 '2026/11/13 09:00')]
         now = datetime(2026, 11, 10, 22, tzinfo=selection.JST)
-        self.assertEqual(selection.upcoming(lots_, now), lots_[1:])
+        self.assertEqual(selection.upcoming(lots_, now), lots_[1:])  # today's lots too, not yesterday's
 
 
 class PublicLotsTest(unittest.TestCase):

@@ -26,15 +26,22 @@ RUN_HOURS = (10, 12, 14)
 MAX_PHOTO = 3 * 1024 * 1024
 LOCK = ROOT / '.korea_auction_job.lock'
 PENDING = ROOT / 'korea_auction_data/prices_pending'  # set while some lot pages or lot photos are still to do
+WAITING = ROOT / 'korea_auction_data/ticker_waiting'  # TICKER-FIX3-001: set while the auction lists no lots
 PHOTO_WORKERS = 6
 PHOTOS_PER_RUN = 6000  # new lot photo copies per run (~0.6 GB)
 FIRST_PHOTOS = 3  # copied for every lot before the rest
 
 
-def due(now, ticker_exists, pending=False):
-    """Korea business mornings Mon-Sat; a missing ticker, unread lot pages or photos left: the next hourly run (not on
+def due(now, ticker_exists, pending=False, stale=False):
+    """Korea business mornings Mon-Sat; a missing ticker, unread lot pages or photos left, or a ticker older than the
+    installed ticker code (TICKER-FIX-001: a code update shows at the next hourly run): the next hourly run (not on
     Sunday)."""
-    return now.weekday() != 6 and (now.hour in RUN_HOURS or not ticker_exists or pending)
+    return now.weekday() != 6 and (now.hour in RUN_HOURS or not ticker_exists or pending or stale)
+
+
+def stale(page):
+    """The ticker page was written before the installed ticker code (so it lacks the code's changes)."""
+    return page.exists() and page.stat().st_mtime < Path(ticker.__file__).stat().st_mtime
 
 
 def read_login(path=LOGIN):
@@ -69,16 +76,40 @@ def fetch_photo(url):
     return data
 
 
+TICKER_PHOTO_WIDTH = 480  # TICKER-PHOTO-001: the ticker card shows 240 px; twice that for sharp phone screens
+
+
+def ticker_photo(data):
+    """A light JPEG copy for the ticker card (the auction original is up to 3 MB); the original if it can't be read."""
+    from io import BytesIO
+    try:
+        from PIL import Image
+        with Image.open(BytesIO(data)) as image:
+            if image.width <= TICKER_PHOTO_WIDTH:
+                return data
+            height = max(1, round(image.height * TICKER_PHOTO_WIDTH / image.width))
+            out = BytesIO()
+            image.convert('RGB').resize((TICKER_PHOTO_WIDTH, height), Image.LANCZOS).save(
+                out, 'JPEG', quality=82, optimize=True, progressive=True)
+            return out.getvalue()
+    except Exception:  # never lose a lot over its photo copy
+        return data
+
+
 def localize_photos(items, folder, fetch=fetch_photo):
-    """Copy each lot photo to the site; lots whose photo cannot be copied are left out. Old photos are removed."""
-    kept = []
-    for item in items:
-        name = '%s.jpg' % item['id']
+    """Copy each lot's main photo to the site, light and in parallel (TICKER-PHOTO-001); lots whose photo cannot be
+    copied are left out. Old photos are removed."""
+    def one(item):
         try:
-            write(folder / name, fetch(item['photo']))
+            write(folder / ('%s.jpg' % item['id']), ticker_photo(fetch(item['photo'])))
+            return dict(item, photo=IMG_URL + '%s.jpg' % item['id'])
         except (OSError, ValueError):
-            continue
-        kept.append(dict(item, photo=IMG_URL + name))
+            return None
+
+    with ThreadPoolExecutor(PHOTO_WORKERS) as pool:
+        kept = [item for item in pool.map(one, items) if item]
+    if not kept:  # TICKER-FIX2-001: nothing copied — keep the photos the live ticker still shows
+        return kept
     names = {it['photo'].rsplit('/', 1)[1] for it in kept}
     for old in folder.glob('*.jpg'):
         if old.name not in names:
@@ -146,6 +177,8 @@ def mark_pending(pending, path=None):
 
 
 def build(data, now, folder):
+    if not data['items']:  # TICKER-FIX2-001: before the photo copy, which removes the photos it doesn't keep
+        raise RuntimeError('NO_TICKER_ITEMS')
     data = dict(data, items=localize_photos(data['items'], folder))
     if not data['items']:
         raise RuntimeError('NO_TICKER_ITEMS')
@@ -156,7 +189,8 @@ def build(data, now, folder):
 def main(now=None):
     now = now or datetime.now(JST)
     page = OUT / 'ticker.html'
-    if not due(now, page.exists() and (OUT / 'lots.json').exists(), PENDING.exists()):
+    if not due(now, page.exists() and (OUT / 'lots.json').exists(), PENDING.exists() or WAITING.exists(),
+               stale(page)):
         return 0
     with open(LOCK, 'a') as lock:
         try:
@@ -165,11 +199,24 @@ def main(now=None):
             return 0  # the previous run is still working
         browser = session.Session()
         data = collect.collect(*read_login(), now=now, session=browser)
-        data, html = build(data, now, OUT / 'img')
-        write(page, html.encode('utf-8'))  # the ticker first: the lot prices take a while
-        data_priced, pages_left = priced(data, browser)
-        shown, photos_left = publish_lots(data_priced, now, OUT)
-        mark_pending(pages_left or photos_left)
+        pages_left = photos_left = False
+        if not data['items']:
+            # TICKER-FIX3-001: the auction lists no lots yet — the tile (score legend) and the owner's cars, no lot
+            # photos; the lot list stays; retried every hour until lots are listed.
+            html = ticker.render(data)
+            if not html:
+                raise RuntimeError('NO_TICKER_ITEMS')
+            write(page, html.encode('utf-8'))
+            WAITING.parent.mkdir(parents=True, exist_ok=True)
+            WAITING.touch()
+            shown = 0
+        else:
+            data, html = build(data, now, OUT / 'img')
+            write(page, html.encode('utf-8'))  # the ticker first: the lot pages and photos take a while
+            WAITING.unlink(missing_ok=True)
+            data_priced, pages_left = priced(data, browser)
+            shown, photos_left = publish_lots(data_priced, now, OUT)
+            mark_pending(pages_left or photos_left)
     print(json.dumps({'at': now.isoformat(timespec='minutes'), 'auction_date': data['auction_date'],
                       'lots_on_date': data['lots_on_date'], 'lots_shown': shown, 'items': len(data['items']),
                       'pages_left': pages_left, 'photos_left': photos_left}))

@@ -12,8 +12,8 @@ import deployment_transport  # noqa: E402
 
 
 def installed():
-    """The collector as KOREA-SCORE-INSTALL-20261111-R6 installed it (its package here) and the live Korea page."""
-    collector = HERE.parent / 'korea_score_001' / 'korea_auction'
+    """The collector as TICKER-FIX3-INSTALL-20261112 installs it (its package here) and the live Korea page."""
+    collector = HERE.parent / 'korea_ticker_fix3_001' / 'korea_auction'
     value = {name: (collector / name.split('/')[1]).read_bytes() for name in candidate_builder.INSTALLED_SHA256}
     value[candidate_builder.PAGE] = (HERE / 'fixtures' / 'korea_live.html').read_bytes()
     return value

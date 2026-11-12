@@ -21,6 +21,16 @@ T = {
               'Завтра на торгах {n} авто — доступ после договора',
               'ხვალ ვაჭრობაზე {n} ავტო — წვდომა ხელშეკრულების შემდეგ'),
     'lead': ('Завтра на торгах', 'Завтра на торгах', 'ხვალ ვაჭრობაზე'),
+    # the auction lists no lots yet (TICKER-FIX3-001): the tile and the owner's cars only
+    'lead_wait': ('Нові лоти аукціону — незабаром', 'Новые лоты аукциона — скоро', 'აუქციონის ახალი ლოტები — მალე'),
+    'count_wait': ('Лоти наступних торгів з’являться найближчим часом — доступ після договору',
+                   'Лоты следующих торгов появятся в ближайшее время — доступ после договора',
+                   'შემდეგი ვაჭრობის ლოტები მალე გამოჩნდება — წვდომა ხელშეკრულების შემდეგ'),
+    # today's auction, before the next day's lots are listed (TICKER-FIX-001)
+    'lead_today': ('Сьогодні на торгах', 'Сегодня на торгах', 'დღეს ვაჭრობაზე'),
+    'count_today': ('Сьогодні на торгах {n} авто — доступ після договору',
+                    'Сегодня на торгах {n} авто — доступ после договора',
+                    'დღეს ვაჭრობაზე {n} ავტო — წვდომა ხელშეკრულების შემდეგ'),
     'cars': ('авто', 'авто', 'ავტო'),
     # what the lot score means, on the yellow tile (owner 2026-11-11), per the auction house rules (Auto Hub):
     # first letter = accident grade A-F, second = exterior grade (panels to repair now) A, B, C, D, F (no E)
@@ -137,16 +147,23 @@ def _mix(lots, own, every=2):
 
 
 def render(data, tomorrow=True):
-    """Collected JSON (see collect.py) -> HTML block, or '' when there is nothing to show."""
+    """Collected JSON (see collect.py) -> HTML block, or '' when there is nothing to show. Without lots (the auction
+    lists none yet) the tile with the score legend and the owner's cars (TICKER-FIX3-001)."""
     items = [i for i in data.get('items', []) if i.get('start_price_usd')]
-    if not items:
-        return ''
-    lead = ('<div class="kt-lead"><span class="kt-count">● %s <b>%s</b> %s</span>%s</div>'
-            % (_t('lead'), _num(data['lots_on_date']), _t('cars'), _legend()))
     own = [c for c in data.get('own', []) if c.get('price_usd') and c.get('photo')]
-    track = lead + ''.join(_own(i) if 'stage' in i else _item(i, tomorrow) for i in _mix(items, own))
+    if not items and not own:
+        return ''
+    if items:
+        lead = ('<div class="kt-lead"><span class="kt-count">● %s <b>%s</b> %s</span>%s</div>'
+                % (_t('lead' if tomorrow else 'lead_today'), _num(data['lots_on_date']), _t('cars'), _legend()))
+        track = lead + ''.join(_own(i) if 'stage' in i else _item(i, tomorrow) for i in _mix(items, own))
+        count = _t('count' if tomorrow else 'count_today', n=_num(data['lots_on_date']))
+    else:
+        track = ('<div class="kt-lead"><span class="kt-count">● %s</span>%s</div>' % (_t('lead_wait'), _legend())
+                 + ''.join(_own(c) for c in own))
+        count = _t('count_wait')
     tail = ('<span class="kt-end"><span>%s</span><small>%s</small><a class="kt-btn" href="%s">%s</a></span>'
-            % (_t('count', n=_num(data['lots_on_date'])), _t('note'), LINK, _t('want')))
+            % (count, _t('note'), LINK, _t('want')))
     return ('<section class="korea-ticker" aria-label="Korea online auction"><style>%s</style>'
             '<button class="kt-arrow kt-prev" type="button" aria-label="‹">‹</button>'
             '<div class="kt-track">%s%s</div>'
