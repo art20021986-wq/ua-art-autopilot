@@ -5,7 +5,8 @@ installs of 2026-11-10/11). Owner 2026-11-12: the deposit is at least 1 000 $ an
 - ua_auction_bids.py: a bid is no longer refused for being above the client's limit (step, minimum, day limit stay).
 - ua_auction_clients_view.py / ua_auction_clients_bot.py / ua_auction_stats.py: the CRM bot shows no bid limit.
 - ua_auction_web.py: the login answer has no limit.
-- video/korea.html: the client cabinet no longer shows «ліміт ставок» and the bid hint «ваш ліміт»; nothing else changes.
+- video/korea.html: the client cabinet no longer shows «ліміт ставок» and the bid hint «ваш ліміт», and the page's
+  limit texts («ваш ліміт», «Сума вища за ваш ліміт») are removed; nothing else changes.
 """
 import hashlib
 from pathlib import Path
@@ -30,6 +31,10 @@ PAGE_EDITS = (
      '<b id="kc-limit"></b> $ · ', ''),
     ('$("kc-limit").textContent=Number(c.limit_usd).toLocaleString("uk-UA");', ''),
     ('+" · "+t("limit")+" $"+n(c.limit_usd);', ';'),
+    # The texts of the limit no page code uses any more (rule «старое — убирать»).
+    ('"limit": ["ваш ліміт", "ваш лимит", "თქვენი ლიმიტი"], ', ''),
+    ('"limit_over": ["Сума вища за ваш ліміт.", "Сумма выше вашего лимита.", "თანხა თქვენს ლიმიტზე მეტია."], ', ''),
+    ('limit:"limit_over",', ''),
 )
 
 

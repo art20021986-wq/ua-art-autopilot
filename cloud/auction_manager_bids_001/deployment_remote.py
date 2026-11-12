@@ -134,7 +134,7 @@ import json, sys, sqlite3, tempfile, pathlib
 after, root = sys.argv[1], sys.argv[2]
 sys.path[:0] = [after, root]
 import ua_auction_clients as store, ua_auction_stats as stats, ua_auction_clients_view as view
-import ua_auction_clients_bot as bot, ua_auction_bids as bids, ua_auction_web
+import ua_auction_clients_bot as bot, ua_auction_bids as bids, ua_auction_web, ua_auction_bids_bot as notify
 people = store.all_clients()
 staff = bot._staff()
 numbers = stats.summary()
@@ -155,6 +155,7 @@ with tempfile.TemporaryDirectory() as folder:
     lot = {'lot': {'id': '2', 'title': 'Test', 'year': 2020, 'vin': 'VIN2'}, 'krw': 1, 'usd': 1}
     bids.record({'phone': '+380000000000'}, lot, 'failed', 'test', old, placed_by=7)
     migrated = [r['placed_by'] for r in stats.of_client('+380000000000', db=old)] == [7, 0]
+    titled = notify.text(stats.of_client('+380000000000', db=old)[0], None, {7: 'M'}).startswith('<b>🔨 Ставка менеджера M')
     with bids._OneAtATime(old):
         try:
             with bids._OneAtATime(old, wait=0):
@@ -165,7 +166,7 @@ print(json.dumps({'clients': len(people), 'staff': len(staff), 'managers': len(m
                   'home_buttons': [row[0][1] for row in home['buttons']],
                   'card_bid_button': all(['🔨 Ставка за клиента', 'ac:bid:' + c['phone']] in [list(b) for row in s['buttons'] for b in row]
                                          for c, s in zip(people, cards)),
-                  'old_ledger_reads': old_reads, 'old_ledger_migrated': migrated, 'one_at_a_time': one_at_a_time}))
+                  'old_ledger_reads': old_reads, 'old_ledger_migrated': migrated, 'notice_titled': titled, 'one_at_a_time': one_at_a_time}))
 """
 
 
@@ -177,7 +178,8 @@ def smoke(directory):
     value = json.loads(result.stdout.strip().splitlines()[-1])
     if (value.get('home_buttons') != ['ac:new', 'ac:list', 'ac:days', 'ac:mgrs', 'menu']
             or value.get('card_bid_button') is not True or value.get('old_ledger_reads') is not True
-            or value.get('old_ledger_migrated') is not True or value.get('one_at_a_time') is not True):
+            or value.get('old_ledger_migrated') is not True or value.get('one_at_a_time') is not True
+            or value.get('notice_titled') is not True):
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:300])
     return value
 
