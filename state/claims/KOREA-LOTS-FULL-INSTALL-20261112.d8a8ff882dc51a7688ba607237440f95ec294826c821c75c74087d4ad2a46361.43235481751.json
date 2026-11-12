@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-LOTS-FULL-INSTALL-20261112.d8a8ff882dc51a7688ba607237440f95ec294826c821c75c74087d4ad2a46361.json",
+  "autostart_ledger_sha256": "df09c5864f06e646bb804f50f7eded5e844727fb4cc13c3ebd5fcbd82ccd3a25",
+  "autostart_source_commit": "3544a0d28630f19e1d7b056172d2d85e58d5d9ec",
+  "created_at": "2026-11-12T14:23:31Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-12T14:23:31Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43235481751",
+    "task_id": "KOREA-LOTS-FULL-INSTALL-20261112",
+    "task_sha256": "d8a8ff882dc51a7688ba607237440f95ec294826c821c75c74087d4ad2a46361"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "receipt_path": "state/receipts/KOREA-LOTS-FULL-INSTALL-20261112.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/KOREA-LOTS-FULL-INSTALL-20261112.json",
+  "request_sha256": "d8a8ff882dc51a7688ba607237440f95ec294826c821c75c74087d4ad2a46361",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "5a350ba1b26192bc3a005506c699e443a190c60f",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-12T14:23:31Z"
+}
