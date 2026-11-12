@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "092c3a6db6194507b9490c00166359b3b9c449670c42267217d2715291a522ea",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T20:17:49Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-12T20:33:43Z",
+  "heartbeat_at": "2026-11-12T20:33:43Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43297307514",
     "task_id": "NEW-CAR-VIN-INSTALL-20261112",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 464.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 125.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43297307514-f22db32d0dc74e43",
   "production_transaction_path": "state/transactions/NEW-CAR-VIN-INSTALL-20261112.f22db32d0dc74e435b4b90df626d56b7a813fe4afe6bb827fce991e13c67c0ac.43297307514.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-4d50646af4dee811-82b15077a5f33621",
   "receipt_path": "state/receipts/NEW-CAR-VIN-INSTALL-20261112.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "6ef6a8aacedb8f9693f37e41c9ef42f525639d952abcf579f83715548affa95f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/NEW-CAR-VIN-INSTALL-20261112.json",
   "request_sha256": "f22db32d0dc74e435b4b90df626d56b7a813fe4afe6bb827fce991e13c67c0ac",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
     "file_sha256": {
@@ -87,5 +110,5 @@
       "cloud/crm_new_car_vin_001/ua_new_car_bot.py": "06ab57a0d0c9bec33784baafd2c241f5bcdd4aa777bcb5464362d75e5f372474"
     }
   },
-  "updated_at": "2026-11-12T20:17:49Z"
+  "updated_at": "2026-11-12T20:33:44Z"
 }
