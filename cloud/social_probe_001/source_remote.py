@@ -298,6 +298,65 @@ def report_r10(home=None):
             'posted_field_names': sorted({k for k, _ in data}), 'results_page': shape(url2, html2)}
 
 
+# R11 (coordinator): the Korea search lists 0. Which filters does the search form offer now (selects, checkboxes,
+# day tabs), and how many results does each auction day / house give? Names, option values and counts only.
+def report_r11(home=None):
+    import html as _html
+    import sys as _sys
+    _sys.path.insert(0, str(HOME))
+    from korea_auction import collect, job, session
+
+    def form_of(page):
+        start = page.find('id="purchase_search_form"')
+        end = page.find('</form>', start)
+        return page[start:end] if start >= 0 else ''
+
+    def fields(form):
+        selects = {}
+        for name, body in re.findall(r'(?is)<select[^>]*name="([^"]+)"[^>]*>(.*?)</select>', form):
+            opts = re.findall(r'(?is)<option[^>]*value="([^"]*)"[^>]*>(.*?)</option>', body)
+            selects[sanitized_line(name)[:60]] = [[sanitized_line(v)[:40], sanitized_line(re.sub('<[^>]+>', '', t)).strip()[:40]]
+                                                 for v, t in opts][:25]
+        boxes = {}
+        for tag in re.findall(r'(?is)<input[^>]*type="(?:checkbox|radio)"[^>]*>', form):
+            name = re.search(r'name="([^"]+)"', tag)
+            value = re.search(r'value="([^"]*)"', tag)
+            if name:
+                boxes.setdefault(sanitized_line(name.group(1))[:60], []).append(
+                    [sanitized_line(value.group(1) if value else '')[:40], 'checked' in tag.lower()])
+        texts = sorted({sanitized_line(n)[:60] for n in re.findall(r'(?is)<input[^>]*type="(?:text|date|number)"[^>]*name="([^"]+)"', form)})
+        return {'selects': selects, 'boxes': {k: v[:25] for k, v in boxes.items()}, 'text_inputs': texts[:20]}
+
+    def count(page):
+        return (re.findall(r'[\d,]+ Results', page) or ['?'])[0]
+
+    s = session.Session()
+    s.login(*job.read_login())
+    url, page = s.fetch(collect.SEARCH_PAGE)
+    form = form_of(page)
+    info = fields(form)
+    action, data = collect._search_form_data(page)
+    base_url, base = s.fetch(action, data)
+    tries = []
+    for name, opts in list(info['selects'].items())[:6]:
+        if not re.search(r'(?i)date|day|auction|house|kaijo|hall|place', name):
+            continue
+        for value, label in opts[:8]:
+            if not value:
+                continue
+            _, page2 = s.fetch(action, list(data) + [(name, value)])
+            tries.append({'field': name, 'value': value, 'label': label, 'results': count(page2)})
+    for name, vals in list(info['boxes'].items())[:6]:
+        if not re.search(r'(?i)date|day|auction|house|kaijo|hall|place', name):
+            continue
+        for value, _checked in vals[:8]:
+            _, page2 = s.fetch(action, list(data) + [(name, value)])
+            tries.append({'field': name, 'value': value, 'results': count(page2)})
+    links = sorted({sanitized_line(h)[:100] for h in re.findall(r'href="(/vehicle-search/kr[^"]*)"', page)})[:20]
+    return {'status': 'PASS', 'form_found': bool(form), 'form': info, 'default_results': count(base),
+            'search_page_results': count(page), 'tries': tries[:40], 'kr_links': links, 'requests': s.requests}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -311,7 +370,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r10()  # R10 auction page shape; report_r9() R9, report_r6() R6–R8, report_r5()…report() R1–R5
+        value = report_r11()  # R11 search form filters; report_r10() R10 auction page shape; report_r9() R9, report_r6() R6–R8, report_r5()…report() R1–R5
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
