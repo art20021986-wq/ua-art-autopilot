@@ -1,0 +1,56 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TICKER-FIX5-PREFLIGHT-20261112.035a4a9ce7a037f65c32f0e2b31719906c37c66457f02b5284cdd0c66b633628.json",
+  "autostart_ledger_sha256": "f2195f48d1e591a69608159564867597908fbd8438d77e8d454555e191aad72d",
+  "autostart_source_commit": "7750864f1706601b0f45675e9a3df40a67830ba4",
+  "created_at": "2026-11-12T07:41:50Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-11-12T07:42:36Z",
+      "class": "UNKNOWN",
+      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 43176989243",
+      "retries_remaining": 3,
+      "retry_allowed": false,
+      "signature": "c801bf83b44d55cf"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-12T07:54:04+00:00",
+      "class": "PACKAGE_BUILD_CHECK",
+      "evidence_path": "state/reconciliations/TICKER-FIX5-PREFLIGHT-20261112.43176989243.authenticated-evidence.json",
+      "message": "Read-only preview stopped at the execution contract (test hash changed after the request); nothing written. Retried as R3.",
+      "retries_remaining": 0,
+      "retry_allowed": false
+    }
+  ],
+  "heartbeat_at": "2026-11-12T07:41:50Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43176989243",
+    "task_id": "TICKER-FIX5-PREFLIGHT-20261112",
+    "task_sha256": "035a4a9ce7a037f65c32f0e2b31719906c37c66457f02b5284cdd0c66b633628"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-23c25066eab32fad-f9a7c7dd66348783",
+  "receipt_path": "state/receipts/TICKER-FIX5-PREFLIGHT-20261112.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TICKER-FIX5-PREFLIGHT-20261112.json",
+  "request_sha256": "035a4a9ce7a037f65c32f0e2b31719906c37c66457f02b5284cdd0c66b633628",
+  "resource_locks": [
+    "PATH_SCOPE:23c25066eab32fad"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "7111d9e5a2508f17a44bb6ceb52efc2454b12d73",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-12T07:54:04Z"
+}

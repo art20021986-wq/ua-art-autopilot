@@ -1,0 +1,63 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-STRIP-REMOVE-PREFLIGHT-20261112.07d704ba7eb8cb1456b91a7945942ead8803d4c9e48bf7479ba14f28090698fd.json",
+  "autostart_ledger_sha256": "6729784ec210ce772f32680f440b712f32d28eb24a62b6901d9d4a19c7f193f8",
+  "autostart_source_commit": "3a806cf96a0aefe6f19c70a5031b7aa57822bfa8",
+  "created_at": "2026-11-12T12:48:28Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-12T12:54:18Z",
+  "heartbeat_at": "2026-11-12T12:54:18Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43221094352",
+    "task_id": "HOME-STRIP-REMOVE-PREFLIGHT-20261112",
+    "task_sha256": "07d704ba7eb8cb1456b91a7945942ead8803d4c9e48bf7479ba14f28090698fd"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-cb5df924a8116dcb-896451d0711cb40c",
+  "receipt_path": "state/receipts/HOME-STRIP-REMOVE-PREFLIGHT-20261112.json",
+  "receipt_sha256": "580542d9460a8699d949b73aa293e057179d2e625c6e0b16e8afb36f1f28874c",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/HOME-STRIP-REMOVE-PREFLIGHT-20261112.json",
+  "request_sha256": "07d704ba7eb8cb1456b91a7945942ead8803d4c9e48bf7479ba14f28090698fd",
+  "resource_locks": [
+    "PATH_SCOPE:cb5df924a8116dcb"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "0485cb6b60d4c4f82f0b10527c7ad1d12a9cfdbb",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92242731008,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.475
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "ebd18b18259bb73bc6e7a7f752567f7baf736b4c4d8df4d20feb192062568af4",
+    "file_sha256": {
+      "cloud/home_strip_remove_001/candidate_builder.py": "c5a1fe8c723cd69959030f1a367800ca58bf5b78b8b0dadb40305cd3e17b74b4",
+      "cloud/home_strip_remove_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_strip_remove_001/deployment_bootstrap.py": "74854677ce34e0c7a10eccad85837d615894701207e6442e424e2bfc66576465",
+      "cloud/home_strip_remove_001/deployment_remote.py": "922c647d0e8c65424d2c24f4df9ce7dd6810ba6e3d570d221fb8b5710e6bbe94",
+      "cloud/home_strip_remove_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_strip_remove_001/deployment_transport.py": "c42e5e1c9f00499bcc66188af290ffbcd5c77df1a6b4afedbd6e51c42dd54003",
+      "cloud/home_strip_remove_001/edit_home.py": "4a15996312ff971e3fa1f6cf881609609a749f76cb04d02fa57ea4d476331294",
+      "cloud/home_strip_remove_001/make_release.py": "b1e2eaf250c6cd9c1ec19e0e24bad753309977f5a1753bd2a628442a7137c425",
+      "cloud/home_strip_remove_001/release_constants.py": "a6fcdc89044394c660c90ef40c6232d22ca71756611d396d15da00169c655239",
+      "cloud/home_strip_remove_001/test_deployment.py": "449f22edc6537318eafa9c17293d2df73bf17d1052fa1dec6b0167ee19f71893",
+      "cloud/home_strip_remove_001/test_edit_home.py": "90d2dbfd358e84813280f2160313c93eae2d0079e04081fd69c92215b17d11c3"
+    }
+  },
+  "updated_at": "2026-11-12T12:54:18Z"
+}

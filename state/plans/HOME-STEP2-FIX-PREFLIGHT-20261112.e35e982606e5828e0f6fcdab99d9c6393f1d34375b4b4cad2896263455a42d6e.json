@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-STEP2-FIX-PREFLIGHT-20261112.e35e982606e5828e0f6fcdab99d9c6393f1d34375b4b4cad2896263455a42d6e.json",
+  "autostart_ledger_sha256": "087d2a5da07bce9eba91297e0fdd9ee30ef227f9c2ebc25e8db08d35fc9226e7",
+  "autostart_source_commit": "c1639af32e08837ca02890eb4070e3fafa0bdc21",
+  "created_at": "2026-11-12T11:18:44Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43207859537",
+    "task_id": "HOME-STEP2-FIX-PREFLIGHT-20261112",
+    "task_sha256": "e35e982606e5828e0f6fcdab99d9c6393f1d34375b4b4cad2896263455a42d6e"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-54df2b833b1ccbda-cbee723247120359",
+  "request_path": "tasks/requests/HOME-STEP2-FIX-PREFLIGHT-20261112.json",
+  "resource_locks": [
+    "PATH_SCOPE:54df2b833b1ccbda"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

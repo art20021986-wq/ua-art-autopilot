@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-STRIP-REMOVE-PREFLIGHT-20261112.07d704ba7eb8cb1456b91a7945942ead8803d4c9e48bf7479ba14f28090698fd.json",
+  "autostart_ledger_sha256": "6729784ec210ce772f32680f440b712f32d28eb24a62b6901d9d4a19c7f193f8",
+  "autostart_source_commit": "3a806cf96a0aefe6f19c70a5031b7aa57822bfa8",
+  "created_at": "2026-11-12T12:48:28Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43221094352",
+    "task_id": "HOME-STRIP-REMOVE-PREFLIGHT-20261112",
+    "task_sha256": "07d704ba7eb8cb1456b91a7945942ead8803d4c9e48bf7479ba14f28090698fd"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-cb5df924a8116dcb-896451d0711cb40c",
+  "request_path": "tasks/requests/HOME-STRIP-REMOVE-PREFLIGHT-20261112.json",
+  "resource_locks": [
+    "PATH_SCOPE:cb5df924a8116dcb"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

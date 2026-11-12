@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TICKER-FIX2-INSTALL-20261112.bdcffc8f0083621c25877dad5b78333c64f23a74846621a9802e1148c5c83d67.json",
+  "autostart_ledger_sha256": "03f4548cdf8af4808b452d3409eb137fb27c017ece94e30106d327152d376f3f",
+  "autostart_source_commit": "da88e2c75cb2bcb4425dfa7f9b701c4d5849cc0c",
+  "created_at": "2026-11-12T04:39:02Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43156034764",
+    "task_id": "TICKER-FIX2-INSTALL-20261112",
+    "task_sha256": "bdcffc8f0083621c25877dad5b78333c64f23a74846621a9802e1148c5c83d67"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "request_path": "tasks/requests/TICKER-FIX2-INSTALL-20261112.json",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
