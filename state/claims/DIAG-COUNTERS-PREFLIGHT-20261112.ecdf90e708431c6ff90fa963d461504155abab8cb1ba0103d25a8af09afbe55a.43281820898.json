@@ -7,21 +7,23 @@
   "created_at": "2026-11-12T18:39:33Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T18:39:33Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-12T18:45:25Z",
+  "heartbeat_at": "2026-11-12T18:45:25Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43281820898",
     "task_id": "DIAG-COUNTERS-PREFLIGHT-20261112",
     "task_sha256": "ecdf90e708431c6ff90fa963d461504155abab8cb1ba0103d25a8af09afbe55a"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-c9650720b5943708-4558906be15c08cd",
   "receipt_path": "state/receipts/DIAG-COUNTERS-PREFLIGHT-20261112.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "aa5b5adcf658251e88f38b454fda120ee49b315a48f2fcfa9901cc4d187dc3d8",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/DIAG-COUNTERS-PREFLIGHT-20261112.json",
   "request_sha256": "ecdf90e708431c6ff90fa963d461504155abab8cb1ba0103d25a8af09afbe55a",
   "resource_locks": [
@@ -29,8 +31,34 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "5c02b23b5eb46b5eb760b47b66aa69a71a775665",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92752584704,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.146
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-12T18:39:33Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "e37fcb1a5633581e1c759e78b951ff9136fe18da65edc7dbbf6da34b2f03dc8c",
+    "file_sha256": {
+      "cloud/diag_counters_001/candidate_builder.py": "def5542ad47faceca0327f7f57427e89ed9fe5b6e13ef57d52a59f2a1bf5d927",
+      "cloud/diag_counters_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/diag_counters_001/deployment_bootstrap.py": "f92ee8b8c08e84cfd417c2e7143a6923a93c2c249f7fd4e750c5f366f5cea135",
+      "cloud/diag_counters_001/deployment_remote.py": "417cc3bc072c32eca3c6c2518dc40c42d12eb849e18af8b07a733574c711cbc3",
+      "cloud/diag_counters_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/diag_counters_001/deployment_transport.py": "048a923fde696a3cc60f0fd2d4c6c1ddc844b2bfb3de8b87c404c9b654f7ca66",
+      "cloud/diag_counters_001/make_release.py": "c0d1144fa4f63c7c967493c96996ea5970bc40ad56f137a77ddc056f5cc22b0e",
+      "cloud/diag_counters_001/release_constants.py": "b3430e154ddde75d9ae545097d7d9007e69ff40338451f62cf8687b64637d3f7",
+      "cloud/diag_counters_001/test_deployment.py": "c1a1f8410548944bd285c9d2b01812536a6a33861be9878db6886d328620b314",
+      "cloud/diag_counters_001/test_release.py": "9813927384506050b78734ee7da4d99d72d1571a3831ada9c99481bc2c547451",
+      "cloud/diag_counters_001/ua_google_tag.py": "f5f0a30489d20d7f7d973c27bd31e583e9827fb5a6d1e24a97fb35d1e6a3b6d4",
+      "cloud/diag_counters_001/ua_own_counter.py": "e9414d9988d3d3a2b22011cd051a65d6f8d086cde3d7abc1443bb35b45a5fd38"
+    }
+  },
+  "updated_at": "2026-11-12T18:45:25Z"
 }
