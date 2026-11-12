@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "93f115d57cea8a7d97f403a35fcb8d627b9a778d54ec4968b96d9342d765c296",
+  "error": "RuntimeError: REMOTE_PREVIEW:DeploymentError:ACCOUNT_USAGE (du: cannot access '/home/Carix/vin_specs_issue84_queue.db-journal': No such file or directory)",
+  "failed_step": "execute / standard / remote preview: storage probe (read-only du), before any write",
+  "precedent": "state/reconciliations/CRM-PAYMENTS-PREFLIGHT-20261112-R2.43304091915.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-12T21:51:41+00:00",
+  "remote_mode": "preview (reads only)",
+  "retry": "CRM-PAYMENTS-PREFLIGHT-20261112-R6 (deployment_remote.account_used_bytes tolerates a vanished file, as cloud/card_sync_fix_002)",
+  "run_id": "43308429821",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "CRM-PAYMENTS-PREFLIGHT-20261112-R5"
+}
