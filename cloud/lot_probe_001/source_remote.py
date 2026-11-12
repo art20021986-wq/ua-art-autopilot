@@ -1,5 +1,11 @@
 """Read-only probe on the server for JPAUTO-KOREA-001 (owner 2026-11-11: auction day choice, VIN and all photos).
 
+R3 (2026-11-12, owner: real Korea auction lots in the order page model carousels): report() reads the whole Korea
+search once (as the hourly job does, no lot page) and reports, for the five Korea order models (K5, Sonata, Tucson,
+Sportage, Santa Fe), the model names, model codes (the «Model Code» column) and years as the auction writes them,
+the auction grade formats, lots per day, photos per lot and start price presence. Nothing is written except this
+receipt; no bid is placed.
+
 R2 (2026-11-11): the lot page markup differs from the collector's pattern, so every image address shape,
 the table labels and the chassis/VIN lines (a 17-character VIN masked as [VIN17]) are reported too.
 Uses the collector already installed on the server (/home/Carix/korea_auction) with the owner's login file, as the
@@ -47,49 +53,57 @@ def shape(url):
     return LONG_NUMBER.sub('[N]', path)[:120]
 
 
+TARGETS = (('KIA', 'K5'), ('HYUNDAI', 'SONATA'), ('HYUNDAI', 'TUCSON'), ('KIA', 'SPORTAGE'), ('HYUNDAI', 'SANTA'))
+
+
+def with_model_codes(lots, html_tools):
+    """lots.parse_results, plus each lot's «Model Code» column (the collector does not keep it yet)."""
+    original = lots.parse_results
+
+    def parse(html):
+        found = original(html)
+        codes = {}
+        for row in html_tools.table_rows(html_tools.table_containing(html, 'Close Time')):
+            if len(row) >= len(lots._COLUMNS) and row[0]['tag'] == 'td':
+                cells = dict(zip(lots._COLUMNS, row))
+                if cells['photo']['attrs'].get('data-lot-id'):
+                    codes[cells['photo']['attrs']['data-lot-id']] = cells['model_code']['text']
+        return [dict(lot, model_code=codes.get(lot['id'], '')) for lot in found]
+    return parse
+
+
+def model_report(all_lots):
+    value = {}
+    for maker, word in TARGETS:
+        chosen = [l for l in all_lots if l['maker'].upper().startswith(maker) and word in l['model'].upper()]
+        value[maker + ' ' + word] = {
+            'lots': len(chosen),
+            'name_code_year': [[n, c, y, k] for (n, c, y), k in Counter(
+                (l['model'], l['model_code'], l['year']) for l in chosen).most_common(60)],
+            'scores': Counter(l['score'] for l in chosen).most_common(20),
+            'days': sorted(Counter(selection_day(l) for l in chosen).items()),
+            'with_price': sum(1 for l in chosen if l['start_price_krw']),
+            'photos': dict(Counter(len(l['photos']) for l in chosen))}
+    return value
+
+
+def selection_day(lot):
+    return lot['auction_start'][:10]
+
+
 def report():
     sys.path.insert(0, str(ROOT))
-    from korea_auction import collect, job, lots, selection, session
+    from korea_auction import collect, html_tools, job, lots, session
+    lots.parse_results = with_model_codes(lots, html_tools)
     browser = session.Session()
     browser.login(*job.read_login())
     total, all_lots = collect.fetch_all_lots(browser)
-    days = Counter(selection.auction_date(lot) for lot in all_lots)
-    by_day = [{'date': day, 'weekday': datetime.strptime(day, '%Y/%m/%d').strftime('%a'), 'lots': n,
-               'starts': sorted({lot['auction_start'][11:] for lot in all_lots if selection.auction_date(lot) == day}),
-               'houses': len({lot['house'] for lot in all_lots if selection.auction_date(lot) == day})}
-              for day, n in sorted(days.items())]
-    sample = [lot for lot in all_lots if lot.get('detail_url')][::max(1, len(all_lots) // 3)][:3]
-    pages, measured = [], {}
-    for lot in sample:
-        _, html = browser.fetch(lot['detail_url'])
-        detail = lots.parse_detail(html)
-        chassis = detail['specs'].get('Chassis No.', '')
-        all_imgs = re.findall(r'<img[^>]+src="([^"]+)"', html)
-        labels = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', m)).strip()[:40]
-                  for m in re.findall(r'<(?:th|dt)\b[^>]*>(.*?)</(?:th|dt)>', html, re.S | re.I)]
-        vin_lines = [LONG_NUMBER.sub('[N]', re.sub(r'[A-HJ-NPR-Z0-9]{17}', '[VIN17]', re.sub(r'\s+', ' ', line)))[:200]
-                     for line in html.splitlines() if re.search(r'(?i)chassis|\bvin\b|차대', line)][:15]
-        img_attrs = sorted({shape(m) for m in re.findall(r'(?:data-src|data-original|data-lazy|href)="(https?://[^"]+\.(?:jpe?g|png|webp)[^"]*)"', html, re.I)})[:12]
-        pages.append({'detail_photos': len(detail['photos']), 'results_photos': len(lot['photos']),
-                      'chassis_length': len(chassis), 'chassis_looks_like_vin': bool(re.fullmatch(r'[A-HJ-NPR-Z0-9]{17}', chassis)),
-                      'spec_labels': sorted(detail['specs'])[:40], 'img_tags': len(all_imgs),
-                      'photo_shapes': sorted({shape(u) for u in detail['photos']})[:6],
-                      'img_shapes': sorted({shape(u) for u in all_imgs})[:60], 'other_photo_links': img_attrs,
-                      'labels': labels[:80], 'vin_lines': vin_lines,
-                      'same_as_results': sum(1 for u in all_imgs if any(u.split('?')[0].endswith(r.rsplit('/', 1)[-1]) for r in lot['photos'])),
-                      'results_photo_shapes': sorted({shape(u) for u in lot['photos']})[:3]})
-        if not measured and detail['photos']:
-            sizes = []
-            for url in detail['photos'][:3]:
-                try:
-                    sizes.append(len(job.fetch_photo(url)))
-                except (OSError, ValueError) as error:
-                    sizes.append(type(error).__name__)
-            measured = {'photo_bytes': sizes}
+    days = Counter(selection_day(lot) for lot in all_lots)
     return {'status': 'PASS', 'no_bid_placed': True, 'lots_total': total, 'lots_parsed': len(all_lots),
-            'days': by_day, 'lot_pages': pages, **measured, 'requests': browser.requests,
-            'published': published(), 'folders': {'lots': folder_size(ROOT / 'video/korea/lots'),
-                                                  'img': folder_size(ROOT / 'video/korea/img')}}
+            'days': [{'date': day, 'weekday': datetime.strptime(day, '%Y/%m/%d').strftime('%a'), 'lots': n}
+                     for day, n in sorted(days.items())],
+            'scores_all': Counter(l['score'] for l in all_lots).most_common(40),
+            'models': model_report(all_lots), 'requests': browser.requests}
 
 
 def main():
