@@ -51,7 +51,8 @@ class Release(unittest.TestCase):
         self.assertIn('Замовте автомобіль із закордонних аукціонів — ми супроводимо його до Києва', catalog)
         landing = self.result.get('video/seo/ru/avto-pod-zakaz-kiev.html', b'').decode()
         self.assertIn('Проверяем историю и отчёт аукциона выбранного автомобиля', landing)
-        self.assertIn('депозит 500 $', landing)  # the 500 $ deposit stays (owner)
+        self.assertIn('предоплата 500 $ засчитывается в стоимость авто', landing)
+        self.assertNotIn('депозит 500', landing)
 
     def test_prepayment_instead_of_deposit(self):
         home = self.result['video/index.html'].decode()
