@@ -7,21 +7,23 @@
   "created_at": "2026-11-12T13:06:13Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T13:06:13Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-12T13:10:56Z",
+  "heartbeat_at": "2026-11-12T13:10:56Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43223789427",
     "task_id": "HOME-STRIP-REMOVE-PREFLIGHT-20261112-R2",
     "task_sha256": "e97bd3765f18a5895153e7c275c4f67040222d76a06fba592030eabbd1232c9f"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-cb5df924a8116dcb-896451d0711cb40c",
   "receipt_path": "state/receipts/HOME-STRIP-REMOVE-PREFLIGHT-20261112-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "89a659d78d68798cc8c203c891a0a35573cacadb09441ff5c48bb35a5b737857",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-STRIP-REMOVE-PREFLIGHT-20261112-R2.json",
   "request_sha256": "e97bd3765f18a5895153e7c275c4f67040222d76a06fba592030eabbd1232c9f",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "e18db9fe4310eb2e3116b009b12d7cb1091f19e2",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92182102016,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.514
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-12T13:06:13Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "ebd18b18259bb73bc6e7a7f752567f7baf736b4c4d8df4d20feb192062568af4",
+    "file_sha256": {
+      "cloud/home_strip_remove_001/candidate_builder.py": "c5a1fe8c723cd69959030f1a367800ca58bf5b78b8b0dadb40305cd3e17b74b4",
+      "cloud/home_strip_remove_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_strip_remove_001/deployment_bootstrap.py": "74854677ce34e0c7a10eccad85837d615894701207e6442e424e2bfc66576465",
+      "cloud/home_strip_remove_001/deployment_remote.py": "922c647d0e8c65424d2c24f4df9ce7dd6810ba6e3d570d221fb8b5710e6bbe94",
+      "cloud/home_strip_remove_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_strip_remove_001/deployment_transport.py": "c42e5e1c9f00499bcc66188af290ffbcd5c77df1a6b4afedbd6e51c42dd54003",
+      "cloud/home_strip_remove_001/edit_home.py": "4a15996312ff971e3fa1f6cf881609609a749f76cb04d02fa57ea4d476331294",
+      "cloud/home_strip_remove_001/make_release.py": "b1e2eaf250c6cd9c1ec19e0e24bad753309977f5a1753bd2a628442a7137c425",
+      "cloud/home_strip_remove_001/release_constants.py": "ace7c9e7ea539cbfecdec0d49137d7cc6011ae3ded9ab890f8110c22a92b7c82",
+      "cloud/home_strip_remove_001/test_deployment.py": "449f22edc6537318eafa9c17293d2df73bf17d1052fa1dec6b0167ee19f71893",
+      "cloud/home_strip_remove_001/test_edit_home.py": "90d2dbfd358e84813280f2160313c93eae2d0079e04081fd69c92215b17d11c3"
+    }
+  },
+  "updated_at": "2026-11-12T13:10:56Z"
 }
