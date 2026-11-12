@@ -4,7 +4,6 @@ from pathlib import Path
 import re
 import sys
 import tempfile
-import types
 import unittest
 from unittest.mock import patch
 
@@ -15,56 +14,52 @@ import transport  # noqa: E402
 import week  # noqa: E402
 
 FORM = ('<form id="purchase_search_form" action="/vehicle-search/kr/index">'
-        '<input type="checkbox" name="auction_group[]" value="1" id="g1"><label for="g1">Mon AutoPlus</label>'
-        '<input type="checkbox" name="auction_group[]" value="4" checked> Wed <b>Auto Hub</b>'
-        '<input type="checkbox" name="auction[]" value="50004|4">'
-        '<input type="checkbox" name="auction_group[]" value="5" checked>Thu'
+        '<input type="checkbox" name="auction_group[]" value="1" id="g1"><label for="g1">Mon. AutoPlus</label>'
+        '<input type="checkbox" name="auction_group[]" value="4" checked> Thu. <b>Show Detail</b>'
+        '<input type="checkbox" name="auction[]" value="50004|4"> K-Car O-San'
+        '<input type="checkbox" name="auction_group[]" value="5" checked>Fri.'
         '</form>')
 
 
-def lot(lot_id, day, house):
-    return {'id': lot_id, 'auction_start': day + ' 12:00', 'house': house}
+def lot(day, house):
+    return {'auction_start': day + ' 12:00', 'house': house}
 
 
 class WeekTests(unittest.TestCase):
-    def test_groups_labels_and_default(self):
-        self.assertEqual(week.groups('<p>x</p>' + FORM), [
-            {'value': '1', 'label': 'Mon AutoPlus', 'checked': False},
-            {'value': '4', 'label': 'Wed Auto Hub', 'checked': True},
-            {'value': '5', 'label': 'Thu', 'checked': True}])
+    def test_schedule_days_auctions_and_default(self):
+        self.assertEqual(week.schedule('<p>x</p>' + FORM), [
+            {'value': '1', 'label': 'Mon. AutoPlus', 'checked': False, 'auctions': []},
+            {'value': '4', 'label': 'Thu. Show Detail', 'checked': True, 'auctions': ['K-Car O-San']},
+            {'value': '5', 'label': 'Fri.', 'checked': True, 'auctions': []}])
 
-    def test_week_counts_each_lot_once_and_marks_site(self):
-        by_group = {'1': [lot('a', '2026/11/16', 'AutoPlus'), lot('b', '2026/11/16', 'AutoPlus')],
-                    '4': [lot('c', '2026/11/18', 'Auto Hub'), lot('d', '2026/11/26', 'Auto Hub')],
-                    '5': [lot('c', '2026/11/18', 'Auto Hub'), lot('e', '2026/11/11', 'Old')]}
-        self.assertEqual(week.week(by_group, ['4', '5'], '2026/11/12'), [
-            {'date': '2026/11/16', 'weekday': 'Mon', 'house': 'AutoPlus', 'lots': 2, 'groups': ['1'], 'on_site': False},
-            {'date': '2026/11/18', 'weekday': 'Wed', 'house': 'Auto Hub', 'lots': 1, 'groups': ['4', '5'],
-             'on_site': True}])
+    def test_week_counts_auction_and_site_lots(self):
+        lots = [lot('2026/11/13', 'AutoPlus'), lot('2026/11/13', 'AutoPlus'), lot('2026/11/18', 'Auto Hub'),
+                lot('2026/11/20', 'Late'), lot('2026/11/12', 'Old')]
+        self.assertEqual(week.week(lots, [lot('2026/11/13', 'AutoPlus')], '2026/11/13'), [
+            {'date': '2026/11/13', 'weekday': 'Fri', 'house': 'AutoPlus', 'lots': 2, 'on_site': 1},
+            {'date': '2026/11/18', 'weekday': 'Wed', 'house': 'Auto Hub', 'lots': 1, 'on_site': 0}])
 
-    def test_compare_finds_new_house_day_and_group(self):
-        old = {'groups': [{'value': '4', 'label': 'Wed'}],
-               'week': [{'house': 'Auto Hub', 'weekday': 'Wed', 'on_site': True}]}
-        new = {'groups': [{'value': '4', 'label': 'Wed'}, {'value': '9', 'label': 'Sat New'}],
-               'week': [{'house': 'Auto Hub', 'weekday': 'Wed', 'on_site': True},
-                        {'house': 'Auto Hub', 'weekday': 'Sat', 'on_site': True},
-                        {'house': 'New', 'weekday': 'Sat', 'on_site': False}]}
+    def test_compare_finds_new_house_day_schedule_and_misses(self):
+        old = {'schedule': [{'label': 'Wed.', 'auctions': []}],
+               'week': [{'house': 'Auto Hub', 'weekday': 'Wed', 'lots': 1, 'on_site': 1}]}
+        new = {'schedule': [{'label': 'Wed.', 'auctions': ['Auto Hub']}],
+               'week': [{'house': 'Auto Hub', 'weekday': 'Wed', 'lots': 1, 'on_site': 1},
+                        {'house': 'Auto Hub', 'weekday': 'Sat', 'lots': 2, 'on_site': 2},
+                        {'house': 'New', 'weekday': 'Sat', 'lots': 3, 'on_site': 0}]}
         value = week.compare(old, new)
-        self.assertEqual((value['new_houses'], value['gone_houses'], value['new_days'], value['new_groups'],
-                          value['auctions_before'], value['auctions_now'], len(value['not_on_site_now'])),
-                         (['New'], [], {'Auto Hub': ['Sat']}, {'9': 'Sat New'}, 1, 3, 1))
+        self.assertEqual((value['new_houses'], value['gone_houses'], value['new_days'], value['new_schedule'],
+                          value['auctions_before'], value['auctions_now'], len(value['site_misses_now'])),
+                         (['New'], [], {'Auto Hub': ['Sat']}, ['Wed. / Auto Hub'], 1, 3, 1))
 
 
 class RemoteTests(unittest.TestCase):
-    def test_search_group_sends_only_that_group_and_restores(self):
-        sent = []
-        original = lambda html: ('/a', [('mode', 'search'), ('order_closed[]', '1'), ('auction_group[]', '4'),
-                                        ('auction[]', '50004|4')])
-        collect = types.SimpleNamespace(_search_form_data=original)
-        collect.fetch_all_lots = lambda browser: sent.append(collect._search_form_data('')) or (0, [])
-        remote.search_group(None, collect, '1')
-        self.assertEqual(sent, [('/a', [('mode', 'search'), ('order_closed[]', '1'), ('auction_group[]', '1')])])
-        self.assertIs(collect._search_form_data, original)
+    def test_site_lots_missing_is_empty(self):
+        with tempfile.TemporaryDirectory() as temp, patch.object(remote, 'ROOT', Path(temp)):
+            self.assertEqual(remote.site_lots(), [])
+            folder = Path(temp) / 'video/korea'
+            folder.mkdir(parents=True)
+            (folder / 'lots.json').write_text(json.dumps({'lots': [{'house': 'A'}]}))
+            self.assertEqual(remote.site_lots(), [{'house': 'A'}])
 
 
 class FakeAPI:

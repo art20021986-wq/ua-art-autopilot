@@ -1,0 +1,100 @@
+{
+  "default_groups": [
+    "5",
+    "6"
+  ],
+  "groups": [
+    {
+      "checked": false,
+      "label": "Mon. Show Detail AutoPlus(Weekly)",
+      "lots_parsed": 434,
+      "lots_total": 434,
+      "value": "1"
+    },
+    {
+      "checked": false,
+      "label": "Tue. Show Detail K-Car Se-Jong SK Rent Car Auction",
+      "lots_parsed": 434,
+      "lots_total": 434,
+      "value": "2"
+    },
+    {
+      "checked": false,
+      "label": "Wed. Show Detail",
+      "lots_parsed": 434,
+      "lots_total": 434,
+      "value": "3"
+    },
+    {
+      "checked": false,
+      "label": "Thu. Show Detail K-Car O-San",
+      "lots_parsed": 434,
+      "lots_total": 434,
+      "value": "4"
+    },
+    {
+      "checked": true,
+      "label": "Fri. Show Detail",
+      "lots_parsed": 434,
+      "lots_total": 434,
+      "value": "5"
+    },
+    {
+      "checked": true,
+      "label": "Sat. Show Detail",
+      "lots_parsed": 434,
+      "lots_total": 434,
+      "value": "6"
+    },
+    {
+      "checked": false,
+      "label": "Oneprice Show Detail Search Reset",
+      "lots_parsed": 434,
+      "lots_total": 434,
+      "value": "8"
+    }
+  ],
+  "mode": "probe",
+  "no_bid_placed": true,
+  "remote_write_count": 0,
+  "requests": 24,
+  "run_id": "43242754680",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "KOREA-WEEK-PROBE-20261112",
+  "today_kst": "2026/11/13",
+  "week": [
+    {
+      "date": "2026/11/13",
+      "groups": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "8"
+      ],
+      "house": "AutoPlus",
+      "lots": 56,
+      "on_site": true,
+      "weekday": "Fri"
+    },
+    {
+      "date": "2026/11/18",
+      "groups": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "8"
+      ],
+      "house": "Auto Hub Auction",
+      "lots": 378,
+      "on_site": true,
+      "weekday": "Wed"
+    }
+  ]
+}

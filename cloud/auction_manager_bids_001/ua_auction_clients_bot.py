@@ -1,13 +1,14 @@
 """Auction clients in the CRM bot (JPAUTO-KOREA-001, owner 2026-11-10/11): «🔨 Клиенты аукциона» in the main menu
-(statistics, «➕ Создать клиента», «👥 Клиенты с доступом · N», «📋 Ставки по датам»); the first two also stay in
-«👤 Клиенты → 🔨 Аукционы онлайн → 🇰🇷 Корея». A client's card lists the client's bids by date.
+(statistics, «➕ Создать клиента», «👥 Клиенты с доступом · N», «📋 Ставки по датам», «👔 По менеджерам»); only there,
+not duplicated elsewhere (owner 2026-11-12). A client's card lists the client's bids by date.
 
 Telegram glue only: records in ua_auction_clients, texts in ua_auction_clients_view, access rules and buttons from
 ua_crm_orders (the same staff as «Клиенты»). Multi-step input keeps a draft in context.user_data[WAIT]; any menu button
 cancels it, as in the rest of the bot.
-Owner 2026-11-12: «🔨 Ставка за клиента» in the client card (lot, amount, confirm; the same checks and the same send as a
-bid from the site, recorded with the manager) and «👔 По менеджерам» on the home screen. The send runs in a worker
-thread, so the bot keeps answering; the draft is taken before sending, so a second tap sends nothing.
+Owner 2026-11-12: «🔨 Ставка за клиента» in the client card (lot, amount, the same checks as a bid from the site;
+the manager opens the lot and places the bid themselves on the auction, then «✅ Поставил» records it with the
+manager — nothing is sent to the auction from the server, variant А) and «👔 По менеджерам» on the home screen.
+The draft is taken before recording, so a second tap records nothing.
 """
 import asyncio
 import re
@@ -20,17 +21,24 @@ import ua_crm_orders as orders
 
 WAIT = 'auction_client'
 BACK = view.HOME[1]  # «Назад» from the client list: the «🔨 Клиенты аукциона» screen
-BID_PAUSE = 1.0  # seconds between the auction site requests of one bid, as for a bid from the site
 
 
 def folder_rows():
-    """Rows the «🇰🇷 Корея» folder shows above its back button."""
-    return [[view.NEW], [('👥 Клиенты с доступом · %d' % len(store.all_clients()), view.LIST)]]
+    """Rows the «🇰🇷 Корея» folder of «👤 Клиенты» shows above its back button: none (owner 2026-11-12: «➕ Создать
+    клиента» and «👥 Клиенты с доступом» only in «🔨 Клиенты аукциона», no duplicates). ua_crm_orders still asks."""
+    return []
+
+
+def _markup(rows):
+    """Inline buttons: (label, callback data), or (label, 'https://…') for a link."""
+    from telegram import InlineKeyboardButton as B, InlineKeyboardMarkup as M
+    return M([[B(label, url=data) if data.startswith('https://') else B(label, callback_data=data) for label, data in row]
+              for row in rows if row])
 
 
 async def _show(message, screen, edit=None):
     from telegram.error import BadRequest
-    markup = orders.markup(screen['buttons']) if screen['buttons'] else None
+    markup = _markup(screen['buttons']) if screen['buttons'] else None
     if edit is not None:
         try:
             await edit.edit_message_text(screen['text'], parse_mode='HTML', reply_markup=markup)
@@ -92,10 +100,9 @@ def _bidder(phone):
     return client
 
 
-def _send(phone, bid, manager):
-    """Send a manager's checked bid as a bid from the site is sent; -> (status, message)."""
-    from korea_auction import job, session
-    return bids.place(_bidder(phone), bid, session.Session(pause=BID_PAUSE), job.read_login(), placed_by=manager)
+def _record(phone, bid, manager):
+    """A manager's bid for the client, placed by them on the auction."""
+    return bids.by_manager(_bidder(phone), bid, manager)
 
 
 async def callback(update, context):
@@ -159,18 +166,17 @@ async def callback(update, context):
         elif action == 'bidok':
             draft = context.user_data.get(WAIT)
             if not (isinstance(draft, dict) and draft.get('bid')):
-                await query.message.reply_text('Ставка уже отправлена или отменена.')
+                await query.message.reply_text('Ставка уже отмечена или отменена.')
                 raise ApplicationHandlerStop
-            context.user_data.pop(WAIT, None)  # taken before sending: a second tap finds nothing
+            context.user_data.pop(WAIT, None)  # taken before recording: a second tap finds nothing
             from telegram.error import BadRequest
             try:  # the confirm buttons go away; if Telegram refuses, the draft is already taken anyway
                 await query.edit_message_reply_markup(reply_markup=None)
             except BadRequest:
                 pass
-            await query.message.reply_text('⏳ Ставлю на аукционе, это займёт до минуты…')
-            status, message = await asyncio.to_thread(_send, draft['bid_for'], draft['bid'], update.effective_user.id)
+            await asyncio.to_thread(_record, draft['bid_for'], draft['bid'], update.effective_user.id)
             screen = await asyncio.to_thread(_client_screen, draft['bid_for'])
-            screen['text'] = view.bid_result(status, message) + screen['text']
+            screen['text'] = view.BID_RECORDED + screen['text']
             await _show(query.message, screen)
         elif action == 'dep':
             client = await asyncio.to_thread(store.get, arg)
@@ -238,7 +244,7 @@ async def _bid_answer(context, draft, message, text):
         await message.reply_text(view.BID_ERRORS.get(str(error), 'Ошибка: ' + str(error)))
         return
     draft['bid'], draft['ready'] = bid, True
-    await _show(message, view.bid_confirm(client, bid))
+    await _show(message, view.bid_confirm(client, bid, bids.LOT_URL % bid['lot']['id']))
 
 
 async def text(update, context):
@@ -268,13 +274,13 @@ def register(app):
     from telegram.ext import CallbackQueryHandler, MessageHandler, filters
     group = min(app.handlers, default=0) - 1  # an unused group before the bot's own handlers
     app.add_handler(CallbackQueryHandler(callback, pattern=r'^ac:'), group=group)
-    app.add_handler(CallbackQueryHandler(cancel), group=group)
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text), group=group)
-    app.add_handler(MessageHandler(filters.COMMAND, cancel), group=group)
-    try:  # JPAUTO-KOREA-001 step В: the staff hear about every client bid (module ua_auction_bids_bot)
+    try:  # the staff hear about every bid and answer requests (module ua_auction_bids_bot); before the catch-all below
         import ua_auction_bids_bot
-        ua_auction_bids_bot.register(app)
+        ua_auction_bids_bot.register(app, group)
     except Exception as exc:
         import logging
         logging.getLogger(__name__).warning('ua_auction_bids_bot не подключён: %s', exc)
+    app.add_handler(CallbackQueryHandler(cancel), group=group)
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text), group=group)
+    app.add_handler(MessageHandler(filters.COMMAND, cancel), group=group)
     return group

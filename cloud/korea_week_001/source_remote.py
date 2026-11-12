@@ -2,9 +2,10 @@
 auctions run and whether new ones were added).
 
 Uses the collector already installed on the server (/home/Carix/korea_auction) with the owner's login file, as the
-hourly job does: reads the Korea search form (auction groups, their labels, which are checked by default), then
-searches each group on its own and reports every auction (house + day) of the coming 7 days, its lots and whether the
-site collector (default groups only) sees it. No lot page, no bid; nothing is written except this receipt.
+hourly job does: reads the Korea search form (auction days and the auctions under each), runs the collector's own
+search once and reports every auction (house + day) of the coming 7 days with its lots, and how many of them the
+published lot list (video/korea/lots.json) shows. R2: the search ignores the day boxes (R1: every day gave the same
+lots), so no per-day search. No lot page, no bid; nothing is written except this receipt.
 """
 import argparse
 from datetime import datetime
@@ -20,19 +21,12 @@ ROOT = Path('/home/Carix')
 LONG_NUMBER = re.compile(r'\d{5,}')
 
 
-def search_group(browser, collect, group):
-    """All lots of one auction group: the collector's own search with only that group checked."""
-    original = collect._search_form_data
-
-    def one_group(html):
-        action, data = original(html)
-        return action, [(k, v) for k, v in data if k not in ('auction_group[]', 'auction[]')] + [('auction_group[]', group)]
-
-    collect._search_form_data = one_group
+def site_lots():
+    """The lots the site shows now (read only); [] when the list is missing or unreadable."""
     try:
-        return collect.fetch_all_lots(browser)
-    finally:
-        collect._search_form_data = original
+        return json.loads((ROOT / 'video/korea/lots.json').read_text(encoding='utf-8')).get('lots', [])
+    except (OSError, ValueError):
+        return []
 
 
 def report():
@@ -44,16 +38,12 @@ def report():
     browser = session.Session()
     browser.login(*job.read_login())
     _, page = browser.fetch(collect.SEARCH_PAGE)
-    form_groups = week.groups(page)
-    lots_by_group, totals = {}, {}
-    for group in form_groups:
-        totals[group['value']], lots_by_group[group['value']] = search_group(browser, collect, group['value'])
+    total, lots = collect.fetch_all_lots(browser)
     today = datetime.now(JST).strftime('%Y/%m/%d')
-    default = [g['value'] for g in form_groups if g['checked']]
-    return {'status': 'PASS', 'no_bid_placed': True, 'today_kst': today, 'groups': [
-                dict(g, lots_total=totals[g['value']], lots_parsed=len(lots_by_group[g['value']])) for g in form_groups],
-            'default_groups': default, 'week': week.week(lots_by_group, default, today),
-            'requests': browser.requests}
+    shown = site_lots()
+    return {'status': 'PASS', 'no_bid_placed': True, 'today_kst': today, 'schedule': week.schedule(page),
+            'lots_total': total, 'lots_parsed': len(lots), 'site_lots': len(shown),
+            'week': week.week(lots, shown, today), 'requests': browser.requests}
 
 
 def main():
@@ -62,7 +52,7 @@ def main():
     args = parser.parse_args()
     if not re.fullmatch(r'[0-9]+', args.run):
         raise SystemExit('RUN_ID')
-    resource.setrlimit(resource.RLIMIT_CPU, (300, 310))
+    resource.setrlimit(resource.RLIMIT_CPU, (120, 130))
     work = HERE / 'runs' / args.run
     work.mkdir(parents=True, exist_ok=True, mode=0o700)
     receipt = work / 'receipt-probe.json'

@@ -72,7 +72,7 @@ def _date(day):
 
 
 def _bid_line(bid, who=None):
-    state = '✅' if bid['status'] == 'placed' else '❌'
+    state = {'placed': '✅', 'requested': '⏳'}.get(bid['status'], '❌')
     head = '%s %s' % (state, escape(bid['created_at'][11:16]))
     if who is not None:
         head += ' · ' + escape(who)
@@ -86,7 +86,15 @@ def staff_name(staff, manager):
 
 
 def _placed(bid, staff):
-    return 'ставил: менеджер %s' % staff_name(staff, bid['placed_by']) if bid.get('placed_by') else 'сам'
+    """Who started the bid and, for a client's request, who answered it (variant А: a person places every bid)."""
+    if bid.get('placed_by'):
+        return 'ставил: менеджер %s' % staff_name(staff, bid['placed_by'])
+    if bid['status'] == 'requested':
+        return 'заявка клиента · ждёт менеджера'
+    if bid.get('handled_by'):
+        return 'заявка клиента · %s %s' % ('поставил' if bid['status'] == 'placed' else 'не поставил',
+                                            staff_name(staff, bid['handled_by']))
+    return 'сам'
 
 
 def card(client, bids=(), staff=None):
@@ -167,7 +175,7 @@ def password_changed(client, password):
 def list_view(clients, back):
     buttons = [[('%s%s %s · %s' % ('⛔ ' if c['blocked'] else '', c['surname'], c['name'], c['phone']),
                  'ac:c:' + c['phone'])] for c in clients[:40]]
-    buttons += [[NEW], [('Назад', back)]]
+    buttons += [[('Назад', back)]]  # «➕ Создать клиента» is on «🔨 Клиенты аукциона» (no duplicates)
     text = '<b>Клиенты аукционов онлайн</b>\n%s' % ('Всего: %d' % len(clients) if clients else 'Пока нет клиентов')
     return {'text': text, 'buttons': buttons}
 
@@ -220,18 +228,15 @@ def bid_amount_prompt(client, lot):
             'buttons': []}
 
 
-def bid_confirm(client, bid):
+def bid_confirm(client, bid, lot_url):
+    """The checked bid: the manager opens the lot, places it themselves on the auction, then «✅ Поставил»."""
     lot = bid['lot']
     return {'text': '<b>Проверьте ставку за %s %s</b>\n🚗 %s %s · лот %s\n₩%s ≈ $%s\n'
-                    '→ ставится с аккаунта компании, как ставка с сайта'
+                    '→ поставьте сами на аукционе, затем нажмите «✅ Поставил»'
                     % (escape(client['surname']), escape(client['name']), escape(str(lot['title'])), escape(str(lot['year'])),
                        escape(lot['id']), _money(bid['krw']), _money(bid['usd'])),
-            'buttons': [[('✅ Поставить', 'ac:bidok'), ('✖ Отмена', 'ac:c:' + client['phone'])]]}
+            'buttons': [[('🔗 Открыть лот на аукционе', lot_url)],
+                        [('✅ Поставил', 'ac:bidok'), ('✖ Отмена', 'ac:c:' + client['phone'])]]}
 
 
-def bid_result(status, message):
-    if status == 'placed':
-        return '✅ Ставка поставлена на аукционе.\n\n'
-    reason = {'busy': 'аукцион занят другой ставкой, попробуйте ещё раз',
-              'not_confirmed': 'аукцион не подтвердил ставку'}.get(message, BID_ERRORS.get(message, message))
-    return '❌ Ставка не прошла: %s.\n\n' % escape(reason)
+BID_RECORDED = '✅ Ставка записана как ваша.\n\n'

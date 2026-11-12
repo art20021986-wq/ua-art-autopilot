@@ -23,8 +23,10 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'ua_auction_bids.py', 'ua_auction_bids_bot.py', 'ua_auction_clients.py',
-                                'ua_auction_clients_bot.py', 'ua_auction_clients_view.py', 'ua_auction_stats.py')]
+                                'make_release.py', 'release_constants.py', 'ua_auction_bids.py', 'ua_auction_bids_bot.py',
+                                'ua_auction_cars.py', 'ua_auction_clients.py', 'ua_auction_clients_bot.py',
+                                'ua_auction_clients_view.py', 'ua_auction_stats.py', 'ua_auction_web.py',
+                                'ua_client_cabinet.py', 'ua_korea_bid.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_manager_bids.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'master_card.py',
@@ -73,14 +75,14 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of AUCTION-MGR-BIDS (AUCTION-MGR-BIDS-001): reads the live auction client modules '
-                            '(exact installed versions), builds the candidate, imports it with the bots\' interpreter and '
-                            'builds the screens from the live clients, bids and staff (read only, counts only); checks the '
-                            'ledger column and the one-bid lock on a temporary ledger; measures storage. No application '
-                            'source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of AUCTION-MGR-BIDS (AUCTION-MGR-BIDS-001, variant А + «Мій кабінет»): reads the live '
+                            'auction client modules (exact installed versions) and the Korea page, builds the candidate, '
+                            'imports it with the bots\' interpreter, builds the screens and the client page data from the '
+                            'live clients, bids and staff (read only, counts only); checks the ledger on a temporary copy '
+                            'and the two pages; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview manager bids'}
+             'title': 'Preview manual bids and client page'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -134,23 +136,24 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner request (2026-11-12, AUCTION-MGR-BIDS-001, «да» to the mockup): «🔨 Ставка за клиента» '
-                              'in the auction client card (lot, amount in ₩, confirm; the same checks and the same send '
-                              'as a bid from the site, recorded with the manager), «👔 По менеджерам» on «🔨 Клиенты '
-                              'аукциона» (clients each manager created, bids for clients, bids their clients placed '
-                              'themselves; a manager opens their bids by date), «Клиенты сами / менеджеры за клиентов» '
-                              'on the home screen, «Оформил» and who placed each bid in the card and the bids of a date. '
-                              'ua_auction_bids: ledger column placed_by (older bids stay the clients\' own), one bid at a '
-                              'time to the auction account. ua_auction_clients, ua_auction_clients_view, '
-                              'ua_auction_clients_bot, ua_auction_stats. The bot is paused for the file change and '
-                              'resumed; the web app is reloaded. No CRM, client record or page change. Existing backup, bot '
-                              'pause, writer locks, data-preservation, rollback and public health checks are kept.',
+               'description': 'Owner request (2026-11-12, AUCTION-MGR-BIDS-001): variant А — no bid is sent to the auction '
+                              'from the server: a client\'s bid on the site becomes a request; the staff get «🔨 Заявка на '
+                              'ставку» with «🔗 Открыть лот на аукционе», «✅ Поставил», «❌ Не поставил» (the first answer '
+                              'counts and shows on every copy); «🔨 Ставка за клиента» in the client card (the manager places '
+                              'it themselves, «✅ Поставил» records it); «👔 По менеджерам» and «Клиенты сами / менеджеры за '
+                              'клиентов» on «🔨 Клиенты аукциона»; «Оформил» and who placed each bid. Site: video/korea.html — '
+                              'the bid block (variant А) and «Мій кабінет» in the login line; video/kabinet.html (new, noindex) — '
+                              'the client\'s data, bids with status, bought cars. Modules: ua_auction_bids, ua_auction_bids_bot, '
+                              'ua_auction_clients, ua_auction_clients_view, ua_auction_clients_bot, ua_auction_stats, '
+                              'ua_auction_web, ua_auction_cars (new). The bot is paused for the file change and resumed; '
+                              'the web app is reloaded. No CRM or client record change. Existing backup, bot pause, writer '
+                              'locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/katalog.html',
                                  'https://www.uaart.com.ua/video/korea.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install manager bids'}
+               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install manual bids and client page'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),
