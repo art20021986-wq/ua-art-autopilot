@@ -3,7 +3,7 @@
 page(korea_html) builds it from the live Korea page: the same site header (taken from that page, so the menu and the
 language switch stay one), the site's stylesheet and language script, then three parts filled by GET /api/auction/my
 for the logged-in client (owner 2026-11-12: clearly split, by stages): a short line with the client's data and
-«Вийти»; «🚗 Мої авто» — a card per car: photo, title, VIN / lot / price, «Де зараз авто» (the delivery stages,
+«Вийти»; «🚗 Мої авто» — a card per car: photo, title, VIN / price (no lot number, owner 2026-11-12), «Де зараз авто» (the delivery stages,
 done / current / next), «Оплати» (paid of total with a bar, each payment with a coloured status: paid, days left,
 overdue, penalty accrued) and the contract's penalty terms for late payment; «🔨 Мої ставки» — a card per bid with a
 coloured status (waiting for the manager / placed / not placed). The numbers and stages come from the contract
@@ -35,7 +35,6 @@ TEXT = {
               'Вы ещё не вошли. Войдите на странице аукционов Кореи («Вход для клиентов»).',
               'ჯერ არ შესულხართ. შედით კორეის აუქციონების გვერდზე («კლიენტების შესვლა»).'],
     'none': ['Поки немає.', 'Пока нет.', 'ჯერ არ არის.'],
-    'lot': ['лот', 'лот', 'ლოტი'],
     'stages': ['Де зараз авто', 'Где сейчас авто', 'სად არის ახლა ავტომობილი'],
     'payments': ['Оплати', 'Оплаты', 'გადახდები'],
     'paid_of': ['Сплачено ${p} з ${a}', 'Оплачено ${p} из ${a}', 'გადახდილია ${p} / ${a}'],
@@ -128,13 +127,13 @@ SCRIPT = (
     'return el("li",s.state,(s.state==="done"?"✓ ":"")+s.label);})):a.stage_label?el("div",null,null,'
     '[chip("wait",a.stage_label)]):null;var img=null;if(a.photo){img=el("img");img.src=a.photo;img.alt="";'
     'img.loading="lazy";img.onerror=function(){img.remove();};}return el("div","cab-card",null,[img,el("div","cab-in",null,[el("div","cab-title",'
-    'a.title+(a.year?" "+a.year:"")),tags([a.vin?"VIN "+a.vin:"",a.lot_id?t("lot")+" "+a.lot_id:"",'
+    'a.title+(a.year?" "+a.year:"")),tags([a.vin?"VIN "+a.vin:"",'
     'a.price_usd?t("price")+" $"+n(a.price_usd):""]),steps?el("div","cab-h",t("stages")):null,steps,'
     'pays.length?el("div","cab-h",t("payments")):null,pays.length?el("div",null,t("paid_of",{p:n(paid),'
     'a:n(total)})):null,pays.length?bar:null].concat(pays.map(payment)).concat([penalty(a.penalty)]))]);}'
     'function bid(b){var cls=b.status==="placed"?"ok":b.status==="requested"?"wait":"bad";'
     'return el("div","cab-card cab-bid",null,[el("div","top",null,[el("b",null,"🚗 "+b.title),'
-    'chip(cls,T[b.status]?t(b.status):t("not_placed"))]),el("div","cab-sub",[t("lot")+" "+b.lot_id,'
+    'chip(cls,T[b.status]?t(b.status):t("not_placed"))]),el("div","cab-sub",['
     'b.vin?"VIN "+b.vin:"",b.created_at.slice(0,16).replace("T"," ")].filter(Boolean).join(" · ")),'
     'el("div","cab-usd","₩"+n(b.krw)+" ≈ $"+n(b.usd))]);}'
     'function render(){if(!data)return;var c=data.client;$("cab-in").hidden=false;$("cab-login").hidden=true;'
