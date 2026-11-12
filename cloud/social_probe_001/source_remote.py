@@ -440,6 +440,39 @@ def report_r14(home=None):
     return {'status': 'PASS', 'total': total, 'parsed': len(found), 'date': date, 'photos': out}
 
 
+# R15: the full ticker build in a temporary folder (never the site): which exception drops every photo copy.
+def report_r15(home=None):
+    import sys as _sys
+    import tempfile as _tempfile
+    import traceback
+    from concurrent.futures import ThreadPoolExecutor
+    _sys.path.insert(0, str(HOME))
+    from korea_auction import collect, job, selection
+    from datetime import datetime
+    now = datetime.now(selection.JST)
+    data = collect.collect(*job.read_login(), now=now)
+    errors = []
+
+    def one(item):
+        try:
+            raw = job.fetch_photo(item['photo'])
+            small = job.ticker_photo(raw)
+            with _tempfile.TemporaryDirectory() as tmp:
+                job.write(Path(tmp) / 'x.jpg', small)
+            return {'ok': True, 'raw': len(raw), 'small': len(small)}
+        except BaseException as error:
+            return {'ok': False, 'error': type(error).__name__ + ':' + sanitized_line(str(error))[:160],
+                    'where': [sanitized_line(l)[:160] for l in traceback.format_exc().splitlines()[-6:]]}
+
+    with ThreadPoolExecutor(job.PHOTO_WORKERS) as pool:
+        results = list(pool.map(one, data['items']))
+    hosts = sorted({item['photo'].split('/')[2] for item in data['items'] if '://' in item['photo']})
+    return {'status': 'PASS', 'items': len(data['items']), 'auction_date': data['auction_date'],
+            'lots_today': data.get('lots_today'), 'lots_next': data.get('lots_next'), 'next_date': data.get('next_date'),
+            'photo_hosts': hosts, 'photo_schemes': sorted({item['photo'].split(':')[0] for item in data['items']}),
+            'results': results[:6], 'ok': sum(1 for r in results if r['ok'])}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -453,7 +486,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r14()  # R14 photo fetch; report_r6() R6–R8/R13, report_r10() R10, report_r9() R9
+        value = report_r15()  # R15 full ticker build in a temp dir; report_r14() R14, report_r6() R6–R8/R13
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
