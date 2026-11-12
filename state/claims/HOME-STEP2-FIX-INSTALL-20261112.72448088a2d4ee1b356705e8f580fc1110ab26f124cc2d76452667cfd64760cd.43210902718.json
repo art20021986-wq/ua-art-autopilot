@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "9704be58fd7969f05a275f432e83e5243145955511f9c36b805dcdae7d65a2ae",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T11:41:23Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-12T11:49:27Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43210902718",
     "task_id": "HOME-STEP2-FIX-INSTALL-20261112",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43210902718-72448088a2d4ee1b",
   "production_transaction_path": "state/transactions/HOME-STEP2-FIX-INSTALL-20261112.72448088a2d4ee1b356705e8f580fc1110ab26f124cc2d76452667cfd64760cd.43210902718.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-STEP2-FIX-INSTALL-20261112.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/home_step2_fix_001/test_edit_home.py": "f18c373151e42c9d8e2cd9215f61e77c8788ebccc07fbe9c6c74068b84dbb4d7"
     }
   },
-  "updated_at": "2026-11-12T11:41:23Z"
+  "updated_at": "2026-11-12T11:49:27Z"
 }
