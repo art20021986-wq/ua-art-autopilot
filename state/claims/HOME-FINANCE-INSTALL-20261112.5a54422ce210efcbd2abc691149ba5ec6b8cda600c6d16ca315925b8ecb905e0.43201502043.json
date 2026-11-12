@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "714905ebaa814e016bb5358c9913a0ab7caea39bcbe5bc5a420ad3bf6f1b9db8",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T10:37:12Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-12T10:40:02Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43201502043",
     "task_id": "HOME-FINANCE-INSTALL-20261112",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43201502043-5a54422ce210efcb",
   "production_transaction_path": "state/transactions/HOME-FINANCE-INSTALL-20261112.5a54422ce210efcbd2abc691149ba5ec6b8cda600c6d16ca315925b8ecb905e0.43201502043.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-FINANCE-INSTALL-20261112.json",
   "receipt_validation_status": "PENDING",
@@ -88,5 +88,5 @@
       "cloud/home_finance_001/test_edit_home.py": "07bfdf8547be9352d017e82989f67a5fce65cf2feb7e86ea45de909a31fdff45"
     }
   },
-  "updated_at": "2026-11-12T10:37:12Z"
+  "updated_at": "2026-11-12T10:40:02Z"
 }
