@@ -190,6 +190,114 @@ def report_r5(home=None):
             'versions': r4['versions'], 'catalog_links_broken': r4['catalog_links_broken'], 'sitemap': r4['sitemap']}
 
 
+# R6 (owner 2026-11-12: the Korea ticker legend is not on the site): why video/korea/ticker.html is not rewritten.
+def _file(path):
+    if not path.exists():
+        return None
+    st = path.stat()
+    return {'bytes': st.st_size, 'mtime': round(st.st_mtime)}
+
+
+def _tail(path, lines=40):
+    text = text_of(path) if path.is_file() else None
+    if text is None:
+        return None
+    return [sanitized_line(l)[:300] for l in text.splitlines()[-lines:]]
+
+
+def report_r6(home=None):
+    global HOME
+    if home is not None:
+        HOME = home
+    import glob
+    out = HOME / 'video/korea'
+    ticker = text_of(out / 'ticker.html') or ''
+    package = {}
+    for path in sorted((HOME / 'korea_auction').glob('*.py')) if (HOME / 'korea_auction').is_dir() else []:
+        text = text_of(path) or ''
+        package[path.name] = {'sha256': hashlib.sha256(text.encode()).hexdigest(), 'mtime': round(path.stat().st_mtime),
+                              'kt_legend': text.count('kt-legend')}
+    data = HOME / 'korea_auction_data'
+    logs = {}
+    for pattern in ('/var/log/*1576351*', '/var/log/*/*1576351*', '/var/log/*sched*', '/var/log/tasks/*',
+                    str(HOME / '*.log'), str(HOME / 'korea_auction_data/*.log'), str(HOME / 'logs/*korea*')):
+        for name in sorted(glob.glob(pattern))[-6:]:
+            path = Path(name)
+            if path.is_file() and ('korea' in name or 'sched' in name or 'task' in name or '1576351' in name):
+                logs[name] = _tail(path)
+    var_log = sorted(p.name for p in Path('/var/log').iterdir())[:80] if Path('/var/log').is_dir() else None
+    login = HOME / 'jpauto_login.txt'
+    job = text_of(HOME / 'korea_ticker_job.py')
+    return {'status': 'PASS',
+            'ticker_html': dict(_file(out / 'ticker.html') or {}, kt_legend=ticker.count('kt-legend')),
+            'lots_json': _file(out / 'lots.json'), 'package': package,
+            'data_dir': {p.name: _file(p) for p in sorted(data.iterdir())[:40]} if data.is_dir() else None,
+            'lock': _file(HOME / '.korea_auction_job.lock'),
+            'login_lines': len([l for l in (text_of(login) or '').splitlines() if l.strip()]) if login.is_file() else None,
+            'job_script': sanitized(job)[:2000] if job else None, 'logs': logs, 'var_log': var_log}
+
+
+# R9: a dry run of the Korea collector's selection on the server (logs in, reads the lot list, no write): where do
+# the ticker items get lost? Counts only — no account data, no lot text beyond dates and model names.
+def report_r9(home=None):
+    import collections
+    import sys as _sys
+    _sys.path.insert(0, str(HOME))
+    from korea_auction import catalog, collect, job, lots as lots_mod, selection, session
+    from datetime import datetime
+    now = datetime.now(selection.JST)
+    s = session.Session()
+    s.login(*job.read_login())
+    total, found = collect.fetch_all_lots(s)
+    dates = collections.Counter(selection.auction_date(l) for l in found)
+    photos = collections.Counter(selection.auction_date(l) for l in found if l['photos'])
+    top = collections.Counter(selection.auction_date(l) for l in found if l['photos'] and selection.top_model(l))
+    date = selection.next_auction_date(found, now)
+    own_cars = catalog.parse(catalog.fetch())
+    rules = catalog.model_rules(own_cars)
+    cands = selection.candidates(found, date, lambda l: catalog.same_model(l, rules)) if date else []
+    priced = []
+    for lot in cands[:3]:
+        _, html = s.fetch(lot['detail_url'])
+        detail = lots_mod.parse_detail(html)
+        priced.append({'list_price': lot['start_price_krw'], 'detail_price': detail['start_price_krw'],
+                       'detail_photos': len(detail['photos'])})
+    sample = [{'start': l['auction_start'], 'photos': len(l['photos']), 'model': l['model'][:30],
+               'price': l['start_price_krw']} for l in found[:5]]
+    return {'status': 'PASS', 'now_jst': now.isoformat(timespec='minutes'), 'total': total, 'parsed': len(found),
+            'dates': dict(sorted(dates.items())), 'with_photos': dict(sorted(photos.items())),
+            'top_with_photos': dict(sorted(top.items())), 'chosen_date': date, 'candidates': len(cands),
+            'first_candidates': priced, 'sample': sample, 'requests': s.requests}
+
+
+# R10: the lot list came back empty (R9: 0 results). What the auction site shows after login — structure only.
+def report_r10(home=None):
+    import html as _html
+    import sys as _sys
+    _sys.path.insert(0, str(HOME))
+    from korea_auction import collect, job, session
+
+    def shape(url, page):
+        text = re.sub(r'\s+', ' ', _html.unescape(re.sub(r'(?is)<(script|style)[^>]*>.*?</\1>|<[^>]+>', ' ', page)))
+        notes = [sanitized_line(m)[:160] for m in re.findall(r'(?i)[^.!?]{0,80}(?:no (?:results|vehicles)|not found|'
+                 r'expired|subscription|membership|permission|access denied|please log ?in|maintenance)[^.!?]{0,80}', text)][:8]
+        return {'url': sanitized_line(url)[:160], 'bytes': len(page),
+                'title': sanitized_line((re.findall(r'(?is)<title>(.*?)</title>', page) or [''])[0].strip())[:120],
+                'search_form': page.count('purchase_search_form'), 'logout': page.lower().count('logout'),
+                'login_form': page.count('data[Bidder][password]'),
+                'results_text': re.findall(r'[\d,]+ Results', page)[:3], 'notes': notes,
+                'hidden_fields': sorted({n for n in re.findall(r'<input[^>]*type="hidden"[^>]*name="([^"]+)"', page)})[:30]}
+
+    s = session.Session()
+    s.login(*job.read_login())
+    url, page = s.fetch(collect.SEARCH_PAGE)
+    first = shape(url, page)
+    action, data = collect._search_form_data(page)
+    url2, html2 = s.fetch(action, data)
+    return {'status': 'PASS', 'search_page': first, 'action': sanitized_line(action)[:120],
+            'posted_field_names': sorted({k for k, _ in data}), 'results_page': shape(url2, html2)}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -203,7 +311,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r5()  # R5; report_r4() R4, report_r3() R3, report_r2() R2, report() R1
+        value = report_r10()  # R10 auction page shape; report_r9() R9, report_r6() R6–R8, report_r5()…report() R1–R5
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
