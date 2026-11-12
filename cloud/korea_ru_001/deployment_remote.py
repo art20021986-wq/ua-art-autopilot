@@ -120,7 +120,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'KOREA-RU-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'new /video/ru/korea.html (Russian version of the Korea auctions page, ua_korea_ru), hreflang pair first in the head of /video/korea.html, i18n-home-ge.js opens a page with language versions in its own language, both Korea pages in the sitemap (ua_seo_sitemap); the card version job keeps the Russian page in step; sitemap via ua_seo_index.refresh',
+            'site_scope':'new /video/ru/korea.html (Russian version of the Korea auctions page, ua_korea_ru), hreflang pair first in the head of /video/korea.html, i18n-home-ge.js opens a page with language versions in its own language, both Korea pages in the sitemap (ua_seo_sitemap); the «Авто з Кореї» hubs link the Korea page (ua_korea_link via ua_seo_landings.pages); the card version job keeps the Russian page in step; sitemap via ua_seo_index.refresh',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan

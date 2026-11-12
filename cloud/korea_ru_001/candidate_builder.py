@@ -6,12 +6,14 @@
    scripts know both versions.
 3. video/i18n-home-ge.js: a page with language versions opens in its own language (as ua-site-languages.js).
 4. ua_seo_sitemap.py: both Korea pages in the sitemap.
+5. ua_seo_landings.py: the «Авто з Кореї» hubs link the Korea page under the model list (ua_korea_link.py, new; owner
+   «Да» 2026-11-12 to the text); the install's landing refresh writes them.
 Texts, lots, photos, CRM data and every other byte stay as they are.
 """
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-NEW_MODULES = ('ua_korea_ru.py',)
+NEW_MODULES = ('ua_korea_ru.py', 'ua_korea_link.py')
 KOREA = 'video/korea.html'
 RUSSIAN = 'video/ru/korea.html'
 MARK = 'KOREA-RU-001'
@@ -40,12 +42,21 @@ EDITS = {
          "  var yaz=zapros||ownLang||savedHomeLang()||'uk';\n"),
     ],
 }
+# Appended at the end of ua_seo_landings.py, after the existing pages() wrappers (as TERMS-LINKS-001).
+TAILS = {
+    'ua_seo_landings.py': ("def pages(",
+                           "\n\n# KOREA-RU-001: the «Авто з Кореї» hubs link the Korea auctions page.\n"
+                           "_ua_korea_link_base_pages = pages\n"
+                           "def pages(*args, **kwargs):\n"
+                           "    import ua_korea_link\n"
+                           "    return {k: ua_korea_link.apply(k, v) for k, v in _ua_korea_link_base_pages(*args, **kwargs).items()}\n"),
+}
 DEPENDENCY_SHA256 = {}
 
 
 def targets(root):
     """Existing files the candidate replaces (the new module and the Russian page are added beside them)."""
-    return tuple(EDITS) + (KOREA,)
+    return tuple(EDITS) + tuple(TAILS) + (KOREA,)
 
 
 def edit(name, value):
@@ -57,6 +68,14 @@ def edit(name, value):
             raise ValueError('KOREA_RU_EDIT:%s:%d' % (name, text.count(old)))
         text = text.replace(old, new)
     return text.encode('utf-8')
+
+
+def tail(name, value):
+    text = value.decode('utf-8')
+    anchor, added = TAILS[name]
+    if MARK in text or anchor not in text:
+        raise ValueError('KOREA_RU_TAIL:' + name)
+    return (text.rstrip('\n') + added).encode('utf-8')
 
 
 def korea(value):
@@ -72,6 +91,6 @@ def build(source, dependencies, read_original=None):
     import ua_korea_ru
     result = {name: (HERE/name).read_bytes() for name in NEW_MODULES}
     for name, value in source.items():
-        result[name] = korea(value) if name == KOREA else edit(name, value)
+        result[name] = korea(value) if name == KOREA else tail(name, value) if name in TAILS else edit(name, value)
     result[RUSSIAN] = ua_korea_ru.page(result[KOREA].decode('utf-8')).encode('utf-8')
     return result

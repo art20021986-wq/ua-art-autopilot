@@ -250,7 +250,9 @@ class TransportTests(unittest.TestCase):
 class PublicVerificationTests(unittest.TestCase):
     def response(self,request,timeout):
         body=('<html lang="ru"><head><link rel="alternate" hreflang="ru" href="https://www.uaart.com.ua/video/ru/korea.html">'
-              '<title>Аукционы Кореи онлайн</title></head><body>'+'x'*300+'</body></html>')
+              '<title>Аукционы Кореи онлайн</title></head><body>'+'x'*300+
+              '<a href="/video/korea.html">Аукціони Кореї онлайн — дивитися лоти →</a>'
+              '<a href="/video/ru/korea.html">Аукционы Кореи онлайн — смотреть лоты →</a></body></html>')
         response=BytesIO(body.encode())
         response.url=request.full_url;response.status=200
         return response
