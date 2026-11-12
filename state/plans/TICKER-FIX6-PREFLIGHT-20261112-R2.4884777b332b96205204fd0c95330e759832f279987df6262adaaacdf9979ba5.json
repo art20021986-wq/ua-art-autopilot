@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TICKER-FIX6-PREFLIGHT-20261112-R2.4884777b332b96205204fd0c95330e759832f279987df6262adaaacdf9979ba5.json",
+  "autostart_ledger_sha256": "7393bd8382fd72a5d4f3c1c07da281aa9d81a83e6e2d2a6634ffc7a07bb74a83",
+  "autostart_source_commit": "bc0bc1e81751ae003df884bd321810e3907d9ec9",
+  "created_at": "2026-11-12T09:46:10Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43194172370",
+    "task_id": "TICKER-FIX6-PREFLIGHT-20261112-R2",
+    "task_sha256": "4884777b332b96205204fd0c95330e759832f279987df6262adaaacdf9979ba5"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-13e09ef6a7a858c2-cc3ab8e6f81b6309",
+  "request_path": "tasks/requests/TICKER-FIX6-PREFLIGHT-20261112-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:13e09ef6a7a858c2"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
