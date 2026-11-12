@@ -150,8 +150,14 @@ class OrderStages(unittest.TestCase):
     def test_eight_stages_keep_old_keys(self):
         import edit_order_book
         source = (HERE.parent / 'lead_folders_001' / 'ua_order_book.py').read_bytes()
-        ns = {}
-        exec(compile(edit_order_book.build(source), 'ua_order_book.py', 'exec'), ns)
+        import importlib.util
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'ua_order_book_built.py'
+            path.write_bytes(edit_order_book.build(source))
+            spec = importlib.util.spec_from_file_location('ua_order_book_built', path)
+            built = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(built)
+        ns = vars(built)
         keys = [k for k, _ in ns['STAGES']]
         self.assertEqual(keys, [k for k, _ in payst.STAGES])
         self.assertTrue({'contract', 'bought', 'transit', 'georgia', 'ukraine', 'delivered'} <= set(keys))
