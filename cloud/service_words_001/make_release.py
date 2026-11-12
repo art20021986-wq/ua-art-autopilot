@@ -132,7 +132,7 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved SERVICE-WORDS-001 («1. Да 2. Да 3. Да» and «Да» to the 1 000 $ prepayment and to the install with before/after photos in chat 2026-11-12): '
+               'description': 'Owner approved SERVICE-WORDS-001 («1. Да 2. Да 3. Да» and «Да» to the 1 000 $ and 500 $ prepayment and to the install with before/after photos in chat 2026-11-12): '
                               'the 1 000 $ «депозит» on the home step 2 becomes «передоплата … зараховується у вартість авто»; no «подбор» on the '
                               'site — the approved service wording (full support of the car) in the menu («Заказать авто»), '
                               'home, catalogue, order page, Korea page, model and topic landings, credit page and car cards '
