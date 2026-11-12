@@ -20,7 +20,6 @@ import time
 
 from deployment_transport import API, canonical, sha
 from candidate_builder import SOURCE_FILES, DEPENDENCY_SHA256, build
-import candidate_builder
 
 ROOT = Path('/home/Carix')
 HERE = Path(__file__).resolve().parent
@@ -120,7 +119,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'AUCTION-LIMIT-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'auction clients without the bid limit, deposit from 1 000 $: ua_auction_clients, ua_auction_clients_view, ua_auction_clients_bot, ua_auction_bids, ua_auction_stats, ua_auction_web; video/korea.html client cabinet without «ліміт ставок»; bot paused and resumed, web app reloaded; no CRM, client record or table change',
+            'site_scope':'auction clients without the bid limit, deposit from 1 000 $: ua_auction_clients, ua_auction_clients_view, ua_auction_clients_bot, ua_auction_bids, ua_auction_stats, ua_auction_web; bot paused and resumed, web app reloaded; no CRM, client record or table change',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -129,7 +128,7 @@ def prepare(directory):
 # Runs in a separate python3.10 (the bots' interpreter) with the candidate modules first on the path and the live
 # server root: the modules import with the installed telegram library, the live clients load without a limit, the
 # screens build from the live clients and bids (read only; only counts are reported), the deposit takes 1 000 $, and
-# the Korea page candidate differs from the live page only by the cabinet's limit pieces.
+# nothing else.
 SMOKE = r"""
 import json, sys
 after, root = sys.argv[1], sys.argv[2]
@@ -158,12 +157,9 @@ def smoke(directory):
     if result.returncode != 0:
         raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
-    page = read(directory/'after'/candidate_builder.PAGE).decode('utf-8')
-    live = read(ROOT/candidate_builder.PAGE).decode('utf-8')
-    value['page_only_limit'] = candidate_builder.apply(live) == page and 'kc-limit' not in page and 'limit_usd' not in page
     if (value.get('no_limit_field') is not True or value.get('no_limit_text') is not True
             or value.get('deposit_1000') is not True or value.get('deposit_999') != 'refused'
-            or value.get('home_buttons') != ['ac:new', 'ac:list', 'ac:days', 'menu'] or not value['page_only_limit']):
+            or value.get('home_buttons') != ['ac:new', 'ac:list', 'ac:days', 'menu']):
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:300])
     return value
 
