@@ -7,21 +7,23 @@
   "created_at": "2026-11-12T21:53:57Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T21:53:57Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-12T21:58:46Z",
+  "heartbeat_at": "2026-11-12T21:58:46Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43314510018",
     "task_id": "CRM-PAYMENTS-PREFLIGHT-20261112-R6",
     "task_sha256": "1f55bd615b288efbd8fde299e2b5055e39aec257bae9189b259c77359e963b04"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-PAYMENTS-PREFLIGHT-20261112-R6.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "3d64d874478c6e5d0f1e2b2c90fe5348bbf6aa7be5923d7d6cd2b7d35c130d18",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-PAYMENTS-PREFLIGHT-20261112-R6.json",
   "request_sha256": "1f55bd615b288efbd8fde299e2b5055e39aec257bae9189b259c77359e963b04",
   "resource_locks": [
@@ -29,8 +31,39 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "e0c6239621b8f9f32d35fab41cdf44b3ebecac84",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92748976128,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 40.149
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-12T21:53:57Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/crm_payments_001/candidate_builder.py": "e06b3b7a8ec658ac613e529d2c31d094098d7d8555b23e7ca1863b7834c981f5",
+      "cloud/crm_payments_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_payments_001/deployment_bootstrap.py": "80047bc2c76418b4c8b9e7992a46cee147044d6dec194fe30571e8e37b7e64a0",
+      "cloud/crm_payments_001/deployment_remote.py": "cd3206b637a6ff4ca876ffe1c7a22e17af64a2a941bad1c954ea6cb0e0efa47b",
+      "cloud/crm_payments_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_payments_001/deployment_transport.py": "28201f37fae63c5f793fc7cdade6ece7632b1608d1190814c89a63bda6b197b8",
+      "cloud/crm_payments_001/edit_cars_ui.py": "ae47dd160a3701b08bf5cb8d6eede146f1f9695251a54267adb72cfee1c66bf5",
+      "cloud/crm_payments_001/edit_order_book.py": "85b9b6ebe4f365606d5a475e1feb2541e7aac43afe7997ad64e9ff7b1898a08f",
+      "cloud/crm_payments_001/make_release.py": "d1a2368d42572a04de11f5bfe36ebd3052a0bdeff20c615f11d96afc55fca5f5",
+      "cloud/crm_payments_001/release_constants.py": "09fe616a684ef3e8ca112e5b93b13be9f4e067b07a5679b16217807e01ac1f7a",
+      "cloud/crm_payments_001/test_crm_payments.py": "81ccf2ea4b911738ed6eb23bf3bcd6410e750aa5d2f0e86b3b205453375b8f78",
+      "cloud/crm_payments_001/test_deployment.py": "acedb2d6d540aa5551185c46347cf3ef9630c2943d3c28c6d0b5f68cd757f7d2",
+      "cloud/crm_payments_001/ua_pay_bot.py": "8b02d675b0a1f5a49f46a29625ceb3dae361385fb4ebb6827d714aeaa247994f",
+      "cloud/crm_payments_001/ua_pay_lot.py": "dd0ca45144a550d90e1636579891b3faa958db67ac893f54f3a0134a28dc4a00",
+      "cloud/crm_payments_001/ua_pay_rules.py": "530ea3115c4141420e9370a819e6ec9401a34e8f248359230cd471afbaeedf3a",
+      "cloud/crm_payments_001/ua_pay_store.py": "e8b2e7539aa91aa0a52e63245de0c0726e790d6bf1c77da58aa548e8a74aa9e5",
+      "cloud/crm_payments_001/ua_pay_view.py": "dcd4137368160b002fab37618bbfba72e5fc8e9e52329c4e88767b60f1fd1361"
+    }
+  },
+  "updated_at": "2026-11-12T21:58:46Z"
 }
