@@ -53,6 +53,14 @@ class Release(unittest.TestCase):
         self.assertIn('Проверяем историю и отчёт аукциона выбранного автомобиля', landing)
         self.assertIn('депозит 500 $', landing)  # the 500 $ deposit stays (owner)
 
+    def test_prepayment_instead_of_deposit(self):
+        home = self.result['video/index.html'].decode()
+        for words in ('депозит — 1 000', 'Депозит 1 000', 'დეპოზიტი — 1 000', 'დეპოზიტი 1 000'):
+            self.assertNotIn(words, home)
+        self.assertIn('data-uk="Оплата на цьому кроці: послуга — 600 $, передоплата — 1 000 $"', home)
+        self.assertIn('Передоплата 1 000 $ зараховується у вартість авто', home)
+        self.assertIn('Предоплата 1 000 $ засчитывается в стоимость авто', home)
+
     def test_only_listed_phrases_change(self):
         for name, value in self.source.items():
             if name not in self.result or not name.endswith('.html'):
