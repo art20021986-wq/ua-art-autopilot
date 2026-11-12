@@ -66,12 +66,14 @@ class CandidateTests(unittest.TestCase):
         before = installed()[candidate_builder.PAGE].decode('utf-8')
         after = candidate_builder.patch_page(before)
         self.assertNotIn('(час Кореї)', after)
-        self.assertIn('"kyiv": ["Київ", "Киев", "კიევი"]', after)
-        self.assertIn('+when(l.auction_start)+', after)
-        self.assertEqual(after.count('function when('), 1)
-        # nothing else changes: taking the three replacements back gives the page as it was
-        back = (after.replace(candidate_builder.LABEL_TO, candidate_builder.LABEL_FROM)
-                .replace(candidate_builder.ROW_TO, candidate_builder.ROW_FROM).replace(candidate_builder.WHEN, ''))
+        self.assertIn('["Корея","Київ"],["Корея","Киев"],["კორეა","კიევი"]', after)
+        self.assertIn('slice(11,16)+zones(s,i);', after)
+        self.assertIn('slice(11,16)+zones(l.auction_start,i);', after)
+        self.assertEqual(after.count('function kyiv('), 1)
+        # nothing else changes: taking the replacements back gives the page as it was
+        back = after
+        for old, new in candidate_builder.PIECES:
+            back = back.replace(new, old)
         self.assertEqual(back, before)
 
     def test_page_patched_twice_or_changed_is_refused(self):
@@ -79,7 +81,7 @@ class CandidateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             candidate_builder.patch_page(candidate_builder.patch_page(page))
         with self.assertRaises(ValueError):
-            candidate_builder.patch_page(page.replace(candidate_builder.ROW_FROM, 'row("start",x)'))
+            candidate_builder.patch_page(page.replace(candidate_builder.STAMP_FROM, ''))
 
     def _tmp(self):
         import tempfile

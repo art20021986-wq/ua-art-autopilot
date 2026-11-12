@@ -3,9 +3,10 @@
 1. The collector as TICKER-FIX6-INSTALL-20261112-R2 installed it, with ticker.py updated: every lot card in the home
    ticker shows «Торги 18.11 · 12:00 Корея · 05:00 Київ» (the hourly job rebuilds the ticker). The collector modules
    come from korea_auction/ in this package (zipped flat as kauc_<module>.py by the transport).
-2. video/korea.html, the lot card: «Початок торгів (час Кореї) 2026/11/18 12:00» becomes
-   «Початок торгів 18.11 · 12:00 Корея · 05:00 Київ» (Kyiv time worked out in the visitor's browser, summer time
-   included; without it the Korea time alone). Three exact replacements in the lot list script; nothing else changes.
+2. video/korea.html (lot list of KOREA-LOTS-FULL-001): the list cards «чт, 18.11 · 12:00 Корея · 05:00 Київ» and
+   the lot card «Початок торгів середа, 18 листопада, 12:00 Корея · 05:00 Київ» (Kyiv time worked out in the
+   visitor's browser, summer time included; without it the Korea time alone). Exact replacements in the lot list
+   script; nothing else changes.
 """
 from pathlib import Path
 
@@ -30,32 +31,40 @@ PAGE = 'video/korea.html'
 SOURCE_FILES = tuple(sorted(INSTALLED_SHA256)) + (PAGE,)
 DEPENDENCY_SHA256 = {}
 
-# The lot list script on korea.html (cloud/korea_lots_*/ua_korea_lots.py, as live on 2026-11-12): each piece once.
-MARK = '"kyiv": ['
+# The lot list script on korea.html as KOREA-LOTS-FULL-001 installs it (cloud/korea_lots_full_001/ua_korea_lots.py):
+# each piece once. The list card stamp «чт, 18.11 · 12:00» and the lot card «середа, 18 листопада, 12:00» get
+# « Корея · 05:00 Київ»; the label loses «(час Кореї)».
+MARK = 'function kyiv('
 LABEL_FROM = '"start": ["Початок торгів (час Кореї)", "Начало торгов (время Кореи)", "ვაჭრობის დაწყება (კორეის დრო)"]'
-LABEL_TO = ('"start": ["Початок торгів", "Начало торгов", "ვაჭრობის დაწყება"], "kr": ["Корея", "Корея", "კორეა"], '
-            '"kyiv": ["Київ", "Киев", "კიევი"]')
-ROW_FROM = 'row("start",l.auction_start)'
-# row() escapes its value; the time line carries translated words (t() gives the site's data-uk/ru/ka spans)
-ROW_TO = '(l.auction_start?"<dt>"+t("start")+"</dt><dd>"+when(l.auction_start)+"</dd>":"")'
-FUNC_AT = 'function row(k,v){'
-# 'YYYY/MM/DD HH:MM' (Korea, UTC+9) -> '18.11 · 12:00 Корея · 05:00 Київ'; the Kyiv day is added when it differs.
-WHEN = ('function when(s){var m=/^(\\d{4})\\/(\\d\\d)\\/(\\d\\d) (\\d\\d:\\d\\d)/.exec(s||"");if(!m)return esc(s);'
-        'var out=m[3]+"."+m[2]+" · "+m[4]+" "+t("kr"),at=new Date(m[1]+"-"+m[2]+"-"+m[3]+"T"+m[4]+":00+09:00"),p=null;'
-        '["Europe/Kyiv","Europe/Kiev"].some(function(z){try{p={};new Intl.DateTimeFormat("en-GB",{timeZone:z,'
-        'day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(at)'
-        '.forEach(function(x){p[x.type]=x.value;});return true;}catch(e){p=null;return false;}});'
-        'if(!p||!p.hour)return out;var h=p.hour==="24"?"00":p.hour,d=p.day+"."+p.month;'
-        'return out+" · "+h+":"+p.minute+(d===m[3]+"."+m[2]?"":" ("+d+")")+" "+t("kyiv");}')
+LABEL_TO = '"start": ["Початок торгів", "Начало торгов", "ვაჭრობის დაწყება"]'
+STAMP_FROM = '+" · "+String(s).slice(11,16);});}'
+STAMP_TO = '+" · "+String(s).slice(11,16)+zones(s,i);});}'
+CARD_FROM = '+", "+String(l.auction_start).slice(11,16);}))'
+CARD_TO = '+", "+String(l.auction_start).slice(11,16)+zones(l.auction_start,i);}))'
+FUNC_AT = 'function tri(f){'
+# kyiv('YYYY/MM/DD HH:MM' Korea, UTC+9) -> '05:00', or '23:00 (17.11)' when the Kyiv day differs, or '' (no Intl);
+# zones(s, language) -> ' Корея · 05:00 Київ'. Plain text: tri() escapes it.
+FUNCS = ('var ZN=[["Корея","Київ"],["Корея","Киев"],["კორეა","კიევი"]];'
+         'function kyiv(s){var m=/^(\\d{4})\\/(\\d\\d)\\/(\\d\\d) (\\d\\d:\\d\\d)/.exec(s||""),p=null;if(!m)return "";'
+         'var at=new Date(m[1]+"-"+m[2]+"-"+m[3]+"T"+m[4]+":00+09:00");'
+         '["Europe/Kyiv","Europe/Kiev"].some(function(z){try{p={};new Intl.DateTimeFormat("en-GB",{timeZone:z,'
+         'day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(at)'
+         '.forEach(function(x){p[x.type]=x.value;});return true;}catch(e){p=null;return false;}});'
+         'if(!p||!p.hour)return "";var d=p.day+"."+p.month;'
+         'return (p.hour==="24"?"00":p.hour)+":"+p.minute+(d===m[3]+"."+m[2]?"":" ("+d+")");}'
+         'function zones(s,i){var k=kyiv(s);return " "+ZN[i][0]+(k?" · "+k+" "+ZN[i][1]:"");}')
+PIECES = ((LABEL_FROM, LABEL_TO), (STAMP_FROM, STAMP_TO), (CARD_FROM, CARD_TO), (FUNC_AT, FUNCS + FUNC_AT))
 
 
 def patch_page(page):
     if MARK in page:
         raise ValueError('KOREA_TIME_ALREADY_ON_PAGE')
-    for piece in (LABEL_FROM, ROW_FROM, FUNC_AT):
-        if page.count(piece) != 1:
-            raise ValueError('KOREA_PAGE_UNEXPECTED:' + piece[:24])
-    return page.replace(LABEL_FROM, LABEL_TO).replace(ROW_FROM, ROW_TO).replace(FUNC_AT, WHEN + FUNC_AT)
+    for old, _ in PIECES:
+        if page.count(old) != 1:
+            raise ValueError('KOREA_PAGE_UNEXPECTED:' + old[:24])
+    for old, new in PIECES:
+        page = page.replace(old, new)
+    return page
 
 
 def build(source, dependencies, here=HERE, sha=None):

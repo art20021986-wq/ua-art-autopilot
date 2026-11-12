@@ -11,7 +11,7 @@ ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 # After the install the Korea page carries the Kyiv time words of the lot card; the home page with its ticker slot,
 # catalogue and order page stay healthy. The ticker cards get the time line at the job's next run (minutes).
-EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': '"kyiv": ["Київ", "Киев", "კიევი"]',
+EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': 'function kyiv(',
             '/video/katalog.html': '', '/video/podbor.html': ''}
 SITE = 'https://www.uaart.com.ua'
 AGENT = 'UAART-KoreaTicker-Verify/1'

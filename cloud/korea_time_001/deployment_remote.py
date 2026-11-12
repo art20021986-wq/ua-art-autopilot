@@ -162,7 +162,7 @@ def smoke(directory):
                  # KOREA-TIME-001: Korea and Kyiv time on the ticker card and in the korea.html lot card
                  'ticker_kyiv_time': '11.11 · 13:00 Корея · 06:00 Київ' in html,
                  'page_kyiv_time': all(piece in read(after/'video/korea.html').decode('utf-8') for piece in (
-                     '"kyiv": ["Київ"', 'function when(', '+when(l.auction_start)+')),
+                     'function kyiv(', 'zones(s,i);', 'zones(l.auction_start,i);')),
                  'day_counts': '<b>989</b>' in ticker.render(dict(sample, lots_today=989, lots_next=640, next_date='2026/11/13',
                                                                    next_is_tomorrow=True)) and 'Завтра на торгах' in ticker.render(
                      dict(sample, lots_today=989, lots_next=640, next_date='2026/11/13', next_is_tomorrow=True)),
