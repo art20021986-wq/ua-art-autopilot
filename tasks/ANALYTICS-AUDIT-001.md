@@ -81,3 +81,8 @@ ANALYTICS-AUDIT-PROBE-20261112 — та же проверка только на 
   страницы диагностики переписаны сервером без меток (известное ограничение: stranica.py не добавляет теги).
   Без меток также video/korea/ticker.html, video/order/podbor.html. GA4 эта версия пробы не читает (report() без ga4()) —
   проверку GA4 ведёт сессия 10. Предложение владельцу: найти писателя диагностики и добавить метки (запись — только после «да»).
+- 2026-11-12: owner enabled the Google Analytics Data API. ANALYTICS-AUDIT-PROBE-20261112-R2 (GA4-only report()) PASS:
+  the Data API answers (cloud/analytics_audit_001/20261112-R2.json). GA4 counts far fewer people than the server log
+  (e.g. 11.11: GA4 6 users / server log 36) — blockers and no-consent visits. Point 5 DONE (reading works; a bot report
+  from GA4 is not built — only if the owner asks). Point 6 (Clarity): owner on phone, mobile layout hides «New project»;
+  waits for the Project ID.
