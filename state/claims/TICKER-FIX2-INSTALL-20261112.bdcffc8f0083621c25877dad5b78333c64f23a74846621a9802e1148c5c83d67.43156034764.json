@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "79701a78aa9d1b8eb3883341fd312a6c116e181d4e4bed59530b39d2884c0e6f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T04:44:17Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-12T04:58:05Z",
+  "heartbeat_at": "2026-11-12T04:58:05Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43156034764",
     "task_id": "TICKER-FIX2-INSTALL-20261112",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 452.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 93.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 138.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43156034764-bdcffc8f0083621c",
   "production_transaction_path": "state/transactions/TICKER-FIX2-INSTALL-20261112.bdcffc8f0083621c25877dad5b78333c64f23a74846621a9802e1148c5c83d67.43156034764.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/TICKER-FIX2-INSTALL-20261112.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "2317b862f566250ed15fd9347fc58441ac5718098528dafb940b4327c0720f75",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/TICKER-FIX2-INSTALL-20261112.json",
   "request_sha256": "bdcffc8f0083621c25877dad5b78333c64f23a74846621a9802e1148c5c83d67",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "c9d4c033911e0f9003b0eb9dc32da8afaca8731e8a1fe433735cbc2ddeb64859",
     "file_sha256": {
@@ -106,5 +137,5 @@
       "cloud/korea_ticker_fix2_001/test_release.py": "df8b1ea5ffedb3fdc5ed19ac0ca541fe6db9cd9b922f0fb91ff4bff96ee46fbf"
     }
   },
-  "updated_at": "2026-11-12T04:44:17Z"
+  "updated_at": "2026-11-12T04:58:05Z"
 }
