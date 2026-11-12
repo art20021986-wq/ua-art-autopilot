@@ -3,12 +3,12 @@
 1. The collector as TICKER-FIX6-INSTALL-20261112-R2 installed it, with ticker.py updated: every lot card in the home
    ticker shows «Торги 18.11 · 12:00 Корея · 05:00 Київ» (the hourly job rebuilds the ticker). The collector modules
    come from korea_auction/ in this package (zipped flat as kauc_<module>.py by the transport).
-2. video/korea.html (lot list of KOREA-LOTS-FULL-001): the list cards «чт, 18.11 · 12:00 Корея · 05:00 Київ» and
-   the lot card «Початок торгів середа, 18 листопада, 12:00 Корея · 05:00 Київ» (Kyiv time worked out in the
-   visitor's browser, summer time included; without it the Korea time alone). Exact replacements in the lot list
-   script; nothing else changes.
+2. Pages (time_pages.py): video/korea.html lot list and lot card, the order page model carousels
+   (video/order/order.js, order-strings.json, the order.js version in video/podbor.html).
 """
 from pathlib import Path
+
+import time_pages
 
 HERE = Path(__file__).resolve().parent
 MODULES = ('catalog', 'collect', 'html_tools', 'job', 'lots', 'nbu', 'prices', 'public', 'selection', 'session', 'ticker')
@@ -27,44 +27,8 @@ INSTALLED_SHA256 = {
     'korea_auction/session.py': 'a39f03ec675ad2f8817efbcd76ef81e3d11bfd647ed4992ec65a1b2db79c18f9',
     'korea_auction/ticker.py': 'aff2b4ca9b3eb715e7b0f1f0a8235f395b103bfa3c989e25bb4cb569f4d0d2a9',
 }
-PAGE = 'video/korea.html'
-SOURCE_FILES = tuple(sorted(INSTALLED_SHA256)) + (PAGE,)
+SOURCE_FILES = tuple(sorted(INSTALLED_SHA256)) + time_pages.FILES
 DEPENDENCY_SHA256 = {}
-
-# The lot list script on korea.html as KOREA-LOTS-FULL-001 installs it (cloud/korea_lots_full_001/ua_korea_lots.py):
-# each piece once. The list card stamp «чт, 18.11 · 12:00» and the lot card «середа, 18 листопада, 12:00» get
-# « Корея · 05:00 Київ»; the label loses «(час Кореї)».
-MARK = 'function kyiv('
-LABEL_FROM = '"start": ["Початок торгів (час Кореї)", "Начало торгов (время Кореи)", "ვაჭრობის დაწყება (კორეის დრო)"]'
-LABEL_TO = '"start": ["Початок торгів", "Начало торгов", "ვაჭრობის დაწყება"]'
-STAMP_FROM = '+" · "+String(s).slice(11,16);});}'
-STAMP_TO = '+" · "+String(s).slice(11,16)+zones(s,i);});}'
-CARD_FROM = '+", "+String(l.auction_start).slice(11,16);}))'
-CARD_TO = '+", "+String(l.auction_start).slice(11,16)+zones(l.auction_start,i);}))'
-FUNC_AT = 'function tri(f){'
-# kyiv('YYYY/MM/DD HH:MM' Korea, UTC+9) -> '05:00', or '23:00 (17.11)' when the Kyiv day differs, or '' (no Intl);
-# zones(s, language) -> ' Корея · 05:00 Київ'. Plain text: tri() escapes it.
-FUNCS = ('var ZN=[["Корея","Київ"],["Корея","Киев"],["კორეა","კიევი"]];'
-         'function kyiv(s){var m=/^(\\d{4})\\/(\\d\\d)\\/(\\d\\d) (\\d\\d:\\d\\d)/.exec(s||""),p=null;if(!m)return "";'
-         'var at=new Date(m[1]+"-"+m[2]+"-"+m[3]+"T"+m[4]+":00+09:00");'
-         '["Europe/Kyiv","Europe/Kiev"].some(function(z){try{p={};new Intl.DateTimeFormat("en-GB",{timeZone:z,'
-         'day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(at)'
-         '.forEach(function(x){p[x.type]=x.value;});return true;}catch(e){p=null;return false;}});'
-         'if(!p||!p.hour)return "";var d=p.day+"."+p.month;'
-         'return (p.hour==="24"?"00":p.hour)+":"+p.minute+(d===m[3]+"."+m[2]?"":" ("+d+")");}'
-         'function zones(s,i){var k=kyiv(s);return " "+ZN[i][0]+(k?" · "+k+" "+ZN[i][1]:"");}')
-PIECES = ((LABEL_FROM, LABEL_TO), (STAMP_FROM, STAMP_TO), (CARD_FROM, CARD_TO), (FUNC_AT, FUNCS + FUNC_AT))
-
-
-def patch_page(page):
-    if MARK in page:
-        raise ValueError('KOREA_TIME_ALREADY_ON_PAGE')
-    for old, _ in PIECES:
-        if page.count(old) != 1:
-            raise ValueError('KOREA_PAGE_UNEXPECTED:' + old[:24])
-    for old, new in PIECES:
-        page = page.replace(old, new)
-    return page
 
 
 def build(source, dependencies, here=HERE, sha=None):
@@ -73,9 +37,10 @@ def build(source, dependencies, here=HERE, sha=None):
     files = {'korea_auction/__init__.py': b''}
     for name in MODULES:
         files['korea_auction/%s.py' % name] = (here / ('kauc_%s.py' % name)).read_bytes()
-    files[PAGE] = patch_page(source[PAGE].decode('utf-8')).encode('utf-8')
+    for name in time_pages.FILES:
+        files[name] = time_pages.build(name, source[name].decode('utf-8')).encode('utf-8')
     return files
 
 
 def is_page(name):
-    return False  # korea.html is this site's own page; no other writer rewrites it (KOREA-HOW-SYNC-001)
+    return False  # these pages are this site's own; no other writer rewrites it (KOREA-HOW-SYNC-001)

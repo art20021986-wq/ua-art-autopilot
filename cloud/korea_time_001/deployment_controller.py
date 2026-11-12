@@ -9,10 +9,10 @@ from deployment_transport import API, HERE, canonical, sha, upload_package
 
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
-# After the install the Korea page carries the Kyiv time words of the lot card; the home page with its ticker slot,
-# catalogue and order page stay healthy. The ticker cards get the time line at the job's next run (minutes).
+# After the install the Korea page carries the Kyiv time script and the order page loads the new order.js version;
+# the home page with its ticker slot and the catalogue stay healthy. The ticker cards get the time line at the job's next run (minutes).
 EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': 'function kyiv(',
-            '/video/katalog.html': '', '/video/podbor.html': ''}
+            '/video/katalog.html': '', '/video/podbor.html': 'order/order.js?v=20261112.71'}
 SITE = 'https://www.uaart.com.ua'
 AGENT = 'UAART-KoreaTicker-Verify/1'
 

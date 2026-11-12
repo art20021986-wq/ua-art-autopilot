@@ -15,7 +15,9 @@ def installed():
     """The collector as TICKER-FIX6-INSTALL-20261112-R2 installed it (its package in this repository), live korea.html."""
     ticker = HERE.parent / 'korea_ticker_fix6_001' / 'korea_auction'
     files = {name: (ticker / name.split('/')[1]).read_bytes() for name in candidate_builder.INSTALLED_SHA256}
-    files[candidate_builder.PAGE] = (HERE / 'fixtures' / 'korea_lots_live.txt').read_bytes()
+    import test_time_pages
+    for name, fixture in test_time_pages.FIXTURES.items():
+        files[name] = (HERE / 'fixtures' / fixture).read_bytes()
     return files
 
 
@@ -45,7 +47,7 @@ class CandidateTests(unittest.TestCase):
         for name in archive.namelist():
             (unpacked / name).write_bytes(archive.read(name))
         files = candidate_builder.build(installed(), {}, here=unpacked, sha=deployment_transport.sha)
-        self.assertEqual(set(files), {'korea_auction/__init__.py', candidate_builder.PAGE}
+        self.assertEqual(set(files), {'korea_auction/__init__.py', *candidate_builder.time_pages.FILES}
                          | {'korea_auction/%s.py' % m for m in candidate_builder.MODULES})
         self.assertIn('korea_auction/public.py', files)
         source = HERE / 'korea_auction'
@@ -61,27 +63,6 @@ class CandidateTests(unittest.TestCase):
         source['korea_auction/job.py'] += b'# edited'
         with self.assertRaises(ValueError):
             candidate_builder.build(source, {}, sha=deployment_transport.sha)
-
-    def test_page_lot_card_gets_korea_and_kyiv_time_only(self):
-        before = installed()[candidate_builder.PAGE].decode('utf-8')
-        after = candidate_builder.patch_page(before)
-        self.assertNotIn('(час Кореї)', after)
-        self.assertIn('["Корея","Київ"],["Корея","Киев"],["კორეა","კიევი"]', after)
-        self.assertIn('slice(11,16)+zones(s,i);', after)
-        self.assertIn('slice(11,16)+zones(l.auction_start,i);', after)
-        self.assertEqual(after.count('function kyiv('), 1)
-        # nothing else changes: taking the replacements back gives the page as it was
-        back = after
-        for old, new in candidate_builder.PIECES:
-            back = back.replace(new, old)
-        self.assertEqual(back, before)
-
-    def test_page_patched_twice_or_changed_is_refused(self):
-        page = installed()[candidate_builder.PAGE].decode('utf-8')
-        with self.assertRaises(ValueError):
-            candidate_builder.patch_page(candidate_builder.patch_page(page))
-        with self.assertRaises(ValueError):
-            candidate_builder.patch_page(page.replace(candidate_builder.STAMP_FROM, ''))
 
     def _tmp(self):
         import tempfile
