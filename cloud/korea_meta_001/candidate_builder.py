@@ -1,8 +1,9 @@
-"""Build the KOREA-META candidate: the Korea page description no longer names the 2000 $ deposit (owner 2026-11-12).
+"""Build the KOREA-META candidate: the Korea page description names the 1 000 $ prepayment (owner 2026-11-12, «А»).
 
 The deposit block left the page (KOREA-TERMS-001); its search description still said «Депозит 2000 $ входить у
-вартість авто». Only that sentence is removed, in the Ukrainian, Russian and Georgian description values of the
-<meta name="description"> tag. Nothing else in video/korea.html changes.
+вартість авто». That sentence becomes «Передоплата 1 000 $ зараховується у вартість авто» in the Ukrainian, Russian
+and Georgian description values of the <meta name="description"> tag (the wording of SERVICE-WORDS-001).
+Nothing else in video/korea.html changes.
 """
 import re
 
@@ -10,8 +11,11 @@ PAGE = 'video/korea.html'
 SOURCE_FILES = (PAGE,)
 DEPENDENCY_SHA256 = {}
 META = re.compile(r'<meta name="description"[^>]*>')
-SENTENCES = (' Депозит 2000 $ входить у вартість авто.', ' Депозит 2000 $ входит в стоимость авто.',
-             ' დეპოზიტი 2000 $ შედის ავტომობილის ღირებულებაში.')
+REPLACE = (('Депозит 2000 $ входить у вартість авто.', 'Передоплата 1 000 $ зараховується у вартість авто.'),
+           ('Депозит 2000 $ входит в стоимость авто.', 'Предоплата 1 000 $ засчитывается в стоимость авто.'),
+           ('დეპოზიტი 2000 $ შედის ავტომობილის ღირებულებაში.',
+            'წინასწარი გადახდა 1 000 $ ჩაითვლება ავტომობილის ღირებულებაში.'))
+SENTENCES = tuple(old for old, new in REPLACE)
 
 
 def apply(page):
@@ -19,8 +23,8 @@ def apply(page):
     if len(tags) != 1 or not any(s in tags[0] for s in SENTENCES):
         raise ValueError('KOREA_META_PAGE_UNEXPECTED')
     tag = tags[0]
-    for sentence in SENTENCES:
-        tag = tag.replace(sentence, '')
+    for old, new in REPLACE:
+        tag = tag.replace(old, new)
     return page.replace(tags[0], tag, 1)
 
 
