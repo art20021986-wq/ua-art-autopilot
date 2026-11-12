@@ -5,20 +5,53 @@
   "autostart_ledger_sha256": "9b560e6ca8d4f67501a928aaee93a549ddb6d596041106124d5f5c428a4e3980",
   "autostart_source_commit": "ee728db31dc324218a12d36b2939ca4299b970da",
   "created_at": "2026-11-12T05:48:35Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "0cfb9722ec9185749497a8c48e56b554104d30f0e876c308a1091804808b03a3",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T05:48:35Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-12T05:49:50Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "43163690917",
     "task_id": "TICKER-FIX3-INSTALL-20261112",
     "task_sha256": "d377a0a8e2ae8e7ba1594519f7942aa3719fbfe485cc347801f94b2695cd86ea"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 93.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 144.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 89.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-43163690917-d377a0a8e2ae8e7b",
+  "production_transaction_path": "state/transactions/TICKER-FIX3-INSTALL-20261112.d377a0a8e2ae8e7ba1594519f7942aa3719fbfe485cc347801f94b2695cd86ea.43163690917.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/TICKER-FIX3-INSTALL-20261112.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +62,49 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "d920acfd3ba83375484d9467988b03948d96b8fe",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 317.815,
+    "allowed": true,
+    "evidence_path": "state/storage/TICKER-FIX3-INSTALL-20261112.json",
+    "evidence_sha256": "7011d78fdd1a7ea454dd2d6f808a97e49f98f625c4873bbd640cfd54a3e8aafb",
+    "free_bytes": 22588423680,
+    "heavy": true,
+    "measured_at": "2026-11-12T05:44:30.646443+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 35.46164662857143
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-12T05:48:35Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "c9d4c033911e0f9003b0eb9dc32da8afaca8731e8a1fe433735cbc2ddeb64859",
+    "file_sha256": {
+      "cloud/korea_ticker_fix3_001/candidate_builder.py": "9ebefbe5d79dc606abb50896ff56a78b848d38e6340bb14e458c4ff8b65bf736",
+      "cloud/korea_ticker_fix3_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/korea_ticker_fix3_001/deployment_bootstrap.py": "55adb3851459168679fd146c4479b4e2c46beee338683e016cbbf84643c1ca32",
+      "cloud/korea_ticker_fix3_001/deployment_remote.py": "db9c79c35872a5788901130397ca53f12bb2ecd97bc00a3e4dcdebb7bf26ccbf",
+      "cloud/korea_ticker_fix3_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/korea_ticker_fix3_001/deployment_transport.py": "13c7bf64552003c00a32e63b9556459ce5b5b049640b589fa739785bfdb36e3b",
+      "cloud/korea_ticker_fix3_001/korea_auction/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cloud/korea_ticker_fix3_001/korea_auction/catalog.py": "8bd5fb28edade7696228c43826831d856aa9bd9b1b2e620cfc1c652992b40f3c",
+      "cloud/korea_ticker_fix3_001/korea_auction/collect.py": "53b64c3a8ace10b8fe5eeb1e7a68a202a4be07aff254eb1d1b97b9a6d0b71227",
+      "cloud/korea_ticker_fix3_001/korea_auction/html_tools.py": "2baacd8a4ed1402b352c70c14475954eedd0c1aff98aa602fcab1a6ad20a9802",
+      "cloud/korea_ticker_fix3_001/korea_auction/job.py": "699fce766b9f47662bff0f07d2bb5560ee63dfe446601dd61a2db4bf4d5c0ede",
+      "cloud/korea_ticker_fix3_001/korea_auction/lots.py": "9a764841f379dbdaaff5dda0e5c69e82b23826561ae8624a1314478b1cbc7ae9",
+      "cloud/korea_ticker_fix3_001/korea_auction/nbu.py": "0b1abeb8a940b3ccd70e31a4eecc8e8e5cbcaf24c528fc38ac9d56152f148b25",
+      "cloud/korea_ticker_fix3_001/korea_auction/prices.py": "271e13cc1e68e2cc3481c13c22e3b4a0fd42549cca8a414adc41624a3f145d3e",
+      "cloud/korea_ticker_fix3_001/korea_auction/public.py": "a79d07b3914c2edaba432a8ff24630557ad9da07b7694f38651be0ac655459d9",
+      "cloud/korea_ticker_fix3_001/korea_auction/selection.py": "e2c82ca69a3cebe0e4488b3fae237253c3e6bcc95af30b7ca5f11a53a4a72e9d",
+      "cloud/korea_ticker_fix3_001/korea_auction/session.py": "a39f03ec675ad2f8817efbcd76ef81e3d11bfd647ed4992ec65a1b2db79c18f9",
+      "cloud/korea_ticker_fix3_001/korea_auction/test_korea_auction.py": "713a5b3e95f1336ac15361bab4131e30086ad8331e8afa248696fabbb98100ca",
+      "cloud/korea_ticker_fix3_001/korea_auction/ticker.py": "85bbfefc7d2e26d5a972f7e43dede1f031c94713f51832a3dea42989e719d7b9",
+      "cloud/korea_ticker_fix3_001/make_release.py": "01d9bcb7704180aac87d5dc8770dee9a421317345a505b061b7be48ce8041857",
+      "cloud/korea_ticker_fix3_001/release_constants.py": "a4166d576a7b2f1c5be29a44727d3c300254aaa5dec4d6f3f70e1934632fb56c",
+      "cloud/korea_ticker_fix3_001/test_deployment.py": "0c3b46537a4e4bd5c2c1790e50279058e395ed7723a60d6a57a83b7c9fec9ec8",
+      "cloud/korea_ticker_fix3_001/test_release.py": "b9e1f3f4cbba0d7424bbefbb8e905c283e18faf00bc7c7565e30b370034185f5"
+    }
+  },
+  "updated_at": "2026-11-12T05:49:50Z"
 }
