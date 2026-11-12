@@ -24,6 +24,7 @@ def fixture_module(name, path):
 fixture_module('ua_card_lang', HERE/'fixtures'/'ua_card_lang.txt')
 import candidate_builder as builder  # noqa: E402
 import deployment_controller as controller  # noqa: E402
+import ua_korea_link as korea_link  # noqa: E402
 import ua_korea_ru as korea  # noqa: E402
 
 LIVE = (HERE/'fixtures'/'korea_live.txt').read_text(encoding='utf-8')  # public /video/korea.html, 2026-11-12
@@ -88,6 +89,7 @@ class BuildTests(unittest.TestCase):
     def sources(self):
         value = {name: ('# head\n' + ''.join(old + '# between\n' for old, _ in edits)).encode()
                  for name, edits in builder.EDITS.items()}
+        value['ua_seo_landings.py'] = b'def pages(cars):\n    return {}\n'
         value[builder.KOREA] = LIVE.encode()
         return value
 
@@ -100,7 +102,9 @@ class BuildTests(unittest.TestCase):
         self.assertEqual(page, LIVE.replace('<head>', '<head>' + korea.links(), 1))
         self.assertEqual(result[builder.RUSSIAN].decode(), korea.page(page))
         self.assertEqual(result['ua_korea_ru.py'], (HERE/'ua_korea_ru.py').read_bytes())
-        self.assertEqual(sorted(result), sorted(builder.targets(None) + ('ua_korea_ru.py', builder.RUSSIAN)))
+        self.assertEqual(result['ua_korea_link.py'], (HERE/'ua_korea_link.py').read_bytes())
+        self.assertTrue(result['ua_seo_landings.py'].decode().endswith(builder.TAILS['ua_seo_landings.py'][1]))
+        self.assertEqual(sorted(result), sorted(builder.targets(None) + builder.NEW_MODULES + (builder.RUSSIAN,)))
         # The job rebuilds nothing right after the install: the page carries the installed korea.html's mark.
         self.assertIn(korea.revision(page), result[builder.RUSSIAN].decode())
 
@@ -117,6 +121,33 @@ class BuildTests(unittest.TestCase):
         source[builder.KOREA] = LIVE.replace('<head>', '<head>' + korea.links(), 1).encode()
         with self.assertRaisesRegex(ValueError, 'KOREA_RU_PAGE_HEAD'):
             builder.build(source, {})
+
+
+class HubLinkTests(unittest.TestCase):
+    HUB = ('<h1>x</h1><p>i</p><h2>%s</h2><ul class="models"><li><a href="/video/seo/ua/kia-k5-koreya-kyiv.html">Kia K5</a>'
+           '</li></ul><h2>Автомобілі в каталозі</h2>')
+
+    def test_link_under_model_list(self):
+        uk = korea_link.apply('seo/ua/avto-z-korei-do-kyieva-pid-kluch.html', self.HUB % 'Моделі з Кореї')
+        self.assertIn('</ul><p><a href="/video/korea.html">Аукціони Кореї онлайн — дивитися лоти →</a></p>'
+                      '<h2>Автомобілі в каталозі</h2>', uk)
+        ru = korea_link.apply('seo/ru/avto-iz-korei-v-kiev-pod-kluch.html', self.HUB % 'Модели из Кореи')
+        self.assertIn('</ul><p><a href="/video/ru/korea.html">Аукционы Кореи онлайн — смотреть лоты →</a></p>', ru)
+        self.assertEqual(korea_link.apply('seo/ua/avto-z-korei-do-kyieva-pid-kluch.html', uk), uk)  # once
+        self.assertEqual(korea_link.apply('seo/ua/kia-k5-koreya-kyiv.html', self.HUB % 'Моделі з Кореї'),
+                         self.HUB % 'Моделі з Кореї')  # model pages unchanged
+        self.assertTrue(controller.EXPECTED['/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html'](uk))
+        self.assertTrue(controller.EXPECTED['/video/seo/ru/avto-iz-korei-v-kiev-pod-kluch.html'](ru))
+
+    def test_wrapper_runs_on_every_build(self):
+        source = builder.build(BuildTests().sources(), {})['ua_seo_landings.py'].decode()
+        source = source.replace('return {}', "return {'seo/ua/avto-z-korei-do-kyieva-pid-kluch.html': %r}"
+                                % (self.HUB % 'Моделі з Кореї'))
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)/'candidate_landings.txt'
+            path.write_text(source, encoding='utf-8')
+            pages = fixture_module('candidate_landings', path).pages
+        self.assertIn('Аукціони Кореї онлайн', pages([])['seo/ua/avto-z-korei-do-kyieva-pid-kluch.html'])
 
 
 class SitemapPollTests(unittest.TestCase):
