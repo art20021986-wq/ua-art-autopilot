@@ -18,7 +18,12 @@ from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 KOREA_URLS = ('https://www.uaart.com.ua/video/korea.html', 'https://www.uaart.com.ua/video/ru/korea.html')
 EXPECTED = {'/video/korea.html': lambda body: 'hreflang="ru" href="%s"' % KOREA_URLS[1] in body,
             '/video/ru/korea.html': lambda body: '<html lang="ru">' in body and 'Аукционы Кореи' in body,
-            '/video/index.html': lambda body: '<body' in body}
+            '/video/index.html': lambda body: '<body' in body,
+            # Owner-approved link under «Моделі з Кореї»; the install's landing refresh writes the hubs.
+            '/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html':
+                lambda body: '<a href="/video/korea.html">Аукціони Кореї онлайн — дивитися лоти →</a>' in body,
+            '/video/seo/ru/avto-iz-korei-v-kiev-pod-kluch.html':
+                lambda body: '<a href="/video/ru/korea.html">Аукционы Кореи онлайн — смотреть лоты →</a>' in body}
 SITEMAP_WAIT_SECONDS = 600
 
 

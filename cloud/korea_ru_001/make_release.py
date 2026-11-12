@@ -22,7 +22,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'ua_korea_ru.py')]
+                                'make_release.py', 'release_constants.py', 'ua_korea_link.py', 'ua_korea_ru.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'lead_bot.py',
@@ -74,7 +74,8 @@ def preview():
              'description': 'Preview of KOREA-RU-001 (owner «Да» 2026-11-12): reads the live korea.html, '
                             'i18n-home-ge.js, ua_seo_sitemap.py and ua_card_lang_job.py, builds the candidate (new '
                             '/video/ru/korea.html, hreflang pair in korea.html, own-language rule in the home language '
-                            'script, both Korea pages in the sitemap, the card version job keeps the Russian page in step) '
+                            'script, both Korea pages in the sitemap, the card version job keeps the Russian page in step, '
+                            'the «Авто з Кореї» hubs link the Korea page under the model list) '
                             'and reports the Russian page and candidate sitemap; measures storage. No application source, '
                             'CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
@@ -137,7 +138,9 @@ def install():
                               'canonical); korea.html gets only the hreflang pair in its head; i18n-home-ge.js opens a page '
                               'with language versions in its own language (home unchanged); both Korea pages in the sitemap '
                               '(ua_seo_sitemap, web app reloaded); the card version job rebuilds the Russian page when '
-                              'korea.html changes. Sitemap refresh via ua_seo_index.refresh (IndexNow, Google). No CRM data '
+                              'korea.html changes; the «Авто з Кореї» hubs link the Korea page under «Моделі з Кореї» (text '
+                              'approved by the owner, ua_korea_link via ua_seo_landings.pages). Landing and sitemap refresh '
+                              'via ua_seo_index.refresh (IndexNow, Google). No CRM data '
                               'change. Existing backup, bot pause, writer locks, data-preservation, rollback and public '
                               'health checks are kept.',
                'execution': execution(task, True),
