@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "a32539526fe2aff84fdef6332bd893d91610d9edb99c175ac9d5d11186616658",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T15:20:18Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-12T15:24:18Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43245170432",
     "task_id": "KOREA-CARD-INSTALL-20261112",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43245170432-478b7ad1ed9fc3e4",
   "production_transaction_path": "state/transactions/KOREA-CARD-INSTALL-20261112.478b7ad1ed9fc3e410236919e25ae3e557ce22a36194198a63a8d05c518eb863.43245170432.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-a513e4136e321fe7-aa5afa55010095a2",
   "receipt_path": "state/receipts/KOREA-CARD-INSTALL-20261112.json",
   "receipt_validation_status": "PENDING",
@@ -96,5 +96,5 @@
       "cloud/korea_card_001/ua_korea_lots.py": "d37dc43ce3707bb362b1f7ee5178cf7ee4c374d63333111f6f792fc6b3082662"
     }
   },
-  "updated_at": "2026-11-12T15:20:18Z"
+  "updated_at": "2026-11-12T15:24:18Z"
 }
