@@ -95,8 +95,15 @@ class ReleaseTests(unittest.TestCase):
             href = 'href="/video/%s"' % self.L.path(lang, 'ukraine')
             for key in (None, self.L.ORDER):
                 self.assertEqual(self.pages[self.L.path(lang, key)].count(href), 1, (lang, key))
+        for lang in ('uk', 'ru'):
+            order = self.pages[self.L.path(lang, self.L.ORDER)]
+            self.assertNotIn('500 $', order, lang)
+            self.assertIn('1 000 $', order)
+            self.assertIn('<a class="cta" href="/video/podbor.html">', order)
+            self.assertIn('500 $', self.pages[self.L.path(lang)])  # the Korea hub (catalogue cars) keeps it
         changed = {n for n in self.before if self.before[n] != self.pages[n]}
-        self.assertEqual(changed, {self.L.path(l, k) for l in ('uk', 'ru') for k in (None, self.L.ORDER)})
+        # The price page shares the «can the price change» answer.
+        self.assertEqual(changed, {self.L.path(l, k) for l in ('uk', 'ru') for k in (None, self.L.ORDER, self.L.PRICE)})
 
     def test_edits_refused_twice(self):
         once = candidate_builder.build(self.live, {})
