@@ -8,14 +8,17 @@ import zipfile
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import candidate_builder  # noqa: E402
+import edit_order  # noqa: E402
 import deployment_transport  # noqa: E402
 
 
 def installed():
-    """The collector as TICKER-FIX3-INSTALL-20261112 installs it (its package here) and the live Korea page."""
-    collector = HERE.parent / 'korea_ticker_fix3_001' / 'korea_auction'
+    """The collector as TICKER-FIX6-INSTALL-20261112-R2 installed it (its package here) and the live Korea page."""
+    collector = HERE.parent / 'korea_ticker_fix6_001' / 'korea_auction'
     value = {name: (collector / name.split('/')[1]).read_bytes() for name in candidate_builder.INSTALLED_SHA256}
     value[candidate_builder.PAGE] = (HERE / 'fixtures' / 'korea_live.html').read_bytes()
+    for name in edit_order.SOURCE_FILES:
+        value[name] = (HERE / 'fixtures' / 'order' / name.rsplit('/', 1)[1]).read_bytes()
     return value
 
 
@@ -45,8 +48,10 @@ class CandidateTests(unittest.TestCase):
         for name in archive.namelist():
             (unpacked / name).write_bytes(archive.read(name))
         files = candidate_builder.build(installed(), {}, here=unpacked, sha=deployment_transport.sha)
-        self.assertEqual(set(files), {'korea_auction/__init__.py', candidate_builder.PAGE}
+        self.assertEqual(set(files), {'korea_auction/__init__.py', candidate_builder.PAGE} | set(edit_order.SOURCE_FILES)
                          | {'korea_auction/%s.py' % m for m in candidate_builder.MODULES})
+        for name in edit_order.SOURCE_FILES:
+            self.assertIn(edit_order.CHECKS[name], files.pop(name).decode('utf-8'))
         page = files.pop(candidate_builder.PAGE).decode('utf-8')
         self.assertIn('id="kl-days"', page)
         self.assertIn('row("vin",l.vin)', page)
