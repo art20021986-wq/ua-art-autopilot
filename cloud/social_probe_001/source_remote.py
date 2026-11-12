@@ -357,6 +357,48 @@ def report_r11(home=None):
             'search_page_results': count(page), 'tries': tries[:40], 'kr_links': links, 'requests': s.requests}
 
 
+# R12 (coordinator): every R11 filter gave 0. Post exactly what a browser posts (hidden + checked boxes), and list
+# where the page's scripts load results from (ajax/json endpoints), to see whether the lots moved to a separate call.
+def report_r12(home=None):
+    import sys as _sys
+    _sys.path.insert(0, str(HOME))
+    from korea_auction import collect, job, session
+
+    def count(page):
+        return (re.findall(r'[\d,]+ Results', page) or ['?'])[0]
+
+    def lots_hint(page):
+        return {'detail_links': len(re.findall(r'/vehicle-search/kr/(?:detail|view)[^"\']*', page)),
+                'img_tags': page.count('<img'), 'tr_rows': page.lower().count('<tr')}
+
+    s = session.Session()
+    s.login(*job.read_login())
+    url, page = s.fetch(collect.SEARCH_PAGE)
+    start = page.find('id="purchase_search_form"')
+    form = page[start:page.find('</form>', start)] if start >= 0 else ''
+    action, hidden = collect._search_form_data(page)
+    checked = []
+    for tag in re.findall(r'(?is)<input[^>]*type="(?:checkbox|radio)"[^>]*>', form):
+        if 'checked' in tag.lower():
+            n = re.search(r'name="([^"]+)"', tag)
+            v = re.search(r'value="([^"]*)"', tag)
+            if n:
+                checked.append((n.group(1), v.group(1) if v else 'on'))
+    variants = {'hidden_plus_checked': list(hidden) + checked,
+                'checked_without_order_closed': list(hidden) + [c for c in checked if not c[0].startswith('order_closed')],
+                'all_groups': list(hidden) + [('auction_group[]', g) for g in ('1', '2', '3', '4', '5', '6', '8')]}
+    results = {}
+    for name, data in variants.items():
+        _, html2 = s.fetch(action, data)
+        results[name] = {'results': count(html2), **lots_hint(html2)}
+    scripts = ' '.join(re.findall(r'(?is)<script[^>]*>(.*?)</script>', page))
+    endpoints = sorted({sanitized_line(e)[:120] for e in re.findall(r'["\'](/[A-Za-z0-9_/\-.]*(?:ajax|api|json|search|list|result)[A-Za-z0-9_/\-.]*)["\']', scripts)})[:30]
+    script_src = sorted({sanitized_line(e)[:120] for e in re.findall(r'<script[^>]*src="([^"]+)"', page)})[:20]
+    return {'status': 'PASS', 'checked_defaults': [[sanitized_line(n)[:40], sanitized_line(v)[:20]] for n, v in checked],
+            'variants': results, 'script_endpoints': endpoints, 'script_src': script_src,
+            'search_page_hint': lots_hint(page), 'requests': s.requests}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -370,7 +412,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r11()  # R11 search form filters; report_r10() R10 auction page shape; report_r9() R9, report_r6() R6–R8, report_r5()…report() R1–R5
+        value = report_r12()  # R12 browser-like post + endpoints; report_r11() R11 search form filters; report_r10() R10 auction page shape; report_r9() R9, report_r6() R6–R8, report_r5()…report() R1–R5
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
