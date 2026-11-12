@@ -23,8 +23,10 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'edit_client_ui.py', 'edit_lead_bot.py', 'edit_lead_desk.py', 'edit_order_bindings.py',
-                                'edit_order_host.py', 'edit_vitrina.py', 'edits.py', 'make_release.py',
+                                'edit_analitika_bot.py', 'edit_analitika_knopka.py', 'edit_bezopasnost.py',
+                                'edit_client_ui.py', 'edit_karta_klienta.py', 'edit_lead_bot.py', 'edit_lead_desk.py',
+                                'edit_order_bindings.py', 'edit_order_host.py', 'edit_svyaz.py', 'edit_vitrina.py', 'edits.py',
+                                'make_release.py',
                                 'release_constants.py', 'ua_owners.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_edits.py', 'test_ua_owners.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
@@ -138,7 +140,9 @@ def install():
                'description': 'Owner approved STAFF-FULL-ACCESS-001 (2026-11-12): the client bot\'s owners are the '
                               'configured chat and every active CRM «Владелец» (new ua_owners.py); lead_bot, client_ui, '
                               'vitrina, ua_order bindings/host and the lead desk send every owner notification to each owner '
-                              'and give each owner the owner screens and commands. The bot is paused for the file change and '
+                              'and give each owner the owner screens, analytics and commands; the alerts of the CRM guard (bezopasnost), '
+                              'karta_klienta and svyaz go to each owner and every owner may use /dostup and /kopiya (nothing of '
+                              'the guard is switched off). The bot is paused for the file change and '
                               'resumed. No CRM, page or table change. Existing backup, bot pause, writer locks, '
                               'data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
