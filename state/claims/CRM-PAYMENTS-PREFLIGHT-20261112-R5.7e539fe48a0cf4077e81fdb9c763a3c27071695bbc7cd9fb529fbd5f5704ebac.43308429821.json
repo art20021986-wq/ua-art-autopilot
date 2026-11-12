@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "1d55fca572381b7a"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-12T21:51:41+00:00",
+      "class": "PACKAGE_BUILD_CHECK",
+      "evidence_path": "state/reconciliations/CRM-PAYMENTS-PREFLIGHT-20261112-R5.43308429821.authenticated-evidence.json",
+      "message": "Read-only preview stopped at the storage probe (du: a SQLite journal vanished while measuring); nothing written. Package takes the CARD-SYNC-FIX2 du tolerance; retried as R6.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-12T21:16:57Z",
@@ -42,6 +51,6 @@
   "source_commit": "49451857a1757da78e5f95f95e6fb7cc1ecc284a",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-12T21:22:39Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-12T21:51:41+00:00"
 }
