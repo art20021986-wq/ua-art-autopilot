@@ -23,7 +23,8 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'ua_korea_lots.py')]
+                                'make_release.py', 'release_constants.py', 'ua_korea_bid.py', 'ua_korea_login.py',
+                                'ua_korea_lots.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'lead_bot.py',
@@ -74,7 +75,7 @@ def preview():
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Preview of KOREA-CARD (JPAUTO-KOREA-001): reads the live Korea page, builds the candidate '
                             '(the lot list block in its new version: weekday with date, direct lot links, VIN instead of the '
-                            'lot number) and checks that only that block changes; measures storage. No application source, '
+                            'lot number), puts back the client login and bid blocks KOREA-LOTS-FULL removed, and checks that only that block changes; measures storage. No application source, '
                             'CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
@@ -135,7 +136,7 @@ def install():
                               'lot cards show the weekday with its date (Пт 13.11, uk/ru/ka without the browser locale '
                               'data, Georgian was shown in English), each opened lot gets its own link (#lot-<id>) and the '
                               'lot card shows the VIN and no longer the lot number (a lot without VIN hides the row); only '
-                              'the list block of video/korea.html is replaced. No CRM data change. Existing backup, bot '
+                              'the list block of video/korea.html is replaced. Repair: the client login («Вхід для клієнтів») and bid («Розмістити ставку») blocks that KOREA-LOTS-FULL-INSTALL-20261112 removed with the old list are put back exactly as before, and the list keeps such blocks from now on. No CRM data change. Existing backup, bot '
                               'pause, writer locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',

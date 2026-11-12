@@ -136,6 +136,7 @@ def smoke(directory):
     value = {'list_once': page.count(ua_korea_lots.MARK) == 1, 'days': 'id="kl-days"' in page,
              'vin_row': 'row("vin",l.vin)' in page and 'row("lot",' not in page, 'date_sort': 'value="date"' in page,
              'lot_link': 'history.replaceState(null,"","#lot-"+id)' in page,
+             'login_and_bid': all(page.count(m) == 1 for m in ('<!--UA-KOREA-LOGIN-V1-->', '<!--UA-KOREA-BID-V1-->')),
              'weekday_names': all(w in page for w in ('"Пт"', '"Вс"', '"პარ"', '"пʼятниця"')),
              'only_the_list': outside(page) == outside(live),
              'page_platform_unnamed': not any(w in page.lower() for w in ('beforward', 'be forward', 'jpauto', 'jp auto'))}
