@@ -1,6 +1,6 @@
 """Auction clients in the CRM bot (JPAUTO-KOREA-001, owner 2026-11-10/11): «🔨 Клиенты аукциона» in the main menu
-(statistics, «➕ Создать клиента», «👥 Клиенты с доступом · N», «📋 Ставки по датам»); the first two also stay in
-«👤 Клиенты → 🔨 Аукционы онлайн → 🇰🇷 Корея». A client's card lists the client's bids by date.
+(statistics, «➕ Создать клиента», «👥 Клиенты с доступом · N», «📋 Ставки по датам», «👔 По менеджерам»); only there,
+not duplicated elsewhere (owner 2026-11-12). A client's card lists the client's bids by date.
 
 Telegram glue only: records in ua_auction_clients, texts in ua_auction_clients_view, access rules and buttons from
 ua_crm_orders (the same staff as «Клиенты»). Multi-step input keeps a draft in context.user_data[WAIT]; any menu button
@@ -24,8 +24,9 @@ BACK = view.HOME[1]  # «Назад» from the client list: the «🔨 Клие�
 
 
 def folder_rows():
-    """Rows the «🇰🇷 Корея» folder shows above its back button."""
-    return [[view.NEW], [('👥 Клиенты с доступом · %d' % len(store.all_clients()), view.LIST)]]
+    """Rows the «🇰🇷 Корея» folder of «👤 Клиенты» shows above its back button: none (owner 2026-11-12: «➕ Создать
+    клиента» and «👥 Клиенты с доступом» only in «🔨 Клиенты аукциона», no duplicates). ua_crm_orders still asks."""
+    return []
 
 
 def _markup(rows):
