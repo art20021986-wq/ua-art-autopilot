@@ -7,21 +7,23 @@
   "created_at": "2026-11-12T05:15:54Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T05:15:54Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-12T05:19:53Z",
+  "heartbeat_at": "2026-11-12T05:19:53Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43160024066",
     "task_id": "SOCIAL-PROBE-20261112-R8",
     "task_sha256": "8da69fdd0a8c1a3d37937af53efba62d6e4d74ec9fa6f9c0cd31bf5798f7be91"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-4cabf1c1897442e9-9805a98b5bc6911d",
   "receipt_path": "state/receipts/SOCIAL-PROBE-20261112-R8.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "6bf5a9db9835374fbfc8963e7bca6a7bc0ea8fb756395c1edfcfc0b836eb412e",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SOCIAL-PROBE-20261112-R8.json",
   "request_sha256": "8da69fdd0a8c1a3d37937af53efba62d6e4d74ec9fa6f9c0cd31bf5798f7be91",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "5b7c4f7cdfdbefa1276cec096e509f991b89131b",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92785893376,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.125
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-12T05:15:54Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "37f88d017c97d13c8f9bd4a6118f8df610ff983f2484dae562f3e2cebca7febf",
+    "file_sha256": {
+      "cloud/social_probe_001/bootstrap.py": "81fd05ac8d5868b78f1c9dc53e62a9eaeb68ce2d5e2f79ca24c54e5196a67f07",
+      "cloud/social_probe_001/make_request.py": "0b5358218549c192cca82863bcefa5b5c14c18b9826b9c933baeafea4c8d9fb9",
+      "cloud/social_probe_001/source_remote.py": "1f6699caebe09ca3fb1a11f51516aa61c28cb5daa5249d5b2c78ff8447735998",
+      "cloud/social_probe_001/test_social_probe.py": "ea805de0de04ab6313c0146edd07b1ae1dd96cf5fa0eb2d39af569e95ce7fc38",
+      "cloud/social_probe_001/transport.py": "d9593a7c7882801f29992627fe386e7bcba47ea7a297b2c745bf32d9e3d7eb8b"
+    }
+  },
+  "updated_at": "2026-11-12T05:19:53Z"
 }
