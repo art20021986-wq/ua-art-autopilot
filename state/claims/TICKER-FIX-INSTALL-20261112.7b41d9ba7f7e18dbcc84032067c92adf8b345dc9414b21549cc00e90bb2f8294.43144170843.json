@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "b2b355f6ac211bd51676eaf5a9a89d0d33f8e751ff67831cc5febfd01e096602",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T02:53:19Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-12T02:58:17Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43144170843",
     "task_id": "TICKER-FIX-INSTALL-20261112",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43144170843-7b41d9ba7f7e18db",
   "production_transaction_path": "state/transactions/TICKER-FIX-INSTALL-20261112.7b41d9ba7f7e18dbcc84032067c92adf8b345dc9414b21549cc00e90bb2f8294.43144170843.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/TICKER-FIX-INSTALL-20261112.json",
   "receipt_validation_status": "PENDING",
@@ -106,5 +106,5 @@
       "cloud/korea_ticker_fix_001/test_release.py": "7032541229f514944cceed880c90d5d9cfaf1c933dcc005213d46e618cb27b33"
     }
   },
-  "updated_at": "2026-11-12T02:53:19Z"
+  "updated_at": "2026-11-12T02:58:17Z"
 }
