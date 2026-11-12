@@ -17,6 +17,7 @@ Lots whose start price is not known yet show «Ціна — на торгах» 
 translates them, also in the cards the script adds).
 """
 import json
+import re
 
 MARK = '<!--UA-KOREA-LOTS-V1-->'
 END = '<!--/UA-KOREA-LOTS-V1-->'
@@ -201,6 +202,23 @@ SCRIPT = (
 BLOCK = MARK + STYLE + SECTION + SCRIPT + END
 
 
+# Other releases put their own marked blocks inside the list section (the client login UA-KOREA-LOGIN-V1 and the
+# bid UA-KOREA-BID-V1, right after its opening tag). Replacing this list keeps them as they are, in their order.
+LIST_OPEN = '<section class="kr-sec" id="lots">'
+NESTED = re.compile(r'<!--(UA-[A-Z0-9-]+-V\d+)-->.*?<!--/\1-->', re.S)
+
+
+def nested(block):
+    """The other releases' marked blocks inside an installed list block, in page order."""
+    return ''.join(m.group(0) for m in NESTED.finditer(block[len(MARK):]))
+
+
+def with_nested(block, kept):
+    """This list block with the kept blocks back right after the list section's opening tag."""
+    at = block.index(LIST_OPEN) + len(LIST_OPEN)
+    return block[:at] + kept + block[at:]
+
+
 def apply(html):
     """Korea page with the lot list and the «Дивитися онлайн» buttons leading to it; any other page unchanged."""
     if not isinstance(html, str):
@@ -208,7 +226,7 @@ def apply(html):
     if MARK in html:  # an installed list (this or an older version): the block is replaced in place
         start = html.index(MARK)
         end = html.index(END, start) + len(END)
-        return html[:start] + BLOCK + html[end:]
+        return html[:start] + with_nested(BLOCK, nested(html[start:end])) + html[end:]
     if html.count(AFTER) != 1:
         return html
     start = html.index(AFTER)
