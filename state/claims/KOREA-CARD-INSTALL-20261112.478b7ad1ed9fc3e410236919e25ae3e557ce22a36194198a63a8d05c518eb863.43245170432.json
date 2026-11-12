@@ -5,20 +5,53 @@
   "autostart_ledger_sha256": "37ccdf1a05e00494b74e90d29b91d0e83dbcb65de1109d13f5444a53e04b4e58",
   "autostart_source_commit": "48a40dea2b45bbf7e9ebb58e6cb412f5a19c37ec",
   "created_at": "2026-11-12T15:19:02Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "a32539526fe2aff84fdef6332bd893d91610d9edb99c175ac9d5d11186616658",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T15:19:02Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-12T15:20:18Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "43245170432",
     "task_id": "KOREA-CARD-INSTALL-20261112",
     "task_sha256": "478b7ad1ed9fc3e410236919e25ae3e557ce22a36194198a63a8d05c518eb863"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 187.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 199.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 133.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-43245170432-478b7ad1ed9fc3e4",
+  "production_transaction_path": "state/transactions/KOREA-CARD-INSTALL-20261112.478b7ad1ed9fc3e410236919e25ae3e557ce22a36194198a63a8d05c518eb863.43245170432.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-a513e4136e321fe7-aa5afa55010095a2",
   "receipt_path": "state/receipts/KOREA-CARD-INSTALL-20261112.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +62,39 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "f370d245b9f039c5011ccca954ff93f6b117b7d8",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 665.429,
+    "allowed": true,
+    "evidence_path": "state/storage/KOREA-CARD-INSTALL-20261112.json",
+    "evidence_sha256": "e631a1d3763f202d99d69ba5e93f0f0b1b038c367a0065fbd5e6e923a4054b8b",
+    "free_bytes": 22719901184,
+    "heavy": true,
+    "measured_at": "2026-11-12T15:09:11.345741+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 35.085996617142854
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-12T15:19:02Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "7c455880a90513bad058d7e53ab023db0e6748583fbce9590ada667c2090aecc",
+    "file_sha256": {
+      "cloud/korea_card_001/candidate_builder.py": "1ce7e059aaff678ae14f83feace84a2750b1e0990ced6d66de101301e71d676e",
+      "cloud/korea_card_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/korea_card_001/deployment_bootstrap.py": "dafd85411c56d3e773e4c5f6719125753bb1e8f9a9d2952e9f16d3e2c3a113b9",
+      "cloud/korea_card_001/deployment_remote.py": "d6847e189f059b715b20e6ae6e504825077696a0905e3edcd58cbe534867cca7",
+      "cloud/korea_card_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/korea_card_001/deployment_transport.py": "c5c8c250aab796fbb4c34cd01c4696a599af2e314c24f37ec348d82e5e5ba499",
+      "cloud/korea_card_001/make_release.py": "b0f9bc4e0c492bb8c38db183ab97fc4e0b3d20f0309c3cc7244917757bb3f5c2",
+      "cloud/korea_card_001/release_constants.py": "3ac526abf8df43861bcdfad2e31f3169db0188e35754856e0fad7a4d1e793110",
+      "cloud/korea_card_001/test_deployment.py": "159df88e5443b0c8338d5ba3902da07d51b9f361cf724aa92d8c92b489db7c66",
+      "cloud/korea_card_001/test_release.py": "bbc7023c791e921e6e667f30df57256512a7ad66d642e641ed94410639243c67",
+      "cloud/korea_card_001/ua_korea_bid.py": "3a0a3a55083da7ee753bf9484e47d10db87c7408a2f1e444ccfc1d1633793cef",
+      "cloud/korea_card_001/ua_korea_login.py": "2dca8d9533438786c1e929e4f184c395ed5460ae2787841cae7b41d113b1f420",
+      "cloud/korea_card_001/ua_korea_lots.py": "d37dc43ce3707bb362b1f7ee5178cf7ee4c374d63333111f6f792fc6b3082662"
+    }
+  },
+  "updated_at": "2026-11-12T15:20:18Z"
 }
