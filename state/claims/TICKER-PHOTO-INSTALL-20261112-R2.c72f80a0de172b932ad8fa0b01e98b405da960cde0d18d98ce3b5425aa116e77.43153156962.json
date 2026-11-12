@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "6fb2c7b0ff44e200a0fb4d1736b328fef830978acc8cb3d2c9803bf900c85824",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T04:14:27Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-12T04:18:25Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43153156962",
     "task_id": "TICKER-PHOTO-INSTALL-20261112-R2",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43153156962-c72f80a0de172b93",
   "production_transaction_path": "state/transactions/TICKER-PHOTO-INSTALL-20261112-R2.c72f80a0de172b932ad8fa0b01e98b405da960cde0d18d98ce3b5425aa116e77.43153156962.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/TICKER-PHOTO-INSTALL-20261112-R2.json",
   "receipt_validation_status": "PENDING",
@@ -106,5 +106,5 @@
       "cloud/korea_ticker_photo_001/test_release.py": "ec16518251bfc929d646297592006d9ecf04db24996dd7531bcac0907477d117"
     }
   },
-  "updated_at": "2026-11-12T04:14:27Z"
+  "updated_at": "2026-11-12T04:18:25Z"
 }
