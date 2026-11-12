@@ -1,0 +1,27 @@
+{
+  "backup_receipt": "state/receipts/TERMS-LINKS-INSTALL-20261111-R3-BACKUP.json",
+  "backup_started": true,
+  "claim_before_sha256": "143a30f76f0b07d66892f90a2acd4d95031208b8758fea5279dda72c15d8ef4f",
+  "claim_status_before": {
+    "critical_gate_status": "PASS_PRODUCTION",
+    "package_compile_status": "PASS",
+    "production_transaction_status": "ROLLED_BACK",
+    "task_execution_status": "ROLLED_BACK"
+  },
+  "crm_unchanged": true,
+  "error": "TimeoutError: The read operation timed out — one public page did not answer within 30 s during the after-install public check (controller_production, 18:20Z)",
+  "failed_step": "execute / critical / controller_production: public_verify (after install)",
+  "halt_archive": "state/halt_history/TERMS-LINKS-INSTALL-20261111-R3.43073985305/halt.json",
+  "live_verify": "PASS (rollback receipt); 2026-11-11 18:30Z /, /video/katalog.html, /video/korea.html, /video/podbor.html 200, info.html links present (pre-install release)",
+  "owner_statement": "А. Да (2026-11-12, coordinator session, after the halt report)",
+  "precedent": "state/reconciliations/SPEED2-INSTALL-20261108.42748648983.authenticated-evidence.json",
+  "production_transaction_status": "ROLLED_BACK",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-12T02:05:32+00:00",
+  "rollback_receipt": "state/receipts/TERMS-LINKS-INSTALL-20261111-R3-ROLLBACK.json",
+  "rollback_status": "ROLLED_BACK",
+  "run_id": "43073985305",
+  "site_state_after": "pre-install release, restored and verified by the rollback (unexpected_changes 0)",
+  "task_id": "TERMS-LINKS-INSTALL-20261111-R3",
+  "workflow_conclusion": "failure"
+}
