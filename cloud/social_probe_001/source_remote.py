@@ -190,6 +190,52 @@ def report_r5(home=None):
             'versions': r4['versions'], 'catalog_links_broken': r4['catalog_links_broken'], 'sitemap': r4['sitemap']}
 
 
+# R6 (owner 2026-11-12: the Korea ticker legend is not on the site): why video/korea/ticker.html is not rewritten.
+def _file(path):
+    if not path.exists():
+        return None
+    st = path.stat()
+    return {'bytes': st.st_size, 'mtime': round(st.st_mtime)}
+
+
+def _tail(path, lines=40):
+    text = text_of(path) if path.is_file() else None
+    if text is None:
+        return None
+    return [sanitized_line(l)[:300] for l in text.splitlines()[-lines:]]
+
+
+def report_r6(home=None):
+    global HOME
+    if home is not None:
+        HOME = home
+    import glob
+    out = HOME / 'video/korea'
+    ticker = text_of(out / 'ticker.html') or ''
+    package = {}
+    for path in sorted((HOME / 'korea_auction').glob('*.py')) if (HOME / 'korea_auction').is_dir() else []:
+        text = text_of(path) or ''
+        package[path.name] = {'sha256': hashlib.sha256(text.encode()).hexdigest(), 'mtime': round(path.stat().st_mtime),
+                              'kt_legend': text.count('kt-legend')}
+    data = HOME / 'korea_auction_data'
+    logs = {}
+    for pattern in ('/var/log/*sched*', '/var/log/tasks/*', str(HOME / '*.log'), str(HOME / 'korea_auction_data/*.log'),
+                    str(HOME / 'logs/*korea*')):
+        for name in sorted(glob.glob(pattern))[-6:]:
+            path = Path(name)
+            if path.is_file() and ('korea' in name or 'sched' in name or 'task' in name):
+                logs[name] = _tail(path)
+    login = HOME / 'jpauto_login.txt'
+    job = text_of(HOME / 'korea_ticker_job.py')
+    return {'status': 'PASS',
+            'ticker_html': dict(_file(out / 'ticker.html') or {}, kt_legend=ticker.count('kt-legend')),
+            'lots_json': _file(out / 'lots.json'), 'package': package,
+            'data_dir': {p.name: _file(p) for p in sorted(data.iterdir())[:40]} if data.is_dir() else None,
+            'lock': _file(HOME / '.korea_auction_job.lock'),
+            'login_lines': len([l for l in (text_of(login) or '').splitlines() if l.strip()]) if login.is_file() else None,
+            'job_script': sanitized(job)[:2000] if job else None, 'logs': logs}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
@@ -203,7 +249,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r5()  # R5; report_r4() R4, report_r3() R3, report_r2() R2, report() R1
+        value = report_r6()  # R6 ticker; report_r5() R5, report_r4() R4, report_r3() R3, report_r2() R2, report() R1
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
