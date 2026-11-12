@@ -7,21 +7,23 @@
   "created_at": "2026-11-12T18:19:58Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T18:19:58Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-12T18:26:44Z",
+  "heartbeat_at": "2026-11-12T18:26:44Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43278419173",
     "task_id": "AUCTION-LIMIT-PREFLIGHT-20261112-R3",
     "task_sha256": "c34910a67851ca4f1e5c3088e4a674a9d8142863b9032cae73fdd5c4bd5e23ca"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-d8f3c60cdca1f4ee-65447e929206d850",
   "receipt_path": "state/receipts/AUCTION-LIMIT-PREFLIGHT-20261112-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "963b0b5ec5e80b3c483eef827faad3516bde30a6ab0f03e79da4280f01266a3a",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AUCTION-LIMIT-PREFLIGHT-20261112-R3.json",
   "request_sha256": "c34910a67851ca4f1e5c3088e4a674a9d8142863b9032cae73fdd5c4bd5e23ca",
   "resource_locks": [
@@ -29,8 +31,38 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "95843711438408fef987d5526d0e39d3e02b2df2",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92754100224,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.145
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-12T18:19:58Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "4f2b9b52eb07f7d3a728ca0953b6a5e20b91ac0709da1df4f8cae1f0abf33bf7",
+    "file_sha256": {
+      "cloud/auction_limit_001/candidate_builder.py": "a79fa6d41bd8ac625adc5fcc70d2b32092a66faf467d13daa70212935393ba46",
+      "cloud/auction_limit_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/auction_limit_001/deployment_bootstrap.py": "cc04ccad245b3d76f8130cf7c867e071a53a2a8fec9887f4aa6f7cf7ac61f20a",
+      "cloud/auction_limit_001/deployment_remote.py": "8d91e5911a96eb1b35cbfd2257316c940ff5257d00d1cffa3f46aa98ae496d51",
+      "cloud/auction_limit_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/auction_limit_001/deployment_transport.py": "fd7a8fd09f49e9f4a6b760cf356fbca5bd5dff8ecd2e4b5ea01cc0ecd623bcdb",
+      "cloud/auction_limit_001/make_release.py": "408f78f4a6f35871520491a7cac678fd9af97a1d14bb6d78925d72616bdb094a",
+      "cloud/auction_limit_001/release_constants.py": "d5a069585c6a761f2fba2b0cc594fa32abf286d286de6ed06c187b31346e02fa",
+      "cloud/auction_limit_001/test_auction_limit.py": "70fe1019d025d10c35b21f4ef0fbfd648370a59c5b7ceb6b0a94dc694ff7e512",
+      "cloud/auction_limit_001/test_deployment.py": "b15f13669d03e5ae5dcd72e87bbf2aeee9a7d9601961da75853bb2fcf3bf5242",
+      "cloud/auction_limit_001/ua_auction_bids.py": "c4aef73f74b39b0809b5caa096db8ede009149abdbff2774338f1f1133102ba5",
+      "cloud/auction_limit_001/ua_auction_clients.py": "6677e89f4bb68ed79c57eb9881dfa3eef04199bd44e11eca0e08fd0efd65ce77",
+      "cloud/auction_limit_001/ua_auction_clients_bot.py": "0b6841451c8c7b4f883645344f9c0b0b4e66c4df0ecfe3d05e6b495258359af1",
+      "cloud/auction_limit_001/ua_auction_clients_view.py": "29c9bb11738770e9efa0bf2310615b17ab3fb459659d0d9959a4b603fc4708e7",
+      "cloud/auction_limit_001/ua_auction_stats.py": "b03636c7768a9b7314a89138737b031f36fdb1d11058ab139f95233db4b379e7",
+      "cloud/auction_limit_001/ua_auction_web.py": "ac1923dfe96b8ca8b2ecdd4f0c7f9b97b6ebb5adb2f6fe0b1ac99d20ab9fce0b"
+    }
+  },
+  "updated_at": "2026-11-12T18:26:44Z"
 }
