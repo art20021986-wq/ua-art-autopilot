@@ -74,33 +74,13 @@ class ViewTest(unittest.TestCase):
         self.assertEqual(web._public(CLIENT), {'name': 'Иван', 'surname': 'Иванов', 'phone': '+380991112233'})
 
 
-class PageTest(unittest.TestCase):
-    def setUp(self):
-        self.page = (HERE / 'fixtures' / 'korea_live.html').read_text(encoding='utf-8')
-
-    def test_cabinet_without_limit(self):
-        new = candidate_builder.apply(self.page)
-        self.assertNotIn('kc-limit', new)
-        self.assertNotIn('limit_usd', new)
-        self.assertNotIn('ліміт', new)
-        self.assertNotIn('лимит', new)
-        self.assertNotIn('limit_over', new)
-        self.assertIn('day_limit:"day_limit"', new)
-        self.assertIn('id="kc-who"', new)
-        self.assertIn('id="kc-out"', new)
-        self.assertIn('.kb-hint").textContent=t("min")+" ₩"+n(min);btn.textContent', new)
-        removed = sum(len(old) - len(repl) for old, repl in candidate_builder.PAGE_EDITS)
-        self.assertEqual(len(self.page) - len(new), removed)
-
-    def test_unexpected_page_stops(self):
-        with self.assertRaisesRegex(ValueError, 'AUCTION_LIMIT_PAGE_UNEXPECTED'):
-            candidate_builder.apply(candidate_builder.apply(self.page))
-
+class BuildTest(unittest.TestCase):
     def test_other_installed_version_stops(self):
-        source = {name: b'other' for name in candidate_builder.MODULES}
-        source[candidate_builder.PAGE] = self.page.encode('utf-8')
         with self.assertRaisesRegex(ValueError, 'INPUT_HASH'):
-            candidate_builder.build(source, {})
+            candidate_builder.build({name: b'other' for name in candidate_builder.MODULES}, {})
+
+    def test_no_page_in_the_release(self):
+        self.assertTrue(all(name.endswith('.py') for name in candidate_builder.SOURCE_FILES))
 
 
 if __name__ == '__main__':
