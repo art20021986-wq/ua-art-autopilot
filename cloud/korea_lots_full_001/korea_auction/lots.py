@@ -1,7 +1,9 @@
 """Parse auction lot data: the Korea search results table and a lot detail page."""
 import re
+from urllib.parse import urljoin
 
 from . import html_tools
+from .session import BASE
 
 _COLUMNS = ('start', 'close', 'house_lot', 'score', 'mileage', 'year', 'start_price',
             'photo', 'maker', 'model', 'model_code', 'trim', 'engine', 'transmission')
@@ -74,6 +76,7 @@ def parse_detail(html):
                 market.append(sold)
     photos = []
     for src in re.findall(r'<img[^>]+src="([^"]+)"', html):
+        src = urljoin(BASE, src)  # the page writes them site-relative; the ticker and the copies need full addresses
         if PHOTO_PATH.search(src) and src not in photos:
             photos.append(src)
     vin = re.search(r'id="chassis_no_value"[^>]*>\s*([A-Za-z0-9-]{5,20})\s*<', html)

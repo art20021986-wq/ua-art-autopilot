@@ -1,0 +1,58 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-WEEK-PROBE-20261112.e04abcef4a9be3e627e0568bb54b42a989c27a291b08541b183ddfa176fc60c7.json",
+  "autostart_ledger_sha256": "be76b90c96a7f3e9f16dbcd8988f618b4b32653bf7c27362705db9f337f53994",
+  "autostart_source_commit": "d9bc9d16914d158bddc087307e53881982b69585",
+  "created_at": "2026-11-12T14:59:50Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-12T15:04:32Z",
+  "heartbeat_at": "2026-11-12T15:04:32Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43242754680",
+    "task_id": "KOREA-WEEK-PROBE-20261112",
+    "task_sha256": "e04abcef4a9be3e627e0568bb54b42a989c27a291b08541b183ddfa176fc60c7"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-3e17f451ce1febe4-84cbeab57c76a229",
+  "receipt_path": "state/receipts/KOREA-WEEK-PROBE-20261112.json",
+  "receipt_sha256": "3b2eb61b6938d366e6e7d055fe5c90482a0985d984d670a542c391a7ab56bbd3",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/KOREA-WEEK-PROBE-20261112.json",
+  "request_sha256": "e04abcef4a9be3e627e0568bb54b42a989c27a291b08541b183ddfa176fc60c7",
+  "resource_locks": [
+    "PATH_SCOPE:3e17f451ce1febe4"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "ae809e3cd307aac8951b5e093bb65e26947c1269",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92747218944,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.15
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "a9f60f0c42bfed2c4f8a4c5d43e445b0df5d04cb3b4754db30cd46928220ebe8",
+    "file_sha256": {
+      "cloud/korea_week_001/bootstrap.py": "b6ee7989e4ea9fc68d1c144fa2f12ff006c0ba4f15b44f349499b145354a760a",
+      "cloud/korea_week_001/make_request.py": "d74618d7274ba7b84672d20df6bfde070cfc8a29b9a1a961df4a283ea889c891",
+      "cloud/korea_week_001/source_remote.py": "64a7643bb0e94a498dd2b3c156d4c70c63d506583854ae5f1dd8eb08e8d5b106",
+      "cloud/korea_week_001/test_korea_week.py": "1262048c8244f5280bc5f7c1b8df45b580c531a1f176c5df84fdf07cc959d497",
+      "cloud/korea_week_001/transport.py": "cf0a6df4a8daab56e872d2d3187c3d1b06b5c30dcbdc2f95bdbc28790b611110",
+      "cloud/korea_week_001/week.py": "6d68faa1f69a08485ed2e81416d412187bdfd0831b94da8e7e77fb8357c928ea"
+    }
+  },
+  "updated_at": "2026-11-12T15:04:32Z"
+}

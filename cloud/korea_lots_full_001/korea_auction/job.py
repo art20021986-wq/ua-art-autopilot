@@ -15,13 +15,14 @@ import sys
 import tempfile
 import urllib.request
 
-from . import collect, prices, public, session, ticker
+from . import collect, model_lots, prices, public, session, ticker
 from .selection import JST
 
 ROOT = Path('/home/Carix')
 LOGIN = ROOT / 'jpauto_login.txt'
 OUT = ROOT / 'video/korea'
 IMG_URL = '/video/korea/img/'
+LOT_PAGE = '/video/korea.html'  # its lot card opens at #lot-<id>
 RUN_HOURS = (10, 12, 14)
 MAX_PHOTO = 3 * 1024 * 1024
 LOCK = ROOT / '.korea_auction_job.lock'
@@ -76,34 +77,16 @@ def fetch_photo(url):
     return data
 
 
-TICKER_PHOTO_WIDTH = 480  # TICKER-PHOTO-001: the ticker card shows 240 px; twice that for sharp phone screens
-
-
-def ticker_photo(data):
-    """A light JPEG copy for the ticker card (the auction original is up to 3 MB); the original if it can't be read."""
-    from io import BytesIO
-    try:
-        from PIL import Image
-        with Image.open(BytesIO(data)) as image:
-            if image.width <= TICKER_PHOTO_WIDTH:
-                return data
-            height = max(1, round(image.height * TICKER_PHOTO_WIDTH / image.width))
-            out = BytesIO()
-            image.convert('RGB').resize((TICKER_PHOTO_WIDTH, height), Image.LANCZOS).save(
-                out, 'JPEG', quality=82, optimize=True, progressive=True)
-            return out.getvalue()
-    except Exception:  # never lose a lot over its photo copy
-        return data
-
-
 def localize_photos(items, folder, fetch=fetch_photo):
-    """Copy each lot's main photo to the site, light and in parallel (TICKER-PHOTO-001); lots whose photo cannot be
-    copied are left out. Old photos are removed."""
+    """Copy each lot's main photo to the site as it is (TICKER-FIX5-001, owner: no compression), in parallel; lots whose
+    photo cannot be copied are left out and the reason goes to the task log. Old photos are removed."""
     def one(item):
         try:
-            write(folder / ('%s.jpg' % item['id']), ticker_photo(fetch(item['photo'])))
+            write(folder / ('%s.jpg' % item['id']), fetch(item['photo']))
             return dict(item, photo=IMG_URL + '%s.jpg' % item['id'])
-        except (OSError, ValueError):
+        except (OSError, ValueError) as error:
+            print('ticker photo %s not copied: %s: %s' % (item['id'], type(error).__name__, str(error)[:120]),
+                  file=sys.stderr)
             return None
 
     with ThreadPoolExecutor(PHOTO_WORKERS) as pool:
@@ -163,6 +146,12 @@ def publish_lots(data, now, folder):
     value = public.build(data['upcoming_lots'], data['auction_date'], data['rates'], photos,
                          now.isoformat(timespec='minutes'))
     write(folder / 'lots.json', json.dumps(value, ensure_ascii=False, separators=(',', ':')).encode('utf-8'))
+    # KOREA-MODEL-LOTS-001: the order page model carousels show the week's lots of each model (from the list above)
+    shown = {view['id']: view for view in value['lots']}
+    listed = [dict(lot, start_usd=shown[lot['id']]['start_usd']) for lot in data['upcoming_lots'] if lot['id'] in shown]
+    models = model_lots.select(listed, model_lots.KOREA, {key: view['photos'] for key, view in shown.items()},
+                               now.strftime('%Y/%m/%d %H:%M'), LOT_PAGE)
+    write(folder / 'model-lots.json', json.dumps(models, ensure_ascii=False, separators=(',', ':')).encode('utf-8'))
     return len(value['lots']), left
 
 

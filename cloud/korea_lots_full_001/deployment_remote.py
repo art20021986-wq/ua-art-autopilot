@@ -1,4 +1,5 @@
-"""Bounded KOREA-LOTS-FULL release (collector + Korea page lot list: VIN, every photo, auction days); preserve live data and pending requests."""
+"""Bounded KOREA-LOTS-FULL release (collector + Korea page lot list: VIN, every photo, auction days; order page model
+carousels: the week's auction lots first); preserve live data and pending requests."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -20,6 +21,7 @@ import time
 
 from deployment_transport import API, JOB_COMMAND, JOB_MINUTE, canonical, sha
 from candidate_builder import SOURCE_FILES, DEPENDENCY_SHA256, build, is_page
+import edit_order
 import ua_korea_lots
 
 ROOT = Path('/home/Carix')
@@ -123,21 +125,22 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'KOREA-LOTS-FULL-INSTALL-1','files':files,'job':JOB,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'collector update (korea_auction: coming days, VIN and every photo, copied gradually) and the lot list block of video/korea.html (auction days, VIN); no other page or CRM module changes',
+            'site_scope':'collector update (korea_auction: coming days, VIN and every photo, copied gradually; model lots for the order page), the lot list block of video/korea.html (auction days, VIN) and small edits of video/podbor.html and video/order/ (auction lots first in the model carousels); no CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
 
 
 def smoke(directory, live_page=None):
-    """The new collector imports on the server's Python and renders; only the list block of the page changes. No network."""
+    """The new collector imports and renders on the server's Python, the model lots are chosen, only the list block of the
+    Korea page changes and the order page files carry their edits. No network."""
     after = directory/'after'
     for name in read_names(directory):
         if name.endswith('.py'):
             compile(read(after/name), name, 'exec')
     sys.path.insert(0, str(after))
     try:
-        from korea_auction import job, lots, prices, public, selection, ticker
+        from korea_auction import job, lots, model_lots, prices, public, selection, ticker
         sample = {'lots_on_date': 2, 'own': [], 'items': [{
             'id': '1', 'title': 'Kia K5', 'model': 'K5', 'year': 2022, 'mileage_km': 1000, 'score': 'A',
             'fuel': 'Gasoline', 'start_price_krw': 10000000, 'start_price_usd': 7000, 'photo': '/video/korea/img/1.jpg',
@@ -167,7 +170,15 @@ def smoke(directory, live_page=None):
                  'vin_row': 'row("vin",l.vin)' in page, 'date_sort': 'value="date"' in page,
                  'card_photos_lazy': 'loading="lazy" decoding="async" src=' in page,
                  'only_the_list': outside(page) == outside(live),
-                 'page_platform_unnamed': not any(w in page.lower() for w in ('beforward', 'be forward', 'jpauto', 'jp auto'))}
+                 'page_platform_unnamed': not any(w in page.lower() for w in ('beforward', 'be forward', 'jpauto', 'jp auto')),
+                 'model_lots': model_lots.select([dict(lot, model='K5', year=2023, mileage_km=1000,
+                                                       score='AB', start_usd=7000)], model_lots.KOREA,
+                                                 {'1': ['/video/korea/lots/'+name]}, '2026/11/10 00:00', job.LOT_PAGE)
+                               == {'models': {'kia-k5': [{'id': '1', 'href': '/video/korea.html#lot-1',
+                                   'photo': '/video/korea/lots/'+name, 'date': '11.11', 'start': '2026/11/11 13:00',
+                                   'score': 'AB', 'year': 2023, 'km': 1000, 'usd': 7000}]}},
+                 'order_files': all(edit_order.CHECKS[n] in read(after/n).decode('utf-8') for n in edit_order.SOURCE_FILES)
+                                and isinstance(json.loads(read(after/edit_order.STRINGS)), dict)}
     finally:
         sys.path.remove(str(after))
         for name in [m for m in sys.modules if m == 'korea_auction' or m.startswith('korea_auction.')]:

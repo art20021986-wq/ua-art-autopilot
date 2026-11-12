@@ -56,8 +56,9 @@ CLIENT = {'phone': '+380991112233', 'surname': 'Иванов', 'name': 'Иван
 
 class ViewTest(unittest.TestCase):
     def test_deposit_question(self):
-        self.assertIn('Депозит в $ (от 1 000 $):', view.ask(len(view.STEPS) - 1)['text'])
-        self.assertIn('от 1000', view.FIELD_ERRORS['deposit'])
+        self.assertIn('Передоплата в $ (от 1 000 $, засчитывается в стоимость авто):', view.ask(len(view.STEPS) - 1)['text'])
+        self.assertEqual(view.FIELD_ERRORS['deposit'], 'Передоплата — число от 1000, например 1000.')
+        self.assertNotIn('епозит', view.ask(len(view.STEPS) - 1)['text'])
 
     def test_no_limit_anywhere(self):
         numbers = stats.summary(now=datetime(2026, 11, 12, 10, 0, tzinfo=KST), db=Path('/nonexistent/bids.db'),
@@ -81,7 +82,10 @@ class PageTest(unittest.TestCase):
         new = candidate_builder.apply(self.page)
         self.assertNotIn('kc-limit', new)
         self.assertNotIn('limit_usd', new)
-        self.assertNotIn('ліміт ставок', new)
+        self.assertNotIn('ліміт', new)
+        self.assertNotIn('лимит', new)
+        self.assertNotIn('limit_over', new)
+        self.assertIn('day_limit:"day_limit"', new)
         self.assertIn('id="kc-who"', new)
         self.assertIn('id="kc-out"', new)
         self.assertIn('.kb-hint").textContent=t("min")+" ₩"+n(min);btn.textContent', new)
