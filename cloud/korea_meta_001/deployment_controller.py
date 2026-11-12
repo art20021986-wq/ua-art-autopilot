@@ -11,9 +11,9 @@ from deployment_transport import API, HERE, INBOX, TransportError, canonical, sh
 
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
-# The live site after the install: the Korea page description without the deposit sentence; the
+# The live site after the install: the Korea page description with the prepayment, not the deposit; the
 # home page, catalogue and order page stay healthy.
-EXPECTED = {'/video/korea.html': 'name="description"', '/video/order/quick-lead.js': 'payload.lot = {id:',
+EXPECTED = {'/video/korea.html': 'Передоплата 1 000 $ зараховується у вартість авто.', '/video/order/quick-lead.js': 'payload.lot = {id:',
             '/video/index.html': 'class="ua-how section-frame"', '/video/katalog.html': '', '/video/podbor.html': ''}
 SITE = 'https://www.uaart.com.ua'
 ABSENT = {'/video/korea.html': 'Депозит 2000 $ входить у вартість авто.'}
