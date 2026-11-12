@@ -129,15 +129,16 @@ def collect(email, password, now=None, session=None):
         'items': items, 'requests': s.requests,
         'own': _own_for_ticker(own_cars),
         # for the public lot list (public.py); not part of the ticker
-        'day_lots': [l for l in all_lots if date and selection.auction_date(l) == date], 'rates': rates,
+        # every lot of the coming auction days (owner 2026-11-11: the visitor picks the day)
+        'upcoming_lots': selection.upcoming(all_lots, now), 'rates': rates,
     }
 
 
 def main(argv):
     result = collect(os.environ['JPAUTO_EMAIL'], os.environ['JPAUTO_PASSWORD'])
     with open(argv[1], 'w', encoding='utf-8') as fh:
-        json.dump({k: v for k, v in result.items() if k != 'day_lots'}, fh, ensure_ascii=False, indent=1)
-    print(json.dumps({k: v for k, v in result.items() if k != 'day_lots'}, ensure_ascii=False))  # no account data
+        json.dump({k: v for k, v in result.items() if k != 'upcoming_lots'}, fh, ensure_ascii=False, indent=1)
+    print(json.dumps({k: v for k, v in result.items() if k != 'upcoming_lots'}, ensure_ascii=False))  # no account data
     if not result['items']:
         raise SystemExit('NO_TICKER_ITEMS')
 
