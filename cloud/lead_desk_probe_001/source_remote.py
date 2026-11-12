@@ -15,7 +15,7 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('client_ui.py', 'ua_order/bindings.py', 'ua_order/host.py', 'ua_lead_desk.py')  # STAFF-FULL-ACCESS-001
+FULL = ('vitrina.py',)  # STAFF-FULL-ACCESS-001 R3
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -118,7 +118,7 @@ def report(home=None):
             'lead_desk': desk, 'owners': owners()}
 
 
-RECIPIENT = re.compile(r'OWNER_ID|MANAGER_CHAT_ID|ADMIN_IDS|owner_id|is_admin\(|ROLE_OWNER|staff_ids_by_role')
+RECIPIENT = re.compile(r'vladelec|VLADELEC|OWNER_ID|MANAGER_CHAT_ID|ADMIN_IDS|owner_id|is_admin\(|ROLE_OWNER|staff_ids_by_role')
 
 
 def owners():
