@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-CARD-INSTALL-20261112.478b7ad1ed9fc3e410236919e25ae3e557ce22a36194198a63a8d05c518eb863.json",
+  "autostart_ledger_sha256": "37ccdf1a05e00494b74e90d29b91d0e83dbcb65de1109d13f5444a53e04b4e58",
+  "autostart_source_commit": "48a40dea2b45bbf7e9ebb58e6cb412f5a19c37ec",
+  "created_at": "2026-11-12T15:19:02Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-12T15:19:02Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43245170432",
+    "task_id": "KOREA-CARD-INSTALL-20261112",
+    "task_sha256": "478b7ad1ed9fc3e410236919e25ae3e557ce22a36194198a63a8d05c518eb863"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-a513e4136e321fe7-aa5afa55010095a2",
+  "receipt_path": "state/receipts/KOREA-CARD-INSTALL-20261112.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/KOREA-CARD-INSTALL-20261112.json",
+  "request_sha256": "478b7ad1ed9fc3e410236919e25ae3e557ce22a36194198a63a8d05c518eb863",
+  "resource_locks": [
+    "PATH_SCOPE:a513e4136e321fe7"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "f370d245b9f039c5011ccca954ff93f6b117b7d8",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-12T15:19:02Z"
+}
