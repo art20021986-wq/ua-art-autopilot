@@ -22,7 +22,7 @@ def request(day):
     task = 'LEAD-DESK-PROBE-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Read-only check for STAFF-FULL-ACCESS-001 (owner 2026-11-12): full sanitized vitrina.py and every line reading vladelec.txt; '
+        'description': 'Read-only check for STAFF-FULL-ACCESS-001 (owner 2026-11-12): full sanitized analitika_knopka.py, karta_klienta.py, svyaz.py, bezopasnost.py, analitika_bot.py; '
                        'every line where the bots name the '
                        'owner or send to him (sanitized), the sanitized client bot source, and whether @Beetle204 is in '
                        'the CRM staff and the client bot users (yes/no and role only; no ids, names or rows). '

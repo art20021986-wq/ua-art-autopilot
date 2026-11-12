@@ -15,7 +15,7 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('vitrina.py',)  # STAFF-FULL-ACCESS-001 R3
+FULL = ('analitika_knopka.py', 'karta_klienta.py', 'svyaz.py', 'bezopasnost.py', 'analitika_bot.py')  # STAFF-FULL-ACCESS-001 R4
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
