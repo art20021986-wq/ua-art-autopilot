@@ -130,6 +130,22 @@ class Lot(unittest.TestCase):
         self.assertIsNone(lot.car_from_page('1' * 14, detail, 'Final Price -', None)['price_usd'])
 
 
+class Photos(unittest.TestCase):
+    def test_save_photos(self):
+        written = {}
+
+        def fetch(url):
+            if 'bad' in url:
+                raise ValueError('NOT_AN_IMAGE')
+            return b'jpg'
+
+        urls = lot.save_photos(5, ['https://a/1.jpg', 'https://a/bad.jpg', 'https://a/3.jpg'], fetch,
+                               lambda path, data: written.__setitem__(str(path), data), root=Path('/r'),
+                               base='https://s/', token='abc')
+        self.assertEqual(urls, ['https://s/5-abc/1.jpg', 'https://s/5-abc/3.jpg'])
+        self.assertEqual(sorted(written), ['/r/5-abc/1.jpg', '/r/5-abc/3.jpg'])
+
+
 class Edit(unittest.TestCase):
     def test_block_appended_once(self):
         source = b"import x\nlog = 1\n\ndef register(app):\n    pass\n"
