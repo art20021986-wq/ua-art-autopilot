@@ -7,21 +7,23 @@
   "created_at": "2026-11-12T07:53:24Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T07:53:24Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-12T07:57:54Z",
+  "heartbeat_at": "2026-11-12T07:57:54Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43178423290",
     "task_id": "HOME-FINANCE-PREFLIGHT-20261112",
     "task_sha256": "a84200009712b526b8c7b2bb060ae4e1f9ef9dc380b6c8b1b35c4f7c1bb91f1b"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-0fe793b35864db65-fd6b9da7fe8403f6",
   "receipt_path": "state/receipts/HOME-FINANCE-PREFLIGHT-20261112.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "1607e21a37be1e5b4ab8114fcbd6f7d13c5d44d30cfbacfdb46ea5b07162b440",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-FINANCE-PREFLIGHT-20261112.json",
   "request_sha256": "a84200009712b526b8c7b2bb060ae4e1f9ef9dc380b6c8b1b35c4f7c1bb91f1b",
   "resource_locks": [
@@ -29,8 +31,35 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "689d0df135539ff5f633532969a223971a9afa2b",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92781260800,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.128
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-12T07:53:24Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "013606631bc2ed6fc3d52d1254d6e845202479371e6c4502e9e03a2345bcca8f",
+    "file_sha256": {
+      "cloud/home_finance_001/candidate_builder.py": "656098cdfc1fa5c7c8cbfb11155bc7695a02215aaf5f6a6ae120bdcce9517275",
+      "cloud/home_finance_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_finance_001/deployment_bootstrap.py": "cf8e73c81144b02252d7dc2bcef53567a0d3747fe054b7294b025264f64dd892",
+      "cloud/home_finance_001/deployment_remote.py": "7ab57c9a6ffbc6e4cfd6e116c0d3a02c686af429cc48022b5b371e7508cb82c4",
+      "cloud/home_finance_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_finance_001/deployment_transport.py": "5a0b22508fd90cc5d4c253df8dfd574407e42b0fbddd175c43a2eb0b66e73436",
+      "cloud/home_finance_001/edit_home.py": "0c15f79c8740f2c9d11c481fbbe173b9611288f0d9bc6d66250a4c3e86906d25",
+      "cloud/home_finance_001/finance_block.py": "ea65ceb9f93032cccf2a5fc63182a0aa8a4e472f56653e0f9dab4998ec853578",
+      "cloud/home_finance_001/finance_text.py": "58a6ca7f35685b231b6bc80609c1a53e6b919ee59a998bf048f14d4be9ddc0ad",
+      "cloud/home_finance_001/make_release.py": "eba647e9cb3457cfba26267d22a65af0b6e1eb25b73b632588540009da2aecfc",
+      "cloud/home_finance_001/release_constants.py": "c42d65df22b24b450174acb2d82a06af49f3206e80f6563da03dff19c6ed9312",
+      "cloud/home_finance_001/test_deployment.py": "d79feeea6681ab6a26f5c474c1cbcdc5d93cbc18efdddc6d568594150c7ac5af",
+      "cloud/home_finance_001/test_edit_home.py": "07bfdf8547be9352d017e82989f67a5fce65cf2feb7e86ea45de909a31fdff45"
+    }
+  },
+  "updated_at": "2026-11-12T07:57:54Z"
 }
