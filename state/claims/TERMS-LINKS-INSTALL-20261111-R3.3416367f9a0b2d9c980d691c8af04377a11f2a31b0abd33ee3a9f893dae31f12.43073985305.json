@@ -1,0 +1,102 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TERMS-LINKS-INSTALL-20261111-R3.3416367f9a0b2d9c980d691c8af04377a11f2a31b0abd33ee3a9f893dae31f12.json",
+  "autostart_ledger_sha256": "e6f67e783a793c8fc6fd9d84ee061dc943b73bd3dbb37b440ad5d9594c486d17",
+  "autostart_source_commit": "3ecfd6e085eb4dbadeb643eef9064b2a6fe00f7a",
+  "created_at": "2026-11-11T18:04:13Z",
+  "critical_gate_evidence_sha256": "84ae382d7d7193665d80c41012a64a1e7a2c52b0513d49c98e0b117c95078268",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "STOP_AFTER_VERIFIED_ROLLBACK",
+      "at": "2026-11-11T18:29:41Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 43073985305",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "b8c092155d0e7c05"
+    }
+  ],
+  "heartbeat_at": "2026-11-11T18:09:21Z",
+  "heartbeat_sequence": 7,
+  "identity": {
+    "run_id": "43073985305",
+    "task_id": "TERMS-LINKS-INSTALL-20261111-R3",
+    "task_sha256": "3416367f9a0b2d9c980d691c8af04377a11f2a31b0abd33ee3a9f893dae31f12"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 187.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 144.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-43073985305-3416367f9a0b2d9c",
+  "production_transaction_path": "state/transactions/TERMS-LINKS-INSTALL-20261111-R3.3416367f9a0b2d9c980d691c8af04377a11f2a31b0abd33ee3a9f893dae31f12.43073985305.json",
+  "production_transaction_status": "ROLLED_BACK",
+  "queue_key": "catalog_renderer-516734deb9ea5607",
+  "receipt_path": "state/receipts/TERMS-LINKS-INSTALL-20261111-R3.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TERMS-LINKS-INSTALL-20261111-R3.json",
+  "request_sha256": "3416367f9a0b2d9c980d691c8af04377a11f2a31b0abd33ee3a9f893dae31f12",
+  "resource_locks": [
+    "CATALOG_RENDERER",
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "1b89f839c3648f13aa3cedbf7013d21307ec71fa",
+  "storage_preflight": {
+    "age_seconds": 390.602,
+    "allowed": true,
+    "evidence_path": "state/storage/TERMS-LINKS-INSTALL-20261111-R3.json",
+    "evidence_sha256": "130030ea9b9369ee88fafbcefd42a9c84fbb184a0118864729ccce886ebbc9d7",
+    "free_bytes": 22632631808,
+    "heavy": true,
+    "measured_at": "2026-11-11T17:58:55.250630+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 35.33533769142857
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "ROLLED_BACK",
+  "trusted_package": {
+    "controller_sha256": "cc74a63134f27de4f24e563ce0079e9c336d05f3917724512c60c2dcacff0e49",
+    "file_sha256": {
+      "cloud/terms_links_001/candidate_builder.py": "3300f11b689103513fcee75387b117944d246522d0832ee6e3a75da5b7da4a37",
+      "cloud/terms_links_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/terms_links_001/deployment_bootstrap.py": "3a073b891bb51aa16d92f825b64a4d20568d18f23742599d90804eb9a85286c1",
+      "cloud/terms_links_001/deployment_remote.py": "e128b02d48dd63023cdb89ff4416df8bbe30966b2c0ae3ab69328df853bf42cb",
+      "cloud/terms_links_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/terms_links_001/deployment_transport.py": "adab51935b8a1213f1dcb7c55d8bb579305f74a33f10a139369b1cc06062c1bc",
+      "cloud/terms_links_001/make_release.py": "419d7fc0cdea1595a966c0d2f918008ff25e459b2212472e661a4f21c4561244",
+      "cloud/terms_links_001/release_constants.py": "a739788d5d63dd0dd98c9e0736408bf8f57fc3bd59b09399071c2574b22c101e",
+      "cloud/terms_links_001/test_deployment.py": "255fe6f2391a424e25d39f6013f7ef5b1c5dca05b7cd3aa8cce78fda7243b18e",
+      "cloud/terms_links_001/test_release.py": "f22ef40cb6eeb3c2ea0bb67aa0fc24057c884fd467936f13a90385b057f04d89",
+      "cloud/terms_links_001/ua_terms_links.py": "adb3e32a9d9e765b22435f2aaea70cb94bf92fe14821fe433d543e6efa88b3c5"
+    }
+  },
+  "updated_at": "2026-11-11T18:29:41Z"
+}

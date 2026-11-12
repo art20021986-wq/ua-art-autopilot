@@ -59,16 +59,29 @@ def accepted(value, mode, run_id, backup=None):
         raise RuntimeError('BACKUP_BINDING')
 
 
+# A slow answer from the site is retried (R3 install was rolled back on one 30 s read timeout); a wrong page is not.
+RETRY_DELAYS=(15,45)
+
+
+def fetch(url,path):
+    for delay in RETRY_DELAYS+(None,):
+        request=urllib.request.Request(url,headers={'Cache-Control':'no-cache','User-Agent':'UAART-Terms-Verify/1'})
+        try:
+            with urllib.request.urlopen(request,timeout=60) as response:
+                final=urllib.parse.urlsplit(response.url)
+                if response.status!=200 or (final.scheme,final.netloc,final.path)!=('https','www.uaart.com.ua',path):
+                    raise RuntimeError('PUBLIC_CANONICAL_HEALTH:'+path)
+                return response.read(1024*1024).decode('utf-8','replace')
+        except (TimeoutError,urllib.error.URLError,ConnectionError):
+            if delay is None: raise
+            time.sleep(delay)
+
+
 def public_verify(api, bundle, backup_sha, plan):
     results={}
     for path,expected in EXPECTED.items():
         url='https://www.uaart.com.ua'+path
-        request=urllib.request.Request(url,headers={'Cache-Control':'no-cache','User-Agent':'UAART-Terms-Verify/1'})
-        with urllib.request.urlopen(request,timeout=30) as response:
-            final=urllib.parse.urlsplit(response.url)
-            if response.status!=200 or (final.scheme,final.netloc,final.path)!=('https','www.uaart.com.ua',path):
-                raise RuntimeError('PUBLIC_CANONICAL_HEALTH:'+path)
-            body=response.read(1024*1024).decode('utf-8','replace')
+        body=fetch(url,path)
         if len(body)<100: raise RuntimeError('EMPTY_PUBLIC_PAGE:'+path)
         if not expected(body): raise RuntimeError('PUBLIC_CHANGE_MISSING:'+path)
         results[path]='PASS'

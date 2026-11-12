@@ -84,20 +84,20 @@ class CandidateTests(unittest.TestCase):
         folder = Path(tempfile.mkdtemp())
         (folder / 'site_ge_inject.py').write_bytes(self.result['site_ge_inject.py'])
         (folder / 'ua_chat_button.py').write_bytes(self.result['ua_chat_button.py'])
-        namespace = {}
-        calls = []
         code = self.result['site_ge_inject.py'].decode()
         tail = code[code.index('# CHAT-BUTTON-001'):]
-        namespace['inject_html'] = lambda source: calls.append(source) or source
+        # The appended chain over a stub base inject_html, loaded as a module (the execution contract denies exec).
+        (folder / 'chain_probe.py').write_text('CALLS = []\n\ndef inject_html(source):\n    CALLS.append(source)\n'
+                                               '    return source\n' + tail, 'utf-8')
         sys.path.insert(0, str(folder))
         try:
-            exec(tail, namespace)
-            page = namespace['inject_html']('<html><body><a class="chat" href="https://wa.me/1">c</a></body></html>')
+            probe = _module(folder / 'chain_probe.py', 'chain_probe')
+            page = probe.inject_html('<html><body><a class="chat" href="https://wa.me/1">c</a></body></html>')
         finally:
             sys.path.remove(str(folder))
-        self.assertEqual(len(calls), 1)
+        self.assertEqual(len(probe.CALLS), 1)
         self.assertTrue(page.endswith(ua_chat_button.END + '</body></html>'))
-        self.assertEqual(namespace['inject_html'](page), page)
+        self.assertEqual(probe.inject_html(page), page)
 
     def test_pages_style_once_and_guard(self):
         for name in ('video/katalog.html', 'video/index.html', 'catalog_design_golden.html'):
