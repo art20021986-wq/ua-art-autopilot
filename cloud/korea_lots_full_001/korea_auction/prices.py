@@ -8,10 +8,8 @@ the price is read again once.
 """
 import json
 from pathlib import Path
-from urllib.parse import urljoin
 
 from . import lots
-from .session import BASE
 
 CACHE = Path('/home/Carix/korea_auction_data/prices.json')
 PER_RUN = 600
@@ -40,7 +38,7 @@ def save(known, path=None):
 def entry(html):
     detail = lots.parse_detail(html)
     return {'krw': detail['start_price_krw'], 'vin': detail['vin'],
-            'photos': [urljoin(BASE, src) for src in detail['photos'][:MAX_PHOTOS]]}
+            'photos': detail['photos'][:MAX_PHOTOS]}
 
 
 def fill(session, current_lots, known, limit=PER_RUN):

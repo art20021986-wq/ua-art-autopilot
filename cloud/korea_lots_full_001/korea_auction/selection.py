@@ -37,6 +37,25 @@ def next_auction_date(lots, now=None):
     return today if any(auction_date(l) == today for l in lots) else None
 
 
+def ticker_dates(lots, now=None):
+    """TICKER-FIX6-001: the dates the ticker takes cars from, in order — the next auction days, then today (a freshly
+    listed next day may have no popular car with a photo and price yet; the ticker must never stay empty)."""
+    today = (now or datetime.now(JST)).strftime('%Y/%m/%d')
+    dates = {auction_date(l) for l in lots}
+    return sorted(d for d in dates if d > today) + ([today] if today in dates else [])
+
+
+def today_and_next(lots, now=None):
+    """TICKER-FIX4-001: today's date and the next auction date after today ('YYYY/MM/DD', None if not listed)."""
+    today = (now or datetime.now(JST)).strftime('%Y/%m/%d')
+    later = sorted({auction_date(l) for l in lots if auction_date(l) > today})
+    return today, (later[0] if later else None)
+
+
+def day_after(date):
+    return (datetime.strptime(date, '%Y/%m/%d') + timedelta(days=1)).strftime('%Y/%m/%d')
+
+
 def candidates(lots, date, is_own=lambda lot: False, rng=random):
     """Lots of that date: the owner's models first, then other top models; each group shuffled."""
     day = [l for l in lots if auction_date(l) == date and l['photos']]
