@@ -13,3 +13,7 @@
 Проверки: тесты 37 OK (фикстуры = установленные файлы, sha сверены с ANALYTICS-AUDIT-PROBE-20261112);
 скрипт прогнан в браузере (Playwright): foto/knopka/scroll приходят; запись и отчёт на тестовой базе.
 Порядок: ANALYTICS3-PREFLIGHT-20261112 (только чтение) → ANALYTICS3-INSTALL-20261112, оба через очередь координатора.
+
+Итог 2026-11-12: ANALYTICS3-PREFLIGHT-20261112 PASS (run 43284622185); ANALYTICS3-INSTALL-20261112 FINISHED
+(run 43286203420): backup PASS, live_verify PASS, CRM без изменений, web app reload HTTP_200, /ua/a.js отдаёт
+UA-PAGE-DEPTH-001 (проверено вживую). Блок «📜» появится в отчёте, когда накопятся события прокрутки.
