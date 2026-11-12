@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/NEW-CAR-VIN-PREFLIGHT-20261112.73fb4ea3d4a9b1579c2ca196908ad6b189e3e51b09a37342f32e7fb3699544fa.json",
+  "autostart_ledger_sha256": "1336fe12df9bc32d533a40e9f56f4f1ebf2ff9a76884090c9914483ffe0c747f",
+  "autostart_source_commit": "d30710e19e2ae155d4aa4600c68a4438df2fd396",
+  "created_at": "2026-11-12T20:02:22Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43295964781",
+    "task_id": "NEW-CAR-VIN-PREFLIGHT-20261112",
+    "task_sha256": "73fb4ea3d4a9b1579c2ca196908ad6b189e3e51b09a37342f32e7fb3699544fa"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/NEW-CAR-VIN-PREFLIGHT-20261112.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
