@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "e0e092a06ef1d508c3fc6c24d36f7ba85b045bbcb02448c2dec9d0ec63daca16",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T17:09:05Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-12T17:15:09Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43265865618",
     "task_id": "KOREA-META-INSTALL-20261112",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43265865618-9217c667ed887e5e",
   "production_transaction_path": "state/transactions/KOREA-META-INSTALL-20261112.9217c667ed887e5e59f3a168162544df8dce3d7e775a1615b9968a01b8af4355.43265865618.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-99bc477d25844e17-14b4137fe6264e02",
   "receipt_path": "state/receipts/KOREA-META-INSTALL-20261112.json",
   "receipt_validation_status": "PENDING",
@@ -93,5 +93,5 @@
       "cloud/korea_meta_001/test_release.py": "bcfef10ed331702880c4d2546aafbd7ca750eb3a22a106cd7bd9c78d68c4db10"
     }
   },
-  "updated_at": "2026-11-12T17:09:05Z"
+  "updated_at": "2026-11-12T17:15:09Z"
 }
