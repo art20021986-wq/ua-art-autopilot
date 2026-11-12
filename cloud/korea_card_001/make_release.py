@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write the KOREA-DAYS-PAGE preview request, then (after the preview) the install request set (run from the repo root).
+"""Write the KOREA-CARD preview request, then (after the preview) the install request set (run from the repo root).
 
 Usage: python3 cloud/korea_card_001/make_release.py preview   # PR, merge, then: launch preview
        python3 cloud/korea_card_001/make_release.py launch TASK_ID
@@ -72,12 +72,13 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of KOREA-DAYS-PAGE (JPAUTO-KOREA-001): reads the live Korea page, builds the '
-                            'candidate (the lot list block in its new version) and checks that only that block changes; '
-                            'measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of KOREA-CARD (JPAUTO-KOREA-001): reads the live Korea page, builds the candidate '
+                            '(the lot list block in its new version: weekday with date, direct lot links, VIN instead of the '
+                            'lot number) and checks that only that block changes; measures storage. No application source, '
+                            'CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview Korea lot list days and VIN'}
+             'title': 'Preview Korea lot card and day labels'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -130,17 +131,18 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner request (2026-11-11): on the Korea auctions page the lot list has the auction days on '
-                              'top (weekday, date, number of cars; «Усі дні» first), the auction day and time on every '
-                              'card, «За датою торгів» in the sorting and the VIN in the lot card; only the list block of '
-                              'video/korea.html is replaced. No CRM data change. Existing backup, bot pause, '
-                              'writer locks, data-preservation, rollback and public health checks are kept.',
+               'description': 'Owner requests (2026-11-12, «да»): on the Korea auctions page the auction day buttons and '
+                              'lot cards show the weekday with its date (Пт 13.11, uk/ru/ka without the browser locale '
+                              'data, Georgian was shown in English), each opened lot gets its own link (#lot-<id>) and the '
+                              'lot card shows the VIN and no longer the lot number (a lot without VIN hides the row); only '
+                              'the list block of video/korea.html is replaced. No CRM data change. Existing backup, bot '
+                              'pause, writer locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install Korea lot list days and VIN'}
+               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install Korea lot card and day labels'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),
