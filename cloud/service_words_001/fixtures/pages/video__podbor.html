@@ -1,0 +1,371 @@
+<!doctype html><html lang="uk"><head><!--UA-GTAG-V1--><script async src="https://www.googletagmanager.com/gtag/js?id=G-6SRBQK6GY4"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-6SRBQK6GY4');
+(function(){var last={};
+function lead(name,method){var key=name+'|'+method,now=Date.now();if(last[key]&&now-last[key]<2000)return;last[key]=now;gtag('event',name,{method:method});}
+function contact(href){var h=href.toLowerCase();if(h.indexOf('tel:')===0)return 'phone';if(h.indexOf('viber:')===0)return 'viber';
+if(/^tg:|\/\/(t\.me|telegram\.me)\//.test(h))return 'telegram';if(/\/\/(wa\.me|api\.whatsapp\.com)\/|^whatsapp:/.test(h))return 'whatsapp';return '';}
+document.addEventListener('click',function(e){var t=e.target;if(!t||!t.closest)return;
+if(t.closest('#ua-order #handoff')){lead('generate_lead','order_telegram');return;}
+var a=t.closest('a[href]');var m=a?contact(a.getAttribute('href')):'';if(m)lead('contact',m);},true);
+document.addEventListener('DOMContentLoaded',function(){var r=document.querySelector('#ua-order #receipt');if(!r||!window.MutationObserver)return;
+new MutationObserver(function(){if(r.hidden)return;try{if(sessionStorage.getItem('ua_gtag_lead'))return;sessionStorage.setItem('ua_gtag_lead','1');}catch(x){}
+lead('generate_lead','order_form');}).observe(r,{attributes:true,attributeFilter:['hidden']});});})();</script><!--/UA-GTAG-V1--><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title data-ru="Подбор авто под заказ в Украину — UA ART COMPANY" data-uk="Підбір авто під замовлення в Україну — UA ART COMPANY">Підбір авто під замовлення в Україну — UA ART COMPANY</title><meta name="description" content="Підбір автомобіля з Кореї, США, Японії та інших країн. Укажіть країну, модель і бюджет у заявці UA ART COMPANY для обговорення підбору та доставки." data-ru-content="Подбор автомобиля из Кореи, США, Японии и других стран. Укажите страну, модель и бюджет в заявке UA ART COMPANY для обсуждения подбора и доставки." data-uk-content="Підбір автомобіля з Кореї, США, Японії та інших країн. Укажіть країну, модель і бюджет у заявці UA ART COMPANY для обговорення підбору та доставки."><style>
+:root{--fon:#0d1826;--karta:#152437;--zoloto:#e8a33d;--tekst:#eaf0f7;--seryj:#9fb0c4;--zel:#6ee7a0}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--fon);color:var(--tekst);font-size:16px;line-height:1.5;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+a{color:inherit;text-decoration:none}
+.shapka{position:sticky;top:0;z-index:9;background:rgba(10,20,33,.97);padding:14px 16px;
+ border-bottom:1px solid #1e3149;backdrop-filter:blur(8px)}
+.logo{display:flex;align-items:center;gap:10px}
+.znak{width:34px;height:34px;border-radius:9px;background:var(--zoloto);color:#10202f;
+ font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.imya{color:var(--zoloto);font-weight:800;letter-spacing:.08em;font-size:15px}
+.pod{color:var(--seryj);font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px}
+.svyaz{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.svyaz a{flex:1 1 0;padding:12px 8px;border-radius:12px;border:1px solid #2b405a;
+ font-size:14px;text-align:center;white-space:nowrap}
+.svyaz a.pozvonit{flex:1 1 100%;border:1.5px solid var(--zoloto);color:var(--zoloto);
+ font-weight:700;font-size:16px;padding:14px 8px}
+.svyaz a.wa{border-color:#2c5a41;color:var(--zel)}
+.svyaz a.karta{color:#dce7f3}
+.svyaz.polya{padding:0 16px;margin-top:14px}
+.lenta{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:14px 16px 6px;
+ -webkit-overflow-scrolling:touch}
+.lenta::-webkit-scrollbar{display:none}
+.kadr{flex:0 0 86%;scroll-snap-align:center;background:#0B1524;border-radius:14px;overflow:hidden}
+.kadr img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block;background:#0B1524}
+.podpis_kadra{color:var(--seryj);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+ padding:6px 12px 8px}
+.schet{color:var(--seryj);font-size:13px;padding:0 16px 6px}
+.blok{background:var(--karta);margin:12px 16px;padding:16px;border-radius:16px}
+.zag{color:var(--seryj);font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px}
+h1{font-size:22px;margin:2px 0 8px;line-height:1.2}
+.nom{color:var(--seryj);font-size:12px;letter-spacing:.16em}
+.chip{display:inline-block;border:1px solid #2c5a41;color:var(--zel);border-radius:20px;
+ padding:5px 12px;font-size:13px}
+.cena{font-size:30px;color:var(--zoloto);font-weight:800;letter-spacing:-.5px}
+.tihо{color:var(--seryj);font-size:13px}
+video{width:calc(100% - 32px);margin:6px 16px 0;border-radius:14px;background:#000;display:block}
+table.kratko{width:100%;border-collapse:collapse}
+table.kratko td{padding:8px 0;border-bottom:1px solid #1e3149;font-size:15px}
+table.kratko td.k{color:var(--seryj);width:42%}
+table.kratko tr:last-child td{border-bottom:none}
+.etap{display:flex;gap:10px;padding:7px 0;font-size:14px;align-items:center}
+.etap .krug{width:22px;height:22px;border-radius:50%;border:1px solid #2b405a;color:var(--seryj);
+ font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 22px}
+.etap.proshel{color:var(--seryj)}
+.etap.proshel .krug{background:#22364e;color:#dce7f3;border-color:#22364e}
+.etap.tut{color:var(--zoloto);font-weight:700}
+.etap.tut .krug{background:var(--zoloto);color:#10202f;border-color:var(--zoloto)}
+.dejstvie{display:block;margin:12px 16px;padding:17px;border-radius:14px;background:var(--zoloto);
+ color:#10202f;text-align:center;font-weight:800;font-size:16px}
+.vtoraya{display:block;margin:10px 16px;padding:15px;border-radius:14px;border:1px solid #2b405a;
+ color:#dce7f3;text-align:center;font-size:15px}
+.zvonok{display:block;margin:10px 16px;padding:16px;border-radius:14px;
+ border:1.5px solid var(--zoloto);color:var(--zoloto);text-align:center;
+ font-size:16px;font-weight:700}
+.zvonok span{opacity:.75;font-weight:400;font-size:14px}
+.podval{color:#5f7186;padding:20px 16px 40px;text-align:center;font-size:12px;line-height:1.7}
+.avtor{color:var(--zoloto);opacity:.7;font-size:10px;margin-top:10px}
+.plitka{display:block;background:var(--karta);margin:12px 16px;border-radius:16px;overflow:hidden}
+.plitka img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#0B1524}
+.plitka .telo{padding:14px}
+.plitka .stroka{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.plitka .nazv{font-size:17px;font-weight:700;line-height:1.25}
+.plitka .cn{color:var(--zoloto);font-weight:800;font-size:19px;white-space:nowrap}
+.plitka .niz{color:var(--seryj);font-size:13px;margin-top:7px}
+.plitka .ramka{position:relative}
+.znak_video{position:absolute;right:10px;bottom:10px;background:rgba(10,20,33,.82);
+ color:var(--tekst);font-size:12px;padding:5px 10px;border-radius:20px;
+ display:flex;align-items:center;gap:5px}
+.znak_video b{color:var(--zoloto);font-size:11px}
+.mini_lenta{display:flex;gap:5px;padding:8px 14px 0}
+.mini_lenta img{flex:1;aspect-ratio:4/3;object-fit:cover;border-radius:7px;background:#0B1524;
+ min-width:0}
+.mini_lenta .eshche{flex:1;aspect-ratio:4/3;border-radius:7px;background:#1b2c42;color:var(--seryj);
+ font-size:12px;display:flex;align-items:center;justify-content:center}
+.zagolovok{padding:20px 16px 2px;font-size:22px;font-weight:800}
+.geroj{position:relative;min-height:74vh;display:flex;flex-direction:column;justify-content:flex-end;
+ padding:24px 20px 26px;overflow:hidden}
+.geroj .fon{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.42)}
+.geroj .tuman{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,24,38,.55) 0%,rgba(13,24,38,.25) 40%,var(--fon) 100%)}
+.geroj .telo{position:relative}
+.geroj h1{font-size:34px;line-height:1.1;font-weight:800;letter-spacing:-.5px;margin:14px 0 10px}
+.geroj .pod2{color:#c8d6e6;font-size:16px;line-height:1.5;max-width:520px}
+.mini{display:flex;gap:10px;padding:16px;flex-wrap:wrap}
+.mini div{flex:1 1 30%;background:var(--karta);border-radius:14px;padding:14px 12px;text-align:center}
+.mini b{display:block;color:var(--zoloto);font-size:19px;margin-bottom:3px}
+.mini span{color:var(--seryj);font-size:12px;line-height:1.35}
+.shag{display:flex;gap:12px;padding:8px 0;font-size:15px;align-items:flex-start}
+.shag .n{flex:0 0 24px;height:24px;border-radius:50%;background:#22364e;color:#dce7f3;font-size:12px;
+ display:flex;align-items:center;justify-content:center;margin-top:1px}
+.vybor{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.vybor button{flex:1 1 46%;background:#1b2c42;border:1px solid #2b405a;color:var(--tekst);
+ padding:13px 10px;border-radius:12px;font-size:14px;font-family:inherit}
+.vybor button.vzyat{background:var(--zoloto);border-color:var(--zoloto);color:#10202f;font-weight:700}
+.itog{color:var(--seryj);font-size:14px;padding:0 16px 6px}
+.vopros{border-bottom:1px solid #1e3149;padding:12px 0}
+.vopros:last-child{border-bottom:none}
+.vopros b{display:block;margin-bottom:5px;font-size:15px}
+.vopros span{color:var(--seryj);font-size:14px;line-height:1.55}
+.vhodit{display:flex;gap:10px;padding:7px 0;font-size:15px;align-items:flex-start}
+.vhodit .g{color:var(--zel);flex:0 0 18px}
+.tehstr{display:flex;gap:10px;padding:6px 0;font-size:15px;line-height:1.5;align-items:flex-start}
+.tehstr .m{color:var(--zoloto);flex:0 0 12px;font-size:15px;line-height:1.5}
+.tehtekst{font-size:15px;line-height:1.6}
+.chat{position:fixed;right:16px;bottom:18px;z-index:90;display:flex;align-items:center;gap:8px;
+ background:#1f7a4d;color:#fff;padding:13px 18px;border-radius:30px;font-size:15px;font-weight:600;
+ box-shadow:0 6px 20px rgba(0,0,0,.45);text-decoration:none}
+.chat svg{width:20px;height:20px;fill:#fff;flex:0 0 20px}
+body{padding-bottom:76px}
+#lupa{position:fixed;inset:0;background:#000;z-index:99;display:none;align-items:center;justify-content:center}
+#lupa img{max-width:100%;max-height:86vh;object-fit:contain}
+#lupaschet{position:fixed;top:16px;left:0;right:0;text-align:center;color:#fff;font-size:15px;
+ z-index:100;display:none}
+
+#uspeh{position:fixed;inset:0;background:rgba(10,20,33,.97);z-index:120;display:none;
+ align-items:center;justify-content:center;padding:24px;text-align:center}
+#uspeh .karta{background:var(--karta);border-radius:20px;padding:28px 22px;max-width:420px}
+#uspeh .galka{width:64px;height:64px;border-radius:50%;background:var(--zoloto);color:#10202f;
+ font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+#uspeh h2{font-size:22px;margin:0 0 10px}
+#uspeh p{color:var(--seryj);font-size:15px;line-height:1.6;margin:0 0 18px}
+#uspeh .zakr{display:block;padding:14px;border-radius:12px;border:1px solid #2b405a;color:#dce7f3}
+
+#nomerok{position:fixed;inset:0;background:rgba(10,20,33,.97);z-index:130;display:none;
+ align-items:center;justify-content:center;padding:24px;text-align:center}
+#nomerok .karta{background:var(--karta);border-radius:20px;padding:26px 22px;max-width:420px;width:100%}
+#nomerok .cif{color:var(--zoloto);font-size:26px;font-weight:800;margin-bottom:8px}
+#nomerok p{color:var(--seryj);font-size:14px;line-height:1.6;margin:0 0 16px}
+#nomerok a,#nomerok button{display:block;width:100%;padding:14px;border-radius:12px;
+ font-size:15px;font-family:inherit;margin-top:9px;border:1px solid #2b405a;
+ background:transparent;color:#dce7f3}
+#nomerok button.glav{background:var(--zoloto);border-color:var(--zoloto);color:#10202f;font-weight:700}
+#nomerok a.wa2{border-color:#2c5a41;color:var(--zel)}
+
+.diag{display:block;margin-top:14px;padding:15px;border-radius:12px;
+ border:1px solid #3A5A7A;background:#16283C;color:#dce7f3;text-align:center;
+ font-size:15px;font-weight:600}
+.diag_pod{color:var(--seryj);font-size:12px;text-align:center;margin-top:7px}
+</style><style id="mcf-chat-css">
+/* Desktop не меняем */
+a.mcf-chat,.mcf-chat{position:fixed!important;right:16px!important;left:auto!important;
+bottom:calc(16px + env(safe-area-inset-bottom))!important;z-index:9990!important;
+display:inline-flex!important;align-items:center!important;gap:8px!important;
+width:auto!important;padding:11px 16px!important;border-radius:999px!important;
+font-size:15px!important;line-height:1!important;white-space:nowrap!important}
+/* Телефон: маленький кружок, не закрывает автомобиль, стрелку и текст.
+   Правило ловит кнопку по ссылке на WhatsApp и слову chat в классе,
+   поэтому работает даже если наш класс не проставился. */
+@media (max-width:900px){
+body a.mcf-chat,
+body a[href*="wa.me"][class*="chat"],
+body a[href*="wa.me"][id*="chat"]{
+width:44px!important;min-width:44px!important;max-width:44px!important;
+height:44px!important;padding:0!important;border-radius:50%!important;
+display:flex!important;align-items:center!important;justify-content:center!important;
+right:10px!important;left:auto!important;
+bottom:calc(78px + env(safe-area-inset-bottom))!important;
+font-size:0!important;line-height:0!important;gap:0!important;overflow:hidden!important;
+opacity:.94!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important}
+body a.mcf-chat svg,
+body a[href*="wa.me"][class*="chat"] svg{width:22px!important;height:22px!important;
+flex:0 0 auto!important;display:block!important}
+body a.mcf-chat > *:not(svg),
+body a[href*="wa.me"][class*="chat"] > *:not(svg){display:none!important}
+body a.mcf-chat::after,body a[href*="wa.me"][class*="chat"]::after{content:""!important}
+}
+</style><style id="mcf-photofit-css">
+/* Фото в плитках и превью заполняют контейнер, не деформируясь */
+.plitka img,.karta img,.card img,.preview img,.tile img,
+a[href*="UA-"] > img,figure.foto img{
+object-fit:cover!important;width:100%!important;height:100%!important;
+display:block!important;background:transparent!important}
+</style><link rel="canonical" href="https://www.uaart.com.ua/video/podbor.html">
+<script id="ua-art-site-languages" src="/video/ua-site-languages.js?v=site-ge-002-v1" defer></script>
+<link rel="stylesheet" href="order/order.css?v=20261025.2"><link rel="stylesheet" href="order/model-note.css?v=20261030.1" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="order/model-note.css?v=20261030.1"></noscript><link rel="stylesheet" href="order/model-price.css?v=20261031.1" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="order/model-price.css?v=20261031.1"></noscript><link rel="stylesheet" href="order/finance-link.css?v=20261103.1" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="order/finance-link.css?v=20261103.1"></noscript><link rel="stylesheet" href="order/gallery.css?v=20261027.1" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="order/gallery.css?v=20261027.1"></noscript><link rel="stylesheet" href="order/quick-lead.css?v=20261030.1" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="order/quick-lead.css?v=20261030.1"></noscript><link rel="stylesheet" href="order/search-picker.css?v=20261106.1"><script src="order/attribution.js?v=20261030.1" defer></script><script src="order/quick-lead.js?v=20261030.1" defer></script><script type="module" src="order/order.js?v=20261106.2"></script><!-- UA-ART-FAVICON-20260928 -->
+<link rel="icon" href="/video/brand/ua-art/favicon.ico" sizes="16x16 32x32 48x48" type="image/x-icon">
+<link rel="icon" href="/video/brand/ua-art/favicon-96.png" sizes="96x96" type="image/png">
+<link rel="apple-touch-icon" href="/video/brand/ua-art/apple-touch-icon.png" sizes="180x180">
+<!-- /UA-ART-FAVICON-20260928 --><style id="ua-order-zayavka-001">#zayavka{display:none}#zayavka:target{display:block}body:has(#zayavka:target) #model-section,body:has(#zayavka:target) #ua-seo-order-intro{display:none!important}</style></head><body><div onclick="location.href='index.html'" style='cursor:pointer' title='На главную'><div class='shapka'><div class='logo'><div class='znak'>UA</div><div><div class='imya'>UA ART COMPANY</div><div class='pod'>автомобили из Кореи</div></div></div><div class='svyaz'><a class='pozvonit' href='tel:+380992222002'>Позвонить +380 99 222 20 02</a><a class='wa' href='https://wa.me/380992222002?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%B8%D1%88%D1%83%20%D1%81%20%D1%81%D0%B0%D0%B9%D1%82%D0%B0%20UA%20ART%20COMPANY'>WhatsApp</a><a class='karta' href='https://maps.app.goo.gl/8T9A5H8YCtSs5eHH8'>Офис на карте</a></div></div></div><style>
+.p_zag{font-size:24px;font-weight:700;margin:2px 0 10px;line-height:1.2}
+.p_vvod{font-size:15px;color:#8fa0b8;margin:0 0 22px;line-height:1.55}
+.p_shag{border:1px solid #1d2942;border-radius:18px;padding:15px 14px 16px;margin-bottom:14px;background:#0e1626}
+.p_head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 12px}
+.p_head b{font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:#dfa952;font-weight:600}
+.p_head i{font-style:normal;color:#8fa0b8;margin-right:8px}
+.p_sbros{font-size:12px;color:#8fa0b8;background:transparent;border:none;padding:0;text-decoration:underline;font-family:inherit}
+.p_setka{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.p_v{text-align:center;font-size:15px;padding:15px 8px;border-radius:14px;border:1px solid #2c3a52;background:transparent;color:#e6ecf5;line-height:1.25;font-family:inherit}
+.p_v.p_on{border-color:#dfa952;background:rgba(223,169,82,0.10)}
+.p_shir{grid-column:1 / -1;color:#8fa0b8;border-style:dashed}
+.p_m{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font-size:16px;padding:14px 15px;border-radius:14px;margin-bottom:9px;border:1px solid #2c3a52;background:transparent;color:#e6ecf5;line-height:1.3;font-family:inherit}
+.p_m.p_on{border-color:#dfa952;background:rgba(223,169,82,0.10)}
+.p_n{color:#8fa0b8;font-size:14px;min-width:14px}
+.p_pole{width:100%;font-size:15px;padding:14px 15px;border-radius:14px;border:1px dashed #2c3a52;background:transparent;color:#e6ecf5;font-family:inherit;resize:none}
+.p_tihiy{font-size:13px;color:#8fa0b8;margin:10px 2px 0;line-height:1.5}
+.p_foto{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;font-size:15px;font-weight:600;padding:15px 12px;border-radius:14px;margin-top:10px;border:1px solid #dfa952;background:rgba(223,169,82,0.08);color:#dfa952;font-family:inherit}
+.p_send{display:block;width:100%;text-align:center;font-size:17px;font-weight:700;padding:19px 14px;border-radius:16px;margin-top:20px;background:#dfa952;border:none;color:#16202f;font-family:inherit}
+.p_pod{font-size:13px;color:#8fa0b8;text-align:center;margin:11px 6px 0;line-height:1.5}
+.p_osh{font-size:12px;color:#c98b8b;text-align:center;margin:14px 6px 0;line-height:1.5}
+.p_okno{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(8,13,24,0.92);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+.p_karta{background:#111a2b;border:1px solid #1d2942;border-radius:22px;padding:26px 20px;max-width:420px;width:100%;text-align:center}
+.p_krug{width:74px;height:74px;border-radius:50%;background:#dfa952;color:#16202f;font-size:36px;line-height:74px;margin:0 auto 16px}
+.p_karta h3{font-size:21px;margin:0 0 10px}
+.p_karta p{font-size:15px;color:#8fa0b8;line-height:1.55;margin:0 0 18px}
+.p_karta a,.p_karta button{display:block;width:100%;text-align:center;font-size:16px;padding:16px 12px;border-radius:14px;margin-bottom:10px;text-decoration:none;font-family:inherit}
+.p_zel{background:#25d366;color:#08301a;font-weight:700;border:none}
+.p_ram{background:transparent;border:1px solid #2c3a52;color:#e6ecf5}
+</style><div style="max-width:960px;margin:0 auto;padding:0 16px"><p id="ua-seo-order-intro" style="margin:12px 0;color:inherit"><span data-ru="Подбор авто из Кореи, США, Японии и других стран начинается с выбора модели и бюджета. Оставьте заявку, чтобы обсудить доступные варианты, проверку автомобиля и условия доставки в Украину." data-uk="Підбір авто з Кореї, США, Японії та інших країн починається з вибору моделі й бюджету. Залиште заявку, щоб обговорити доступні варіанти, перевірку автомобіля та умови доставки в Україну.">Підбір авто з Кореї, США, Японії та інших країн починається з вибору моделі й бюджету. Залиште заявку, щоб обговорити доступні варіанти, перевірку автомобіля та умови доставки в Україну.</span> </p></div><main class="ua-order" id="ua-order" data-site-no-translate>
+    <h1 data-label="title">Авто під замовлення</h1>
+    <h2 id="zayavka" data-label="application_title">Оформлення заявки</h2>
+    <p id="message" role="status" aria-live="polite">Завантаження…</p>
+    <section aria-labelledby="country-heading">
+      <h2 id="country-heading" data-label="choose_country">Оберіть країну підбору</h2>
+      <nav id="countries" class="country-grid" aria-labelledby="country-heading"></nav>
+    </section>
+    <section id="model-section" hidden aria-labelledby="model-heading">
+      <h2 id="model-heading" data-label="choose_model">Оберіть модель</h2>
+      <div id="models" class="models"></div>
+      <dialog class="ua-quick-dialog" id="quick-lead-dialog"><form class="ua-quick" data-ua-quick-lead><h2><span data-label="quick_title">Отримати пропозицію на</span> <span data-quick-model-title></span></h2><div data-fields><label><span data-label="quick_name">Ім'я</span><input name="customer_name" autocomplete="name" required minlength="2" maxlength="80"></label><label><span data-label="quick_phone">Телефон</span><input name="phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="30"></label><button type="submit" data-label="quick_offer">Отримати пропозицію від UA ART в месенджері</button><p class="note" data-label="quick_note">Менеджер зв’яжеться з вами.</p><p class="consent" data-consent>Натискаючи кнопку, ви погоджуєтесь на обробку персональних даних.</p><a class="privacy" href="/video/privacy.html" data-label="privacy">Політика конфіденційності</a></div><p class="status" data-status role="status" hidden></p><span data-msg="ok" data-label="quick_ok" hidden></span><span data-msg="error" data-label="quick_error" hidden></span><span data-msg="bad_phone" data-label="quick_bad_phone" hidden></span><span data-msg="bad_name" data-label="quick_bad_name" hidden></span><button type="button" class="ua-quick-close" data-quick-close data-label="quick_close">Закрити</button></form></dialog>
+      <button type="button" id="other-model" data-label="other_choose">Обрати інше авто</button>
+    </section>
+    <form id="order-form" hidden>
+      <p id="selection" class="selection"></p>
+      <p id="pref-notice" class="field-help" data-label="autofill" hidden></p>
+      <h2 data-label="main" tabindex="-1"></h2>
+      <p data-label="main_help"></p>
+      <div class="form-grid" id="main-fields"></div>
+      <details id="optional-preferences">
+        <summary data-label="optional"></summary>
+        <p data-label="optional_help"></p>
+        <div class="form-grid" id="optional-fields"></div>
+      </details>
+      <label class="consent"><input type="checkbox" name="consent" required><span id="consent-copy"></span></label>
+      <p class="privacy"><a class="privacy" href="/video/privacy.html" data-label="privacy">Політика конфіденційності</a></p>
+      <div class="form-grid" id="contact-fields"></div>
+      <button type="submit" data-label="review">Перевірте заявку</button>
+    </form>
+    <section id="review" hidden aria-labelledby="review-heading">
+      <h2 id="review-heading" data-label="review">Перевірте заявку</h2>
+      <dl id="summary"></dl>
+      <div class="actions">
+        <button type="button" id="confirm" data-label="confirm">Підтвердити заявку</button>
+        <button type="button" id="edit" class="secondary" data-label="edit">Змінити дані</button>
+        <button type="button" id="handoff" class="secondary" data-label="handoff">Продовжити в Telegram</button>
+      </div>
+      <p id="handoff-link"></p>
+    </section>
+    <section id="receipt" hidden>
+      <h2 data-label="thanks">Дякуємо! Вашу заявку отримано</h2>
+      <p>№ <span id="number"></span></p>
+      <p data-label="reply_time">Ми зв'яжемося з вами найближчим часом — можливо, того ж дня, максимум протягом 3 робочих днів (усі дні, крім неділі та свят). Заявки обробляємо строго по черзі.</p>
+      <a id="whatsapp" class="button" rel="noopener" target="_blank" data-label="whatsapp">Написати у WhatsApp</a>
+      <button type="button" id="new-request" class="secondary" data-label="new_request">Нова заявка</button>
+    </section>
+    <noscript>Для форми потрібен JavaScript. Телефон: +380 99 222 20 02.</noscript>
+  </main><div style='display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0 6px'><a class='vtoraya' href='#' style='margin:0' onclick="if(history.length>1){history.back();}else{location.href='index.html';}return false;">← Назад</a><a class='vtoraya' href='index.html' style='margin:0'>На главную</a></div><div class='podval'>ул. Победы 20, Киев · +380 99 222 20 02<br>UA ART COMPANY LLC<br>обновлено 22.08.2026 14:24<div class='avtor'>𝓑𝓐 | 𝓒𝓻𝓮𝓪𝓽𝓮𝓭 𝓫𝔂 𝓐𝓻𝓽𝓮𝓶 𝓑𝓸𝓻𝓸𝓿𝓲𝓷𝓼𝓴𝔂</div></div><div id='nomerok'><div class='karta'><div class='cif'>+380 99 222 20 02</div><p>Telegram не даёт набрать номер прямо из приложения. Нажмите «Скопировать номер» и вставьте его в телефон — или напишите нам в WhatsApp, ответим сразу.</p><button class='glav' id='kopirovat'>Скопировать номер</button><a class='wa2' href="https://wa.me/380992222002?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%9F%D0%B8%D1%88%D1%83%20%D1%81%20%D1%81%D0%B0%D0%B9%D1%82%D0%B0%20UA%20ART%20COMPANY">Написать в WhatsApp</a><button onclick="document.getElementById('nomerok').style.display='none'">Закрыть</button></div></div><script src='https://telegram.org/js/telegram-web-app.js'></script><script>
+(function(){
+ var tg = window.Telegram && window.Telegram.WebApp;
+ if(tg){ try{ tg.ready(); tg.expand(); }catch(e){} }
+
+ // Перехватываем ТОЛЬКО ссылки на самого бота — их браузер открыть не может.
+ // Телефон, WhatsApp и карта работают обычным нажатием, без вмешательства.
+ document.addEventListener('click', function(e){
+   var a = e.target.closest && e.target.closest('a');
+   if(!a){ return; }
+   var ssylka = a.getAttribute('href') || '';
+   if(!/^https?:\/\/t\.me\//.test(ssylka)){ return; }
+   if(!tg || !tg.openTelegramLink){ return; }
+   e.preventDefault();
+   try{
+     tg.openTelegramLink(ssylka);
+     if(tg.close){ setTimeout(function(){ tg.close(); }, 120); }
+   }catch(err){ window.location.href = ssylka; }
+ }, false);
+
+ // Телефон. В обычном браузере ссылку tel: не трогаем — она работает сама.
+ // Внутри Telegram переход заблокирован, поэтому показываем окно с номером.
+ var v_telegram = !!(tg && tg.platform && tg.platform !== 'unknown');
+ document.addEventListener('click', function(e){
+   var a = e.target.closest && e.target.closest('a');
+   if(!a || !v_telegram){ return; }
+   var ssylka = a.getAttribute('href') || '';
+   if(ssylka.indexOf('tel:') !== 0){ return; }
+   var okno = document.getElementById('nomerok');
+   if(!okno){ return; }
+   e.preventDefault();
+   okno.style.display = 'flex';
+ }, false);
+
+ // UA-V61 · отчёт диагностики: внутри Telegram — через openLink.
+ document.addEventListener('click', function(e){
+   var a = e.target.closest && e.target.closest('a.diag');
+   if(!a || !tg || !tg.openLink){ return; }
+   e.preventDefault();
+   try{ tg.openLink(a.getAttribute('href')); }
+   catch(err){ window.location.href = a.getAttribute('href'); }
+ }, false);
+
+ // UA-V63 · отчёт OBD: внутри Telegram открываем через openLink.
+ document.addEventListener('click', function(e){
+   var a = e.target.closest && e.target.closest('a.diag');
+   if(!a || !tg || !tg.openLink){ return; }
+   e.preventDefault();
+   try{ tg.openLink(a.getAttribute('href')); }
+   catch(err){ window.location.href = a.getAttribute('href'); }
+ }, false);
+
+ // Кнопка «Скопировать номер» в этом окне.
+ document.addEventListener('click', function(e){
+   var knopka = e.target;
+   if(!knopka || knopka.id !== 'kopirovat'){ return; }
+   var uzel = document.querySelector('#nomerok .cif');
+   var nomer = uzel ? uzel.textContent : '';
+   function gotovo(){
+     knopka.textContent = 'Номер скопирован';
+     setTimeout(function(){ knopka.textContent = 'Скопировать номер'; }, 2500);
+   }
+   function zapas(){
+     var pole = document.createElement('textarea');
+     pole.value = nomer;
+     document.body.appendChild(pole);
+     pole.select();
+     try{ document.execCommand('copy'); gotovo(); }catch(err){}
+     document.body.removeChild(pole);
+   }
+   if(navigator.clipboard && navigator.clipboard.writeText){
+     navigator.clipboard.writeText(nomer).then(gotovo, zapas);
+   }else{
+     zapas();
+   }
+ }, false);
+})();
+
+function pokazat_uspeh(zag, tekst){
+  var s = document.getElementById('uspeh');
+  if(!s){ return false; }
+  document.getElementById('uspeh_zag').textContent = zag;
+  document.getElementById('uspeh_tekst').textContent = tekst;
+  s.style.display = 'flex';
+  return true;
+}
+
+function otpravit_zayavku(dannye, zag, tekst, zapasnaya_ssylka){
+  var tg = window.Telegram && window.Telegram.WebApp;
+  if(tg && typeof tg.sendData === 'function'){
+    try{
+      tg.sendData(JSON.stringify(dannye));
+      pokazat_uspeh(zag, tekst);
+      return true;
+    }catch(e){}
+  }
+  if(tg && tg.openTelegramLink && zapasnaya_ssylka){
+    tg.openTelegramLink(zapasnaya_ssylka);
+    if(tg.close){ setTimeout(function(){ tg.close(); }, 120); }
+    return true;
+  }
+  if(zapasnaya_ssylka){ window.location.href = zapasnaya_ssylka; }
+  return false;
+}
+</script><script src='/ua/a.js?v=1' defer></script><!--UA-ANALIT-V1--><a class="mcf-chat" href="https://wa.me/380992222002" target="_blank" rel="noopener" aria-label="Написать в WhatsApp" style="background:#25D366;color:#08210f;text-decoration:none;font-weight:700"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.7 15l-1.2 4.4 4.5-1.2A10 10 0 1 0 12 2zm5.6 14.2c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.2-.8-2.7-1.1-4.4-3.9-4.5-4-.1-.2-1-1.4-1-2.7 0-1.3.7-1.9.9-2.2.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.5.3.1.2.1.7-.1 1.2z"/></svg><span>Чат online</span></a><!--UA-SOCIAL-V1--><style>.ua-social{display:flex;gap:16px;justify-content:center;margin:16px 0 0;padding:0}.ua-social a{display:inline-flex;width:36px;height:36px;border-radius:8px;transition:transform .15s}.ua-social a:hover,.ua-social a:focus-visible{transform:scale(1.1)}.ua-social svg{width:36px;height:36px;display:block}</style><nav class="ua-social" aria-label="UA ART"><a href="https://www.instagram.com/ua_artcompany_llc/" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><radialGradient id="ua-ig" cx="30%" cy="107%" r="150%"><stop offset="0" stop-color="#fdf497"/><stop offset=".05" stop-color="#fdf497"/><stop offset=".45" stop-color="#fd5949"/><stop offset=".6" stop-color="#d6249f"/><stop offset=".9" stop-color="#285AEB"/></radialGradient></defs><rect width="24" height="24" rx="6" fill="url(#ua-ig)"/><path transform="translate(4 4) scale(.6667)" fill="#fff" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></a><a href="https://t.me/uaart_auto" target="_blank" rel="noopener" aria-label="Telegram" title="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="11" fill="#fff"/><path fill="#26A5E4" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a><a href="https://www.youtube.com/@beetleua" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#fff" d="M8 7h9v10H8z"/><path fill="#FF0000" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a><a href="https://www.tiktok.com/@llc_ua_art_company" target="_blank" rel="noopener" aria-label="TikTok" title="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect width="24" height="24" rx="6" fill="#000"/><g transform="translate(5 4.5) scale(.6)"><path fill="#25F4EE" transform="translate(-.9 -.9)" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/><path fill="#FE2C55" transform="translate(.9 .9)" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/><path fill="#fff" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></g></svg></a></nav><!--/UA-SOCIAL-V1--><!--UA-CHAT-GLASS-V1--><style id="ua-chat-glass">html body a.mcf-chat[href*="wa.me"],html body a.floating-chat[href*="wa.me"],html body a.chat[href*="wa.me"]{display:inline-flex!important;align-items:center!important;gap:0!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;padding:8px 13px 8px 10px!important;border-radius:999px!important;overflow:visible!important;background:rgba(11,21,36,.55)!important;-webkit-backdrop-filter:blur(10px) saturate(140%)!important;backdrop-filter:blur(10px) saturate(140%)!important;border:1px solid rgba(232,200,125,.45)!important;color:#e8c87d!important;font-size:0!important;line-height:1!important;font-weight:500!important;text-decoration:none!important;white-space:nowrap!important;opacity:1!important;box-shadow:0 4px 16px rgba(0,0,0,.25)!important;transition:background .15s,border-color .15s}html body a.mcf-chat[href*="wa.me"]:hover,html body a.floating-chat[href*="wa.me"]:hover,html body a.chat[href*="wa.me"]:hover,html body a.mcf-chat[href*="wa.me"]:focus-visible,html body a.floating-chat[href*="wa.me"]:focus-visible,html body a.chat[href*="wa.me"]:focus-visible{background:rgba(11,21,36,.8)!important;border-color:#e8c87d!important;outline:none!important}html body a.mcf-chat[href*="wa.me"] svg,html body a.floating-chat[href*="wa.me"] svg,html body a.chat[href*="wa.me"] svg{display:block!important;width:16px!important;height:16px!important;flex:0 0 16px!important;fill:currentColor!important}html body a.mcf-chat[href*="wa.me"] > :not(svg),html body a.floating-chat[href*="wa.me"] > :not(svg),html body a.chat[href*="wa.me"] > :not(svg){display:none!important}html body a.mcf-chat[href*="wa.me"]::after,html body a.floating-chat[href*="wa.me"]::after,html body a.chat[href*="wa.me"]::after{display:inline!important;margin-left:7px!important;font-size:13px!important;line-height:1!important;color:#e8c87d!important;content:"Зв’язатися з менеджером"!important}html[lang^="ru"] body a.mcf-chat[href*="wa.me"]::after,html[lang^="ru"] body a.floating-chat[href*="wa.me"]::after,html[lang^="ru"] body a.chat[href*="wa.me"]::after{content:"Связаться с менеджером"!important}html[lang^="ka"] body a.mcf-chat[href*="wa.me"]::after,html[lang^="ka"] body a.floating-chat[href*="wa.me"]::after,html[lang^="ka"] body a.chat[href*="wa.me"]::after{content:"მენეჯერთან დაკავშირება"!important}</style><!--/UA-CHAT-GLASS-V1--></body></html>
