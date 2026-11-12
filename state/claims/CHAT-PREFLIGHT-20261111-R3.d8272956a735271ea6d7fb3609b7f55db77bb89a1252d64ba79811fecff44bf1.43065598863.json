@@ -1,0 +1,63 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CHAT-PREFLIGHT-20261111-R3.d8272956a735271ea6d7fb3609b7f55db77bb89a1252d64ba79811fecff44bf1.json",
+  "autostart_ledger_sha256": "4e69630e502b64c6ed8615fadf516b642735137f096eab401e1e70eb0c2b4aee",
+  "autostart_source_commit": "0eaf976b824a36cc4b4c5c97dd6fbfef57a740e8",
+  "created_at": "2026-11-11T17:12:12Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-11T17:16:23Z",
+  "heartbeat_at": "2026-11-11T17:16:23Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43065598863",
+    "task_id": "CHAT-PREFLIGHT-20261111-R3",
+    "task_sha256": "d8272956a735271ea6d7fb3609b7f55db77bb89a1252d64ba79811fecff44bf1"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-db1717918efa9757-2205f96a40b4d6ba",
+  "receipt_path": "state/receipts/CHAT-PREFLIGHT-20261111-R3.json",
+  "receipt_sha256": "55b1391ea5cd3c88f2f263521670dd8e7b819d0ff1819ee08fdfb249c048ab57",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CHAT-PREFLIGHT-20261111-R3.json",
+  "request_sha256": "d8272956a735271ea6d7fb3609b7f55db77bb89a1252d64ba79811fecff44bf1",
+  "resource_locks": [
+    "PATH_SCOPE:db1717918efa9757"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "755ea671d48812eb0e9c27480fdfcfde9633e2f6",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92791865344,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.121
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "20dfc4dc5f27428851847c05d713393e94910838a31156dc9204374e5e1695f7",
+    "file_sha256": {
+      "cloud/chat_button_001/candidate_builder.py": "b12742a7e775c82f1dec97e4db5556ef4bd5d7d89137663bb7bcec423edf001d",
+      "cloud/chat_button_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/chat_button_001/deployment_bootstrap.py": "0b6c9df51a25e83732f967c1082c26f4787b320ff9da3f8d13c53aecc8c22f55",
+      "cloud/chat_button_001/deployment_remote.py": "1cfb58256f45e365a7471d222c7e065c8c2558473f21bccea67f96c24813fe53",
+      "cloud/chat_button_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/chat_button_001/deployment_transport.py": "c731dcafc157d80915a192f53a67254c47c16d733c5257a11385843d17213d8b",
+      "cloud/chat_button_001/make_release.py": "db4e58f0fb101350d61e72abe8042323601acf0d2f15d77fca36a23b36804a55",
+      "cloud/chat_button_001/release_constants.py": "fe1dee3388831bf89a6a795619a22b7dee105e348d6df10dc9d9bee9320dca41",
+      "cloud/chat_button_001/test_deployment.py": "2e3726da5083c576d811b79763553c3ebc3a977ef6293ee1631edf98b057c6ee",
+      "cloud/chat_button_001/test_release.py": "af63f6dab9935ed47040ce3bca3d5f65cd0f8d5b923b52abd6cdb71354cba7ee",
+      "cloud/chat_button_001/ua_chat_button.py": "d6514f31c29050b37b6418e15b1d38b631faa2a9852ee128799954fc03593409"
+    }
+  },
+  "updated_at": "2026-11-11T17:16:23Z"
+}

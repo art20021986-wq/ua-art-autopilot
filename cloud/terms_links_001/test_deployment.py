@@ -278,9 +278,23 @@ class PublicVerificationTests(unittest.TestCase):
                 controller.public_verify(None,'a'*64,'b'*64,{})
 
     def test_network_failure_propagates(self):
-        with patch.object(controller.urllib.request,'urlopen',side_effect=urllib.error.URLError('offline')):
+        with patch.object(controller.urllib.request,'urlopen',side_effect=urllib.error.URLError('offline')) as fetch, \
+                patch.object(controller.time,'sleep') as pause:
             with self.assertRaises(urllib.error.URLError):
                 controller.public_verify(None,'a'*64,'b'*64,{})
+        self.assertEqual(fetch.call_count,3)
+        self.assertEqual([c.args[0] for c in pause.call_args_list],[15,45])
+
+    def test_slow_answer_is_retried(self):
+        calls=[]
+        def flaky(request,timeout):
+            calls.append(request.full_url)
+            if len(calls)==1: raise TimeoutError('The read operation timed out')
+            return self.response(request,timeout)
+        with patch.object(controller.urllib.request,'urlopen',side_effect=flaky), patch.object(controller.time,'sleep'):
+            result=controller.public_verify(None,'a'*64,'b'*64,{})
+        self.assertEqual(result,{path:'PASS' for path in controller.EXPECTED})
+        self.assertEqual(len(calls),len(controller.EXPECTED)+1)
 
 
 if __name__ == '__main__':
