@@ -13,15 +13,16 @@ from deployment_transport import API, HERE, INBOX, TransportError, canonical, sh
 
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
-# The site stays healthy (this release changes the CRM bot and the bids ledger module the web app also imports).
-EXPECTED = {'/video/index.html': '', '/video/katalog.html': '', '/video/korea.html': 'id="kc-who"', '/video/podbor.html': ''}
+# The site stays healthy; the Korea page has «Мій кабінет» in the login line and the client page opens.
+EXPECTED = {'/video/index.html': '', '/video/katalog.html': '', '/video/korea.html': 'id="kc-cab"',
+            '/video/kabinet.html': 'id="cab-bids"', '/video/podbor.html': ''}
 ABSENT = {}
 # A slow answer is retried (TERMS-LINKS lesson 2026-11-11): 3 attempts of 60 s, pauses 15 and 45 s.
 PAUSES = (15, 45, None)
 SITE = 'https://www.uaart.com.ua'
 AGENT = 'UAART-AuctionMgr-Verify/1'
 # The live bid endpoint answers a bid without a login with 401 «login» before and after (the web app reloads to take
-# the new ua_auction_bids with placed_by and the lock); nothing is stored.
+# the new ua_auction_bids, variant А); nothing is stored.
 INTAKE_FIELD = {'install': 'login_api', 'rollback': 'login_api'}
 
 

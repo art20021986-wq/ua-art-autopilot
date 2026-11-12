@@ -1,4 +1,4 @@
-"""Bounded AUCTION-MGR-BIDS release (manager bids for a client, statistics by manager); preserve live data and pending requests."""
+"""Bounded AUCTION-MGR-BIDS release (variant А: bids placed by a person, manager bids, «Мій кабінет»); preserve live data and pending requests."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -119,54 +119,57 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'AUCTION-MGR-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'CRM bot and bids ledger module, no page: «🔨 Ставка за клиента» in the auction client card, «👔 По менеджерам» on «🔨 Клиенты аукциона», who placed each bid; ua_auction_clients, ua_auction_clients_view, ua_auction_clients_bot, ua_auction_bids (ledger column placed_by, one bid at a time), ua_auction_stats; bot paused and resumed, web app reloaded; no CRM or client record change',
+            'site_scope':'variant А: no bid is sent to the auction from the server; a client bid becomes a request the staff place themselves («🔗 Открыть лот», «✅ Поставил», «❌ Не поставил»); «🔨 Ставка за клиента», «👔 По менеджерам»; ua_auction_bids, ua_auction_bids_bot, ua_auction_clients, ua_auction_clients_view, ua_auction_clients_bot, ua_auction_stats, ua_auction_web (GET /api/auction/my), ua_auction_cars (new); video/korea.html: bid block (variant А) and «Мій кабінет» in the login line; video/kabinet.html (new, noindex); bot paused and resumed, web app reloaded; no CRM or client record change',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
 
 
 # Runs in a separate python3.10 (the bots' interpreter) with the candidate modules first on the path and the live
-# server root: the modules import with the installed telegram library; the screens build from the live clients, bids
-# and staff (read only; only counts are reported); an older ledger (no placed_by) gets the column on a temporary
-# copy, keeps its bids as the clients' own and records a manager's bid; the lock lets one bid through at a time.
+# server root: the modules import with the installed telegram library; the screens and the client page data build
+# from the live clients, bids and staff (read only; only counts are reported); an older ledger (no placed_by /
+# handled_*) on a temporary copy takes a request, the first answer only, and a manager's bid; the pages are checked.
 SMOKE = r"""
 import json, sys, sqlite3, tempfile, pathlib
 after, root = sys.argv[1], sys.argv[2]
 sys.path[:0] = [after, root]
 import ua_auction_clients as store, ua_auction_stats as stats, ua_auction_clients_view as view
-import ua_auction_clients_bot as bot, ua_auction_bids as bids, ua_auction_web, ua_auction_bids_bot as notify
+import ua_auction_clients_bot as bot, ua_auction_bids as bids, ua_auction_web as web, ua_auction_bids_bot as notify
+import ua_auction_cars
 people = store.all_clients()
 staff = bot._staff()
-numbers = stats.summary()
-home = view.home(numbers)
+home = view.home(stats.summary())
 managers = stats.managers()
 view.managers_view(managers, staff)
 cards = [view.card(c, stats.of_client(c['phone']), staff) for c in people[:20]]
+pages = [web._cabinet(c) for c in people[:20]]
 for m in managers[:20]:
     bot._manager_screen(str(m['id']))
 with tempfile.TemporaryDirectory() as folder:
     old = pathlib.Path(folder) / 'bids.db'
     connection = sqlite3.connect(old)
-    connection.execute(bids.SCHEMA.replace(', placed_by INTEGER NOT NULL DEFAULT 0', ''))
+    connection.execute(bids.SCHEMA.split(', placed_by')[0] + ')')
     connection.execute("INSERT INTO bids (phone, lot_id, title, krw, usd, status, message, created_at) "
                        "VALUES ('+380000000000', '1', 'Old', 1, 1, 'placed', '', '2026-11-11T10:00:00+09:00')")
     connection.commit(); connection.close()
-    old_reads = stats.summary(db=old, people=[])['bids_self'] == 1 and stats.managers(people=[], db=old) == []
     lot = {'lot': {'id': '2', 'title': 'Test', 'year': 2020, 'vin': 'VIN2'}, 'krw': 1, 'usd': 1}
-    bids.record({'phone': '+380000000000'}, lot, 'failed', 'test', old, placed_by=7)
-    migrated = [r['placed_by'] for r in stats.of_client('+380000000000', db=old)] == [7, 0]
-    titled = notify.text(stats.of_client('+380000000000', db=old)[0], None, {7: 'M'}).startswith('<b>🔨 Ставка менеджера M')
-    with bids._OneAtATime(old):
-        try:
-            with bids._OneAtATime(old, wait=0):
-                one_at_a_time = False
-        except bids.BidError as error:
-            one_at_a_time = str(error) == 'busy'
+    asked = bids.request({'phone': '+380000000000'}, lot, old)
+    answers = [bids.mark(asked, 7, True, old), bids.mark(asked, 8, False, old)]
+    bids.by_manager({'phone': '+380000000000'}, lot, 9, old)
+    rows = stats.of_client('+380000000000', db=old)
+    ledger = ([(r['status'], r['placed_by'], r['handled_by']) for r in rows]
+              == [('placed', 9, 9), ('placed', 0, 7), ('placed', 0, 0)] and answers == [True, False])
+    notice = notify.text(rows[1], None, {7: 'M'}).find('✅ поставил M') > 0
+korea = open(after + '/video/korea.html', encoding='utf-8').read()
+cabinet = open(after + '/video/kabinet.html', encoding='utf-8').read()
 print(json.dumps({'clients': len(people), 'staff': len(staff), 'managers': len(managers),
                   'home_buttons': [row[0][1] for row in home['buttons']],
-                  'card_bid_button': all(['🔨 Ставка за клиента', 'ac:bid:' + c['phone']] in [list(b) for row in s['buttons'] for b in row]
+                  'card_bid_button': all(('🔨 Ставка за клиента', 'ac:bid:' + c['phone']) in [b for row in s['buttons'] for b in row]
                                          for c, s in zip(people, cards)),
-                  'old_ledger_reads': old_reads, 'old_ledger_migrated': migrated, 'notice_titled': titled, 'one_at_a_time': one_at_a_time}))
+                  'client_pages': all(set(x) == {'client', 'bids', 'cars'} for x in pages),
+                  'ledger': ledger, 'notice': notice, 'no_auction_send': not hasattr(bids, 'place'),
+                  'korea_page': korea.count('id="kc-cab"') == 1 and 'r.status==="requested"' in korea and 'limit_usd' not in korea,
+                  'cabinet_page': 'id="cab-bids"' in cabinet and 'noindex' in cabinet}))
 """
 
 
@@ -176,10 +179,9 @@ def smoke(directory):
     if result.returncode != 0:
         raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
-    if (value.get('home_buttons') != ['ac:new', 'ac:list', 'ac:days', 'ac:mgrs', 'menu']
-            or value.get('card_bid_button') is not True or value.get('old_ledger_reads') is not True
-            or value.get('old_ledger_migrated') is not True or value.get('one_at_a_time') is not True
-            or value.get('notice_titled') is not True):
+    checks = ('card_bid_button', 'client_pages', 'ledger', 'notice', 'no_auction_send', 'korea_page', 'cabinet_page')
+    if value.get('home_buttons') != ['ac:new', 'ac:list', 'ac:days', 'ac:mgrs', 'menu'] or not all(
+            value.get(name) is True for name in checks):
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:300])
     return value
 
