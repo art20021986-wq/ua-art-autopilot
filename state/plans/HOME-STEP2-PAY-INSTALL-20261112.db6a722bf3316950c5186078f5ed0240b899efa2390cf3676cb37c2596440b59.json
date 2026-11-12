@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-STEP2-PAY-INSTALL-20261112.db6a722bf3316950c5186078f5ed0240b899efa2390cf3676cb37c2596440b59.json",
+  "autostart_ledger_sha256": "9ffb09645f3786ea480e4a723fed7b0282be155cde3510b636033242fda91335",
+  "autostart_source_commit": "1a28d56dfc59b34ac1802bfb7284bffd048ad5be",
+  "created_at": "2026-11-12T12:17:01Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43216268955",
+    "task_id": "HOME-STEP2-PAY-INSTALL-20261112",
+    "task_sha256": "db6a722bf3316950c5186078f5ed0240b899efa2390cf3676cb37c2596440b59"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "homepage-68ed6564ebea221c",
+  "request_path": "tasks/requests/HOME-STEP2-PAY-INSTALL-20261112.json",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

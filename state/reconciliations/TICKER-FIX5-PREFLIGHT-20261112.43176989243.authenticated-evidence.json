@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "70f7c699cdf8342d9649a9088d8d3a227849669e2ee98833284f965e0e8ffb74",
+  "error": "ExecutionContractError: TEST_SHA_MISMATCH:cloud/korea_ticker_fix5_001/test_deployment.py (the package test changed in PR #1245 after this request was made)",
+  "failed_step": "execute / standard / execute: execution contract validation in the runner, before any remote call",
+  "precedent": "state/reconciliations/SPEED2-PREFLIGHT-20261108-R4.42746746531.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-12T07:54:04+00:00",
+  "remote_mode": "preview (reads only), not started",
+  "retry": "TICKER-FIX5-PREFLIGHT-20261112-R3 (R2 run 43177208018 refused RESOURCE_BUSY by this claim; no R2 claim was created)",
+  "run_id": "43176989243",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "TICKER-FIX5-PREFLIGHT-20261112"
+}
