@@ -95,6 +95,24 @@ class RemoteTests(unittest.TestCase):
         self.assertIs(value['lead_desk']['aggregates']['manager_chat_is_owner'], True)
         self.assertNotIn('397376186', dumped)
 
+    def test_owners_yes_no_only(self):
+        import sqlite3
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'lead_bot.py').write_text('MANAGER_CHAT_ID = os.environ.get("MANAGER_CHAT_ID", "397376186")\n')
+            (home / 'users_db.json').write_text(json.dumps({'555000111': {'username': 'Beetle204', 'full_name': 'Petro'}}))
+            with sqlite3.connect(home / 'crm.db') as c:
+                c.execute('CREATE TABLE staff (user_id, role, active, username)')
+                c.execute("INSERT INTO staff VALUES (555000111, 'admin', 1, 'Beetle204')")
+            with patch.object(remote, 'HOME', home):
+                value = remote.owners()
+        dumped = json.dumps(value)
+        self.assertEqual(value['crm_staff']['beetle204'], [('admin', True)])
+        self.assertIs(value['beetle204_in_client_bot'], True)
+        self.assertEqual(value['hits'][0]['file'], 'lead_bot.py')
+        for secret in ('555000111', 'Petro'):
+            self.assertNotIn(secret, dumped)
+
 
 if __name__ == '__main__':
     unittest.main()
