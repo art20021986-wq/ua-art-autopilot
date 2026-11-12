@@ -87,6 +87,7 @@ class ReleaseTests(unittest.TestCase):
             self.assertEqual(questions, [q for q, _ in t['faq']])
             self.assertNotIn('Запор', html)
             self.assertIn('500 $', html)
+            self.assertIn('без передоплати' if lang == 'uk' else 'без предоплаты', html)
             self.assertIn('1 000 $', html)
 
     def test_linked_from_hub_and_order_page_only_change_there(self):
