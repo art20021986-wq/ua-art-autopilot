@@ -198,7 +198,7 @@ def _file(path):
     return {'bytes': st.st_size, 'mtime': round(st.st_mtime)}
 
 
-def _tail(path, lines=40):
+def _tail(path, lines=120):
     text = text_of(path) if path.is_file() else None
     if text is None:
         return None
@@ -486,7 +486,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r15()  # R15 full ticker build in a temp dir; report_r14() R14, report_r6() R6–R8/R13
+        value = report_r6()  # R16 ticker log after the FIX5 install; report_r15() R15, report_r14() R14, report_r6() R6–R8/R13
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
