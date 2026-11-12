@@ -249,7 +249,7 @@ class TransportTests(unittest.TestCase):
 
 class PublicVerificationTests(unittest.TestCase):
     def response(self,request,timeout):
-        body=('<html><head></head><body><a data-uk="Замовити авто">Замовити авто</a>'+'x'*300+'<a href="podbor.html">k</a></body></html>')
+        body=('<html><head></head><body><a data-uk="Замовити авто">Замовити авто</a><p>Передоплата 1 000 $</p>'+'x'*300+'<a href="podbor.html">k</a></body></html>')
         response=BytesIO(body.encode())
         response.url=request.full_url;response.status=200
         return response

@@ -21,6 +21,12 @@ def auction_date(lot):
     return lot['auction_start'][:10]  # 'YYYY/MM/DD'
 
 
+def upcoming(lots, now=None):
+    """The lots of today's and the coming auction days (Japan/Korea time), as the ticker (TICKER-FIX2-001) shows."""
+    today = (now or datetime.now(JST)).strftime('%Y/%m/%d')
+    return [lot for lot in lots if auction_date(lot) >= today]
+
+
 def next_auction_date(lots, now=None):
     """Earliest auction date after today (Japan/Korea time); while the next day's lots are not listed yet, today if it
     has lots — started ones too: their countdown hides itself (TICKER-FIX2-001: the ticker must never stall); else None."""

@@ -22,9 +22,10 @@ def request(day):
     task = 'LEAD-DESK-PROBE-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Read-only check after LEAD-FOLDERS-INSTALL (owner 2026-11-07): the bot log lines of the lead desk '
-                       'and CRM orders registration (sanitized, last 80 matching lines), whether the desk tables exist and '
-                       'whether the client bot manager chat is an active CRM owner (yes/no; no id or row returned). '
+        'description': 'Read-only check for STAFF-FULL-ACCESS-001 (owner 2026-11-12): full sanitized vitrina.py and every line reading vladelec.txt; '
+                       'every line where the bots name the '
+                       'owner or send to him (sanitized), the sanitized client bot source, and whether @Beetle204 is in '
+                       'the CRM staff and the client bot users (yes/no and role only; no ids, names or rows). '
                        'Bounded run in the existing private inbox in a temporary always-on task (never the CRM bot). '
                        'No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),

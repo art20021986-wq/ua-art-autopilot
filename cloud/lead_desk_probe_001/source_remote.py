@@ -15,7 +15,7 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ()
+FULL = ('vitrina.py',)  # STAFF-FULL-ACCESS-001 R3
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -115,7 +115,37 @@ def report(home=None):
                                                      "('lead_state','lead_state_reminders','crm_orders','crm_order_stages')")
         desk = {'tables': tables, 'track_from': track[0] if track else None, 'aggregates': aggregates}
     return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone,
-            'lead_desk': desk}
+            'lead_desk': desk, 'owners': owners()}
+
+
+RECIPIENT = re.compile(r'vladelec|VLADELEC|OWNER_ID|MANAGER_CHAT_ID|ADMIN_IDS|owner_id|is_admin\(|ROLE_OWNER|staff_ids_by_role')
+
+
+def owners():
+    """STAFF-FULL-ACCESS-001, read-only: every line where a bot names the owner or sends to him (sanitized),
+    the full sanitized client bot source, and whether @Beetle204 is in the CRM staff and the client bot users
+    (yes/no and role only; no ids, names or rows are returned)."""
+    hits = []
+    for path in sorted(list(HOME.glob('*.py')) + list(HOME.glob('ua_order/*.py'))):
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_SOURCE:
+            continue
+        for n, line in enumerate(path.read_text(encoding='utf-8', errors='replace').splitlines()):
+            if RECIPIENT.search(line) and len(hits) < 600:
+                hits.append({'file': str(path.relative_to(HOME)), 'line': n + 1, 'text': sanitized_line(line)[:300]})
+    raw = read('lead_bot.py')
+    client = None if raw is None else {'sha256': hashlib.sha256(raw).hexdigest(), 'source': '\n'.join(
+        sanitized_line(line) for line in raw.decode('utf-8', 'replace').splitlines())}
+    try:
+        crm = staff() if (HOME/'crm.db').is_file() else None
+    except Exception as error:
+        crm = type(error).__name__
+    users = HOME/'users_db.json'
+    try:
+        names = [str((v or {}).get('username') or '').lower() for v in json.loads(users.read_text(encoding='utf-8')).values()]
+        client_user = 'beetle204' in names
+    except Exception as error:
+        client_user = type(error).__name__
+    return {'hits': hits, 'lead_bot': client, 'crm_staff': crm, 'beetle204_in_client_bot': client_user}
 
 
 def staff():
