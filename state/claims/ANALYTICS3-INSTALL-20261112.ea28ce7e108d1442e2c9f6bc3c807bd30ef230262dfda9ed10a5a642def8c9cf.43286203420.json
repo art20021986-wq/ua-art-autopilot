@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "ef85bd8bddf93233987c632c31d98fca734c7e75d44ce02a8d56d3ac1860d856",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T19:06:16Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-12T19:11:16Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43286203420",
     "task_id": "ANALYTICS3-INSTALL-20261112",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43286203420-ea28ce7e108d1442",
   "production_transaction_path": "state/transactions/ANALYTICS3-INSTALL-20261112.ea28ce7e108d1442e2c9f6bc3c807bd30ef230262dfda9ed10a5a642def8c9cf.43286203420.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-81279448a9c3effd-10ff50f719457c19",
   "receipt_path": "state/receipts/ANALYTICS3-INSTALL-20261112.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/analytics_003/ua_page_depth.py": "d2fdac6dca03af1651d86c4a7af8c9745b1467a6a913363ab8067166ce64a446"
     }
   },
-  "updated_at": "2026-11-12T19:06:16Z"
+  "updated_at": "2026-11-12T19:11:16Z"
 }
