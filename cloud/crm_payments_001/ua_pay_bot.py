@@ -249,7 +249,7 @@ def _input(wait, text, actor):
         due = store.issue(order_id, kind, amount, today, actor, ferry)
         return '✅ Счёт выставлен. Оплата до %s' % view.d(due), _screen(order_id)
     if kind_of == 'lot':
-        car = lot.fetch(text)
+        car = lot.fetch(text, order_id)
         store.set_car(order_id, car, actor)
         return None, view.car_found(_order(order_id), store.car(order_id))
     raise LookupError('wait')

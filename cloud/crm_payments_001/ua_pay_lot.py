@@ -1,11 +1,16 @@
 """Bought car data from an auction lot link (CRM-PAYMENTS-001): the manager pastes the lot link (or its number), the
 bot opens the lot page under the owner's auction login and fills title, year, VIN, mileage, color, fuel, photos and
 the price. Reuses the installed collector (/home/Carix/korea_auction, session «Аукционы Кореи»): session.Session,
-job.read_login, lots.parse_detail, html_tools.text, nbu rates. Nothing here writes to the site or to the cars table.
+job.read_login, lots.parse_detail, html_tools.text, job.fetch_photo/write, nbu rates. The only write is the copy of
+the lot photos to video/kabinet/photos/<order>-<random>/ (owner 2026-11-12); the cars table and the pages are not touched.
 The final price is read when the page shows it; the manager always confirms the price before payment 2 is issued.
 """
 import re
+import secrets
+from pathlib import Path
 
+PHOTO_DIR = Path('/home/Carix/video/kabinet/photos')  # served as https://www.uaart.com.ua/video/kabinet/photos/
+PHOTO_URL = 'https://www.uaart.com.ua/video/kabinet/photos/'
 LOT_URL = 'https://jpauto.auction/vehicle-detail/kr/%s'
 _LOT = re.compile(r'(?:vehicle-detail/kr/)?(\d{8,20})')
 
@@ -44,7 +49,21 @@ def car_from_page(lot, detail, page_text, rates=None):
             'price_krw': krw or None, 'price_usd': usd}
 
 
-def fetch(text):
+def save_photos(order_id, urls, fetch_photo, write, root=PHOTO_DIR, base=PHOTO_URL, token=None):
+    """Copy the lot photos to our server (owner 2026-11-12: the cabinet shows our copies, not the auction's) in page
+    order: root/<order>-<random>/<n>.jpg -> full URLs on www.uaart.com.ua. A photo that fails is skipped."""
+    folder = '%d-%s' % (int(order_id), token or secrets.token_hex(6))
+    out = []
+    for n, url in enumerate(urls[:30], 1):
+        try:
+            write(root / folder / ('%d.jpg' % n), fetch_photo(url))
+            out.append('%s%s/%d.jpg' % (base, folder, n))
+        except (OSError, ValueError):
+            continue
+    return out
+
+
+def fetch(text, order_id=None):
     """Server only: open the lot page with the owner's login and return the car fields. Raises on failure."""
     from korea_auction import html_tools, job, lots, nbu, session
     lot = lot_id(text)
@@ -58,4 +77,7 @@ def fetch(text):
         rates = nbu.fetch_rates()
     except Exception:
         rates = None
-    return car_from_page(lot, detail, html_tools.text(html), rates)
+    car = car_from_page(lot, detail, html_tools.text(html), rates)
+    if order_id is not None and car['photos']:
+        car['photos'] = save_photos(order_id, car['photos'], job.fetch_photo, job.write)
+    return car

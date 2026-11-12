@@ -227,6 +227,6 @@ def purchased_cars(phone, path=DB_PATH, today=None):
         title, year, vin, lot_id, photos, price_usd = car or (subject, '', '', '', '[]', None)
         out.append({'title': title or subject or '', 'year': year or '', 'vin': vin or '', 'lot_id': lot_id or '',
                     'stage': stage, 'stage_label': STAGE_LABELS.get(stage, stage), 'stages': stage_path(stage),
-                    'photo': (json.loads(photos or '[]') or [''])[0], 'price_usd': price_usd,
+                    'photos': json.loads(photos or '[]'), 'photo': (json.loads(photos or '[]') or [''])[0], 'price_usd': price_usd,
                     'payments': _cabinet_payments(pays, today, nbu_rate), 'penalty': penalty})
     return out
