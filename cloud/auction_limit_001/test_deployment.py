@@ -261,6 +261,12 @@ class PublicVerificationTests(unittest.TestCase):
         with patch.object(controller.urllib.request, 'urlopen', side_effect=self.response):
             self.assertEqual(controller.public_verify(None, 'a'*64, 'b'*64, {}), {p: 'PASS' for p in controller.EXPECTED})
 
+    def test_limit_still_on_the_page_fails(self):
+        self.body = b'<html><div id="kc-who"></div><b id="kc-limit"></b>' + b'x'*300 + b'</html>'
+        with patch.object(controller.urllib.request, 'urlopen', side_effect=self.response):
+            with self.assertRaisesRegex(RuntimeError, 'PUBLIC_CHANGE_MISSING:/video/korea.html'):
+                controller.public_verify(None, 'a'*64, 'b'*64, {})
+
     def test_slow_answer_is_retried(self):
         answers = [TimeoutError('slow')]
         def slow_once(request, timeout):
