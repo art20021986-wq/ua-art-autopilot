@@ -175,7 +175,7 @@ def password_changed(client, password):
 def list_view(clients, back):
     buttons = [[('%s%s %s · %s' % ('⛔ ' if c['blocked'] else '', c['surname'], c['name'], c['phone']),
                  'ac:c:' + c['phone'])] for c in clients[:40]]
-    buttons += [[NEW], [('Назад', back)]]
+    buttons += [[('Назад', back)]]  # «➕ Создать клиента» is on «🔨 Клиенты аукциона» (no duplicates)
     text = '<b>Клиенты аукционов онлайн</b>\n%s' % ('Всего: %d' % len(clients) if clients else 'Пока нет клиентов')
     return {'text': text, 'buttons': buttons}
 
