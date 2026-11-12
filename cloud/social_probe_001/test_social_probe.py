@@ -148,5 +148,23 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(value['versions']['ua'], ['UA-0001.html'])
 
 
+    def test_r6_ticker(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'video/korea').mkdir(parents=True)
+            (home / 'korea_auction').mkdir()
+            (home / 'korea_auction_data').mkdir()
+            (home / 'video/korea/ticker.html').write_text('<div class="kt-x"></div>')
+            (home / 'korea_auction/ticker.py').write_text("X = 'kt-legend'")
+            (home / 'jpauto_login.txt').write_text('a@b.c\nsecret\n')
+            (home / 'korea_ticker_job.py').write_text('password = "x"\nimport korea_auction.job\n')
+            value = remote.report_r6(home)
+        self.assertEqual(value['ticker_html']['kt_legend'], 0)
+        self.assertEqual(value['package']['ticker.py']['kt_legend'], 1)
+        self.assertEqual(value['login_lines'], 2)
+        self.assertNotIn('secret', json.dumps(value))
+        self.assertEqual(value['job_script'].splitlines()[0], '[REDACTED]')
+
+
 if __name__ == '__main__':
     unittest.main()
