@@ -3,7 +3,7 @@
 page(korea_html) builds it from the live Korea page: the same site header (taken from that page, so the menu and the
 language switch stay one), the site's stylesheet and language script, then three parts filled by GET /api/auction/my
 for the logged-in client (owner 2026-11-12: clearly split, by stages): a short line with the client's data and
-«Вийти»; «🚗 Мої авто» — a card per car: photo, title, VIN / price (no lot number, owner 2026-11-12), «Де зараз авто» (the delivery stages,
+«Вийти»; «🚗 Мої авто» — a card per car: its photos (a swipe strip; copied to our site after the purchase), title, VIN / price (no lot number, owner 2026-11-12), «Де зараз авто» (the delivery stages,
 done / current / next), «Оплати» (paid of total with a bar, each payment with a coloured status: paid, days left,
 overdue, penalty accrued) and the contract's penalty terms for late payment; «🔨 Мої ставки» — a card per bid with a
 coloured status (waiting for the manager / placed / not placed). The numbers and stages come from the contract
@@ -73,7 +73,9 @@ STYLE = ('<style id="ua-cabinet-v1">.cab{max-width:860px;margin:0 auto;padding:2
          'background:#13233a;border:1px solid #2a3b55}.cab-me b{font-size:18px}.cab-me span{opacity:.85}'
          '#cab-out{margin-left:auto;padding:8px 16px;border-radius:10px;border:0;background:#f2b544;color:#0B1524;'
          'font-weight:700;cursor:pointer}.cab-card{border-radius:16px;background:#13233a;border:1px solid #2a3b55;'
-         'overflow:hidden;margin-bottom:14px}.cab-card img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}'
+         'overflow:hidden;margin-bottom:14px}.cab-photos{display:flex;overflow-x:auto;scroll-snap-type:x mandatory}'
+         '.cab-photos img{flex:0 0 100%;scroll-snap-align:start;display:block;width:100%;aspect-ratio:16/9;'
+         'object-fit:cover}'
          '.cab-in{padding:14px}.cab-title{font-size:18px;font-weight:800}.cab-tags{display:flex;flex-wrap:wrap;gap:6px;'
          'margin:8px 0 2px}.cab-tag{font-size:13px;padding:3px 8px;border-radius:999px;background:#0B1524;'
          'border:1px solid #2a3b55;opacity:.9}.cab-chip{display:inline-block;font-size:13px;font-weight:700;'
@@ -125,8 +127,10 @@ SCRIPT = (
     'bar.firstChild.style.width=(total?Math.round(paid*100/total):0)+"%";'
     'var steps=(a.stages||[]).length?el("ol","cab-steps",null,a.stages.map(function(s){'
     'return el("li",s.state,(s.state==="done"?"✓ ":"")+s.label);})):a.stage_label?el("div",null,null,'
-    '[chip("wait",a.stage_label)]):null;var img=null;if(a.photo){img=el("img");img.src=a.photo;img.alt="";'
-    'img.loading="lazy";img.onerror=function(){img.remove();};}return el("div","cab-card",null,[img,el("div","cab-in",null,[el("div","cab-title",'
+    '[chip("wait",a.stage_label)]):null;var urls=(a.photos||[]).length?a.photos:a.photo?[a.photo]:[],'
+    'gallery=urls.length?el("div","cab-photos",null,urls.map(function(u){var i=el("img");i.src=u;i.alt="";'
+    'i.loading="lazy";i.onerror=function(){i.remove();};return i;})):null;'
+    'return el("div","cab-card",null,[gallery,el("div","cab-in",null,[el("div","cab-title",'
     'a.title+(a.year?" "+a.year:"")),tags([a.vin?"VIN "+a.vin:"",'
     'a.price_usd?t("price")+" $"+n(a.price_usd):""]),steps?el("div","cab-h",t("stages")):null,steps,'
     'pays.length?el("div","cab-h",t("payments")):null,pays.length?el("div",null,t("paid_of",{p:n(paid),'
