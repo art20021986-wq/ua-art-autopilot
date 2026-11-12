@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-PAYMENTS-PREFLIGHT-20261112-R3.79d88aa35b3019373363c51e1eb05239bb36a6d7bdb749f2cd47e080a947a313.json",
+  "autostart_ledger_sha256": "94fb8296d36d8ecd7ead87ed6a4fec0760e286639bb8e59e3528ed21b1a67345",
+  "autostart_source_commit": "8d4dae9aed06da2986c289d4af014079b98005af",
+  "created_at": "2026-11-12T20:58:10Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-12T20:58:10Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43305273427",
+    "task_id": "CRM-PAYMENTS-PREFLIGHT-20261112-R3",
+    "task_sha256": "79d88aa35b3019373363c51e1eb05239bb36a6d7bdb749f2cd47e080a947a313"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/CRM-PAYMENTS-PREFLIGHT-20261112-R3.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CRM-PAYMENTS-PREFLIGHT-20261112-R3.json",
+  "request_sha256": "79d88aa35b3019373363c51e1eb05239bb36a6d7bdb749f2cd47e080a947a313",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "1d55e1b54edc5177cddb1f1838dae738e817431c",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-12T20:58:10Z"
+}
