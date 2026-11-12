@@ -7,21 +7,23 @@
   "created_at": "2026-11-12T12:09:39Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T12:09:39Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-12T12:14:19Z",
+  "heartbeat_at": "2026-11-12T12:14:19Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43215168786",
     "task_id": "HOME-STEP2-PAY-PREFLIGHT-20261112",
     "task_sha256": "5968ff4e35a0dba5857d41d874845273bfc8642ab43dd5c6ea5c639a712e8162"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-1b9e0b8bc5094697-3b1751775f1c004c",
   "receipt_path": "state/receipts/HOME-STEP2-PAY-PREFLIGHT-20261112.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "1fc1c6990e611528f12d2c5289a3b4899fd9c0f5e9c7ac1ab81b3a53fb7f6267",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-STEP2-PAY-PREFLIGHT-20261112.json",
   "request_sha256": "5968ff4e35a0dba5857d41d874845273bfc8642ab43dd5c6ea5c639a712e8162",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "da8f326c2c286063b48bdfe145d4986bfb4a28b1",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92777263104,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.13
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-12T12:09:39Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "6842d38e60026118ea5b481060d5ee5b1673290bd5224c16cceebbb6868da3cc",
+    "file_sha256": {
+      "cloud/home_step2_pay_001/candidate_builder.py": "75f481e74b2463a739ec82438c8fa63ee698704093932c4e9f6d79cdb0afc3fd",
+      "cloud/home_step2_pay_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_step2_pay_001/deployment_bootstrap.py": "593a30207bafb75bff7ee6ceff7d1c483446fcd87f62b92f37a4d98788feba99",
+      "cloud/home_step2_pay_001/deployment_remote.py": "e346084cedadf40833f17f606e6c4e1184e0c49616e895e48e203f3440f06846",
+      "cloud/home_step2_pay_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_step2_pay_001/deployment_transport.py": "c9b885f79654b80eb4828856a9051f801154bc6d8154522765728860dcd08512",
+      "cloud/home_step2_pay_001/edit_home.py": "f82d775f7e00dad3fecf00a6a75aec809b37a58d245e11f2b6e71fd5706fcd15",
+      "cloud/home_step2_pay_001/make_release.py": "04167dd7e8fdf7888efa4fc9b7eeef1b1ca4aee6d29d1a4a91640d416fb43e06",
+      "cloud/home_step2_pay_001/release_constants.py": "de253abfaf4c9cd69b542211361897df0cc0a9bacb7fc22b5af7802ecf5363b7",
+      "cloud/home_step2_pay_001/test_deployment.py": "69fc4c95a10648f910baae5d4cb5cfe426c893d91d20b39d0cb9f2973709708c",
+      "cloud/home_step2_pay_001/test_edit_home.py": "ceba0199bdc1024af8a0c4219361f02bb568c6c8bcaeeed4a2f8f7002a30a98b"
+    }
+  },
+  "updated_at": "2026-11-12T12:14:19Z"
 }
