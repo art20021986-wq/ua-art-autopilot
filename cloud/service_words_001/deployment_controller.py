@@ -17,13 +17,15 @@ from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 # is there.
 WORD = re.compile(r'(?i)п[іi]дб[іi]р|подбор|подбира|п[іi]дбира|п[іi]дбер|подбер|п[іi]д[іi]бра|подобра|შერჩ|ვარჩევ')
 NO_WORD = lambda body: WORD.search(body) is None
-EXPECTED = {'/video/index.html': lambda body: NO_WORD(body) and 'data-uk="Замовити авто"' in body,
+EXPECTED = {'/video/index.html': lambda body: (NO_WORD(body) and 'data-uk="Замовити авто"' in body
+                                             and 'депозит — 1 000' not in body and 'Передоплата 1 000 $' in body),
             '/video/katalog.html': NO_WORD,
             '/video/podbor.html': NO_WORD,
             '/video/korea.html': NO_WORD,
             '/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html': NO_WORD,
             '/video/seo/ru/avto-pod-zakaz-kiev.html': NO_WORD,
-            '/video/ru/UA-0005.html': NO_WORD}
+            '/video/ru/UA-0005.html': NO_WORD,
+            '/video/ua-site-languages.js': NO_WORD}
 
 
 def context():
