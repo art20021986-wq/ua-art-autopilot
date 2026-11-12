@@ -8,11 +8,16 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+import edit_analitika_bot  # noqa: E402
+import edit_analitika_knopka  # noqa: E402
+import edit_bezopasnost  # noqa: E402
 import edit_client_ui  # noqa: E402
+import edit_karta_klienta  # noqa: E402
 import edit_lead_bot  # noqa: E402
 import edit_lead_desk  # noqa: E402
 import edit_order_bindings  # noqa: E402
 import edit_order_host  # noqa: E402
+import edit_svyaz  # noqa: E402
 import edit_vitrina  # noqa: E402
 import edits  # noqa: E402
 
@@ -23,7 +28,27 @@ CASES = (
     (edit_order_bindings, 'order_bindings.txt', r'owner_id\s*=\s*int|== owner_id'),
     (edit_order_host, 'order_host.txt', r'owner_id'),
     (edit_lead_desk, 'ua_lead_desk.txt', r'owner_id|\[owner\]'),
+    (edit_bezopasnost, 'bezopasnost.txt', r'_soobshenie\(_vladelec\(\)|== str\(_vladelec\(\)\)'),
+    (edit_karta_klienta, 'karta_klienta.txt', r'komu = _chitat'),
+    (edit_svyaz, 'svyaz.txt', r'kto = _fayl'),
+    (edit_analitika_bot, 'analitika_bot.txt', r'id in VLADELEC\n'),
+    (edit_analitika_knopka, 'analitika_knopka.txt', r'== int\(vladelec_id'),
 )
+
+
+
+def stubbed(text):
+    """A sanitized line ([REDACTED]) becomes a statement of the right indent, so the edited file can be compiled."""
+    lines = text.splitlines()
+    for i, line in enumerate(lines):
+        if line.strip() == '[REDACTED]':
+            before = next((x for x in reversed(lines[:i]) if x.strip()), '')
+            after = next((x for x in lines[i + 1:] if x.strip()), '')
+            indent = lambda x: len(x) - len(x.lstrip())
+            opener = indent(after) > indent(before) and not before.rstrip().endswith(':')
+            width = indent(before) if opener else indent(after)
+            lines[i] = ' ' * width + ('if True:' if opener else 'pass')
+    return '\n'.join(lines)
 
 
 class EditTests(unittest.TestCase):
@@ -37,13 +62,15 @@ class EditTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'FRAGMENT_NOT_UNIQUE'):
                     edits.apply(result.encode(), module.EDITS)
 
-    def test_files_without_redactions_still_compile(self):
+    def test_edited_files_compile(self):
         for module, fixture, _ in CASES:
             source = (HERE / 'fixtures' / fixture).read_bytes()
-            if b'[REDACTED]' in source:
+            try:  # where the stubs fit the original, they must fit the edited file (the server compiles the real one)
+                compile(stubbed(source.decode()), module.NAME, 'exec')
+            except SyntaxError:
                 continue
             with self.subTest(module.NAME):
-                compile(edits.apply(source, module.EDITS), module.NAME, 'exec')
+                compile(stubbed(edits.apply(source, module.EDITS).decode()), module.NAME, 'exec')
 
     def test_drifted_source_stops(self):
         with self.assertRaisesRegex(ValueError, 'FRAGMENT_NOT_UNIQUE'):

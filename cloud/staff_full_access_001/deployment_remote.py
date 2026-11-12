@@ -120,7 +120,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'STAFF-ACCESS-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'client bot only, no page: new ua_owners.py; lead_bot, client_ui, vitrina, ua_order bindings/host and the lead desk ask ua_owners (the configured chat + active CRM owners) instead of one owner chat',
+            'site_scope':'bots only, no page: new ua_owners.py; the client bot (lead_bot, client_ui, vitrina, ua_order bindings/host, lead desk, analytics) and the owner alerts of bezopasnost, karta_klienta and svyaz ask ua_owners (the configured chat + active CRM owners) instead of one owner chat',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -135,7 +135,8 @@ import json, os, re, sys
 after, root = sys.argv[1], sys.argv[2]
 sys.path[:0] = [after, root]
 os.chdir(root)
-for name in ('lead_bot.py', 'client_ui.py', 'vitrina.py', 'ua_order/bindings.py', 'ua_order/host.py', 'ua_lead_desk.py'):
+for name in ('lead_bot.py', 'client_ui.py', 'vitrina.py', 'ua_order/bindings.py', 'ua_order/host.py', 'ua_lead_desk.py',
+             'analitika_bot.py', 'analitika_knopka.py', 'bezopasnost.py', 'karta_klienta.py', 'svyaz.py', 'ua_owners.py'):
     compile(open(after + '/' + name, 'rb').read(), name, 'exec')
 import ua_owners, ua_lead_desk
 owner = open(root + '/vladelec.txt', encoding='utf-8').read().strip()
