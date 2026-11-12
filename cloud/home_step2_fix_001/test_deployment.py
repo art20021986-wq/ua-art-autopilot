@@ -233,7 +233,7 @@ class TransportTests(unittest.TestCase):
 
 class PublicVerificationTests(unittest.TestCase):
     def response(self,request,timeout):
-        response=BytesIO(('<html>'+'x'*300+controller.edit_home.STEP2+' <svg</html>').encode())
+        response=BytesIO(('<html>'+'x'*300+controller.edit_home.CHECK+' <svg</html>').encode())
         response.url=request.full_url;response.status=200
         return response
 
@@ -254,7 +254,7 @@ class PublicVerificationTests(unittest.TestCase):
 
     def test_old_line_still_live_is_not_success(self):
         def old(request,timeout):
-            response=BytesIO(('<html>'+'x'*300+controller.edit_home.STEP2+controller.edit_home.OLD+'</html>').encode())
+            response=BytesIO(('<html>'+'x'*300+controller.edit_home.CHECK+controller.edit_home.OLD_TITLE+'</html>').encode())
             response.url=request.full_url;response.status=200
             return response
         with patch.object(controller.urllib.request,'urlopen',side_effect=old):

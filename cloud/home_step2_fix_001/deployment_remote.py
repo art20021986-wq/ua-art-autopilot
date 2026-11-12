@@ -1,4 +1,4 @@
-"""Bounded home step 2 text fix release (HOME-STEP2-FIX-001: the old line removed from step 2 of the purchase steps); preserve live data and pending requests."""
+"""Bounded home step 2 text fix release (HOME-STEP2-FIX-001: approved service text in step 2 of the purchase steps); preserve live data and pending requests."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -114,7 +114,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'HOME-AUDI-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'one old paragraph removed from step 2 «Оформлення договору» on video/index.html (and the no-JS copy on video/korea.html if present)',
+            'site_scope':'step 2: the old line replaced by the owner-approved service text, other countries\' step 2 title «Супровід автомобіля»; video/index.html and the no-JS copy on video/korea.html where present',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan

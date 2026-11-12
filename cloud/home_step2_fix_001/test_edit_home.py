@@ -1,46 +1,56 @@
-"""Step 2: only the old line goes, on the home page and (if present) the korea.html copy; every other byte stays."""
+"""Step 2: the approved service text replaces the old line; other countries' title changes; every other byte stays."""
 from pathlib import Path
 import unittest
 
 import candidate_builder
 import edit_home
+import service_text as T
 
 FIXTURES = Path(__file__).resolve().parent/'fixtures'
 HOME = (FIXTURES/'index_live.html').read_bytes()
 KOREA = (FIXTURES/'korea_live.html').read_bytes()
 
 
-class Step2FixTests(unittest.TestCase):
-    def test_only_the_old_line_goes(self):
-        before = HOME.decode('utf-8')
-        after = edit_home.build(HOME).decode('utf-8')
-        self.assertEqual(before.count(edit_home.OLD), 1)
-        self.assertNotIn(edit_home.GONE, after)
-        self.assertNotIn('корейских аукционах', after)
-        self.assertEqual(after.count(edit_home.STEP2), 1)
-        self.assertEqual(before.replace(edit_home.OLD, '', 1), after)
+class Step2Tests(unittest.TestCase):
+    def setUp(self):
+        self.before = HOME.decode('utf-8')
+        self.after = edit_home.build(HOME).decode('utf-8')
 
-    def test_rest_of_step2_stays(self):
-        after = edit_home.build(HOME).decode('utf-8')
-        for words in ('Вартість послуги — 600 $', 'Після оплати менеджер створює', 'депозит — 1 000 $'):
-            self.assertIn(words, after)
+    def test_old_words_gone(self):
+        for words in edit_home.GONE + ('корейских аукционах', 'Подбор и проверка', 'შერჩევა და შემოწმება'):
+            self.assertNotIn(words, self.after)
 
-    def test_korea_changes_only_if_it_holds_the_line(self):
-        self.assertNotIn(edit_home.OLD.encode(), KOREA)
-        self.assertEqual(candidate_builder.build({'video/index.html': HOME, 'video/korea.html': KOREA}, {}),
-                         {'video/index.html': edit_home.build(HOME)})
-        korea = KOREA.replace(b'</body>', edit_home.OLD.encode() + b'</body>', 1)
-        result = candidate_builder.build({'video/index.html': HOME, 'video/korea.html': korea}, {})
-        self.assertEqual(result['video/korea.html'], KOREA)
+    def test_approved_text_in_order(self):
+        order = [T.FIRST[1], T.INCLUDES[1]] + [i[1] for i in T.ITEMS] + ['Вартість послуги — 600 $', T.SEPARATE[1]]
+        places = [self.after.index('>%s<' % w) for w in order]
+        self.assertEqual(places, sorted(places))
+        for words in (T.FIRST, T.SEPARATE, T.OTHER_TITLE) + T.ITEMS:
+            self.assertIn('data-ru="%s" data-uk="%s" data-ka="%s">%s<' % (words + (words[1],)), self.after)
 
-    def test_already_fixed_or_doubled_changes_nothing(self):
-        after = edit_home.build(HOME)
+    def test_every_other_byte_stays(self):
+        restored = (self.after.replace(edit_home.SERVICE, edit_home.OLD, 1).replace(edit_home.SEPARATE, '', 1)
+                    .replace(edit_home.NEW_TITLE, edit_home.OLD_TITLE, 1))
+        self.assertEqual(restored, self.before)
+
+    def test_korea_copy_follows_where_present(self):
+        result = candidate_builder.build({'video/index.html': HOME, 'video/korea.html': KOREA}, {})
+        self.assertEqual(result['video/index.html'], edit_home.build(HOME))
+        if edit_home.OLD_TITLE.encode() in KOREA or edit_home.OLD.encode() in KOREA:
+            self.assertNotIn(edit_home.OLD_TITLE, result['video/korea.html'].decode())
+        else:
+            self.assertNotIn('video/korea.html', result)
+
+    def test_already_live_or_doubled_changes_nothing(self):
         with self.assertRaisesRegex(ValueError, 'HOME_STEP2_ANCHOR'):
-            edit_home.build(after)
+            edit_home.build(self.after.encode('utf-8'))
         with self.assertRaisesRegex(ValueError, 'HOME_STEP2_ANCHOR'):
             edit_home.build(HOME + edit_home.OLD.encode())
         with self.assertRaisesRegex(ValueError, 'HOME_STEP2_ANCHOR'):
-            edit_home.build(KOREA + (edit_home.OLD * 2).encode(), required=False)
+            edit_home.build(HOME.replace(edit_home.OLD_TITLE.encode(), b'<b>x</b>'))
+
+    def test_unsafe_text_is_refused(self):
+        with self.assertRaisesRegex(ValueError, 'HOME_STEP2_TEXT'):
+            edit_home.text('p', ('a', '<b>', 'c'))
 
 
 if __name__ == '__main__':
