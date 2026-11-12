@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TICKER-PHOTO-PREFLIGHT-20261112.3f582be5c1e6152b543af63a49fa4ff77c882f3ab89cc5c156342a32bbcfad4e.json",
+  "autostart_ledger_sha256": "8986467b96a4377caab524f0b0bb9e913cf75b70be50cd9786aec44e3952b9db",
+  "autostart_source_commit": "e598f6d31b48159c748a908f71eda26985daaeb6",
+  "created_at": "2026-11-12T03:15:38Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-12T03:15:38Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43146836462",
+    "task_id": "TICKER-PHOTO-PREFLIGHT-20261112",
+    "task_sha256": "3f582be5c1e6152b543af63a49fa4ff77c882f3ab89cc5c156342a32bbcfad4e"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-0843f3b0527fadf0-f5473bce288f8507",
+  "receipt_path": "state/receipts/TICKER-PHOTO-PREFLIGHT-20261112.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TICKER-PHOTO-PREFLIGHT-20261112.json",
+  "request_sha256": "3f582be5c1e6152b543af63a49fa4ff77c882f3ab89cc5c156342a32bbcfad4e",
+  "resource_locks": [
+    "PATH_SCOPE:0843f3b0527fadf0"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "dec414edaa85c7fa0513cbf7993278493abf801f",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-12T03:15:38Z"
+}
