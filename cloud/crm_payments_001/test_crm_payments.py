@@ -86,6 +86,8 @@ class Store(unittest.TestCase):
         self.assertGreater(kinds['car']['penalty_usd'], 0)
         self.assertEqual(kinds['logistics']['days_left'], 1)  # due 24.11
         self.assertEqual(cars[0]['penalty']['annual_percent'], 36.0)
+        self.assertEqual([x['state'] for x in cars[0]['stages']], ['done', 'current', 'todo', 'todo', 'todo', 'todo'])
+        self.assertEqual(cars[0]['stages'][1]['label'], 'Авто викуплено на аукціоні')
         self.assertEqual(payst.purchased_cars('+380509999999', self.path), [])
 
     def test_screen_texts(self):

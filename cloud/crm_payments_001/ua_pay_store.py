@@ -26,8 +26,18 @@ SCHEMA = (
 )
 CAR_FIELDS = ('lot_url', 'lot_id', 'vin', 'title', 'year', 'mileage', 'color', 'fuel', 'photos', 'price_krw',
               'price_usd')
-STAGE_LABELS = {'contract': 'Договор подписан', 'bought': 'Авто выкуплено', 'transit': 'В пути',
-                'georgia': 'В Грузии', 'ukraine': 'В Украине', 'delivered': 'Выдано клиенту'}
+# The order stages the CRM marks (ua_order_book.STAGES), in Ukrainian for the client cabinet.
+STAGES = (('contract', 'Договір підписано'), ('bought', 'Авто викуплено на аукціоні'), ('transit', 'В дорозі'),
+          ('georgia', 'У Грузії'), ('ukraine', 'В Україні'), ('delivered', 'Видано клієнту'))
+STAGE_LABELS = dict(STAGES)
+
+
+def stage_path(stage):
+    """The whole path in order: 'done' before the order's stage, 'current' for it ('done' once delivered), 'todo'."""
+    keys = [key for key, _ in STAGES]
+    at = keys.index(stage) if stage in keys else 0
+    return [{'label': label, 'state': 'done' if i < at or (i == at and stage == 'delivered') else
+             'current' if i == at else 'todo'} for i, (_, label) in enumerate(STAGES)]
 
 
 def _date(text):
@@ -216,7 +226,7 @@ def purchased_cars(phone, path=DB_PATH, today=None):
     for stage, subject, car, pays in result:
         title, year, vin, lot_id, photos, price_usd = car or (subject, '', '', '', '[]', None)
         out.append({'title': title or subject or '', 'year': year or '', 'vin': vin or '', 'lot_id': lot_id or '',
-                    'stage': stage, 'stage_label': STAGE_LABELS.get(stage, stage),
+                    'stage': stage, 'stage_label': STAGE_LABELS.get(stage, stage), 'stages': stage_path(stage),
                     'photo': (json.loads(photos or '[]') or [''])[0], 'price_usd': price_usd,
                     'payments': _cabinet_payments(pays, today, nbu_rate), 'penalty': penalty})
     return out
