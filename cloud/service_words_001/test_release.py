@@ -61,6 +61,14 @@ class Release(unittest.TestCase):
         self.assertIn('Передоплата 1 000 $ зараховується у вартість авто', home)
         self.assertIn('Предоплата 1 000 $ засчитывается в стоимость авто', home)
 
+    def test_payment_term_five_days(self):
+        home = self.result['video/index.html'].decode()
+        self.assertNotIn('7 робочих', home)
+        self.assertNotIn('7 рабочих', home)
+        self.assertIn('data-ru="Срок оплаты автомобиля — до 5 рабочих дней." data-uk="Термін оплати автомобіля — до 5 '
+                      'робочих днів." data-ka="ავტომობილის გადახდის ვადა — 5 სამუშაო დღემდე.">Термін оплати автомобіля — '
+                      'до 5 робочих днів.<', home)
+
     def test_only_listed_phrases_change(self):
         for name, value in self.source.items():
             if name not in self.result or not name.endswith('.html'):
