@@ -14,6 +14,7 @@ from types import SimpleNamespace
 
 import deployment_controller as controller
 import deployment_remote as remote
+import edit_order
 from deployment_transport import canonical, sha
 from deployment_transport import API, BOT_ID, BOT_COMMAND, TransportError
 
@@ -284,6 +285,7 @@ class PublicVerificationTests(unittest.TestCase):
 
 
 class SmokeTests(unittest.TestCase):
+    # The order page files and the Korea page come from fixtures/ (public pages).
     def test_collector_and_page_from_the_candidate(self):
         import shutil
         import candidate_builder
@@ -294,14 +296,16 @@ class SmokeTests(unittest.TestCase):
             source = Path(__file__).resolve().parent/'korea_auction'
             for module in candidate_builder.MODULES:
                 shutil.copy(source/(module+'.py'), here/('kauc_%s.py' % module))
-            files = candidate_builder.build({candidate_builder.PAGE: live}, {}, here=here)
+            order = Path(__file__).resolve().parent/'fixtures'/'order'  # the public order page files, 2026-11-12
+            source = {name: (order/name.rsplit('/', 1)[1]).read_bytes() for name in edit_order.SOURCE_FILES}
+            files = candidate_builder.build(dict(source, **{candidate_builder.PAGE: live}), {}, here=here)
             remote.atomic(root/candidate_builder.PAGE, live)
             for name, value in files.items():
                 remote.atomic(work/'after'/name, value)
             remote.atomic(work/'plan.json', canonical({'files': {name: {} for name in files}}))
             value = remote.smoke(work, root/candidate_builder.PAGE)
             self.assertTrue(all(value.values()), value)
-            self.assertEqual(len(value), 14)
+            self.assertEqual(len(value), 16)
             edited = dict(files)
             edited[candidate_builder.PAGE] = files[candidate_builder.PAGE].replace(b'</body>', b'<p>x</p></body>')
             remote.atomic(work/'after'/candidate_builder.PAGE, edited[candidate_builder.PAGE])

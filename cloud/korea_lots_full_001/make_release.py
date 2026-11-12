@@ -24,8 +24,8 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'ua_korea_lots.py')] + [
-    P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'collect', 'html_tools', 'job', 'lots', 'nbu', 'prices', 'public',
+                                'edit_order.py', 'make_release.py', 'release_constants.py', 'ua_korea_lots.py')] + [
+    P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'collect', 'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public',
                                                    'selection', 'session', 'ticker')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'korea_auction/test_korea_auction.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
@@ -75,14 +75,16 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of KOREA-LOTS-FULL (JPAUTO-KOREA-001): builds the updated collector (every coming auction day, '
-                            'VIN and every lot photo from the lot pages, photos copied gradually) from the installed one and the '
-                            'new lot list block of the live Korea page (auction days, VIN), checks they import and render on the '
-                            'server Python and that only the list block of the page changes; measures storage. No source, CRM, '
-                            'HTML, media, task or bot change.',
+             'description': 'Preview of KOREA-LOTS-FULL (JPAUTO-KOREA-001, KOREA-MODEL-LOTS-001): builds the updated '
+                            'collector (today and the coming auction days, VIN and every lot photo from the lot pages, '
+                            'photos copied gradually, the week\u2019s lots of each order model) from the installed one, the '
+                            'new lot list block of the live Korea page and the small edits of the live order page files '
+                            '(auction lots first in the model carousels); checks they import and render on the server '
+                            'Python and that only those parts change; measures storage. No source, CRM, HTML, media, task '
+                            'or bot change.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview Korea lots VIN, photos and days'}
+             'title': 'Preview Korea lots and order page auction lots'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -135,20 +137,23 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner request (2026-11-11/12, photos answer «1»): on the Korea auctions page the lot list has the coming '
-                              'auction days on top (weekday, date, number of cars; «Усі дні» first), the day and time on every '
-                              'card, «За датою торгів» in the sorting, and the lot card shows the VIN and every photo of the lot '
-                              '(up to 40; the collector copies the first 3 of every lot, the rest over the next hourly runs, '
-                              'about 3.3 GB; photos of past days are removed). Collector update (korea_auction) and the list '
-                              'block of video/korea.html, one install. Rollback restores the previous collector and page. '
-                              'No CRM data change. Existing backup, bot pause, writer locks, data-preservation, rollback and '
-                              'public health checks are kept.',
+               'description': 'Owner requests (2026-11-11/12, photos answer \u00ab1\u00bb; KOREA-MODEL-LOTS-001): on the Korea '
+                              'auctions page the lot list has today\u2019s and the coming auction days on top (weekday, '
+                              'date, number of cars), the day and time on every card, date sorting, and the lot card '
+                              'shows the VIN and every photo (up to 40; the first 3 of every lot at once, the rest over '
+                              'the next hourly runs, about 3.3 GB; photos of past days removed). On the order page '
+                              '(Korea) each model carousel shows up to 6 of this week\u2019s auction lots of its '
+                              'generation first (best grade first), each linking to its lot card; without lots the '
+                              'carousel stays as before. Collector update, the list block of video/korea.html and small '
+                              'edits of video/podbor.html and video/order/, one install. Rollback restores the previous '
+                              'collector and pages. No CRM data change. Existing backup, bot pause, writer locks, '
+                              'data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 4294967296, 'task_id': task, 'title': 'Install Korea lots VIN, photos and days'}
+               'storage_required_bytes': 4294967296, 'task_id': task, 'title': 'Install Korea lots and order page auction lots'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),

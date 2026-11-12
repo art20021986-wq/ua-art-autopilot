@@ -72,3 +72,7 @@ Google Data API выключен — отчёты Google автопилоту н
   ANALYTICS2-INSTALL-20261109-R6 FINISHED (run 43000853889): backup/install/live_verify/rollback-ready PASS, CRM unchanged,
   unexpected_changes 0. Live: GA4 tag on video/privacy.html and diag pages (checked UA-0005/UA-0018). Points 2 and 4 DONE.
   Open: point 5 (owner enables GA4 Data API, reply «включил»), point 6 (Clarity Project ID).
+
+## 2026-11-12 — п.5: владелец включил Google Analytics Data API (через сессию-координатора)
+ANALYTICS-AUDIT-PROBE-20261112 — та же проверка только на чтение: отчёты Google по дням + свой счётчик + журнал сервера.
+Цель: подтвердить доступ к отчётам Google и сравнить три источника. Без записи на сайт/в CRM.

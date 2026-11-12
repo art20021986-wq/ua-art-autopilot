@@ -14,14 +14,14 @@ from . import catalog, lots, nbu, selection
 from .session import Session
 
 SEARCH_PAGE = '/vehicle-search/kr/'
-TICKER_SIZE = 15
-MAX_DETAILS = 25
+TICKER_SIZE = 150  # TICKER-FIX5-001 (owner 2026-11-12): up to ten times more popular-model auction cars
+MAX_DETAILS = 180
 PAGE_LIMIT = 2000
 MAX_PAGES = 5
 
 
 def _search_form_data(html):
-    """Hidden fields of the Korea search form (no filters = all lots)."""
+    """Hidden fields and default-checked boxes of the Korea search form (no other filters = all lots)."""
     form = html[html.find('id="purchase_search_form"'):]
     form = form[:form.find('</form>')]
     data = []
@@ -30,6 +30,13 @@ def _search_form_data(html):
         value = re.search(r'value="([^"]*)"', tag)
         if name and name.group(1) not in ('history_idx_url', 'koreafavoriteurl', 'koreahistoryurl'):
             data.append((name.group(1), value.group(1) if value else ''))
+    # TICKER-FIX4-001: the boxes the form checks by default (auction groups, closed orders) go too, as a browser sends
+    # them; without them the site lists «0 Results» since 11.11 (probe SOCIAL-PROBE-20261112-R12: with them 989).
+    for tag in re.findall(r'(?is)<input[^>]*type="(?:checkbox|radio)"[^>]*>', form):
+        name = re.search(r'name="([^"]+)"', tag)
+        value = re.search(r'value="([^"]*)"', tag)
+        if name and re.search(r'(?i)\schecked\b', tag):
+            data.append((name.group(1), value.group(1) if value else 'on'))
     action = re.search(r'action="([^"]+)"', html[html.find('id="purchase_search_form"') - 300:])
     return (action.group(1) if action else '/vehicle-search/kr/index'), data
 
@@ -97,18 +104,25 @@ def collect(email, password, now=None, session=None):
     rates = nbu.fetch_rates()
     own_cars = catalog.parse(catalog.fetch())
     rules = catalog.model_rules(own_cars)
+    today, next_date = selection.today_and_next(all_lots, now)
+    tomorrow = selection.day_after(today)
     items, details = [], 0
-    for lot in selection.candidates(all_lots, date, lambda l: catalog.same_model(l, rules)) if date else []:
-        if len(items) >= TICKER_SIZE or details >= MAX_DETAILS:
-            break
-        details += 1
-        _, html = s.fetch(lot['detail_url'])
-        detail = lots.parse_detail(html)
-        if detail['start_price_krw'] or lot['start_price_krw']:
-            items.append(ticker_item(lot, detail, rates))
+    for day in selection.ticker_dates(all_lots, now):  # TICKER-FIX6-001: next days, then today, until full
+        for lot in selection.candidates(all_lots, day, lambda l: catalog.same_model(l, rules)):
+            if len(items) >= TICKER_SIZE or details >= MAX_DETAILS:
+                break
+            details += 1
+            _, html = s.fetch(lot['detail_url'])
+            detail = lots.parse_detail(html)
+            if detail['start_price_krw'] or lot['start_price_krw']:
+                items.append(dict(ticker_item(lot, detail, rates), tomorrow=day == tomorrow))
     return {
         'generated_at': (now or datetime.now(selection.JST)).isoformat(timespec='minutes'),
         'auction_date': date,
+        # TICKER-FIX4-001 (owner 2026-11-12): how many cars today and on the next auction day
+        'lots_today': sum(1 for l in all_lots if selection.auction_date(l) == today),
+        'next_date': next_date, 'next_is_tomorrow': next_date == selection.day_after(today),
+        'lots_next': sum(1 for l in all_lots if next_date and selection.auction_date(l) == next_date),
         'lots_total': total, 'lots_parsed': len(all_lots),
         'lots_on_date': sum(1 for l in all_lots if selection.auction_date(l) == date),
         'nbu': {'date': rates['date'], 'usd_uah': rates['USD'], 'krw_uah': rates['KRW']},

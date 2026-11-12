@@ -32,6 +32,9 @@ T = {
                     'Сегодня на торгах {n} авто — доступ после договора',
                     'დღეს ვაჭრობაზე {n} ავტო — წვდომა ხელშეკრულების შემდეგ'),
     'cars': ('авто', 'авто', 'ავტო'),
+    # TICKER-FIX4-001 (owner 2026-11-12): today's and the next day's count side by side
+    'lead_date': ('Торги {d}', 'Торги {d}', 'ვაჭრობა {d}'),
+    'access': ('доступ після договору', 'доступ после договора', 'წვდომა ხელშეკრულების შემდეგ'),
     # what the lot score means, on the yellow tile (owner 2026-11-11), per the auction house rules (Auto Hub):
     # first letter = accident grade A-F, second = exterior grade (panels to repair now) A, B, C, D, F (no E)
     'acc': ('1-ша літера оцінки — аварії', '1-я буква оценки — аварии', 'შეფასების 1-ლი ასო — ავარია'),
@@ -146,6 +149,18 @@ def _mix(lots, own, every=2):
     return out
 
 
+def _days(data):
+    """TICKER-FIX4-001: [(label, count)] for today's auction and the next auction day, each only when it has lots."""
+    out = []
+    if data.get('lots_today'):
+        out.append((_t('lead_today'), data['lots_today']))
+    if data.get('lots_next') and data.get('next_date'):
+        d = data['next_date']
+        label = _t('lead') if data.get('next_is_tomorrow') else _t('lead_date', d='%s.%s' % (d[8:10], d[5:7]))
+        out.append((label, data['lots_next']))
+    return out
+
+
 def render(data, tomorrow=True):
     """Collected JSON (see collect.py) -> HTML block, or '' when there is nothing to show. Without lots (the auction
     lists none yet) the tile with the score legend and the owner's cars (TICKER-FIX3-001)."""
@@ -153,14 +168,23 @@ def render(data, tomorrow=True):
     own = [c for c in data.get('own', []) if c.get('price_usd') and c.get('photo')]
     if not items and not own:
         return ''
-    if items:
+    days = _days(data)
+    if items and days:
+        lead = '<div class="kt-lead">%s%s</div>' % (''.join(
+            '<span class="kt-count">● %s <b>%s</b> %s</span>' % (label, _num(n), _t('cars')) for label, n in days), _legend())
+        track = lead + ''.join(_own(i) if 'stage' in i else _item(i, i.get('tomorrow', tomorrow)) for i in _mix(items, own))
+        count = '%s — %s' % (' · '.join('%s %s %s' % (label, _num(n), _t('cars')) for label, n in days), _t('access'))
+    elif items:
         lead = ('<div class="kt-lead"><span class="kt-count">● %s <b>%s</b> %s</span>%s</div>'
                 % (_t('lead' if tomorrow else 'lead_today'), _num(data['lots_on_date']), _t('cars'), _legend()))
-        track = lead + ''.join(_own(i) if 'stage' in i else _item(i, tomorrow) for i in _mix(items, own))
+        track = lead + ''.join(_own(i) if 'stage' in i else _item(i, i.get('tomorrow', tomorrow)) for i in _mix(items, own))
         count = _t('count' if tomorrow else 'count_today', n=_num(data['lots_on_date']))
     else:
-        track = ('<div class="kt-lead"><span class="kt-count">● %s</span>%s</div>' % (_t('lead_wait'), _legend())
-                 + ''.join(_own(c) for c in own))
+        # TICKER-FIX6-001: the day counts here too, when the auction lists any
+        counts = ''.join('<span class="kt-count">● %s <b>%s</b> %s</span>' % (label, _num(n), _t('cars'))
+                         for label, n in days)
+        track = ('<div class="kt-lead">%s<span class="kt-count">● %s</span>%s</div>'
+                 % (counts, _t('lead_wait'), _legend()) + ''.join(_own(c) for c in own))
         count = _t('count_wait')
     tail = ('<span class="kt-end"><span>%s</span><small>%s</small><a class="kt-btn" href="%s">%s</a></span>'
             % (count, _t('note'), LINK, _t('want')))
