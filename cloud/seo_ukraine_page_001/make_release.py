@@ -137,7 +137,8 @@ def install():
                               'by car carrier or rail, 500 $ catalogue prepayment, Korea auction terms as on the home page), '
                               'linked from the Korea hub and the custom-order page; new ua_seo_ukraine_page.py, '
                               'ua_seo_order_models registers it, ua_seo_hub_texts and ua_seo_landings link it; landing pages '
-                              'refreshed. Cards, catalogue and CRM unchanged. Existing backup, '
+                              'refreshed. Cards, catalogue and CRM unchanged. Existing backup, bot pause, writer locks, '
+                              'data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/katalog.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
