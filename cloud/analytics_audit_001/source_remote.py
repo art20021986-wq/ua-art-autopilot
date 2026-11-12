@@ -1,7 +1,8 @@
 """Read-only analytics audit on the server (ANALYTICS-AUDIT-PROBE).
 
-R3 (2026-11-08, after OWN-COUNTER-INSTALL): counter coverage, live pages, the public /ua/a.js fix and the
-installed modules; report() runs R3, report_r2/report_r1 stay for reference.
+R4 (2026-11-12, owner enabled the Google Analytics Data API): report() asks only the Data API (read-only scope)
+for 14-day totals. R3 (2026-11-08, after OWN-COUNTER-INSTALL): counter coverage, live pages, the public /ua/a.js
+fix and the installed modules; report_r3/report_r2/report_r1 stay for reference.
 R2 (owner «Да» 2026-11-07 to put the own counter on every page and fix its source and time): reads the current
 counter, Google tag and page-writer sources (sanitized) and lists which pages lack the own counter. R1 sections
 below stay for reference; report() runs the R2 reading only.
@@ -363,6 +364,10 @@ def installed():
 
 
 def report():
+    return {'status': 'PASS', 'google_analytics': guarded(ga4)}
+
+
+def report_r3():
     files = page_files()
     return {'status': 'PASS', 'files': coverage(files), 'live': guarded(live), 'script': guarded(script),
             'installed': guarded(installed), 'without_own': pages_without_own(files)}

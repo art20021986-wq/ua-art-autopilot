@@ -1,0 +1,57 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ANALYTICS-AUDIT-PROBE-20261112-R2.c68d1939efda5514369a201908fe59a5c767e88c78caed4ed02777996c3c91b6.json",
+  "autostart_ledger_sha256": "d6ef49bc1fb454e0a8124a24fd3c38585b323ec98fe0e116b873ea745b826348",
+  "autostart_source_commit": "af7c0163c3ac49d38f9bff301941f8c83bc20363",
+  "created_at": "2026-11-12T13:46:18Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-12T13:52:27Z",
+  "heartbeat_at": "2026-11-12T13:52:27Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43230211232",
+    "task_id": "ANALYTICS-AUDIT-PROBE-20261112-R2",
+    "task_sha256": "c68d1939efda5514369a201908fe59a5c767e88c78caed4ed02777996c3c91b6"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-a00b7a073566cbee-5817bb944ce75cbd",
+  "receipt_path": "state/receipts/ANALYTICS-AUDIT-PROBE-20261112-R2.json",
+  "receipt_sha256": "7ef3247ca23e9c5ebc5542d9c7d6c5a21c2ba75a71a6181d2cd20222d6830ec3",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/ANALYTICS-AUDIT-PROBE-20261112-R2.json",
+  "request_sha256": "c68d1939efda5514369a201908fe59a5c767e88c78caed4ed02777996c3c91b6",
+  "resource_locks": [
+    "PATH_SCOPE:a00b7a073566cbee"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "ee5cafb41ba7458491dfc4b64813ec8405c6a887",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92772380672,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.134
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "40598fc2a536c1a9c10a585a02e7e591e5906cdbe1dc62e9bc2b042bfdd6cf29",
+    "file_sha256": {
+      "cloud/analytics_audit_001/bootstrap.py": "63a59601e0e417523f5714066a87cce2ca8153521d0fff984677688375c55e3d",
+      "cloud/analytics_audit_001/make_request.py": "b2200073669359253b95b2e125cbfedef01aa3e951326c92f73d179993488860",
+      "cloud/analytics_audit_001/source_remote.py": "5198bdc3152846eb23a6150092a496df239f292a83556089b7d383466de53ea9",
+      "cloud/analytics_audit_001/test_analytics_audit.py": "6c198875913b4e5d4b4db68223385784d0bdf76508eabf1d67b2036edf592df6",
+      "cloud/analytics_audit_001/transport.py": "2c5de9a04fcaf37756eb3241959730086b0ed8e636f759c5c8f15456a3b1b796"
+    }
+  },
+  "updated_at": "2026-11-12T13:52:27Z"
+}
