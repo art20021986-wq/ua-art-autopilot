@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ANALYTICS3-INSTALL-20261112.ea28ce7e108d1442e2c9f6bc3c807bd30ef230262dfda9ed10a5a642def8c9cf.json",
+  "autostart_ledger_sha256": "b1336152a7d4d18c4742802892cc6e5da8542f18d556fd3906935e5decae1357",
+  "autostart_source_commit": "136548c390e64bb8c06cbd19ce2cbc93619d4a20",
+  "created_at": "2026-11-12T19:04:52Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43286203420",
+    "task_id": "ANALYTICS3-INSTALL-20261112",
+    "task_sha256": "ea28ce7e108d1442e2c9f6bc3c807bd30ef230262dfda9ed10a5a642def8c9cf"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-81279448a9c3effd-10ff50f719457c19",
+  "request_path": "tasks/requests/ANALYTICS3-INSTALL-20261112.json",
+  "resource_locks": [
+    "PATH_SCOPE:81279448a9c3effd"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
