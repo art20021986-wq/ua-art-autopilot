@@ -356,6 +356,7 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
                             atomic(ROOT/relative,read(directory/'after'/relative),plan['files'][relative]['mode'])
                         verify_files(plan,True)
                         job=api.ensure_job()
+                        job['run_soon']=api.run_soon()  # TICKER-FIX5-001: the ticker rebuilds within minutes
                         if protected_data(plan)!=before: raise DeploymentError('PROTECTED_DATA_CHANGED_DURING_INSTALL')
                         result={'status':'PASS','installed':True,'job':job}
                     except BaseException:

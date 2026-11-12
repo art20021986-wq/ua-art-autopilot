@@ -75,7 +75,7 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of TICKER-FIX5-001 (owner 2026-11-12: ten times more auction cars in the ticker, photos without compression, start now): builds the collector update (TICKER_SIZE 150, MAX_DETAILS 180, the rest of the day\'s lots after the top models; original lot photos; each photo-copy failure logged), smoke-tests it on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of TICKER-FIX5-001 (owner 2026-11-12: ten times more auction cars in the ticker, photos without compression, start now): builds the collector update (TICKER_SIZE 150 popular-model lots, MAX_DETAILS 180; original lot photos; each photo-copy failure logged; the hourly job moved to run 3 minutes after the install), smoke-tests it on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
              'title': 'Preview Korea ticker fix 5'}
@@ -131,7 +131,7 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner request (2026-11-12): Korea collector fix 5 — up to 150 auction cars in the ticker (ten times more; the rest of the day\'s lots after the top models), original lot photos without compression, each photo-copy failure written to the task log. Collector modules only; pages, CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
+               'description': 'Owner request (2026-11-12): Korea collector fix 5 — up to 150 popular-model auction cars in the ticker (ten times more), the hourly job moved to run 3 minutes after the install, original lot photos without compression, each photo-copy failure written to the task log. Collector modules only; pages, CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],

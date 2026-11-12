@@ -43,15 +43,13 @@ def day_after(date):
 
 
 def candidates(lots, date, is_own=lambda lot: False, rng=random):
-    """Lots of that date with a photo: the owner's models first, then other top models, then the rest (TICKER-FIX5-001:
-    the ticker shows up to ten times more cars); each group shuffled."""
+    """Lots of that date: the owner's models first, then other top models; each group shuffled."""
     day = [l for l in lots if auction_date(l) == date and l['photos']]
     own = [l for l in day if is_own(l)]
     top = [l for l in day if not is_own(l) and top_model(l)]
-    rest = [l for l in day if not is_own(l) and not top_model(l)]
-    for group in (own, top, rest):
-        rng.shuffle(group)
-    return own + top + rest
+    rng.shuffle(own)
+    rng.shuffle(top)
+    return own + top
 
 
 def is_hot(start_price, market_sold):
