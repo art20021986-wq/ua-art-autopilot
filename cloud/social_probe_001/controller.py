@@ -61,6 +61,12 @@ def execute(env, *, root=None, api=None, upload=upload_package):
     request_sha, run_id = validate_identity(env, root)
     api = api or API(env.get('PYTHONANYWHERE_API_TOKEN', ''))
     report = api.run('probe', run_id, upload(api))
+    try:  # R6+: the account's scheduled tasks that run the Korea collector (command, timing, enabled, expiry)
+        keep = ('id', 'command', 'enabled', 'interval', 'hour', 'minute', 'expiry', 'can_enable', 'logfile', 'description')
+        report['schedule'] = [{k: t.get(k) for k in keep} for t in api.json('GET', 'schedule/')
+                              if isinstance(t, dict) and 'korea' in str(t.get('command', ''))]
+    except Exception as error:  # never stops the probe
+        report['schedule'] = {'error': type(error).__name__}
     task = env['UAART_TASK_ID']
     evidence = '%s/%s.json' % (PACKAGE, TASK.fullmatch(task).group(1))
     write(root, evidence, dump({'task_id': task, 'run_id': run_id, **report}))

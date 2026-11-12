@@ -219,12 +219,13 @@ def report_r6(home=None):
                               'kt_legend': text.count('kt-legend')}
     data = HOME / 'korea_auction_data'
     logs = {}
-    for pattern in ('/var/log/*sched*', '/var/log/tasks/*', str(HOME / '*.log'), str(HOME / 'korea_auction_data/*.log'),
-                    str(HOME / 'logs/*korea*')):
+    for pattern in ('/var/log/*1576351*', '/var/log/*/*1576351*', '/var/log/*sched*', '/var/log/tasks/*',
+                    str(HOME / '*.log'), str(HOME / 'korea_auction_data/*.log'), str(HOME / 'logs/*korea*')):
         for name in sorted(glob.glob(pattern))[-6:]:
             path = Path(name)
-            if path.is_file() and ('korea' in name or 'sched' in name or 'task' in name):
+            if path.is_file() and ('korea' in name or 'sched' in name or 'task' in name or '1576351' in name):
                 logs[name] = _tail(path)
+    var_log = sorted(p.name for p in Path('/var/log').iterdir())[:80] if Path('/var/log').is_dir() else None
     login = HOME / 'jpauto_login.txt'
     job = text_of(HOME / 'korea_ticker_job.py')
     return {'status': 'PASS',
@@ -233,7 +234,7 @@ def report_r6(home=None):
             'data_dir': {p.name: _file(p) for p in sorted(data.iterdir())[:40]} if data.is_dir() else None,
             'lock': _file(HOME / '.korea_auction_job.lock'),
             'login_lines': len([l for l in (text_of(login) or '').splitlines() if l.strip()]) if login.is_file() else None,
-            'job_script': sanitized(job)[:2000] if job else None, 'logs': logs}
+            'job_script': sanitized(job)[:2000] if job else None, 'logs': logs, 'var_log': var_log}
 
 
 def main():

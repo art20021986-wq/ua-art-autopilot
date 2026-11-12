@@ -21,6 +21,10 @@ class FakeAPI:
     def run(self, mode, run_id, bundle):
         return self.report
 
+    def json(self, method, endpoint):
+        return [{'id': 1576351, 'command': 'python3.10 /home/Carix/korea_ticker_job.py', 'enabled': False, 'secret': 'x'},
+                {'id': 2, 'command': 'other.py'}]
+
 
 class ControllerTests(unittest.TestCase):
     TASK = 'SOCIAL-PROBE-20261105'
@@ -42,7 +46,7 @@ class ControllerTests(unittest.TestCase):
     def test_key_material_never_saved(self):
         with tempfile.TemporaryDirectory() as temp:
             with self.assertRaisesRegex(c.ProbeError, 'KEY_MATERIAL'):
-                c.execute(self.env(Path(temp)), root=temp, api=FakeAPI({'x': '-----BEGIN PRIVATE KEY'}),
+                c.execute(ControllerTests.env(ControllerTests(), Path(temp)), root=temp, api=FakeAPI({'x': '-----BEGIN PRIVATE KEY'}),
                           upload=lambda a: 'b' * 64)
 
 
@@ -164,6 +168,15 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(value['login_lines'], 2)
         self.assertNotIn('secret', json.dumps(value))
         self.assertEqual(value['job_script'].splitlines()[0], '[REDACTED]')
+
+
+    def test_schedule_kept_korea_only(self):
+        with tempfile.TemporaryDirectory() as temp:
+            c.execute(ControllerTests.env(ControllerTests(), Path(temp)), root=temp, api=FakeAPI({'status': 'PASS'}), upload=lambda a: 'b' * 64)
+            saved = json.loads((Path(temp) / 'cloud/social_probe_001/20261105.json').read_text())
+        self.assertEqual(saved['schedule'], [{'id': 1576351, 'command': 'python3.10 /home/Carix/korea_ticker_job.py',
+                                              'enabled': False, 'interval': None, 'hour': None, 'minute': None,
+                                              'expiry': None, 'can_enable': None, 'logfile': None, 'description': None}])
 
 
 if __name__ == '__main__':
