@@ -412,7 +412,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = report_r12()  # R12 browser-like post + endpoints; report_r11() R11 search form filters; report_r10() R10 auction page shape; report_r9() R9, report_r6() R6–R8, report_r5()…report() R1–R5
+        value = report_r6()  # R13: collector state + log after TICKER-FIX4 (report_r6); R10 auction shape, R9 dry run
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:160]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
