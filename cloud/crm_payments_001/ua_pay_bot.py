@@ -24,7 +24,8 @@ log = logging.getLogger(__name__)
 WAIT = 'crm_pay_wait'
 JOB = 'crm_pay_reminders'
 REMIND_HOURS = range(9, 19)
-NBU_DISCOUNT_URL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/discount-rate?json'
+# NBU key policy rate (= the discount rate, «облікова ставка»), by report date yyyymmdd; R3 preview: discount-rate was 404.
+NBU_DISCOUNT_URL = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/key?date=%s&json'
 _STORE = None
 
 
@@ -63,7 +64,7 @@ def parse_nbu_rate(payload):
 
 
 def refresh_nbu_rate():
-    req = urllib.request.Request(NBU_DISCOUNT_URL, headers={'User-Agent': 'UA-ART-crm/1'})
+    req = urllib.request.Request(NBU_DISCOUNT_URL % _today().strftime('%Y%m%d'), headers={'User-Agent': 'UA-ART-crm/1'})
     with urllib.request.urlopen(req, timeout=30) as r:
         rate = parse_nbu_rate(json.load(r))
     _store().set_meta('nbu_rate', rate)

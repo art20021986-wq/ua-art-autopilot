@@ -156,7 +156,7 @@ screen = view.screen(order, None, bot._STORE.payments(1), datetime.date(2026, 11
 from korea_auction import html_tools, job, lots, nbu, session
 try:
     import json as j, urllib.request as u
-    nbu_rate = bot.parse_nbu_rate(j.load(u.urlopen(u.Request(bot.NBU_DISCOUNT_URL, headers={'User-Agent': 'UA-ART-crm/1'}), timeout=30)))
+    nbu_rate = bot.parse_nbu_rate(j.load(u.urlopen(u.Request(bot.NBU_DISCOUNT_URL % datetime.date.today().strftime('%Y%m%d'), headers={'User-Agent': 'UA-ART-crm/1'}), timeout=30)))
 except Exception as exc:
     nbu_rate = 'ERROR ' + str(exc)[:120]
 os.unlink(path)
