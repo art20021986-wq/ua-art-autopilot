@@ -1,0 +1,14 @@
+{
+  "claim_before_sha256": "18a95cc5d63a8e484875c0c90deaad16f0c2cce19f63af6aca031f21afd80150",
+  "error": "RuntimeError: TASK_IDENTITY (deployment_controller.py:22 — request task_id CRM-PAYMENTS-PREFLIGHT-20261112-R2 is not release_constants.PREVIEW_TASK)",
+  "failed_step": "execute / standard / deployment_controller.context(), before any remote call",
+  "precedent": "state/reconciliations/TICKER-FIX5-PREFLIGHT-20261112.43176989243.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-12T20:55:30+00:00",
+  "remote_mode": "preview (reads only), not started",
+  "retry": "CRM-PAYMENTS-PREFLIGHT-20261112-R3 (release_constants.PREVIEW_TASK set to the R3 name)",
+  "run_id": "43304091915",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "CRM-PAYMENTS-PREFLIGHT-20261112-R2"
+}
