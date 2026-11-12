@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TICKER-PHOTO-PREFLIGHT-20261112-R2.edc0029db785d84f4c74f9615143c33dc3d5b15655608f66cbe044330653ef0a.json",
+  "autostart_ledger_sha256": "43deb790138a91e625ced7a6914436e2fa7da5d131cc10d8c9925adf61522473",
+  "autostart_source_commit": "9c6940b2ff19b5297c40132c34fd87dee9a017d8",
+  "created_at": "2026-11-12T03:21:37Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43147501742",
+    "task_id": "TICKER-PHOTO-PREFLIGHT-20261112-R2",
+    "task_sha256": "edc0029db785d84f4c74f9615143c33dc3d5b15655608f66cbe044330653ef0a"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-0843f3b0527fadf0-f5473bce288f8507",
+  "request_path": "tasks/requests/TICKER-PHOTO-PREFLIGHT-20261112-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:0843f3b0527fadf0"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

@@ -1,0 +1,135 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUCTION-HOME-INSTALL-20261111-R2.16e2afcb8072a22f3d97e9049d37ca543f792e77c9de1d2c4be47932d0f7d789.json",
+  "autostart_ledger_sha256": "bd66e7562c885e4bb2acd0eb1b5f53de005023e66941a681a88e20ad2ae27d0f",
+  "autostart_source_commit": "c629e320847484496c9f9d48a88f647fe559b58d",
+  "created_at": "2026-11-11T14:28:49Z",
+  "critical_gate_evidence_sha256": "e77c885cf68a1e7f5515ad44bc77f6157d70abbca46ffd9c827d1831251f4052",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-11T14:49:18Z",
+  "heartbeat_at": "2026-11-11T14:49:18Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "43035994991",
+    "task_id": "AUCTION-HOME-INSTALL-20261111-R2",
+    "task_sha256": "16e2afcb8072a22f3d97e9049d37ca543f792e77c9de1d2c4be47932d0f7d789"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 686.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 307.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 295.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 177.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 208.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 140.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-43035994991-16e2afcb8072a22f",
+  "production_transaction_path": "state/transactions/AUCTION-HOME-INSTALL-20261111-R2.16e2afcb8072a22f3d97e9049d37ca543f792e77c9de1d2c4be47932d0f7d789.43035994991.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "path_scope-167a5da75cfd7a98-d9eaee951a5cf350",
+  "receipt_path": "state/receipts/AUCTION-HOME-INSTALL-20261111-R2.json",
+  "receipt_sha256": "35dcb646931adaad3d8895381b097f162f06f12bcf8c763cf0d3e02ce7c092a8",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/AUCTION-HOME-INSTALL-20261111-R2.json",
+  "request_sha256": "16e2afcb8072a22f3d97e9049d37ca543f792e77c9de1d2c4be47932d0f7d789",
+  "resource_locks": [
+    "PATH_SCOPE:167a5da75cfd7a98"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "a099c43c6a2a35621b8f468f954405af2d8c6a6e",
+  "storage_preflight": {
+    "age_seconds": 1399.317,
+    "allowed": true,
+    "evidence_path": "state/storage/AUCTION-HOME-INSTALL-20261111-R2.json",
+    "evidence_sha256": "78d9da98b07f6bc6cb5e5a4b712fb6019b64fab950caf1beda8b55119f16f3fe",
+    "free_bytes": 22709198336,
+    "heavy": true,
+    "measured_at": "2026-11-11T14:06:54.502671+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 35.116576182857145
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "c31588a3be70268e22a235c628a86727a090e38adaaa9b57e8b587b813de8f0e",
+    "file_sha256": {
+      "cloud/auction_home_001/candidate_builder.py": "200ef8a603ae0ef0363a7d913e3a0697850ab4cff9a042014e2fca5d54802a70",
+      "cloud/auction_home_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/auction_home_001/deployment_bootstrap.py": "7ffc5b4d7201fc823c75783c6029634220684f7dc60762a3dfcf17a5da1277cb",
+      "cloud/auction_home_001/deployment_remote.py": "be262958b545d19fd5c8ec833c3174e7e0076002505725e3c514b03cec236bfa",
+      "cloud/auction_home_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/auction_home_001/deployment_transport.py": "1d8969da7091527b836540a0b0537beaa3c0993d7a377f143948905a8be83502",
+      "cloud/auction_home_001/make_release.py": "d18181ac05509e5066687b27ba1f69f480097e6d2417b2844002448bef312b06",
+      "cloud/auction_home_001/release_constants.py": "e59ed87755afe4622fcde0cc8e2a96877f7c1e5e16ba6af3b97e8e8e6f8514db",
+      "cloud/auction_home_001/test_auction_home.py": "c20b48e95f28ba07b446eeb3f01f754063e48e8a1626ea7f8b79c22c1b7aacf0",
+      "cloud/auction_home_001/test_bids_vin.py": "38ee2e35c297ff57ea08ae64588619f51b125d3a299da84eb771d8d95fd493e5",
+      "cloud/auction_home_001/test_deployment.py": "778b4f1dcba40a8380b7dd76708a1d8a97f4efb963785e207dc611d44dc92980",
+      "cloud/auction_home_001/ua_auction_bids.py": "934ae8642946ea66c7c7782c1bc550f8df7adf65dee96e8a8fc61af48965ecb4",
+      "cloud/auction_home_001/ua_auction_bids_bot.py": "11e3d27c5227c9d333169437b2981643b3a1230c737ff6ce178ec230c1a5dd87",
+      "cloud/auction_home_001/ua_auction_clients_bot.py": "76ab27475cc83c9fa3c47cfb27e7d4f020faee2a23f2beb1591da181c4a2cc19",
+      "cloud/auction_home_001/ua_auction_clients_view.py": "85a8381c23254ff595f48e12f1fbafa7180a1a67eddf28dff1b5b48c70e1c8d5",
+      "cloud/auction_home_001/ua_auction_stats.py": "268e9299c8004b55db8784e85675e6319042163f4d0179457ed4e50ae1a019db",
+      "cloud/auction_home_001/ua_menu_extra.py": "3672fef09b6e37aaf5b5e0005c6ccede0fd0a7191b936398dd3d09c36d6c9e41"
+    }
+  },
+  "updated_at": "2026-11-11T14:49:18Z"
+}

@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUTORIA-FIGURES-PREFLIGHT-20261111.313ee9c6d2d49e4da1f01300216864cdb38726137408a344a9e3353eb4a21fda.json",
+  "autostart_ledger_sha256": "9b25782467d703ddd0c6b1014feefbdf82ce04b52ae30782a80b831060a14bda",
+  "autostart_source_commit": "73b6bbbbafe644d8e785484e27cc1752e4713028",
+  "created_at": "2026-11-11T14:24:22Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43035835597",
+    "task_id": "AUTORIA-FIGURES-PREFLIGHT-20261111",
+    "task_sha256": "313ee9c6d2d49e4da1f01300216864cdb38726137408a344a9e3353eb4a21fda"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-a22a284722f4e050-cfee6d260dbe76c8",
+  "request_path": "tasks/requests/AUTORIA-FIGURES-PREFLIGHT-20261111.json",
+  "resource_locks": [
+    "PATH_SCOPE:a22a284722f4e050"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

@@ -21,6 +21,10 @@ class FakeAPI:
     def run(self, mode, run_id, bundle):
         return self.report
 
+    def json(self, method, endpoint):
+        return [{'id': 1576351, 'command': 'python3.10 /home/Carix/korea_ticker_job.py', 'enabled': False, 'secret': 'x'},
+                {'id': 2, 'command': 'other.py'}]
+
 
 class ControllerTests(unittest.TestCase):
     TASK = 'SOCIAL-PROBE-20261105'
@@ -42,7 +46,7 @@ class ControllerTests(unittest.TestCase):
     def test_key_material_never_saved(self):
         with tempfile.TemporaryDirectory() as temp:
             with self.assertRaisesRegex(c.ProbeError, 'KEY_MATERIAL'):
-                c.execute(self.env(Path(temp)), root=temp, api=FakeAPI({'x': '-----BEGIN PRIVATE KEY'}),
+                c.execute(ControllerTests.env(ControllerTests(), Path(temp)), root=temp, api=FakeAPI({'x': '-----BEGIN PRIVATE KEY'}),
                           upload=lambda a: 'b' * 64)
 
 
@@ -146,6 +150,33 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(value['rows']['cards_ua']['with_row'], 1)
         self.assertEqual(value['catalog_links_broken'], [])
         self.assertEqual(value['versions']['ua'], ['UA-0001.html'])
+
+
+    def test_r6_ticker(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'video/korea').mkdir(parents=True)
+            (home / 'korea_auction').mkdir()
+            (home / 'korea_auction_data').mkdir()
+            (home / 'video/korea/ticker.html').write_text('<div class="kt-x"></div>')
+            (home / 'korea_auction/ticker.py').write_text("X = 'kt-legend'")
+            (home / 'jpauto_login.txt').write_text('a@b.c\nsecret\n')
+            (home / 'korea_ticker_job.py').write_text('password = "x"\nimport korea_auction.job\n')
+            value = remote.report_r6(home)
+        self.assertEqual(value['ticker_html']['kt_legend'], 0)
+        self.assertEqual(value['package']['ticker.py']['kt_legend'], 1)
+        self.assertEqual(value['login_lines'], 2)
+        self.assertNotIn('secret', json.dumps(value))
+        self.assertEqual(value['job_script'].splitlines()[0], '[REDACTED]')
+
+
+    def test_schedule_kept_korea_only(self):
+        with tempfile.TemporaryDirectory() as temp:
+            c.execute(ControllerTests.env(ControllerTests(), Path(temp)), root=temp, api=FakeAPI({'status': 'PASS'}), upload=lambda a: 'b' * 64)
+            saved = json.loads((Path(temp) / 'cloud/social_probe_001/20261105.json').read_text())
+        self.assertEqual(saved['schedule'], [{'id': 1576351, 'command': 'python3.10 /home/Carix/korea_ticker_job.py',
+                                              'enabled': False, 'interval': None, 'hour': None, 'minute': None,
+                                              'expiry': None, 'can_enable': None, 'logfile': None, 'description': None}])
 
 
 if __name__ == '__main__':

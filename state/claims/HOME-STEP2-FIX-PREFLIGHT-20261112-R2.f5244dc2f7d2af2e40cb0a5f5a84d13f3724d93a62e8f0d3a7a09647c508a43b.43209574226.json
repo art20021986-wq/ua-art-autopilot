@@ -1,0 +1,64 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-STEP2-FIX-PREFLIGHT-20261112-R2.f5244dc2f7d2af2e40cb0a5f5a84d13f3724d93a62e8f0d3a7a09647c508a43b.json",
+  "autostart_ledger_sha256": "58a7083e7bd95cb94adfef0bfc0630c57a6fe261e41bf1201fe68d2b392425a9",
+  "autostart_source_commit": "730ef1d760535149352a2b1277cf5d14c727b0d6",
+  "created_at": "2026-11-12T11:30:55Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-12T11:36:37Z",
+  "heartbeat_at": "2026-11-12T11:36:37Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43209574226",
+    "task_id": "HOME-STEP2-FIX-PREFLIGHT-20261112-R2",
+    "task_sha256": "f5244dc2f7d2af2e40cb0a5f5a84d13f3724d93a62e8f0d3a7a09647c508a43b"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-54df2b833b1ccbda-cbee723247120359",
+  "receipt_path": "state/receipts/HOME-STEP2-FIX-PREFLIGHT-20261112-R2.json",
+  "receipt_sha256": "02df2599ab1fdc5966cc88e179775318f532a7686e93cdf5d9fe917977654f39",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/HOME-STEP2-FIX-PREFLIGHT-20261112-R2.json",
+  "request_sha256": "f5244dc2f7d2af2e40cb0a5f5a84d13f3724d93a62e8f0d3a7a09647c508a43b",
+  "resource_locks": [
+    "PATH_SCOPE:54df2b833b1ccbda"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "a40306686c9d53d3e922c05b4da3673d90da802f",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92776771584,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.131
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "3fb499b82e3fa1b3ca86faff48851144a5e41076e5216825986895370fbb81b3",
+    "file_sha256": {
+      "cloud/home_step2_fix_001/candidate_builder.py": "5efd94d8a546cc50883da08c89f7664d291bd2475fe7d3118e98c0483f6646d8",
+      "cloud/home_step2_fix_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_step2_fix_001/deployment_bootstrap.py": "aa3cf5c000a1c6df8126f1129e80dbbf74b3d09ad117a67747b0540075526514",
+      "cloud/home_step2_fix_001/deployment_remote.py": "8dfbe944db08f9e5d72cea0922c829094e3d38423af37b231c08cdc0b1d49deb",
+      "cloud/home_step2_fix_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_step2_fix_001/deployment_transport.py": "fc2bf93bc340c9c73bd519489f85dcadb797cfe18ccfc5f40d67b74a0c43ddef",
+      "cloud/home_step2_fix_001/edit_home.py": "fd7ec5ed3c56b889cdd45e44fd14eff9f77e48c9c73b7e9e4f9022c10d8c8d37",
+      "cloud/home_step2_fix_001/make_release.py": "b7d521458a4adcdcfea3ed30d49ecf82c3906d1e6fb032291fc318e131f1d93f",
+      "cloud/home_step2_fix_001/release_constants.py": "6e2c6fa281b9f64c29b228ef8f388d21ae636ed3619b258577f30cfd13bb8ba7",
+      "cloud/home_step2_fix_001/service_text.py": "baa7590837cb51e7f62a5f6a46469c875b74dcf2a1abfe236d54fd9c7097729f",
+      "cloud/home_step2_fix_001/test_deployment.py": "3752ac8d8a76c0f6c40d7f47e7037620296acef763859b893ea06c46d3c2cfae",
+      "cloud/home_step2_fix_001/test_edit_home.py": "f18c373151e42c9d8e2cd9215f61e77c8788ebccc07fbe9c6c74068b84dbb4d7"
+    }
+  },
+  "updated_at": "2026-11-12T11:36:37Z"
+}

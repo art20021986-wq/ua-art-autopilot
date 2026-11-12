@@ -1,0 +1,113 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-STEP2-PAY-INSTALL-20261112.db6a722bf3316950c5186078f5ed0240b899efa2390cf3676cb37c2596440b59.json",
+  "autostart_ledger_sha256": "9ffb09645f3786ea480e4a723fed7b0282be155cde3510b636033242fda91335",
+  "autostart_source_commit": "1a28d56dfc59b34ac1802bfb7284bffd048ad5be",
+  "created_at": "2026-11-12T12:17:01Z",
+  "critical_gate_evidence_sha256": "2265ae3c4bfbe1a35886586ce343e428f73e3e5e7d2463166d5e7923247ff038",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-12T12:36:05Z",
+  "heartbeat_at": "2026-11-12T12:36:05Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "43216268955",
+    "task_id": "HOME-STEP2-PAY-INSTALL-20261112",
+    "task_sha256": "db6a722bf3316950c5186078f5ed0240b899efa2390cf3676cb37c2596440b59"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 417.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 29.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 88.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 84.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-43216268955-db6a722bf3316950",
+  "production_transaction_path": "state/transactions/HOME-STEP2-PAY-INSTALL-20261112.db6a722bf3316950c5186078f5ed0240b899efa2390cf3676cb37c2596440b59.43216268955.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "homepage-68ed6564ebea221c",
+  "receipt_path": "state/receipts/HOME-STEP2-PAY-INSTALL-20261112.json",
+  "receipt_sha256": "48343588b0cf7d5e3b56c9b14f59e530b1a0a422a90539d676bf25590d287e89",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/HOME-STEP2-PAY-INSTALL-20261112.json",
+  "request_sha256": "db6a722bf3316950c5186078f5ed0240b899efa2390cf3676cb37c2596440b59",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "0bcc5983153c63461c78764e821903ba2bd784a7",
+  "storage_preflight": {
+    "age_seconds": 371.126,
+    "allowed": true,
+    "evidence_path": "state/storage/HOME-STEP2-PAY-INSTALL-20261112.json",
+    "evidence_sha256": "32c994a05210faf16ea42194ed3069314ace306cf8763f170cccd539715bb71d",
+    "free_bytes": 22751809024,
+    "heavy": true,
+    "measured_at": "2026-11-12T12:12:12.087643+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 34.99483136
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "6842d38e60026118ea5b481060d5ee5b1673290bd5224c16cceebbb6868da3cc",
+    "file_sha256": {
+      "cloud/home_step2_pay_001/candidate_builder.py": "75f481e74b2463a739ec82438c8fa63ee698704093932c4e9f6d79cdb0afc3fd",
+      "cloud/home_step2_pay_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_step2_pay_001/deployment_bootstrap.py": "593a30207bafb75bff7ee6ceff7d1c483446fcd87f62b92f37a4d98788feba99",
+      "cloud/home_step2_pay_001/deployment_remote.py": "e346084cedadf40833f17f606e6c4e1184e0c49616e895e48e203f3440f06846",
+      "cloud/home_step2_pay_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_step2_pay_001/deployment_transport.py": "c9b885f79654b80eb4828856a9051f801154bc6d8154522765728860dcd08512",
+      "cloud/home_step2_pay_001/edit_home.py": "f82d775f7e00dad3fecf00a6a75aec809b37a58d245e11f2b6e71fd5706fcd15",
+      "cloud/home_step2_pay_001/make_release.py": "04167dd7e8fdf7888efa4fc9b7eeef1b1ca4aee6d29d1a4a91640d416fb43e06",
+      "cloud/home_step2_pay_001/release_constants.py": "de253abfaf4c9cd69b542211361897df0cc0a9bacb7fc22b5af7802ecf5363b7",
+      "cloud/home_step2_pay_001/test_deployment.py": "69fc4c95a10648f910baae5d4cb5cfe426c893d91d20b39d0cb9f2973709708c",
+      "cloud/home_step2_pay_001/test_edit_home.py": "ceba0199bdc1024af8a0c4219361f02bb568c6c8bcaeeed4a2f8f7002a30a98b"
+    }
+  },
+  "updated_at": "2026-11-12T12:36:05Z"
+}

@@ -1,0 +1,65 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-FINANCE-PREFLIGHT-20261112-R3.1f8edea09034fcafa24ad2f0fc7feb820f040ba7f97b83195d90c0533ebe762b.json",
+  "autostart_ledger_sha256": "41355d5533e38eead098dc5aca959049ad146bf63bba788e9c40b66c31fcb68b",
+  "autostart_source_commit": "9e4867050ae0c7435fa05145a51be7534cbff4f6",
+  "created_at": "2026-11-12T10:29:05Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-12T10:32:41Z",
+  "heartbeat_at": "2026-11-12T10:32:41Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43200556644",
+    "task_id": "HOME-FINANCE-PREFLIGHT-20261112-R3",
+    "task_sha256": "1f8edea09034fcafa24ad2f0fc7feb820f040ba7f97b83195d90c0533ebe762b"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-0fe793b35864db65-fd6b9da7fe8403f6",
+  "receipt_path": "state/receipts/HOME-FINANCE-PREFLIGHT-20261112-R3.json",
+  "receipt_sha256": "7c624f3c6ecb925ac4efce7327f0e6c0d8d3f37b160a8af4cbec4de1bbdb1e7b",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/HOME-FINANCE-PREFLIGHT-20261112-R3.json",
+  "request_sha256": "1f8edea09034fcafa24ad2f0fc7feb820f040ba7f97b83195d90c0533ebe762b",
+  "resource_locks": [
+    "PATH_SCOPE:0fe793b35864db65"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "9df378d27b30ff6b566d65eeca46435d817e93c5",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92779220992,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.129
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "013606631bc2ed6fc3d52d1254d6e845202479371e6c4502e9e03a2345bcca8f",
+    "file_sha256": {
+      "cloud/home_finance_001/candidate_builder.py": "656098cdfc1fa5c7c8cbfb11155bc7695a02215aaf5f6a6ae120bdcce9517275",
+      "cloud/home_finance_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_finance_001/deployment_bootstrap.py": "cf8e73c81144b02252d7dc2bcef53567a0d3747fe054b7294b025264f64dd892",
+      "cloud/home_finance_001/deployment_remote.py": "6c277d205a3f8d900f917480fd06db94817abe9bef82efd03fe1356bb7e68b02",
+      "cloud/home_finance_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_finance_001/deployment_transport.py": "5a0b22508fd90cc5d4c253df8dfd574407e42b0fbddd175c43a2eb0b66e73436",
+      "cloud/home_finance_001/edit_home.py": "0c15f79c8740f2c9d11c481fbbe173b9611288f0d9bc6d66250a4c3e86906d25",
+      "cloud/home_finance_001/finance_block.py": "ea65ceb9f93032cccf2a5fc63182a0aa8a4e472f56653e0f9dab4998ec853578",
+      "cloud/home_finance_001/finance_text.py": "58a6ca7f35685b231b6bc80609c1a53e6b919ee59a998bf048f14d4be9ddc0ad",
+      "cloud/home_finance_001/make_release.py": "eba647e9cb3457cfba26267d22a65af0b6e1eb25b73b632588540009da2aecfc",
+      "cloud/home_finance_001/release_constants.py": "c29420545c825ae161863d0a405e5ff11ce1830ee7d1fb5a97cabd680e90453f",
+      "cloud/home_finance_001/test_deployment.py": "b1b18e1dc9d083a66bca9d8e1a712ff31fc7ff5611dbd53aa15186cbeee95006",
+      "cloud/home_finance_001/test_edit_home.py": "07bfdf8547be9352d017e82989f67a5fce65cf2feb7e86ea45de909a31fdff45"
+    }
+  },
+  "updated_at": "2026-11-12T10:32:41Z"
+}

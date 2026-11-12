@@ -24,8 +24,9 @@ def request(day):
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
         'description': 'Read-only probe R7 for SEO-KOREA-001 (owner 2026-11-11): bounded run in the existing private '
                        'inbox (temporary always-on task removed after its receipt; never the CRM bot) that reads the '
-                       'landing writer, hub texts, order models, sitemap, metadata and index modules, korea.html and one '
-                       'model page. No source, CRM, HTML, media or bot change.',
+                       'landing writer, hub texts, order models, sitemap, metadata and index modules, korea.html, model and '
+                       'Mercedes E-Class pages, and lists which public pages link E-Class and korea.html. '
+                       'No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,

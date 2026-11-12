@@ -1,0 +1,33 @@
+{
+  "candidates": 0,
+  "chosen_date": null,
+  "dates": {},
+  "first_candidates": [],
+  "mode": "probe",
+  "now_jst": "2026-11-12T14:25+09:00",
+  "parsed": 0,
+  "remote_write_count": 0,
+  "requests": 4,
+  "run_id": "43160783540",
+  "safe_to_stop": true,
+  "sample": [],
+  "schedule": [
+    {
+      "can_enable": false,
+      "command": "python3.10 /home/Carix/korea_ticker_job.py",
+      "description": "UA ART home ticker (Korea auctions)",
+      "enabled": true,
+      "expiry": null,
+      "hour": null,
+      "id": 1576351,
+      "interval": "hourly",
+      "logfile": "/user/Carix/files/var/log/schedule-log-1576351.log",
+      "minute": 7
+    }
+  ],
+  "status": "PASS",
+  "task_id": "SOCIAL-PROBE-20261112-R9",
+  "top_with_photos": {},
+  "total": 0,
+  "with_photos": {}
+}

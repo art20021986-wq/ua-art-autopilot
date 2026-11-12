@@ -18,7 +18,12 @@ HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
 # R7 (20261111): landing writer, hub texts, order models, sitemap and metadata modules, korea.html, for SEO-KOREA-001.
 FULL = ('ua_seo_landings.py', 'ua_seo_hub_texts.py', 'ua_seo_order_models.py', 'ua_seo_sitemap.py', 'ua_seo_metadata.py',
-        'ua_seo_index.py', 'video/korea.html', 'video/seo/ua/kia-sportage-koreya-kyiv.html')
+        'ua_seo_index.py', 'video/korea.html', 'video/seo/ua/kia-sportage-koreya-kyiv.html',
+        # 20261112: Mercedes E-Class pages «discovered, not indexed» — who links them.
+        'video/seo/ua/mercedes-benz-e-class-koreya-kyiv.html', 'video/seo/ru/mercedes-benz-e-class-koreya-kiev.html',
+        'video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html', 'video/sitemap.xml')
+# Pages under video/seo that link a given landing (R7b): name -> list of linking pages.
+LINKED = ('mercedes-benz-e-class-koreya-kyiv.html', 'mercedes-benz-e-class-koreya-kiev.html', 'korea.html')
 # R3 (MAPS): every Google Maps link in the top-level modules and public pages (public URLs, not masked).
 MAPS = re.compile(r'https?://(?:maps\.app\.goo\.gl|goo\.gl/maps|(?:www\.)?google\.[a-z.]+/maps|maps\.google\.[a-z.]+)[^\s\'"<>)\\]*')
 PARTIAL = {name: re.compile(r'web_app|WebAppInfo|telegram-web-app') for name in
@@ -81,7 +86,14 @@ def report(home=None):
             found = [{'line': n + 1, 'text': sanitized_line(l)[:240]} for n, l in enumerate(lines) if SCAN.search(l)]
             if found:
                 scan[path.name] = found[:60]
-    return {'status': 'PASS', 'files': files, 'maps': maps, 'media': media(), 'scan': scan}
+    linked = {name: [] for name in LINKED}
+    for path in sorted(list((HOME/'video').glob('*.html')) + list((HOME/'video'/'seo').glob('*/*.html'))):
+        if path.is_file() and not path.is_symlink() and path.stat().st_size <= MAX_SOURCE:
+            text = path.read_text(encoding='utf-8', errors='replace')
+            for name in LINKED:
+                if path.name != name and re.search(r'href="[^"]*' + re.escape(name), text):
+                    linked[name].append(str(path.relative_to(HOME)))
+    return {'status': 'PASS', 'files': files, 'maps': maps, 'media': media(), 'scan': scan, 'linked': linked}
 
 
 def media():

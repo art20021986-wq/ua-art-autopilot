@@ -22,18 +22,18 @@ def request(day):
     task = 'LOT-PROBE-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Read-only probe for JPAUTO-KOREA-001 (owner 2026-11-11: auction day choice, VIN and all photos in '
-                       'the lot card). Bounded run in the existing private inbox: upload this package, run source_remote.py '
+        'description': 'Read-only probe for JPAUTO-KOREA-001 (owner 2026-11-12: real Korea auction lots in the order page '
+                       'model carousels). Bounded run in the existing private inbox: upload this package, run source_remote.py '
                        'once in a temporary always-on task (removed after its receipt; never the CRM bot) which uses the '
-                       'installed collector and the owner login file to read the Korea search (lots per day), three lot '
-                       'pages (photo count, chassis number length only) and three photos (size only, not saved). No bid, '
-                       'no source, CRM, HTML, media or bot change.',
+                       'installed collector and the owner login file to read the Korea search once and report model names, '
+                       'model codes, years, grades, days, photo counts and price presence for the five Korea order models. '
+                       'No lot page, no bid, no source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
                       'receipt_path': 'state/receipts/%s.json' % task, 'test_paths': TESTS, 'timeout_seconds': 900},
         'production_required': False, 'read_only': False, 'requested_min_class': 'STANDARD',
-        'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Auction days and lot photos probe'}
+        'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Korea order models in the auction probe'}
     path = 'tasks/requests/%s.json' % task
     with open(path, 'x') as handle:
         handle.write(json.dumps(value, sort_keys=True, separators=(',', ':')))

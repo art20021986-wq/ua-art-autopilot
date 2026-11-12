@@ -1,0 +1,115 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-CANONICAL-RU-INSTALL-20261111.600e95c0a0853aa2997e6b5fa3c652ce9f431408be91bde7799bfbaa7f4651c0.json",
+  "autostart_ledger_sha256": "bc64b5a4aa0266cd053429673a829f1e12c05397cedd3b04fee98faf939278de",
+  "autostart_source_commit": "095c4af2c50137c5751957d2abb0770517ac9658",
+  "created_at": "2026-11-11T16:07:11Z",
+  "critical_gate_evidence_sha256": "10f8eb847e0c4b62ae5351649fdbd676a9eb825036a6dae2e4d0c3a54522845e",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-11T16:24:21Z",
+  "heartbeat_at": "2026-11-11T16:24:21Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "43054875877",
+    "task_id": "CARD-CANONICAL-RU-INSTALL-20261111",
+    "task_sha256": "600e95c0a0853aa2997e6b5fa3c652ce9f431408be91bde7799bfbaa7f4651c0"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 527.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 116.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 267.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 275.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-43054875877-600e95c0a0853aa2",
+  "production_transaction_path": "state/transactions/CARD-CANONICAL-RU-INSTALL-20261111.600e95c0a0853aa2997e6b5fa3c652ce9f431408be91bde7799bfbaa7f4651c0.43054875877.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "path_scope-b4062ed3881012a8-64180e3bc2d4c096",
+  "receipt_path": "state/receipts/CARD-CANONICAL-RU-INSTALL-20261111.json",
+  "receipt_sha256": "f467c01a3d07241bdf7b473ca86326ec1e0bca7ed83b91f3bf82758900107570",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CARD-CANONICAL-RU-INSTALL-20261111.json",
+  "request_sha256": "600e95c0a0853aa2997e6b5fa3c652ce9f431408be91bde7799bfbaa7f4651c0",
+  "resource_locks": [
+    "PATH_SCOPE:b4062ed3881012a8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "6e7b26c54ad45a05d66562dcbeb21fc49f46542e",
+  "storage_preflight": {
+    "age_seconds": 352.353,
+    "allowed": true,
+    "evidence_path": "state/storage/CARD-CANONICAL-RU-INSTALL-20261111.json",
+    "evidence_sha256": "70ad32641cf4e4ea0b4186d4ac9f1fbacc41e530c54344246cb36eef364ed011",
+    "free_bytes": 22683512320,
+    "heavy": true,
+    "measured_at": "2026-11-11T16:02:43.385355+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 35.1899648
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "174a21aa2bd7e174687144782db1710fdbf88c573e6c7087d060caa701a00d3d",
+    "file_sha256": {
+      "cloud/card_canonical_ru_001/candidate_builder.py": "73cd33bf2f2b890970edc4c0ee52fd2e947a5e65b61e70108953483491c21a46",
+      "cloud/card_canonical_ru_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/card_canonical_ru_001/deployment_bootstrap.py": "4bcc16b62f4836a5431a7463ddf45c0931a63861a43d5cb0ac472f526267bd2f",
+      "cloud/card_canonical_ru_001/deployment_remote.py": "aa68100c872d069538c6fe12472cd6107e262329373adbef74ffc15a53e98d9a",
+      "cloud/card_canonical_ru_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/card_canonical_ru_001/deployment_transport.py": "5bf1fa4eae00584aea7a0e70bf3672f7a0306f167c8be241bc05fe9d45c6ff15",
+      "cloud/card_canonical_ru_001/edit_card_lang.py": "046c5dd31d0a83daf83d31313d656481f0a97b1f5d814536f4d91c527d340ad0",
+      "cloud/card_canonical_ru_001/edit_guard.py": "5456a6851ada08a6cc9e292e5d81401b2ddf73abecee2df95e1d1c94fd35c80c",
+      "cloud/card_canonical_ru_001/edit_metadata.py": "435b4bf7c685ce609cdf808d1dca083015bc283bf7344c1059876648b680bbad",
+      "cloud/card_canonical_ru_001/make_release.py": "ea7d1c4bf991cbb9116b92f9244c661b33ceca1c9fc9b39afde3f810f89d18f1",
+      "cloud/card_canonical_ru_001/release_constants.py": "aa0e012a2828a1af07ad31d513cd2c2661115755e9a5b6dd30c85be72cad9b85",
+      "cloud/card_canonical_ru_001/test_deployment.py": "272bfeca0f45a280a3208503a10a04bc6c0609f424fb625dd3005e0e33c26bea",
+      "cloud/card_canonical_ru_001/test_release.py": "d1f537a55d540e85a0a742562d7c54734dc959d6580c5c413d0ccfb8008f9f03"
+    }
+  },
+  "updated_at": "2026-11-11T16:24:21Z"
+}

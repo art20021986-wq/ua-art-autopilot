@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-FINANCE-PREFLIGHT-20261112-R2.466490fb5391e8e7159ed424abeefe73138e9e02c69f574d1fb2722a7a55db53.json",
+  "autostart_ledger_sha256": "96736a081167e8cbff8690ed338b5719c16127ad4394bae5f69ada84fcc38b3b",
+  "autostart_source_commit": "c4c6f27a85afe4675b74442350ed8b23cc9910f8",
+  "created_at": "2026-11-12T10:21:48Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43199480126",
+    "task_id": "HOME-FINANCE-PREFLIGHT-20261112-R2",
+    "task_sha256": "466490fb5391e8e7159ed424abeefe73138e9e02c69f574d1fb2722a7a55db53"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-0fe793b35864db65-fd6b9da7fe8403f6",
+  "request_path": "tasks/requests/HOME-FINANCE-PREFLIGHT-20261112-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:0fe793b35864db65"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
