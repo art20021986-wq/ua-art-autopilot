@@ -1,0 +1,70 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0;background:#0e1621;font:15px -apple-system,Segoe UI,Arial,sans-serif;color:#fff;padding:14px;width:1180px}
+h2{font-size:17px;margin:4px 0 10px;color:#8ab4f8}.row{display:flex;gap:14px;margin-bottom:18px}
+.col{flex:1}.cap{font-weight:700;margin-bottom:6px}.now{color:#f28b82}.new{color:#81c995}
+.msg{background:#182533;border-radius:10px;padding:10px 12px;line-height:1.45;white-space:pre-wrap}
+.btn{background:#2b5278;border-radius:8px;padding:8px;text-align:center;margin-top:5px}.add{background:#2e7d32}
+.hl{background:#2e7d32;border-radius:4px;padding:0 3px}
+</style></head><body>
+<h2>1. Главный экран «🔨 Клиенты аукциона»</h2><div class="row">
+<div class="col"><div class="cap now">СЕЙЧАС</div><div class="msg"><b>🔨 Клиенты аукциона</b>
+Клиентов: 3 (активных 3, заблокировано 0)
+Депозиты: 3 000 $
+
+<b>Ставки</b>
+Сегодня: 4 · за 7 дней: 9 · всего: 9
+Поставлено на аукционе: 8 · не прошло: 1
+Сумма поставленных за 7 дней: 41 500 $</div>
+<div class="btn">➕ Создать клиента</div><div class="btn">👥 Клиенты с доступом · 3</div><div class="btn">📋 Ставки по датам</div><div class="btn">← Меню</div></div>
+<div class="col"><div class="cap new">БУДЕТ</div><div class="msg"><b>🔨 Клиенты аукциона</b>
+Клиентов: 3 (активных 3, заблокировано 0)
+Депозиты: 3 000 $
+
+<b>Ставки</b>
+Сегодня: 4 · за 7 дней: 9 · всего: 9
+<span class="hl">Клиенты сами: 5 · менеджеры за клиентов: 4</span>
+Поставлено на аукционе: 8 · не прошло: 1
+Сумма поставленных за 7 дней: 41 500 $</div>
+<div class="btn">➕ Создать клиента</div><div class="btn">👥 Клиенты с доступом · 3</div><div class="btn">📋 Ставки по датам</div><div class="btn add">👔 По менеджерам</div><div class="btn">← Меню</div></div></div>
+
+<h2>2. Новый экран «👔 По менеджерам» → менеджер</h2><div class="row">
+<div class="col"><div class="cap new">БУДЕТ: список</div><div class="msg"><b>👔 Ставки по менеджерам</b>
+
+<b>Иван</b> — оформил клиентов: 2
+ ставок за клиентов: 3 · ставки его клиентов сами: 4
+<b>Ольга</b> — оформила клиентов: 1
+ ставок за клиентов: 1 · ставки её клиентов сами: 1</div>
+<div class="btn">Иван · 3</div><div class="btn">Ольга · 1</div><div class="btn">← Назад</div></div>
+<div class="col"><div class="cap new">БУДЕТ: менеджер Иван</div><div class="msg"><b>Иван</b> · клиентов: 2
+<b>Ср 12.11.2026</b>
+13:05 Kia K5 2021 · лот 1234 · VIN … · 21 000 $ · ✅ · <span class="hl">за Петров П.</span>
+12:40 Hyundai Tucson · лот 5678 · 18 500 $ · ✅ · <span class="hl">сам клиент Иванов И.</span>
+<b>Вт 11.11.2026</b>
+…</div><div class="btn">← По менеджерам</div></div></div>
+
+<h2>3. Карточка клиента: ставка за клиента</h2><div class="row">
+<div class="col"><div class="cap now">СЕЙЧАС</div><div class="msg"><b>Иванов Иван</b>
+Логин: +380991112233
+Депозит: 1 000 $ · Статус: ✅
+
+<b>Ставки</b>: 2
+13:05 Kia K5 · 21 000 $ · ✅</div>
+<div class="btn">🔁 Сменить пароль · ⛔ Заблокировать</div><div class="btn">💵 Депозит</div><div class="btn">К списку клиентов</div></div>
+<div class="col"><div class="cap new">БУДЕТ</div><div class="msg"><b>Иванов Иван</b>
+Логин: +380991112233
+<span class="hl">Оформил: Иван (менеджер)</span>
+Депозит: 1 000 $ · Статус: ✅
+
+<b>Ставки</b>: 2
+13:05 Kia K5 · 21 000 $ · ✅ · <span class="hl">ставил: менеджер Иван</span>
+12:40 Tucson · 18 500 $ · ✅ · <span class="hl">сам</span></div>
+<div class="btn">🔁 Сменить пароль · ⛔ Заблокировать</div><div class="btn">💵 Депозит</div><div class="btn add">🔨 Ставка за клиента</div><div class="btn">К списку клиентов</div></div>
+<div class="col"><div class="cap new">БУДЕТ: «🔨 Ставка за клиента»</div><div class="msg">Ставка за Иванов Иван
+Шаг 1: номер лота
+Шаг 2: сумма в ₩ (кратно 10 000, от старта + 50 000)
+
+<b>Проверьте</b>: Kia K5 2021 · лот 1234
+25 000 000 ₩ ≈ 18 300 $
+→ ставится с аккаунта компании, как ставка с сайта</div>
+<div class="btn">✅ Поставить · ✖ Отмена</div></div></div>
+</body></html>
