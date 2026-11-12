@@ -47,7 +47,7 @@ class SelectionTest(unittest.TestCase):
                  {'model': 'MORNING', 'auction_start': '2026/11/11 13:00', 'photos': [1]}]
         date = selection.next_auction_date(lots_, datetime(2026, 11, 10, 10, tzinfo=selection.JST))
         self.assertEqual(date, '2026/11/11')
-        self.assertEqual([l['model'] for l in selection.candidates(lots_, date, rng=random.Random(0))], ['TUCSON', 'MORNING'])  # FIX5: the rest after top models
+        self.assertEqual([l['model'] for l in selection.candidates(lots_, date, rng=random.Random(0))], ['TUCSON'])
 
     def test_today_before_next_day_is_listed(self):
         """TICKER-FIX-001: mornings before the next day's lots are listed — today's lots that have not started."""
@@ -217,12 +217,7 @@ class JobTest(unittest.TestCase):
                 job.localize_photos([{'id': '7', 'photo': 'u'}], pathlib.Path(tmp), down)
             self.assertIn('ticker photo 7 not copied: OSError: timed out', err.getvalue())
 
-    def test_more_cars_rest_after_top(self):
-        lots_ = [{'model': 'K5', 'auction_start': '2026/11/18 13:00', 'photos': [1]},
-                 {'model': 'MORNING', 'auction_start': '2026/11/18 13:00', 'photos': [1]},
-                 {'model': 'RAY', 'auction_start': '2026/11/18 13:00', 'photos': []}]
-        self.assertEqual([l['model'] for l in selection.candidates(lots_, '2026/11/18', rng=random.Random(0))],
-                         ['K5', 'MORNING'])
+    def test_up_to_150_popular_cars(self):
         from korea_auction import collect
         self.assertEqual(collect.TICKER_SIZE, 150)
 

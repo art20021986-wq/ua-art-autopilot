@@ -59,6 +59,8 @@ class RecoveryTests(unittest.TestCase):
             def ensure_job(self):
                 outer.jobs = 1
                 return {'id': 7, 'interval': 'hourly', 'minute': 7, 'enabled': True}
+            def run_soon(self):
+                return {'id': 7, 'minute': 10}
             def remove_job(self):
                 outer.jobs = 0
         self.jobs = 0
@@ -301,6 +303,20 @@ class SmokeTests(unittest.TestCase):
                                                   'login_path': True, 'public_list': True, 'today_fallback': True,
                                           'today_wording': True, 'stale_rerun': True, 'waiting_tile': True,
                                   'search_checked_boxes': True, 'day_counts': True})
+
+
+
+class RunSoonTests(unittest.TestCase):
+    def test_moves_the_hourly_job_a_few_minutes_ahead(self):
+        import datetime
+        from deployment_transport import API as Api
+        api = Api.__new__(Api)
+        calls = []
+        api.jobs = lambda: [{'id': 1576351, 'command': 'x'}]
+        api.json = lambda method, endpoint, fields=None, allowed=(200,): calls.append((method, endpoint, fields))
+        at = datetime.datetime(2026, 11, 12, 7, 58, tzinfo=datetime.timezone.utc)
+        self.assertEqual(api.run_soon(at), {'id': 1576351, 'minute': 1})
+        self.assertEqual(calls, [('PATCH', 'schedule/1576351/', {'minute': 1})])
 
 
 if __name__ == '__main__':

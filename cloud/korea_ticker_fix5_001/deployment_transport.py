@@ -108,6 +108,16 @@ class API:
             raise TransportError('JOB_STATE')
         return {'id': found[0]['id'], 'interval': 'hourly', 'minute': found[0].get('minute'), 'enabled': True}
 
+    def run_soon(self, now=None, delay=3):
+        """Move the hourly ticker job to `delay` minutes from now, so it runs right after the install and every hour
+        at that minute (TICKER-FIX5-001, owner 2026-11-12: «запусти ленту немедленно»)."""
+        import datetime
+        now = now or datetime.datetime.now(datetime.timezone.utc)
+        minute = (now.minute + delay) % 60
+        (job,) = self.jobs()
+        self.json('PATCH', 'schedule/%d/' % job['id'], {'minute': minute})
+        return {'id': job['id'], 'minute': minute}
+
     def remove_job(self):
         for task in self.jobs():
             self.request('DELETE', 'schedule/%d/' % task['id'], allowed=(200, 202, 204, 404))

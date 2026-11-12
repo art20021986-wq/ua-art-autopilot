@@ -14,7 +14,7 @@ from . import catalog, lots, nbu, selection
 from .session import Session
 
 SEARCH_PAGE = '/vehicle-search/kr/'
-TICKER_SIZE = 150  # TICKER-FIX5-001 (owner 2026-11-12): ten times more auction cars in the ticker
+TICKER_SIZE = 150  # TICKER-FIX5-001 (owner 2026-11-12): up to ten times more popular-model auction cars
 MAX_DETAILS = 180
 PAGE_LIMIT = 2000
 MAX_PAGES = 5
