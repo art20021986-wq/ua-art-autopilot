@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TICKER-FIX4-INSTALL-20261112.fcfeda5d8935d749853c66bb081f5664edd4a991ee2dd1c3cfb75e5a6d9c796c.json",
+  "autostart_ledger_sha256": "63a0e8b6c8f206e4e106e019e829aeb69a6ec39ac16d162754d07a6d23277781",
+  "autostart_source_commit": "db428b679d1d169fc151e5b188065cc2111f6d04",
+  "created_at": "2026-11-12T06:41:37Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-12T06:41:37Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43169755722",
+    "task_id": "TICKER-FIX4-INSTALL-20261112",
+    "task_sha256": "fcfeda5d8935d749853c66bb081f5664edd4a991ee2dd1c3cfb75e5a6d9c796c"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "receipt_path": "state/receipts/TICKER-FIX4-INSTALL-20261112.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TICKER-FIX4-INSTALL-20261112.json",
+  "request_sha256": "fcfeda5d8935d749853c66bb081f5664edd4a991ee2dd1c3cfb75e5a6d9c796c",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "2d64c3d18a38cd91c1f583fee934f3b8b370aafe",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-12T06:41:37Z"
+}
