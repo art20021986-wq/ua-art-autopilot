@@ -153,27 +153,70 @@ class PayStore:
             c.execute('INSERT OR REPLACE INTO crm_pay_meta (key, value) VALUES (?, ?)', (key, str(value)))
 
 
-def purchased_cars(phone, path=DB_PATH):
-    """Read-only, for the client cabinet: the cars bought for this phone (last 9 digits), newest first.
-    Shows no money (owner: sums only after his decision). [] when nothing is entered yet."""
+NBU_RATE_DEFAULT = 0.155  # used only until the bot has read the NBU discount rate (crm_pay_meta 'nbu_rate')
+KIND_NAMES = {2: 'car', 3: 'logistics', 4: 'customs'}
+
+
+def _cabinet_payments(rows, today, nbu_rate):
+    """crm_pay rows of one order -> the cabinet list; payment 1 is shown as services + deposit (paid goes to the
+    service first)."""
+    out = []
+    for kind, amount, paid, due_text in sorted(rows):
+        due = _date(due_text)
+        if kind == 1:
+            for name, part, got in (('services', rules.SERVICE_USD, min(paid, rules.SERVICE_USD)),
+                                    ('deposit', amount - rules.SERVICE_USD, max(paid - rules.SERVICE_USD, 0))):
+                out.append({'kind': name, 'amount_usd': int(round(part)), 'paid_usd': int(round(got)),
+                            'due_date': '', 'days_left': None, 'penalty_usd': 0})
+            continue
+        debt = max(amount - paid, 0)
+        if due is None or debt <= 0:
+            left = None
+        elif today <= due:
+            left = rules.working_days_between(today, due)
+        else:
+            left = -rules.working_days_between(due, today)
+        out.append({'kind': KIND_NAMES[kind], 'amount_usd': int(round(amount)), 'paid_usd': int(round(paid)),
+                    'due_date': due.isoformat() if due else '', 'days_left': left,
+                    'penalty_usd': int(round(rules.sanctions(debt, due, today, nbu_rate)['total']))})
+    return out
+
+
+def purchased_cars(phone, path=DB_PATH, today=None):
+    """Read-only, for the client cabinet (session 14; owner 2026-11-12: sums, deadlines and penalties are shown):
+    every order of this phone (last 9 digits), newest first, with the car (when entered) and the payments.
+    [] when there is none. The penalty block is the contract's p. 6.2, the same numbers the CRM bot uses."""
     key = digits(phone)
     if len(key) < 9:
         return []
+    today = today or datetime.date.today()
     try:
         con = sqlite3.connect('file:%s?mode=ro' % path, uri=True, timeout=10)
     except sqlite3.Error:
         return []
     try:
-        rows = con.execute('SELECT o.phone, o.stage, c.title, c.year, c.vin, c.lot_id, c.photos FROM crm_pay_car c '
-                           'JOIN crm_orders o ON o.id = c.order_id ORDER BY c.order_id DESC').fetchall()
+        orders = con.execute('SELECT id, phone, stage, subject FROM crm_orders ORDER BY id DESC').fetchall()
+        mine = [row for row in orders if digits(row[1]) == key]
+        rate_row = con.execute("SELECT value FROM crm_pay_meta WHERE key='nbu_rate'").fetchone()
+        result = []
+        for order_id, _, stage, subject in mine:
+            car = con.execute('SELECT title, year, vin, lot_id, photos, price_usd FROM crm_pay_car WHERE order_id=?',
+                              (order_id,)).fetchone()
+            pays = con.execute('SELECT kind, amount, paid, due FROM crm_pay WHERE order_id=?', (order_id,)).fetchall()
+            result.append((stage, subject, car, pays))
     except sqlite3.Error:
         return []
     finally:
         con.close()
+    nbu_rate = float(rate_row[0]) if rate_row else NBU_RATE_DEFAULT
+    penalty = {'daily_percent': round(2 * nbu_rate / 365 * 100, 4), 'annual_percent': rules.ANNUAL_RATE * 100,
+               'fine_percent': rules.FINE_RATE * 100, 'fine_after_working_days': rules.FINE_AFTER,
+               'nbu_discount_percent': round(nbu_rate * 100, 2), 'clause': 'п. 6.2'}
     out = []
-    for phone_db, stage, title, year, vin, lot_id, photos in rows:
-        if digits(phone_db) == key:
-            first = (json.loads(photos or '[]') or [''])[0]
-            out.append({'title': title or '', 'year': year or '', 'vin': vin or '', 'lot_id': lot_id or '',
-                        'stage': stage, 'stage_label': STAGE_LABELS.get(stage, stage), 'photo': first})
+    for stage, subject, car, pays in result:
+        title, year, vin, lot_id, photos, price_usd = car or (subject, '', '', '', '[]', None)
+        out.append({'title': title or subject or '', 'year': year or '', 'vin': vin or '', 'lot_id': lot_id or '',
+                    'stage': stage, 'stage_label': STAGE_LABELS.get(stage, stage),
+                    'photo': (json.loads(photos or '[]') or [''])[0], 'price_usd': price_usd,
+                    'payments': _cabinet_payments(pays, today, nbu_rate), 'penalty': penalty})
     return out
