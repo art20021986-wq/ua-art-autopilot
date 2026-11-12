@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-STEP2-PAY-PREFLIGHT-20261112.5968ff4e35a0dba5857d41d874845273bfc8642ab43dd5c6ea5c639a712e8162.json",
+  "autostart_ledger_sha256": "2604f4652ee383ea73765fc6118f122d73a0235733a8e87a20b7d93ad1df863f",
+  "autostart_source_commit": "aa4bd0d4772815112300e99e4e474cbe8a33cdf4",
+  "created_at": "2026-11-12T12:09:39Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43215168786",
+    "task_id": "HOME-STEP2-PAY-PREFLIGHT-20261112",
+    "task_sha256": "5968ff4e35a0dba5857d41d874845273bfc8642ab43dd5c6ea5c639a712e8162"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-1b9e0b8bc5094697-3b1751775f1c004c",
+  "request_path": "tasks/requests/HOME-STEP2-PAY-PREFLIGHT-20261112.json",
+  "resource_locks": [
+    "PATH_SCOPE:1b9e0b8bc5094697"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
