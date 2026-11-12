@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "92c6c33bcaa2c821647ee5f7533b8ca4edaa22bd6b3625b6f75da52bdaaa8572",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-12T13:24:31Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-12T13:35:51Z",
+  "heartbeat_at": "2026-11-12T13:35:51Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43225030097",
     "task_id": "HOME-STRIP-REMOVE-INSTALL-20261112-R2",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 646.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 278.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43225030097-a2e8d6cf5e4bc0ae",
   "production_transaction_path": "state/transactions/HOME-STRIP-REMOVE-INSTALL-20261112-R2.a2e8d6cf5e4bc0ae8a547910e6cb8e49cc6c81be020bfad0cfa384aae9f49b4c.43225030097.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-STRIP-REMOVE-INSTALL-20261112-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "d2c50a97015ba8f63d129a63749a9c2a92406dfbc0c13327b1126a86ef87ea66",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-STRIP-REMOVE-INSTALL-20261112-R2.json",
   "request_sha256": "a2e8d6cf5e4bc0ae8a547910e6cb8e49cc6c81be020bfad0cfa384aae9f49b4c",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "ebd18b18259bb73bc6e7a7f752567f7baf736b4c4d8df4d20feb192062568af4",
     "file_sha256": {
@@ -86,5 +109,5 @@
       "cloud/home_strip_remove_001/test_edit_home.py": "90d2dbfd358e84813280f2160313c93eae2d0079e04081fd69c92215b17d11c3"
     }
   },
-  "updated_at": "2026-11-12T13:24:31Z"
+  "updated_at": "2026-11-12T13:35:51Z"
 }
