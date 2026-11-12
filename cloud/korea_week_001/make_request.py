@@ -26,8 +26,8 @@ def request(day):
                        'auctions run and whether new ones were added). Bounded run in the existing private inbox: upload this '
                        'package, run source_remote.py once in a temporary always-on task (removed after its receipt; never the '
                        'CRM bot) which uses the installed collector and the owner login file to read the Korea search form '
-                       '(auction groups) and search each group once, reporting every auction (house and day) of the coming '
-                       '7 days with its lot count and whether the site collector sees it. No lot page, no bid, no source, CRM, '
+                       '(auction days) and run the collector search once, reporting every auction (house and day) of the coming '
+                       '7 days with its lot count and how many of them the published lot list shows. No lot page, no bid, no source, CRM, '
                        'HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],

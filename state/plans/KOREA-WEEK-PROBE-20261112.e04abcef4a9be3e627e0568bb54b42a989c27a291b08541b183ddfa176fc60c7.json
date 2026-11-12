@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-WEEK-PROBE-20261112.e04abcef4a9be3e627e0568bb54b42a989c27a291b08541b183ddfa176fc60c7.json",
+  "autostart_ledger_sha256": "be76b90c96a7f3e9f16dbcd8988f618b4b32653bf7c27362705db9f337f53994",
+  "autostart_source_commit": "d9bc9d16914d158bddc087307e53881982b69585",
+  "created_at": "2026-11-12T14:59:50Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43242754680",
+    "task_id": "KOREA-WEEK-PROBE-20261112",
+    "task_sha256": "e04abcef4a9be3e627e0568bb54b42a989c27a291b08541b183ddfa176fc60c7"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-3e17f451ce1febe4-84cbeab57c76a229",
+  "request_path": "tasks/requests/KOREA-WEEK-PROBE-20261112.json",
+  "resource_locks": [
+    "PATH_SCOPE:3e17f451ce1febe4"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
