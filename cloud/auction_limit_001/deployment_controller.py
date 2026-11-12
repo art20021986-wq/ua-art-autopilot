@@ -13,9 +13,9 @@ from deployment_transport import API, HERE, INBOX, TransportError, canonical, sh
 
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
-# The site stays healthy; the Korea page keeps the client cabinet and no longer shows the bid limit.
-EXPECTED = {'/video/index.html': '', '/video/katalog.html': '', '/video/korea.html': 'id="kc-who"', '/video/podbor.html': ''}
-ABSENT = {'/video/korea.html': 'kc-limit'}
+# The site stays healthy (this release changes the CRM bot and the auction modules the web app also imports).
+EXPECTED = {'/video/index.html': '', '/video/katalog.html': '', '/video/korea.html': '', '/video/podbor.html': ''}
+ABSENT = {}
 # A slow answer is retried (TERMS-LINKS lesson 2026-11-11): 3 attempts of 60 s, pauses 15 and 45 s.
 PAUSES = (15, 45, None)
 SITE = 'https://www.uaart.com.ua'

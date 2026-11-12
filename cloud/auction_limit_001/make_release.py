@@ -75,8 +75,8 @@ def preview():
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Preview of AUCTION-LIMIT (AUCTION-LIMIT-001): reads the live auction client modules (exact '
-                            'installed versions) and the Korea page, builds the candidate (deposit from 1 000 $, no bid '
-                            'limit, cabinet without «ліміт ставок»), imports it with the bots\' interpreter and builds the '
+                            'installed versions), builds the candidate (deposit from 1 000 $, no bid limit; step 6 '
+                            '«Передоплата»), imports it with the bots\' interpreter and builds the '
                             'screens from the live clients and bids (read only, counts only); measures storage. No application '
                             'source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
@@ -140,8 +140,8 @@ def install():
                               'ua_auction_clients, ua_auction_clients_view, ua_auction_clients_bot, ua_auction_stats: the CRM '
                               'bot asks «Депозит в $ (от 1 000 $)» and shows no limit; ua_auction_bids: a bid is no longer '
                               'refused above a limit (step, minimum and the 30 bids a day stay); ua_auction_web: the login '
-                              'answer has no limit; video/korea.html: the client cabinet without «ліміт ставок» and the bid '
-                              'hint without «ваш ліміт». Client records and deposits are kept. The bot is paused for the file '
+                              'answer has no limit; step 6 of a new client reads «Передоплата в $ (от 1 000 $, засчитывается '
+                              'в стоимость авто)». No page change. Client records and deposits are kept. The bot is paused for the file '
                               'change and resumed; the web app is reloaded. No CRM or table change. Existing backup, bot '
                               'pause, writer locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
