@@ -1,0 +1,55 @@
+"""Inject only the local language resource and localized outgoing display text."""
+import re
+
+MARKER = '<script id="ua-art-site-languages" src="/video/ua-site-languages.js?v=site-ge-002-v1" defer></script>'
+
+
+def inject_html(source):
+    if not isinstance(source, str) or not re.search(r'<html\b', source, re.I):
+        return source
+    if 'id="ua-art-site-languages"' not in source:
+        source, count = re.subn(r'</head\s*>', MARKER + '\n</head>', source, count=1, flags=re.I)
+        if count != 1:
+            raise ValueError('SITE_GE_HEAD_MISSING')
+    # Translate only native share's existing human-readable text, preserving identity,
+    # price, URL and the original native/fallback behavior.
+    needle = ";try{if(navigator.share)"
+    addition = ";if(window.UAArtLocale){d.text=window.UAArtLocale.t(d.text);}try{if(navigator.share)"
+    source = source.replace(needle, addition)
+    # The selection form keeps its original data-k/data-t values and CRM payload.
+    # Translate the composed WhatsApp display text before URI encoding.
+    pattern = r'(  function tekstom\(\)\{.*?)(   return s;)(\n  \})'
+    source = re.sub(pattern, lambda m: m[1] + '   return window.UAArtLocale ? window.UAArtLocale.message(s) : s;' + m[3], source, count=1, flags=re.S)
+    old = "tekstom()+'Прикрепляю фото машины, которую хочу.'"
+    new = "tekstom()+(window.UAArtLocale?window.UAArtLocale.t('Прикрепляю фото машины, которую хочу.'):'Прикрепляю фото машины, которую хочу.')"
+    source = source.replace(old, new)
+    source = source.replace('(Показано|Показанo|Показано:|Показуємо|Показано авто)', '(Показано|Показанo|Показано:|Показуємо|Показано авто|ნაჩვენებია)')
+    return source
+
+
+def normalize_patch(source):
+    """Reverse exactly our changes for byte-for-byte unrelated-content checks."""
+    source = source.replace(MARKER + '\n', '').replace(MARKER, '')
+    source = source.replace(';if(window.UAArtLocale){d.text=window.UAArtLocale.t(d.text);}try{if(navigator.share)', ';try{if(navigator.share)')
+    source = source.replace('   return window.UAArtLocale ? window.UAArtLocale.message(s) : s;', '   return s;')
+    source = source.replace("tekstom()+(window.UAArtLocale?window.UAArtLocale.t('Прикрепляю фото машины, которую хочу.'):'Прикрепляю фото машины, которую хочу.')", "tekstom()+'Прикрепляю фото машины, которую хочу.'")
+    source = source.replace('(Показано|Показанo|Показано:|Показуємо|Показано авто|ნაჩვენებია)', '(Показано|Показанo|Показано:|Показуємо|Показано авто)')
+    return source
+
+# UA-PRICE-HTML-V2: single CRM source for generated market prices.
+_ua_price_base_inject = inject_html
+def inject_html(source):
+    from ua_price_html_v2 import render
+    return render(_ua_price_base_inject(source))
+
+# SPEED-001: Telegram's script just before its first user, not in <head>.
+_ua_speed_base_inject = inject_html
+def inject_html(source):
+    from ua_tg_script import place
+    return place(_ua_speed_base_inject(source))
+
+# TERMS-LINKS-001: no link to the terms page (info.html) on any page.
+_ua_terms_base_inject = inject_html
+def inject_html(source):
+    import ua_terms_links
+    return ua_terms_links.apply(_ua_terms_base_inject(source))

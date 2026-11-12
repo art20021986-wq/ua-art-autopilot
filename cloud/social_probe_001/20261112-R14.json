@@ -1,0 +1,90 @@
+{
+  "date": "2026/11/12",
+  "mode": "probe",
+  "parsed": 989,
+  "photos": [
+    {
+      "fetch": {
+        "bytes": 257448,
+        "ok": true
+      },
+      "from": "list",
+      "raw": {
+        "length": "257448",
+        "status": 200,
+        "type": "image/jpeg"
+      },
+      "url": {
+        "host": "image-cdn-autoplus.beforward.jp",
+        "path": "/cha_auction/2026/1110/2026111013445032157/a20261110135040_1.jpg",
+        "scheme": "https"
+      }
+    },
+    {
+      "from": "detail",
+      "url": null
+    },
+    {
+      "fetch": {
+        "bytes": 355592,
+        "ok": true
+      },
+      "from": "list",
+      "raw": {
+        "length": "355592",
+        "status": 200,
+        "type": "image/jpeg"
+      },
+      "url": {
+        "host": "image-cdn-autoplus.beforward.jp",
+        "path": "/cha_auction/2026/1105/C26102110073/20261105100107_1.jpg",
+        "scheme": "https"
+      }
+    },
+    {
+      "from": "detail",
+      "url": null
+    },
+    {
+      "fetch": {
+        "bytes": 433225,
+        "ok": true
+      },
+      "from": "list",
+      "raw": {
+        "length": "433225",
+        "status": 200,
+        "type": "image/jpeg"
+      },
+      "url": {
+        "host": "image-cdn-autoplus.beforward.jp",
+        "path": "/cha_auction/2026/1111/C26110310216/20261111084631_1.jpg",
+        "scheme": "https"
+      }
+    },
+    {
+      "from": "detail",
+      "url": null
+    }
+  ],
+  "remote_write_count": 0,
+  "run_id": "43174875853",
+  "safe_to_stop": true,
+  "schedule": [
+    {
+      "can_enable": false,
+      "command": "python3.10 /home/Carix/korea_ticker_job.py",
+      "description": "UA ART home ticker (Korea auctions)",
+      "enabled": true,
+      "expiry": null,
+      "hour": null,
+      "id": 1576351,
+      "interval": "hourly",
+      "logfile": "/user/Carix/files/var/log/schedule-log-1576351.log",
+      "minute": 7
+    }
+  ],
+  "status": "PASS",
+  "task_id": "SOCIAL-PROBE-20261112-R14",
+  "total": 989
+}

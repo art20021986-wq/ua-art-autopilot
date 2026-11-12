@@ -1,0 +1,75 @@
+{
+  "action": "/vehicle-search/kr/index",
+  "mode": "probe",
+  "posted_field_names": [
+    "auction_country_id",
+    "dir",
+    "mode",
+    "save_search_history",
+    "sortkey"
+  ],
+  "remote_write_count": 0,
+  "results_page": {
+    "bytes": 178729,
+    "hidden_fields": [
+      "auction_country_id",
+      "dir",
+      "history_idx_url",
+      "japan_time",
+      "koreafavoriteurl",
+      "koreahistoryurl",
+      "limit",
+      "mode",
+      "save_search_history",
+      "sortkey"
+    ],
+    "login_form": 0,
+    "logout": 3,
+    "notes": [],
+    "results_text": [
+      "0 Results"
+    ],
+    "search_form": 2,
+    "title": "Vehicle Search (Korea) | JP Auto Auction",
+    "url": "[URL]"
+  },
+  "run_id": "43161499115",
+  "safe_to_stop": true,
+  "schedule": [
+    {
+      "can_enable": false,
+      "command": "python3.10 /home/Carix/korea_ticker_job.py",
+      "description": "UA ART home ticker (Korea auctions)",
+      "enabled": true,
+      "expiry": null,
+      "hour": null,
+      "id": 1576351,
+      "interval": "hourly",
+      "logfile": "/user/Carix/files/var/log/schedule-log-1576351.log",
+      "minute": 7
+    }
+  ],
+  "search_page": {
+    "bytes": 174477,
+    "hidden_fields": [
+      "auction_country_id",
+      "dir",
+      "history_idx_url",
+      "japan_time",
+      "koreafavoriteurl",
+      "koreahistoryurl",
+      "mode",
+      "save_search_history",
+      "sortkey"
+    ],
+    "login_form": 0,
+    "logout": 3,
+    "notes": [],
+    "results_text": [],
+    "search_form": 2,
+    "title": "Vehicle Search (Korea) | JP Auto Auction",
+    "url": "[URL]"
+  },
+  "status": "PASS",
+  "task_id": "SOCIAL-PROBE-20261112-R10"
+}

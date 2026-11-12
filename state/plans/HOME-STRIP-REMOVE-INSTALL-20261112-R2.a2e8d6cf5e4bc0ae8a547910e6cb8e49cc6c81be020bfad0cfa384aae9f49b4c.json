@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-STRIP-REMOVE-INSTALL-20261112-R2.a2e8d6cf5e4bc0ae8a547910e6cb8e49cc6c81be020bfad0cfa384aae9f49b4c.json",
+  "autostart_ledger_sha256": "821a79aeb13741c982db1367b782542b9bc5ccdfe76d7663cdd99f4f21b19e01",
+  "autostart_source_commit": "6410dbfe7b57093456a60b34a6ca21899e17a52f",
+  "created_at": "2026-11-12T13:17:08Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43225030097",
+    "task_id": "HOME-STRIP-REMOVE-INSTALL-20261112-R2",
+    "task_sha256": "a2e8d6cf5e4bc0ae8a547910e6cb8e49cc6c81be020bfad0cfa384aae9f49b4c"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "homepage-68ed6564ebea221c",
+  "request_path": "tasks/requests/HOME-STRIP-REMOVE-INSTALL-20261112-R2.json",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

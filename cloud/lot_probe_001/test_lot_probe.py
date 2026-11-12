@@ -63,6 +63,14 @@ class TransportTests(unittest.TestCase):
 
 
 class RemoteTests(unittest.TestCase):
+    def test_model_report(self):
+        lot = {'maker': 'KIA', 'model': 'THE NEW K5', 'model_code': 'DL3', 'year': 2023, 'score': 'AB',
+               'auction_start': '2026/11/13 12:00', 'start_price_krw': 0, 'photos': ['a', 'b', 'c']}
+        value = remote.model_report([lot, dict(lot, maker='HYUNDAI', model='SONATA')])
+        self.assertEqual(value['KIA K5']['name_code_year'], [['THE NEW K5', 'DL3', 2023, 1]])
+        self.assertEqual((value['KIA K5']['days'], value['HYUNDAI SONATA']['lots'], value['HYUNDAI TUCSON']['lots']),
+                         ([('2026/11/13', 1)], 1, 0))
+
     def test_photo_shape_hides_host_and_numbers(self):
         self.assertEqual(remote.shape('https://cdn.example/a/20261111000123/photo_01.jpg?w=640'),
                          '/a/[N]/photo_01.jpg?w=640')

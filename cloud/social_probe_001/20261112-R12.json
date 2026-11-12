@@ -1,0 +1,85 @@
+{
+  "checked_defaults": [
+    [
+      "order_closed[]",
+      "1"
+    ],
+    [
+      "auction_group[]",
+      "4"
+    ],
+    [
+      "auction_group[]",
+      "5"
+    ]
+  ],
+  "mode": "probe",
+  "remote_write_count": 0,
+  "requests": 6,
+  "run_id": "43167033302",
+  "safe_to_stop": true,
+  "schedule": [
+    {
+      "can_enable": false,
+      "command": "python3.10 /home/Carix/korea_ticker_job.py",
+      "description": "UA ART home ticker (Korea auctions)",
+      "enabled": true,
+      "expiry": null,
+      "hour": null,
+      "id": 1576351,
+      "interval": "hourly",
+      "logfile": "/user/Carix/files/var/log/schedule-log-1576351.log",
+      "minute": 7
+    }
+  ],
+  "script_endpoints": [],
+  "script_src": [
+    "//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js",
+    "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js",
+    "/gjs/bid.js",
+    "/gjs/bootstrap-multiselect.js",
+    "/gjs/common.js",
+    "/gjs/notifications_common.js",
+    "/js/bootstrap.js",
+    "/js/cusotmer_extension.js?_=MTYyNzI4NDQxOA==",
+    "/js/customer_common.js",
+    "/js/customer_list_polling.js?_=MTYyNzI4NDQxOA==",
+    "/js/customer_polling.js?_=MTYyNzI4NDQxOA==",
+    "/js/customer_search.js",
+    "/js/customer_search_reset.js",
+    "/js/highslide-full.packed.js",
+    "/js/highslide_setting_for_jp_auto_auction.js",
+    "/js/jquery.cookie.min.js",
+    "/js/jquery.fastconfirm.js",
+    "/js/jquery.floatThead.min.js?_=MTUzMDE0OTcyMA==",
+    "/js/jquery.keep-position.js",
+    "/js/jquery.toast.error.js?_=MTYxODgxNjQ4NQ=="
+  ],
+  "search_page_hint": {
+    "detail_links": 0,
+    "img_tags": 1,
+    "tr_rows": 27
+  },
+  "status": "PASS",
+  "task_id": "SOCIAL-PROBE-20261112-R12",
+  "variants": {
+    "all_groups": {
+      "detail_links": 0,
+      "img_tags": 1,
+      "results": "0 Results",
+      "tr_rows": 29
+    },
+    "checked_without_order_closed": {
+      "detail_links": 0,
+      "img_tags": 1,
+      "results": "0 Results",
+      "tr_rows": 29
+    },
+    "hidden_plus_checked": {
+      "detail_links": 0,
+      "img_tags": 61,
+      "results": "989 Results",
+      "tr_rows": 48
+    }
+  }
+}
