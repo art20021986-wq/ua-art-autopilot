@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-OTHER-SOON-INSTALL-20261113.f05902693cfb00f8c5080bde1750677f2e8ed96b63d5a74d007bb4f072a2b9a5.json",
+  "autostart_ledger_sha256": "e3446482c0eff7c398e2f1ead0e869fc9a56e4690a213a1656ec62adff6e0247",
+  "autostart_source_commit": "dc9970a51249784d56d4cda65e2c5c932572ffb5",
+  "created_at": "2026-11-13T10:39:11Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43410289499",
+    "task_id": "HOME-OTHER-SOON-INSTALL-20261113",
+    "task_sha256": "f05902693cfb00f8c5080bde1750677f2e8ed96b63d5a74d007bb4f072a2b9a5"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "homepage-68ed6564ebea221c",
+  "request_path": "tasks/requests/HOME-OTHER-SOON-INSTALL-20261113.json",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
