@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "74940de603e775b808f8d5222977feab3373f4a0937a199496c1f59fab50793a",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T06:54:37Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-13T07:05:56Z",
+  "heartbeat_at": "2026-11-13T07:05:56Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43381079932",
     "task_id": "KOREA-RU-INSTALL-20261112",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 888.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 302.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43381079932-33f3c5d81096bc04",
   "production_transaction_path": "state/transactions/KOREA-RU-INSTALL-20261112.33f3c5d81096bc04a597bea141dece6e7449d6632b40eb4fc4ebd1b3903aba69.43381079932.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-3260105351e44167-4e102076cf08fd9b",
   "receipt_path": "state/receipts/KOREA-RU-INSTALL-20261112.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "26bda3f82b2c86be6a543c3b31122ab1e327f3b9ff5c80733217d154608f2d1c",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-RU-INSTALL-20261112.json",
   "request_sha256": "33f3c5d81096bc04a597bea141dece6e7449d6632b40eb4fc4ebd1b3903aba69",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "1133477f5574b292e133e146e2f4e863e0c2a16fe124d3e9357e5e38f980e831",
     "file_sha256": {
@@ -87,5 +110,5 @@
       "cloud/korea_ru_001/ua_korea_ru.py": "8e561c695dacfeee21745908ea6c3f7c0bbd6746c205427f0b7712fc30ae9bf7"
     }
   },
-  "updated_at": "2026-11-13T06:54:37Z"
+  "updated_at": "2026-11-13T07:05:56Z"
 }
