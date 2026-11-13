@@ -125,6 +125,10 @@ class Release(unittest.TestCase):
         self.assertIn('ждать покупки на аукционе.":"ავტომობილი უკვე გზაშია — აუქციონზე შეძენის ლოდინი', after)
         self.assertIn('video/ua-site-languages.js', candidate_builder.PAGES)
 
+    def test_privacy_header_link(self):
+        page = '<a href="/video/podbor.html">Підбір авто</a><a href="#ru">Русская версия</a>'
+        self.assertEqual(W.apply(page), '<a href="/video/podbor.html">Замовити авто</a><a href="#ru">Русская версия</a>')
+
     def test_untouched(self):
         for html in ('<a href="podbor.html">k</a>', '<p>депозит 500 $</p>', '<p>Подробнее</p>'):
             self.assertEqual(W.apply(html), html)
