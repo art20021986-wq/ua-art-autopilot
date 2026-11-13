@@ -275,7 +275,7 @@ class JobTest(unittest.TestCase):
         html = ticker.render({'items': [], 'own': [own], 'lots_today': 989,
                               'next_days': [{'date': '2026/11/18', 'lots': 585}]})
         self.assertIn('<b>989</b>', html)
-        self.assertIn('Торги Ср, 18.11</span> <b>585</b>', html)
+        self.assertIn('Торги Ср, 18.11</span></span><span class="kt-num"><b>585</b>', html)
 
     def test_failed_run_keeps_the_live_ticker_photos(self):
         """TICKER-FIX2-001: no items, or no photo copied — the photos the live ticker shows stay."""
@@ -457,9 +457,10 @@ class Fix4Test(unittest.TestCase):
         html = ticker.render(self._data(lots_today=56, houses_today=['AutoPlus'], next_days=self.DAYS))
         lead = html[html.index('class="kt-lead"'):html.index('class="kt-legend"')]
         self.assertIn('<b>56</b> <span', lead)
-        self.assertIn('<small class="kt-houses">AutoPlus</small>', lead)
-        self.assertIn('<small class="kt-houses">K-Car O-San · K-Car Se-Jong · SK Rent Car Auction</small>', lead)
-        self.assertIn('<small class="kt-houses">Auto Hub Auction</small>', lead)
+        self.assertIn('<span class="kt-houses"><span>AutoPlus</span></span>', lead)
+        self.assertIn('<span class="kt-houses"><span>K-Car O-San</span><span>K-Car Se-Jong</span>'
+                      '<span>SK Rent Car Auction</span></span>', lead)
+        self.assertIn('<span class="kt-houses"><span>Auto Hub Auction</span></span>', lead)
         self.assertEqual(lead.count('kt-houses'), 3)  # 19.11 lists no house: no empty line
         self.assertNotIn('AutoPlus', html[html.index('class="kt-end"'):])  # closing card: counts only
 
@@ -475,10 +476,10 @@ class Fix4Test(unittest.TestCase):
         car count each («Торги Вт, 17.11 3 авто · Торги Ср, 18.11 585 авто …»)."""
         html = ticker.render(self._data(lots_today=56, next_days=self.DAYS))
         lead = html[html.index('class="kt-lead"'):html.index('class="kt-legend"')]
-        self.assertIn('Сьогодні на торгах</span> <b>56</b> <span', lead)
-        self.assertIn('Торги Вт, 17.11</span> <b>766</b> <span', lead)
-        self.assertIn('Торги Ср, 18.11</span> <b>585</b> <span', lead)
-        self.assertIn('Торги Чт, 19.11</span> <b>12</b> <span', lead)
+        self.assertIn('Сьогодні на торгах</span></span><span class="kt-num"><b>56</b> <span', lead)
+        self.assertIn('Торги Вт, 17.11</span></span><span class="kt-num"><b>766</b> <span', lead)
+        self.assertIn('Торги Ср, 18.11</span></span><span class="kt-num"><b>585</b> <span', lead)
+        self.assertIn('Торги Чт, 19.11</span></span><span class="kt-num"><b>12</b> <span', lead)
         self.assertIn('data-ka="ვაჭრობა ოთხ, 18.11"', lead)
         self.assertEqual(lead.count('class="kt-count"'), 4)
         self.assertNotIn('Наступний аукціон', html)
@@ -487,8 +488,8 @@ class Fix4Test(unittest.TestCase):
 
     def test_tile_shows_zero_today(self):
         html = ticker.render(self._data(lots_today=0, next_days=self.DAYS[:1]))
-        self.assertIn('Сьогодні на торгах</span> <b>0</b>', html)
-        self.assertIn('Торги Вт, 17.11</span> <b>766</b>', html)
+        self.assertIn('Сьогодні на торгах</span></span><span class="kt-num"><b>0</b>', html)
+        self.assertIn('Торги Вт, 17.11</span></span><span class="kt-num"><b>766</b>', html)
 
     def test_tile_without_next_days(self):
         html = ticker.render(self._data(lots_today=989, next_days=[]), tomorrow=False)

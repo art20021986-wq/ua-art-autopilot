@@ -197,6 +197,13 @@ def _tile(data):
     return out
 
 
+def _row(label, value, unit, names):
+    """One tile line: the day on the left, the car count on the right, the day's auction houses as tags below."""
+    houses = ''.join('<span>%s</span>' % escape(n) for n in names)
+    return ('<span class="kt-count"><span class="kt-day">%s</span><span class="kt-num"><b>%s</b>%s</span>%s</span>'
+            % (label, value, ' ' + unit if unit else '', '<span class="kt-houses">%s</span>' % houses if houses else ''))
+
+
 def _lines(tile):
     """The tile lines as text, for the closing card: «Сьогодні на торгах 56 авто · Торги Вт, 17.11 3 авто»."""
     return ' · '.join(' '.join(p for p in line[:3] if p) for line in tile)
@@ -210,10 +217,7 @@ def render(data, tomorrow=True):
     if not items and not own:
         return ''
     tile = _tile(data)
-    counts = ''.join('<span class="kt-count">● %s <b>%s</b>%s%s</span>' % (
-        label, value, ' ' + unit if unit else '',
-        '<small class="kt-houses">%s</small>' % escape(' · '.join(names)) if names else '')
-        for label, value, unit, names in tile)
+    counts = ''.join(_row(*line) for line in tile)
     if items:
         track = ('<div class="kt-lead">%s%s</div>' % (counts, _legend())
                  + ''.join(_own(i) if 'stage' in i else _item(i, i.get('tomorrow', tomorrow)) for i in _mix(items, own)))
@@ -257,9 +261,15 @@ CSS = (
     'font-size:16px;color:#ffd200;font-variant-numeric:tabular-nums}'
     '.kt-lead{display:flex;flex-direction:column;justify-content:center;gap:8px;width:640px;padding:10px 18px;'
     'border-radius:12px;color:#0B1524;background:linear-gradient(135deg,#ffd200,#ff8a00)}'
-    '.kt-count{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:700;white-space:nowrap}'
-    '.kt-count b{font-size:30px}.kt-count{flex-wrap:wrap}'
-    '.kt-houses{flex-basis:100%;margin:-6px 0 0 22px;font-size:14px;font-weight:600;white-space:normal;opacity:.8}'
+    # tile lines (owner 2026-11-13: day, car count, auction names — neatly): a row per day, thin dividers
+    '.kt-count{display:grid;grid-template-columns:1fr auto;align-items:baseline;column-gap:12px;padding:8px 0;'
+    'border-top:1px solid rgba(11,21,36,.18);font-size:18px;font-weight:700;line-height:1.2}'
+    '.kt-count:first-child{border-top:0;padding-top:0}'
+    '.kt-num{white-space:nowrap;font-size:15px}.kt-num b{margin-right:4px;font-size:26px;'
+    'font-variant-numeric:tabular-nums}'
+    '.kt-houses{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}'
+    '.kt-houses span{padding:3px 10px;border-radius:999px;background:rgba(11,21,36,.12);font-size:12.5px;'
+    'font-weight:600;white-space:nowrap}'
     '.kt-legend{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:12.5px;line-height:1.25}'
     '.kt-legend b{display:block;margin-bottom:4px;font-size:13px}'
     '.kt-legend dl{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;margin:0}'
@@ -271,7 +281,7 @@ CSS = (
     '@media (max-width:600px){.kt-track{padding:0 7vw;gap:10px}.kt-item,.kt-lead,.kt-end{scroll-margin-left:7vw}'
     '.kt-item{flex-direction:column;align-items:stretch;width:86vw;padding:6px}'
     '.korea-ticker .kt-item img{width:100%!important;height:auto!important;aspect-ratio:4/3}'
-    '.kt-body{min-width:0}.kt-lead{width:86vw;box-sizing:border-box}.kt-count{flex-wrap:wrap;white-space:normal}'
+    '.kt-body{min-width:0}.kt-lead{width:86vw;box-sizing:border-box}'
     '.kt-legend{grid-template-columns:1fr}.kt-arrow{width:38px;height:38px;font-size:26px;line-height:34px}'
     '.kt-prev{left:2px}.kt-next{right:2px}}'
 )
