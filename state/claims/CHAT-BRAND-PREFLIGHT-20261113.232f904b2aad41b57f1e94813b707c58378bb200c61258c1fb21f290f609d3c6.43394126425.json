@@ -1,0 +1,64 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CHAT-BRAND-PREFLIGHT-20261113.232f904b2aad41b57f1e94813b707c58378bb200c61258c1fb21f290f609d3c6.json",
+  "autostart_ledger_sha256": "71bf68d9e3b72af40bf47004fbee894df076439416fc1df02d166ef9a402b95f",
+  "autostart_source_commit": "33307c18434854314a7f903898ef20c6805d1dc8",
+  "created_at": "2026-11-13T08:42:40Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-13T08:46:49Z",
+  "heartbeat_at": "2026-11-13T08:46:49Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43394126425",
+    "task_id": "CHAT-BRAND-PREFLIGHT-20261113",
+    "task_sha256": "232f904b2aad41b57f1e94813b707c58378bb200c61258c1fb21f290f609d3c6"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-07ad4f725ab13126-face506af73bb307",
+  "receipt_path": "state/receipts/CHAT-BRAND-PREFLIGHT-20261113.json",
+  "receipt_sha256": "8d30f26ca2bd47df275d0064a46da22d3cb8dfbeef8286a3b05c939818b3253f",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CHAT-BRAND-PREFLIGHT-20261113.json",
+  "request_sha256": "232f904b2aad41b57f1e94813b707c58378bb200c61258c1fb21f290f609d3c6",
+  "resource_locks": [
+    "PATH_SCOPE:07ad4f725ab13126"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "743a2bd92fddfb55efc9410632e436f97bfb1965",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92720902144,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.167
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "052389a874b63c29d5793c0dfe3e111a88297521c15e7445df66d53e200a7921",
+    "file_sha256": {
+      "cloud/chat_brand_001/candidate_builder.py": "05292932271f35cb42b645fe2df086a33a353f502cc1f385457b13301a408dc7",
+      "cloud/chat_brand_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/chat_brand_001/deployment_bootstrap.py": "a50c5dcafe201f3be5d4494218a4d2daaed7ac9ab37737616c1f6e6a28e3201d",
+      "cloud/chat_brand_001/deployment_remote.py": "bd08a615d5ae19c8faf0451e3500a6b814b54e15c14a5e6209cc231db56d9849",
+      "cloud/chat_brand_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/chat_brand_001/deployment_transport.py": "cf5980829d4b36f53c5605c1b1d425e048d9837db6248346f72438d082b550e4",
+      "cloud/chat_brand_001/make_release.py": "b1ce5c3d85beda56dd6c2fa4e6da8ad5a0045b3f40a77b48ef3f3a0f22b56096",
+      "cloud/chat_brand_001/release_constants.py": "6bebefcfe26cff3249df678fe8ebda9748a8c4f4e873eb05a62caf46ad310945",
+      "cloud/chat_brand_001/test_deployment.py": "19cd1477eb6b4dcf073a2c20870b0f358b8e7c12f9704f9f5c777c0ce0c81dba",
+      "cloud/chat_brand_001/test_release.py": "d87cdd413e54fe6083d0c0c4002e2f09dceb8613ea12306d53efcff504bf0a95",
+      "cloud/chat_brand_001/ua_brand_home.py": "ec4aabfa8777d53b4fb678014617c9dcb6031b8b9ed9ee8a86d23b44b9c00c6e",
+      "cloud/chat_brand_001/ua_chat_button.py": "aff23c742a7926b6831277ca1e2a407c0ee2b2f382cb47b4eb565909089dab5e"
+    }
+  },
+  "updated_at": "2026-11-13T08:46:49Z"
+}

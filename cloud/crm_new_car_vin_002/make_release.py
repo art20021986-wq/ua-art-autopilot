@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Write the NEW-CAR-VIN-SPEC preview request, then (after the preview) the install request set (run from the repo root).
 
-Usage: python3 cloud/crm_new_car_vin_002/make_release.py preview [SUFFIX]   # PR, merge, then: launch preview
+Usage: python3 cloud/crm_new_car_vin_002/make_release.py preview   # PR, merge, then: launch preview
        python3 cloud/crm_new_car_vin_002/make_release.py launch TASK_ID
-       python3 cloud/crm_new_car_vin_002/make_release.py install [SUFFIX]   # only after the owner's «да»: writes gate,
+       python3 cloud/crm_new_car_vin_002/make_release.py install   # only after the owner's «да»: writes gate,
                                                                        # manifest, approval, storage probe, request, launch
 Task names come from release_constants.py.
 """
@@ -68,8 +68,8 @@ def execution(task, production):
     return value
 
 
-def preview(suffix):
-    task = PREVIEW_TASK + suffix
+def preview():
+    task = PREVIEW_TASK  # a retry gets its own name in release_constants: the controller accepts only that name
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Owner 2026-11-13 (NEW-CAR-VIN-SPEC): a card created by «Создать новое объявление» gets the '
@@ -96,10 +96,10 @@ def launch(task, now=None, production=False):
                  json.dumps(value, indent=2, sort_keys=True) + '\n'), value
 
 
-def install(suffix):
+def install():
     if not APPROVAL:
         raise SystemExit('OWNER_APPROVAL_MISSING')
-    task = INSTALL_TASK + suffix
+    task = INSTALL_TASK
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
     plan = json.load(open(P + 'deployment_plan.json'))
     preview_value = json.load(open(P + 'deployment_preview.json'))
@@ -170,8 +170,8 @@ def launch_values(task, now):
 if __name__ == '__main__':
     action = sys.argv[1]
     if action == 'preview':
-        print(preview(sys.argv[2] if len(sys.argv) > 2 else ''))
+        print(preview())
     elif action == 'launch':
         print(launch(sys.argv[2])[0])
     else:
-        print(install(sys.argv[2] if len(sys.argv) > 2 else ''))
+        print(install())

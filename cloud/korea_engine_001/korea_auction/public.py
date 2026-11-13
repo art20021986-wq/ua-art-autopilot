@@ -9,6 +9,10 @@ from . import fuel, nbu
 from .collect import display_name
 
 PHOTO_URL = '/video/korea/lots/'
+# KOREA-ENGINE-001 (owner 2026-11-13: every photo in the lot card): the lot list keeps the first photos, so it stays
+# light for every visitor; each lot's whole set is its own small file (job.publish_galleries ->
+# /video/korea/gallery/<id>.json), read when its card opens.
+LIST_PHOTOS = 3
 
 
 def photo_name(lot_id, url):
@@ -25,8 +29,13 @@ def lot_view(lot, rates, photos):
         'engine_cc': lot['engine_cc'], 'fuel': fuel.key(lot.get('fuel')) or '', 'transmission': lot['transmission'],
         'house': lot['house'], 'lot_no': lot['lot_no'], 'auction_start': lot['auction_start'],
         'start_krw': price, 'start_usd': nbu.krw_to_usd(price, rates) if price else 0, 'vin': lot.get('vin', ''),
-        'photos': [PHOTO_URL + name for name in photos],
+        'photos': [PHOTO_URL + name for name in photos[:LIST_PHOTOS]],
     }
+
+
+def gallery(photos):
+    """One lot's gallery file: every copied photo, in the lot page's order."""
+    return {'photos': [PHOTO_URL + name for name in photos]}
 
 
 def build(lots, date, rates, photos, generated_at):

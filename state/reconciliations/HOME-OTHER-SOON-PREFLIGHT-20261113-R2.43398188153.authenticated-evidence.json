@@ -1,0 +1,15 @@
+{
+  "claim_before_sha256": "a9c06b36d94b9a6f594c6cad775834cd6238d3a7ed09c220a2ceec265e0de758",
+  "error": "RuntimeError: TASK_IDENTITY (task id HOME-OTHER-SOON-PREFLIGHT-20261113-R2 not in release_constants) -> ExecutionContractError: CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: Execute STANDARD controller (before any remote call)",
+  "owner_approval": "«Да» in chat 2026-11-13 to closing the R2 claim by manual reconciliation",
+  "precedent": "state/reconciliations/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113.43388227132.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-13T09:35:00+00:00",
+  "remote_mode": "none (controller stopped at the task identity check, no server call)",
+  "retry": "HOME-OTHER-SOON-PREFLIGHT-20261113-R3 (PREVIEW_TASK set in release_constants, #1521)",
+  "run_id": "43398188153",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "HOME-OTHER-SOON-PREFLIGHT-20261113-R2"
+}

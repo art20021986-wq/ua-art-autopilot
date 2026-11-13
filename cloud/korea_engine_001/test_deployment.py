@@ -304,7 +304,8 @@ class SmokeTests(unittest.TestCase):
                                                   'login_path': True, 'public_list': True, 'today_fallback': True,
                                           'today_wording': True, 'stale_rerun': True, 'waiting_tile': True,
                                   'search_checked_boxes': True, 'tile': True, 'ticker_kyiv_time': True,
-                                  'fuel_in_list': True, 'page_engine_models': True, 'all_photos': True})
+                                  'fuel_in_list': True, 'page_engine_models': True, 'all_photos': True,
+                                  'photos_for_time': True, 'gallery_all': True})
 
 
 
