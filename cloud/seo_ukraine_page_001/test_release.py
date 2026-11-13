@@ -86,6 +86,8 @@ class ReleaseTests(unittest.TestCase):
                         questions = [q['name'] for q in node['mainEntity']]
             self.assertEqual(questions, [q for q, _ in t['faq']])
             self.assertNotIn('Запор', html)
+            self.assertIsNone(re.search(r'[Пп]ідб|[Пп]одб', repr(t)))  # owner: support, not «подбор» (SERVICE-WORDS)
+            self.assertNotRegex(html, 'перевіряємо авто до покупки|проверяем авто до покупки')  # owner 13.11
             self.assertIn('500 $', html)
             self.assertNotIn('без передоплати' if lang == 'uk' else 'без предоплаты', html)
             self.assertIn('1 000 $', html)
@@ -101,6 +103,7 @@ class ReleaseTests(unittest.TestCase):
             self.assertIn('1 000 $', order)
             self.assertIn('<a class="cta" href="/video/podbor.html">', order)
             self.assertIn('500 $', self.pages[self.L.path(lang)])  # the Korea hub (catalogue cars) keeps it
+            self.assertNotRegex(self.pages[self.L.path(lang)], 'перевіряємо авто до покупки|проверяем авто до покупки')  # owner 13.11
         changed = {n for n in self.before if self.before[n] != self.pages[n]}
         # The price page shares the «can the price change» answer.
         self.assertEqual(changed, {self.L.path(l, k) for l in ('uk', 'ru') for k in (None, self.L.ORDER, self.L.PRICE)})

@@ -23,9 +23,6 @@ TEXTS = {
         models_title='Які авто найчастіше замовляють з Кореї',
         sedans='{k5} і {sonata} — є версії на {lpi}: економні на щодень.', lpi='заводському газу (LPi)',
         crossovers='{models} — кросовери, часто з дизелем.', other='Будь-яку іншу модель підберемо під ваш бюджет.',
-        check_title='Як ми перевіряємо авто до покупки',
-        check=('Дивимося звіт аукціону: оцінка кузова, салону й технічного стану.',
-               "За потреби перевіряємо лакофарбове покриття, робимо комп'ютерну діагностику й технічний огляд."),
         steps_title='Як проходить замовлення',
         steps=('Безкоштовна консультація: модель, бюджет, країна.',
                'Підбираємо варіанти й перевіряємо історію та звіт аукціону.',
@@ -47,9 +44,6 @@ TEXTS = {
         models_title='Какие авто чаще всего заказывают из Кореи',
         sedans='{k5} и {sonata} — есть версии на {lpi}: экономичные на каждый день.', lpi='заводском газе (LPi)',
         crossovers='{models} — кроссоверы, часто с дизелем.', other='Любую другую модель подберём под ваш бюджет.',
-        check_title='Как мы проверяем авто до покупки',
-        check=('Смотрим отчёт аукциона: оценка кузова, салона и технического состояния.',
-               'При необходимости проверяем лакокрасочное покрытие, делаем компьютерную диагностику и технический осмотр.'),
         steps_title='Как проходит заказ',
         steps=('Бесплатная консультация: модель, бюджет, страна.',
                'Подбираем варианты и проверяем историю и отчёт аукциона.',
@@ -78,13 +72,13 @@ def _list(title, items, tag='ul'):
 
 
 def hub(lang, link):
-    """«Why UA ART», «most ordered models» (linked) and «how we check» for the Korea hub."""
+    """«Why UA ART» and «most ordered models» (linked) for the Korea hub (owner 13.11: no «how we check» section)."""
     t = TEXTS[lang]
     name = lambda key: _a(link(key), '%s %s' % key)
     models = (t['sedans'].format(k5=name(K5), sonata=name(SONATA), lpi=_a(link(LPI), t['lpi'])),
               t['crossovers'].format(models=', '.join(name(k) for k in CROSSOVERS)), escape(t['other']))
     return (_list(t['why_title'], [escape(x) for x in t['why']]) + _list(t['models_title'], models)
-            + _list(t['check_title'], [escape(x) for x in t['check']]) + _ukraine(lang, link))
+            + _ukraine(lang, link))
 
 
 def order_steps(lang, link=None):
