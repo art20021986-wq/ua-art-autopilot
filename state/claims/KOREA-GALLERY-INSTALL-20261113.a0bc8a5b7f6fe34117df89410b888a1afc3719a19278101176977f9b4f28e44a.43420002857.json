@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "12bf7ea3cf35d3fdcaf35a2f88967c81cbddfec19e366a7c061c7349f21fdebe",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T11:51:46Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T11:55:45Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43420002857",
     "task_id": "KOREA-GALLERY-INSTALL-20261113",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43420002857-a0bc8a5b7f6fe341",
   "production_transaction_path": "state/transactions/KOREA-GALLERY-INSTALL-20261113.a0bc8a5b7f6fe34117df89410b888a1afc3719a19278101176977f9b4f28e44a.43420002857.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-b0b8b3ecb1b29fb7-d13a9e06157bfebb",
   "receipt_path": "state/receipts/KOREA-GALLERY-INSTALL-20261113.json",
   "receipt_validation_status": "PENDING",
@@ -98,5 +98,5 @@
       "cloud/korea_gallery_001/ua_media_styles.py": "2c365fb7863dfe3e920320c71f315e167fc8534198f0d9a7699816d9d96e6195"
     }
   },
-  "updated_at": "2026-11-13T11:51:46Z"
+  "updated_at": "2026-11-13T11:55:45Z"
 }
