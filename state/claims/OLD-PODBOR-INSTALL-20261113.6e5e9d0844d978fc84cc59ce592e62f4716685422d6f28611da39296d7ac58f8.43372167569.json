@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "126021cc711bfee15c9e9c700d1df41799429f6ffb5e9a4ce09a268d9eeef2f5",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-11-13T05:35:49Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 43372167569",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "ea7184f84f42a8c5"
+    }
+  ],
   "heartbeat_at": "2026-11-13T05:30:41Z",
   "heartbeat_sequence": 6,
   "identity": {
@@ -69,7 +80,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
   "trusted_package": {
     "controller_sha256": "e3799db3cf058e218f78403e21282b025aee571e58dc922d1f6bc47ebb056189",
     "file_sha256": {
@@ -85,5 +96,5 @@
       "cloud/old_podbor_remove_001/test_release.py": "e3e66707bfd65d766f6854fd60ad4903dfbb5e7be8052f87e14c6e17f1493e5a"
     }
   },
-  "updated_at": "2026-11-13T05:30:41Z"
+  "updated_at": "2026-11-13T05:35:49Z"
 }
