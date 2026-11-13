@@ -8,7 +8,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import time_pages as tp  # noqa: E402
 
-FIXTURES = {tp.KOREA: 'korea_lots_live.txt', tp.ORDER: 'order_js_lots_full.txt',
+FIXTURES = {tp.KOREA: 'korea_live.html', tp.ORDER: 'order_js_lots_full.txt',
             tp.STRINGS: 'order_strings_lots_full.txt', tp.PODBOR: 'podbor_script_tag.txt'}
 
 

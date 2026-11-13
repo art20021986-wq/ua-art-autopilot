@@ -25,3 +25,12 @@ KOREA-LOTS-FULL (очередь координатора: HOME-STRIP → KOREA-L
 ## Важно другим сессиям
 Будущие пакеты, пересобирающие список лотов на korea.html (`ua_korea_lots.py`, например KOREA-DAYS-PAGE), должны
 сохранить строку времени (Корея + Киев), иначе она пропадёт.
+
+## Общая установка Кореи (владелец 13.11 через координатора)
+К KOREA-TIME присоединены, каждая правка — свой модуль в cloud/korea_time_001:
+- KOREA-WEEK-DAYS-001 (сессия 17): 7 дней вперёд в кнопках дней на korea.html — week_days.py (из cloud/korea_week_days_001).
+- KOREA-PHOTOS-ALL-001 (02): все фото лота — korea_auction/prices.py MAX_PHOTOS = None (из cloud/korea_photos_all_001).
+- LOT-OTP-001 (15): строка OTP под ценой в окне лота — lot_otp.py + edit_korea.py (из cloud/lot_otp_001).
+Страница Кореи: time_pages → week_days → edit_korea. Заявки R3 (KOREA-TIME-PREFLIGHT/INSTALL-20261113-R3); заявки
+этих пакетов не запускать. Тесты 92/92; браузер (iPhone 13) на живой korea.html (13.11) с тремя правками: 7 дней +
+«Усі дні», строка OTP 1 раз, время Корея · Київ, ошибок JS нет.
