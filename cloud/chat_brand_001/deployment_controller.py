@@ -23,6 +23,8 @@ LINK = 'href="https://wa.me/380992222002"'
 # page) on static pages and a landing page; the WhatsApp link itself unchanged.
 PHONE = '@media (max-width:767px){html body a.mcf-chat'
 CAPTION = 'a.brand .brand-copy::after'
+# The floating button added to the landing pages (owner «да» 2026-11-13).
+ADDED = 'class="mcf-chat ua-chat-added" href="https://wa.me/380992222002"'
 
 
 def blocks(body, caption=True):
@@ -36,7 +38,8 @@ EXPECTED = {'/video/index.html': lambda body: blocks(body, caption=False) and LI
             '/video/katalog.html': blocks,
             '/video/podbor.html': blocks,
             '/video/info.html': blocks,
-            '/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html': blocks}
+            '/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html': lambda body: blocks(body) and ADDED in body,
+            '/video/seo/gu/kia-k5-koreidan-sakartveloshi.html': lambda body: ROW in body and ADDED in body}
 
 
 def context():
