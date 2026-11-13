@@ -1,0 +1,15 @@
+{
+  "claim_before_sha256": "73322dfca85f0f8bcbadf674f663841e0a74bb5d708cd2f2402a0d0cd0d1dac4",
+  "error": "deployment_transport.TransportError: NETWORK_TimeoutError (DELETE always_on/<id>/ after the preview receipt was read) -> ExecutionContractError: CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: Execute STANDARD controller (remote preview, read-only)",
+  "owner_approval": "«Да» in chat 2026-11-13 to closing the R1 claim by manual reconciliation",
+  "precedent": "state/reconciliations/SERVICE-WORDS-PREFLIGHT-20261112-R3.43350432698.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-13T08:40:00+00:00",
+  "remote_mode": "preview (reads only)",
+  "retry": "NEW-CAR-VIN-SPEC-PREFLIGHT-20261113-R3 (DELETE retried, own leftover always-on tasks removed, #1501); R2 was refused at intake RESOURCE_BUSY by this claim",
+  "run_id": "43388227132",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "NEW-CAR-VIN-SPEC-PREFLIGHT-20261113"
+}
