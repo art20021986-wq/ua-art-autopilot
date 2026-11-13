@@ -31,6 +31,8 @@ T = {
     'lead_today': ('Сьогодні на торгах', 'Сегодня на торгах', 'დღეს ვაჭრობაზე'),
     'cars': ('авто', 'авто', 'ავტო'),
     'lead_day': ('Торги {d}', 'Торги {d}', 'ვაჭრობა {d}'),  # «Торги Вт, 17.11» (owner 2026-11-13)
+    # an auction house's start in Kyiv time, on its tile tag (owner 2026-11-13: «старт время по Украине»)
+    'house_start': ('старт {u} Київ', 'старт {u} Киев', 'დაწყება {u} კიევი'),
     'access': ('доступ після договору', 'доступ после договора', 'წვდომა ხელშეკრულების შემდეგ'),
     # what the lot score means, on the yellow tile (owner 2026-11-11), per the auction house rules (Auto Hub):
     # first letter = accident grade A-F, second = exterior grade (panels to repair now) A, B, C, D, F (no E)
@@ -124,16 +126,32 @@ def _day(at):
 
 def _when(start):
     """'YYYY/MM/DD HH:MM' (Korea) -> «Торги Ср, 18.11 · 12:00 Корея · 05:00 Київ», or '' when it cannot be read."""
+    at = _korea(start)
+    if at is None or KYIV is None:
+        return ''
+    return '<span class="kt-when">%s</span>' % _t('when', d=_day(at), k=at.strftime('%H:%M'), u=_kyiv(at))
+
+
+def _korea(start):
+    """'YYYY/MM/DD HH:MM' (Korea) -> aware datetime, or None when it cannot be read."""
     try:
-        at = datetime.strptime((start or '')[:16], '%Y/%m/%d %H:%M').replace(tzinfo=KST)
+        return datetime.strptime((start or '')[:16], '%Y/%m/%d %H:%M').replace(tzinfo=KST)
     except ValueError:
-        return ''
-    if KYIV is None:
-        return ''
+        return None
+
+
+def _kyiv(at):
+    """Korea datetime -> its Kyiv time per language: '05:00', or '23:00 (Вт, 17.11)' when the Kyiv day differs."""
     kyiv = at.astimezone(KYIV)
     time = kyiv.strftime('%H:%M')
-    local = tuple(time if kyiv.date() == at.date() else '%s (%s)' % (time, day) for day in _day(kyiv))
-    return '<span class="kt-when">%s</span>' % _t('when', d=_day(at), k=at.strftime('%H:%M'), u=local)
+    return tuple(time if kyiv.date() == at.date() else '%s (%s)' % (time, day) for day in _day(kyiv))
+
+
+def _house(house):
+    """A tile tag: the auction house name and, when known, its start in Kyiv time («AutoPlus · старт 05:00 Київ»)."""
+    at = _korea(house.get('start'))
+    start = ' · ' + _t('house_start', u=_kyiv(at)) if at and KYIV else ''
+    return '<span>%s%s</span>' % (escape(house['name']), start)
 
 
 def _item(it, tomorrow):
@@ -187,18 +205,26 @@ def _mix(lots, own, every=2):
 
 
 def _tile(data):
-    """KOREA-TILE-001: the yellow tile's lines [(label, value, unit)]: today's car count, always (0 when none), then
-    each of the nearest auction days after today (Korea time) with its weekday and listed car count."""
-    out = [(_t('lead_today'), _num(data.get('lots_today') or 0), _t('cars'))]
+    """KOREA-TILE-001: the yellow tile's lines [(label, value, unit, houses)]: today's car count, always (0 when none),
+    then each of the nearest auction days after today (Korea time) with its weekday and listed car count; each line
+    with the names of that day's auction houses."""
+    out = [(_t('lead_today'), _num(data.get('lots_today') or 0), _t('cars'), data.get('houses_today') or [])]
     for day in data.get('next_days') or []:
         at = datetime.strptime(day['date'], '%Y/%m/%d')
-        out.append((_t('lead_day', d=_day(at)), _num(day['lots']), _t('cars')))
+        out.append((_t('lead_day', d=_day(at)), _num(day['lots']), _t('cars'), day.get('houses') or []))
     return out
+
+
+def _row(label, value, unit, names):
+    """One tile line: the day on the left, the car count on the right, the day's auction houses as tags below."""
+    houses = ''.join(_house(h) for h in names)
+    return ('<span class="kt-count"><span class="kt-day">%s</span><span class="kt-num"><b>%s</b>%s</span>%s</span>'
+            % (label, value, ' ' + unit if unit else '', '<span class="kt-houses">%s</span>' % houses if houses else ''))
 
 
 def _lines(tile):
     """The tile lines as text, for the closing card: «Сьогодні на торгах 56 авто · Торги Вт, 17.11 3 авто»."""
-    return ' · '.join(' '.join(p for p in line if p) for line in tile)
+    return ' · '.join(' '.join(p for p in line[:3] if p) for line in tile)
 
 
 def render(data, tomorrow=True):
@@ -209,15 +235,16 @@ def render(data, tomorrow=True):
     if not items and not own:
         return ''
     tile = _tile(data)
-    counts = ''.join('<span class="kt-count">● %s <b>%s</b>%s</span>' % (label, value, ' ' + unit if unit else '')
-                     for label, value, unit in tile)
+    counts = ''.join(_row(*line) for line in tile)
+    # two yellow tiles (owner 2026-11-13): the auctions first, then what the damage score means
+    legend = '<div class="kt-lead">%s</div>' % _legend()
     if items:
-        track = ('<div class="kt-lead">%s%s</div>' % (counts, _legend())
+        track = ('<div class="kt-lead">%s</div>%s' % (counts, legend)
                  + ''.join(_own(i) if 'stage' in i else _item(i, i.get('tomorrow', tomorrow)) for i in _mix(items, own)))
         count = '%s — %s' % (_lines(tile), _t('access'))
     else:
-        track = ('<div class="kt-lead">%s<span class="kt-count">● %s</span>%s</div>'
-                 % (counts, _t('lead_wait'), _legend()) + ''.join(_own(c) for c in own))
+        track = ('<div class="kt-lead">%s<span class="kt-count">● %s</span></div>%s'
+                 % (counts, _t('lead_wait'), legend) + ''.join(_own(c) for c in own))
         count = _t('count_wait')
     tail = ('<span class="kt-end"><span>%s</span><small>%s</small><a class="kt-btn" href="%s">%s</a></span>'
             % (count, _t('note'), LINK, _t('want')))
@@ -254,8 +281,15 @@ CSS = (
     'font-size:16px;color:#ffd200;font-variant-numeric:tabular-nums}'
     '.kt-lead{display:flex;flex-direction:column;justify-content:center;gap:8px;width:640px;padding:10px 18px;'
     'border-radius:12px;color:#0B1524;background:linear-gradient(135deg,#ffd200,#ff8a00)}'
-    '.kt-count{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:700;white-space:nowrap}'
-    '.kt-count b{font-size:30px}'
+    # tile lines (owner 2026-11-13: day, car count, auction names — neatly): a row per day, thin dividers
+    '.kt-count{display:grid;grid-template-columns:1fr auto;align-items:baseline;column-gap:12px;padding:8px 0;'
+    'border-top:1px solid rgba(11,21,36,.18);font-size:18px;font-weight:700;line-height:1.2}'
+    '.kt-count:first-child{border-top:0;padding-top:0}'
+    '.kt-num{white-space:nowrap;font-size:15px}.kt-num b{margin-right:4px;font-size:26px;'
+    'font-variant-numeric:tabular-nums}'
+    '.kt-houses{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}'
+    '.kt-houses>span{padding:3px 10px;border-radius:999px;background:rgba(11,21,36,.12);font-size:12.5px;'
+    'font-weight:600;white-space:nowrap}'
     '.kt-legend{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:12.5px;line-height:1.25}'
     '.kt-legend b{display:block;margin-bottom:4px;font-size:13px}'
     '.kt-legend dl{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;margin:0}'
@@ -267,7 +301,7 @@ CSS = (
     '@media (max-width:600px){.kt-track{padding:0 7vw;gap:10px}.kt-item,.kt-lead,.kt-end{scroll-margin-left:7vw}'
     '.kt-item{flex-direction:column;align-items:stretch;width:86vw;padding:6px}'
     '.korea-ticker .kt-item img{width:100%!important;height:auto!important;aspect-ratio:4/3}'
-    '.kt-body{min-width:0}.kt-lead{width:86vw;box-sizing:border-box}.kt-count{flex-wrap:wrap;white-space:normal}'
+    '.kt-body{min-width:0}.kt-lead{width:86vw;box-sizing:border-box}'
     '.kt-legend{grid-template-columns:1fr}.kt-arrow{width:38px;height:38px;font-size:26px;line-height:34px}'
     '.kt-prev{left:2px}.kt-next{right:2px}}'
 )
