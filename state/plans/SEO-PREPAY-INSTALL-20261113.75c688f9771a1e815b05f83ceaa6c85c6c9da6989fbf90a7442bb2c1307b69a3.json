@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-PREPAY-INSTALL-20261113.75c688f9771a1e815b05f83ceaa6c85c6c9da6989fbf90a7442bb2c1307b69a3.json",
+  "autostart_ledger_sha256": "dfa80925a57d96ebf43cd971d321fedbaeb9fb86211454e86505f23f968fe7b1",
+  "autostart_source_commit": "4722bbfeff5c034ff0791f1173cc1b3e086561b8",
+  "created_at": "2026-11-13T12:54:41Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43428939452",
+    "task_id": "SEO-PREPAY-INSTALL-20261113",
+    "task_sha256": "75c688f9771a1e815b05f83ceaa6c85c6c9da6989fbf90a7442bb2c1307b69a3"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-b76d901a3f11c6ec-28b82411a1bf39fb",
+  "request_path": "tasks/requests/SEO-PREPAY-INSTALL-20261113.json",
+  "resource_locks": [
+    "PATH_SCOPE:b76d901a3f11c6ec"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
