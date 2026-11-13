@@ -13,9 +13,11 @@ sys.path.insert(0, str(HERE))
 import candidate_builder  # noqa: E402
 import deployment_remote as remote  # noqa: E402
 
-OLD = ('<html><head><title>Індивідуальне замовлення автомобіля — UA ART COMPANY</title></head><body>'
-       '<h1>Індивідуальне замовлення автомобіля</h1><p>Форма тимчасово недоступна. Телефон: +380 99 222 20 02.</p>'
-       '</body></html>').encode()
+# The live file as served (ANALYTICS-AUDIT/OLD-PODBOR R1: the browser texts come from order.js, not the file).
+OLD = ('<!doctype html><html lang="uk"><head><title>Авто під замовлення — UA ART COMPANY</title>'
+       '<script type="module" src="order.js?v=20260927.10"></script></head><body>'
+       '<main class="ua-order" id="ua-order"><h1 data-label="title">Авто під замовлення</h1>'
+       '<h2 id="country-heading">Оберіть країну підбору</h2></main></body></html>').encode()
 PROTECTED = ('start_safe.py', 'run_all.py', 'team_bot.py', 'lead_bot.py', 'db.py', 'publication_fence.py',
              'ua_public_freshness.py', 'ua_site_counters.py', 'catalog_design_guard.py', 'cars_schema.py',
              'stranica.py', 'master_card.py', 'publish_transaction_guard.py')
@@ -44,6 +46,9 @@ class CandidateTests(unittest.TestCase):
     def test_other_content_is_refused(self):
         with self.assertRaisesRegex(ValueError, 'OLD_PAGE_NOT_RECOGNISED'):
             candidate_builder.build({'video/order/podbor.html': 'Оберіть країну підбору'.encode()}, {})
+        current = '<title>Авто під замовлення в Україну — UA ART COMPANY</title><script src="order/order.js?v=1">'.encode()
+        with self.assertRaisesRegex(ValueError, 'OLD_PAGE_NOT_RECOGNISED'):
+            candidate_builder.build({'video/order/podbor.html': current}, {})
 
 
 class SmokeTests(unittest.TestCase):
