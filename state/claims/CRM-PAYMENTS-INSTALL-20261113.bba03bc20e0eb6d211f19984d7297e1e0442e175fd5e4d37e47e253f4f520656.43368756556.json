@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "77bf2c68ac295cdf3edf870f280648026327702d9613bbc44c6d4aaaca7e1a77",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T04:59:36Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T05:04:39Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43368756556",
     "task_id": "CRM-PAYMENTS-INSTALL-20261113",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43368756556-bba03bc20e0eb6d2",
   "production_transaction_path": "state/transactions/CRM-PAYMENTS-INSTALL-20261113.bba03bc20e0eb6d211f19984d7297e1e0442e175fd5e4d37e47e253f4f520656.43368756556.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-PAYMENTS-INSTALL-20261113.json",
   "receipt_validation_status": "PENDING",
@@ -92,5 +92,5 @@
       "cloud/crm_payments_001/ua_pay_view.py": "dcd4137368160b002fab37618bbfba72e5fc8e9e52329c4e88767b60f1fd1361"
     }
   },
-  "updated_at": "2026-11-13T04:59:36Z"
+  "updated_at": "2026-11-13T05:04:39Z"
 }
