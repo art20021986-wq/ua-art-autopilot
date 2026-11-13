@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-FAQ-INSTALL-20261113.c9109b78ea97fd08aff544b9b68a83bc537c3b960f952380a48b126727d2d171.json",
+  "autostart_ledger_sha256": "42e7d250217f5a31a7e1109f8a43369452368dedd38dc22ce74a93768c719729",
+  "autostart_source_commit": "299f0e0cd4a39641fc617cca07659f8ff7f8e684",
+  "created_at": "2026-11-13T12:24:17Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-13T12:24:17Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43424658612",
+    "task_id": "KOREA-FAQ-INSTALL-20261113",
+    "task_sha256": "c9109b78ea97fd08aff544b9b68a83bc537c3b960f952380a48b126727d2d171"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-85c7e8ead3a1c206-29d6ba4c5a8d11b0",
+  "receipt_path": "state/receipts/KOREA-FAQ-INSTALL-20261113.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/KOREA-FAQ-INSTALL-20261113.json",
+  "request_sha256": "c9109b78ea97fd08aff544b9b68a83bc537c3b960f952380a48b126727d2d171",
+  "resource_locks": [
+    "PATH_SCOPE:85c7e8ead3a1c206"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "3c94b6d170f4bf48c6d23cc3caf8bfdf0ed0e2ec",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-13T12:24:17Z"
+}
