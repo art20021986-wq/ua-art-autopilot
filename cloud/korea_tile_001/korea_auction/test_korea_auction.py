@@ -451,6 +451,8 @@ class Fix4Test(unittest.TestCase):
                 'photo': '/video/korea/img/1.jpg', 'auction_start_jst': '2026/11/13 10:00', 'hot': False}
         return dict({'lots_on_date': 500, 'own': [], 'items': [item]}, **kw)
 
+    OWN = {'stage': 'sea', 'title': 'Kia K5 2021', 'url': '/video/ua/UA-0001.html', 'photo': '/video/foto/UA-0001/001.jpg',
+           'price_usd': 15000}
     DAYS = [{'date': '2026/11/17', 'lots': 766, 'houses': [{'name': 'K-Car O-San', 'start': '2026/11/17 13:00'},
                                                           {'name': 'SK Rent Car Auction', 'start': '2026/11/17 13:00'}]},
             {'date': '2026/11/18', 'lots': 585, 'houses': [{'name': 'Auto Hub Auction', 'start': '2026/11/18 06:00'}]},
@@ -472,6 +474,18 @@ class Fix4Test(unittest.TestCase):
         self.assertIn('data-ru="старт 23:00 (Вт, 17.11) Киев"', lead)
         self.assertEqual(lead.count('kt-houses'), 3)  # 19.11 lists no house: no empty line
         self.assertNotIn('AutoPlus', html[html.index('class="kt-end"'):])  # closing card: counts only
+
+    def test_two_yellow_tiles_auctions_then_damage(self):
+        """Owner 2026-11-13: «подели на 2 жёлтых квадрата: аукционы, потом повреждения»."""
+        for data in (self._data(lots_today=56, next_days=self.DAYS), dict(self._data(lots_today=56), items=[],
+                                                                           own=[self.OWN])):
+            html = ticker.render(data)
+            self.assertEqual(html.count('class="kt-lead"'), 2)
+            first, second = html.split('<div class="kt-lead">')[1:3]
+            self.assertIn('Сьогодні на торгах', first)
+            self.assertNotIn('kt-legend', first)
+            self.assertTrue(second.startswith('<div class="kt-legend">'))
+            self.assertNotIn('kt-count', second.split('</div></div>')[0])
 
     def test_house_without_a_readable_start_shows_the_name_only(self):
         html = ticker.render(self._data(lots_today=1, houses_today=[{'name': 'AutoPlus', 'start': ''}]))

@@ -236,13 +236,15 @@ def render(data, tomorrow=True):
         return ''
     tile = _tile(data)
     counts = ''.join(_row(*line) for line in tile)
+    # two yellow tiles (owner 2026-11-13): the auctions first, then what the damage score means
+    legend = '<div class="kt-lead">%s</div>' % _legend()
     if items:
-        track = ('<div class="kt-lead">%s%s</div>' % (counts, _legend())
+        track = ('<div class="kt-lead">%s</div>%s' % (counts, legend)
                  + ''.join(_own(i) if 'stage' in i else _item(i, i.get('tomorrow', tomorrow)) for i in _mix(items, own)))
         count = '%s — %s' % (_lines(tile), _t('access'))
     else:
-        track = ('<div class="kt-lead">%s<span class="kt-count">● %s</span>%s</div>'
-                 % (counts, _t('lead_wait'), _legend()) + ''.join(_own(c) for c in own))
+        track = ('<div class="kt-lead">%s<span class="kt-count">● %s</span></div>%s'
+                 % (counts, _t('lead_wait'), legend) + ''.join(_own(c) for c in own))
         count = _t('count_wait')
     tail = ('<span class="kt-end"><span>%s</span><small>%s</small><a class="kt-btn" href="%s">%s</a></span>'
             % (count, _t('note'), LINK, _t('want')))
