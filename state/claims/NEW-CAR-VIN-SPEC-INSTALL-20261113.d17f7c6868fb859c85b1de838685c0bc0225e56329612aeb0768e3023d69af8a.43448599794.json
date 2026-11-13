@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43448599794-d17f7c6868fb859c",
   "production_transaction_path": "state/transactions/NEW-CAR-VIN-SPEC-INSTALL-20261113.d17f7c6868fb859c85b1de838685c0bc0225e56329612aeb0768e3023d69af8a.43448599794.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "ROLLING_BACK",
   "queue_key": "path_scope-051a1d31a326d0a5-b0839769106467df",
   "receipt_path": "state/receipts/NEW-CAR-VIN-SPEC-INSTALL-20261113.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/crm_new_car_vin_002/ua_vin_decode.py": "9df929afadc026bf7e722e1bf8d42dcbd84c4f879c9308d8ac0b71169242c7b0"
     }
   },
-  "updated_at": "2026-11-13T15:09:50Z"
+  "updated_at": "2026-11-13T15:22:03Z"
 }
