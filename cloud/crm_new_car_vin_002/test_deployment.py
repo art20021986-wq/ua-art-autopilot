@@ -198,6 +198,42 @@ class TransportTests(unittest.TestCase):
             self.assertEqual(call.call_count, 1)
             self.assertEqual(call.call_args.args[0], 'GET')
 
+    def test_delete_is_retried_after_a_timeout(self):
+        api = API('test-token')
+
+        class Response:
+            status = 204
+
+            def read(self, size):
+                return b''
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+        with patch('deployment_transport.urllib.request.urlopen', side_effect=[TimeoutError(), Response()]) as call, \
+                patch('deployment_transport.time.sleep'):
+            api.request('DELETE', 'always_on/5/', allowed=(204,))
+        self.assertEqual(call.call_count, 2)
+
+    def test_post_is_not_retried(self):
+        api = API('test-token')
+        with patch('deployment_transport.urllib.request.urlopen', side_effect=TimeoutError()) as call:
+            with self.assertRaisesRegex(TransportError, 'NETWORK_TimeoutError'):
+                api.request('POST', 'always_on/', b'x')
+        self.assertEqual(call.call_count, 1)
+
+    def test_leftovers_of_this_package_only(self):
+        from deployment_transport import INBOX
+        api = API('test-token')
+        tasks = [{'id': BOT_ID, 'command': BOT_COMMAND},
+                 {'id': 7, 'command': 'python3.10 %s/newcarvin2_bootstrap.py --bundle x' % INBOX},
+                 {'id': 8, 'command': 'python3.10 %s/other_bootstrap.py' % INBOX}]
+        with patch.object(api, 'json', return_value=tasks), patch.object(api, 'request') as request:
+            api.remove_leftovers()
+        request.assert_called_once_with('DELETE', 'always_on/7/', allowed=(200, 202, 204, 404))
+
 
 class PublicVerificationTests(unittest.TestCase):
     def response(self,request,timeout):
