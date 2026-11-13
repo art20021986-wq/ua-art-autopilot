@@ -1,0 +1,119 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-PAYMENTS-INSTALL-20261113.bba03bc20e0eb6d211f19984d7297e1e0442e175fd5e4d37e47e253f4f520656.json",
+  "autostart_ledger_sha256": "2096003723b963d5a0818f6a2a56e245787541eb5cfbe07f41f8204c4ee4bf1e",
+  "autostart_source_commit": "908cad3bdafbe97a3bc011e76709cd4703489978",
+  "created_at": "2026-11-13T04:58:13Z",
+  "critical_gate_evidence_sha256": "77bf2c68ac295cdf3edf870f280648026327702d9613bbc44c6d4aaaca7e1a77",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-13T05:19:45Z",
+  "heartbeat_at": "2026-11-13T05:19:45Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "43368756556",
+    "task_id": "CRM-PAYMENTS-INSTALL-20261113",
+    "task_sha256": "bba03bc20e0eb6d211f19984d7297e1e0442e175fd5e4d37e47e253f4f520656"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 839.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 311.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 302.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 265.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-43368756556-bba03bc20e0eb6d2",
+  "production_transaction_path": "state/transactions/CRM-PAYMENTS-INSTALL-20261113.bba03bc20e0eb6d211f19984d7297e1e0442e175fd5e4d37e47e253f4f520656.43368756556.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/CRM-PAYMENTS-INSTALL-20261113.json",
+  "receipt_sha256": "1c2f4a6fbd5a7564e628a96a6c156262af503c476bb5cd24cbe612dae9e12440",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CRM-PAYMENTS-INSTALL-20261113.json",
+  "request_sha256": "bba03bc20e0eb6d211f19984d7297e1e0442e175fd5e4d37e47e253f4f520656",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "33b89a74c258a64743a4912b0eac6f1655bba6a0",
+  "storage_preflight": {
+    "age_seconds": 380.609,
+    "allowed": true,
+    "evidence_path": "state/storage/CRM-PAYMENTS-INSTALL-20261113.json",
+    "evidence_sha256": "4a7dadc678796fc5c391498c71a1f548812ae559b862387c60460b44cd7bcc83",
+    "free_bytes": 21542399488,
+    "heavy": true,
+    "measured_at": "2026-11-13T04:53:12.661521+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 38.450287177142854
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/crm_payments_001/candidate_builder.py": "e06b3b7a8ec658ac613e529d2c31d094098d7d8555b23e7ca1863b7834c981f5",
+      "cloud/crm_payments_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_payments_001/deployment_bootstrap.py": "80047bc2c76418b4c8b9e7992a46cee147044d6dec194fe30571e8e37b7e64a0",
+      "cloud/crm_payments_001/deployment_remote.py": "cd3206b637a6ff4ca876ffe1c7a22e17af64a2a941bad1c954ea6cb0e0efa47b",
+      "cloud/crm_payments_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_payments_001/deployment_transport.py": "28201f37fae63c5f793fc7cdade6ece7632b1608d1190814c89a63bda6b197b8",
+      "cloud/crm_payments_001/edit_cars_ui.py": "ae47dd160a3701b08bf5cb8d6eede146f1f9695251a54267adb72cfee1c66bf5",
+      "cloud/crm_payments_001/edit_order_book.py": "85b9b6ebe4f365606d5a475e1feb2541e7aac43afe7997ad64e9ff7b1898a08f",
+      "cloud/crm_payments_001/make_release.py": "dd56013874c94e17610b3a856fa03d65cf2c141110966cd26d61adb2bb472af1",
+      "cloud/crm_payments_001/release_constants.py": "32a742711d9638a27632aa1bcdec233bf3675e0f7cea93fa064fbb2b9863e284",
+      "cloud/crm_payments_001/test_crm_payments.py": "81ccf2ea4b911738ed6eb23bf3bcd6410e750aa5d2f0e86b3b205453375b8f78",
+      "cloud/crm_payments_001/test_deployment.py": "acedb2d6d540aa5551185c46347cf3ef9630c2943d3c28c6d0b5f68cd757f7d2",
+      "cloud/crm_payments_001/ua_pay_bot.py": "8b02d675b0a1f5a49f46a29625ceb3dae361385fb4ebb6827d714aeaa247994f",
+      "cloud/crm_payments_001/ua_pay_lot.py": "dd0ca45144a550d90e1636579891b3faa958db67ac893f54f3a0134a28dc4a00",
+      "cloud/crm_payments_001/ua_pay_rules.py": "530ea3115c4141420e9370a819e6ec9401a34e8f248359230cd471afbaeedf3a",
+      "cloud/crm_payments_001/ua_pay_store.py": "e8b2e7539aa91aa0a52e63245de0c0726e790d6bf1c77da58aa548e8a74aa9e5",
+      "cloud/crm_payments_001/ua_pay_view.py": "dcd4137368160b002fab37618bbfba72e5fc8e9e52329c4e88767b60f1fd1361"
+    }
+  },
+  "updated_at": "2026-11-13T05:19:45Z"
+}
