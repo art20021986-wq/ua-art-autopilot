@@ -7,6 +7,17 @@
   "created_at": "2026-11-13T08:59:31Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-11-13T09:00:53Z",
+      "class": "UNKNOWN",
+      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 43396764840",
+      "retries_remaining": 3,
+      "retry_allowed": false,
+      "signature": "d0c510cfca560bb5"
+    }
+  ],
   "heartbeat_at": "2026-11-13T08:59:31Z",
   "heartbeat_sequence": 0,
   "identity": {
@@ -31,6 +42,6 @@
   "source_commit": "53cfba633da33e522b637c930053093620bdf713",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-13T08:59:31Z"
+  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "updated_at": "2026-11-13T09:00:53Z"
 }
