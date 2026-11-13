@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "dd6c0e948ee6f89eac61bccd889353071eb3cf1cfeab0f91c25bba74e9b1580f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T13:31:34Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T13:36:55Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43433941183",
     "task_id": "CHAT-BRAND-INSTALL-20261113",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43433941183-f275f5d2dc94002c",
   "production_transaction_path": "state/transactions/CHAT-BRAND-INSTALL-20261113.f275f5d2dc94002cc07cd8e6e71f186f54e013eb8cc2b1ee2dec48c6f2146075.43433941183.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-516734deb9ea5607",
   "receipt_path": "state/receipts/CHAT-BRAND-INSTALL-20261113.json",
   "receipt_validation_status": "PENDING",
@@ -91,5 +91,5 @@
       "cloud/chat_brand_001/ua_chat_button.py": "135549d6473fb41c192a16cb8c0a38c0c4d2826305b85ed3e15e20df15ff2114"
     }
   },
-  "updated_at": "2026-11-13T13:31:34Z"
+  "updated_at": "2026-11-13T13:36:55Z"
 }
