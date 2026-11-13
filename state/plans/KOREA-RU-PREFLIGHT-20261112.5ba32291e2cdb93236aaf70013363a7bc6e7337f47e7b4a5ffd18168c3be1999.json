@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-RU-PREFLIGHT-20261112.5ba32291e2cdb93236aaf70013363a7bc6e7337f47e7b4a5ffd18168c3be1999.json",
+  "autostart_ledger_sha256": "7abbe0cc588e8e90ff73da5058a6e939c611ab8c07ee7d06042955832ce0191a",
+  "autostart_source_commit": "bac60c7cfb78c3fad58a1ae4e284483ebbe85c0c",
+  "created_at": "2026-11-13T06:32:00Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43379203018",
+    "task_id": "KOREA-RU-PREFLIGHT-20261112",
+    "task_sha256": "5ba32291e2cdb93236aaf70013363a7bc6e7337f47e7b4a5ffd18168c3be1999"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-fd32e4c6fe408565-532a38f4150e4097",
+  "request_path": "tasks/requests/KOREA-RU-PREFLIGHT-20261112.json",
+  "resource_locks": [
+    "PATH_SCOPE:fd32e4c6fe408565"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
