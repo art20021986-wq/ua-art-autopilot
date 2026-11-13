@@ -66,13 +66,20 @@ class CandidateTests(unittest.TestCase):
         cls.result = candidate_builder.build(cls.source, {})
 
     def test_files(self):
-        self.assertEqual(sorted(self.result), sorted(list(self.source) + ['ua_autoria_badge.py', 'ua_autoria_text.py', 'ua_brand_home.py']))
+        self.assertEqual(sorted(self.result), sorted(list(self.source) + ['ua_autoria_badge.py', 'ua_autoria_text.py', 'ua_brand_home.py',
+                                                        'video/brand/autoria-logo.svg']))
         for name in ('ua_chat_button.py', 'ua_brand_home.py', 'ua_autoria_badge.py', 'ua_autoria_text.py'):
             self.assertEqual(self.result[name], (HERE / name).read_bytes())
         self.assertIn("SEO_REVISION = 'CHAT-BRAND-001'", self.result['ua_seo_metadata.py'].decode())
         for name, value in self.result.items():
             if name.endswith('.py'):
                 compile(value, name, 'exec')
+
+    def test_official_autoria_logo_replaces_the_file(self):
+        logo = self.result['video/brand/autoria-logo.svg']
+        self.assertEqual(logo, (HERE.parent / 'photos' / 'autoria-logo-official.svg').read_bytes())
+        self.assertIn(b'width="135" height="40"', logo)
+        self.assertIn('video/brand/autoria-logo.svg', candidate_builder.targets(HERE))
 
     def test_writers_add_both_blocks(self):
         inject = self.result['site_ge_inject.py'].decode()

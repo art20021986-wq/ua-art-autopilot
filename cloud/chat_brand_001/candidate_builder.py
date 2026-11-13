@@ -8,7 +8,8 @@
 3. The SEO landing pages get the floating button too (owner «да» 2026-11-13; they have none).
 4. «Ми на AUTO.RIA» with the official logo at the bottom of every page: ua_autoria_badge.py (new) adds the home page
    badge where it is missing and shows the logo in place of the plain text on the Korea pages.
-5. AUTO.RIA's own wording on the home page reviews button (ua_autoria_text.py, new; their message to the owner).
+5. AUTO.RIA's own wording on the home page reviews button (ua_autoria_text.py, new) and their official logo in place of
+   video/brand/autoria-logo.svg (autoria_logo.py) — their message to the owner.
 
 Every page writer gets the blocks: site_ge_inject.inject_html (cards, catalogue, home, order page) through a wrapper
 appended at the end of the module, ua_seo_index.refresh (landings) in its chain. ua_seo_metadata SEO_REVISION: the CRM
@@ -60,8 +61,9 @@ def page_names(root):
 
 
 def targets(root):
-    """Existing files the candidate replaces (the new module is added beside them)."""
-    return (MODULE,) + tuple(EDITS) + (GOLDEN,) + page_names(root)
+    """Existing files the candidate replaces (the new modules are added beside them)."""
+    import autoria_logo
+    return (MODULE,) + tuple(EDITS) + (GOLDEN, autoria_logo.PATH) + page_names(root)
 
 
 def edit(name, value):
@@ -106,8 +108,10 @@ def build(source, dependencies):
         raise ValueError('CHAT_BRAND_LIVE_MODULE_UNEXPECTED')
     result = {MODULE: module}
     result.update({name: (HERE/name).read_bytes() for name in NEW_MODULES})
+    import autoria_logo
+    result[autoria_logo.PATH] = autoria_logo.SVG.encode('utf-8')
     for name, value in source.items():
-        if name == MODULE:
+        if name in (MODULE, autoria_logo.PATH):
             continue
         if name in EDITS:
             result[name] = edit(name, value)
