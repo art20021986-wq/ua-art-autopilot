@@ -50,6 +50,7 @@ class CandidateTests(unittest.TestCase):
         page = files[candidate_builder.KOREA].decode('utf-8')
         self.assertIn('function engine(l){', page)  # KOREA-ENGINE-001: engine type in the lot card
         self.assertIn('createElement("optgroup")', page)  # KOREA-ENGINE-001: models grouped by make
+        self.assertIn('function gallery(l){', page)  # KOREA-ENGINE-001: every lot photo in the card
         self.assertIn('korea_auction/public.py', files)
         source = HERE / 'korea_auction'
         for module in candidate_builder.MODULES:
@@ -62,7 +63,7 @@ class CandidateTests(unittest.TestCase):
     def test_only_the_engine_modules_differ_from_the_installed_collector(self):
         """The package never rolls back another install: every module but KOREA-ENGINE's own equals the
         installed one (fuel.py is new)."""
-        changed = {'collect', 'ticker', 'prices', 'public'}
+        changed = {'collect', 'ticker', 'prices', 'public', 'job'}
         live = installed()
         for module in candidate_builder.MODULES:
             name = 'korea_auction/%s.py' % module

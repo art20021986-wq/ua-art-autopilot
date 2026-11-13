@@ -10,7 +10,7 @@ from deployment_transport import API, HERE, canonical, sha, upload_package
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 # After the install the Korea page carries KOREA-ENGINE-001 (engine type in the lot card, models grouped by make);
-# the other pages stay healthy. lots.json gets the fuel type at the job's next runs.
+# the other pages stay healthy. lots.json gets the fuel type and the gallery files at the job's next runs.
 EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': 'function engine(l){',
             '/video/katalog.html': '', '/video/podbor.html': 'order/order.js?v=20261112.71'}
 SITE = 'https://www.uaart.com.ua'

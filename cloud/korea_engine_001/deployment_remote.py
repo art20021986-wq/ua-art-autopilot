@@ -122,7 +122,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'TICKER-FIX4-INSTALL-1','files':files,'job':JOB,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'korea_auction/fuel.py (new), prices.py, public.py (fuel type in lots.json), collect.py (misspelt model names), ticker.py (fuel key from fuel.py) + video/korea.html (lot card engine type, models grouped by make); no other page or CRM module changes',
+            'site_scope':'korea_auction/fuel.py (new), prices.py, public.py (fuel type in lots.json), collect.py (misspelt model names), ticker.py (fuel key from fuel.py), job.py + public.py (every lot photo: copying for a time per run, gallery files video/korea/gallery/<id>.json, lots.json 3 photos per lot) + video/korea.html (lot card engine type and whole photo set, models grouped by make); no other page or CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -179,7 +179,12 @@ def smoke(directory):
                                               'now')['lots'][0]['fuel']
                                  == 'gasoline',
                  'page_engine_models': all(piece in read(after/'video/korea.html').decode('utf-8')
-                                           for piece in ('function engine(l){', 'createElement("optgroup")')),
+                                           for piece in ('function engine(l){', 'createElement("optgroup")',
+                                                         'function gallery(l){')),
+                 # KOREA-ENGINE-001: every lot photo — copying for a time per run; the list keeps 3, the gallery has all
+                 'photos_for_time': job.RUN_SECONDS < 3600 and not hasattr(job, 'PHOTOS_PER_RUN'),
+                 'gallery_all': len(public.gallery(['%d.jpg' % n for n in range(41)])['photos']) == 41
+                                and public.LIST_PHOTOS == 3,
                  # KOREA-PHOTOS-ALL-001 stays installed (never rolled back to 40 photos)
                  'all_photos': __import__('korea_auction.prices', fromlist=['x']).MAX_PHOTOS is None}
     finally:
