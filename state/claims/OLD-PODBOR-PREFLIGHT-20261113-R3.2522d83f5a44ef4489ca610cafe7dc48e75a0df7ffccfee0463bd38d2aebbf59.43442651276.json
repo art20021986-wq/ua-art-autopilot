@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/OLD-PODBOR-PREFLIGHT-20261113-R3.2522d83f5a44ef4489ca610cafe7dc48e75a0df7ffccfee0463bd38d2aebbf59.json",
+  "autostart_ledger_sha256": "fb417877d252d4058b0f5c5f1f5b01c27b26b635dd8bba686b881553439c3470",
+  "autostart_source_commit": "eab1e9c00467c46de682c06d6ef2631f0316bde0",
+  "created_at": "2026-11-13T14:27:29Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-13T14:27:29Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43442651276",
+    "task_id": "OLD-PODBOR-PREFLIGHT-20261113-R3",
+    "task_sha256": "2522d83f5a44ef4489ca610cafe7dc48e75a0df7ffccfee0463bd38d2aebbf59"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-573756374f54a1a6-987f07ff3870329f",
+  "receipt_path": "state/receipts/OLD-PODBOR-PREFLIGHT-20261113-R3.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/OLD-PODBOR-PREFLIGHT-20261113-R3.json",
+  "request_sha256": "2522d83f5a44ef4489ca610cafe7dc48e75a0df7ffccfee0463bd38d2aebbf59",
+  "resource_locks": [
+    "PATH_SCOPE:573756374f54a1a6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "dfe144337506a888c403a44c8e870c51f6f74091",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-13T14:27:29Z"
+}
