@@ -3,8 +3,8 @@
 The auction's results table has no start price, no VIN and only 3 photos; each lot page has them. Lot pages are read
 a few hundred per run (the session keeps its pause between requests) and remembered in CACHE, so every lot page is
 read once; lots that left the auction are forgotten. One responsibility: the lot page cache.
-Cache entry: {'krw': start price, 'vin': chassis number, 'photos': [photo addresses], 'fuel': fuel text}; an older
-entry without the fuel text is read again once (KOREA-ENGINE-001).
+Cache entry: {'krw': start price, 'vin': chassis number, 'photos': [photo addresses]}; an older entry holding only
+the price is read again once.
 """
 import json
 from pathlib import Path
@@ -38,33 +38,28 @@ def save(known, path=None):
 def entry(html):
     detail = lots.parse_detail(html)
     return {'krw': detail['start_price_krw'], 'vin': detail['vin'],
-            'photos': detail['photos'][:MAX_PHOTOS], 'fuel': detail['fuel']}
-
-
-def read(page):
-    """The lot page is in the cache with everything the site shows."""
-    return page is not None and 'fuel' in page
+            'photos': detail['photos'][:MAX_PHOTOS]}
 
 
 def fill(session, current_lots, known, limit=PER_RUN):
     """Known lot pages for these lots, reading at most `limit` new ones. -> (known, lots still unread)."""
     current = {lot['id'] for lot in current_lots}
     known = {k: v for k, v in known.items() if k in current}
-    missing = [lot for lot in current_lots if not read(known.get(lot['id']))]
+    missing = [lot for lot in current_lots if lot['id'] not in known]
     for lot in missing[:limit]:
         try:
             _, html = session.fetch(lot['detail_url'])
         except OSError:
             continue
         known[lot['id']] = entry(html)
-    return known, sum(1 for lot in current_lots if not read(known.get(lot['id'])))
+    return known, sum(1 for lot in current_lots if lot['id'] not in known)
 
 
 def apply(current_lots, known):
-    """The lots with their start price, VIN, photos and fuel from the lot pages (the table's own while unread)."""
+    """The lots with their start price, VIN and photos from the lot pages (the table's own while unread)."""
     result = []
     for lot in current_lots:
         page = known.get(lot['id'], {})
         result.append(dict(lot, start_price_krw=page.get('krw') or lot['start_price_krw'], vin=page.get('vin', ''),
-                           photos=page.get('photos') or lot['photos'], fuel=page.get('fuel', '')))
+                           photos=page.get('photos') or lot['photos']))
     return result

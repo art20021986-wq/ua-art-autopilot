@@ -60,14 +60,7 @@ cloud/photos/22-KOREA-TILE-TWO.png.
 3 дня, названия, старт по Киеву, новое оформление), затем повреждения. Ветка claude/youthful-allen-sz1efh (7ed5e3eb
 и этот коммит). Ставит сессия 22 по сигналу координатора.
 
-## Одна установка с KOREA-ENGINE-001 (13.11, координатор; владелец «4. Да» в чате KOREA-ENGINE)
-Одни и те же файлы сборщика — одной установкой. Ставит сессия «Торговая страница дата и время» (23).
-- `korea_auction/` = cloud/korea_engine_001/korea_auction (= эта плашка + KOREA-ENGINE: новый fuel.py, prices.py и
-  public.py — тип топлива в lots.json, collect.py — исправления названий моделей). prices.py — все фото (MAX_PHOTOS None).
-- video/korea.html: `engine_page.build` (окно лота «Двигун 2 996 см³ · бензин»), затем `model_groups.build` (список
-  «Модель» по маркам) — модули из KOREA-ENGINE, каждый со своими якорями; применяются к живой странице на сервере.
-- Проверки на сервере: + fuel_in_list, page_engine_models, all_photos; после установки на живой korea.html —
-  `function engine(l){`.
-- Тесты 90/90. Браузер (iPhone 13): живая korea.html 13.11 + обе правки — 31 марка в группах, строка «Двигун»,
-  ошибок JS 0.
-Заявки R2: KOREA-TILE-PREFLIGHT-20261113-R2 → KOREA-TILE-INSTALL-20261113-R2 (R1 собрана без KOREA-ENGINE, не запускалась).
+## KOREA-ENGINE-001 отдельно (13.11, координатор)
+Объединение с KOREA-ENGINE (#1470) отменено: «да» владельца на ENGINE — только в чате её сессии. Пакет возвращён к
+версии #1467 (только плашка) с заявкой KOREA-TILE-PREFLIGHT-20261113. ENGINE ставит её сессия сразу после этой
+установки, поверх установленного сборщика.
