@@ -54,6 +54,15 @@ class CandidateTests(unittest.TestCase):
                 compile(value, name, 'exec')
         self.assertFalse(any(candidate_builder.is_page(name) for name in files))
 
+    def test_only_the_tile_modules_differ_from_the_installed_collector(self):
+        """The package never rolls back another install: every module but the tile's own equals the installed one."""
+        changed = {'collect', 'selection', 'ticker'}
+        live = installed()
+        for module in candidate_builder.MODULES:
+            name = 'korea_auction/%s.py' % module
+            mine = (HERE / name).read_bytes()
+            self.assertEqual(mine != live[name], module in changed, name)
+
     def test_other_installed_collector_is_refused(self):
         source = installed()
         source['korea_auction/job.py'] += b'# edited'

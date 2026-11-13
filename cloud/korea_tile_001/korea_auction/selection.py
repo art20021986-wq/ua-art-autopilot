@@ -45,11 +45,18 @@ def ticker_dates(lots, now=None):
     return sorted(d for d in dates if d > today) + ([today] if today in dates else [])
 
 
-def today_and_next(lots, now=None):
-    """TICKER-FIX4-001: today's date and the next auction date after today ('YYYY/MM/DD', None if not listed)."""
+NEXT_DAYS = 3  # owner 2026-11-13: the yellow tile lists the 3 nearest auction days after today
+
+
+def today_and_next_days(lots, now=None, days=NEXT_DAYS):
+    """Today's date and the nearest auction days after today with their listed car counts:
+    ('YYYY/MM/DD', [('YYYY/MM/DD', n), ...]) — at most `days`, fewer when the auction lists fewer."""
     today = (now or datetime.now(JST)).strftime('%Y/%m/%d')
-    later = sorted({auction_date(l) for l in lots if auction_date(l) > today})
-    return today, (later[0] if later else None)
+    counts = {}
+    for lot in lots:
+        if auction_date(lot) > today:
+            counts[auction_date(lot)] = counts.get(auction_date(lot), 0) + 1
+    return today, sorted(counts.items())[:days]
 
 
 def day_after(date):

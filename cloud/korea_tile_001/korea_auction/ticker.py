@@ -16,7 +16,7 @@ T = {
     'auction': ('Аукціон', 'Аукцион', 'აუქციონი'),
     'start': ('старт', 'старт', 'საწყისი'),
     'left': ('до торгів', 'до торгов', 'ვაჭრობამდე'),
-    # KOREA-TIME-001 (owner 2026-11-12): the auction start in Korea time and Kyiv time
+    # KOREA-TIME-001 (owner 2026-11-12): the auction start in Korea time and Kyiv time; the weekday (owner 2026-11-13)
     'when': ('Торги {d} · {k} Корея · {u} Київ', 'Торги {d} · {k} Корея · {u} Киев',
              'ვაჭრობა {d} · {k} კორეა · {u} კიევი'),
     'hot': ('Нижче звичайної ціни', 'Ниже обычной цены', 'ჩვეულებრივ ფასზე იაფი'),
@@ -30,7 +30,7 @@ T = {
     # KOREA-TILE-001 (owner 2026-11-13): the yellow tile always shows today's car count and the next auction date
     'lead_today': ('Сьогодні на торгах', 'Сегодня на торгах', 'დღეს ვაჭრობაზე'),
     'cars': ('авто', 'авто', 'ავტო'),
-    'lead_next': ('Наступний аукціон', 'Следующий аукцион', 'შემდეგი აუქციონი'),
+    'lead_day': ('Торги {d}', 'Торги {d}', 'ვაჭრობა {d}'),  # «Торги Вт, 17.11» (owner 2026-11-13)
     'access': ('доступ після договору', 'доступ после договора', 'წვდომა ხელშეკრულების შემდეგ'),
     # what the lot score means, on the yellow tile (owner 2026-11-11), per the auction house rules (Auto Hub):
     # first letter = accident grade A-F, second = exterior grade (panels to repair now) A, B, C, D, F (no E)
@@ -82,8 +82,10 @@ def fuel_key(value):
 
 
 def _t(key, **fmt):
-    """Span with the site's three-language attributes; Ukrainian is the default text."""
-    uk, ru, ka = (s.format(**fmt) for s in T[key])
+    """Span with the site's three-language attributes; Ukrainian is the default text.
+    A format value may be a (uk, ru, ka) tuple when it differs by language (a weekday)."""
+    uk, ru, ka = (s.format(**{k: v[i] if isinstance(v, tuple) else v for k, v in fmt.items()})
+                  for i, s in enumerate(T[key]))
     return '<span data-uk="%s" data-ru="%s" data-ka="%s">%s</span>' % (
         escape(uk), escape(ru), escape(ka), escape(uk))
 
@@ -110,9 +112,18 @@ def _zone(*names):
 
 KYIV = _zone('Europe/Kyiv', 'Europe/Kiev')  # older time zone data knows only the old name; summer time included
 
+# short weekday names Monday..Sunday, uk/ru/ka (as Intl/CLDR writes them; the Korea page shows the same «Пт, 13.11»)
+WEEKDAYS = (('Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'), ('Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'),
+            ('ორშ', 'სამ', 'ოთხ', 'ხუთ', 'პარ', 'შაბ', 'კვი'))
+
+
+def _day(at):
+    """datetime -> ('Ср, 18.11', 'Ср, 18.11', 'ოთხ, 18.11'): weekday and date per language."""
+    return tuple('%s, %s' % (names[at.weekday()], at.strftime('%d.%m')) for names in WEEKDAYS)
+
 
 def _when(start):
-    """'YYYY/MM/DD HH:MM' (Korea) -> «Торги 18.11 · 12:00 Корея · 05:00 Київ», or '' when it cannot be read."""
+    """'YYYY/MM/DD HH:MM' (Korea) -> «Торги Ср, 18.11 · 12:00 Корея · 05:00 Київ», or '' when it cannot be read."""
     try:
         at = datetime.strptime((start or '')[:16], '%Y/%m/%d %H:%M').replace(tzinfo=KST)
     except ValueError:
@@ -120,8 +131,9 @@ def _when(start):
     if KYIV is None:
         return ''
     kyiv = at.astimezone(KYIV)
-    local = kyiv.strftime('%H:%M') + ('' if kyiv.date() == at.date() else kyiv.strftime(' (%d.%m)'))
-    return '<span class="kt-when">%s</span>' % _t('when', d=at.strftime('%d.%m'), k=at.strftime('%H:%M'), u=local)
+    time = kyiv.strftime('%H:%M')
+    local = tuple(time if kyiv.date() == at.date() else '%s (%s)' % (time, day) for day in _day(kyiv))
+    return '<span class="kt-when">%s</span>' % _t('when', d=_day(at), k=at.strftime('%H:%M'), u=local)
 
 
 def _item(it, tomorrow):
@@ -175,17 +187,17 @@ def _mix(lots, own, every=2):
 
 
 def _tile(data):
-    """KOREA-TILE-001: the yellow tile's lines [(label, value, unit)]: today's car count, always (0 when none), and the
-    next auction date after today (Korea time) once the auction lists it."""
+    """KOREA-TILE-001: the yellow tile's lines [(label, value, unit)]: today's car count, always (0 when none), then
+    each of the nearest auction days after today (Korea time) with its weekday and listed car count."""
     out = [(_t('lead_today'), _num(data.get('lots_today') or 0), _t('cars'))]
-    d = data.get('next_date')
-    if d:
-        out.append((_t('lead_next'), '%s.%s' % (d[8:10], d[5:7]), ''))
+    for day in data.get('next_days') or []:
+        at = datetime.strptime(day['date'], '%Y/%m/%d')
+        out.append((_t('lead_day', d=_day(at)), _num(day['lots']), _t('cars')))
     return out
 
 
 def _lines(tile):
-    """The tile lines as text, for the closing card: «Сьогодні на торгах 56 авто · Наступний аукціон 17.11»."""
+    """The tile lines as text, for the closing card: «Сьогодні на торгах 56 авто · Торги Вт, 17.11 3 авто»."""
     return ' · '.join(' '.join(p for p in line if p) for line in tile)
 
 
