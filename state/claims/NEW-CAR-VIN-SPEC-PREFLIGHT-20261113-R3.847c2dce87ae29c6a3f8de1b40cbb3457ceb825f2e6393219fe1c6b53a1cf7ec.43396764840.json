@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "d0c510cfca560bb5"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-13T09:30:00+00:00",
+      "class": "PACKAGE_TASK_IDENTITY",
+      "evidence_path": "state/reconciliations/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113-R3.43396764840.authenticated-evidence.json",
+      "message": "Controller refused the task name at start (TASK_IDENTITY: the -R3 suffix was not in release_constants); the server was not contacted; nothing written. Retried as R4.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-13T08:59:31Z",
@@ -42,6 +51,6 @@
   "source_commit": "53cfba633da33e522b637c930053093620bdf713",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "task_execution_status": "FAILED",
   "updated_at": "2026-11-13T09:00:53Z"
 }
