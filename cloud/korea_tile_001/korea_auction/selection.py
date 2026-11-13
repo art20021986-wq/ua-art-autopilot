@@ -59,6 +59,16 @@ def today_and_next_days(lots, now=None, days=NEXT_DAYS):
     return today, sorted(counts.items())[:days]
 
 
+def houses(lots, date):
+    """The auction houses holding lots on a date ('YYYY/MM/DD') with each one's start (its earliest lot,
+    'YYYY/MM/DD HH:MM' Korea time), earliest first (owner 2026-11-13: names and start time on the tile)."""
+    start = {}
+    for lot in lots:
+        if auction_date(lot) == date and lot.get('house'):
+            start[lot['house']] = min(start.get(lot['house'], lot['auction_start']), lot['auction_start'])
+    return sorted(start.items(), key=lambda house: (house[1], house[0]))
+
+
 def day_after(date):
     return (datetime.strptime(date, '%Y/%m/%d') + timedelta(days=1)).strftime('%Y/%m/%d')
 
