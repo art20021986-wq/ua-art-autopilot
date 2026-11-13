@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "ecdb24a5bbd81d223fa2872e2e61cb9954826f0b6f157819347b99c9850d5a61",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T06:08:24Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T06:11:40Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43376261674",
     "task_id": "KOREA-TIME-INSTALL-20261113-R3",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43376261674-ecadaa1495b4e205",
   "production_transaction_path": "state/transactions/KOREA-TIME-INSTALL-20261113-R3.ecadaa1495b4e205fe323a74b77b7098cea17ec3ac34c81d8eba74d88b9b116b.43376261674.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-TIME-INSTALL-20261113-R3.json",
   "receipt_validation_status": "PENDING",
@@ -114,5 +114,5 @@
       "cloud/korea_time_001/week_days.py": "1259b147a1ba06e6a58f2078c0f7d51ab7af88828ae0920823132cde3736a6c9"
     }
   },
-  "updated_at": "2026-11-13T06:08:24Z"
+  "updated_at": "2026-11-13T06:11:40Z"
 }
