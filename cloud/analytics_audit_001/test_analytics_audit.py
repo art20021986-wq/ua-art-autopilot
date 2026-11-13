@@ -120,6 +120,19 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(value['hits']['ua_google_tag.py'], [{'line': 2, 'text': 'x = 1  # /ua/a.js'}])
         self.assertFalse(value['analitika_stop']['exists'])
 
+    def test_direct_log_by_app_and_click_id_keeps_no_ip(self):
+        ig = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile/15E148 Instagram 300.0'
+        log = '\n'.join([
+            '1.1.1.1 - - [12/Nov/2026:10:00:00 +0000] "GET /video/index.html?fbclid=x HTTP/1.1" 200 5 "-" "%s"' % ig,
+            '1.1.1.1 - - [12/Nov/2026:10:01:00 +0000] "GET /video/katalog.html HTTP/1.1" 200 5 "-" "%s"' % ig,
+            '3.3.3.3 - - [12/Nov/2026:11:00:00 +0000] "GET / HTTP/1.1" 200 5 "https://www.google.com/" "%s"' % PHONE,
+            '4.4.4.4 - - [12/Nov/2026:11:00:00 +0000] "GET / HTTP/1.1" 200 5 "-" "Googlebot/2.1"'])
+        value = remote.direct_log([log])
+        self.assertEqual((value['human_first_requests'], value['no_referrer'], value['robot_requests_no_referrer']),
+                         (2, 1, 1))
+        self.assertEqual((value['by_app'], value['by_click_id']), ({'instagram': 1}, {'fbclid': 1}))
+        self.assertNotIn('1.1.1.1', json.dumps(value))
+
     def test_live_only_public_get(self):
         seen = []
 
