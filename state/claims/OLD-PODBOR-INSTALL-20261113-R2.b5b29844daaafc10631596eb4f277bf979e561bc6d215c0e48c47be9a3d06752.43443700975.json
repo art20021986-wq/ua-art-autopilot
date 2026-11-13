@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "188917929b7c724b570fe28cda046b929949e222e39d237c58d950157ad3299a",
   "autostart_source_commit": "0d8498d32a0578f126d48471759ecdb55be4d0c9",
   "created_at": "2026-11-13T14:34:17Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "bc4296474db2f2e4450c008168998aa4200e0fbe5f0dc025ef5d8c4d3d730bc5",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T14:34:17Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-13T14:35:41Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "43443700975",
     "task_id": "OLD-PODBOR-INSTALL-20261113-R2",
     "task_sha256": "b5b29844daaafc10631596eb4f277bf979e561bc6d215c0e48c47be9a3d06752"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 53.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 97.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-43443700975-b5b29844daaafc10",
+  "production_transaction_path": "state/transactions/OLD-PODBOR-INSTALL-20261113-R2.b5b29844daaafc10631596eb4f277bf979e561bc6d215c0e48c47be9a3d06752.43443700975.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-6a0922611ce8b5b6-766ebab9bb8d3ec6",
   "receipt_path": "state/receipts/OLD-PODBOR-INSTALL-20261113-R2.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "11a5c2e951f88384b3cde63271aea5fc8ac5e29d",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 347.867,
+    "allowed": true,
+    "evidence_path": "state/storage/OLD-PODBOR-INSTALL-20261113-R2.json",
+    "evidence_sha256": "7282166120f9f023d72ef88bc0e65b5615a8985e266b8391072d06e62dc106fd",
+    "free_bytes": 17860345344,
+    "heavy": true,
+    "measured_at": "2026-11-13T14:29:50.947057+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 48.97044187428571
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-13T14:34:17Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "e3799db3cf058e218f78403e21282b025aee571e58dc922d1f6bc47ebb056189",
+    "file_sha256": {
+      "cloud/old_podbor_remove_001/candidate_builder.py": "1aa87cfb6b728ddf4f848b451b7ea3b1e4dc1c149b492280f395c8aca7230c9a",
+      "cloud/old_podbor_remove_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/old_podbor_remove_001/deployment_bootstrap.py": "2b6b7f11660948308fb9e9e1220512cf316c51eafd273736d6e8cf2148376162",
+      "cloud/old_podbor_remove_001/deployment_remote.py": "bdec6c4c549171ad346b272f35c555bf9d5453d5cccbafbe0a80743eb319e7a5",
+      "cloud/old_podbor_remove_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/old_podbor_remove_001/deployment_transport.py": "bb3b625a236135597f9489bc335a30c9e618da5e6165771a77d0a01e4318c7df",
+      "cloud/old_podbor_remove_001/make_release.py": "536ae1dd768269f5d97ae0676b117c9fee659c0f959437d86eb21426bf8874d5",
+      "cloud/old_podbor_remove_001/release_constants.py": "ec16260a88475a34b7503dbf1e8d02082e0879a5215e3ebbe0f314c04827c8a8",
+      "cloud/old_podbor_remove_001/test_deployment.py": "8e899c4db59da5dddca92924f90c11e1d9dfb0380bc9d81c900abab488de41a3",
+      "cloud/old_podbor_remove_001/test_release.py": "e3e66707bfd65d766f6854fd60ad4903dfbb5e7be8052f87e14c6e17f1493e5a"
+    }
+  },
+  "updated_at": "2026-11-13T14:35:41Z"
 }
