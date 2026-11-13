@@ -263,10 +263,12 @@ class JobTest(unittest.TestCase):
             data = collect.collect('a', 'b', now=datetime(2026, 11, 12, 17, 20, tzinfo=selection.JST), session=Browser())
         self.assertEqual(data['auction_date'], '2026/11/13')
         self.assertEqual([(i['id'], i['tomorrow']) for i in data['items']], [('4', False), ('5', False)])
-        self.assertEqual((data['lots_today'], data['houses_today']), (1, ['Auto Hub Auction']))
+        hub = {'name': 'Auto Hub Auction', 'start': '2026/11/13 13:00'}
+        self.assertEqual((data['lots_today'], data['houses_today']),
+                         (1, [{'name': 'Auto Hub Auction', 'start': '2026/11/12 13:00'}]))
         self.assertEqual(data['next_days'], [
-            {'date': '2026/11/13', 'lots': 3, 'houses': ['Auto Hub Auction', 'K-Car O-San']},
-            {'date': '2026/11/18', 'lots': 1, 'houses': ['Auto Hub Auction']}])
+            {'date': '2026/11/13', 'lots': 3, 'houses': [hub, {'name': 'K-Car O-San', 'start': '2026/11/13 13:00'}]},
+            {'date': '2026/11/18', 'lots': 1, 'houses': [{'name': 'Auto Hub Auction', 'start': '2026/11/18 13:00'}]}])
 
     def test_waiting_tile_shows_day_counts(self):
         """TICKER-FIX6-001: no lot cars yet — the tile still shows today's and the next day's counts."""
@@ -449,26 +451,39 @@ class Fix4Test(unittest.TestCase):
                 'photo': '/video/korea/img/1.jpg', 'auction_start_jst': '2026/11/13 10:00', 'hot': False}
         return dict({'lots_on_date': 500, 'own': [], 'items': [item]}, **kw)
 
-    DAYS = [{'date': '2026/11/17', 'lots': 766, 'houses': ['K-Car O-San', 'K-Car Se-Jong', 'SK Rent Car Auction']},
-            {'date': '2026/11/18', 'lots': 585, 'houses': ['Auto Hub Auction']}, {'date': '2026/11/19', 'lots': 12}]
+    DAYS = [{'date': '2026/11/17', 'lots': 766, 'houses': [{'name': 'K-Car O-San', 'start': '2026/11/17 13:00'},
+                                                          {'name': 'SK Rent Car Auction', 'start': '2026/11/17 13:00'}]},
+            {'date': '2026/11/18', 'lots': 585, 'houses': [{'name': 'Auto Hub Auction', 'start': '2026/11/18 06:00'}]},
+            {'date': '2026/11/19', 'lots': 12}]
+    KYIV_TAG = '<span data-uk="старт %s Київ" data-ru="старт %s Киев" data-ka="დაწყება %s კიევი">старт %s Київ</span>'
 
-    def test_tile_names_the_auction_houses(self):
-        """Owner 2026-11-13: «название аукционов допиши» — under each tile line, that day's auction houses."""
-        html = ticker.render(self._data(lots_today=56, houses_today=['AutoPlus'], next_days=self.DAYS))
+    def test_tile_names_the_auction_houses_and_kyiv_start(self):
+        """Owner 2026-11-13: «название аукционов допиши», «старт время по Украине добавь» — under each tile line, that
+        day's auction houses, each with its start in Kyiv time."""
+        html = ticker.render(self._data(lots_today=56, houses_today=[{'name': 'AutoPlus', 'start': '2026/11/13 12:00'}],
+                                        next_days=self.DAYS))
         lead = html[html.index('class="kt-lead"'):html.index('class="kt-legend"')]
-        self.assertIn('<b>56</b> <span', lead)
-        self.assertIn('<span class="kt-houses"><span>AutoPlus</span></span>', lead)
-        self.assertIn('<span class="kt-houses"><span>K-Car O-San</span><span>K-Car Se-Jong</span>'
-                      '<span>SK Rent Car Auction</span></span>', lead)
-        self.assertIn('<span class="kt-houses"><span>Auto Hub Auction</span></span>', lead)
+        self.assertIn('<span class="kt-houses"><span>AutoPlus · %s</span></span>' % (self.KYIV_TAG % (('05:00',) * 4)),
+                      lead)
+        self.assertIn('<span>K-Car O-San · %s</span><span>SK Rent Car Auction · ' % (self.KYIV_TAG % (('06:00',) * 4)),
+                      lead)
+        # 06:00 in Korea is the day before in Kyiv: the Kyiv day is named
+        self.assertIn('data-uk="старт 23:00 (Вт, 17.11) Київ"', lead)
+        self.assertIn('data-ru="старт 23:00 (Вт, 17.11) Киев"', lead)
         self.assertEqual(lead.count('kt-houses'), 3)  # 19.11 lists no house: no empty line
         self.assertNotIn('AutoPlus', html[html.index('class="kt-end"'):])  # closing card: counts only
 
+    def test_house_without_a_readable_start_shows_the_name_only(self):
+        html = ticker.render(self._data(lots_today=1, houses_today=[{'name': 'AutoPlus', 'start': ''}]))
+        self.assertIn('<span class="kt-houses"><span>AutoPlus</span></span>', html)
+
     def test_houses_of_a_day(self):
-        lots_ = [{'auction_start': '2026/11/17 10:00', 'house': h} for h in ('SK Rent Car Auction', 'K-Car O-San',
-                                                                          'K-Car O-San')]
-        lots_.append({'auction_start': '2026/11/18 10:00', 'house': 'Auto Hub Auction'})
-        self.assertEqual(selection.houses(lots_, '2026/11/17'), ['K-Car O-San', 'SK Rent Car Auction'])
+        lots_ = [{'auction_start': d, 'house': h} for d, h in (('2026/11/17 13:00', 'SK Rent Car Auction'),
+                                                              ('2026/11/17 10:30', 'K-Car O-San'),
+                                                              ('2026/11/17 10:00', 'K-Car O-San'),
+                                                              ('2026/11/18 10:00', 'Auto Hub Auction'))]
+        self.assertEqual(selection.houses(lots_, '2026/11/17'),
+                         [('K-Car O-San', '2026/11/17 10:00'), ('SK Rent Car Auction', '2026/11/17 13:00')])
         self.assertEqual(selection.houses(lots_, '2026/11/19'), [])
 
     def test_tile_today_count_and_next_auction_days(self):

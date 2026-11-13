@@ -60,8 +60,13 @@ def today_and_next_days(lots, now=None, days=NEXT_DAYS):
 
 
 def houses(lots, date):
-    """The auction houses holding lots on a date ('YYYY/MM/DD'), by name (owner 2026-11-13: names on the tile)."""
-    return sorted({lot['house'] for lot in lots if auction_date(lot) == date and lot.get('house')})
+    """The auction houses holding lots on a date ('YYYY/MM/DD') with each one's start (its earliest lot,
+    'YYYY/MM/DD HH:MM' Korea time), earliest first (owner 2026-11-13: names and start time on the tile)."""
+    start = {}
+    for lot in lots:
+        if auction_date(lot) == date and lot.get('house'):
+            start[lot['house']] = min(start.get(lot['house'], lot['auction_start']), lot['auction_start'])
+    return sorted(start.items(), key=lambda house: (house[1], house[0]))
 
 
 def day_after(date):

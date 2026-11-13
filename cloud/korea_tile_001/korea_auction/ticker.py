@@ -31,6 +31,8 @@ T = {
     'lead_today': ('Сьогодні на торгах', 'Сегодня на торгах', 'დღეს ვაჭრობაზე'),
     'cars': ('авто', 'авто', 'ავტო'),
     'lead_day': ('Торги {d}', 'Торги {d}', 'ვაჭრობა {d}'),  # «Торги Вт, 17.11» (owner 2026-11-13)
+    # an auction house's start in Kyiv time, on its tile tag (owner 2026-11-13: «старт время по Украине»)
+    'house_start': ('старт {u} Київ', 'старт {u} Киев', 'დაწყება {u} კიევი'),
     'access': ('доступ після договору', 'доступ после договора', 'წვდომა ხელშეკრულების შემდეგ'),
     # what the lot score means, on the yellow tile (owner 2026-11-11), per the auction house rules (Auto Hub):
     # first letter = accident grade A-F, second = exterior grade (panels to repair now) A, B, C, D, F (no E)
@@ -124,16 +126,32 @@ def _day(at):
 
 def _when(start):
     """'YYYY/MM/DD HH:MM' (Korea) -> «Торги Ср, 18.11 · 12:00 Корея · 05:00 Київ», or '' when it cannot be read."""
+    at = _korea(start)
+    if at is None or KYIV is None:
+        return ''
+    return '<span class="kt-when">%s</span>' % _t('when', d=_day(at), k=at.strftime('%H:%M'), u=_kyiv(at))
+
+
+def _korea(start):
+    """'YYYY/MM/DD HH:MM' (Korea) -> aware datetime, or None when it cannot be read."""
     try:
-        at = datetime.strptime((start or '')[:16], '%Y/%m/%d %H:%M').replace(tzinfo=KST)
+        return datetime.strptime((start or '')[:16], '%Y/%m/%d %H:%M').replace(tzinfo=KST)
     except ValueError:
-        return ''
-    if KYIV is None:
-        return ''
+        return None
+
+
+def _kyiv(at):
+    """Korea datetime -> its Kyiv time per language: '05:00', or '23:00 (Вт, 17.11)' when the Kyiv day differs."""
     kyiv = at.astimezone(KYIV)
     time = kyiv.strftime('%H:%M')
-    local = tuple(time if kyiv.date() == at.date() else '%s (%s)' % (time, day) for day in _day(kyiv))
-    return '<span class="kt-when">%s</span>' % _t('when', d=_day(at), k=at.strftime('%H:%M'), u=local)
+    return tuple(time if kyiv.date() == at.date() else '%s (%s)' % (time, day) for day in _day(kyiv))
+
+
+def _house(house):
+    """A tile tag: the auction house name and, when known, its start in Kyiv time («AutoPlus · старт 05:00 Київ»)."""
+    at = _korea(house.get('start'))
+    start = ' · ' + _t('house_start', u=_kyiv(at)) if at and KYIV else ''
+    return '<span>%s%s</span>' % (escape(house['name']), start)
 
 
 def _item(it, tomorrow):
@@ -199,7 +217,7 @@ def _tile(data):
 
 def _row(label, value, unit, names):
     """One tile line: the day on the left, the car count on the right, the day's auction houses as tags below."""
-    houses = ''.join('<span>%s</span>' % escape(n) for n in names)
+    houses = ''.join(_house(h) for h in names)
     return ('<span class="kt-count"><span class="kt-day">%s</span><span class="kt-num"><b>%s</b>%s</span>%s</span>'
             % (label, value, ' ' + unit if unit else '', '<span class="kt-houses">%s</span>' % houses if houses else ''))
 
@@ -268,7 +286,7 @@ CSS = (
     '.kt-num{white-space:nowrap;font-size:15px}.kt-num b{margin-right:4px;font-size:26px;'
     'font-variant-numeric:tabular-nums}'
     '.kt-houses{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}'
-    '.kt-houses span{padding:3px 10px;border-radius:999px;background:rgba(11,21,36,.12);font-size:12.5px;'
+    '.kt-houses>span{padding:3px 10px;border-radius:999px;background:rgba(11,21,36,.12);font-size:12.5px;'
     'font-weight:600;white-space:nowrap}'
     '.kt-legend{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:12.5px;line-height:1.25}'
     '.kt-legend b{display:block;margin-bottom:4px;font-size:13px}'
