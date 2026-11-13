@@ -37,6 +37,10 @@ RIA_TEXT = 'Дивіться всі авто та відгуки від UA ART C
 RIA_OLD = 'Усі відгуки та продані авто'
 
 
+# AUTO.RIA's official logo file (their .com version) in place of the old one.
+LOGO_MARK = 'aria-label="AUTO.RIA"><image'
+
+
 EXPECTED = {'/video/index.html': lambda body: (blocks(body, caption=False) and LINK in body and RIA_TEXT in body
                                               and RIA_OLD not in body),
             '/video/korea.html': blocks,
@@ -45,7 +49,8 @@ EXPECTED = {'/video/index.html': lambda body: (blocks(body, caption=False) and L
             '/video/podbor.html': blocks,
             '/video/info.html': blocks,
             '/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html': lambda body: blocks(body) and ADDED in body,
-            '/video/seo/gu/kia-k5-koreidan-sakartveloshi.html': lambda body: ROW in body and ADDED in body}
+            '/video/seo/gu/kia-k5-koreidan-sakartveloshi.html': lambda body: ROW in body and ADDED in body,
+            '/video/brand/autoria-logo.svg': lambda body: LOGO_MARK in body}
 
 
 def context():
