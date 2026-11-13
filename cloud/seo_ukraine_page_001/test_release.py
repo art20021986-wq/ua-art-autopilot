@@ -86,6 +86,7 @@ class ReleaseTests(unittest.TestCase):
                         questions = [q['name'] for q in node['mainEntity']]
             self.assertEqual(questions, [q for q, _ in t['faq']])
             self.assertNotIn('Запор', html)
+            self.assertIsNone(re.search(r'[Пп]ідб|[Пп]одб', repr(t)))  # owner: support, not «подбор» (SERVICE-WORDS)
             self.assertIn('500 $', html)
             self.assertNotIn('без передоплати' if lang == 'uk' else 'без предоплаты', html)
             self.assertIn('1 000 $', html)
