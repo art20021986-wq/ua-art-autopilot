@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "ef93a89a3a8fb6f603655f4208c9859e9264ae21936487a3f3c76e5bc57e1dec",
   "autostart_source_commit": "7a872a94df70a6c0cb610f26b93ea77509cdf62f",
   "created_at": "2026-11-13T03:32:42Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "18ce6d3c2424eb0888c69996e620dd7679bcda208f09138e65b130989d527982",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T03:32:42Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-13T03:34:07Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "43359493802",
     "task_id": "SERVICE-WORDS-INSTALL-20261112",
     "task_sha256": "9afb90b0c0f0ed12baee9a7154664ddc3071db62953427e6f58fd5833e064dd0"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 63.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 60.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-43359493802-9afb90b0c0f0ed12",
+  "production_transaction_path": "state/transactions/SERVICE-WORDS-INSTALL-20261112.9afb90b0c0f0ed12baee9a7154664ddc3071db62953427e6f58fd5833e064dd0.43359493802.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "card-ua-0005-d6f6b46c7fcb09a3",
   "receipt_path": "state/receipts/SERVICE-WORDS-INSTALL-20261112.json",
   "receipt_validation_status": "PENDING",
@@ -33,8 +58,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "d8feec57f117058ce8c084fa598aa7ea53d88866",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 349.392,
+    "allowed": true,
+    "evidence_path": "state/storage/SERVICE-WORDS-INSTALL-20261112.json",
+    "evidence_sha256": "9ff268b0b8cdea685da96c0fa376494fe45731ee1bf59abe6471d9585cb21033",
+    "free_bytes": 21805710848,
+    "heavy": true,
+    "measured_at": "2026-11-13T03:28:15.399423+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 37.697969005714285
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-13T03:32:42Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "c0c6a55c4ad95510843ded3973664b0e1f42294a31c5702826a76f083ba43e93",
+    "file_sha256": {
+      "cloud/service_words_001/candidate_builder.py": "2bd23e7037384bff0285dc1ba5e410cda96551445da524004ae636e51bf9b724",
+      "cloud/service_words_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/service_words_001/deployment_bootstrap.py": "d7b13937dd78262b789a03b18f8a2f62e4844ca1fe1dc2f34d157ef24f7d52d3",
+      "cloud/service_words_001/deployment_remote.py": "7c9ada10e7eb1a2b769f9ed2671a00672737f3957cd3b71074e19debc3bd6c86",
+      "cloud/service_words_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/service_words_001/deployment_transport.py": "d779eeaa229d618290e5534b26e0eed84bd6142d2a8c48b7af61a1f8d972000b",
+      "cloud/service_words_001/make_release.py": "85c240d13f8af067943560405dc0e1af41e19336f4da63e871561b1cbeead504",
+      "cloud/service_words_001/release_constants.py": "ee543a7d482313803911e1fdcd15963c333841953a1f4ea5bc48b50d35af6b2e",
+      "cloud/service_words_001/test_deployment.py": "e0912f1fff187cc0a3f84a5b3b5f08a51fa1f7d98ccc54f545ec8e4e3020ad2f",
+      "cloud/service_words_001/test_release.py": "4380d7e4c1c1c6b3d48580d569b86b061b3766c8488a944464519729f5fcb03d",
+      "cloud/service_words_001/ua_service_words.py": "3b05aba4bfc3ecf36d8cbcec364a4c972eb8e7df63a20e2c2de35a070bbdc900"
+    }
+  },
+  "updated_at": "2026-11-13T03:34:07Z"
 }
