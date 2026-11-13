@@ -1,0 +1,15 @@
+{
+  "claim_before_sha256": "a6085d337e47bff217ed80b6b46110377f9ef23a43ec58aba535abff6f684782",
+  "error": "RuntimeError: REMOTE_PREVIEW:DeploymentError:SMOKE_RESULT (the package's own smoke check found live pages that kept the word «подбор»; preview mode reads only)",
+  "failed_step": "execute / standard / execute: Execute STANDARD controller (remote preview, read-only)",
+  "owner_approval": "«Да» in chat 2026-11-13 to closing this claim by manual reconciliation",
+  "precedent": "state/reconciliations/TICKER-FIX5-PREFLIGHT-20261112.43176989243.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-13T00:00:00+00:00",
+  "remote_mode": "preview (reads only)",
+  "retry": "SERVICE-WORDS-PREFLIGHT-20261112-R2 (run 43271946665 refused RESOURCE_BUSY by this claim; no R2 claim was created)",
+  "run_id": "43219463706",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "SERVICE-WORDS-PREFLIGHT-20261112"
+}
