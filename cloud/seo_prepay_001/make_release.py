@@ -23,7 +23,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'edit_landings.py', 'make_release.py', 'release_constants.py')]
+                                'edit_landings.py', 'edit_models.py', 'make_release.py', 'release_constants.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'lead_bot.py',
@@ -73,7 +73,7 @@ def preview():
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Preview of SEO-PREPAY-001 (auction order: service 600 $ + prepayment 1 000 $): reads the live '
-                            'ua_seo_landings.py, builds the candidate and renders every landing '
+                            'ua_seo_landings.py and ua_seo_order_models.py, builds the candidate and renders every landing '
                             'page in memory with the live catalogue; measures storage. No application source, CRM, HTML, media '
                             'or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
@@ -133,8 +133,8 @@ def install():
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner-approved terms (auction order: «service 600 $ + prepayment 1 000 $», 500 $ only for catalogue '
                               'cars; owner 2026-11-12/13, coordinator check 13.11): on the landing pages the second «how we '
-                              'work» step and the «how to order a car from Korea» answer (text and FAQPage), uk and ru, in '
-                              'ua_seo_landings; landing pages refreshed. Cards, catalogue and CRM unchanged. Existing backup, '
+                              'work» step and the «how to order a car from Korea / Japan» answer (text and FAQPage), uk and ru, in '
+                              'ua_seo_landings and ua_seo_order_models; landing pages refreshed. Cards, catalogue and CRM unchanged. Existing backup, '
                               'bot pause, writer locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/katalog.html'],

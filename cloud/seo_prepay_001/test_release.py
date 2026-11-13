@@ -26,6 +26,7 @@ sys.path.insert(1, str(FINANCE))
 sys.path.insert(2, str(MODULES))
 import candidate_builder  # noqa: E402
 import edit_landings  # noqa: E402
+import edit_models  # noqa: E402
 
 NEW = {'uk': 'послуга — 600 $, передоплата — 1 000 $ (зараховується у вартість авто)',
        'ru': 'услуга — 600 $, предоплата — 1 000 $ (засчитывается в стоимость авто)'}
@@ -44,12 +45,12 @@ def live_sources():
     text = (FIXTURES / 'ua_seo_landings.txt').read_bytes()
     for package in (FINANCE, HEADER, HUB, UKRAINE):
         text = _module(package / 'edit_landings.py', package.name + '_edit').build(text)
-    return {edit_landings.NAME: text}
+    models = _module(UKRAINE / 'edit_models.py', 'ukraine_models').build((FIXTURES / 'ua_seo_order_models.txt').read_bytes())
+    return {edit_landings.NAME: text, edit_models.NAME: models}
 
 
 def installed_modules():
-    models = _module(UKRAINE / 'edit_models.py', 'ukraine_models').build((FIXTURES / 'ua_seo_order_models.txt').read_bytes())
-    return {'ua_seo_order_models.py': models, 'ua_seo_hub_texts.py': (UKRAINE / 'ua_seo_hub_texts.py').read_bytes(),
+    return {'ua_seo_hub_texts.py': (UKRAINE / 'ua_seo_hub_texts.py').read_bytes(),
             'ua_seo_ukraine_page.py': (UKRAINE / 'ua_seo_ukraine_page.py').read_bytes()}
 
 
@@ -89,11 +90,15 @@ class ReleaseTests(unittest.TestCase):
                         answers = {q['name']: q['acceptedAnswer']['text'] for q in node['mainEntity']}
             self.assertIn(NEW[lang], answers[ORDER_Q[lang]])
 
+    def test_japan_step_and_answer(self):
+        for lang in ('uk', 'ru'):
+            self.assertEqual(self.pages[self.L.path(lang, 'japan')].count(NEW[lang]), 3, lang)
+
     def test_500_only_for_catalogue_cars(self):
         contract_500 = re.compile(r'(договір|договор)[^<]{0,40}(депозит|передоплата|предоплата) 500')
-        for name, html in self.pages.items():  # Japan's own order terms are not part of this task
-            if any(v in html for v in NEW.values()):
-                self.assertIsNone(contract_500.search(html.split('<body', 1)[-1]), name)  # head: catalogue description
+        for name, html in self.pages.items():
+            self.assertIsNone(contract_500.search(html.split('<body', 1)[-1]), name)  # head: catalogue description
+            self.assertNotIn('депозит', html.split('<body', 1)[-1], name)
         for lang in ('uk', 'ru'):
             self.assertIn('в каталозі від' if lang == 'uk' else 'в каталоге от', self.pages[self.L.path(lang)])
             self.assertIn('500 $', self.pages[self.L.path(lang)])  # the hub description (catalogue cars) keeps it
@@ -108,6 +113,8 @@ class ReleaseTests(unittest.TestCase):
         once = candidate_builder.build(self.live, {})
         with self.assertRaisesRegex(ValueError, 'LANDINGS_FRAGMENT_NOT_UNIQUE'):
             edit_landings.build(once[edit_landings.NAME])
+        with self.assertRaisesRegex(ValueError, 'MODELS_FRAGMENT_NOT_UNIQUE'):
+            edit_models.build(once[edit_models.NAME])
 
 
 if __name__ == '__main__':
