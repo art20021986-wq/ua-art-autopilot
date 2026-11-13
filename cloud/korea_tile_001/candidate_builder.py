@@ -1,22 +1,14 @@
 """Build the KOREA-TILE-001 candidate (owner 2026-11-13): the yellow tile of the home ticker shows today's car count
 (always, 0 too) and the 3 nearest auction days with weekday and car count.
 
-1. The collector as KOREA-TIME-INSTALL installed it, with collect.py, selection.py and ticker.py updated (the hourly job
-   rebuilds the ticker). The collector modules come from korea_auction/ in this package (zipped flat as
-   kauc_<module>.py by the transport).
-2. Joined in one install (owner 2026-11-13, «4. Да»; the coordinator: the same files, one install): KOREA-ENGINE-001 —
-   new fuel.py, prices.py and public.py (lots.json carries the fuel type), collect.py model name fixes, and two edits of
-   video/korea.html, each its own module: engine_page (lot card «Двигун 2 996 см³ · бензин»), then model_groups (the
-   «Model» list grouped by make).
+The collector as KOREA-TIME-INSTALL installed it, with ticker.py and collect.py updated (the hourly job rebuilds the
+ticker). The collector modules come from korea_auction/ in this package (zipped flat as kauc_<module>.py by the
+transport). No page changes.
 """
 from pathlib import Path
 
-import engine_page
-import model_groups
-
 HERE = Path(__file__).resolve().parent
-MODULES = ('catalog', 'collect', 'fuel', 'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public', 'selection',
-           'session', 'ticker')
+MODULES = ('catalog', 'collect', 'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public', 'selection', 'session', 'ticker')
 # The collector exactly as KOREA-TIME-INSTALL installs it (cloud/korea_time_001/korea_auction).
 INSTALLED_SHA256 = {
     'korea_auction/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
@@ -33,8 +25,7 @@ INSTALLED_SHA256 = {
     'korea_auction/session.py': 'a39f03ec675ad2f8817efbcd76ef81e3d11bfd647ed4992ec65a1b2db79c18f9',
     'korea_auction/ticker.py': 'a061f48f5ed203600d7c2b9fe87a40f675f9d3da52857c5780c1c65acecb2cc1',
 }
-KOREA = 'video/korea.html'
-SOURCE_FILES = tuple(sorted(INSTALLED_SHA256)) + (KOREA,)
+SOURCE_FILES = tuple(sorted(INSTALLED_SHA256))
 DEPENDENCY_SHA256 = {}
 
 
@@ -44,9 +35,8 @@ def build(source, dependencies, here=HERE, sha=None):
     files = {'korea_auction/__init__.py': b''}
     for name in MODULES:
         files['korea_auction/%s.py' % name] = (here / ('kauc_%s.py' % name)).read_bytes()
-    files[KOREA] = model_groups.build(engine_page.build(source[KOREA]))
     return files
 
 
 def is_page(name):
-    return False  # the Korea page is this site's own; no other writer rewrites it (KOREA-HOW-SYNC-001)
+    return False  # collector modules only, no pages

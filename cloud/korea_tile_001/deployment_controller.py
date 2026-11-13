@@ -9,9 +9,9 @@ from deployment_transport import API, HERE, canonical, sha, upload_package
 
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
-# After the install the Korea page carries KOREA-ENGINE-001 (engine type in the lot card, models grouped by make) and
-# keeps KOREA-TIME's Kyiv time; the other pages stay healthy. The ticker tiles get the new view at the job's next run.
-EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': 'function engine(l){',
+# Pages are not changed: they stay as KOREA-TIME-INSTALL left them (Kyiv time script, order.js version) and healthy.
+# The ticker tile gets today's count and the 3 nearest auction days at the job's next run (minutes).
+EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': 'function kyiv(',
             '/video/katalog.html': '', '/video/podbor.html': 'order/order.js?v=20261112.71'}
 SITE = 'https://www.uaart.com.ua'
 AGENT = 'UAART-KoreaTicker-Verify/1'

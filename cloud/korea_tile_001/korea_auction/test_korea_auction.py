@@ -5,7 +5,7 @@ from datetime import datetime
 
 import tempfile
 
-from korea_auction import catalog, fuel, job, lots, model_lots, nbu, prices, public, selection, ticker
+from korea_auction import catalog, job, lots, model_lots, nbu, prices, public, selection, ticker
 
 FIX = pathlib.Path(__file__).with_name('fixtures')
 
@@ -155,7 +155,7 @@ class TickerTest(unittest.TestCase):
     def test_fuel_type_in_the_card(self):
         html = ticker.render({'lots_on_date': 5, 'items': [dict(self.ITEM, fuel='Gasoline+Electric')]})
         self.assertIn('data-uk="гібрид" data-ru="гибрид" data-ka="ჰიბრიდი"', html)
-        self.assertEqual([fuel.key(v) for v in ('Gasoline', 'Diesel', 'LPG', 'Electric', 'Gasoline+Electric', '')],
+        self.assertEqual([ticker.fuel_key(v) for v in ('Gasoline', 'Diesel', 'LPG', 'Electric', 'Gasoline+Electric', '')],
                          ['gasoline', 'diesel', 'lpg', 'electric', 'hybrid', None])
         self.assertNotIn(' ·  · ', ticker.render({'lots_on_date': 5, 'items': [dict(self.ITEM, fuel='')]}))
 
@@ -310,35 +310,6 @@ class UpcomingTest(unittest.TestCase):
         self.assertEqual(selection.upcoming(lots_, now), lots_[1:])  # today's lots too, not yesterday's
 
 
-class ModelNameTest(unittest.TestCase):
-    def test_misspelt_models_join_the_right_one(self):
-        from korea_auction.collect import display_name
-        self.assertEqual([display_name('KIA', m) for m in ('MORNIG', 'Mornig', 'MOHAVI', 'MORNING', 'K5')],
-                         ['Kia Morning', 'Kia Morning', 'Kia Mohave', 'Kia Morning', 'Kia K5'])
-
-
-class FuelTest(unittest.TestCase):
-    """KOREA-ENGINE-001 (owner 2026-11-13): the lot card shows the engine type."""
-
-    class Browser:
-        def fetch(self, url):
-            return url, '<p>Fuel: Gasoline+Electric Vehicle History: For Private Use</p>'
-
-    def test_entry_without_fuel_is_read_again_once(self):
-        day = [{'id': '1', 'detail_url': '/vehicle-detail/kr/1', 'start_price_krw': 0, 'photos': []}]
-        known, left = prices.fill(self.Browser(), day, {'1': {'krw': 5, 'vin': 'V', 'photos': ['p']}})
-        self.assertEqual((known['1']['fuel'], left), ('Gasoline+Electric', 0))
-        self.assertEqual(prices.fill(None, day, known), (known, 0))  # read once: no new page read
-        self.assertEqual(prices.apply(day, known)[0]['fuel'], 'Gasoline+Electric')
-        self.assertEqual(prices.apply(day, {})[0]['fuel'], '')  # unread lot: no fuel yet
-
-    def test_lot_list_carries_the_fuel_key(self):
-        lot = dict(PublicLotsTest.LOT, fuel='Diesel')
-        view = public.lot_view(lot, PublicLotsTest.RATES, ['7-1.jpg'])
-        self.assertEqual(view['fuel'], 'diesel')
-        self.assertEqual(public.lot_view(PublicLotsTest.LOT, PublicLotsTest.RATES, [])['fuel'], '')
-
-
 class PublicLotsTest(unittest.TestCase):
     LOT = {'id': '7', 'maker': 'KIA', 'model': 'SORENTO', 'trim': 'Signature', 'year': 2021, 'mileage_km': 40000,
            'score': 'A', 'engine_cc': 2497, 'transmission': 'AT', 'house': 'Auto Hub Auction', 'lot_no': '3001',
@@ -422,13 +393,13 @@ class PricesTest(unittest.TestCase):
     def test_each_lot_page_read_once_and_remembered(self):
         day = [{'id': str(n), 'detail_url': '/vehicle-detail/kr/%d' % n, 'start_price_krw': 0} for n in range(5)]
         browser = self.Browser()
-        old = {'0': {'krw': 5000000, 'vin': '', 'photos': [], 'fuel': ''}, 'gone': {'krw': 1}}
+        old = {'0': {'krw': 5000000, 'vin': '', 'photos': []}, 'gone': {'krw': 1}}
         known, left = prices.fill(browser, day, old, limit=3)
         self.assertEqual((len(browser.urls), left), (3, 1))  # 3 new pages read, 1 left for the next run
         self.assertNotIn('gone', known)                       # a lot that left the auction is forgotten
         self.assertEqual(known['1'], {'krw': 9400000, 'vin': 'KNAG541BBNA169806',
                                       'photos': ['https://jpauto.auction/cha_auction/2026/1110/1/a1_1.jpg',
-                                                 'https://cdn.example/cha_auction/1/a1_2.jpg'], 'fuel': ''})
+                                                 'https://cdn.example/cha_auction/1/a1_2.jpg']})
         shown = prices.apply([dict(l, photos=['t']) for l in day], known)
         self.assertEqual([l['start_price_krw'] for l in shown][:2], [5000000, 9400000])
         self.assertEqual((shown[1]['vin'], len(shown[1]['photos']), shown[0]['photos'], shown[4]['vin']),
