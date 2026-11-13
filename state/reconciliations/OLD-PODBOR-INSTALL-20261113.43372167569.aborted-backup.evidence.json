@@ -1,0 +1,32 @@
+{
+  "backup_error": "deployment_transport.TransportError: NETWORK_TimeoutError (DELETE always_on/<temporary task>/ timed out after the remote backup wrote its receipt) -> BACKUP_CONTROLLER_FAILED:1",
+  "bot_paused": false,
+  "failed_step": "execute / critical / backup",
+  "leftover_temporary_task": "possible (the DELETE timed out); checked and removed only by SERVER-CHECK-20261113 after this recovery",
+  "live_verify": "PASS 2026-11-13 ~05:37Z: video/order/podbor.html 200 (still present), video/podbor.html 200 with countries, video/katalog.html 200; coordinator checked /, korea, podbor 200",
+  "original_state_sha256": {
+    "state/AUTOPILOT_HALT.json": "cc72d2b48bd28777fbcc07b1c40fefbfabab7f7223d4746b60c106d325faa19c",
+    "state/claims/OLD-PODBOR-INSTALL-20261113.6e5e9d0844d978fc84cc59ce592e62f4716685422d6f28611da39296d7ac58f8.43372167569.json": "e6efd2f7f63f4fba1ce8d2093d80284cf8bd56134e50ed8cc2b6000e114f49d8",
+    "state/transactions/OLD-PODBOR-INSTALL-20261113.6e5e9d0844d978fc84cc59ce592e62f4716685422d6f28611da39296d7ac58f8.43372167569.json": "e7bc38a17b0e31f39e8c9298b255070ab29cf2c76be3a8dd5f6c24437b623638"
+  },
+  "owner_statement": "«Да» in chat 2026-11-13 to lifting the emergency halt",
+  "precedent": "PR #175, state/reconciliations/CRM-PHOTO-VISIBILITY-INSTALL-20260928.36353547114.aborted-backup.json",
+  "production_transaction_status": "NOT_OPENED",
+  "request_sha256": "6e5e9d0844d978fc84cc59ce592e62f4716685422d6f28611da39296d7ac58f8",
+  "run_id": "43372167569",
+  "site_or_crm_written": false,
+  "stages_skipped": [
+    "open",
+    "controller_production",
+    "rollback_execute",
+    "finalize"
+  ],
+  "task_id": "OLD-PODBOR-INSTALL-20261113",
+  "transaction": {
+    "backup_receipt_present": false,
+    "opened_at": null,
+    "status": "PREPARING"
+  },
+  "workflow_conclusion": "failure",
+  "workflow_run": "https://github.com/art20021986-wq/ua-art-autopilot/actions/runs/43372167569"
+}

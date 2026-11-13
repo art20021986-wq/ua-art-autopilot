@@ -1,0 +1,49 @@
+{
+  "always_on_after": [
+    {
+      "description": "",
+      "enabled": true,
+      "id": 266084,
+      "state": "Running"
+    },
+    {
+      "description": "UA ART site connection watch — read-only — 5 min",
+      "enabled": true,
+      "id": 270984,
+      "state": "Running"
+    }
+  ],
+  "always_on_before": [
+    {
+      "description": "",
+      "enabled": true,
+      "id": 266084,
+      "state": "Running"
+    },
+    {
+      "description": "UA ART site connection watch — read-only — 5 min",
+      "enabled": true,
+      "id": 270984,
+      "state": "Running"
+    }
+  ],
+  "bot": {
+    "description": "",
+    "enabled": true,
+    "id": 266084,
+    "state": "Running"
+  },
+  "cpu": {
+    "http": 200,
+    "value": {
+      "daily_cpu_limit_seconds": 10000,
+      "daily_cpu_total_usage_seconds": 3793.53263,
+      "next_reset_time": "2026-11-13T09:53:18+00:00"
+    }
+  },
+  "delete_status": {},
+  "leftovers_after": [],
+  "leftovers_found": [],
+  "run_id": "43374904889",
+  "task_id": "SERVER-CHECK-20261113"
+}

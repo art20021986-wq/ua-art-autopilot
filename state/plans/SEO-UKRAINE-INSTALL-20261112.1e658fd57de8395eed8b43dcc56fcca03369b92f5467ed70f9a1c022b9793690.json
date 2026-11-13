@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-UKRAINE-INSTALL-20261112.1e658fd57de8395eed8b43dcc56fcca03369b92f5467ed70f9a1c022b9793690.json",
+  "autostart_ledger_sha256": "f6d396f8eb728e89f992a3f8aca893c7b7dd660de52a2519e897ab63fcdca75a",
+  "autostart_source_commit": "c633827399cdbde005aa015d049e21454d6de92c",
+  "created_at": "2026-11-13T07:25:14Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43385456666",
+    "task_id": "SEO-UKRAINE-INSTALL-20261112",
+    "task_sha256": "1e658fd57de8395eed8b43dcc56fcca03369b92f5467ed70f9a1c022b9793690"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-e1d98ab7947d8b21-e6adfe7a4d69841a",
+  "request_path": "tasks/requests/SEO-UKRAINE-INSTALL-20261112.json",
+  "resource_locks": [
+    "PATH_SCOPE:e1d98ab7947d8b21"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

@@ -1,0 +1,56 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113.3be3444ab4f4e31a447a611e1576dfc030ef9acba21efa6bec3c60017958b45a.json",
+  "autostart_ledger_sha256": "f07f896a48010328989f036edeae3320a569685b05b98e0fcda6b0bfa02eaaa4",
+  "autostart_source_commit": "0632389a483be98479402d45c703536861b3b4a8",
+  "created_at": "2026-11-13T07:52:07Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-11-13T07:58:24Z",
+      "class": "UNKNOWN",
+      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 43388227132",
+      "retries_remaining": 3,
+      "retry_allowed": false,
+      "signature": "675725083fb278ce"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-13T08:40:00+00:00",
+      "class": "TRANSPORT_CLEANUP_TIMEOUT",
+      "evidence_path": "state/reconciliations/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113.43388227132.authenticated-evidence.json",
+      "message": "Read-only preview finished on the server; the DELETE of the temporary always-on task then timed out and was not retried; nothing written. Fixed in #1501, retried as R3.",
+      "retries_remaining": 0,
+      "retry_allowed": false
+    }
+  ],
+  "heartbeat_at": "2026-11-13T07:52:07Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43388227132",
+    "task_id": "NEW-CAR-VIN-SPEC-PREFLIGHT-20261113",
+    "task_sha256": "3be3444ab4f4e31a447a611e1576dfc030ef9acba21efa6bec3c60017958b45a"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113.json",
+  "request_sha256": "3be3444ab4f4e31a447a611e1576dfc030ef9acba21efa6bec3c60017958b45a",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "57ffc8e8e12ea777722169b18975794a702a4741",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-13T07:58:24Z"
+}

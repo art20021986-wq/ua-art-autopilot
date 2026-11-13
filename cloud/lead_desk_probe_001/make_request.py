@@ -22,12 +22,10 @@ def request(day):
     task = 'LEAD-DESK-PROBE-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Read-only check for STAFF-FULL-ACCESS-001 (owner 2026-11-12): full sanitized analitika_knopka.py, karta_klienta.py, svyaz.py, bezopasnost.py, analitika_bot.py; '
-                       'every line where the bots name the '
-                       'owner or send to him (sanitized), the sanitized client bot source, and whether @Beetle204 is in '
-                       'the CRM staff and the client bot users (yes/no and role only; no ids, names or rows). '
-                       'Bounded run in the existing private inbox in a temporary always-on task (never the CRM bot). '
-                       'No source, CRM, HTML, media or bot change.',
+        'description': 'Read-only check for STAFF-FULL-ACCESS-001 (owner 2026-11-13): active CRM staff per role and '
+                       'whether @Beetle204 is in the CRM staff and the client bot users (yes/no and role only; no ids, '
+                       'names or rows). Bounded run in the existing private inbox in a temporary always-on task (never '
+                       'the CRM bot). No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
