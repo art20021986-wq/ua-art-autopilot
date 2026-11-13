@@ -7,21 +7,23 @@
   "created_at": "2026-11-13T10:27:43Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T10:27:43Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-13T10:34:38Z",
+  "heartbeat_at": "2026-11-13T10:34:38Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43409048615",
     "task_id": "HOME-OTHER-SOON-PREFLIGHT-20261113-R3",
     "task_sha256": "ff62e7823b17d864b3557e562a22718b171865d0f4209e6e07fd3326c01258c7"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-9f411ee474e3e8d2-36ca7b3cc01e4c15",
   "receipt_path": "state/receipts/HOME-OTHER-SOON-PREFLIGHT-20261113-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "53aab9d49ff5c050c40cbde035566f75f6eb57155fa7fec65b5019f6f198450e",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-OTHER-SOON-PREFLIGHT-20261113-R3.json",
   "request_sha256": "ff62e7823b17d864b3557e562a22718b171865d0f4209e6e07fd3326c01258c7",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "8935248105583a90f8d3b7c2ee0c3ab5fb7f3b81",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92704497664,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.177
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-13T10:27:43Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "2cca0278f5320d17455dca43a49ed188e0cb260b3435d3856c4e8bdd7190ebb5",
+    "file_sha256": {
+      "cloud/home_other_soon_001/candidate_builder.py": "48715e55f5a1d8e218cdc45f92ec1703f793033e318336020ad417b9c8847a9e",
+      "cloud/home_other_soon_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_other_soon_001/deployment_bootstrap.py": "012b730be318611132a14c17c8a0dfe454d739753369adaf4a5b16072744e099",
+      "cloud/home_other_soon_001/deployment_remote.py": "a81623d7caaace51260583f8711355d1c6fa113f572a155705a1822d4c8d2f39",
+      "cloud/home_other_soon_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_other_soon_001/deployment_transport.py": "b8c7c9aa0f524c3dda23761843c92d766bfdd932905a285ba0faf329b86837e9",
+      "cloud/home_other_soon_001/edit_home.py": "0c4141ccd4b3098ea2e1fb0b63385c89529d6bfd5863005bb8fd538c0648d9ad",
+      "cloud/home_other_soon_001/make_release.py": "8083c2076e5758368b1d391a47a7d2cc08c6f55c22c0ca83b34fef3d71cf8b48",
+      "cloud/home_other_soon_001/release_constants.py": "f060a44974d6178e28f219af3758b861e463692cdab2938144de1212938e639a",
+      "cloud/home_other_soon_001/test_deployment.py": "69fc4c95a10648f910baae5d4cb5cfe426c893d91d20b39d0cb9f2973709708c",
+      "cloud/home_other_soon_001/test_edit_home.py": "8d01740a7beba930ad93d25902c056235c3b9c8123e97acccdbdd948f7c2bb67"
+    }
+  },
+  "updated_at": "2026-11-13T10:34:38Z"
 }
