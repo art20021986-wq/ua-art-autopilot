@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-TILE-COUNTS-INSTALL-20261113.ad3fc13c7cadd84b3205cec9ab65075b9fcff7dc434da20070b666578c4e1f25.json",
+  "autostart_ledger_sha256": "f0b517471916ea8e7b610513875ee9bcaca3bcfc2c46665a7b20ea02695b217a",
+  "autostart_source_commit": "d869633d505242f1114c9aa5fa49eaddff662876",
+  "created_at": "2026-11-13T11:12:22Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43414978647",
+    "task_id": "KOREA-TILE-COUNTS-INSTALL-20261113",
+    "task_sha256": "ad3fc13c7cadd84b3205cec9ab65075b9fcff7dc434da20070b666578c4e1f25"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "request_path": "tasks/requests/KOREA-TILE-COUNTS-INSTALL-20261113.json",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
