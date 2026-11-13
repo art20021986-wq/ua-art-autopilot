@@ -143,6 +143,7 @@ managers = stats.managers()
 view.managers_view(managers, staff)
 cards = [view.card(c, stats.of_client(c['phone']), staff) for c in people[:20]]
 pages = [web._cabinet(c) for c in people[:20]]
+bought = ua_auction_cars.purchased('+380000000000')  # the contract accounting answers (a list) for any phone
 for m in managers[:20]:
     bot._manager_screen(str(m['id']))
 with tempfile.TemporaryDirectory() as folder:
@@ -166,7 +167,7 @@ print(json.dumps({'clients': len(people), 'staff': len(staff), 'managers': len(m
                   'home_buttons': [row[0][1] for row in home['buttons']],
                   'card_bid_button': all(('🔨 Ставка за клиента', 'ac:bid:' + c['phone']) in [b for row in s['buttons'] for b in row]
                                          for c, s in zip(people, cards)),
-                  'client_pages': all(set(x) == {'client', 'bids', 'cars'} for x in pages),
+                  'client_pages': all(set(x) == {'client', 'bids', 'cars'} for x in pages) and isinstance(bought, list),
                   'ledger': ledger, 'notice': notice, 'no_auction_send': not hasattr(bids, 'place'),
                   'korea_page': korea.count('id="kc-cab"') == 1 and 'r.status==="requested"' in korea and 'limit_usd' not in korea,
                   'cabinet_page': 'id="cab-bids"' in cabinet and 'noindex' in cabinet}))
