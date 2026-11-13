@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "18ce6d3c2424eb0888c69996e620dd7679bcda208f09138e65b130989d527982",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T03:34:07Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T03:38:12Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43359493802",
     "task_id": "SERVICE-WORDS-INSTALL-20261112",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43359493802-9afb90b0c0f0ed12",
   "production_transaction_path": "state/transactions/SERVICE-WORDS-INSTALL-20261112.9afb90b0c0f0ed12baee9a7154664ddc3071db62953427e6f58fd5833e064dd0.43359493802.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "card-ua-0005-d6f6b46c7fcb09a3",
   "receipt_path": "state/receipts/SERVICE-WORDS-INSTALL-20261112.json",
   "receipt_validation_status": "PENDING",
@@ -90,5 +90,5 @@
       "cloud/service_words_001/ua_service_words.py": "3b05aba4bfc3ecf36d8cbcec364a4c972eb8e7df63a20e2c2de35a070bbdc900"
     }
   },
-  "updated_at": "2026-11-13T03:34:07Z"
+  "updated_at": "2026-11-13T03:38:12Z"
 }
