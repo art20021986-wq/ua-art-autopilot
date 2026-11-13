@@ -5,20 +5,53 @@
   "autostart_ledger_sha256": "5ac834ed9bc92176b9b09ec3143a2a4e165b068245d40f999b0a58f5adc05dae",
   "autostart_source_commit": "d5711d20c1b0c246dca994ab653b72769b58d9d7",
   "created_at": "2026-11-13T14:05:18Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "ff95297d648385ae2cc95d56c024bf4275b23be94b6def1e065805c00569a7d3",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T14:05:18Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-13T14:06:46Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "43439180792",
     "task_id": "AUCTION-MGR-BIDS-INSTALL-20261112-R2",
     "task_sha256": "b182070745207fe7e0100fa040d4243fe8846be50c2591cbb144bf0b215a26f7"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 287.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 324.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 269.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-43439180792-b182070745207fe7",
+  "production_transaction_path": "state/transactions/AUCTION-MGR-BIDS-INSTALL-20261112-R2.b182070745207fe7e0100fa040d4243fe8846be50c2591cbb144bf0b215a26f7.43439180792.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-7cd9ed9de5098a9e-81de5ad8c7b10739",
   "receipt_path": "state/receipts/AUCTION-MGR-BIDS-INSTALL-20261112-R2.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +62,46 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "2426b1090d603b44fe397f7fe5d3369fcb425a24",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 393.264,
+    "allowed": true,
+    "evidence_path": "state/storage/AUCTION-MGR-BIDS-INSTALL-20261112-R2.json",
+    "evidence_sha256": "bfcd5b57cd57755df97d87993a03ff0cc49b25b42966830d7fb85307479013c2",
+    "free_bytes": 17868713472,
+    "heavy": true,
+    "measured_at": "2026-11-13T14:00:10.374580+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 48.946532937142855
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-13T14:05:18Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "e42aae9d79b25c6ac7d1cbb878eab784b80c9127b8aa0e5aab4be68eeca3e91e",
+    "file_sha256": {
+      "cloud/auction_manager_bids_001/candidate_builder.py": "497ed1af3d22ce0361952621b4f91fbb8822312837b73af9027830837c419a78",
+      "cloud/auction_manager_bids_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/auction_manager_bids_001/deployment_bootstrap.py": "6c418a1809d51c74ae8cce0e6b5f9569e8e10c5acbab9a40e94859e0191113be",
+      "cloud/auction_manager_bids_001/deployment_remote.py": "4943c6d0060979ceb788853d3437577731f0a8674b0f81bccd348b670f7042fe",
+      "cloud/auction_manager_bids_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/auction_manager_bids_001/deployment_transport.py": "de03b7e032bfe59d69c92dd15702c4993055ac4c114aa9b70ab10625e07b74b4",
+      "cloud/auction_manager_bids_001/make_release.py": "ac9da41b43d5eddbc5378362fc2c69e56c519ecd15b84a6b13ea8ef410162709",
+      "cloud/auction_manager_bids_001/release_constants.py": "569ce879d81787c4562d02018fe466ed3dbf6afc993a5bc945c182144501b51d",
+      "cloud/auction_manager_bids_001/test_deployment.py": "de0b153ec5037799201087b81e9a2369bd1a56bdd560fa73c2ee6504b45f582c",
+      "cloud/auction_manager_bids_001/test_manager_bids.py": "43619f6bf7c5869df13f7d3c2954d104b22f992fc8cce919acd5bdd307de61bd",
+      "cloud/auction_manager_bids_001/ua_auction_bids.py": "e8a612675ff8609daf93dcda750afbf4bc6375e95ddb8a815e3a380fdf3c280f",
+      "cloud/auction_manager_bids_001/ua_auction_bids_bot.py": "0e33bcde0f6ec3b8e79082589864bca9f73c6f4df23a0cc9c95bb8cae01ae8f5",
+      "cloud/auction_manager_bids_001/ua_auction_cars.py": "2cc5aba78a7ac389a9c02fd8af3356bfea5eee28ad9eb5f6b15cbbb8a9709e4b",
+      "cloud/auction_manager_bids_001/ua_auction_clients.py": "4120c750e6dd1679bd72f37559c53ea4fbcef31c6df6d0fd30d862f7fd00da4f",
+      "cloud/auction_manager_bids_001/ua_auction_clients_bot.py": "665157aa82b8a22f5c35d94809d27ac692cdeeeda869951b25a449221bcd82a6",
+      "cloud/auction_manager_bids_001/ua_auction_clients_view.py": "7b028bfa65c10c2ec480e11c4beb33658ca682181c5e47fa8aed146690694730",
+      "cloud/auction_manager_bids_001/ua_auction_stats.py": "8104933d12d4779a5674c8e12277564d2a03cd6b0779a34a839f1d5f2ebbb8b7",
+      "cloud/auction_manager_bids_001/ua_auction_web.py": "1ef39473725e36fb2ca50ca89199f582d791c94fe7ff4ea49778818f8b9b373e",
+      "cloud/auction_manager_bids_001/ua_client_cabinet.py": "c0dc4a3d5553396cfa41e8ca91e77ed8fca011a995609036855fb808cde1b5fc",
+      "cloud/auction_manager_bids_001/ua_korea_bid.py": "31df70a4e5893d36011fa90dfd3a1f8c8a6f38c9a5f1d62bbcab57068227021a"
+    }
+  },
+  "updated_at": "2026-11-13T14:06:46Z"
 }
