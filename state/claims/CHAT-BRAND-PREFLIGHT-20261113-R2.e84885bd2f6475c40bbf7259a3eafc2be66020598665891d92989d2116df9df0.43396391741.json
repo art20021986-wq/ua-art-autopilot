@@ -7,21 +7,23 @@
   "created_at": "2026-11-13T08:52:00Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T08:52:00Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-13T08:58:40Z",
+  "heartbeat_at": "2026-11-13T08:58:40Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43396391741",
     "task_id": "CHAT-BRAND-PREFLIGHT-20261113-R2",
     "task_sha256": "e84885bd2f6475c40bbf7259a3eafc2be66020598665891d92989d2116df9df0"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-07ad4f725ab13126-face506af73bb307",
   "receipt_path": "state/receipts/CHAT-BRAND-PREFLIGHT-20261113-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b6ae54866e192c8cdb852889101ce976f24fa718734ee92f9e6c7bd0be271ba1",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CHAT-BRAND-PREFLIGHT-20261113-R2.json",
   "request_sha256": "e84885bd2f6475c40bbf7259a3eafc2be66020598665891d92989d2116df9df0",
   "resource_locks": [
@@ -29,8 +31,35 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "d94c6f522ee80cad1723d47387336b9a03a8e08d",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92719083520,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.168
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-13T08:52:00Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "2e74d1e86ad4960162facca7c7140f26f9c4c1d18e7d6ae78ccc1f5afb4ae9c6",
+    "file_sha256": {
+      "cloud/chat_brand_001/candidate_builder.py": "1648fd96e409c5704c39d8e48b40d1baecf1d6c16fb825560f9ba68b4cd6a3cb",
+      "cloud/chat_brand_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/chat_brand_001/deployment_bootstrap.py": "a50c5dcafe201f3be5d4494218a4d2daaed7ac9ab37737616c1f6e6a28e3201d",
+      "cloud/chat_brand_001/deployment_remote.py": "f28028788fb077311aad54c206956c882eb1556b0a22578003387ffdce824106",
+      "cloud/chat_brand_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/chat_brand_001/deployment_transport.py": "cf5980829d4b36f53c5605c1b1d425e048d9837db6248346f72438d082b550e4",
+      "cloud/chat_brand_001/make_release.py": "276bc0ae4a81097a5eda040c953f7c12e5d92c7034d2a2ab887d69e61aa80d74",
+      "cloud/chat_brand_001/release_constants.py": "3d9af83d1702cb570ff7337a285cc22903c11d508d0d35f2084c468307c21306",
+      "cloud/chat_brand_001/test_deployment.py": "3d8d3aba532dd7d090aef0ab2c9fa8e73dcf685bd950c78dc925e339eb5cad68",
+      "cloud/chat_brand_001/test_release.py": "35c1525a29dc2fe1194f0984ef2538b8707391ee00b9abd5e07746d0917028e8",
+      "cloud/chat_brand_001/ua_autoria_badge.py": "e603708da9eb7479d77111963388ed32dc9380a9a7dfad99005f8b552bb8788f",
+      "cloud/chat_brand_001/ua_brand_home.py": "ec4aabfa8777d53b4fb678014617c9dcb6031b8b9ed9ee8a86d23b44b9c00c6e",
+      "cloud/chat_brand_001/ua_chat_button.py": "aff23c742a7926b6831277ca1e2a407c0ee2b2f382cb47b4eb565909089dab5e"
+    }
+  },
+  "updated_at": "2026-11-13T08:58:40Z"
 }
