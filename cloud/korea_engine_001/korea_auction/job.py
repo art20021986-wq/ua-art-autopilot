@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import sys
 import tempfile
+import time
 import urllib.request
 
 from . import collect, model_lots, prices, public, session, ticker
@@ -29,7 +30,9 @@ LOCK = ROOT / '.korea_auction_job.lock'
 PENDING = ROOT / 'korea_auction_data/prices_pending'  # set while some lot pages or lot photos are still to do
 WAITING = ROOT / 'korea_auction_data/ticker_waiting'  # TICKER-FIX3-001: set while the auction lists no lots
 PHOTO_WORKERS = 6
-PHOTOS_PER_RUN = 6000  # new lot photo copies per run (~0.6 GB)
+# KOREA-ENGINE-001 (owner 2026-11-13: every photo in the lot card): photos are copied for a time, not a count, so a run
+# ends before the next hourly start and no hourly run is skipped (6000 copies took ~70 min after the lot pages).
+RUN_SECONDS = 50 * 60  # photo copying stops this long after the run started
 FIRST_PHOTOS = 3  # copied for every lot before the rest
 
 
@@ -100,8 +103,9 @@ def localize_photos(items, folder, fetch=fetch_photo):
     return kept
 
 
-def copy_lot_photos(lots, folder, fetch=fetch_photo, limit=PHOTOS_PER_RUN):
-    """Every photo of each lot into `folder`, at most `limit` new copies per run; other photos are removed.
+def copy_lot_photos(lots, folder, fetch=fetch_photo, deadline=None, clock=time.monotonic):
+    """Every photo of each lot into `folder`, new copies started only before `deadline` (clock()); other photos are
+    removed.
 
     The first FIRST_PHOTOS of every lot are copied before the rest, so each lot is shown at once and the others
     follow over the next runs (owner 2026-11-12: all photos, gradually). Returns ({lot id: [photo names]}, left).
@@ -114,14 +118,19 @@ def copy_lot_photos(lots, folder, fetch=fetch_photo, limit=PHOTOS_PER_RUN):
                if not (folder / name).exists()]
     missing = list(dict.fromkeys(missing))
 
+    late = []  # copies not started before the deadline (a failed copy is not retried before the next due run)
+
     def copy(name):
+        if deadline is not None and clock() >= deadline:
+            late.append(name)  # the next run goes on from here
+            return
         try:
             write(folder / name, fetch(wanted[name]))
         except (OSError, ValueError):
             pass
 
     with ThreadPoolExecutor(PHOTO_WORKERS) as pool:
-        list(pool.map(copy, missing[:limit]))
+        list(pool.map(copy, missing))
     for old in folder.glob('*.jpg'):
         if old.name not in wanted:
             old.unlink()
@@ -129,7 +138,7 @@ def copy_lot_photos(lots, folder, fetch=fetch_photo, limit=PHOTOS_PER_RUN):
     photos = {lot['id']: list(dict.fromkeys(name for name in (public.photo_name(lot['id'], url)
                                                               for url in lot['photos'][:prices.MAX_PHOTOS])
                                             if name in have)) for lot in lots}
-    return photos, len(missing) > limit
+    return photos, bool(late)
 
 
 def priced(data, browser):
@@ -140,12 +149,26 @@ def priced(data, browser):
     return dict(data, upcoming_lots=prices.apply(data['upcoming_lots'], known)), left
 
 
-def publish_lots(data, now, folder):
+def publish_galleries(photos, folder):
+    """Each shown lot's gallery file (written only when it changed); files of lots no longer shown are removed."""
+    folder.mkdir(parents=True, exist_ok=True)
+    for lot_id, names in photos.items():
+        path = folder / ('%s.json' % lot_id)
+        data = json.dumps(public.gallery(names), separators=(',', ':')).encode('utf-8')
+        if not path.exists() or path.read_bytes() != data:
+            write(path, data)
+    for old in folder.glob('*.json'):
+        if old.stem not in photos:
+            old.unlink()
+
+
+def publish_lots(data, now, folder, deadline=None):
     """lots.json of the copied photos. -> (lots shown, photos still to copy)"""
-    photos, left = copy_lot_photos(data['upcoming_lots'], folder / 'lots')
+    photos, left = copy_lot_photos(data['upcoming_lots'], folder / 'lots', deadline=deadline)
     value = public.build(data['upcoming_lots'], data['auction_date'], data['rates'], photos,
                          now.isoformat(timespec='minutes'))
     write(folder / 'lots.json', json.dumps(value, ensure_ascii=False, separators=(',', ':')).encode('utf-8'))
+    publish_galleries({view['id']: photos[view['id']] for view in value['lots']}, folder / 'gallery')
     # KOREA-MODEL-LOTS-001: the order page model carousels show the week's lots of each model (from the list above)
     shown = {view['id']: view for view in value['lots']}
     listed = [dict(lot, start_usd=shown[lot['id']]['start_usd']) for lot in data['upcoming_lots'] if lot['id'] in shown]
@@ -186,6 +209,7 @@ def main(now=None):
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             return 0  # the previous run is still working
+        deadline = time.monotonic() + RUN_SECONDS
         browser = session.Session()
         data = collect.collect(*read_login(), now=now, session=browser)
         pages_left = photos_left = False
@@ -204,7 +228,7 @@ def main(now=None):
             write(page, html.encode('utf-8'))  # the ticker first: the lot pages and photos take a while
             WAITING.unlink(missing_ok=True)
             data_priced, pages_left = priced(data, browser)
-            shown, photos_left = publish_lots(data_priced, now, OUT)
+            shown, photos_left = publish_lots(data_priced, now, OUT, deadline)
             mark_pending(pages_left or photos_left)
     print(json.dumps({'at': now.isoformat(timespec='minutes'), 'auction_date': data['auction_date'],
                       'lots_on_date': data['lots_on_date'], 'lots_shown': shown, 'items': len(data['items']),

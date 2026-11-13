@@ -24,11 +24,11 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'engine_page.py', 'model_groups.py',
+                                'make_release.py', 'release_constants.py', 'engine_page.py', 'model_groups.py', 'gallery_page.py',
                                 'fixtures/korea_live.html')] + [
     P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'collect', 'fuel', 'html_tools', 'job', 'lots', 'model_lots', 'nbu',
                                                    'prices', 'public', 'selection', 'session', 'ticker')]
-TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_engine_page.py', 'test_model_groups.py',
+TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_engine_page.py', 'test_model_groups.py', 'test_gallery_page.py',
                          'korea_auction/test_korea_auction.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'lead_bot.py',
@@ -77,7 +77,7 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of KOREA-ENGINE-001 (owner 2026-11-13): fuel type in lots.json and in the Korea page lot card («Двигун 2 996 см³ · бензин»), the «Model» list grouped by make, misspelt model names fixed. Builds the collector update (fuel, prices, public, collect, ticker) and the video/korea.html edits, smoke-tests them on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of KOREA-ENGINE-001 (owner 2026-11-13): fuel type in lots.json and in the Korea page lot card («Двигун 2 996 см³ · бензин»), the «Model» list grouped by make, misspelt model names fixed. Every lot photo in the card: photos copied for a time per run (no overlapping runs), the whole photo set of each lot in video/korea/gallery/<id>.json, lots.json keeps 3 photos per lot. Builds the collector update (fuel, prices, public, collect, ticker, job) and the video/korea.html edits, smoke-tests them on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
              'title': 'Preview Korea engine type'}
@@ -133,7 +133,7 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner request (2026-11-13, «4. Да»): KOREA-ENGINE-001 — fuel type in lots.json and in the Korea page lot card («Двигун 2 996 см³ · бензин»), the «Model» list grouped by make, misspelt model names fixed (Mornig, Mohavi). Collector fuel.py, prices.py, public.py, collect.py, ticker.py and video/korea.html only; CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
+               'description': 'Owner request (2026-11-13, «4. Да»): KOREA-ENGINE-001 — fuel type in lots.json and in the Korea page lot card («Двигун 2 996 см³ · бензин»), the «Model» list grouped by make, misspelt model names fixed (Mornig, Mohavi). Every lot photo in the card: photos copied for a time per run (no overlapping runs), the whole photo set of each lot in video/korea/gallery/<id>.json, lots.json keeps 3 photos per lot. Collector fuel.py, prices.py, public.py, collect.py, ticker.py, job.py and video/korea.html only; CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],

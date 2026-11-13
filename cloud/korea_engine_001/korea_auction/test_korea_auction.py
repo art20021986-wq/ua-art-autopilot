@@ -1,6 +1,8 @@
+import json
 import pathlib
 import random
 import unittest
+import unittest.mock
 from datetime import datetime
 
 import tempfile
@@ -381,7 +383,8 @@ class PublicLotsTest(unittest.TestCase):
             self.assertEqual((folder / name('a')).read_bytes(), b'kept')
             self.assertFalse((folder / '99-1.jpg').exists())
 
-    def test_photos_copied_gradually_first_photos_first(self):
+    def test_photos_copied_for_a_time_first_photos_first(self):
+        """KOREA-ENGINE-001: copies start only before the deadline; the first photos of every lot go first."""
         other = dict(self.LOT, id='8', photos=['https://cdn.example/%s8' % c for c in 'abcd'])
         with tempfile.TemporaryDirectory() as tmp:
             folder = pathlib.Path(tmp)
@@ -389,16 +392,48 @@ class PublicLotsTest(unittest.TestCase):
             def fetch(url):
                 fetched.append(url)
                 return b'jpg'
-            photos, left = job.copy_lot_photos([self.LOT, other], folder, fetch, limit=6)
+            photos, left = job.copy_lot_photos([self.LOT, other], folder, fetch, deadline=0, clock=lambda: 0)
+            self.assertEqual((fetched, left, photos), ([], True, {'7': [], '8': []}))  # time is up: nothing started
+            ticks = iter(range(100))
+            with unittest.mock.patch.object(job, 'PHOTO_WORKERS', 1):  # one at a time: the order is exact
+                photos, left = job.copy_lot_photos([self.LOT, other], folder, fetch, deadline=6,
+                                                   clock=lambda: next(ticks))
             self.assertTrue(left)  # 2 photos for the next run
-            self.assertEqual(sorted(fetched), sorted(['https://cdn.example/a', 'https://cdn.example/b',
-                                                      'https://cdn.example/c', 'https://cdn.example/a8',
-                                                      'https://cdn.example/b8', 'https://cdn.example/c8']))
+            self.assertEqual(fetched, ['https://cdn.example/a', 'https://cdn.example/a8', 'https://cdn.example/b',
+                                       'https://cdn.example/b8', 'https://cdn.example/c', 'https://cdn.example/c8'])
             self.assertEqual((len(photos['7']), len(photos['8'])), (3, 3))
             fetched.clear()
-            photos, left = job.copy_lot_photos([self.LOT, other], folder, fetch, limit=6)
+            photos, left = job.copy_lot_photos([self.LOT, other], folder, fetch)  # no deadline: every photo
             self.assertEqual((sorted(fetched), left), (['https://cdn.example/d', 'https://cdn.example/d8'], False))
             self.assertEqual((len(photos['7']), len(photos['8'])), (4, 4))
+
+    def test_list_keeps_first_photos_gallery_has_all(self):
+        names = ['7-%d.jpg' % n for n in range(5)]
+        view = public.lot_view(self.LOT, self.RATES, names)
+        self.assertEqual(view['photos'], ['/video/korea/lots/7-0.jpg', '/video/korea/lots/7-1.jpg', '/video/korea/lots/7-2.jpg'])
+        self.assertEqual(public.gallery(names), {'photos': ['/video/korea/lots/%s' % n for n in names]})
+
+    def test_gallery_files_follow_the_shown_lots(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = pathlib.Path(tmp) / 'gallery'
+            folder.mkdir()
+            (folder / 'gone.json').write_text('{}')
+            job.publish_galleries({'7': ['7-0.jpg', '7-1.jpg']}, folder)
+            self.assertEqual(sorted(p.name for p in folder.iterdir()), ['7.json'])
+            self.assertEqual(json.loads((folder / '7.json').read_text()),
+                             {'photos': ['/video/korea/lots/7-0.jpg', '/video/korea/lots/7-1.jpg']})
+            stamp = (folder / '7.json').stat().st_mtime_ns
+            with unittest.mock.patch.object(job, 'write') as write:
+                job.publish_galleries({'7': ['7-0.jpg', '7-1.jpg']}, folder)
+            write.assert_not_called()  # unchanged: not written again
+            self.assertEqual((folder / '7.json').stat().st_mtime_ns, stamp)
+
+    def test_failed_copy_does_not_keep_the_job_pending(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            def fetch(url):
+                raise OSError('down')
+            photos, left = job.copy_lot_photos([self.LOT], pathlib.Path(tmp), fetch, deadline=10 ** 9)
+            self.assertEqual((photos, left), ({'7': []}, False))
 
     def test_pending_marker(self):
         with tempfile.TemporaryDirectory() as tmp:

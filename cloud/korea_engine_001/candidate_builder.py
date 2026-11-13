@@ -4,12 +4,15 @@
 1. The collector as KOREA-TILE-INSTALL installed it, with fuel.py (new), prices.py and public.py (lots.json carries the
    fuel type), collect.py (misspelt model names fixed) and ticker.py (fuel key from fuel.py) updated. The collector
    modules come from korea_auction/ in this package (zipped flat as kauc_<module>.py by the transport).
-2. Two edits of video/korea.html, each its own module: engine_page (lot card «Двигун 2 996 см³ · бензин»), then
-   model_groups (the «Model» list grouped by make).
+   Every lot photo (coordinator 2026-11-13 for the owner): job.py copies photos for a time, not a count (runs no
+   longer overlap), lots.json keeps the first 3 photos and each lot's whole set is its own file in video/korea/gallery/.
+2. Three edits of video/korea.html, each its own module: engine_page (lot card «Двигун 2 996 см³ · бензин»),
+   model_groups (the «Model» list grouped by make), gallery_page (the card loads the lot's whole photo set).
 """
 from pathlib import Path
 
 import engine_page
+import gallery_page
 import model_groups
 
 HERE = Path(__file__).resolve().parent
@@ -42,7 +45,7 @@ def build(source, dependencies, here=HERE, sha=None):
     files = {'korea_auction/__init__.py': b''}
     for name in MODULES:
         files['korea_auction/%s.py' % name] = (here / ('kauc_%s.py' % name)).read_bytes()
-    files[KOREA] = model_groups.build(engine_page.build(source[KOREA]))
+    files[KOREA] = gallery_page.build(model_groups.build(engine_page.build(source[KOREA])))
     return files
 
 
