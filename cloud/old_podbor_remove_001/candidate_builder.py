@@ -1,10 +1,12 @@
 """Build the OLD-PODBOR-REMOVE-001 candidate: the abandoned old order page video/order/podbor.html is removed.
 
-The page («Форма тимчасово недоступна», no menu, no countries) was replaced by video/podbor.html; ANALYTICS-AUDIT-PROBE-
-20261113: no request to it in 10 days of the access log and no public page links to it. Nothing else changes.
+The page is the old stand-alone order form (title «Авто під замовлення», main#ua-order, order.js beside it; in a browser
+it shows «Форма тимчасово недоступна»); video/podbor.html replaced it. ANALYTICS-AUDIT-PROBE-20261113: no request to it in
+10 days of the access log and no public page links to it. order.js / order.css stay (the current page uses them).
 """
 OLD_PAGE = 'video/order/podbor.html'
-MARKS = ('Індивідуальне замовлення автомобіля', 'Форма тимчасово недоступна')
+# Its own markup (the browser texts are drawn by order.js and are not in the file; R1 refused on them).
+MARKS = ('<title>Авто під замовлення — UA ART COMPANY</title>', 'id="ua-order"', 'src="order.js?v=')
 DEPENDENCY_SHA256 = {}
 
 
