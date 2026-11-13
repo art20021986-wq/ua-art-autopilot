@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/NEW-CAR-VIN-INSTALL-20261112.f22db32d0dc74e435b4b90df626d56b7a813fe4afe6bb827fce991e13c67c0ac.json",
+  "autostart_ledger_sha256": "3c407b8503978d89d89d879edc0d5772bd5a6a8cfb4c1a5f6832e9b7a5f839b4",
+  "autostart_source_commit": "6172bc1480f62fed0568c750fe496174baccb1da",
+  "created_at": "2026-11-12T20:10:10Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43297307514",
+    "task_id": "NEW-CAR-VIN-INSTALL-20261112",
+    "task_sha256": "f22db32d0dc74e435b4b90df626d56b7a813fe4afe6bb827fce991e13c67c0ac"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-4d50646af4dee811-82b15077a5f33621",
+  "request_path": "tasks/requests/NEW-CAR-VIN-INSTALL-20261112.json",
+  "resource_locks": [
+    "PATH_SCOPE:4d50646af4dee811"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

@@ -1,0 +1,66 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-UKRAINE-PREFLIGHT-20261112-R4.c8c6a2c9ef701839a3029726e736909cea074b48edf0d1bc4126506fb75cf4c0.json",
+  "autostart_ledger_sha256": "5ef19f064867f20bda8b23ba135b76103b3b03c85f2ea0768a98562711e89f4d",
+  "autostart_source_commit": "00a3955f7b39ceb932bb50d6bb644ce5e22951f9",
+  "created_at": "2026-11-13T07:10:02Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-13T07:14:55Z",
+  "heartbeat_at": "2026-11-13T07:14:55Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43383599348",
+    "task_id": "SEO-UKRAINE-PREFLIGHT-20261112-R4",
+    "task_sha256": "c8c6a2c9ef701839a3029726e736909cea074b48edf0d1bc4126506fb75cf4c0"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-5dc09620c6787b9a-8d8b1715ff2d3f28",
+  "receipt_path": "state/receipts/SEO-UKRAINE-PREFLIGHT-20261112-R4.json",
+  "receipt_sha256": "8df86c439545762f8aa6a2eac0457ddf9f996716e0a1984df6804305f1178165",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/SEO-UKRAINE-PREFLIGHT-20261112-R4.json",
+  "request_sha256": "c8c6a2c9ef701839a3029726e736909cea074b48edf0d1bc4126506fb75cf4c0",
+  "resource_locks": [
+    "PATH_SCOPE:5dc09620c6787b9a"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "dc29e6762900d4757b1a7064c21ba8b0876f27c3",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 95793041408,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.185
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "369c6358530d22ba245af47019bc281484a8681164c9453d710375adf4f89d1b",
+    "file_sha256": {
+      "cloud/seo_ukraine_page_001/candidate_builder.py": "45685aa1cab91516dd4e292f819f2e9333708078a8a87cb2ce9b3d590c581a2b",
+      "cloud/seo_ukraine_page_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/seo_ukraine_page_001/deployment_bootstrap.py": "97219a0d78b3829f05ceddc4a0df16df6cec52177b8be347a5272e9dc62948f9",
+      "cloud/seo_ukraine_page_001/deployment_remote.py": "c854a8e43b4b37a499cd23fb4368026ce680b2d69d309b9fe0acb6f0ef4ae176",
+      "cloud/seo_ukraine_page_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/seo_ukraine_page_001/deployment_transport.py": "01494e47c606dfe266c914521ba38bf4521ab004f09e2c1dcde4339c5f92b77f",
+      "cloud/seo_ukraine_page_001/edit_landings.py": "bba888a1b4f588731ac383e71ce39e7d136802db9692fc18ef080686e5ebf75e",
+      "cloud/seo_ukraine_page_001/edit_models.py": "6759fe3c4dd8be4e5107f1238d4dedcc8dd8503b840125bdf181541103e3ad39",
+      "cloud/seo_ukraine_page_001/make_release.py": "34a7fbd51c5afc1d684a1e04cf42eb69665be342cd5c3e8080cc6fd36f8a1200",
+      "cloud/seo_ukraine_page_001/release_constants.py": "a784fafd014f959c9b65a3e7f35188fb326da747654a2510c4fa075ba4b23851",
+      "cloud/seo_ukraine_page_001/test_deployment.py": "b5697b201f199d971c10c5039031650850cd365c07c64e98d08044b184b88b3c",
+      "cloud/seo_ukraine_page_001/test_release.py": "cc4d339b2dc8d2441d946b067cb0291bce09d401dc1b2f1a3c53a74906f4fc1f",
+      "cloud/seo_ukraine_page_001/ua_seo_hub_texts.py": "747082ad115774fcf2c015a9f9bb707725ab190420df41b0967cf90df34a7844",
+      "cloud/seo_ukraine_page_001/ua_seo_ukraine_page.py": "5eb462410a574043061aa30cbdf2440a966cb6b65b065d8d9a4874c6ad573f7e"
+    }
+  },
+  "updated_at": "2026-11-13T07:14:55Z"
+}

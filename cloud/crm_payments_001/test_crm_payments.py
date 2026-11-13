@@ -150,8 +150,14 @@ class OrderStages(unittest.TestCase):
     def test_eight_stages_keep_old_keys(self):
         import edit_order_book
         source = (HERE.parent / 'lead_folders_001' / 'ua_order_book.py').read_bytes()
-        ns = {}
-        exec(compile(edit_order_book.build(source), 'ua_order_book.py', 'exec'), ns)
+        import importlib.util
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'ua_order_book_built.py'
+            path.write_bytes(edit_order_book.build(source))
+            spec = importlib.util.spec_from_file_location('ua_order_book_built', path)
+            built = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(built)
+        ns = vars(built)
         keys = [k for k, _ in ns['STAGES']]
         self.assertEqual(keys, [k for k, _ in payst.STAGES])
         self.assertTrue({'contract', 'bought', 'transit', 'georgia', 'ukraine', 'delivered'} <= set(keys))
@@ -175,6 +181,11 @@ class BotHelpers(unittest.TestCase):
         import ua_pay_bot as bot
         self.assertEqual(bot.parse_nbu_rate([{'value': 15.5, 'dt': '20260101'}, {'value': 14, 'dt': '20251201'}]),
                          0.155)
+        rows = [{'id_api': 'KEY_PolicyRate', 'dt': '20261112', 'value': 15.5},
+                {'id_api': 'KEY_OvernightCreditRate', 'dt': '20261112', 'value': 18.5}]
+        self.assertEqual(bot.parse_nbu_rate(rows), 0.155)
+        with self.assertRaises(ValueError):
+            bot.parse_nbu_rate(rows[1:])
         with self.assertRaises(ValueError):
             bot.parse_nbu_rate([])
         self.assertEqual(bot.number('1 500,50 $'), 1500.5)

@@ -1,0 +1,23 @@
+{
+  "application_writes": 0,
+  "automatic_rollback_replayed": false,
+  "evidence_path": "state/reconciliations/OLD-PODBOR-INSTALL-20261113.43372167569.aborted-backup.evidence.json",
+  "evidence_sha256": "a14ef4bf87d90417bd7887e60fcb78613e0c19005fafa96803793c4382a866f1",
+  "fresh_plan_request_and_gate_b_required": true,
+  "metadata_terminal_status": "ROLLED_BACK",
+  "metadata_terminal_status_meaning": "Existing watchdog-compatible aborted-attempt convention; no installation or rollback PASS is claimed.",
+  "original_failure_preserved": true,
+  "owner_instruction": "Да",
+  "production_install_controller_executed": false,
+  "production_rollback_controller_executed": false,
+  "reconciled_at": "2026-11-13T05:51:51.970427+00:00",
+  "request_sha256": "6e5e9d0844d978fc84cc59ce592e62f4716685422d6f28611da39296d7ac58f8",
+  "run_id": "43372167569",
+  "runtime_workflows_gates_ledger_nonce_unchanged": true,
+  "schema_version": "UA-ART-PRODUCTION-RECONCILIATION-1",
+  "semantic_outcome": "ABORTED_DURING_BACKUP_BEFORE_APPLICATION_WRITE",
+  "service_pause_resume_executed": false,
+  "successor_authorized_by_record": false,
+  "task_id": "OLD-PODBOR-INSTALL-20261113",
+  "transaction_id": "tx-43372167569-6e5e9d0844d978fc"
+}

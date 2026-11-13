@@ -1,0 +1,56 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-PAYMENTS-PREFLIGHT-20261112-R2.73813f44e152bde34bade3539b78b69e7ed9863d62a7a29186022bb696344ccd.json",
+  "autostart_ledger_sha256": "eae86d8083d34cbd22bf9541bcb3e2808643f9ee5793c7bda6276352934c5566",
+  "autostart_source_commit": "9b8a929a0622a4219e188276971b9a73ba130a8a",
+  "created_at": "2026-11-12T20:50:55Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-11-12T20:51:48Z",
+      "class": "UNKNOWN",
+      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 43304091915",
+      "retries_remaining": 3,
+      "retry_allowed": false,
+      "signature": "2ccd703c1de6b0af"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-12T20:55:30+00:00",
+      "class": "PACKAGE_BUILD_CHECK",
+      "evidence_path": "state/reconciliations/CRM-PAYMENTS-PREFLIGHT-20261112-R2.43304091915.authenticated-evidence.json",
+      "message": "Read-only preview stopped in deployment_controller.context() (TASK_IDENTITY: the request was named -R2, the package constant was not); nothing written. Retried as R3.",
+      "retries_remaining": 0,
+      "retry_allowed": false
+    }
+  ],
+  "heartbeat_at": "2026-11-12T20:50:55Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43304091915",
+    "task_id": "CRM-PAYMENTS-PREFLIGHT-20261112-R2",
+    "task_sha256": "73813f44e152bde34bade3539b78b69e7ed9863d62a7a29186022bb696344ccd"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/CRM-PAYMENTS-PREFLIGHT-20261112-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CRM-PAYMENTS-PREFLIGHT-20261112-R2.json",
+  "request_sha256": "73813f44e152bde34bade3539b78b69e7ed9863d62a7a29186022bb696344ccd",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "81ac347cd22db0c9958cec17d8f96ce0acb7b478",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-12T20:55:30+00:00"
+}

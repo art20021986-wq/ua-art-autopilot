@@ -156,13 +156,16 @@ screen = view.screen(order, None, bot._STORE.payments(1), datetime.date(2026, 11
 from korea_auction import html_tools, job, lots, nbu, session
 try:
     import json as j, urllib.request as u
-    nbu_rate = bot.parse_nbu_rate(j.load(u.urlopen(u.Request(bot.NBU_DISCOUNT_URL, headers={'User-Agent': 'UA-ART-crm/1'}), timeout=30)))
+    raw = j.load(u.urlopen(u.Request(bot.NBU_DISCOUNT_URL % datetime.date.today().strftime('%Y%m%d'), headers={'User-Agent': 'UA-ART-crm/1'}), timeout=30))
+    nbu_ids = sorted({str(r.get('id_api')) for r in raw if isinstance(r, dict)})[:8]
+    nbu_rate = bot.parse_nbu_rate(raw)
 except Exception as exc:
+    nbu_ids = []
     nbu_rate = 'ERROR ' + str(exc)[:120]
 os.unlink(path)
 print(json.dumps({'card_rows': card_rows[:2], 'screen_buttons': [b[1] for row in screen['buttons'] for b in row],
                   'has_first_payment': 'Услуга 600 $' in screen['text'], 'cabinet_live': payst.purchased_cars('+380671234567'),
-                  'collector': [m.__name__ for m in (html_tools, job, lots, nbu, session)], 'nbu_rate': nbu_rate}))
+                  'collector': [m.__name__ for m in (html_tools, job, lots, nbu, session)], 'nbu_rate': nbu_rate, 'nbu_ids': nbu_ids}))
 """
 
 
@@ -400,7 +403,10 @@ def account_used_bytes():
     result = subprocess.run(['du', '-s', '-B1', str(ROOT), '/tmp'], capture_output=True, text=True,
                             timeout=600, check=False)
     sizes = [int(line.split('\t')[0]) for line in result.stdout.splitlines() if line.strip()]
-    if result.returncode != 0 or len(sizes) != 2:
+    # du exits 1 when a temporary file (e.g. a SQLite journal) vanishes while it walks; the totals are still
+    # printed and differ by that file only. Any other complaint still fails (as CARD-SYNC-FIX2 and later packages).
+    vanished = all('No such file or directory' in line for line in result.stderr.splitlines() if line.strip())
+    if (result.returncode != 0 and not (result.returncode == 1 and vanished)) or len(sizes) != 2:
         raise DeploymentError('ACCOUNT_USAGE:'+result.stderr[-160:])
     return sum(sizes)
 

@@ -1,0 +1,64 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/NEW-CAR-VIN-PREFLIGHT-20261112.73fb4ea3d4a9b1579c2ca196908ad6b189e3e51b09a37342f32e7fb3699544fa.json",
+  "autostart_ledger_sha256": "1336fe12df9bc32d533a40e9f56f4f1ebf2ff9a76884090c9914483ffe0c747f",
+  "autostart_source_commit": "d30710e19e2ae155d4aa4600c68a4438df2fd396",
+  "created_at": "2026-11-12T20:02:22Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-12T20:06:58Z",
+  "heartbeat_at": "2026-11-12T20:06:58Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43295964781",
+    "task_id": "NEW-CAR-VIN-PREFLIGHT-20261112",
+    "task_sha256": "73fb4ea3d4a9b1579c2ca196908ad6b189e3e51b09a37342f32e7fb3699544fa"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/NEW-CAR-VIN-PREFLIGHT-20261112.json",
+  "receipt_sha256": "2fb7d53ae7a0df91e4171796ed15595f450575ea04f6ec16959a263d55660c8a",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/NEW-CAR-VIN-PREFLIGHT-20261112.json",
+  "request_sha256": "73fb4ea3d4a9b1579c2ca196908ad6b189e3e51b09a37342f32e7fb3699544fa",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "466065ae602e3c4cfa291fae126d2d732357bc16",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92751122432,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 40.147
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/crm_new_car_vin_001/candidate_builder.py": "2bbc26b1aa8e62150ea7d5c10edd0d815254797f576359ba36059ba8f97cb1d2",
+      "cloud/crm_new_car_vin_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_new_car_vin_001/deployment_bootstrap.py": "3b3108ce29edb29ca24f91260346f1b330d0a674616e59376608b50eca16a713",
+      "cloud/crm_new_car_vin_001/deployment_remote.py": "d464afd60bbd230824251f3e4b112fbd063d59ecc299805f6981712c2b2edc81",
+      "cloud/crm_new_car_vin_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_new_car_vin_001/deployment_transport.py": "d02ff658918ea1ef1e47af413c695970211c63611c57d5fb188571a0d0012879",
+      "cloud/crm_new_car_vin_001/edit_cars_ui.py": "a1058a6fce92cb2b0a767d06f7753ec778bca6873d220e22cfab38a56b32a836",
+      "cloud/crm_new_car_vin_001/make_release.py": "d702c435ffe0db67f6dc859774b67f4aebdeff3725b8cbc85c23225f445e4755",
+      "cloud/crm_new_car_vin_001/release_constants.py": "860b52c303aad9b9e044fceac2329a3ca413c1eafbf3f812c37ce172f26ce108",
+      "cloud/crm_new_car_vin_001/test_deployment.py": "3fdb19ddf7ae81824a375dfd750c21577d1fa13a4d24f45fcd3e214d6a55c19f",
+      "cloud/crm_new_car_vin_001/test_new_car_vin.py": "2defe6319ca49820235378f40662171d00e944a289fc2d066ccfd2f9e5ae9568",
+      "cloud/crm_new_car_vin_001/ua_new_car_bot.py": "06ab57a0d0c9bec33784baafd2c241f5bcdd4aa777bcb5464362d75e5f372474"
+    }
+  },
+  "updated_at": "2026-11-12T20:06:58Z"
+}

@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/analytics_audit_001/20261113.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "d6cfeab2fb91524f3cfde22408c4a5cddb35877d18e239ea83760619d10948c1",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "43361870837",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ANALYTICS-AUDIT-PROBE-20261113",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}

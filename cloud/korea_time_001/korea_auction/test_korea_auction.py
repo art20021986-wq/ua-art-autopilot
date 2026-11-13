@@ -514,13 +514,20 @@ class KoreaTimeTests(unittest.TestCase):
 
     def test_winter_and_summer_kyiv_time(self):
         from korea_auction import ticker
-        self.assertIn('>Торги 18.11 · 12:00 Корея · 05:00 Київ<', ticker._when('2026/11/18 12:00'))
-        self.assertIn('data-ru="Торги 18.11 · 12:00 Корея · 05:00 Киев"', ticker._when('2026/11/18 12:00'))
-        self.assertIn('>Торги 15.07 · 10:00 Корея · 04:00 Київ<', ticker._when('2026/07/15 10:00'))
+        self.assertIn('>Торги Ср, 18.11 · 12:00 Корея · 05:00 Київ<', ticker._when('2026/11/18 12:00'))
+        self.assertIn('data-ru="Торги Ср, 18.11 · 12:00 Корея · 05:00 Киев"', ticker._when('2026/11/18 12:00'))
+        self.assertIn('>Торги Ср, 15.07 · 10:00 Корея · 04:00 Київ<', ticker._when('2026/07/15 10:00'))
+
+    def test_weekday_per_language(self):
+        from korea_auction import ticker
+        sunday = ticker._when('2026/11/22 12:00')
+        self.assertIn('data-uk="Торги Нд, 22.11 ', sunday)
+        self.assertIn('data-ru="Торги Вс, 22.11 ', sunday)
+        self.assertIn('data-ka="ვაჭრობა კვი, 22.11 ', sunday)
 
     def test_kyiv_day_shown_when_it_differs(self):
         from korea_auction import ticker
-        self.assertIn('06:00 Корея · 23:00 (17.11) Київ', ticker._when('2026/11/18 06:00'))
+        self.assertIn('Ср, 18.11 · 06:00 Корея · 23:00 (Вт, 17.11) Київ', ticker._when('2026/11/18 06:00'))
 
     def test_unreadable_start_shows_nothing(self):
         from korea_auction import ticker

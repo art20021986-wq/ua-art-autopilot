@@ -5,10 +5,15 @@
    come from korea_auction/ in this package (zipped flat as kauc_<module>.py by the transport).
 2. Pages (time_pages.py): video/korea.html lot list and lot card, the order page model carousels
    (video/order/order.js, order-strings.json, the order.js version in video/podbor.html).
+3. Joined in one install (owner 2026-11-13, via the coordinator): all lot photos (korea_auction/prices.py MAX_PHOTOS
+   None, KOREA-PHOTOS-ALL-001), 7 day buttons on korea.html (week_days.py, KOREA-WEEK-DAYS-001) and the OTP credit line
+   in the korea.html lot window (lot_otp.py + edit_korea.py, LOT-OTP-001). Each edit is its own module.
 """
 from pathlib import Path
 
+import edit_korea
 import time_pages
+import week_days
 
 HERE = Path(__file__).resolve().parent
 MODULES = ('catalog', 'collect', 'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public', 'selection', 'session', 'ticker')
@@ -40,6 +45,9 @@ def build(source, dependencies, here=HERE, sha=None):
         files['korea_auction/%s.py' % name] = (here / ('kauc_%s.py' % name)).read_bytes()
     for name in time_pages.FILES:
         files[name] = time_pages.build(name, source[name].decode('utf-8')).encode('utf-8')
+    # The same Korea page also gets the 7 day buttons (KOREA-WEEK-DAYS-001) and the OTP line (LOT-OTP-001).
+    korea = time_pages.KOREA
+    files[korea] = edit_korea.build(week_days.build(files[korea].decode('utf-8')).encode('utf-8'))
     return files
 
 

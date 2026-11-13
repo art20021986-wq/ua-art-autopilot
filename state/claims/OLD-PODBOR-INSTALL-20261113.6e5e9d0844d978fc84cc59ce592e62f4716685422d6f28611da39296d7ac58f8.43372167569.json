@@ -1,0 +1,110 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/OLD-PODBOR-INSTALL-20261113.6e5e9d0844d978fc84cc59ce592e62f4716685422d6f28611da39296d7ac58f8.json",
+  "autostart_ledger_sha256": "56e1cdb20a04034fdea892634eadc1996bc6c95f7189b707d4ba69c48621a9d9",
+  "autostart_source_commit": "bd6de3f634117b45fc53766eb115f8686f760cea",
+  "created_at": "2026-11-13T05:29:08Z",
+  "critical_gate_evidence_sha256": "126021cc711bfee15c9e9c700d1df41799429f6ffb5e9a4ce09a268d9eeef2f5",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-11-13T05:35:49Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 43372167569",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "ea7184f84f42a8c5"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-13T05:51:51.970427+00:00",
+      "class": "ABORTED_DURING_BACKUP",
+      "evidence_path": "state/reconciliations/OLD-PODBOR-INSTALL-20261113.43372167569.aborted-backup.evidence.json",
+      "message": "CRITICAL install stopped in the backup step (network timeout to the PythonAnywhere API); no open, install or rollback stage ran; nothing written to the site or CRM. Owner «Да» to lifting the halt.",
+      "retries_remaining": 0,
+      "retry_allowed": false
+    }
+  ],
+  "heartbeat_at": "2026-11-13T05:30:41Z",
+  "heartbeat_sequence": 6,
+  "identity": {
+    "run_id": "43372167569",
+    "task_id": "OLD-PODBOR-INSTALL-20261113",
+    "task_sha256": "6e5e9d0844d978fc84cc59ce592e62f4716685422d6f28611da39296d7ac58f8"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 314.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 275.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-43372167569-6e5e9d0844d978fc",
+  "production_transaction_path": "state/transactions/OLD-PODBOR-INSTALL-20261113.6e5e9d0844d978fc84cc59ce592e62f4716685422d6f28611da39296d7ac58f8.43372167569.json",
+  "production_transaction_status": "ROLLED_BACK",
+  "queue_key": "path_scope-6a0922611ce8b5b6-766ebab9bb8d3ec6",
+  "receipt_path": "state/receipts/OLD-PODBOR-INSTALL-20261113.json",
+  "receipt_validation_status": "PENDING",
+  "reconciliation_path": "state/reconciliations/OLD-PODBOR-INSTALL-20261113.43372167569.aborted-backup.json",
+  "request_path": "tasks/requests/OLD-PODBOR-INSTALL-20261113.json",
+  "request_sha256": "6e5e9d0844d978fc84cc59ce592e62f4716685422d6f28611da39296d7ac58f8",
+  "resource_locks": [
+    "PATH_SCOPE:6a0922611ce8b5b6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "9ada1b89acd2f3b0760845761b4d9ad5479fd8cd",
+  "storage_preflight": {
+    "age_seconds": 360.977,
+    "allowed": true,
+    "evidence_path": "state/storage/OLD-PODBOR-INSTALL-20261113.json",
+    "evidence_sha256": "6ab0d0e0711f8317ddb14b44943f838f30aa343cc0bd9ea2ef83f541eb2d4008",
+    "free_bytes": 21532024320,
+    "heavy": true,
+    "measured_at": "2026-11-13T05:24:37.442989+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.47993051428571
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FAILED",
+  "trusted_package": {
+    "controller_sha256": "e3799db3cf058e218f78403e21282b025aee571e58dc922d1f6bc47ebb056189",
+    "file_sha256": {
+      "cloud/old_podbor_remove_001/candidate_builder.py": "1aa87cfb6b728ddf4f848b451b7ea3b1e4dc1c149b492280f395c8aca7230c9a",
+      "cloud/old_podbor_remove_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/old_podbor_remove_001/deployment_bootstrap.py": "2b6b7f11660948308fb9e9e1220512cf316c51eafd273736d6e8cf2148376162",
+      "cloud/old_podbor_remove_001/deployment_remote.py": "bdec6c4c549171ad346b272f35c555bf9d5453d5cccbafbe0a80743eb319e7a5",
+      "cloud/old_podbor_remove_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/old_podbor_remove_001/deployment_transport.py": "bb3b625a236135597f9489bc335a30c9e618da5e6165771a77d0a01e4318c7df",
+      "cloud/old_podbor_remove_001/make_release.py": "536ae1dd768269f5d97ae0676b117c9fee659c0f959437d86eb21426bf8874d5",
+      "cloud/old_podbor_remove_001/release_constants.py": "4157ac3cc9b9af10d621430a0948859b2270197c29be490653ab5f05a608b9a6",
+      "cloud/old_podbor_remove_001/test_deployment.py": "8e899c4db59da5dddca92924f90c11e1d9dfb0380bc9d81c900abab488de41a3",
+      "cloud/old_podbor_remove_001/test_release.py": "e3e66707bfd65d766f6854fd60ad4903dfbb5e7be8052f87e14c6e17f1493e5a"
+    }
+  },
+  "updated_at": "2026-11-13T05:51:51.970427+00:00"
+}
