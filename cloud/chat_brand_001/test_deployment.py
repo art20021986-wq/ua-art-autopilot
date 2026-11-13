@@ -249,7 +249,9 @@ class TransportTests(unittest.TestCase):
 
 class PublicVerificationTests(unittest.TestCase):
     def response(self,request,timeout):
-        caption='' if request.full_url.endswith('/video/index.html') else 'a.brand .brand-copy::after{}'
+        home=request.full_url.endswith('/video/index.html')
+        caption='' if home else 'a.brand .brand-copy::after{}'
+        caption+='</style><span>Дивіться всі авто та відгуки від UA ART COMPANY на AUTO.RIA</span><style>' if home else ''
         body=('<html><head></head><body>'+'x'*300+'<a class="mcf-chat floating-chat" href="https://wa.me/380992222002">'
               'c</a><!--UA-CHAT-GLASS-V1--><style>@media (max-width:767px){html body a.mcf-chat</style>'
               '<a class="mcf-chat ua-chat-added" href="https://wa.me/380992222002"></a><!--/UA-CHAT-GLASS-V1-->'

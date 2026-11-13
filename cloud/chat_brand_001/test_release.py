@@ -19,6 +19,7 @@ sys.path.insert(0, str(HERE))
 import candidate_builder  # noqa: E402
 import deployment_remote as remote  # noqa: E402
 import ua_autoria_badge  # noqa: E402
+import ua_autoria_text  # noqa: E402
 import ua_brand_home  # noqa: E402
 import ua_chat_button  # noqa: E402
 
@@ -65,8 +66,8 @@ class CandidateTests(unittest.TestCase):
         cls.result = candidate_builder.build(cls.source, {})
 
     def test_files(self):
-        self.assertEqual(sorted(self.result), sorted(list(self.source) + ['ua_autoria_badge.py', 'ua_brand_home.py']))
-        for name in ('ua_chat_button.py', 'ua_brand_home.py', 'ua_autoria_badge.py'):
+        self.assertEqual(sorted(self.result), sorted(list(self.source) + ['ua_autoria_badge.py', 'ua_autoria_text.py', 'ua_brand_home.py']))
+        for name in ('ua_chat_button.py', 'ua_brand_home.py', 'ua_autoria_badge.py', 'ua_autoria_text.py'):
             self.assertEqual(self.result[name], (HERE / name).read_bytes())
         self.assertIn("SEO_REVISION = 'CHAT-BRAND-001'", self.result['ua_seo_metadata.py'].decode())
         for name, value in self.result.items():
@@ -200,6 +201,32 @@ class BrandStyleTests(unittest.TestCase):
         stale = card.replace('</body>', ua_brand_home.MARK + '<style>old</style>' + ua_brand_home.END + '</body>')
         self.assertEqual(ua_brand_home.apply(stale), new)
         self.assertEqual(ua_brand_home.apply('google-site-verification: x'), 'google-site-verification: x')
+
+
+class AutoriaTextTests(unittest.TestCase):
+    BUTTON = ('<a class="ua-reviews-button" href="https://auto.ria.com/uk/dealers/yua-art-kompani/3356/"><span '
+              'data-ru="Все отзывы и проданные авто" data-uk="Усі відгуки та продані авто" '
+              'data-ka="ყველა შეფასება და გაყიდული ავტომობილი">Усі відгуки та продані авто</span></a>')
+
+    def test_new_wording_everywhere_old_gone(self):
+        page = ua_autoria_text.apply(self.BUTTON)
+        for old, new in ua_autoria_text.TEXTS:
+            self.assertNotIn(old, page)
+        self.assertEqual(page.count('Дивіться всі авто та відгуки від UA ART COMPANY на AUTO.RIA'), 2)
+        self.assertIn('data-ru="Смотрите все авто и отзывы UA ART COMPANY на AUTO.RIA"', page)
+        self.assertEqual(ua_autoria_text.apply(page), page)
+        self.assertEqual(ua_autoria_text.revert(page), self.BUTTON)
+
+    def test_other_text_untouched(self):
+        text = '<p>Усі відгуки та продані авто — наша гордість</p>'
+        self.assertEqual(ua_autoria_text.apply(text), text)
+
+    def test_builder_and_rollback_of_a_rewritten_home(self):
+        home = old.apply(HOME_HEAD + '<body>' + HEADER + self.BUTTON + '</body></html>')
+        new = candidate_builder.page(home)
+        self.assertNotIn('Усі відгуки та продані авто', new)
+        rewritten = new.replace('<body>', '<body><p>x</p>').encode()
+        self.assertEqual(remote.rewind_row(rewritten, home.encode()).decode(), home.replace('<body>', '<body><p>x</p>'))
 
 
 class AutoriaBadgeTests(unittest.TestCase):
