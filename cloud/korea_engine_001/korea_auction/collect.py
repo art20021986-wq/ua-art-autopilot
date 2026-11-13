@@ -62,9 +62,13 @@ def fetch_all_lots(s):
     return total, found
 
 
+# KOREA-ENGINE-001 (owner 2026-11-13): the auction's misspelt model names, so one model is one entry in the lot search
+MODEL_FIXES = {'MORNIG': 'MORNING', 'MOHAVI': 'MOHAVE'}
+
+
 def display_name(maker, model):
-    """'KIA', 'SANTA FE' -> 'Kia Santa Fe'; words with digits stay as is ('K5', 'G80')."""
-    words = (maker + ' ' + model).split()
+    """'KIA', 'SANTA FE' -> 'Kia Santa Fe'; words with digits stay as is ('K5', 'G80'); misspelt models fixed."""
+    words = (maker + ' ' + MODEL_FIXES.get(model.strip().upper(), model)).split()
     return ' '.join(w if any(c.isdigit() for c in w) else '-'.join(p.capitalize() for p in w.split('-'))
                     for w in words)
 
@@ -96,6 +100,11 @@ def _own_for_ticker(cars, rng=random):
     return ready[:OWN_IN_TICKER]
 
 
+def _houses(lots, date):
+    """The day's auction houses for the tile: [{'name', 'start' ('YYYY/MM/DD HH:MM' Korea)}]."""
+    return [{'name': name, 'start': start} for name, start in selection.houses(lots, date)]
+
+
 def collect(email, password, now=None, session=None):
     s = session or Session()
     s.login(email, password)
@@ -104,7 +113,7 @@ def collect(email, password, now=None, session=None):
     rates = nbu.fetch_rates()
     own_cars = catalog.parse(catalog.fetch())
     rules = catalog.model_rules(own_cars)
-    today, next_date = selection.today_and_next(all_lots, now)
+    today, next_days = selection.today_and_next_days(all_lots, now)
     tomorrow = selection.day_after(today)
     items, details = [], 0
     for day in selection.ticker_dates(all_lots, now):  # TICKER-FIX6-001: next days, then today, until full
@@ -119,10 +128,10 @@ def collect(email, password, now=None, session=None):
     return {
         'generated_at': (now or datetime.now(selection.JST)).isoformat(timespec='minutes'),
         'auction_date': date,
-        # TICKER-FIX4-001 (owner 2026-11-12): how many cars today and on the next auction day
+        # KOREA-TILE-001 (owner 2026-11-13): the yellow tile — today's car count and the 3 nearest auction days
         'lots_today': sum(1 for l in all_lots if selection.auction_date(l) == today),
-        'next_date': next_date, 'next_is_tomorrow': next_date == selection.day_after(today),
-        'lots_next': sum(1 for l in all_lots if next_date and selection.auction_date(l) == next_date),
+        'houses_today': _houses(all_lots, today),
+        'next_days': [{'date': d, 'lots': n, 'houses': _houses(all_lots, d)} for d, n in next_days],
         'lots_total': total, 'lots_parsed': len(all_lots),
         'lots_on_date': sum(1 for l in all_lots if selection.auction_date(l) == date),
         'nbu': {'date': rates['date'], 'usd_uah': rates['USD'], 'krw_uah': rates['KRW']},
