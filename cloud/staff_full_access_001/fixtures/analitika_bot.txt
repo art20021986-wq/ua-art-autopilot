@@ -1,0 +1,54 @@
+# -*- coding: utf-8 -*-
+# UA-ANALIT-V1  раздел "Аналитика" в клиентском боте. Доступ только владельцу.
+import sys
+DOM = "/home/Carix"
+if DOM not in sys.path:
+    sys.path.insert(0, DOM)
+
+VLADELEC = [397376186]
+
+def _knopki():
+    from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("📅 Сегодня", callback_data="ana_segodnya"),
+         InlineKeyboardButton("📅 Вчера", callback_data="ana_vchera")],
+        [InlineKeyboardButton("📅 7 дней", callback_data="ana_7"),
+         InlineKeyboardButton("📅 30 дней", callback_data="ana_30")],
+        [InlineKeyboardButton("🔄 Обновить", callback_data="ana_segodnya")],
+    ])
+
+def _svoy(update):
+    try:
+        return update.effective_user and update.effective_user.id in VLADELEC
+    except Exception:
+        return False
+
+async def _cmd(update, context):
+    if not _svoy(update):
+        return
+    await update.effective_message.reply_text("📊 UA ART — Аналитика\nВыберите период:", reply_markup=_knopki())
+
+async def _cb(update, context):
+    q = update.callback_query
+    if not _svoy(update):
+        try:
+            await q.answer("Раздел доступен только владельцу", show_alert=True)
+        except Exception:
+            pass
+        return
+    await q.answer()
+    period = q.data.replace("ana_", "")
+    import analitika_yadro as ya
+    try:
+        tekst = ya.otchet(period)
+    except Exception as e:
+        tekst = "Ошибка отчёта: %s" % e
+    for kusok in [tekst[i:i + 3500] for i in range(0, len(tekst), 3500)] or ["пусто"]:
+        await context.bot.send_message(chat_id=q.message.chat_id, text=kusok)
+    await context.bot.send_message(chat_id=q.message.chat_id, text="Период:", reply_markup=_knopki())
+
+def register(app):
+    from telegram.ext import CommandHandler, CallbackQueryHandler
+    app.add_handler(CommandHandler("analitika", _cmd), group=-1)
+    app.add_handler(CallbackQueryHandler(_cb, pattern=r"^ana_"), group=-1)
+    return True

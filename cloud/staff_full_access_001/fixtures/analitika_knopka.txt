@@ -1,0 +1,73 @@
+# -*- coding: utf-8 -*-
+# UA-ANALIT-KNOPKA-V2 — раздел «📊 Аналитика» клиентского бота.
+# Пользуется тем, что уже есть в проекте: отправка через vitrina.poslat,
+# кнопки парами, «Назад» — существующее действие v_start, доступ — vladelec.txt.
+import sys
+if "/home/Carix" not in sys.path:
+    sys.path.insert(0, "/home/Carix")
+
+DEYSTVIE = "v_analytics"
+ZAPASNOY_VLADELEC = "397376186"
+PERIODY = {"v_an_today": "today", "v_an_yesterday": "yesterday",
+           "v_an_7": "7d", "v_an_30": "30d"}
+IMENA = {"today": "Сегодня", "yesterday": "Вчера", "7d": "7 дней", "30d": "30 дней"}
+
+
+def vladelec_id():
+    try:
+        import vitrina
+        znach = (vitrina.fajl("vladelec.txt") or "").strip()
+        if znach:
+            return znach
+    except Exception:
+        pass
+    return ZAPASNOY_VLADELEC
+
+
+def vladelec_li(kto):
+    try:
+        return int(kto) == int(vladelec_id())
+    except Exception:
+        return False
+
+
+def otchet(period="today"):
+    """Отчёт строит analitika_otchet (та же база, правильные периоды)."""
+    try:
+        import analitika_otchet
+        return analitika_otchet.otchet(period)
+    except Exception as oshibka:
+        try:
+            import analitika_yadro as Y
+            return Y.otchet(period)
+        except Exception:
+            return "Отчёт временно недоступен: " + str(oshibka)
+
+
+def knopki():
+    return [
+        [("📅 Сегодня", "v_an_today"), ("📅 Вчера", "v_an_yesterday")],
+        [("📅 7 дней", "v_an_7"), ("📅 30 дней", "v_an_30")],
+        [("🔄 Обновить", "v_an_today")],
+        [("⬅️ Назад", "v_start")],
+    ]
+
+
+async def vetka(bot, chat_id, kto, deystvie):
+    """True — действие обработано здесь, витрина дальше его не разбирает."""
+    import vitrina
+    if not vladelec_li(kto):
+        return True
+    if deystvie == DEYSTVIE:
+        await vitrina.poslat(bot, chat_id,
+                             "📊 <b>UA ART — аналитика</b>\nВыберите период:", knopki())
+        return True
+    period = PERIODY.get(deystvie)
+    if period is None:
+        return False
+    try:
+        tekst = otchet(period)
+    except Exception as oshibka:
+        tekst = "Не удалось построить отчёт: " + str(oshibka)
+    await vitrina.poslat(bot, chat_id, tekst, knopki())
+    return True

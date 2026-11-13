@@ -1,0 +1,305 @@
+# -*- coding: utf-8 -*-
+# karta_klienta.py  —  подключается сам, правки в боты не вносит.
+#
+#  1. В клиентском боте к карточке машины первой строкой встаёт кнопка
+#     «Открыть карточку машины» (Telegram Web App) — страница разворачивается
+#     внутри Telegram ровно в том виде, в каком её видит покупатель.
+#  2. Папка site держится зеркалом папки video, поэтому старые ссылки вида
+#     /card/UA-XXXX.html показывают ту же свежую страницу, что и /video/.
+#  3. Сторож раз в 15 минут сам открывает страницу каждой опубликованной машины,
+#     считает кадры и проверяет ролик; при расхождении пишет владельцу.
+
+import os, re, json, time, shutil, sqlite3, threading, getpass
+import urllib.request, urllib.parse
+
+DOM = "/home/Carix"
+VIDEO = os.path.join(DOM, "video")
+SITE = os.path.join(DOM, "site")
+BAZA = os.path.join(DOM, "crm.db")
+LOG = os.path.join(DOM, "karta_log.txt")
+SIGNAL = os.path.join(DOM, ".karta_signal.json")
+
+PROVERKA_MIN = 15        # как часто сторож проверяет страницы
+ZERKALO_SEK = 20         # как часто обновляется зеркало site
+DOLYA_FOTO = 0.8         # ниже этой доли кадров страница считается неполной
+
+
+def _log(s):
+    try:
+        with open(LOG, "a", encoding="utf-8") as f:
+            f.write(time.strftime("%Y-%m-%d %H:%M:%S ") + str(s) + "\n")
+    except Exception:
+        pass
+
+
+def _chitat(imya):
+    try:
+        with open(os.path.join(DOM, imya), encoding="utf-8") as f:
+            return f.read().strip()
+    except Exception:
+        return ""
+
+
+def _sayt():
+    a = _chitat("video_sayt.txt")
+    if a:
+        return a.rstrip("/")
+    try:
+        user = getpass.getuser()
+    except Exception:
+        user = "Carix"
+    return "[URL]" % user
+
+
+def _fayl(nomer):
+    return os.path.join(VIDEO, nomer + ".html")
+
+
+def _ssylka(nomer):
+    p = _fayl(nomer)
+    try:
+        metka = int(os.path.getmtime(p))
+    except Exception:
+        metka = int(time.time())
+    return "%s/video/%s.html?v=%d" % (_sayt(), nomer, metka)
+
+
+# ---------------------------------------------------------------- зеркало
+
+def _zerkalo():
+    try:
+        if not os.path.isdir(VIDEO):
+            return
+        if not os.path.isdir(SITE):
+            os.makedirs(SITE, exist_ok=True)
+        for imya in os.listdir(VIDEO):
+            if not imya.lower().endswith(".html"):
+                continue
+            a = os.path.join(VIDEO, imya)
+            b = os.path.join(SITE, imya)
+            try:
+                if (not os.path.exists(b)) or os.path.getmtime(a) > os.path.getmtime(b) + 1:
+                    shutil.copy2(a, b)
+                    _log("зеркало: обновлено " + imya)
+            except Exception as e:
+                _log("зеркало %s: %s" % (imya, e))
+    except Exception as e:
+        _log("зеркало: " + str(e))
+
+
+# ---------------------------------------------------------------- кнопка
+
+def _klientskiy(bot):
+    """Правка нужна только клиентскому боту. Не смогли определить — ставим всем."""
+    try:
+        t = (getattr(bot, "token", "") or "").strip()
+        k = _chitat("bot_token.txt")
+        if t and k:
+            return t == k
+    except Exception:
+        pass
+    return True
+
+
+def _nomer_iz(text):
+    m = re.search(r"UA-(\d{3,6})", text or "")
+    return ("UA-" + m.group(1)) if m else ""
+
+
+def _knopka(bot, text, markup):
+    try:
+        if not text or len(text) < 120:
+            return markup
+        if not _klientskiy(bot):
+            return markup
+        nomer = _nomer_iz(text)
+        if not nomer:
+            return markup
+        if not os.path.exists(_fayl(nomer)):
+            return markup           # мёртвую кнопку не ставим
+        from telegram import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+        ryady = []
+        if markup is not None and getattr(markup, "inline_keyboard", None):
+            for r in markup.inline_keyboard:
+                for b in r:
+                    if getattr(b, "web_app", None):
+                        return markup   # кнопка уже стоит
+                ryady.append(list(r))
+        knop = InlineKeyboardButton("🚘 Открыть карточку машины",
+                                    web_app=WebAppInfo(url=_ssylka(nomer)))
+        return InlineKeyboardMarkup([[knop]] + ryady)
+    except Exception as e:
+        _log("кнопка: " + str(e))
+        return markup
+
+
+def _podklyuchit_knopku():
+    try:
+        from telegram.ext import ExtBot
+    except Exception:
+        return False
+    if getattr(ExtBot, "_karta_v31", False):
+        return True
+
+    staryy_msg = ExtBot.send_message
+    staryy_foto = ExtBot.send_photo
+
+    async def send_message(self, chat_id, text=None, *a, **kw):
+        try:
+            t = text if text is not None else kw.get("text")
+            kw["reply_markup"] = _knopka(self, t, kw.get("reply_markup"))
+        except Exception:
+            pass
+        return await staryy_msg(self, chat_id, text, *a, **kw)
+
+    async def send_photo(self, chat_id, photo=None, *a, **kw):
+        try:
+            kw["reply_markup"] = _knopka(self, kw.get("caption"), kw.get("reply_markup"))
+        except Exception:
+            pass
+        return await staryy_foto(self, chat_id, photo, *a, **kw)
+
+    ExtBot.send_message = send_message
+    ExtBot.send_photo = send_photo
+    ExtBot._karta_v31 = True
+    _log("кнопка карточки подключена")
+    return True
+
+
+# ---------------------------------------------------------------- сторож
+
+def _pismo(text, kluch):
+    """Пишем владельцу не чаще раза в сутки на один и тот же повод."""
+    try:
+        try:
+            with open(SIGNAL, encoding="utf-8") as f:
+                bylo = json.load(f)
+        except Exception:
+            bylo = {}
+        if time.time() - float(bylo.get(kluch, 0)) < 86400:
+            return
+[REDACTED]
+        komu = _chitat("vladelec.txt")
+        if not token or not komu:
+            return
+        data = urllib.parse.urlencode({"chat_id": komu, "text": text}).encode()
+        urllib.request.urlopen(
+            "[URL]" % token, data, timeout=20).read()
+        bylo[kluch] = time.time()
+        with open(SIGNAL, "w", encoding="utf-8") as f:
+            json.dump(bylo, f)
+    except Exception as e:
+        _log("письмо: " + str(e))
+
+
+def _spisok_mashin():
+    out = []
+    try:
+        s = sqlite3.connect(BAZA, timeout=20)
+        s.row_factory = sqlite3.Row
+        est = set()
+        for r in s.execute("PRAGMA table_info(cars)"):
+            est.add(r[1])
+        polya = ["auto_number"]
+        for p in ("photos", "hidden_photos", "videos", "published"):
+            if p in est:
+                polya.append(p)
+        q = "SELECT %s FROM cars" % ", ".join(polya)
+        if "published" in est:
+            q += " WHERE published=1"
+        for r in s.execute(q):
+            d = dict(r)
+            out.append(d)
+        s.close()
+    except Exception as e:
+        _log("база: " + str(e))
+    return out
+
+
+def _skolko(v):
+    if not v:
+        return 0
+    try:
+        z = json.loads(v) if isinstance(v, str) else v
+        return len(z) if isinstance(z, (list, tuple)) else 0
+    except Exception:
+        return 0
+
+
+def _proverit_odnu(m):
+    nomer = (m.get("auto_number") or "").strip()
+    if not nomer:
+        return
+    put = _fayl(nomer)
+    if not os.path.exists(put):
+        _pismo("Карточка %s: страницы для покупателя нет.\n"
+               "Откройте машину в CRM и нажмите «Показать клиентам»." % nomer,
+               "net_" + nomer)
+        return
+    try:
+        with open(put, encoding="utf-8", errors="ignore") as f:
+            html = f.read()
+    except Exception as e:
+        _log("чтение %s: %s" % (nomer, e))
+        return
+
+    nado = max(0, _skolko(m.get("photos")) - _skolko(m.get("hidden_photos")))
+    est = html.count("<img")
+    if nado and est < nado * DOLYA_FOTO:
+        _pismo("Карточка %s: на странице покупателя %d кадров из %d.\n"
+               "Нажмите «Скрыть от клиентов», затем «Показать клиентам»." % (nomer, est, nado),
+               "foto_" + nomer)
+
+    if _skolko(m.get("videos")) and ("<video" not in html and ".mp4" not in html):
+        _pismo("Карточка %s: на странице покупателя нет видео.\n"
+               "Нажмите «Скрыть от клиентов», затем «Показать клиентам»." % nomer,
+               "video_" + nomer)
+
+    # страница должна открываться снаружи — проверяем оба адреса
+    for hvost in ("/video/%s.html" % nomer, "/card/%s.html" % nomer):
+        adres = _sayt() + hvost
+        try:
+            req = urllib.request.Request(adres, headers={"User-Agent": "UAART-storozh"})
+            with urllib.request.urlopen(req, timeout=25) as o:
+                kod = o.getcode()
+                o.read(4096)
+            if kod != 200:
+                raise RuntimeError("ответ %s" % kod)
+        except Exception as e:
+            _log("адрес %s: %s" % (adres, e))
+            _pismo("Карточка %s: адрес %s не открывается (%s).\n"
+                   "Проверьте вкладку Web → Static files и нажмите Reload." % (nomer, adres, e),
+                   "adres_" + nomer + hvost.split("/")[1])
+
+
+def _cikl():
+    time.sleep(25)
+    posledn = 0
+    while True:
+        try:
+            _zerkalo()
+            if time.time() - posledn > PROVERKA_MIN * 60:
+                posledn = time.time()
+                for m in _spisok_mashin():
+                    _proverit_odnu(m)
+                _log("сторож: проверка закончена")
+        except Exception as e:
+            _log("цикл: " + str(e))
+        time.sleep(ZERKALO_SEK)
+
+
+def start():
+    try:
+        _podklyuchit_knopku()
+    except Exception as e:
+        _log("подключение: " + str(e))
+    try:
+        t = threading.Thread(target=_cikl, daemon=True)
+        t.start()
+    except Exception as e:
+        _log("поток: " + str(e))
+
+
+if not globals().get("_karta_zapushchen"):
+    _karta_zapushchen = True
+    start()
