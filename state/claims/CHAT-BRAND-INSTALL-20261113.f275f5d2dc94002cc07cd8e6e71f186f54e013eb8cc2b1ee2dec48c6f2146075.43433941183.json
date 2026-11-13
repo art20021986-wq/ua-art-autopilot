@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "dd6c0e948ee6f89eac61bccd889353071eb3cf1cfeab0f91c25bba74e9b1580f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T13:36:55Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-13T13:49:44Z",
+  "heartbeat_at": "2026-11-13T13:49:44Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43433941183",
     "task_id": "CHAT-BRAND-INSTALL-20261113",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 684.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 280.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43433941183-f275f5d2dc94002c",
   "production_transaction_path": "state/transactions/CHAT-BRAND-INSTALL-20261113.f275f5d2dc94002cc07cd8e6e71f186f54e013eb8cc2b1ee2dec48c6f2146075.43433941183.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-516734deb9ea5607",
   "receipt_path": "state/receipts/CHAT-BRAND-INSTALL-20261113.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "08398154948569356044811427dc64f71919d7fc7ba67879b70d5fa9c28e0778",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CHAT-BRAND-INSTALL-20261113.json",
   "request_sha256": "f275f5d2dc94002cc07cd8e6e71f186f54e013eb8cc2b1ee2dec48c6f2146075",
   "resource_locks": [
@@ -70,7 +93,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "e5e82f79f6e45010841126221ce94cdf0a70e52503f13622253f3d880b1ba0f6",
     "file_sha256": {
@@ -91,5 +114,5 @@
       "cloud/chat_brand_001/ua_chat_button.py": "135549d6473fb41c192a16cb8c0a38c0c4d2826305b85ed3e15e20df15ff2114"
     }
   },
-  "updated_at": "2026-11-13T13:36:55Z"
+  "updated_at": "2026-11-13T13:49:44Z"
 }
