@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-PAYMENTS-PREFLIGHT-20261112-R4.5309e6a936b1bf8f81623ca82941ea17b8da618c04d0bc323498d5470a80ae6d.json",
+  "autostart_ledger_sha256": "b2201f157180595fb827d85126c27ea6ffa85c2b20f1ebb02b2147409ec5b48c",
+  "autostart_source_commit": "93423022edc838bc893ea7eb2e93910ecd58480f",
+  "created_at": "2026-11-12T21:07:48Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43306856803",
+    "task_id": "CRM-PAYMENTS-PREFLIGHT-20261112-R4",
+    "task_sha256": "5309e6a936b1bf8f81623ca82941ea17b8da618c04d0bc323498d5470a80ae6d"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/CRM-PAYMENTS-PREFLIGHT-20261112-R4.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

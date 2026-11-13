@@ -1,0 +1,483 @@
+# -*- coding: utf-8 -*-
+# bezopasnost.py - zashchita sistemy UA ART.
+# Samopodklyuchaemyy modul (usercustomize), rabochie fayly ne pravit.
+
+import os
+import re
+import json
+import time
+import gzip
+import shutil
+import sqlite3
+import hashlib
+import threading
+import urllib.parse
+import urllib.request
+
+BAZA = "/home/Carix"
+DB = os.path.join(BAZA, "crm.db")
+LOG = os.path.join(BAZA, "bezopasnost_log.txt")
+SOSTOYANIE = os.path.join(BAZA, ".bezopasnost.json")
+DOSTUP = os.path.join(BAZA, "dostup.txt")
+KODY = os.path.join(BAZA, "kody_dostupa.json")
+KLUCH = os.path.join(BAZA, "kluch_stranic.txt")
+PAPKA = os.path.join(BAZA, "video")
+STAROE = os.path.join(BAZA, "staroe")
+
+CHAS_KOPII = 3          # v skolko chasov po serveru slat kopiyu bazy
+KOD_ZHIVET = 30 * 60    # skolko zhivet odnorazovyy kod, sekund
+ZAKRYT_STARYE = False   # udalyat li otkrytyy adres stranicy
+
+OBRAZEC = re.compile(r"UA-(\d{3,6})\.html")
+
+
+def _log(s):
+    try:
+        with open(LOG, "a", encoding="utf-8") as f:
+            f.write(time.strftime("%Y-%m-%d %H:%M:%S") + "  " + str(s) + "\n")
+        if os.path.getsize(LOG) > 400000:
+            with open(LOG, "r", encoding="utf-8", errors="ignore") as f:
+                hvost = f.readlines()[-1500:]
+            with open(LOG, "w", encoding="utf-8") as f:
+                f.writelines(hvost)
+    except Exception:
+        pass
+
+
+def _fayl(imya):
+    try:
+        with open(os.path.join(BAZA, imya), "r", encoding="utf-8", errors="ignore") as f:
+            return f.read().strip()
+    except Exception:
+        return ""
+
+
+def _sost():
+    try:
+        with open(SOSTOYANIE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _zapisat_sost(d):
+    try:
+        with open(SOSTOYANIE, "w", encoding="utf-8") as f:
+            json.dump(d, f)
+    except Exception:
+        pass
+
+
+def _vladelec():
+    z = _fayl("vladelec.txt")
+    return z.split()[0] if z else ""
+
+
+def _token():
+    return _fayl("team_token.txt")
+
+
+def _soobshenie(komu, tekst):
+    t = _token()
+    if not t or not komu:
+        return False
+    try:
+        d = urllib.parse.urlencode({"chat_id": str(komu), "text": tekst}).encode()
+        urllib.request.urlopen(
+            "[URL]" + t + "/sendMessage", d, timeout=25).read()
+        return True
+    except Exception as e:
+        _log("soobshenie ne ushlo: " + repr(e))
+        return False
+
+
+def _dokument(komu, put, podpis):
+    t = _token()
+    if not t or not komu or not os.path.exists(put):
+        return False
+    granica = "----UAART" + hashlib.md5(str(time.time()).encode()).hexdigest()[:12]
+    try:
+        with open(put, "rb") as f:
+            soderzhimoe = f.read()
+        chasti = []
+        for imya, znach in (("chat_id", str(komu)), ("caption", podpis)):
+            chasti.append(("--" + granica + "\r\n"
+                           "Content-Disposition: form-data; name=\"" + imya + "\"\r\n\r\n"
+                           + znach + "\r\n").encode("utf-8"))
+        chasti.append(("--" + granica + "\r\n"
+                       "Content-Disposition: form-data; name=\"document\"; filename=\""
+                       + os.path.basename(put) + "\"\r\n"
+                       "Content-Type: application/octet-stream\r\n\r\n").encode("utf-8"))
+        chasti.append(soderzhimoe)
+        chasti.append(("\r\n--" + granica + "--\r\n").encode("utf-8"))
+        telo = b"".join(chasti)
+        zapros = urllib.request.Request(
+            "[URL]" + t + "/sendDocument", data=telo)
+        zapros.add_header("Content-Type", "multipart/form-data; boundary=" + granica)
+        urllib.request.urlopen(zapros, timeout=180).read()
+        return True
+    except Exception as e:
+        _log("dokument ne ushel: " + repr(e))
+        return False
+
+
+# ------------------------------------------------ 1. kopiya bazy naruzhu
+def kopiya_bazy(ruchnaya=False):
+    komu = _fayl("kopiya_kuda.txt") or _vladelec()
+    if not komu:
+        _log("kopiya: ne znayu, komu slat")
+        return False
+    if not os.path.exists(DB):
+        return False
+    imya = "crm-" + time.strftime("%Y-%m-%d") + ".db.gz"
+    put = os.path.join(BAZA, imya)
+    try:
+        vremenno = os.path.join(BAZA, ".crm_kopiya.db")
+        try:
+            src = sqlite3.connect(DB, timeout=30)
+            dst = sqlite3.connect(vremenno)
+            with dst:
+                src.backup(dst)
+            dst.close()
+            src.close()
+        except Exception:
+            shutil.copy2(DB, vremenno)
+        with open(vremenno, "rb") as vhod, gzip.open(put, "wb") as vyhod:
+            shutil.copyfileobj(vhod, vyhod)
+        os.remove(vremenno)
+        ves = os.path.getsize(put) / 1024.0
+        podpis = ("Копия базы UA ART, " + time.strftime("%d.%m.%Y %H:%M")
+                  + ", " + str(int(ves)) + " КБ. Сохраните — это все ваши карточки.")
+        ushlo = _dokument(komu, put, podpis)
+        try:
+            os.remove(put)
+        except Exception:
+            pass
+        if ushlo:
+            d = _sost()
+            d["kopiya_den"] = time.strftime("%Y-%m-%d")
+            _zapisat_sost(d)
+            _log("kopiya bazy otpravlena")
+        return ushlo
+    except Exception as e:
+        _log("kopiya ne sobralas: " + repr(e))
+        return False
+
+
+# ------------------------------------------------ 2. propusk v CRM
+def _spisok_dostupa():
+    kto = set()
+    v = _vladelec()
+    if v:
+        kto.add(str(v))
+    try:
+        with open(DOSTUP, "r", encoding="utf-8", errors="ignore") as f:
+            for s in f:
+                s = s.strip().split("#")[0].strip()
+                if s:
+                    kto.add(s)
+    except Exception:
+        pass
+    return kto
+
+
+def _dobavit_v_dostup(kto, podpis=""):
+    try:
+        with open(DOSTUP, "a", encoding="utf-8") as f:
+            f.write(str(kto) + "  # " + podpis + " " + time.strftime("%d.%m.%Y") + "\n")
+        return True
+    except Exception as e:
+        _log("ne dobavil dostup: " + repr(e))
+        return False
+
+
+def _kody():
+    try:
+        with open(KODY, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _zapisat_kody(d):
+    try:
+        with open(KODY, "w", encoding="utf-8") as f:
+            json.dump(d, f)
+    except Exception:
+        pass
+
+
+def novyy_kod():
+    kod = hashlib.md5(str(time.time()).encode()).hexdigest()[:6].upper()
+    d = _kody()
+    d[kod] = {"do": time.time() + KOD_ZHIVET, "ispolzovan": False}
+    for k in list(d.keys()):
+        if d[k].get("do", 0) < time.time() - 86400:
+            d.pop(k, None)
+    _zapisat_kody(d)
+    return kod
+
+
+def _proverit_kod(tekst, kto):
+    if not tekst:
+        return False
+    kod = tekst.strip().upper()
+    if len(kod) != 6:
+        return False
+    d = _kody()
+    zapis = d.get(kod)
+    if not zapis or zapis.get("ispolzovan"):
+        return False
+    if zapis.get("do", 0) < time.time():
+        return False
+    zapis["ispolzovan"] = True
+    zapis["kto"] = str(kto)
+    _zapisat_kody(d)
+    _dobavit_v_dostup(kto, "по коду")
+    return True
+
+
+def _propusk(update):
+    """True - propuskaem obnovlenie dalshe."""
+    spisok = _spisok_dostupa()
+    if not spisok:
+        return True  # nikogo ne znaem - zamok ne stavim, chtoby ne zaperet vladelca
+    try:
+        kto = update.effective_user.id if update.effective_user else None
+    except Exception:
+        kto = None
+    if kto is None:
+        return True
+    if str(kto) in spisok:
+        return True
+
+    tekst = ""
+    try:
+        if update.effective_message and update.effective_message.text:
+            tekst = update.effective_message.text
+    except Exception:
+        pass
+
+    if _proverit_kod(tekst, kto):
+        imya = ""
+        try:
+            imya = (update.effective_user.full_name or "") + " @" + (
+                update.effective_user.username or "")
+        except Exception:
+            pass
+        _soobshenie(kto, "Доступ открыт. Напишите /start")
+        _soobshenie(_vladelec(), "В рабочий бот вошёл новый человек: "
+                    + imya + " (" + str(kto) + "). Код использован и больше не работает.")
+        _log("dostup vydan: " + str(kto))
+        return True
+
+    # ORDER-PROCESS-001 staff invite: a CRM invite from «Сотрудники» goes on to the bot, which gives the role.
+    try:
+        import ua_staff_invite
+        if ua_staff_invite.valid(tekst, DB):
+            _dobavit_v_dostup(kto, "по коду CRM")
+            _log("dostup po kodu CRM: " + str(kto))
+            return True
+    except Exception as e:
+        _log("kod CRM: " + repr(e))
+
+    d = _sost()
+    kogda = d.get("otkaz_" + str(kto), 0)
+    if time.time() - kogda > 3600:
+        d["otkaz_" + str(kto)] = time.time()
+        _zapisat_sost(d)
+        _soobshenie(kto, "Это рабочий бот компании. Доступ по приглашению.")
+        imya = ""
+        try:
+            imya = (update.effective_user.full_name or "") + " @" + (
+                update.effective_user.username or "")
+        except Exception:
+            pass
+        _soobshenie(_vladelec(), "Чужой в рабочем боте: " + imya + " (" + str(kto)
+                    + "). Не пропущен. Если это ваш человек — /dostup выдаст ему код.")
+    _log("otkaz: " + str(kto))
+    return False
+
+
+# ------------------------------------------------ 3. zakrytye adresa stranic
+def _sekret():
+    z = _fayl("kluch_stranic.txt")
+    if z:
+        return z
+    z = hashlib.md5(str(time.time()).encode()).hexdigest()
+    try:
+        with open(KLUCH, "w", encoding="utf-8") as f:
+            f.write(z)
+    except Exception:
+        pass
+    return z
+
+
+def _hvost(nomer):
+    return hashlib.md5((_sekret() + "|" + str(nomer)).encode()).hexdigest()[:8]
+
+
+def zakrytoe_imya(imya_html):
+    """UA-0001.html -> UA-0001-ab12cd34.html"""
+    m = OBRAZEC.fullmatch(imya_html)
+    if not m:
+        return imya_html
+    nomer = "UA-" + m.group(1)
+    return nomer + "-" + _hvost(nomer) + ".html"
+
+
+def obnovit_stranicy():
+    """Deraet/osvezhaet zakrytuyu kopiyu kazhdoy sobrannoy stranicy."""
+    sdelano = []
+    try:
+        if not os.path.isdir(PAPKA):
+            return sdelano
+        for imya in os.listdir(PAPKA):
+            if not OBRAZEC.fullmatch(imya):
+                continue
+            otkrytyy = os.path.join(PAPKA, imya)
+            zakrytyy = os.path.join(PAPKA, zakrytoe_imya(imya))
+            try:
+                svezho = (os.path.exists(zakrytyy) and
+                          os.path.getmtime(zakrytyy) >= os.path.getmtime(otkrytyy))
+                if not svezho:
+                    shutil.copy2(otkrytyy, zakrytyy)
+                    sdelano.append(os.path.basename(zakrytyy))
+                if ZAKRYT_STARYE:
+                    os.remove(otkrytyy)
+            except Exception as e:
+                _log("stranica " + imya + ": " + repr(e))
+    except Exception as e:
+        _log("obhod stranic: " + repr(e))
+    return sdelano
+
+
+def _zamena_v_tekste(tekst):
+    if not tekst or "UA-" not in tekst:
+        return tekst
+
+    def zamenit(m):
+        return zakrytoe_imya(m.group(0))
+
+    try:
+        return OBRAZEC.sub(zamenit, tekst)
+    except Exception:
+        return tekst
+
+
+def _ubrat_lishnee():
+    """Iz publichnoy papki uhodit vsyo, chto ne kartochka: ishodniki i prochee."""
+    try:
+        if not os.path.isdir(PAPKA):
+            return
+        os.makedirs(STAROE, exist_ok=True)
+        for imya in os.listdir(PAPKA):
+            put = os.path.join(PAPKA, imya)
+            opasno = (imya.startswith("ish_") or imya.endswith(".py.txt")
+                      or imya in ("baza.txt", "spisok.txt"))
+            if opasno:
+                try:
+                    shutil.move(put, os.path.join(STAROE, imya + "_" + time.strftime("%H%M%S")))
+                    _log("ubral iz publichnoy papki: " + imya)
+                    _soobshenie(_vladelec(),
+                                "Из открытой папки убран файл с исходниками: " + imya)
+                except Exception as e:
+                    _log("ne ubral " + imya + ": " + repr(e))
+    except Exception as e:
+        _log("chistka papki: " + repr(e))
+
+
+# ------------------------------------------------ perehvat otpravki
+try:
+    from telegram import Bot
+    from telegram.ext import ExtBot
+
+    _staryy_send = ExtBot.send_message
+
+    async def _send_message(self, chat_id, text=None, *a, **kw):
+        try:
+            if isinstance(text, str):
+                text = _zamena_v_tekste(text)
+        except Exception:
+            pass
+        return await _staryy_send(self, chat_id, text, *a, **kw)
+
+    _send_message._ua_art = True
+    if not getattr(ExtBot.send_message, "_ua_art", False):
+        ExtBot.send_message = _send_message
+        _log("zamena adresov v otpravke vklyuchena")
+except Exception as e:
+    _log("perehvat otpravki nedostupen: " + repr(e))
+
+
+# ------------------------------------------------ perehvat obnovleniy CRM
+try:
+    from telegram.ext import Application
+
+    _staraya_obrabotka = Application.process_update
+
+    def _eto_crm(app):
+        try:
+            return str(getattr(app.bot, "token", "") or "").strip() == _token()
+        except Exception:
+            return False
+
+    async def _process_update(self, update):
+        try:
+            if _eto_crm(self):
+                tekst = ""
+                try:
+                    if update.effective_message and update.effective_message.text:
+                        tekst = update.effective_message.text.strip()
+                except Exception:
+                    pass
+                if tekst.startswith("/dostup") and str(
+                        getattr(update.effective_user, "id", "")) == str(_vladelec()):
+                    kod = novyy_kod()
+                    _soobshenie(_vladelec(),
+                                "Одноразовый код: " + kod
+                                + "\nПередайте его человеку — пусть пришлёт этот код "
+                                  "в рабочий бот. Код живёт 30 минут и срабатывает один раз.")
+                    return
+                if tekst.startswith("/kopiya") and str(
+                        getattr(update.effective_user, "id", "")) == str(_vladelec()):
+                    kopiya_bazy(True)
+                    return
+                if not _propusk(update):
+                    return
+        except Exception as e:
+            _log("propusk: " + repr(e))
+        return await _staraya_obrabotka(self, update)
+
+    _process_update._ua_art_bez = True
+    if not getattr(Application.process_update, "_ua_art_bez", False):
+        Application.process_update = _process_update
+        _log("propusk v CRM vklyuchen")
+except Exception as e:
+    _log("perehvat obnovleniy nedostupen: " + repr(e))
+
+
+# ------------------------------------------------ fonovyy krug
+def _krug():
+    posledniy_chas = 0
+    while True:
+        try:
+            obnovit_stranicy()
+            teper = time.localtime()
+            if teper.tm_hour != posledniy_chas:
+                posledniy_chas = teper.tm_hour
+                _ubrat_lishnee()
+            if teper.tm_hour == CHAS_KOPII and _sost().get("kopiya_den") != time.strftime("%Y-%m-%d"):
+                kopiya_bazy()
+        except Exception as e:
+            _log("krug: " + repr(e))
+        time.sleep(60)
+
+
+try:
+    if not globals().get("_krug_idet"):
+        _krug_idet = True
+        threading.Thread(target=_krug, daemon=True).start()
+        _log("zashchita zapushchena")
+except Exception as e:
+    _log("ne zapustil krug: " + repr(e))

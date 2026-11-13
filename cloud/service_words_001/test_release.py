@@ -51,7 +51,16 @@ class Release(unittest.TestCase):
         self.assertIn('Замовте автомобіль із закордонних аукціонів — ми супроводимо його до Києва', catalog)
         landing = self.result.get('video/seo/ru/avto-pod-zakaz-kiev.html', b'').decode()
         self.assertIn('Проверяем историю и отчёт аукциона выбранного автомобиля', landing)
-        self.assertIn('депозит 500 $', landing)  # the 500 $ deposit stays (owner)
+        self.assertIn('предоплата 500 $ засчитывается в стоимость авто', landing)
+        self.assertNotIn('депозит 500', landing)
+
+    def test_prepayment_instead_of_deposit(self):
+        home = self.result['video/index.html'].decode()
+        for words in ('депозит — 1 000', 'Депозит 1 000', 'დეპოზიტი — 1 000', 'დეპოზიტი 1 000'):
+            self.assertNotIn(words, home)
+        self.assertIn('data-uk="Оплата на цьому кроці: послуга — 600 $, передоплата — 1 000 $"', home)
+        self.assertIn('Передоплата 1 000 $ зараховується у вартість авто', home)
+        self.assertIn('Предоплата 1 000 $ засчитывается в стоимость авто', home)
 
     def test_only_listed_phrases_change(self):
         for name, value in self.source.items():
@@ -102,6 +111,23 @@ class Release(unittest.TestCase):
                 self.assertEqual(landings.pages([], set(), set()), {'seo/ua/x.html': '<p>Викуп на аукціоні</p>'})
             finally:
                 sys.path.remove(folder)
+
+    def test_language_script(self):
+        script = ('var d={"ru":{"Підбір":"Подбор","Підібрати авто":"Подобрать авто"},"ka":{"Подбор":"შერჩევა",'
+                  '"Підбір":"შერჩевა","Подобрать авто":"ავტომობილის შერჩევა","Автомобиль уже в пути — не нужно ждать '
+                  'подбора и покупки на аукционе.":"ავტომობილი უკვე გზაშია — შერჩევისა და აუქციონზე შეძენის ლოდინი '
+                  'საჭირო არ არის."}};').replace('შერჩевა', 'შერჩევა')
+        after = W.apply(script)
+        self.assertFalse(W.has_word(after), after)
+        self.assertIn('"Замовити авто":"Заказать авто"', after)
+        self.assertIn('"Заказать авто":"ავტომობილის შეკვეთა"', after)
+        self.assertIn('"Замовити авто":"ავტომობილის შეკვეთა"', after)
+        self.assertIn('ждать покупки на аукционе.":"ავტომობილი უკვე გზაშია — აუქციონზე შეძენის ლოდინი', after)
+        self.assertIn('video/ua-site-languages.js', candidate_builder.PAGES)
+
+    def test_privacy_header_link(self):
+        page = '<a href="/video/podbor.html">Підбір авто</a><a href="#ru">Русская версия</a>'
+        self.assertEqual(W.apply(page), '<a href="/video/podbor.html">Замовити авто</a><a href="#ru">Русская версия</a>')
 
     def test_untouched(self):
         for html in ('<a href="podbor.html">k</a>', '<p>депозит 500 $</p>', '<p>Подробнее</p>'):

@@ -400,6 +400,13 @@ class BotTest(Folder):
         self.assertEqual((first[0].url, first[0].callback_data, a.callback_data, b.url), (
             'https://jpauto.auction/vehicle-detail/kr/1', None, 'ac:x', None))
 
+    def test_no_duplicate_buttons(self):
+        self.assertEqual(bot.folder_rows(), [])  # «👤 Клиенты → Аукционы онлайн → Корея» adds nothing
+        self.assertNotIn([view.NEW], view.list_view([client()], view.HOME[1])['buttons'])
+        home = view.home(stats.summary(NOW, self.db, []))['buttons']
+        labels = [b for row in home for b in row]
+        self.assertEqual(len(labels), len(set(labels)))
+
     def test_staff_names(self):
         self.assertEqual(bot._staff(), {11: 'Иван', 22: '@olga', 33: '33'})
 
@@ -532,6 +539,12 @@ class PageTest(unittest.TestCase):
             candidate_builder.korea(self.page.replace('id="kc-name"', 'id="kc-name"></b><b id="kc-limit"', 1))
         with self.assertRaisesRegex(ValueError, 'KOREA_LOGIN_LINE'):
             cabinet.link('<html></html>')
+
+    def test_cabinet_shows_payments_deadlines_and_penalties(self):
+        html = cabinet.page(candidate_builder.korea(self.page))
+        for key in ('pay_car', 'left', 'overdue', 'penalty_now', 'penalty_head', 'daily', 'annual', 'fine_after',
+                    'роб. дн.', 'від простроченої суми за кожен день'):
+            self.assertIn(key, html)
 
     def test_cabinet_page(self):
         html = cabinet.page(candidate_builder.korea(self.page))

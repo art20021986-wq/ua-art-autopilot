@@ -149,5 +149,33 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(value['summary'], {'pages': 5, 'own': 5, 'google': 5})
 
 
+
+class OldPodborTests(unittest.TestCase):
+    def test_page_visits_people_robots_sources(self):
+        line = ('{ip} - - [12/Nov/2026:10:00:00 +0000] "GET {path} HTTP/1.1" {status} 10 "{ref}" "{agent}"')
+        phone = 'Mozilla/5.0 (iPhone) Safari'
+        text = '\n'.join([
+            line.format(ip='1.1.1.1', path='/video/order/podbor.html', status=200, ref='https://www.google.com/', agent=phone),
+            line.format(ip='1.1.1.1', path='/video/order/podbor.html?x=1', status=200, ref='-', agent=phone),
+            line.format(ip='2.2.2.2', path='/video/order/podbor.html', status=200, ref='-', agent='Googlebot/2.1'),
+            line.format(ip='3.3.3.3', path='/video/podbor.html', status=200, ref='-', agent=phone)])
+        value = remote.page_visits([text])
+        self.assertEqual(list(value), ['2026-11-12'])
+        day = value['2026-11-12']
+        self.assertEqual((day['people'], day['views'], day['robots']), (1, 2, 1))
+        self.assertEqual(day['status'], {'200': 3})
+        self.assertEqual(sum(day['sources'].values()), 2)
+        self.assertNotIn('1.1.1.1', json.dumps(value))
+
+    def test_linked_from_skips_drafts(self):
+        root = Path(tempfile.mkdtemp())
+        for name, body in (('video/index.html', '<a href="order/podbor.html">x</a>'),
+                           ('video/preview/a.html', '<a href="order/podbor.html">x</a>'),
+                           ('video/katalog.html', '<a href="podbor.html">x</a>')):
+            (root/name).parent.mkdir(parents=True, exist_ok=True)
+            (root/name).write_text(body)
+        with patch.object(remote, 'HOME', root), patch.object(remote, 'PUBLIC', (root/'video', root/'site')):
+            self.assertEqual(remote.linked_from(), ['video/index.html'])
+
 if __name__ == '__main__':
     unittest.main()

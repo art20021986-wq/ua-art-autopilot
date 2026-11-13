@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-META-INSTALL-20261112.9217c667ed887e5e59f3a168162544df8dce3d7e775a1615b9968a01b8af4355.json",
+  "autostart_ledger_sha256": "cb1b723a9d2d4361a6e12b6cec1c8eaa373f016db2a9d3468bab809aaa34243c",
+  "autostart_source_commit": "729dd4c81b2f7e1fd513b188c220e7233f2fb4c0",
+  "created_at": "2026-11-12T17:07:43Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43265865618",
+    "task_id": "KOREA-META-INSTALL-20261112",
+    "task_sha256": "9217c667ed887e5e59f3a168162544df8dce3d7e775a1615b9968a01b8af4355"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-99bc477d25844e17-14b4137fe6264e02",
+  "request_path": "tasks/requests/KOREA-META-INSTALL-20261112.json",
+  "resource_locks": [
+    "PATH_SCOPE:99bc477d25844e17"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

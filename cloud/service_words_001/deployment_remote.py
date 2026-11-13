@@ -143,7 +143,15 @@ def smoke(directory):
                                      ua_service_words.has_word(read(ROOT/n).decode('utf-8', 'replace'))]
     if (value['golden_word'] or value['pages_without_word'] != len(pages) or value['pages_left_with_word'] or not value['catalog_guard_after']
             or value['catalog_audit_after'] != 'PASS'):
-        raise DeploymentError('SMOKE_RESULT:' + json.dumps(value)[:300])
+        # What is left, first, so the bounded error names it: each page with the phrase around the first word.
+        left = [n for n in pages if ua_service_words.has_word(page(n))] + value['pages_left_with_word']
+        def around(n):
+            text = page(n) if n in plan['files'] else read(ROOT/n).decode('utf-8', 'replace')
+            m = ua_service_words.WORD.search(text)
+            return n + ':' + text[max(0, m.start() - 60):m.end() + 40]
+        brief = {'left': [around(n) for n in left[:6]], 'left_count': len(left), 'golden_word': value['golden_word'],
+                 'guard_after': value['catalog_guard_after'], 'audit_after': value['catalog_audit_after']}
+        raise DeploymentError('SMOKE_RESULT:' + json.dumps(brief, ensure_ascii=False)[:1500])
     return value
 
 
@@ -473,7 +481,7 @@ def main():
                              code_sha256={name: item['after'] for name, item in manifest['plan']['files'].items()})
             value['safe_to_stop'] = True
         except Exception as error:
-            value['error'] = type(error).__name__+':'+str(error)[:180]
+            value['error'] = type(error).__name__+':'+str(error)[:1500]
             if args.mode in ('preview', 'backup', 'verify'):
                 value['safe_to_stop'] = True
             else:

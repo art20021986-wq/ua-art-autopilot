@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/DIAG-COUNTERS-PREFLIGHT-20261112.ecdf90e708431c6ff90fa963d461504155abab8cb1ba0103d25a8af09afbe55a.json",
+  "autostart_ledger_sha256": "3c236a5251cd1ccfb85fa3ea266013ad923d17b5c410740b0d7c62ee6ec23f15",
+  "autostart_source_commit": "a101072fbe34d95432f7f45485c8993ce7850e65",
+  "created_at": "2026-11-12T18:39:33Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43281820898",
+    "task_id": "DIAG-COUNTERS-PREFLIGHT-20261112",
+    "task_sha256": "ecdf90e708431c6ff90fa963d461504155abab8cb1ba0103d25a8af09afbe55a"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-c9650720b5943708-4558906be15c08cd",
+  "request_path": "tasks/requests/DIAG-COUNTERS-PREFLIGHT-20261112.json",
+  "resource_locks": [
+    "PATH_SCOPE:c9650720b5943708"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
