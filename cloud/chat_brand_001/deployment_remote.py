@@ -185,10 +185,13 @@ def previous_rows(before):
 
 
 def rewind_row(value, before):
-    """A page another writer rewrote since the install, with its blocks as before the install (rollback)."""
+    """A page another writer rewrote since the install, with its blocks and AUTO.RIA wording as before (rollback)."""
+    import ua_autoria_text  # this release's copy (the package folder is on the path)
     text = value.decode('utf-8')
     for row, old in zip(ROWS, previous_rows(before)):
         text = row.sub(lambda match: old, text, count=1)
+    if ua_autoria_text.apply(before.decode('utf-8')) != before.decode('utf-8'):
+        text = ua_autoria_text.revert(text)
     return text.encode('utf-8')
 
 
@@ -379,7 +382,7 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
 
 def installed_modules():
     """Fresh imports of the installed SEO modules (and this release's), from the server root."""
-    for name in [n for n in sys.modules if n.startswith(('ua_seo_', 'ua_card_lang')) or n in ('ua_indexnow', 'ua_google_sitemap', 'ua_photo_copies', 'ua_tg_script', 'ua_card_urls', 'ua_stage_images', 'ua_social_links', 'ua_chat_button', 'ua_autoria_badge', 'ua_brand_home', 'ua_own_counter', 'ua_google_tag')]:
+    for name in [n for n in sys.modules if n.startswith(('ua_seo_', 'ua_card_lang')) or n in ('ua_indexnow', 'ua_google_sitemap', 'ua_photo_copies', 'ua_tg_script', 'ua_card_urls', 'ua_stage_images', 'ua_social_links', 'ua_chat_button', 'ua_autoria_badge', 'ua_autoria_text', 'ua_brand_home', 'ua_own_counter', 'ua_google_tag')]:
         del sys.modules[name]
     sys.path.insert(0, str(ROOT))
     try:
