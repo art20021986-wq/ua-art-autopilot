@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "acb8190aaf30dd5d9b9ed4a656c60ee049d04138b8e88e69945826f4000f6b0d",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T08:25:51Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-13T08:41:58Z",
+  "heartbeat_at": "2026-11-13T08:41:58Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43392375466",
     "task_id": "KOREA-TILE-INSTALL-20261113",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 392.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 106.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 43.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43392375466-0ab0c20c78cfdf08",
   "production_transaction_path": "state/transactions/KOREA-TILE-INSTALL-20261113.0ab0c20c78cfdf08c6e3e95ca036c30213aee628b1b018aa8eca44dbc687f844.43392375466.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-TILE-INSTALL-20261113.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "c8f9dc9550256a85ff77bac796e70f58fae4becf269995274b7750f401c48abf",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-TILE-INSTALL-20261113.json",
   "request_sha256": "0ab0c20c78cfdf08c6e3e95ca036c30213aee628b1b018aa8eca44dbc687f844",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "9015b37871550badfc34a34042eb8990cdd0018b1960233cbf66d43bbd3a2e71",
     "file_sha256": {
@@ -107,5 +138,5 @@
       "cloud/korea_tile_001/test_release.py": "87768548cdbbf7869688168d4e4f84b3a23cc489e4b551eebc290468d0f5aa04"
     }
   },
-  "updated_at": "2026-11-13T08:25:51Z"
+  "updated_at": "2026-11-13T08:41:58Z"
 }
