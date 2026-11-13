@@ -11,7 +11,6 @@ Release 7 (owner 2026-11-11): the official AUTO.RIA logo again instead of the te
 site); the button and badge keep the release 6 design.
 Release 8 (owner 2026-11-11): the sold-cars number follows AUTO.RIA weekly; the written one is the fallback.
 Release 9 (owner 2026-11-11): years on AUTO.RIA and the reviews count follow AUTO.RIA weekly too (stats_loader).
-Release 10 (owner 2026-11-13, AUTO.RIA's request): button text «Дивіться всі авто та відгуки від UA ART COMPANY на AUTO.RIA».
 """
 from html import escape
 
@@ -90,9 +89,7 @@ def block():
                       'შეფასებებს იქ მყიდველები ტოვებენ, ჩვენ მათ ვერ შევცვლით და ვერ წავშლით. '
                       'იქვეა ყველა ავტომობილი, რომელიც უკვე გავყიდეთ.'),
                stats, reviews, _link(autoria_click.BLOCK),
-               _attrs('Смотрите все авто и отзывы от UA ART COMPANY на AUTO.RIA',
-                      'Дивіться всі авто та відгуки від UA ART COMPANY на AUTO.RIA',
-                      'ნახეთ UA ART COMPANY‑ის ყველა ავტომობილი და შეფასება AUTO.RIA‑ზე'),
+               _attrs('Все отзывы и проданные авто', 'Усі відгуки та продані авто', 'ყველა შეფასება და გაყიდული ავტომობილი'),
                _logo(30),
                _attrs('Откроется наша страница на AUTO.RIA', 'Відкриється наша сторінка на AUTO.RIA',
                       'გაიხსნება ჩვენი გვერდი AUTO.RIA‑ზე'),
