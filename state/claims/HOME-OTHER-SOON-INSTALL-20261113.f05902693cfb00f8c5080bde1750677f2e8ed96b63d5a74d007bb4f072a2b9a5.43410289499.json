@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "e3446482c0eff7c398e2f1ead0e869fc9a56e4690a213a1656ec62adff6e0247",
   "autostart_source_commit": "dc9970a51249784d56d4cda65e2c5c932572ffb5",
   "created_at": "2026-11-13T10:39:11Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "e1c3497193015eddd7aa222435109bc5e29faf51dee672bff3d846459f6d86b1",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T10:39:11Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-13T10:40:26Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "43410289499",
     "task_id": "HOME-OTHER-SOON-INSTALL-20261113",
     "task_sha256": "f05902693cfb00f8c5080bde1750677f2e8ed96b63d5a74d007bb4f072a2b9a5"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 275.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 266.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-43410289499-f05902693cfb00f8",
+  "production_transaction_path": "state/transactions/HOME-OTHER-SOON-INSTALL-20261113.f05902693cfb00f8c5080bde1750677f2e8ed96b63d5a74d007bb4f072a2b9a5.43410289499.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/HOME-OTHER-SOON-INSTALL-20261113.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "3b776ab35d94860b5bd2039525619be71c03ce52",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 507.392,
+    "allowed": true,
+    "evidence_path": "state/storage/HOME-OTHER-SOON-INSTALL-20261113.json",
+    "evidence_sha256": "860c24453981047af9e14d2e85fd7113ff150028b37fef9ef85442013ceed92b",
+    "free_bytes": 17936817664,
+    "heavy": true,
+    "measured_at": "2026-11-13T10:31:57.054896+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 48.75194953142857
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-13T10:39:11Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "2cca0278f5320d17455dca43a49ed188e0cb260b3435d3856c4e8bdd7190ebb5",
+    "file_sha256": {
+      "cloud/home_other_soon_001/candidate_builder.py": "48715e55f5a1d8e218cdc45f92ec1703f793033e318336020ad417b9c8847a9e",
+      "cloud/home_other_soon_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_other_soon_001/deployment_bootstrap.py": "012b730be318611132a14c17c8a0dfe454d739753369adaf4a5b16072744e099",
+      "cloud/home_other_soon_001/deployment_remote.py": "a81623d7caaace51260583f8711355d1c6fa113f572a155705a1822d4c8d2f39",
+      "cloud/home_other_soon_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_other_soon_001/deployment_transport.py": "b8c7c9aa0f524c3dda23761843c92d766bfdd932905a285ba0faf329b86837e9",
+      "cloud/home_other_soon_001/edit_home.py": "0c4141ccd4b3098ea2e1fb0b63385c89529d6bfd5863005bb8fd538c0648d9ad",
+      "cloud/home_other_soon_001/make_release.py": "8083c2076e5758368b1d391a47a7d2cc08c6f55c22c0ca83b34fef3d71cf8b48",
+      "cloud/home_other_soon_001/release_constants.py": "f060a44974d6178e28f219af3758b861e463692cdab2938144de1212938e639a",
+      "cloud/home_other_soon_001/test_deployment.py": "69fc4c95a10648f910baae5d4cb5cfe426c893d91d20b39d0cb9f2973709708c",
+      "cloud/home_other_soon_001/test_edit_home.py": "8d01740a7beba930ad93d25902c056235c3b9c8123e97acccdbdd948f7c2bb67"
+    }
+  },
+  "updated_at": "2026-11-13T10:40:26Z"
 }
