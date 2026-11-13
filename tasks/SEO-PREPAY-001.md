@@ -7,7 +7,7 @@ Coordinator check 13.11: on the Korea hub (uk/ru) the FAQ answer «Як замо
 Кореи?» and the second «Як ми працюємо / Как мы работаем» step still said «передоплата 500 $».
 
 Change (cloud/seo_prepay_001, ua_seo_landings only): that step and that answer (text and FAQPage) → 600 $ + 1 000 $,
-uk and ru. 14 Korea pages change (hub, model pages, price page). The hub description (catalogue cars, 500 $) stays.
+uk and ru. 14 Korea pages (hub, model pages, price page) and the Japan page change. The hub description (catalogue cars, 500 $) stays.
 
-Not changed (finding for the owner/coordinator): the Japan order page (ua_seo_order_models) also says «депозит 500 $»;
-Japan terms were not given.
+Japan (coordinator 13.11: «депозит» is banned site-wide; every custom order is 600 $ + 1 000 $): the Japan order page
+(ua_seo_order_models) — same step and «Як замовити авто з Японії?» answer, uk and ru.

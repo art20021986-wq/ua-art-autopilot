@@ -16,6 +16,7 @@ from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 # Public evidence of each change: path -> text the page must contain.
 EXPECTED = {'/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html': 'послуга — 600 $, передоплата — 1 000 $',
             '/video/seo/ru/avto-iz-korei-v-kiev-pod-kluch.html': 'услуга — 600 $, предоплата — 1 000 $',
+            '/video/seo/ua/avto-z-yaponii-pid-zamovlennia.html': 'послуга — 600 $, передоплата — 1 000 $',
             '/video/index.html': ''}
 
 

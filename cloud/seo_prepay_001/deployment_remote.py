@@ -117,7 +117,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'SEO-CONTENT-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'landing pages: the «how we work» step and the «how to order a car from Korea» answer say «service 600 $ + prepayment 1 000 $» (ua_seo_landings), rewritten by ua_seo_index.refresh; nothing else changes',
+            'site_scope':'landing pages: the «how we work» step and the «how to order a car from Korea / Japan» answer say «service 600 $ + prepayment 1 000 $» (ua_seo_landings, ua_seo_order_models), rewritten by ua_seo_index.refresh; nothing else changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -139,10 +139,10 @@ pages = L.pages(cars, ua_seo_index.kept_keys(video), existing)
 NEW = {'uk': 'послуга — 600 $, передоплата — 1 000 $', 'ru': 'услуга — 600 $, предоплата — 1 000 $'}
 OLD = re.compile(r'(договір|договор)[^<]{0,40}(депозит|передоплата|предоплата) 500')
 hub = {lang: pages.get(L.path(lang), '').count(NEW[lang]) for lang in L.LANGS}
+japan = {lang: pages.get(L.path(lang, 'japan'), '').count(NEW[lang]) for lang in L.LANGS}
 with_new = sum(1 for page in pages.values() if any(v in page for v in NEW.values()))
-old_left = sorted(n for n, page in pages.items()  # pages with the Korea terms keep no 500 $ contract (head: catalogue)
-                  if any(v in page for v in NEW.values()) and OLD.search(page.split('<body', 1)[-1]))
-print(json.dumps({'pages': len(pages), 'new_pages': sorted(set(pages) - existing), 'hub_new_text': hub,
+old_left = sorted(n for n, page in pages.items() if OLD.search(page.split('<body', 1)[-1]))  # head: catalogue description
+print(json.dumps({'pages': len(pages), 'new_pages': sorted(set(pages) - existing), 'hub_new_text': hub, 'japan_new_text': japan,
                   'pages_with_new_text': with_new, 'old_contract_500_left': old_left[:12]}))
 '''
 
@@ -155,6 +155,7 @@ def smoke(directory):
     value = json.loads(result.stdout.strip().splitlines()[-1])
     # Both hubs carry the new terms (step and FAQ answer: text + FAQPage), no page keeps a contract with 500 $.
     if (value['new_pages'] or any(n < 3 for n in value['hub_new_text'].values())
+            or any(n < 3 for n in value['japan_new_text'].values())
             or value['old_contract_500_left']):
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value)[:300])
     return value
