@@ -18,6 +18,7 @@ CARD = HERE.parent / 'crm_site_pages_20261012_r3' / 'UA-0018.html'
 sys.path.insert(0, str(HERE))
 import candidate_builder  # noqa: E402
 import deployment_remote as remote  # noqa: E402
+import ua_autoria_badge  # noqa: E402
 import ua_brand_home  # noqa: E402
 import ua_chat_button  # noqa: E402
 
@@ -64,8 +65,8 @@ class CandidateTests(unittest.TestCase):
         cls.result = candidate_builder.build(cls.source, {})
 
     def test_files(self):
-        self.assertEqual(sorted(self.result), sorted(list(self.source) + ['ua_brand_home.py']))
-        for name in ('ua_chat_button.py', 'ua_brand_home.py'):
+        self.assertEqual(sorted(self.result), sorted(list(self.source) + ['ua_autoria_badge.py', 'ua_brand_home.py']))
+        for name in ('ua_chat_button.py', 'ua_brand_home.py', 'ua_autoria_badge.py'):
             self.assertEqual(self.result[name], (HERE / name).read_bytes())
         self.assertIn("SEO_REVISION = 'CHAT-BRAND-001'", self.result['ua_seo_metadata.py'].decode())
         for name, value in self.result.items():
@@ -77,14 +78,16 @@ class CandidateTests(unittest.TestCase):
         self.assertTrue(inject.endswith(candidate_builder.INJECT_TAIL))
         self.assertLess(inject.index('_ua_chat_base_inject = inject_html'), inject.index('_ua_brand_base_inject = inject_html'))
         index = self.result['ua_seo_index.py'].decode()
-        self.assertIn('import ua_brand_home  # CHAT-BRAND-001\n', index)
-        self.assertEqual(index.count('ua_brand_home.apply(' + candidate_builder.CHAIN + ')'), 1)
+        self.assertIn('import ua_autoria_badge  # CHAT-BRAND-001\nimport ua_brand_home  # CHAT-BRAND-001\n', index)
+        self.assertEqual(index.count('ua_brand_home.apply(ua_autoria_badge.apply(' + candidate_builder.CHAIN + '))'), 1)
 
     def test_every_page_has_both_blocks_once(self):
         for name in ('video/index.html', 'video/katalog.html', 'catalog_design_golden.html', 'video/korea.html'):
             page = self.result[name].decode()
             self.assertEqual(page.count(ua_chat_button.HTML), 1, name)
             self.assertEqual(page.count(ua_brand_home.MARK), 1, name)
+            self.assertEqual(page.count(ua_autoria_badge.MARK), 1, name)
+            self.assertIn(ua_autoria_badge.LOGO, page, name)
             self.assertNotIn(old.HTML, page, name)
             self.assertLess(page.index(ua_chat_button.MARK), page.index(ua_brand_home.MARK), name)
 
@@ -94,11 +97,11 @@ class CandidateTests(unittest.TestCase):
 
     def test_only_the_blocks_change(self):
         for name in ('video/index.html', 'video/katalog.html'):
-            page = self.result[name].decode().replace(ua_chat_button.HTML, old.HTML)
+            page = ua_autoria_badge._BLOCK.sub('', self.result[name].decode()).replace(ua_chat_button.HTML, old.HTML)
             for home in (True, False):
                 page = page.replace(ua_brand_home.block(home), '')
             self.assertEqual(page, self.source[name].decode(), name)
-        page = self.result['video/korea.html'].decode().replace(ua_chat_button.HTML, '')
+        page = ua_autoria_badge._BLOCK.sub('', self.result['video/korea.html'].decode()).replace(ua_chat_button.HTML, '')
         self.assertEqual(page.replace(ua_brand_home.block(), ''), self.source['video/korea.html'].decode())
 
     def test_catalogue_guard(self):
@@ -172,6 +175,42 @@ class BrandStyleTests(unittest.TestCase):
         stale = card.replace('</body>', ua_brand_home.MARK + '<style>old</style>' + ua_brand_home.END + '</body>')
         self.assertEqual(ua_brand_home.apply(stale), new)
         self.assertEqual(ua_brand_home.apply('google-site-verification: x'), 'google-site-verification: x')
+
+
+class AutoriaBadgeTests(unittest.TestCase):
+    PAGE = ('<html lang="%s"><body><main>x</main><footer>f<!--UA-SOCIAL-V1--><nav class="ua-social"></nav>'
+            '<!--/UA-SOCIAL-V1--></footer></body></html>')
+
+    def test_missing_badge_added_before_the_social_icons_by_language(self):
+        for lang, label in (('uk', '>Ми на<'), ('ru', '>Мы на<'), ('ka', '>გვიპოვეთ<')):
+            page = ua_autoria_badge.apply(self.PAGE % lang)
+            self.assertEqual(page.count('class="ua-autoria-badge"'), 1)
+            self.assertIn(label, page)
+            self.assertLess(page.index(ua_autoria_badge.END), page.index('<!--UA-SOCIAL-V1-->'))
+            self.assertIn('href="%s"' % ua_autoria_badge.LINK, page)
+            self.assertIn('src="%s"' % ua_autoria_badge.LOGO, page)
+            self.assertEqual(ua_autoria_badge.apply(page), page)
+            self.assertEqual(ua_autoria_badge._BLOCK.sub('', page), self.PAGE % lang)
+
+    def test_page_without_footer_or_social(self):
+        page = ua_autoria_badge.apply('<html lang="uk"><body><main>x</main></body></html>')
+        self.assertTrue(page.endswith(ua_autoria_badge.END + '</body></html>'))
+        self.assertEqual(ua_autoria_badge.apply('google-site-verification: x'), 'google-site-verification: x')
+
+    def test_text_only_badge_gets_the_logo_style_only(self):
+        korea = ('<html lang="uk"><body><footer><a class="ua-autoria-badge" href="x"><span>Ми на</span>'
+                 '<span class="ua-autoria-mark">AUTO.RIA</span></a></footer></body></html>')
+        page = ua_autoria_badge.apply(korea)
+        self.assertEqual(page.count('class="ua-autoria-badge"'), 1)
+        self.assertIn(ua_autoria_badge.TEXT_LOGO, page)
+        self.assertEqual(ua_autoria_badge.apply(page), page)
+
+    def test_home_badge_left_as_is(self):
+        home = ('<html lang="uk"><body><footer><a class="ua-autoria-badge" href="x"><span>Ми на</span>'
+                '<img class="ua-autoria-mark" src="/video/brand/autoria-logo.svg"></a></footer></body></html>')
+        page = ua_autoria_badge.apply(home)
+        self.assertEqual(ua_autoria_badge._BLOCK.sub('', page), home)
+        self.assertEqual(page.count('ua-autoria-mark" src'), 1)
 
 
 class PageLifecycleTests(unittest.TestCase):

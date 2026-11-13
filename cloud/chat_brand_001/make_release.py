@@ -5,7 +5,8 @@ Usage: python3 cloud/chat_brand_001/make_release.py preview   # PR, merge, then:
        python3 cloud/chat_brand_001/make_release.py launch TASK_ID
        python3 cloud/chat_brand_001/make_release.py install   # right after the preview
 Owner 2026-11-13 (tasks/CHAT-BRAND-001.md): the contact button the same on every page (larger, bottom centre on phones;
-the Korea auctions pages get it) and the logo as a clear way home (gold ring, «← На головну» caption); one install.
+the Korea auctions pages get it) and the logo as a clear way home (gold ring, «← На головну» caption); «Ми на AUTO.RIA» with the logo on every page;
+one install.
 """
 import datetime
 import hashlib
@@ -23,7 +24,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'ua_brand_home.py',
+                                'make_release.py', 'release_constants.py', 'ua_autoria_badge.py', 'ua_brand_home.py',
                                 'ua_chat_button.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
@@ -74,8 +75,8 @@ def preview():
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Preview of CHAT-BRAND-001: builds the candidate (ua_chat_button.py one size with the phone rules; '
-                            'ua_brand_home.py new, hooked into site_ge_inject and ua_seo_index; SEO_REVISION in '
-                            'ua_seo_metadata.py; both style blocks in the golden catalogue, static public pages and the '
+                            'ua_brand_home.py and ua_autoria_badge.py new, hooked into site_ge_inject and ua_seo_index; SEO_REVISION in '
+                            'ua_seo_metadata.py; the three blocks in the golden catalogue, static public pages and the '
                             'Korea pages), checks the '
                             'catalogue design guard and measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
@@ -136,7 +137,8 @@ def install():
                'description': 'Owner approved CHAT-BRAND-001 (photo «да» 2026-11-13): the «Зв\u2019язатися з менеджером» pill one '
                               'size on every page, larger and in the bottom centre on phones (ua_chat_button.py); the logo '
                               'with a thin gold ring and a «\u2190 На головну» caption (ua_brand_home.py, new; not on the '
-                              'home page); both used by every page writer; the golden catalogue, static public pages and the '
+                              'home page); «Ми на AUTO.RIA» with the official logo at the bottom of every page (ua_autoria_badge.py, new); '
+                              'all used by every page writer; the golden catalogue, static public pages and the '
                               'Korea pages now; cards republished once by the CRM sync (SEO_REVISION). The WhatsApp link '
                               'is unchanged. Rollback puts the previous blocks back. No CRM data change. '
                               'Existing backup, bot pause, writer locks, data-preservation, rollback and public health checks '

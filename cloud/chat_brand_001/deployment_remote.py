@@ -1,5 +1,5 @@
 """Bounded CHAT-BRAND-001 release (the contact button the same on every page, larger and centred on phones, the Korea pages
-get it; the logo with a gold ring and a «← На головну» caption); preserve live data and pending requests."""
+get it; the logo with a gold ring and a «← На головну» caption; «Ми на AUTO.RIA» with the logo on every page); preserve live data and pending requests."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -27,8 +27,8 @@ HERE = Path(__file__).resolve().parent
 # The account's PythonAnywhere disk quota (owner's Files page, 2026-10-20:
 # "8.2 GB of your 35.0 GB quota"); decimal GB is the conservative reading.
 QUOTA_BYTES = 35 * 10**9
-# The release's style blocks (button, logo): a page carries each once.
-MARKS = ('<!--UA-CHAT-GLASS-V1-->', '<!--UA-BRAND-HOME-V1-->')
+# The release's blocks (button, AUTO.RIA badge, logo): a page carries each once.
+MARKS = ('<!--UA-CHAT-GLASS-V1-->', '<!--UA-AUTORIA-BADGE-V1-->', '<!--UA-BRAND-HOME-V1-->')
 
 
 class DeploymentError(RuntimeError):
@@ -116,7 +116,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'CHAT-BRAND-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'contact button and logo style blocks: ua_chat_button.py (one size, phone rules) and ua_brand_home.py (new) used by every page writer; the golden catalogue and static public pages now (Korea pages get the button); cards republished once by the CRM sync (SEO_REVISION)',
+            'site_scope':'contact button and logo style blocks: ua_chat_button.py (one size, phone rules) and ua_brand_home.py and ua_autoria_badge.py (new) used by every page writer; the golden catalogue and static public pages now (Korea pages get the button); cards republished once by the CRM sync (SEO_REVISION)',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -376,7 +376,7 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
 
 def installed_modules():
     """Fresh imports of the installed SEO modules (and this release's), from the server root."""
-    for name in [n for n in sys.modules if n.startswith(('ua_seo_', 'ua_card_lang')) or n in ('ua_indexnow', 'ua_google_sitemap', 'ua_photo_copies', 'ua_tg_script', 'ua_card_urls', 'ua_stage_images', 'ua_social_links', 'ua_chat_button', 'ua_brand_home', 'ua_own_counter', 'ua_google_tag')]:
+    for name in [n for n in sys.modules if n.startswith(('ua_seo_', 'ua_card_lang')) or n in ('ua_indexnow', 'ua_google_sitemap', 'ua_photo_copies', 'ua_tg_script', 'ua_card_urls', 'ua_stage_images', 'ua_social_links', 'ua_chat_button', 'ua_autoria_badge', 'ua_brand_home', 'ua_own_counter', 'ua_google_tag')]:
         del sys.modules[name]
     sys.path.insert(0, str(ROOT))
     try:

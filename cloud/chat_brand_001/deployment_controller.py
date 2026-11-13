@@ -16,15 +16,18 @@ from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 # Public evidence of each change: path -> check of the page body.
 ROW = '<!--UA-CHAT-GLASS-V1-->'
 BRAND = '<!--UA-BRAND-HOME-V1-->'
+RIA = '<!--UA-AUTORIA-BADGE-V1-->'
+RIA_LOGO = '/video/brand/autoria-logo.svg'
 LINK = 'href="https://wa.me/380992222002"'
-# Public evidence: both style blocks once (the phone rules in the button one, the caption everywhere but on the home
+# Public evidence: the three blocks once, the AUTO.RIA logo present (the phone rules in the button one, the caption everywhere but on the home
 # page) on static pages and a landing page; the WhatsApp link itself unchanged.
 PHONE = '@media (max-width:767px){html body a.mcf-chat'
 CAPTION = 'a.brand .brand-copy::after'
 
 
 def blocks(body, caption=True):
-    return body.count(ROW) == 1 and PHONE in body and body.count(BRAND) == 1 and (CAPTION in body) == caption
+    return (body.count(ROW) == 1 and PHONE in body and body.count(BRAND) == 1 and (CAPTION in body) == caption
+            and body.count(RIA) == 1 and RIA_LOGO in body)
 
 
 EXPECTED = {'/video/index.html': lambda body: blocks(body, caption=False) and LINK in body,
