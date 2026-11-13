@@ -7,21 +7,23 @@
   "created_at": "2026-11-13T10:35:18Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T10:35:18Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-13T10:38:26Z",
+  "heartbeat_at": "2026-11-13T10:38:26Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43409243778",
     "task_id": "ANALYTICS-AUDIT-PROBE-20261113-R2",
     "task_sha256": "79680ce7a362903e289df0ba7e05600527d5e749353c9a15de24c85355b3d1eb"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-a00b7a073566cbee-5817bb944ce75cbd",
   "receipt_path": "state/receipts/ANALYTICS-AUDIT-PROBE-20261113-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "5ae5c92ea3d80faa1e07a327c7ed1bfbda09217f37732ed16ea93de38d350efe",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ANALYTICS-AUDIT-PROBE-20261113-R2.json",
   "request_sha256": "79680ce7a362903e289df0ba7e05600527d5e749353c9a15de24c85355b3d1eb",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "01227ad5f9248e9e88cfa253160e72e3ec24afdf",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92703068160,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.178
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-13T10:35:18Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "40598fc2a536c1a9c10a585a02e7e591e5906cdbe1dc62e9bc2b042bfdd6cf29",
+    "file_sha256": {
+      "cloud/analytics_audit_001/bootstrap.py": "63a59601e0e417523f5714066a87cce2ca8153521d0fff984677688375c55e3d",
+      "cloud/analytics_audit_001/make_request.py": "b2200073669359253b95b2e125cbfedef01aa3e951326c92f73d179993488860",
+      "cloud/analytics_audit_001/source_remote.py": "d7a28820bbcc7e9c4acbf6f3e19e96bfd30180a6d1f9d66159fe2a7e0d79ec2b",
+      "cloud/analytics_audit_001/test_analytics_audit.py": "db78f3d1b1871da541009eaf884e59034c5074dcf8cdf6542d9ba8818bc1d3c1",
+      "cloud/analytics_audit_001/transport.py": "2c5de9a04fcaf37756eb3241959730086b0ed8e636f759c5c8f15456a3b1b796"
+    }
+  },
+  "updated_at": "2026-11-13T10:38:26Z"
 }
