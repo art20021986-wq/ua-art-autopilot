@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "9c60004fc6759af57693d78cf0062be75b61ef1e617b97a67b98e33ce8c37af3",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T04:10:58Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T04:14:53Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43363512261",
     "task_id": "AUCTION-LIMIT-INSTALL-20261112-R4",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43363512261-c8841d3dad756809",
   "production_transaction_path": "state/transactions/AUCTION-LIMIT-INSTALL-20261112-R4.c8841d3dad756809b6c1959c89756d39067ca16d998e30184238339bfa51be08.43363512261.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-9ecc98ca3ec13425-eba0c048904a0248",
   "receipt_path": "state/receipts/AUCTION-LIMIT-INSTALL-20261112-R4.json",
   "receipt_validation_status": "PENDING",
@@ -99,5 +99,5 @@
       "cloud/auction_limit_001/ua_auction_web.py": "ac1923dfe96b8ca8b2ecdd4f0c7f9b97b6ebb5adb2f6fe0b1ac99d20ab9fce0b"
     }
   },
-  "updated_at": "2026-11-13T04:10:58Z"
+  "updated_at": "2026-11-13T04:14:53Z"
 }
