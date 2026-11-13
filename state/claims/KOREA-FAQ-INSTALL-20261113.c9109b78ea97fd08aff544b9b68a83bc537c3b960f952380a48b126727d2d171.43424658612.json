@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "b8af94a84ff5cebe040acd657635586bc008bac0ece36aff13ada56eb3d0f7d1",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T12:25:43Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T12:29:52Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43424658612",
     "task_id": "KOREA-FAQ-INSTALL-20261113",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43424658612-c9109b78ea97fd08",
   "production_transaction_path": "state/transactions/KOREA-FAQ-INSTALL-20261113.c9109b78ea97fd08aff544b9b68a83bc537c3b960f952380a48b126727d2d171.43424658612.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-85c7e8ead3a1c206-29d6ba4c5a8d11b0",
   "receipt_path": "state/receipts/KOREA-FAQ-INSTALL-20261113.json",
   "receipt_validation_status": "PENDING",
@@ -85,5 +85,5 @@
       "cloud/korea_faq_001/test_release.py": "83eca229f5d17e5c16fca2f092488f48c5f7dcf731ee9fc8a06dda5e71f29ad4"
     }
   },
-  "updated_at": "2026-11-13T12:25:43Z"
+  "updated_at": "2026-11-13T12:29:52Z"
 }
