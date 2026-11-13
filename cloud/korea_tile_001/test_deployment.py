@@ -295,14 +295,16 @@ class SmokeTests(unittest.TestCase):
             source = Path(__file__).resolve().parent/'korea_auction'
             for module in candidate_builder.MODULES:
                 shutil.copy(source/(module+'.py'), here/('kauc_%s.py' % module))
-            plan = {'files': {name: {} for name in candidate_builder.build({}, {}, here=here)}}
-            for name, value in candidate_builder.build({}, {}, here=here).items():
+            page = {candidate_builder.KOREA: (Path(__file__).resolve().parent/'fixtures'/'korea_live.html').read_bytes()}
+            plan = {'files': {name: {} for name in candidate_builder.build(page, {}, here=here)}}
+            for name, value in candidate_builder.build(page, {}, here=here).items():
                 remote.atomic(work/'after'/name, value)
             remote.atomic(work/'plan.json', canonical(plan))
             self.assertEqual(remote.smoke(work), {'imports': True, 'renders': True, 'schedule_rule': True,
                                                   'login_path': True, 'public_list': True, 'today_fallback': True,
                                           'today_wording': True, 'stale_rerun': True, 'waiting_tile': True,
-                                  'search_checked_boxes': True, 'tile': True, 'ticker_kyiv_time': True})
+                                  'search_checked_boxes': True, 'tile': True, 'ticker_kyiv_time': True,
+                                  'fuel_in_list': True, 'page_engine_models': True, 'all_photos': True})
 
 
 

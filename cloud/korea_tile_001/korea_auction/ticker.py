@@ -8,6 +8,8 @@ from datetime import datetime, timedelta, timezone
 from html import escape
 from zoneinfo import ZoneInfo
 
+from .fuel import key as fuel_key
+
 LINK = 'korea.html#lots'  # the lot list on the Korea page
 LOT_LINK = 'korea.html#lot-%s'  # a lot card opens that lot's card (owner 2026-11-10)
 
@@ -66,21 +68,6 @@ T = {
     'hybrid': ('гібрид', 'гибрид', 'ჰიბრიდი'), 'electric': ('електро', 'электро', 'ელექტრო'),
     'lpg': ('газ (LPG)', 'газ (LPG)', 'გაზი (LPG)'), 'hydrogen': ('водень', 'водород', 'წყალბადი'),
 }
-
-
-def fuel_key(value):
-    """The lot page's fuel text ('Gasoline', 'Gasoline+Electric', 'Diesel', 'LPG' ...) -> a T key, or None."""
-    v = (value or '').lower()
-    if 'hydrogen' in v:
-        return 'hydrogen'
-    if 'electric' in v:
-        return 'hybrid' if ('gasoline' in v or 'diesel' in v or 'hybrid' in v or 'lpg' in v) else 'electric'
-    if 'hybrid' in v:
-        return 'hybrid'
-    for key in ('diesel', 'lpg', 'gasoline'):
-        if key in v:
-            return key
-    return 'gasoline' if 'petrol' in v else None
 
 
 def _t(key, **fmt):

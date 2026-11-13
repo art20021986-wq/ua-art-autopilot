@@ -24,10 +24,12 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py')] + [
-    P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'collect', 'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public',
-                                                   'selection', 'session', 'ticker')]
-TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'korea_auction/test_korea_auction.py')]
+                                'make_release.py', 'release_constants.py', 'engine_page.py', 'model_groups.py',
+                                'fixtures/korea_live.html')] + [
+    P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'collect', 'fuel', 'html_tools', 'job', 'lots', 'model_lots', 'nbu',
+                                                   'prices', 'public', 'selection', 'session', 'ticker')]
+TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_engine_page.py', 'test_model_groups.py',
+                         'korea_auction/test_korea_auction.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'lead_bot.py',
              'publication_fence.py', 'run_all.py', 'site_ge_inject.py',
@@ -75,10 +77,10 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of KOREA-TILE-001 (owner 2026-11-13: the yellow tile on the home page shows today\'s exact car count and the 3 nearest auction days with weekday and car count): builds the collector update (ticker.py, collect.py, selection.py), smoke-tests it on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of KOREA-TILE-001 + KOREA-ENGINE-001 in one install (owner 2026-11-13): two yellow tiles on the home ticker (auctions today and the 3 nearest days with car count, auction houses and Kyiv start; then the damage score legend), fuel type in lots.json and on the Korea page lot card, models grouped by make on the Korea page. Builds the collector update (collect, selection, ticker, fuel, prices, public) and the video/korea.html edits, smoke-tests them on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview home ticker tile'}
+             'title': 'Preview home ticker tiles + Korea engine'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -131,13 +133,13 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner request (2026-11-13): the yellow tile of the home ticker shows today\'s exact car count (0 too) and each of the 3 nearest auction days with weekday and car count («Торги Вт, 17.11 — 3 авто»; owner 2026-11-13). Collector ticker.py, collect.py and selection.py only; pages, CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
+               'description': 'Owner requests (2026-11-13), one install: KOREA-TILE-001 — two yellow tiles on the home ticker: auctions (today and the 3 nearest days, car count, auction houses, start in Kyiv time), then the damage score legend; KOREA-ENGINE-001 — fuel type in lots.json and in the Korea page lot card («Двигун 2 996 см³ · бензин»), the «Model» list grouped by make, model name fixes. Collector collect.py, selection.py, ticker.py, fuel.py, prices.py, public.py and video/korea.html only; CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install home ticker tile'}
+               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install home ticker tiles + Korea engine'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),
