@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "ecdb24a5bbd81d223fa2872e2e61cb9954826f0b6f157819347b99c9850d5a61",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T06:11:40Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-13T06:24:26Z",
+  "heartbeat_at": "2026-11-13T06:24:26Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43376261674",
     "task_id": "KOREA-TIME-INSTALL-20261113-R3",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 497.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 153.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 155.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43376261674-ecadaa1495b4e205",
   "production_transaction_path": "state/transactions/KOREA-TIME-INSTALL-20261113-R3.ecadaa1495b4e205fe323a74b77b7098cea17ec3ac34c81d8eba74d88b9b116b.43376261674.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-TIME-INSTALL-20261113-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "e01fa50614ddadb4c2e2eb71f8eb28d80e74f83d7fcbfc3d319b25fc424e04b3",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-TIME-INSTALL-20261113-R3.json",
   "request_sha256": "ecadaa1495b4e205fe323a74b77b7098cea17ec3ac34c81d8eba74d88b9b116b",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "4b631cd3b3f68e226ca3fe306e0781e868c0d38456872e6a7500973f39ffe927",
     "file_sha256": {
@@ -114,5 +145,5 @@
       "cloud/korea_time_001/week_days.py": "1259b147a1ba06e6a58f2078c0f7d51ab7af88828ae0920823132cde3736a6c9"
     }
   },
-  "updated_at": "2026-11-13T06:11:40Z"
+  "updated_at": "2026-11-13T06:24:26Z"
 }
