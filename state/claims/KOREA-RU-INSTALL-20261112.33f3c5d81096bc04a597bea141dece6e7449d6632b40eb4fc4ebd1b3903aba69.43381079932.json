@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "74940de603e775b808f8d5222977feab3373f4a0937a199496c1f59fab50793a",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T06:49:34Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T06:54:37Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43381079932",
     "task_id": "KOREA-RU-INSTALL-20261112",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43381079932-33f3c5d81096bc04",
   "production_transaction_path": "state/transactions/KOREA-RU-INSTALL-20261112.33f3c5d81096bc04a597bea141dece6e7449d6632b40eb4fc4ebd1b3903aba69.43381079932.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-3260105351e44167-4e102076cf08fd9b",
   "receipt_path": "state/receipts/KOREA-RU-INSTALL-20261112.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/korea_ru_001/ua_korea_ru.py": "8e561c695dacfeee21745908ea6c3f7c0bbd6746c205427f0b7712fc30ae9bf7"
     }
   },
-  "updated_at": "2026-11-13T06:49:34Z"
+  "updated_at": "2026-11-13T06:54:37Z"
 }
