@@ -1,7 +1,7 @@
 """A client's bought cars for «Мій кабінет» (owner 2026-11-12).
 
 The one place that links the client's page to the contract accounting (session «Договор купли-продажи» /
-CRM-PAYMENTS, by the client's phone). Until that accounting is installed there are no records, so the page shows
+CRM-PAYMENTS, ua_pay_store.purchased_cars, by the client's phone; read only). With no order yet the page shows
 «Поки немає». Each car, as that accounting gives it (owner 2026-11-12: amounts, deadlines and penalties are shown):
 {'title', 'year', 'vin', 'lot_id', 'stage_label', 'stages': [{'label', 'state'}], 'photo', 'photos' (our site's URLs),
  'price_usd',
@@ -12,5 +12,6 @@ CRM-PAYMENTS, by the client's phone). Until that accounting is installed there a
 
 
 def purchased(phone):
-    """The client's bought cars, newest first; [] while the contract accounting is not installed."""
-    return []
+    """The client's bought cars, newest first, from the contract accounting (CRM-PAYMENTS, installed 2026-11-13)."""
+    import ua_pay_store
+    return ua_pay_store.purchased_cars(phone)
