@@ -46,3 +46,6 @@ CHAT-BRAND-INSTALL-20261113 (бэкап/откат/проверки) — тол�
   (135×40, как живой). В пакете — autoria_logo.py (сборщик переносит только .py), заменяет video/brand/autoria-logo.svg на
   месте: кнопка отзывов и все значки «Ми на AUTO.RIA» обновятся. Кэш не мешает (сервер: no-cache, must-revalidate).
   Проба в браузере: cloud/photos/26-CHAT-BRAND-AUTORIA-LOGO.png. Тесты 53/53.
+
+## Итог
+УСТАНОВЛЕНО 2026-11-13: CHAT-BRAND-INSTALL-20261113 FINISHED (run 43433941183), все проверки PASS; живая проверка 80/80 страниц OK.
