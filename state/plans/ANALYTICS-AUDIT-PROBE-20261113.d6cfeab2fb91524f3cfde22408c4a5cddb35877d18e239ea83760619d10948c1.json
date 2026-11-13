@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ANALYTICS-AUDIT-PROBE-20261113.d6cfeab2fb91524f3cfde22408c4a5cddb35877d18e239ea83760619d10948c1.json",
+  "autostart_ledger_sha256": "3ea6c177f0aca04a57c5317fe5c9a4cee77d81bba4546e18c0c6a98240f5acd3",
+  "autostart_source_commit": "e5a1197c889cd01ac93d9716230b684f00fc211f",
+  "created_at": "2026-11-13T03:54:35Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43361870837",
+    "task_id": "ANALYTICS-AUDIT-PROBE-20261113",
+    "task_sha256": "d6cfeab2fb91524f3cfde22408c4a5cddb35877d18e239ea83760619d10948c1"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-a00b7a073566cbee-5817bb944ce75cbd",
+  "request_path": "tasks/requests/ANALYTICS-AUDIT-PROBE-20261113.json",
+  "resource_locks": [
+    "PATH_SCOPE:a00b7a073566cbee"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

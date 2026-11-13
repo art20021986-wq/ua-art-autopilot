@@ -1,0 +1,43 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/DIAG-COUNTERS-INSTALL-20261112-R2.9bd8798c7f7c63ad4f2ec402786d55250fe8fcd367b607cbaa915e5316ef06b9.json",
+  "autostart_ledger_sha256": "7d5c44d646929436d54cf1010e2245ae552e6be33529eaab05f561040e030c16",
+  "autostart_source_commit": "47006d518f1cede9e95e92c8cb59ff9ebd63961f",
+  "created_at": "2026-11-13T03:03:00Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43356106178",
+    "task_id": "DIAG-COUNTERS-INSTALL-20261112-R2",
+    "task_sha256": "9bd8798c7f7c63ad4f2ec402786d55250fe8fcd367b607cbaa915e5316ef06b9"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "card-ua-0001-7c2fd7a763d94227",
+  "request_path": "tasks/requests/DIAG-COUNTERS-INSTALL-20261112-R2.json",
+  "resource_locks": [
+    "CARD:UA-0001",
+    "CARD:UA-0003",
+    "CARD:UA-0004",
+    "CARD:UA-0005",
+    "CARD:UA-0006",
+    "CARD:UA-0007",
+    "CARD:UA-0009",
+    "CARD:UA-0010",
+    "CARD:UA-0011",
+    "CARD:UA-0012",
+    "CARD:UA-0013",
+    "CARD:UA-0014",
+    "CARD:UA-0015",
+    "CARD:UA-0016",
+    "CARD:UA-0017",
+    "CARD:UA-0018",
+    "CARD:UA-0021",
+    "CARD:UA-0022",
+    "CARD:UA-0023"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

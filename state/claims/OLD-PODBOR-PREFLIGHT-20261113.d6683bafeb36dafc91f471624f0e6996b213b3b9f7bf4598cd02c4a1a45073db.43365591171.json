@@ -1,0 +1,56 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/OLD-PODBOR-PREFLIGHT-20261113.d6683bafeb36dafc91f471624f0e6996b213b3b9f7bf4598cd02c4a1a45073db.json",
+  "autostart_ledger_sha256": "77ae1aa5675affb6b43ac10fceff3da0e8a2248fc2c9d1c0cacddd6f4b31c54f",
+  "autostart_source_commit": "aa6c16ee42d0f496981308f00b11fdb35c23309b",
+  "created_at": "2026-11-13T04:28:21Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-11-13T04:32:19Z",
+      "class": "UNKNOWN",
+      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 43365591171",
+      "retries_remaining": 3,
+      "retry_allowed": false,
+      "signature": "a9f314c459cc5a35"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-13T04:50:00+00:00",
+      "class": "PACKAGE_SMOKE_CHECK",
+      "evidence_path": "state/reconciliations/OLD-PODBOR-PREFLIGHT-20261113.43365591171.authenticated-evidence.json",
+      "message": "Read-only preview stopped at the package's own page guard (OLD_PAGE_NOT_RECOGNISED: the browser texts are drawn by order.js, not in the file); nothing written. Retried as R2.",
+      "retries_remaining": 0,
+      "retry_allowed": false
+    }
+  ],
+  "heartbeat_at": "2026-11-13T04:28:21Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43365591171",
+    "task_id": "OLD-PODBOR-PREFLIGHT-20261113",
+    "task_sha256": "d6683bafeb36dafc91f471624f0e6996b213b3b9f7bf4598cd02c4a1a45073db"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-573756374f54a1a6-987f07ff3870329f",
+  "receipt_path": "state/receipts/OLD-PODBOR-PREFLIGHT-20261113.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/OLD-PODBOR-PREFLIGHT-20261113.json",
+  "request_sha256": "d6683bafeb36dafc91f471624f0e6996b213b3b9f7bf4598cd02c4a1a45073db",
+  "resource_locks": [
+    "PATH_SCOPE:573756374f54a1a6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "5a0e2f8a407c4f99895d4c0e42af511018964946",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-13T04:32:19Z"
+}

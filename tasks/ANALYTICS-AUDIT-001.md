@@ -86,3 +86,10 @@ ANALYTICS-AUDIT-PROBE-20261112 — та же проверка только на 
   (e.g. 11.11: GA4 6 users / server log 36) — blockers and no-consent visits. Point 5 DONE (reading works; a bot report
   from GA4 is not built — only if the owner asks). Point 6 (Clarity): owner on phone, mobile layout hides «New project»;
   waits for the Project ID.
+
+## 2026-11-13 — старая страница подбора video/order/podbor.html (владелец «Да»)
+На ней нет ни своего счётчика, ни Google. ANALYTICS-AUDIT-PROBE-20261113 (только чтение): заходы людей/роботов по дням,
+источники, коды ответа (IP+браузер — только хэш в памяти) и какие публичные страницы на неё ссылаются. Решение — после итога.
+- Итог PROBE-20261113 (PASS): за 10 дней журнала сервера (10 файлов) запросов к video/order/podbor.html — 0 (ни людей,
+  ни роботов); ни одна публичная страница на неё не ссылается. Счётчики на ней не нужны. Предложено владельцу:
+  оставить как есть или убрать страницу (запись — только после «да»).

@@ -363,7 +363,54 @@ def installed():
     return value
 
 
+OLD_PODBOR = '/video/order/podbor.html'
+
+
+def page_visits(texts, target=OLD_PODBOR):
+    """Requests to one page by UTC day: people (IP+browser hashed in memory), views, robots, sources, statuses."""
+    days = {}
+    for text in texts:
+        for line in text.splitlines():
+            match = LINE.search(line)
+            if not match or match.group(4).split('?')[0] != target:
+                continue
+            ip, day, method, path, status, referrer, agent = match.groups()
+            day = time.strftime('%Y-%m-%d', time.strptime(day, '%d/%b/%Y'))
+            d = days.setdefault(day, {'people': set(), 'views': 0, 'robots': 0, 'sources': Counter(), 'status': Counter()})
+            d['status'][status] += 1
+            if ROBOT.search(agent):
+                d['robots'] += 1
+                continue
+            d['people'].add(hashlib.sha256((ip + agent).encode()).hexdigest()[:16])
+            d['views'] += 1
+            d['sources'][source(referrer, path)] += 1
+    return {day: {'people': len(d['people']), 'views': d['views'], 'robots': d['robots'],
+                  'sources': dict(d['sources']), 'status': dict(d['status'])} for day, d in sorted(days.items())}
+
+
+def linked_from(target=OLD_PODBOR):
+    """Public pages whose HTML links to the page (not drafts)."""
+    found = []
+    for folder in PUBLIC:
+        for path in sorted(folder.rglob('*.html')):
+            relative = path.relative_to(HOME).as_posix()
+            if '/preview/' in '/' + relative or path.is_symlink():
+                continue
+            text = path.read_text('utf-8', 'replace')
+            if 'order/podbor.html' in text:
+                found.append(relative)
+    return found[:100]
+
+
 def report():
+    """R5 (owner «Да» 2026-11-13): who opens the old order page video/order/podbor.html, and what links to it."""
+    logs = log_texts()
+    texts = [v['text'] for v in logs.values() if 'text' in v]
+    return {'status': 'PASS', 'log_files': len(texts), 'old_podbor': guarded(page_visits, texts),
+            'linked_from': guarded(linked_from)}
+
+
+def report_r4():
     return {'status': 'PASS', 'google_analytics': guarded(ga4)}
 
 

@@ -1,0 +1,15 @@
+{
+  "claim_before_sha256": "107c01640ba3b6493ea1b46d7fff6bdb5e4e727be77c377e1b1e0b323fc945d9",
+  "error": "RuntimeError: REMOTE_PREVIEW:DeploymentError:SMOKE_RESULT left_count 1 (video/privacy.html header link «Підбір авто»; preview mode reads only)",
+  "failed_step": "execute / standard / execute: Execute STANDARD controller (remote preview, read-only)",
+  "owner_approval": "«Да» in chat 2026-11-13 to closing the R3 claim by manual reconciliation",
+  "precedent": "state/reconciliations/SERVICE-WORDS-PREFLIGHT-20261112.43219463706.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-13T02:30:00+00:00",
+  "remote_mode": "preview (reads only)",
+  "retry": "SERVICE-WORDS-PREFLIGHT-20261112-R4 (privacy link added to the package, #1407)",
+  "run_id": "43350432698",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "SERVICE-WORDS-PREFLIGHT-20261112-R3"
+}
