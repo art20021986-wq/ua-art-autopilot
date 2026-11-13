@@ -12,9 +12,11 @@ import deployment_transport  # noqa: E402
 
 
 def installed():
-    """The collector as KOREA-TIME-INSTALL installs it (its package in this repository)."""
+    """The collector as KOREA-TIME-INSTALL installs it (its package in this repository) and the live Korea page."""
     ticker = HERE.parent / 'korea_time_001' / 'korea_auction'
-    return {name: (ticker / name.split('/')[1]).read_bytes() for name in candidate_builder.INSTALLED_SHA256}
+    source = {name: (ticker / name.split('/')[1]).read_bytes() for name in candidate_builder.INSTALLED_SHA256}
+    source[candidate_builder.KOREA] = (HERE / 'fixtures' / 'korea_live.html').read_bytes()
+    return source
 
 
 class FakeAPI:
@@ -43,23 +45,30 @@ class CandidateTests(unittest.TestCase):
         for name in archive.namelist():
             (unpacked / name).write_bytes(archive.read(name))
         files = candidate_builder.build(installed(), {}, here=unpacked, sha=deployment_transport.sha)
-        self.assertEqual(set(files), {'korea_auction/__init__.py'}
+        self.assertEqual(set(files), {'korea_auction/__init__.py', candidate_builder.KOREA}
                          | {'korea_auction/%s.py' % m for m in candidate_builder.MODULES})
+        page = files[candidate_builder.KOREA].decode('utf-8')
+        self.assertIn('function engine(l){', page)  # KOREA-ENGINE-001: engine type in the lot card
+        self.assertIn('createElement("optgroup")', page)  # KOREA-ENGINE-001: models grouped by make
         self.assertIn('korea_auction/public.py', files)
         source = HERE / 'korea_auction'
         for module in candidate_builder.MODULES:
             self.assertEqual(files['korea_auction/%s.py' % module], (source / (module + '.py')).read_bytes())
         for name, value in files.items():
-            if name.endswith('.py'):
+            if name.endswith('.py'):  # the page is checked above
                 compile(value, name, 'exec')
         self.assertFalse(any(candidate_builder.is_page(name) for name in files))
 
     def test_only_the_tile_modules_differ_from_the_installed_collector(self):
-        """The package never rolls back another install: every module but the tile's own equals the installed one."""
-        changed = {'collect', 'selection', 'ticker'}
+        """The package never rolls back another install: every module but the tile's and KOREA-ENGINE's own equals the
+        installed one (fuel.py is new)."""
+        changed = {'collect', 'selection', 'ticker', 'prices', 'public'}
         live = installed()
         for module in candidate_builder.MODULES:
             name = 'korea_auction/%s.py' % module
+            if module == 'fuel':
+                self.assertNotIn(name, live)
+                continue
             mine = (HERE / name).read_bytes()
             self.assertEqual(mine != live[name], module in changed, name)
 

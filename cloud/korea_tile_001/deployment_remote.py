@@ -1,4 +1,4 @@
-"""Bounded KOREA-TILE-001 release (home ticker tile: today's car count and the 3 nearest auction days); preserve live data and pending requests."""
+"""Bounded KOREA-TILE-001 + KOREA-ENGINE-001 release (home ticker tiles; Korea page engine type and models by make); preserve live data and pending requests."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -122,7 +122,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'TICKER-FIX4-INSTALL-1','files':files,'job':JOB,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'korea_auction/ticker.py + collect.py + selection.py (home ticker yellow tile: today\'s car count, always, and the 3 nearest auction days with weekday and car count); no page or CRM module changes',
+            'site_scope':'korea_auction/ticker.py + collect.py + selection.py (home ticker: two yellow tiles — auctions today and the 3 nearest days with car count, auction houses and Kyiv start; then the damage score legend) + fuel.py, prices.py, public.py and collect.py model names (KOREA-ENGINE-001: fuel type in lots.json), video/korea.html (lot card engine type, models grouped by make); no other page or CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -170,7 +170,18 @@ def smoke(directory):
                  'public_list': public.build([dict(sample['items'][0], maker='KIA', model='K5', trim='', engine_cc=1999,
                                                    transmission='AT', house='H', lot_no='1', start_price_krw=10**7, auction_start='2026/11/11 13:00',
                                                    photos=[])], '2026/11/11', {'USD': 41.0, 'KRW': 0.03, 'date': 'd'},
-                                             {'1': ['1-1.jpg']}, 'now')['lots'][0]['photos'] == ['/video/korea/lots/1-1.jpg']}
+                                             {'1': ['1-1.jpg']}, 'now')['lots'][0]['photos'] == ['/video/korea/lots/1-1.jpg'],
+                 # KOREA-ENGINE-001: fuel type in the public lot list; the Korea page shows it and groups models by make
+                 'fuel_in_list': public.build([dict(sample['items'][0], maker='KIA', model='K5', trim='', engine_cc=1999,
+                                                    transmission='AT', house='H', lot_no='1', start_price_krw=10**7,
+                                                    auction_start='2026/11/11 13:00', photos=[], fuel='Gasoline')],
+                                              '2026/11/11', {'USD': 41.0, 'KRW': 0.03, 'date': 'd'}, {'1': ['1-1.jpg']},
+                                              'now')['lots'][0]['fuel']
+                                 == 'gasoline',
+                 'page_engine_models': all(piece in read(after/'video/korea.html').decode('utf-8')
+                                           for piece in ('function engine(l){', 'createElement("optgroup")')),
+                 # KOREA-PHOTOS-ALL-001 stays installed (never rolled back to 40 photos)
+                 'all_photos': __import__('korea_auction.prices', fromlist=['x']).MAX_PHOTOS is None}
     finally:
         sys.path.remove(str(after))
         for name in [m for m in sys.modules if m == 'korea_auction' or m.startswith('korea_auction.')]:

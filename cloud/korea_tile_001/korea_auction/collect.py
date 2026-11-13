@@ -62,9 +62,13 @@ def fetch_all_lots(s):
     return total, found
 
 
+# KOREA-ENGINE-001 (owner 2026-11-13): the auction's misspelt model names, so one model is one entry in the lot search
+MODEL_FIXES = {'MORNIG': 'MORNING', 'MOHAVI': 'MOHAVE'}
+
+
 def display_name(maker, model):
-    """'KIA', 'SANTA FE' -> 'Kia Santa Fe'; words with digits stay as is ('K5', 'G80')."""
-    words = (maker + ' ' + model).split()
+    """'KIA', 'SANTA FE' -> 'Kia Santa Fe'; words with digits stay as is ('K5', 'G80'); misspelt models fixed."""
+    words = (maker + ' ' + MODEL_FIXES.get(model.strip().upper(), model)).split()
     return ' '.join(w if any(c.isdigit() for c in w) else '-'.join(p.capitalize() for p in w.split('-'))
                     for w in words)
 
