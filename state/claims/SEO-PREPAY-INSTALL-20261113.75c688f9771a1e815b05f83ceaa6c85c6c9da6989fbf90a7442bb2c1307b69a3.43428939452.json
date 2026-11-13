@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "e2c151b71843abc76b0e3b9add71e7cb50cd1814115b5b11598085f12e0126b1",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T12:56:00Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T13:01:02Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43428939452",
     "task_id": "SEO-PREPAY-INSTALL-20261113",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43428939452-75c688f9771a1e81",
   "production_transaction_path": "state/transactions/SEO-PREPAY-INSTALL-20261113.75c688f9771a1e815b05f83ceaa6c85c6c9da6989fbf90a7442bb2c1307b69a3.43428939452.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-b76d901a3f11c6ec-28b82411a1bf39fb",
   "receipt_path": "state/receipts/SEO-PREPAY-INSTALL-20261113.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/seo_prepay_001/test_release.py": "7dacf944600375a73c705a9848b868ad64cfdeef82cfdff3f7cf49a4c745f96a"
     }
   },
-  "updated_at": "2026-11-13T12:56:00Z"
+  "updated_at": "2026-11-13T13:01:02Z"
 }
