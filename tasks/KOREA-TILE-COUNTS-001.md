@@ -19,3 +19,6 @@
 KOREA-ENGINE-INSTALL) + правка; меняются только collect.py и job.py (тест). Тесты 90/90.
 Заявки: KOREA-TILE-COUNTS-PREFLIGHT-20261113 → KOREA-TILE-COUNTS-INSTALL-20261113. Ставится после KOREA-ENGINE, по
 очереди координатора.
+
+## Итог (13.11)
+УСТАНОВЛЕНО: KOREA-TILE-COUNTS-INSTALL-20261113 FINISHED (run 43414978647). Живая проверка 11:40 UTC: плашка = lots.json по дням (56/115/1 005/1 655).
