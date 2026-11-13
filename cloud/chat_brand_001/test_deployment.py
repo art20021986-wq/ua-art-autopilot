@@ -252,6 +252,7 @@ class PublicVerificationTests(unittest.TestCase):
         caption='' if request.full_url.endswith('/video/index.html') else 'a.brand .brand-copy::after{}'
         body=('<html><head></head><body>'+'x'*300+'<a class="mcf-chat floating-chat" href="https://wa.me/380992222002">'
               'c</a><!--UA-CHAT-GLASS-V1--><style>@media (max-width:767px){html body a.mcf-chat</style><!--/UA-CHAT-GLASS-V1-->'
+              '<!--UA-AUTORIA-BADGE-V1--><img src="/video/brand/autoria-logo.svg"><!--/UA-AUTORIA-BADGE-V1-->'
               '<!--UA-BRAND-HOME-V1--><style>a.brand .brand-mark{}'+caption+'</style><!--/UA-BRAND-HOME-V1--></body></html>')
         response=BytesIO(body.encode())
         response.url=request.full_url;response.status=200
