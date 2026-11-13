@@ -104,7 +104,7 @@ def collect(email, password, now=None, session=None):
     rates = nbu.fetch_rates()
     own_cars = catalog.parse(catalog.fetch())
     rules = catalog.model_rules(own_cars)
-    today, next_date = selection.today_and_next(all_lots, now)
+    today, next_days = selection.today_and_next_days(all_lots, now)
     tomorrow = selection.day_after(today)
     items, details = [], 0
     for day in selection.ticker_dates(all_lots, now):  # TICKER-FIX6-001: next days, then today, until full
@@ -119,9 +119,9 @@ def collect(email, password, now=None, session=None):
     return {
         'generated_at': (now or datetime.now(selection.JST)).isoformat(timespec='minutes'),
         'auction_date': date,
-        # KOREA-TILE-001 (owner 2026-11-13): the yellow tile — today's car count and the next auction date
+        # KOREA-TILE-001 (owner 2026-11-13): the yellow tile — today's car count and the 3 nearest auction days
         'lots_today': sum(1 for l in all_lots if selection.auction_date(l) == today),
-        'next_date': next_date,
+        'next_days': [{'date': d, 'lots': n} for d, n in next_days],
         'lots_total': total, 'lots_parsed': len(all_lots),
         'lots_on_date': sum(1 for l in all_lots if selection.auction_date(l) == date),
         'nbu': {'date': rates['date'], 'usd_uah': rates['USD'], 'krw_uah': rates['KRW']},

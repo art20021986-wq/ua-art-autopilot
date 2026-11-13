@@ -262,15 +262,17 @@ class JobTest(unittest.TestCase):
             data = collect.collect('a', 'b', now=datetime(2026, 11, 12, 17, 20, tzinfo=selection.JST), session=Browser())
         self.assertEqual(data['auction_date'], '2026/11/13')
         self.assertEqual([(i['id'], i['tomorrow']) for i in data['items']], [('4', False), ('5', False)])
-        self.assertEqual((data['lots_today'], data['next_date']), (1, '2026/11/13'))
+        self.assertEqual(data['lots_today'], 1)
+        self.assertEqual(data['next_days'], [{'date': '2026/11/13', 'lots': 3}, {'date': '2026/11/18', 'lots': 1}])
 
     def test_waiting_tile_shows_day_counts(self):
         """TICKER-FIX6-001: no lot cars yet — the tile still shows today's and the next day's counts."""
         own = {'stage': 'sea', 'title': 'Kia K5 2021', 'url': 'https://www.uaart.com.ua/video/ua/UA-0001.html',
                'photo': 'https://www.uaart.com.ua/video/foto/UA-0001/001.jpg', 'price_usd': 15000}
-        html = ticker.render({'items': [], 'own': [own], 'lots_today': 989, 'next_date': '2026/11/18'})
+        html = ticker.render({'items': [], 'own': [own], 'lots_today': 989,
+                              'next_days': [{'date': '2026/11/18', 'lots': 585}]})
         self.assertIn('<b>989</b>', html)
-        self.assertIn('Наступний аукціон</span> <b>18.11</b>', html)
+        self.assertIn('Торги Ср, 18.11</span> <b>585</b>', html)
 
     def test_failed_run_keeps_the_live_ticker_photos(self):
         """TICKER-FIX2-001: no items, or no photo copied — the photos the live ticker shows stay."""
@@ -427,11 +429,15 @@ class Fix4Test(unittest.TestCase):
         self.assertEqual(data, [('mode', 'search'), ('order_closed[]', '1'), ('auction_group[]', '4'),
                                 ('auction_group[]', '5')])
 
-    def test_today_and_next(self):
-        now = datetime(2026, 11, 12, 14, 0, tzinfo=selection.JST)
-        lots_ = [{'auction_start': d} for d in ('2026/11/12 12:00', '2026/11/13 10:00', '2026/11/16 10:00')]
-        self.assertEqual(selection.today_and_next(lots_, now), ('2026/11/12', '2026/11/13'))
-        self.assertEqual(selection.today_and_next(lots_[:1], now), ('2026/11/12', None))
+    def test_today_and_next_days(self):
+        """Owner 2026-11-13: the 3 nearest auction days after today, each with its listed car count."""
+        now = datetime(2026, 11, 13, 14, 0, tzinfo=selection.JST)
+        dates = ('2026/11/13 12:00', '2026/11/18 10:00', '2026/11/17 10:00', '2026/11/18 11:00', '2026/11/19 10:00',
+                 '2026/11/20 10:00')
+        lots_ = [{'auction_start': d} for d in dates]
+        self.assertEqual(selection.today_and_next_days(lots_, now),
+                         ('2026/11/13', [('2026/11/17', 1), ('2026/11/18', 2), ('2026/11/19', 1)]))
+        self.assertEqual(selection.today_and_next_days(lots_[:1], now), ('2026/11/13', []))
         self.assertEqual(selection.day_after('2026/11/30'), '2026/12/01')
 
     def _data(self, **kw):
@@ -440,28 +446,32 @@ class Fix4Test(unittest.TestCase):
                 'photo': '/video/korea/img/1.jpg', 'auction_start_jst': '2026/11/13 10:00', 'hot': False}
         return dict({'lots_on_date': 500, 'own': [], 'items': [item]}, **kw)
 
-    def test_tile_today_count_and_next_auction_date(self):
-        """KOREA-TILE-001 (owner 2026-11-13): today's count and the next auction date — never the next day's partial
-        count (13.11: «Торги 17.11 — 3 авто» while 585 cars of 18.11 were in the ticker)."""
-        html = ticker.render(self._data(lots_today=56, next_date='2026/11/17'))
+    DAYS = [{'date': '2026/11/17', 'lots': 3}, {'date': '2026/11/18', 'lots': 585}, {'date': '2026/11/19', 'lots': 12}]
+
+    def test_tile_today_count_and_next_auction_days(self):
+        """KOREA-TILE-001 (owner 2026-11-13): today's count, then the 3 nearest auction days — date, weekday and
+        car count each («Торги Вт, 17.11 3 авто · Торги Ср, 18.11 585 авто …»)."""
+        html = ticker.render(self._data(lots_today=56, next_days=self.DAYS))
         lead = html[html.index('class="kt-lead"'):html.index('class="kt-legend"')]
         self.assertIn('Сьогодні на торгах</span> <b>56</b> <span', lead)
-        self.assertIn('data-ru="Следующий аукцион"', lead)
-        self.assertIn('Наступний аукціон</span> <b>17.11</b></span>', lead)
-        self.assertEqual(lead.count('class="kt-count"'), 2)
-        self.assertNotIn('Торги 17.11', html)
+        self.assertIn('Торги Вт, 17.11</span> <b>3</b> <span', lead)
+        self.assertIn('Торги Ср, 18.11</span> <b>585</b> <span', lead)
+        self.assertIn('Торги Чт, 19.11</span> <b>12</b> <span', lead)
+        self.assertIn('data-ka="ვაჭრობა ოთხ, 18.11"', lead)
+        self.assertEqual(lead.count('class="kt-count"'), 4)
+        self.assertNotIn('Наступний аукціон', html)
         self.assertNotIn('Завтра на торгах', html)
         self.assertIn('kt-legend', html)
 
     def test_tile_shows_zero_today(self):
-        html = ticker.render(self._data(lots_today=0, next_date='2026/11/16'))
+        html = ticker.render(self._data(lots_today=0, next_days=self.DAYS[:1]))
         self.assertIn('Сьогодні на торгах</span> <b>0</b>', html)
-        self.assertIn('<b>16.11</b>', html)
+        self.assertIn('Торги Вт, 17.11</span> <b>3</b>', html)
 
-    def test_tile_without_next_date(self):
-        html = ticker.render(self._data(lots_today=989, next_date=None), tomorrow=False)
+    def test_tile_without_next_days(self):
+        html = ticker.render(self._data(lots_today=989, next_days=[]), tomorrow=False)
         self.assertIn('<b>989</b>', html)
-        self.assertNotIn('Наступний аукціон', html)
+        self.assertEqual(html.count('class="kt-count"'), 1)
 
 
 class ModelLotsTest(unittest.TestCase):
@@ -514,13 +524,20 @@ class KoreaTimeTests(unittest.TestCase):
 
     def test_winter_and_summer_kyiv_time(self):
         from korea_auction import ticker
-        self.assertIn('>Торги 18.11 · 12:00 Корея · 05:00 Київ<', ticker._when('2026/11/18 12:00'))
-        self.assertIn('data-ru="Торги 18.11 · 12:00 Корея · 05:00 Киев"', ticker._when('2026/11/18 12:00'))
-        self.assertIn('>Торги 15.07 · 10:00 Корея · 04:00 Київ<', ticker._when('2026/07/15 10:00'))
+        self.assertIn('>Торги Ср, 18.11 · 12:00 Корея · 05:00 Київ<', ticker._when('2026/11/18 12:00'))
+        self.assertIn('data-ru="Торги Ср, 18.11 · 12:00 Корея · 05:00 Киев"', ticker._when('2026/11/18 12:00'))
+        self.assertIn('>Торги Ср, 15.07 · 10:00 Корея · 04:00 Київ<', ticker._when('2026/07/15 10:00'))
+
+    def test_weekday_per_language(self):
+        from korea_auction import ticker
+        sunday = ticker._when('2026/11/22 12:00')
+        self.assertIn('data-uk="Торги Нд, 22.11 ', sunday)
+        self.assertIn('data-ru="Торги Вс, 22.11 ', sunday)
+        self.assertIn('data-ka="ვაჭრობა კვი, 22.11 ', sunday)
 
     def test_kyiv_day_shown_when_it_differs(self):
         from korea_auction import ticker
-        self.assertIn('06:00 Корея · 23:00 (17.11) Київ', ticker._when('2026/11/18 06:00'))
+        self.assertIn('Ср, 18.11 · 06:00 Корея · 23:00 (Вт, 17.11) Київ', ticker._when('2026/11/18 06:00'))
 
     def test_unreadable_start_shows_nothing(self):
         from korea_auction import ticker
