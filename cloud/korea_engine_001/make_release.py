@@ -24,8 +24,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'engine_page.py', 'model_groups.py', 'gallery_page.py',
-                                'fixtures/korea_live.html')] + [
+                                'make_release.py', 'release_constants.py', 'engine_page.py', 'model_groups.py', 'gallery_page.py')] + [
     P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'collect', 'fuel', 'html_tools', 'job', 'lots', 'model_lots', 'nbu',
                                                    'prices', 'public', 'selection', 'session', 'ticker')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_engine_page.py', 'test_model_groups.py', 'test_gallery_page.py',

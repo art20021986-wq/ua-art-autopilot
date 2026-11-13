@@ -5,7 +5,8 @@
    pill has one size everywhere; the Korea auctions pages get the button (they still show the old green circle).
 2. The logo as a clear way home: ua_brand_home.py (new) adds a thin gold ring around the «UA» mark and a small
    «← На головну» caption under the company name (not on the home page itself).
-3. «Ми на AUTO.RIA» with the official logo at the bottom of every page: ua_autoria_badge.py (new) adds the home page
+3. The SEO landing pages get the floating button too (owner «да» 2026-11-13; they have none).
+4. «Ми на AUTO.RIA» with the official logo at the bottom of every page: ua_autoria_badge.py (new) adds the home page
    badge where it is missing and shows the logo in place of the plain text on the Korea pages.
 
 Every page writer gets the blocks: site_ge_inject.inject_html (cards, catalogue, home, order page) through a wrapper
@@ -41,7 +42,7 @@ EDITS = {
         ("import ua_chat_button  # CHAT-BUTTON-001\n",
          "import ua_chat_button  # CHAT-BUTTON-001\nimport ua_autoria_badge  # CHAT-BRAND-001\n"
          "import ua_brand_home  # CHAT-BRAND-001\n"),
-        (CHAIN, "ua_brand_home.apply(ua_autoria_badge.apply(%s))" % CHAIN),
+        (CHAIN, "ua_brand_home.apply(ua_autoria_badge.apply(%s, add_link=True)))" % CHAIN[:-1]),
     ],
     'ua_seo_metadata.py': [],  # SEO_REVISION only
 }
@@ -80,12 +81,17 @@ def edit(name, value):
     return text.encode('utf-8')
 
 
-def page(html):
-    """A page with the current blocks (the button, the AUTO.RIA badge, the logo)."""
+def page(html, landing=False):
+    """A page with the current blocks (the button, the AUTO.RIA badge, the logo); a landing page also gets the floating
+    button link when it has none (owner «да» 2026-11-13)."""
     import ua_autoria_badge
     import ua_brand_home
     import ua_chat_button
-    return ua_brand_home.apply(ua_autoria_badge.apply(ua_chat_button.apply(html)))
+    return ua_brand_home.apply(ua_autoria_badge.apply(ua_chat_button.apply(html, add_link=landing)))
+
+
+def is_landing(name):
+    return name.startswith('video/seo/')
 
 
 def build(source, dependencies):
@@ -103,7 +109,7 @@ def build(source, dependencies):
         if name in EDITS:
             result[name] = edit(name, value)
             continue
-        changed = page(value.decode('utf-8')).encode('utf-8')
+        changed = page(value.decode('utf-8'), is_landing(name)).encode('utf-8')
         if name == GOLDEN and changed == value:
             raise ValueError('CHAT_BRAND_GOLDEN_UNCHANGED')
         if changed != value:

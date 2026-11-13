@@ -1,0 +1,15 @@
+{
+  "claim_before_sha256": "be5c01cf9d4e60ee7e0fceaed30ebfa34025a3171cb12082fd29cc961faf095e",
+  "error": "RuntimeError: TASK_IDENTITY (deployment_controller.context: task not in PREVIEW_TASK/INSTALL_TASK) -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: Execute STANDARD controller (before any remote call)",
+  "owner_approval": "«Да» in chat 2026-11-13 to closing the R3 claim by manual reconciliation",
+  "precedent": "state/reconciliations/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113.43388227132.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-13T09:30:00+00:00",
+  "remote_mode": "none (refused before the remote call)",
+  "retry": "NEW-CAR-VIN-SPEC-PREFLIGHT-20261113-R4 (task name in release_constants; make_release takes no suffix, #1517)",
+  "run_id": "43396764840",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "NEW-CAR-VIN-SPEC-PREFLIGHT-20261113-R3"
+}

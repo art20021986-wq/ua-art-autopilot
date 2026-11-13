@@ -20,7 +20,7 @@ import tempfile
 import time
 
 from deployment_transport import API, canonical, sha
-from candidate_builder import DEPENDENCY_SHA256, build, is_page, page as current_page, targets
+from candidate_builder import DEPENDENCY_SHA256, build, is_landing, is_page, page as current_page, targets
 
 ROOT = Path('/home/Carix')
 HERE = Path(__file__).resolve().parent
@@ -124,6 +124,7 @@ def prepare(directory):
 
 def smoke(directory):
     """What the plan changes; the catalogue design guard must still accept the live catalogue against the golden one."""
+    from ua_chat_button import has_link  # this release's copy (the package folder is on the path)
     plan = json.loads(read(directory/'plan.json'))
     names = sorted(plan['files'])
     after = directory/'after'
@@ -136,7 +137,8 @@ def smoke(directory):
     pages = [n for n in names if plan['files'][n]['page']]
     value = {'modules': [n for n in names if n.endswith('.py')], 'pages': pages,
             'pages_with_row_once': sum(rows_once(page(n)) for n in pages),
-            'pages_current': sum(current_page(page(n)) == page(n) for n in pages),
+            'pages_current': sum(current_page(page(n), is_landing(n)) == page(n) for n in pages),
+            'landings_with_button': sum(has_link(page(n)) for n in pages if is_landing(n)),
             'golden_rows_once': rows_once(golden),
             'golden_current': current_page(golden) == golden,
             'catalog_guard_before': guard.shell_fingerprint(live_catalog) == guard.shell_fingerprint(live_golden),
@@ -144,6 +146,7 @@ def smoke(directory):
             'catalog_audit_after': guard.shell_audit(catalog)['status']}
     if (not value['golden_rows_once'] or value['pages_with_row_once'] != len(pages) or value['pages_current'] != len(pages)
             or not value['golden_current'] or not value['catalog_guard_after']
+            or value['landings_with_button'] != sum(map(is_landing, pages))
             or value['catalog_audit_after'] != 'PASS'):
         raise DeploymentError('SMOKE_RESULT:' + json.dumps(value)[:300])
     return value
