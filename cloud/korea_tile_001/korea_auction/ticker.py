@@ -187,18 +187,19 @@ def _mix(lots, own, every=2):
 
 
 def _tile(data):
-    """KOREA-TILE-001: the yellow tile's lines [(label, value, unit)]: today's car count, always (0 when none), then
-    each of the nearest auction days after today (Korea time) with its weekday and listed car count."""
-    out = [(_t('lead_today'), _num(data.get('lots_today') or 0), _t('cars'))]
+    """KOREA-TILE-001: the yellow tile's lines [(label, value, unit, houses)]: today's car count, always (0 when none),
+    then each of the nearest auction days after today (Korea time) with its weekday and listed car count; each line
+    with the names of that day's auction houses."""
+    out = [(_t('lead_today'), _num(data.get('lots_today') or 0), _t('cars'), data.get('houses_today') or [])]
     for day in data.get('next_days') or []:
         at = datetime.strptime(day['date'], '%Y/%m/%d')
-        out.append((_t('lead_day', d=_day(at)), _num(day['lots']), _t('cars')))
+        out.append((_t('lead_day', d=_day(at)), _num(day['lots']), _t('cars'), day.get('houses') or []))
     return out
 
 
 def _lines(tile):
     """The tile lines as text, for the closing card: «Сьогодні на торгах 56 авто · Торги Вт, 17.11 3 авто»."""
-    return ' · '.join(' '.join(p for p in line if p) for line in tile)
+    return ' · '.join(' '.join(p for p in line[:3] if p) for line in tile)
 
 
 def render(data, tomorrow=True):
@@ -209,8 +210,10 @@ def render(data, tomorrow=True):
     if not items and not own:
         return ''
     tile = _tile(data)
-    counts = ''.join('<span class="kt-count">● %s <b>%s</b>%s</span>' % (label, value, ' ' + unit if unit else '')
-                     for label, value, unit in tile)
+    counts = ''.join('<span class="kt-count">● %s <b>%s</b>%s%s</span>' % (
+        label, value, ' ' + unit if unit else '',
+        '<small class="kt-houses">%s</small>' % escape(' · '.join(names)) if names else '')
+        for label, value, unit, names in tile)
     if items:
         track = ('<div class="kt-lead">%s%s</div>' % (counts, _legend())
                  + ''.join(_own(i) if 'stage' in i else _item(i, i.get('tomorrow', tomorrow)) for i in _mix(items, own)))
@@ -255,7 +258,8 @@ CSS = (
     '.kt-lead{display:flex;flex-direction:column;justify-content:center;gap:8px;width:640px;padding:10px 18px;'
     'border-radius:12px;color:#0B1524;background:linear-gradient(135deg,#ffd200,#ff8a00)}'
     '.kt-count{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:700;white-space:nowrap}'
-    '.kt-count b{font-size:30px}'
+    '.kt-count b{font-size:30px}.kt-count{flex-wrap:wrap}'
+    '.kt-houses{flex-basis:100%;margin:-6px 0 0 22px;font-size:14px;font-weight:600;white-space:normal;opacity:.8}'
     '.kt-legend{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:12.5px;line-height:1.25}'
     '.kt-legend b{display:block;margin-bottom:4px;font-size:13px}'
     '.kt-legend dl{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;margin:0}'

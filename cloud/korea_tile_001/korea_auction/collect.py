@@ -121,7 +121,8 @@ def collect(email, password, now=None, session=None):
         'auction_date': date,
         # KOREA-TILE-001 (owner 2026-11-13): the yellow tile — today's car count and the 3 nearest auction days
         'lots_today': sum(1 for l in all_lots if selection.auction_date(l) == today),
-        'next_days': [{'date': d, 'lots': n} for d, n in next_days],
+        'houses_today': selection.houses(all_lots, today),
+        'next_days': [{'date': d, 'lots': n, 'houses': selection.houses(all_lots, d)} for d, n in next_days],
         'lots_total': total, 'lots_parsed': len(all_lots),
         'lots_on_date': sum(1 for l in all_lots if selection.auction_date(l) == date),
         'nbu': {'date': rates['date'], 'usd_uah': rates['USD'], 'krw_uah': rates['KRW']},

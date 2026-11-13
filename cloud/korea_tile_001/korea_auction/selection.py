@@ -59,6 +59,11 @@ def today_and_next_days(lots, now=None, days=NEXT_DAYS):
     return today, sorted(counts.items())[:days]
 
 
+def houses(lots, date):
+    """The auction houses holding lots on a date ('YYYY/MM/DD'), by name (owner 2026-11-13: names on the tile)."""
+    return sorted({lot['house'] for lot in lots if auction_date(lot) == date and lot.get('house')})
+
+
 def day_after(date):
     return (datetime.strptime(date, '%Y/%m/%d') + timedelta(days=1)).strftime('%Y/%m/%d')
 

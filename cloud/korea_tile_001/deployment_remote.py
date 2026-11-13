@@ -162,8 +162,10 @@ def smoke(directory):
                  # KOREA-TIME-001: Korea and Kyiv time on the ticker card and in the korea.html lot card
                  'ticker_kyiv_time': '11.11 · 13:00 Корея · 06:00 Київ' in html,
                  # KOREA-TILE-001: the tile — today's count (0 too) and the nearest auction days with weekday and count
-                 'tile': all(piece in ticker.render(dict(sample, lots_today=0, next_days=[{'date': '2026/11/17', 'lots': 3}]))
-                             for piece in ('Сьогодні на торгах</span> <b>0</b>', 'Торги Вт, 17.11</span> <b>3</b>')),
+                 'tile': all(piece in ticker.render(dict(sample, lots_today=0, next_days=[
+                     {'date': '2026/11/17', 'lots': 3, 'houses': ['K-Car O-San', 'SK Rent Car Auction']}]))
+                             for piece in ('Сьогодні на торгах</span> <b>0</b>', 'Торги Вт, 17.11</span> <b>3</b>',
+                                           '<small class="kt-houses">K-Car O-San · SK Rent Car Auction</small>')),
                  'public_list': public.build([dict(sample['items'][0], maker='KIA', model='K5', trim='', engine_cc=1999,
                                                    transmission='AT', house='H', lot_no='1', start_price_krw=10**7, auction_start='2026/11/11 13:00',
                                                    photos=[])], '2026/11/11', {'USD': 41.0, 'KRW': 0.03, 'date': 'd'},
