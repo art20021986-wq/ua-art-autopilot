@@ -1,6 +1,8 @@
 """Korea lot window photo viewer (KOREA-GALLERY-001, owner 2026-11-13): as on the catalogue car cards.
 
-A large photo on top, a strip of thumbnails below, arrows, swipe, keyboard, «Фото N / M». Same markup classes and
+A large photo on top, a strip of thumbnails below, arrows, swipe, keyboard, «Фото N / M»; a full-screen view
+(the catalogue's way: a native modal <dialog> over the whole screen, works on iPhone too) with the same photo, strip and
+arrows, closed by «×», Esc or a tap outside, focus back where it was. Same markup classes and
 styles as the catalogue gallery (ua_media_styles.CSS), so both look alike; the catalogue script itself is not used
 because it starts once per page load and the lot window is drawn later.
 
@@ -14,9 +16,9 @@ JS = r'''
   const body = document.getElementById('kl-card-body');
   if (!body || !window.MutationObserver) return;
   const words = {
-    uk: ['Фото','Назад','Далі','Фотографії автомобіля','Завантаження…','Не вдалося завантажити фото'],
-    ru: ['Фото','Назад','Вперёд','Фотографии автомобиля','Загрузка…','Не удалось загрузить фото'],
-    ka: ['ფოტო','წინა','შემდეგი','ავტომობილის ფოტოები','იტვირთება…','ფოტო ვერ ჩაიტვირთა']
+    uk: ['Фото','Назад','Далі','Фотографії автомобіля','Завантаження…','Не вдалося завантажити фото','На весь екран','Закрити'],
+    ru: ['Фото','Назад','Вперёд','Фотографии автомобиля','Загрузка…','Не удалось загрузить фото','На весь экран','Закрыть'],
+    ka: ['ფოტო','წინა','შემდეგი','ავტომობილის ფოტოები','იტვირთება…','ფოტო ვერ ჩაიტვირთა','სრულ ეკრანზე','დახურვა']
   };
   function locale() {
     const selected = document.querySelector('.ua-site-lang [aria-pressed="true"]');
@@ -37,7 +39,11 @@ JS = r'''
     const photos = Array.from(strip.querySelectorAll('img')).map(img => img.getAttribute('src'));
     if (!photos.length) return;
     const root = el('section', 'um-gallery kg-gallery', {'aria-roledescription': 'carousel'});
+    const mount = el('div', 'um-mount');
     const view = el('div', 'um-view');
+    const dialog = el('dialog', 'um-dialog');
+    const expand = el('button', 'um-tool um-expand', {type: 'button'});
+    const close = el('button', 'um-tool um-close', {type: 'button'});
     const bar = el('div', 'um-toolbar');
     const counter = el('span', 'um-counter', {role: 'status', 'aria-live': 'polite', 'aria-atomic': 'true'});
     const stage = el('div', 'um-stage');
@@ -47,12 +53,12 @@ JS = r'''
     const previous = el('button', 'um-tool um-prev', {type: 'button'});
     const next = el('button', 'um-tool um-next', {type: 'button'});
     const rail = el('div', 'um-thumbs', {role: 'tablist'});
-    previous.textContent = '‹'; next.textContent = '›';
+    previous.textContent = '‹'; next.textContent = '›'; expand.textContent = '⛶'; close.textContent = '×';
     state.append(el('span'));
-    bar.append(counter); panel.append(frame); stage.append(panel, state, previous, next);
-    view.append(bar, stage, rail); root.append(view);
+    bar.append(counter, expand, close); panel.append(frame); stage.append(panel, state, previous, next);
+    view.append(bar, stage, rail); mount.append(view); root.append(mount, dialog);
     strip.replaceWith(root);
-    let active = 0, tabs = [], swipe = null;
+    let active = 0, tabs = [], swipe = null, moved = false, opener = null, overflow = '';
     const g = {id, root};
     current = g;
     function stateOf(value) {
@@ -62,7 +68,8 @@ JS = r'''
     }
     function label() {
       const w = locale(), n = photos.length;
-      root.setAttribute('aria-label', w[3]); rail.setAttribute('aria-label', w[3]);
+      root.setAttribute('aria-label', w[3]); rail.setAttribute('aria-label', w[3]); dialog.setAttribute('aria-label', w[3]);
+      expand.setAttribute('aria-label', w[6]); close.setAttribute('aria-label', w[7]);
       previous.setAttribute('aria-label', w[1]); next.setAttribute('aria-label', w[2]);
       counter.textContent = w[0] + ' ' + (active + 1) + ' / ' + n;
       tabs.forEach((tab, i) => tab.setAttribute('aria-label', w[0] + ' ' + (i + 1) + ' / ' + n));
@@ -140,9 +147,30 @@ JS = r'''
     frame.addEventListener('pointerup', e => {
       if (!swipe || e.pointerId !== swipe.id) return;
       const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y; swipe = null;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) select(active + (dx < 0 ? 1 : -1));
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {moved = true; select(active + (dx < 0 ? 1 : -1));}
     });
     frame.addEventListener('pointercancel', () => {swipe = null;});
+    function enlarge() {
+      if (dialog.open || !dialog.showModal) return;
+      opener = view.contains(document.activeElement) ? document.activeElement : expand; overflow = document.body.style.overflow;
+      mount.style.minHeight = mount.getBoundingClientRect().height + 'px';
+      dialog.showModal(); dialog.append(view);
+      document.body.style.overflow = 'hidden';
+      expand.hidden = true; close.focus(); reveal(tabs[active]);
+    }
+    expand.addEventListener('click', enlarge);
+    frame.addEventListener('click', () => {if (moved) {moved = false; return;} enlarge();});
+    close.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('close', () => {
+      mount.append(view); mount.style.minHeight = '';
+      document.body.style.overflow = overflow; expand.hidden = false;
+      if (opener && opener.isConnected) opener.focus({preventScroll: true}); else expand.focus({preventScroll: true});
+      reveal(tabs[active]);
+    });
+    let backdrop = false;
+    dialog.addEventListener('pointerdown', e => {backdrop = e.target === dialog;});
+    dialog.addEventListener('click', e => {if (e.target === dialog && backdrop) dialog.close();});
+    if (!dialog.showModal) expand.hidden = true;
     g.label = label;
     g.add = more => {
       const from = photos.length;

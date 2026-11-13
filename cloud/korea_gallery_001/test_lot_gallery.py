@@ -28,7 +28,9 @@ class ScriptTest(unittest.TestCase):
         js = lot_gallery_script.JS
         for piece in ("role: 'tablist'", "role: 'tab'", "'aria-selected'", "role: 'status'", "'aria-live': 'polite'",
                       "previous.setAttribute('aria-label'", "next.setAttribute('aria-label'", "img.alt = title",
-                      'ArrowRight', 'ArrowLeft', 'Home', 'End', "'pointerup'"):
+                      'ArrowRight', 'ArrowLeft', 'Home', 'End', "'pointerup'", "el('dialog', 'um-dialog')",
+                      'dialog.showModal()', "expand.setAttribute('aria-label'", "close.setAttribute('aria-label'",
+                      'opener.focus('):
             self.assertIn(piece, js)
         self.assertNotIn('</script', js)
 
