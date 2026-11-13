@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "b8af94a84ff5cebe040acd657635586bc008bac0ece36aff13ada56eb3d0f7d1",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T12:29:52Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-13T12:40:57Z",
+  "heartbeat_at": "2026-11-13T12:40:57Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43424658612",
     "task_id": "KOREA-FAQ-INSTALL-20261113",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 662.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 277.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43424658612-c9109b78ea97fd08",
   "production_transaction_path": "state/transactions/KOREA-FAQ-INSTALL-20261113.c9109b78ea97fd08aff544b9b68a83bc537c3b960f952380a48b126727d2d171.43424658612.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-85c7e8ead3a1c206-29d6ba4c5a8d11b0",
   "receipt_path": "state/receipts/KOREA-FAQ-INSTALL-20261113.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "3a7a9d5b183d46aaa1cc3949939a5ddee5ec3a703d959bada3f7587dc76321bc",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-FAQ-INSTALL-20261113.json",
   "request_sha256": "c9109b78ea97fd08aff544b9b68a83bc537c3b960f952380a48b126727d2d171",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "6589b721b0adf03685357e39ba1790c7182dfa525b1c5ad5480c5ed65ef22963",
     "file_sha256": {
@@ -85,5 +108,5 @@
       "cloud/korea_faq_001/test_release.py": "83eca229f5d17e5c16fca2f092488f48c5f7dcf731ee9fc8a06dda5e71f29ad4"
     }
   },
-  "updated_at": "2026-11-13T12:29:52Z"
+  "updated_at": "2026-11-13T12:40:57Z"
 }
