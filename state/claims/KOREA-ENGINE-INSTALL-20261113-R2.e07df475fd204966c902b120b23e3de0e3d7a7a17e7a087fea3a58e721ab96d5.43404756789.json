@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "725bcd233ab2af5370e4915e51948ea36cee181c2b21e7f11fa0961b0bae4693",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T09:58:51Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T10:03:47Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43404756789",
     "task_id": "KOREA-ENGINE-INSTALL-20261113-R2",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43404756789-e07df475fd204966",
   "production_transaction_path": "state/transactions/KOREA-ENGINE-INSTALL-20261113-R2.e07df475fd204966c902b120b23e3de0e3d7a7a17e7a087fea3a58e721ab96d5.43404756789.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-ENGINE-INSTALL-20261113-R2.json",
   "receipt_validation_status": "PENDING",
@@ -114,5 +114,5 @@
       "cloud/korea_engine_001/test_release.py": "09c0ab8dad8464a800a55562d569ad7e709856917d5786d8760274afe109fbd9"
     }
   },
-  "updated_at": "2026-11-13T09:58:51Z"
+  "updated_at": "2026-11-13T10:03:47Z"
 }
