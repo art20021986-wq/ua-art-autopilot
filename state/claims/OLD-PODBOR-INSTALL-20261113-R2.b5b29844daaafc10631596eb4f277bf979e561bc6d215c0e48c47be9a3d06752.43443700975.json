@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "bc4296474db2f2e4450c008168998aa4200e0fbe5f0dc025ef5d8c4d3d730bc5",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T14:35:41Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T14:38:29Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43443700975",
     "task_id": "OLD-PODBOR-INSTALL-20261113-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43443700975-b5b29844daaafc10",
   "production_transaction_path": "state/transactions/OLD-PODBOR-INSTALL-20261113-R2.b5b29844daaafc10631596eb4f277bf979e561bc6d215c0e48c47be9a3d06752.43443700975.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-6a0922611ce8b5b6-766ebab9bb8d3ec6",
   "receipt_path": "state/receipts/OLD-PODBOR-INSTALL-20261113-R2.json",
   "receipt_validation_status": "PENDING",
@@ -85,5 +85,5 @@
       "cloud/old_podbor_remove_001/test_release.py": "e3e66707bfd65d766f6854fd60ad4903dfbb5e7be8052f87e14c6e17f1493e5a"
     }
   },
-  "updated_at": "2026-11-13T14:35:41Z"
+  "updated_at": "2026-11-13T14:38:29Z"
 }
