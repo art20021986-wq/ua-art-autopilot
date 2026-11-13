@@ -1,6 +1,9 @@
 """Read-only analytics audit on the server (ANALYTICS-AUDIT-PROBE).
 
-R4 (2026-11-12, owner enabled the Google Analytics Data API): report() asks only the Data API (read-only scope)
+R6 (2026-11-13, ANALYTICS-DIRECT-001): report() breaks down the «direct / unknown» visits: GA4 Direct sessions by
+landing page, device, browser and hour; own counter sessions with no source; the access log's first page request of
+each visitor-day without a referrer by app (in-app browser user-agent), click id in the address and landing page.
+R5 (old order page) is report_r5. R4 (2026-11-12, owner enabled the Google Analytics Data API): report_r4() asks only the Data API (read-only scope)
 for 14-day totals. R3 (2026-11-08, after OWN-COUNTER-INSTALL): counter coverage, live pages, the public /ua/a.js
 fix and the installed modules; report_r3/report_r2/report_r1 stay for reference.
 R2 (owner «Да» 2026-11-07 to put the own counter on every page and fix its source and time): reads the current
@@ -402,12 +405,129 @@ def linked_from(target=OLD_PODBOR):
     return found[:100]
 
 
-def report():
+def report_r5():
     """R5 (owner «Да» 2026-11-13): who opens the old order page video/order/podbor.html, and what links to it."""
     logs = log_texts()
     texts = [v['text'] for v in logs.values() if 'text' in v]
     return {'status': 'PASS', 'log_files': len(texts), 'old_podbor': guarded(page_visits, texts),
             'linked_from': guarded(linked_from)}
+
+
+APPS = (('telegram', re.compile(r'telegram', re.I)), ('instagram', re.compile(r'instagram', re.I)),
+        ('facebook', re.compile(r'FBAN|FBAV|FB_IAB|FBIOS', re.I)), ('viber', re.compile(r'viber', re.I)),
+        ('whatsapp', re.compile(r'whatsapp', re.I)), ('tiktok', re.compile(r'musical_ly|bytedance|tiktok', re.I)),
+        ('google_app', re.compile(r'GSA/', re.I)), ('android_webview', re.compile(r'; wv\)')))
+CLICK_IDS = ('fbclid', 'gclid', 'ttclid', 'utm_source', 'srsltid', 'igsh')
+FIRST = re.compile(r'^(\S+) .*?\[(\d{2}/\w{3}/\d{4}):(\d{2}):[^\]]*\] "GET (\S+)[^"]*" (\d{3}) \S+ "([^"]*)" "([^"]*)"')
+
+
+def app_of(agent):
+    for name, pattern in APPS:
+        if pattern.search(agent):
+            return name
+    if re.search(r'iPhone|iPad', agent) and 'Safari/' not in agent:
+        return 'ios_in_app_unknown'
+    return 'browser'
+
+
+def bump(table, key):
+    table[key] = table.get(key, 0) + 1
+
+
+def top(table, n=15):
+    return dict(sorted(table.items(), key=lambda x: -x[1])[:n])
+
+
+def direct_log(texts):
+    """First page request of each visitor-day (IP+browser hashed in memory, never kept) with no referrer."""
+    seen = set()
+    value = {'human_first_requests': 0, 'no_referrer': 0, 'robot_requests_no_referrer': 0, 'by_app': {},
+             'by_click_id': {}, 'by_landing': {}, 'by_hour_utc': {}, 'by_device': {}}
+    for text in texts:
+        for row in text.splitlines():
+            match = FIRST.match(row)
+            if not match:
+                continue
+            ip, day, hour, path, status, referrer, agent = match.groups()
+            if status[0] not in '23' or not is_page(path) or path.startswith(('/ua/', '/api/')):
+                continue
+            if ROBOT.search(agent):
+                if referrer in ('', '-'):
+                    value['robot_requests_no_referrer'] += 1
+                continue
+            key = hashlib.sha256((ip + '|' + agent + '|' + day).encode()).hexdigest()
+            if key in seen:
+                continue
+            seen.add(key)
+            value['human_first_requests'] += 1
+            if referrer not in ('', '-'):
+                continue
+            value['no_referrer'] += 1
+            bump(value['by_app'], app_of(agent))
+            bump(value['by_click_id'], ','.join(c for c in CLICK_IDS if c + '=' in path) or 'none')
+            bump(value['by_landing'], path.split('?')[0])
+            bump(value['by_hour_utc'], hour)
+            bump(value['by_device'], 'mobile' if re.search(r'Mobile|Android|iPhone', agent) else 'desktop')
+    value['by_landing'] = top(value['by_landing'])
+    return value
+
+
+def direct_own():
+    connection = sqlite3.connect('file:%s?mode=ro' % DB, uri=True, timeout=10)
+    try:
+        rows = connection.execute(
+            "SELECT s.istochnik, (SELECT stranica FROM events e WHERE e.sid=s.sid ORDER BY ts LIMIT 1), "
+            "strftime('%H', s.nachalo, 'unixepoch') FROM sessions s WHERE s.nachalo>=?",
+            (int(time.time()) - 30 * 86400,)).fetchall()
+    finally:
+        connection.close()
+    value = {'sessions_30d': len(rows), 'by_source': {}, 'direct_landing': {}, 'direct_hour_utc': {}}
+    for name, landing, hour in rows:
+        bump(value['by_source'], name or '(empty)')
+        if not name or name.startswith('Прямой'):
+            bump(value['direct_landing'], (landing or '?').split('?')[0])
+            bump(value['direct_hour_utc'], hour)
+    value['direct_landing'] = top(value['direct_landing'])
+    return value
+
+
+def direct_ga4():
+    key = next((k for k in KEYS if k.is_file()), None)
+    if not key:
+        return {'error': 'KEY_MISSING'}
+    from google.oauth2 import service_account
+    from google.auth.transport.requests import Request
+    credentials = service_account.Credentials.from_service_account_file(
+        str(key), scopes=['https://www.googleapis.com/auth/analytics.readonly'])
+    credentials.refresh(Request())
+
+    def run(dimensions, metric, limit=25, direct=True):
+        body = {'dateRanges': [{'startDate': '29daysAgo', 'endDate': 'today'}],
+                'dimensions': [{'name': n} for n in dimensions], 'metrics': [{'name': metric}],
+                'limit': limit, 'orderBys': [{'metric': {'metricName': metric}, 'desc': True}]}
+        if direct:
+            body['dimensionFilter'] = {'filter': {'fieldName': 'sessionDefaultChannelGroup',
+                                                  'stringFilter': {'value': 'Direct'}}}
+        request = urllib.request.Request(DATA, data=json.dumps(body).encode(), method='POST', headers={
+            'Authorization': 'Bearer ' + credentials.token, 'Content-Type': 'application/json'})
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                rows = json.loads(response.read()).get('rows', [])
+        except urllib.error.HTTPError as error:
+            return {'http': error.code, 'error': error.read(500).decode('utf-8', 'replace')}
+        return [[c.get('value') for c in r.get('dimensionValues', []) + r.get('metricValues', [])] for r in rows]
+    return {'channels_30d': run(['sessionDefaultChannelGroup'], 'sessions', direct=False),
+            'source_medium_30d': run(['sessionSourceMedium'], 'sessions', direct=False),
+            'direct_landing': run(['landingPage'], 'sessions'),
+            'direct_device_browser': run(['deviceCategory', 'browser'], 'sessions'),
+            'direct_hour': run(['hour'], 'sessions', 24),
+            'direct_new_vs_returning': run(['newVsReturning'], 'sessions')}
+
+
+def report():
+    logs = log_texts()
+    return {'status': 'PASS', 'google_analytics': guarded(direct_ga4), 'own': guarded(direct_own),
+            'log': guarded(direct_log, [v['text'] for v in logs.values() if 'text' in v])}
 
 
 def report_r4():

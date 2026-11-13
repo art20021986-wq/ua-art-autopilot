@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-GALLERY-PREFLIGHT-20261113.b5cccd00e65616e09566d7e31f42132a9e805a0a24271463d386744139f3afb2.json",
+  "autostart_ledger_sha256": "ec96f6868a192aaeb5162a991c6a8467d95f800f1e512599a3b02e33fc7d2bec",
+  "autostart_source_commit": "c341a5b7e26808fa5a5c83e113dd04bd7546e771",
+  "created_at": "2026-11-13T11:40:03Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43418675724",
+    "task_id": "KOREA-GALLERY-PREFLIGHT-20261113",
+    "task_sha256": "b5cccd00e65616e09566d7e31f42132a9e805a0a24271463d386744139f3afb2"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-149d761f46949778-d412bdec06b5a4be",
+  "request_path": "tasks/requests/KOREA-GALLERY-PREFLIGHT-20261113.json",
+  "resource_locks": [
+    "PATH_SCOPE:149d761f46949778"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

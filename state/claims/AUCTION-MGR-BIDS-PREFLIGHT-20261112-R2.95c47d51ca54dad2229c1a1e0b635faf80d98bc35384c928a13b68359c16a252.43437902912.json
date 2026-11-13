@@ -1,0 +1,72 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUCTION-MGR-BIDS-PREFLIGHT-20261112-R2.95c47d51ca54dad2229c1a1e0b635faf80d98bc35384c928a13b68359c16a252.json",
+  "autostart_ledger_sha256": "7e175b03e00c9251978283a3e6eae2d0829dfc1b1bbb5d7c69d0d2b724d2e38e",
+  "autostart_source_commit": "bd0fc221054b33284836a01ee56682c56b6a8160",
+  "created_at": "2026-11-13T13:56:48Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-13T14:02:17Z",
+  "heartbeat_at": "2026-11-13T14:02:17Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43437902912",
+    "task_id": "AUCTION-MGR-BIDS-PREFLIGHT-20261112-R2",
+    "task_sha256": "95c47d51ca54dad2229c1a1e0b635faf80d98bc35384c928a13b68359c16a252"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-ecb526909537903f-275f336a73b2a4db",
+  "receipt_path": "state/receipts/AUCTION-MGR-BIDS-PREFLIGHT-20261112-R2.json",
+  "receipt_sha256": "3cf4a4180d7532835d646789bfe43268ea0ac4a76de26657ca6b254610fff0b9",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/AUCTION-MGR-BIDS-PREFLIGHT-20261112-R2.json",
+  "request_sha256": "95c47d51ca54dad2229c1a1e0b635faf80d98bc35384c928a13b68359c16a252",
+  "resource_locks": [
+    "PATH_SCOPE:ecb526909537903f"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "46972365154c9807a2987ad320a3cc831378bd1d",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92694675456,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.184
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "e42aae9d79b25c6ac7d1cbb878eab784b80c9127b8aa0e5aab4be68eeca3e91e",
+    "file_sha256": {
+      "cloud/auction_manager_bids_001/candidate_builder.py": "497ed1af3d22ce0361952621b4f91fbb8822312837b73af9027830837c419a78",
+      "cloud/auction_manager_bids_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/auction_manager_bids_001/deployment_bootstrap.py": "6c418a1809d51c74ae8cce0e6b5f9569e8e10c5acbab9a40e94859e0191113be",
+      "cloud/auction_manager_bids_001/deployment_remote.py": "4943c6d0060979ceb788853d3437577731f0a8674b0f81bccd348b670f7042fe",
+      "cloud/auction_manager_bids_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/auction_manager_bids_001/deployment_transport.py": "de03b7e032bfe59d69c92dd15702c4993055ac4c114aa9b70ab10625e07b74b4",
+      "cloud/auction_manager_bids_001/make_release.py": "ac9da41b43d5eddbc5378362fc2c69e56c519ecd15b84a6b13ea8ef410162709",
+      "cloud/auction_manager_bids_001/release_constants.py": "569ce879d81787c4562d02018fe466ed3dbf6afc993a5bc945c182144501b51d",
+      "cloud/auction_manager_bids_001/test_deployment.py": "de0b153ec5037799201087b81e9a2369bd1a56bdd560fa73c2ee6504b45f582c",
+      "cloud/auction_manager_bids_001/test_manager_bids.py": "43619f6bf7c5869df13f7d3c2954d104b22f992fc8cce919acd5bdd307de61bd",
+      "cloud/auction_manager_bids_001/ua_auction_bids.py": "e8a612675ff8609daf93dcda750afbf4bc6375e95ddb8a815e3a380fdf3c280f",
+      "cloud/auction_manager_bids_001/ua_auction_bids_bot.py": "0e33bcde0f6ec3b8e79082589864bca9f73c6f4df23a0cc9c95bb8cae01ae8f5",
+      "cloud/auction_manager_bids_001/ua_auction_cars.py": "2cc5aba78a7ac389a9c02fd8af3356bfea5eee28ad9eb5f6b15cbbb8a9709e4b",
+      "cloud/auction_manager_bids_001/ua_auction_clients.py": "4120c750e6dd1679bd72f37559c53ea4fbcef31c6df6d0fd30d862f7fd00da4f",
+      "cloud/auction_manager_bids_001/ua_auction_clients_bot.py": "665157aa82b8a22f5c35d94809d27ac692cdeeeda869951b25a449221bcd82a6",
+      "cloud/auction_manager_bids_001/ua_auction_clients_view.py": "7b028bfa65c10c2ec480e11c4beb33658ca682181c5e47fa8aed146690694730",
+      "cloud/auction_manager_bids_001/ua_auction_stats.py": "8104933d12d4779a5674c8e12277564d2a03cd6b0779a34a839f1d5f2ebbb8b7",
+      "cloud/auction_manager_bids_001/ua_auction_web.py": "1ef39473725e36fb2ca50ca89199f582d791c94fe7ff4ea49778818f8b9b373e",
+      "cloud/auction_manager_bids_001/ua_client_cabinet.py": "c0dc4a3d5553396cfa41e8ca91e77ed8fca011a995609036855fb808cde1b5fc",
+      "cloud/auction_manager_bids_001/ua_korea_bid.py": "31df70a4e5893d36011fa90dfd3a1f8c8a6f38c9a5f1d62bbcab57068227021a"
+    }
+  },
+  "updated_at": "2026-11-13T14:02:17Z"
+}

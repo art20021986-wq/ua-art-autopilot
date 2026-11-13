@@ -51,7 +51,7 @@ class API:
             except urllib.error.HTTPError as error:
                 status, body = error.code, error.read(4096)
             except (urllib.error.URLError, TimeoutError) as error:
-                if method != 'GET' or attempt == 2:
+                if method not in ('GET', 'DELETE') or attempt == 2:  # idempotent methods (RFC 9110 9.2.2)
                     raise TransportError('NETWORK_'+type(error).__name__) from error
                 time.sleep(2**attempt)
                 continue
@@ -107,6 +107,13 @@ class API:
         if self.file(path) != payload:
             raise TransportError('UPLOAD_READBACK')
 
+    def remove_leftovers(self):
+        """Delete always-on tasks this package left after a lost DELETE; the bot and other tasks are not touched."""
+        command = INBOX+'/newcarvin2_bootstrap.py'
+        for task in self.json('GET', 'always_on/') or []:
+            if task.get('id') != BOT_ID and command in str(task.get('command', '')).split():
+                self.request('DELETE', 'always_on/%d/' % task['id'], allowed=(200, 202, 204, 404))
+
     def run(self, mode, run_id, bundle_sha, plan_sha='', backup_sha=''):
         if mode not in {'preview', 'backup', 'install', 'verify', 'rollback'} or not re.fullmatch(r'[0-9]+', run_id):
             raise TransportError('RUN_IDENTITY')
@@ -119,6 +126,7 @@ class API:
             return json.loads(prior)
         args = ['python3.10', INBOX+'/newcarvin2_bootstrap.py', '--bundle', bundle_sha,
                 '--run', run_id, '--mode', mode, '--plan', plan_sha, '--backup', backup_sha]
+        self.remove_leftovers()
         trigger = self.json('POST', 'always_on/', {'command': shlex.join(args),
                    'description': 'CRM main menu '+mode+' '+run_id, 'enabled': 'true'}, (200, 201, 202))
         trigger_id = trigger.get('id')

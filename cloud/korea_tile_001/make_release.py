@@ -5,7 +5,7 @@ Usage: python3 cloud/korea_tile_001/make_release.py preview   # PR, merge, then:
        python3 cloud/korea_tile_001/make_release.py launch TASK_ID
        python3 cloud/korea_tile_001/make_release.py install   # right after the preview: writes gate, manifest,
                                                                 # owner approval, storage probe, request and launch
-KOREA-TILE-001 (tasks/KOREA-TILE-001.md): the home ticker tile — today's car count and the next auction date.
+KOREA-TILE-001 (tasks/KOREA-TILE-001.md): the home ticker tile — today's car count and the 3 nearest auction days (weekday, car count).
 The install request is written only after the owner's «Да».
 """
 import datetime
@@ -75,7 +75,7 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of KOREA-TILE-001 (owner 2026-11-13: the yellow tile on the home page shows today\'s exact car count and the next auction date): builds the collector update (ticker.py, collect.py), smoke-tests it on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of KOREA-TILE-001 (owner 2026-11-13: the yellow tile on the home page shows today\'s exact car count and the 3 nearest auction days with weekday and car count): builds the collector update (ticker.py, collect.py, selection.py), smoke-tests it on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
              'title': 'Preview home ticker tile'}
@@ -131,7 +131,7 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner request (2026-11-13): the yellow tile of the home ticker shows today\'s exact car count (0 too) and the next auction date («Наступний аукціон 17.11») instead of the next day\'s partial count. Collector ticker.py and collect.py only; pages, CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
+               'description': 'Owner request (2026-11-13): the yellow tile of the home ticker shows today\'s exact car count (0 too) and each of the 3 nearest auction days with weekday and car count («Торги Вт, 17.11 — 3 авто»; owner 2026-11-13). Collector ticker.py, collect.py and selection.py only; pages, CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],

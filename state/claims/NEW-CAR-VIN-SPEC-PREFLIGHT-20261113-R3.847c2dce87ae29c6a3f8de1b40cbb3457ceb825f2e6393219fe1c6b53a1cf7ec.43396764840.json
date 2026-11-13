@@ -1,0 +1,56 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113-R3.847c2dce87ae29c6a3f8de1b40cbb3457ceb825f2e6393219fe1c6b53a1cf7ec.json",
+  "autostart_ledger_sha256": "b39abb18fd3663709c5807e47d94dc882ace4c63c58dff75881afc42aca7d625",
+  "autostart_source_commit": "17517ff17626adea66fc96bce5367b6324529ada",
+  "created_at": "2026-11-13T08:59:31Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "CLASSIFY_ROOT_CAUSE",
+      "at": "2026-11-13T09:00:53Z",
+      "class": "UNKNOWN",
+      "message": "STANDARD isolated execution/persistence failed or rejected Production; inspect GitHub Actions run 43396764840",
+      "retries_remaining": 3,
+      "retry_allowed": false,
+      "signature": "d0c510cfca560bb5"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-13T09:30:00+00:00",
+      "class": "PACKAGE_TASK_IDENTITY",
+      "evidence_path": "state/reconciliations/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113-R3.43396764840.authenticated-evidence.json",
+      "message": "Controller refused the task name at start (TASK_IDENTITY: the -R3 suffix was not in release_constants); the server was not contacted; nothing written. Retried as R4.",
+      "retries_remaining": 0,
+      "retry_allowed": false
+    }
+  ],
+  "heartbeat_at": "2026-11-13T08:59:31Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43396764840",
+    "task_id": "NEW-CAR-VIN-SPEC-PREFLIGHT-20261113-R3",
+    "task_sha256": "847c2dce87ae29c6a3f8de1b40cbb3457ceb825f2e6393219fe1c6b53a1cf7ec"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113-R3.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113-R3.json",
+  "request_sha256": "847c2dce87ae29c6a3f8de1b40cbb3457ceb825f2e6393219fe1c6b53a1cf7ec",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "53cfba633da33e522b637c930053093620bdf713",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-13T09:00:53Z"
+}

@@ -1,4 +1,4 @@
-"""What the site shows from each lot page: start price, VIN and all photos (owner 2026-11-10/11).
+"""What the site shows from each lot page: start price, VIN and all photos (owner 2026-11-10/11/12).
 
 The auction's results table has no start price, no VIN and only 3 photos; each lot page has them. Lot pages are read
 a few hundred per run (the session keeps its pause between requests) and remembered in CACHE, so every lot page is
@@ -13,7 +13,7 @@ from . import lots
 
 CACHE = Path('/home/Carix/korea_auction_data/prices.json')
 PER_RUN = 600
-MAX_PHOTOS = 40
+MAX_PHOTOS = None  # every photo of the lot page (owner 2026-11-12: «все фотографии, которые представлены»)
 
 
 def load(path=None):

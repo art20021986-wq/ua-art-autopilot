@@ -1,0 +1,133 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-GALLERY-INSTALL-20261113.a0bc8a5b7f6fe34117df89410b888a1afc3719a19278101176977f9b4f28e44a.json",
+  "autostart_ledger_sha256": "930ba7844051ceed17057b2ccd7ce89b9437d46d63c49e757e12b902e76f8f4e",
+  "autostart_source_commit": "5dbab52bb00105beecb96d87f8484e2acc806ebe",
+  "created_at": "2026-11-13T11:50:20Z",
+  "critical_gate_evidence_sha256": "12bf7ea3cf35d3fdcaf35a2f88967c81cbddfec19e366a7c061c7349f21fdebe",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-13T12:09:40Z",
+  "heartbeat_at": "2026-11-13T12:09:40Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "43420002857",
+    "task_id": "KOREA-GALLERY-INSTALL-20261113",
+    "task_sha256": "a0bc8a5b7f6fe34117df89410b888a1afc3719a19278101176977f9b4f28e44a"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 490.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 104.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 120.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 221.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 143.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 154.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-43420002857-a0bc8a5b7f6fe341",
+  "production_transaction_path": "state/transactions/KOREA-GALLERY-INSTALL-20261113.a0bc8a5b7f6fe34117df89410b888a1afc3719a19278101176977f9b4f28e44a.43420002857.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "path_scope-b0b8b3ecb1b29fb7-d13a9e06157bfebb",
+  "receipt_path": "state/receipts/KOREA-GALLERY-INSTALL-20261113.json",
+  "receipt_sha256": "1adca34abd4d537ffad51a6f281957b720d33d79dd006a38072ac2cf6cdd28d7",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/KOREA-GALLERY-INSTALL-20261113.json",
+  "request_sha256": "a0bc8a5b7f6fe34117df89410b888a1afc3719a19278101176977f9b4f28e44a",
+  "resource_locks": [
+    "PATH_SCOPE:b0b8b3ecb1b29fb7"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "df2fa096d4364d299900e9fcce279235cd238318",
+  "storage_preflight": {
+    "age_seconds": 385.839,
+    "allowed": true,
+    "evidence_path": "state/storage/KOREA-GALLERY-INSTALL-20261113.json",
+    "evidence_sha256": "8ccfbadbd88f591c96454950c6728cc52898542aa55956ecee6ea022105e1a6b",
+    "free_bytes": 17916419584,
+    "heavy": true,
+    "measured_at": "2026-11-13T11:45:18.100149+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 48.81022976
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "179dda4c425bda763f6d69d89d4a9f3c2ab4204d6034ff36df95b847deaf3b3e",
+    "file_sha256": {
+      "cloud/korea_gallery_001/candidate_builder.py": "fae09bd6f5fcc125aeaa9fa59eec3b562870c48c0ae863b4eb261f139920cfad",
+      "cloud/korea_gallery_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/korea_gallery_001/deployment_bootstrap.py": "25c19ce352c46d6636a2b4b5d43f4a7b7edf0f116cfe8ca1b182854c351c09f8",
+      "cloud/korea_gallery_001/deployment_remote.py": "f898fe02df36d983ec1be13228ec650d0976116f72e40f21980c818d442b3a0e",
+      "cloud/korea_gallery_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/korea_gallery_001/deployment_transport.py": "0148e06b9068867d3672edc4c4788dad23ca79c3d31e15375e7c7e64d0fa851a",
+      "cloud/korea_gallery_001/lot_gallery_page.py": "35be0cc90d2a9f734cef8bcc9be68be697d709e823e996f2884ab0b57f1520ec",
+      "cloud/korea_gallery_001/lot_gallery_script.py": "59c397716176622c3121efa02dd9b8fd6e65b2565d67f684f666169233210864",
+      "cloud/korea_gallery_001/lot_gallery_style.py": "e57b63181888188fff73bc633053806544e863ed27a90edd61c833794a89cda9",
+      "cloud/korea_gallery_001/make_release.py": "3a6064db74944c336e6b9669113c29e1858583166d009eb5f160c72fa1df634a",
+      "cloud/korea_gallery_001/release_constants.py": "abf93c6e00b75cd9d350bc2e8a7e1ce08cecf0e3932a3b9580005a1c7c127367",
+      "cloud/korea_gallery_001/test_deployment.py": "3900af856051b18102aee998726cb7ef7c794e9a847b966f9abc7655529fa3ff",
+      "cloud/korea_gallery_001/test_lot_gallery.py": "8b023d38a6388f764efb0b7c8fe43e89b31db9fdd71419e34da3f1335bade274",
+      "cloud/korea_gallery_001/test_release.py": "bcb85bd5fbafde56636d714f5f88ce0a180afb32f5add1fe33e09dead4d3c472",
+      "cloud/korea_gallery_001/ua_media_styles.py": "2c365fb7863dfe3e920320c71f315e167fc8534198f0d9a7699816d9d96e6195"
+    }
+  },
+  "updated_at": "2026-11-13T12:09:40Z"
+}

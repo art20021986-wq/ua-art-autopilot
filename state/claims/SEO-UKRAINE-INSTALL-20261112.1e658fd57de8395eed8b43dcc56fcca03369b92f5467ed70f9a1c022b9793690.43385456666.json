@@ -1,0 +1,116 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-UKRAINE-INSTALL-20261112.1e658fd57de8395eed8b43dcc56fcca03369b92f5467ed70f9a1c022b9793690.json",
+  "autostart_ledger_sha256": "f6d396f8eb728e89f992a3f8aca893c7b7dd660de52a2519e897ab63fcdca75a",
+  "autostart_source_commit": "c633827399cdbde005aa015d049e21454d6de92c",
+  "created_at": "2026-11-13T07:25:14Z",
+  "critical_gate_evidence_sha256": "a232f0b02268fa73d03aa40f02d1c44a75dcf1638b413709dd5c71b45546ef39",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-13T07:45:28Z",
+  "heartbeat_at": "2026-11-13T07:45:28Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "43385456666",
+    "task_id": "SEO-UKRAINE-INSTALL-20261112",
+    "task_sha256": "1e658fd57de8395eed8b43dcc56fcca03369b92f5467ed70f9a1c022b9793690"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 346.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 132.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 118.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 96.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-43385456666-1e658fd57de8395e",
+  "production_transaction_path": "state/transactions/SEO-UKRAINE-INSTALL-20261112.1e658fd57de8395eed8b43dcc56fcca03369b92f5467ed70f9a1c022b9793690.43385456666.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "path_scope-e1d98ab7947d8b21-e6adfe7a4d69841a",
+  "receipt_path": "state/receipts/SEO-UKRAINE-INSTALL-20261112.json",
+  "receipt_sha256": "dc45d42a418c1f53596cc67378f481a550c143979fab726dc37ba01be5cd9256",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/SEO-UKRAINE-INSTALL-20261112.json",
+  "request_sha256": "1e658fd57de8395eed8b43dcc56fcca03369b92f5467ed70f9a1c022b9793690",
+  "resource_locks": [
+    "PATH_SCOPE:e1d98ab7947d8b21"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "b2be739a180012375d9fb5549e8469d36d3c7f9d",
+  "storage_preflight": {
+    "age_seconds": 333.343,
+    "allowed": true,
+    "evidence_path": "state/storage/SEO-UKRAINE-INSTALL-20261112.json",
+    "evidence_sha256": "a4e7f2b15eacf7464cca596329b3fa16ab434071ba13ceb14a9146bfbba71db6",
+    "free_bytes": 20825206272,
+    "heavy": true,
+    "measured_at": "2026-11-13T07:20:53.069991+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.49941065142857
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "369c6358530d22ba245af47019bc281484a8681164c9453d710375adf4f89d1b",
+    "file_sha256": {
+      "cloud/seo_ukraine_page_001/candidate_builder.py": "45685aa1cab91516dd4e292f819f2e9333708078a8a87cb2ce9b3d590c581a2b",
+      "cloud/seo_ukraine_page_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/seo_ukraine_page_001/deployment_bootstrap.py": "97219a0d78b3829f05ceddc4a0df16df6cec52177b8be347a5272e9dc62948f9",
+      "cloud/seo_ukraine_page_001/deployment_remote.py": "c854a8e43b4b37a499cd23fb4368026ce680b2d69d309b9fe0acb6f0ef4ae176",
+      "cloud/seo_ukraine_page_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/seo_ukraine_page_001/deployment_transport.py": "01494e47c606dfe266c914521ba38bf4521ab004f09e2c1dcde4339c5f92b77f",
+      "cloud/seo_ukraine_page_001/edit_landings.py": "bba888a1b4f588731ac383e71ce39e7d136802db9692fc18ef080686e5ebf75e",
+      "cloud/seo_ukraine_page_001/edit_models.py": "6759fe3c4dd8be4e5107f1238d4dedcc8dd8503b840125bdf181541103e3ad39",
+      "cloud/seo_ukraine_page_001/make_release.py": "34a7fbd51c5afc1d684a1e04cf42eb69665be342cd5c3e8080cc6fd36f8a1200",
+      "cloud/seo_ukraine_page_001/release_constants.py": "09da8072badd2a8f766aa169a0c3cee69190875e9c42973b65e2f9d45c9a11fd",
+      "cloud/seo_ukraine_page_001/test_deployment.py": "b5697b201f199d971c10c5039031650850cd365c07c64e98d08044b184b88b3c",
+      "cloud/seo_ukraine_page_001/test_release.py": "19110306fc4f9148678fcd0e8618854abc28458f22a02a249e2fc8cb21b30428",
+      "cloud/seo_ukraine_page_001/ua_seo_hub_texts.py": "3445ae0f8a270821338c98e0f210ec3183aabe28f7199d223342f12b47e23506",
+      "cloud/seo_ukraine_page_001/ua_seo_ukraine_page.py": "1406899f6aabe0611e4cebb76590500ee890f3c2aaeb8fcc0d71c3c67762f8d3"
+    }
+  },
+  "updated_at": "2026-11-13T07:45:28Z"
+}
