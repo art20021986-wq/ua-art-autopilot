@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/NEW-CAR-VIN-SPEC-INSTALL-20261113.d17f7c6868fb859c85b1de838685c0bc0225e56329612aeb0768e3023d69af8a.json",
+  "autostart_ledger_sha256": "bd86ca713426efaebb12337467763979c65e9cc731c1142548c3674f20b53a1b",
+  "autostart_source_commit": "4c67df1d469880f57da452b51af87ff57862a415",
+  "created_at": "2026-11-13T15:04:21Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-13T15:04:21Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43448599794",
+    "task_id": "NEW-CAR-VIN-SPEC-INSTALL-20261113",
+    "task_sha256": "d17f7c6868fb859c85b1de838685c0bc0225e56329612aeb0768e3023d69af8a"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-051a1d31a326d0a5-b0839769106467df",
+  "receipt_path": "state/receipts/NEW-CAR-VIN-SPEC-INSTALL-20261113.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/NEW-CAR-VIN-SPEC-INSTALL-20261113.json",
+  "request_sha256": "d17f7c6868fb859c85b1de838685c0bc0225e56329612aeb0768e3023d69af8a",
+  "resource_locks": [
+    "PATH_SCOPE:051a1d31a326d0a5"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "3f0409fe0427609cf8eea733db6140a724942877",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-13T15:04:21Z"
+}
