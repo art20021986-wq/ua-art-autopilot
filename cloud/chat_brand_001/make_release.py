@@ -137,7 +137,7 @@ def install():
                'description': 'Owner approved CHAT-BRAND-001 (photo «да» 2026-11-13): the «Зв\u2019язатися з менеджером» pill one '
                               'size on every page, larger and in the bottom centre on phones (ua_chat_button.py); the logo '
                               'with a thin gold ring and a «\u2190 На головну» caption (ua_brand_home.py, new; not on the '
-                              'home page); «Ми на AUTO.RIA» with the official logo at the bottom of every page (ua_autoria_badge.py, new); '
+                              'home page); the SEO landing pages get the floating button (none there); «Ми на AUTO.RIA» with the official logo at the bottom of every page (ua_autoria_badge.py, new); '
                               'all used by every page writer; the golden catalogue, static public pages and the '
                               'Korea pages now; cards republished once by the CRM sync (SEO_REVISION). The WhatsApp link '
                               'is unchanged. Rollback puts the previous blocks back. No CRM data change. '

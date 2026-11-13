@@ -79,7 +79,8 @@ class CandidateTests(unittest.TestCase):
         self.assertLess(inject.index('_ua_chat_base_inject = inject_html'), inject.index('_ua_brand_base_inject = inject_html'))
         index = self.result['ua_seo_index.py'].decode()
         self.assertIn('import ua_autoria_badge  # CHAT-BRAND-001\nimport ua_brand_home  # CHAT-BRAND-001\n', index)
-        self.assertEqual(index.count('ua_brand_home.apply(ua_autoria_badge.apply(' + candidate_builder.CHAIN + '))'), 1)
+        self.assertEqual(index.count('ua_brand_home.apply(ua_autoria_badge.apply(' + candidate_builder.CHAIN[:-1]
+                                     + ', add_link=True)))'), 1)
 
     def test_every_page_has_both_blocks_once(self):
         for name in ('video/index.html', 'video/katalog.html', 'catalog_design_golden.html', 'video/korea.html'):
@@ -120,6 +121,30 @@ class CandidateTests(unittest.TestCase):
     def test_unexpected_live_writer_is_refused(self):
         with self.assertRaisesRegex(ValueError, 'CHAT_BRAND_EDIT'):
             candidate_builder.edit('ua_seo_index.py', b'import ua_chat_button  # CHAT-BUTTON-001\nother chain\n')
+
+
+class LandingButtonTests(unittest.TestCase):
+    LANDING = '<html lang="ru"><body><a class="header-whatsapp" href="https://wa.me/380992222002">WhatsApp</a></body></html>'
+
+    def test_landing_without_floating_link_gets_one(self):
+        page = ua_chat_button.apply(self.LANDING, add_link=True)
+        self.assertEqual(page.count('class="mcf-chat ua-chat-added"'), 1)
+        self.assertIn('href="https://wa.me/380992222002"', page)
+        self.assertTrue(ua_chat_button.has_link(page))
+        self.assertEqual(ua_chat_button.apply(page, add_link=True), page)
+        self.assertEqual(page.replace(ua_chat_button.block(self.LANDING, True), ''), self.LANDING)
+
+    def test_page_with_its_own_link_or_without_flag_gets_none(self):
+        card = CARD.read_text('utf-8')
+        self.assertTrue(ua_chat_button.has_link(card))
+        self.assertNotIn('ua-chat-added', ua_chat_button.apply(card, add_link=True).replace(ua_chat_button.CSS, ''))
+        self.assertNotIn('class="mcf-chat ua-chat-added"', ua_chat_button.apply(self.LANDING))
+
+    def test_builder_adds_it_only_to_landings(self):
+        landing = self.LANDING.encode()
+        result = candidate_builder.build(dict(live_sources(), **{'video/seo/gu/x.html': landing, 'video/info.html': landing}), {})
+        self.assertIn('ua-chat-added"', result['video/seo/gu/x.html'].decode())
+        self.assertNotIn('class="mcf-chat ua-chat-added"', result['video/info.html'].decode())
 
 
 class ButtonStyleTests(unittest.TestCase):
