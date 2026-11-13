@@ -286,5 +286,19 @@ class PublicVerificationTests(unittest.TestCase):
                 controller.public_verify(None,'a'*64,'b'*64,{})
 
 
+class StorageTests(unittest.TestCase):
+    def du(self, code, out, err):
+        return SimpleNamespace(returncode=code, stdout=out, stderr=err)
+
+    def test_vanished_file_is_tolerated_other_errors_refused(self):
+        out = '100\t/home/Carix\n20\t/tmp\n'
+        with patch.object(remote.subprocess, 'run', return_value=self.du(
+                1, out, "du: cannot access '/home/Carix/.x.tmp': No such file or directory\n")):
+            self.assertEqual(remote.account_used_bytes(), 120)
+        with patch.object(remote.subprocess, 'run', return_value=self.du(1, out, 'du: Permission denied\n')):
+            with self.assertRaisesRegex(remote.DeploymentError, 'ACCOUNT_USAGE'):
+                remote.account_used_bytes()
+
+
 if __name__ == '__main__':
     unittest.main()

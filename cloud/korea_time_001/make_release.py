@@ -24,10 +24,11 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'time_pages.py')] + [
+                                'make_release.py', 'release_constants.py', 'time_pages.py', 'week_days.py', 'lot_otp.py',
+                                'edit_korea.py')] + [
     P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'collect', 'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public',
                                                    'selection', 'session', 'ticker')]
-TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_time_pages.py', 'korea_auction/test_korea_auction.py')]
+TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_time_pages.py', 'test_week_days.py', 'test_edit_korea.py', 'korea_auction/test_korea_auction.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'lead_bot.py',
              'publication_fence.py', 'run_all.py', 'site_ge_inject.py',
@@ -75,10 +76,10 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of KOREA-TIME-001 (owner 2026-11-12: show Ukrainian and Korean time in the cards): builds the collector update (ticker.py: each lot card shows the auction start in Korea and Kyiv time), the video/korea.html lot list and lot card, and the order page model carousels (order.js, order-strings.json, podbor.html script version) in Korea and Kyiv time, smoke-tests them on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of the joined Korea install (owner 2026-11-13): KOREA-TIME-001 (Korea and Kyiv time on the auction cards), KOREA-WEEK-DAYS-001 (7 day buttons on korea.html), KOREA-PHOTOS-ALL-001 (prices.py MAX_PHOTOS None: all lot photos), LOT-OTP-001 (OTP credit line in the korea.html lot window). builds the collector update (ticker.py: each lot card shows the auction start in Korea and Kyiv time), the video/korea.html lot list and lot card, and the order page model carousels (order.js, order-strings.json, podbor.html script version) in Korea and Kyiv time, smoke-tests them on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview Korea auction time'}
+             'title': 'Preview Korea joined install (time, week, photos, OTP)'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -131,13 +132,13 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner request (2026-11-12): show Ukrainian and Korean time in the cards — the home ticker lot cards, the korea.html lot list and lot card, and the order page model carousels show the auction start as «18.11 · 12:00 Корея · 05:00 Київ». Collector ticker.py, video/korea.html, video/order/order.js, order-strings.json and the order.js version in video/podbor.html only; CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
+               'description': 'Owner requests (2026-11-12/13), one Korea install: all lot photos (prices.py), 7 day buttons and the OTP line in the lot window on korea.html (week_days.py, lot_otp.py/edit_korea.py), and Korea and Kyiv time on the auction cards — the home ticker lot cards, the korea.html lot list and lot card, and the order page model carousels show the auction start as «18.11 · 12:00 Корея · 05:00 Київ». Collector ticker.py, video/korea.html, video/order/order.js, order-strings.json and the order.js version in video/podbor.html only; CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install Korea auction time'}
+               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install Korea joined (time, week, photos, OTP)'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),

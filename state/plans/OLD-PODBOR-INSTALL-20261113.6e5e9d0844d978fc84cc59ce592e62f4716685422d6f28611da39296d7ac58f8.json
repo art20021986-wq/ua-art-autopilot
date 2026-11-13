@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/OLD-PODBOR-INSTALL-20261113.6e5e9d0844d978fc84cc59ce592e62f4716685422d6f28611da39296d7ac58f8.json",
+  "autostart_ledger_sha256": "56e1cdb20a04034fdea892634eadc1996bc6c95f7189b707d4ba69c48621a9d9",
+  "autostart_source_commit": "bd6de3f634117b45fc53766eb115f8686f760cea",
+  "created_at": "2026-11-13T05:29:08Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43372167569",
+    "task_id": "OLD-PODBOR-INSTALL-20261113",
+    "task_sha256": "6e5e9d0844d978fc84cc59ce592e62f4716685422d6f28611da39296d7ac58f8"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-6a0922611ce8b5b6-766ebab9bb8d3ec6",
+  "request_path": "tasks/requests/OLD-PODBOR-INSTALL-20261113.json",
+  "resource_locks": [
+    "PATH_SCOPE:6a0922611ce8b5b6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

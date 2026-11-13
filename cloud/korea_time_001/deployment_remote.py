@@ -163,6 +163,11 @@ def smoke(directory):
                  'ticker_kyiv_time': '11.11 · 13:00 Корея · 06:00 Київ' in html,
                  'page_kyiv_time': all(piece in read(after/'video/korea.html').decode('utf-8') for piece in (
                      'function kyiv(', 'zones(s,i);', 'zones(l.auction_start,i);')),
+                 # joined: KOREA-WEEK-DAYS-001, LOT-OTP-001, KOREA-PHOTOS-ALL-001
+                 'page_week_days': 'function week(c){' in read(after/'video/korea.html').decode('utf-8')
+                                   and 'var ks=Object.keys(c).sort();' not in read(after/'video/korea.html').decode('utf-8'),
+                 'page_lot_otp': 'id="ua-lot-otp-001-js"' in read(after/'video/korea.html').decode('utf-8'),
+                 'all_photos': __import__('korea_auction.prices', fromlist=['x']).MAX_PHOTOS is None,
                  'order_kyiv_time': 'auctionTime(lot.start)' in read(after/'video/order/order.js').decode('utf-8')
                                     and '"auction_kyiv": "Київ"' in read(after/'video/order/order-strings.json').decode('utf-8'),
                  'day_counts': '<b>989</b>' in ticker.render(dict(sample, lots_today=989, lots_next=640, next_date='2026/11/13',

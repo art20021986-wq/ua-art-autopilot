@@ -52,6 +52,10 @@ STAFF = [{'user_id': 11, 'full_name': 'Иван', 'username': 'ivan'}, {'user_id
          {'user_id': 33, 'full_name': None, 'username': None}]
 staff_db.list_staff = lambda active_only=False: [dict(s, role='manager') for s in STAFF]
 staff_db.ROLE_OWNER, staff_db.ROLE_ADMIN, staff_db.ROLE_MANAGER = 'owner', 'admin', 'manager'
+pay_store = types.ModuleType('ua_pay_store')  # the contract accounting (CRM-PAYMENTS), read only
+BOUGHT = {}
+pay_store.purchased_cars = lambda phone: BOUGHT.get(phone, [])
+sys.modules['ua_pay_store'] = pay_store
 sys.modules.update({'telegram': telegram, 'telegram.ext': telegram_ext, 'telegram.error': telegram_error,
                     'ua_crm_orders': orders, 'db': staff_db})
 
@@ -513,6 +517,12 @@ class WebTest(Folder):
         self.assertEqual(len(page['bids']), 1)
         self.assertEqual(set(page['bids'][0]), set(web.BID_FIELDS))  # no manager ids or other columns
         self.assertEqual(page['cars'], [])
+        car = {'title': 'Kia K5', 'year': 2021, 'vin': 'V', 'stages': [{'label': 'В дорозі', 'state': 'current'}],
+               'payments': [{'kind': 'car', 'amount_usd': 100, 'paid_usd': 0, 'due_date': '', 'days_left': 3,
+                             'penalty_usd': 0}], 'penalty': {'annual_percent': 36}}
+        BOUGHT[self.me['phone']] = [car]
+        self.addCleanup(BOUGHT.clear)
+        self.assertEqual(self.call('my')[1]['cars'], [car])  # passed through as the accounting gives it
         self.me = None
         self.assertEqual(self.call('my'), ('401 Unauthorized', {'error': 'login'}))
 

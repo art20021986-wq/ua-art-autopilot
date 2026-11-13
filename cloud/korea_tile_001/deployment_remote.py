@@ -1,4 +1,4 @@
-"""Bounded KOREA-TILE-001 release (home ticker tile: today's car count and the next auction date); preserve live data and pending requests."""
+"""Bounded KOREA-TILE-001 release (home ticker tile: today's car count and the 3 nearest auction days); preserve live data and pending requests."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -122,7 +122,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'TICKER-FIX4-INSTALL-1','files':files,'job':JOB,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'korea_auction/ticker.py + collect.py (home ticker yellow tile: today\'s car count, always, and the next auction date); no page or CRM module changes',
+            'site_scope':'korea_auction/ticker.py + collect.py + selection.py (home ticker yellow tile: today\'s car count, always, and the 3 nearest auction days with weekday and car count); no page or CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -161,9 +161,12 @@ def smoke(directory):
                      '<input type="checkbox" name="auction_group[]" value="4" checked></form>')[1],
                  # KOREA-TIME-001: Korea and Kyiv time on the ticker card and in the korea.html lot card
                  'ticker_kyiv_time': '11.11 · 13:00 Корея · 06:00 Київ' in html,
-                 # KOREA-TILE-001: the tile — today's count (0 too) and the next auction date
-                 'tile': all(piece in ticker.render(dict(sample, lots_today=0, next_date='2026/11/17'))
-                             for piece in ('Сьогодні на торгах</span> <b>0</b>', 'Наступний аукціон</span> <b>17.11</b>')),
+                 # KOREA-TILE-001: the tile — today's count (0 too) and the nearest auction days with weekday and count
+                 'tile': all(piece in ticker.render(dict(sample, lots_today=0, next_days=[
+                     {'date': '2026/11/17', 'lots': 3, 'houses': [{'name': 'K-Car O-San', 'start': '2026/11/17 13:00'}]}]))
+                             for piece in ('Сьогодні на торгах</span></span><span class="kt-num"><b>0</b>',
+                                           'Торги Вт, 17.11</span></span><span class="kt-num"><b>3</b>',
+                                           '<span>K-Car O-San · <span data-uk="старт 06:00 Київ"')),
                  'public_list': public.build([dict(sample['items'][0], maker='KIA', model='K5', trim='', engine_cc=1999,
                                                    transmission='AT', house='H', lot_no='1', start_price_krw=10**7, auction_start='2026/11/11 13:00',
                                                    photos=[])], '2026/11/11', {'USD': 41.0, 'KRW': 0.03, 'date': 'd'},
