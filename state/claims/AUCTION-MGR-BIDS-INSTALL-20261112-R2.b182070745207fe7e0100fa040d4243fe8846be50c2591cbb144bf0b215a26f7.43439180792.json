@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "ff95297d648385ae2cc95d56c024bf4275b23be94b6def1e065805c00569a7d3",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-13T14:06:46Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-13T14:10:46Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43439180792",
     "task_id": "AUCTION-MGR-BIDS-INSTALL-20261112-R2",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43439180792-b182070745207fe7",
   "production_transaction_path": "state/transactions/AUCTION-MGR-BIDS-INSTALL-20261112-R2.b182070745207fe7e0100fa040d4243fe8846be50c2591cbb144bf0b215a26f7.43439180792.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-7cd9ed9de5098a9e-81de5ad8c7b10739",
   "receipt_path": "state/receipts/AUCTION-MGR-BIDS-INSTALL-20261112-R2.json",
   "receipt_validation_status": "PENDING",
@@ -103,5 +103,5 @@
       "cloud/auction_manager_bids_001/ua_korea_bid.py": "31df70a4e5893d36011fa90dfd3a1f8c8a6f38c9a5f1d62bbcab57068227021a"
     }
   },
-  "updated_at": "2026-11-13T14:06:46Z"
+  "updated_at": "2026-11-13T14:10:46Z"
 }
