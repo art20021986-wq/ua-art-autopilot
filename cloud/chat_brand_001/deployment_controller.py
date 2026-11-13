@@ -32,7 +32,13 @@ def blocks(body, caption=True):
             and body.count(RIA) == 1 and RIA_LOGO in body)
 
 
-EXPECTED = {'/video/index.html': lambda body: blocks(body, caption=False) and LINK in body,
+# AUTO.RIA's wording on the home page reviews button (the old one gone).
+RIA_TEXT = 'Дивіться всі авто та відгуки від UA ART COMPANY на AUTO.RIA'
+RIA_OLD = 'Усі відгуки та продані авто'
+
+
+EXPECTED = {'/video/index.html': lambda body: (blocks(body, caption=False) and LINK in body and RIA_TEXT in body
+                                              and RIA_OLD not in body),
             '/video/korea.html': blocks,
             '/video/ru/korea.html': blocks,
             '/video/katalog.html': blocks,
