@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "1b424b4eef1d3770b1850a7d6170a61142b8896e5b9412853ac89a22bcbade8a",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-14T12:04:43Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-14T12:08:42Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43592798938",
     "task_id": "ORDER-GUARD-INSTALL-20261114-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43592798938-87c2010d1341526c",
   "production_transaction_path": "state/transactions/ORDER-GUARD-INSTALL-20261114-R2.87c2010d1341526cfd64622a362ab634cdbff60ce91aebf90716166f659d5a92.43592798938.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-9d7d2cb63e5c87e1-75797be5b1d210de",
   "receipt_path": "state/receipts/ORDER-GUARD-INSTALL-20261114-R2.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/order_storage_guard_001/ua_order_outbox_guard.py": "abaa832bb7681f0d4531d11e1f14685768602ffa1f5b484655e08676e49f5773"
     }
   },
-  "updated_at": "2026-11-14T12:04:43Z"
+  "updated_at": "2026-11-14T12:08:42Z"
 }
