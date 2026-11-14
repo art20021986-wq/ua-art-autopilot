@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "90221513474a22207a729d2c0b99c54a03737881f42cfde7de5582a60139b063",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-14T02:36:16Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-14T02:39:08Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43546498402",
     "task_id": "NEW-CAR-VIN-SPEC-INSTALL-20261114",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43546498402-5c4dfbe2c86d3852",
   "production_transaction_path": "state/transactions/NEW-CAR-VIN-SPEC-INSTALL-20261114.5c4dfbe2c86d38522ee319dc8b63bdb2ecc37ce16c9a35d8ba7640ee2894e5d0.43546498402.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-051a1d31a326d0a5-b0839769106467df",
   "receipt_path": "state/receipts/NEW-CAR-VIN-SPEC-INSTALL-20261114.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/crm_new_car_vin_002/ua_vin_decode.py": "9df929afadc026bf7e722e1bf8d42dcbd84c4f879c9308d8ac0b71169242c7b0"
     }
   },
-  "updated_at": "2026-11-14T02:36:16Z"
+  "updated_at": "2026-11-14T02:39:08Z"
 }
