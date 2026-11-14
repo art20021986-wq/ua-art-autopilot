@@ -1,0 +1,220 @@
+{
+  "cpu": {
+    "http": 200,
+    "value": {
+      "daily_cpu_limit_seconds": 10000,
+      "daily_cpu_total_usage_seconds": 4144.998925,
+      "next_reset_time": "2026-11-14T09:54:15+00:00"
+    }
+  },
+  "handlers": {
+    "/home/Carix/cars_ui.py": {
+      "lines": [],
+      "sha256": "2a28154281d7d648ea7711ca6f54f2ce18b3b8a5811bb766b04f7650da3c6395"
+    },
+    "/home/Carix/start_safe.py": {
+      "lines": [
+        "497: ",
+        "498: def patch_error_handlers():",
+        "499:     \"\"\"Сетевые таймауты не уходят владельцу как «Сбой во внутреннем боте».\"\"\"",
+        "500:     from telegram.ext import Application",
+        "501:     from telegram.error import TimedOut, NetworkError",
+        "502: ",
+        "503:     orig = Application.add_error_handler",
+        "504:     if getattr(orig, \"_ns_wrapped\", False):",
+        "505:         return",
+        "506: ",
+        "507:     def filtered(callback):",
+        "508:         @functools.wraps(callback)",
+        "509:         async def inner(update, context):",
+        "510:             err = getattr(context, \"error\", None)",
+        "511:             if isinstance(err, (TimedOut, NetworkError)):",
+        "512:                 log.warning(\"сетевая ошибка не показана владельцу: %r\", err)",
+        "513:                 return",
+        "514:             return await callback(update, context)",
+        "515: ",
+        "516:         inner._ns_filtered = True",
+        "517:         return inner",
+        "518: ",
+        "519:     @functools.wraps(orig)",
+        "520:     def inner(self, callback, block=True, *args, **kwargs):",
+        "521:         if not getattr(callback, \"_ns_filtered\", False):",
+        "522:             callback = filtered(callback)",
+        "523:         try:",
+        "524:             return orig(self, callback, block, *args, **kwargs)",
+        "525:         except TypeError:",
+        "526:             return orig(self, callback)",
+        "527: ",
+        "528:     inner._ns_wrapped = True",
+        "529:     Application.add_error_handler = inner",
+        "530:     log.info(\"фильтр сетевых ошибок включён\")",
+        "531: ",
+        "532: ",
+        "533: # --- условия 50/50 для авто, которое уже в Грузии --------------------------",
+        "534: #",
+        "535: # Пока авто едет — схема 50 % по договору / 50 % по прибытии в Грузию.",
+        "536: # Когда авто в Грузии — этой строки быть не должно, там предоплата 500 $.",
+        "537: ",
+        "538: import re",
+        "539: import sqlite3",
+        "540: import shutil",
+        "541: ",
+        "542: # признаки того, что речь про авто, уже стоящее в Грузии",
+        "543: GEO_MARKERS = (\"Предоплата\", \"Авто в Грузии\", \"в Грузии\")",
+        "544: ",
+        "545: # предложение про 50/50 — в любых написаниях (50%, 50 %, 50 процентов)",
+        "546: SPLIT_RE = re.compile(",
+        "547:     r\"[^.\\n!]*50\\s*%[^.\\n!]*(?:договор|прибыт)[^.\\n!]*[.!]?\",",
+        "548:     re.IGNORECASE,"
+      ],
+      "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+    }
+  },
+  "log": {
+    "bytes": 137095,
+    "failure_times": [
+      "Nov 13 10:26:03",
+      "Nov 13 11:11:01",
+      "Nov 13 11:11:47",
+      "Nov 13 12:29:34",
+      "Nov 13 14:08:37",
+      "Nov 13 15:33:02",
+      "Nov 13 16:24:09"
+    ],
+    "failures": 7,
+    "failures_by_operation": {
+      "claim_notification": 7
+    },
+    "first_at": "Nov 13 10:19:17",
+    "incident_count": 6,
+    "incidents": [
+      {
+        "count": 1,
+        "end": "2026-11-13T10:26:03",
+        "seconds": 0,
+        "start": "2026-11-13T10:26:03"
+      },
+      {
+        "count": 2,
+        "end": "2026-11-13T11:11:47",
+        "seconds": 46,
+        "start": "2026-11-13T11:11:01"
+      },
+      {
+        "count": 1,
+        "end": "2026-11-13T12:29:34",
+        "seconds": 0,
+        "start": "2026-11-13T12:29:34"
+      },
+      {
+        "count": 1,
+        "end": "2026-11-13T14:08:37",
+        "seconds": 0,
+        "start": "2026-11-13T14:08:37"
+      },
+      {
+        "count": 1,
+        "end": "2026-11-13T15:33:02",
+        "seconds": 0,
+        "start": "2026-11-13T15:33:02"
+      },
+      {
+        "count": 1,
+        "end": "2026-11-13T16:24:09",
+        "seconds": 0,
+        "start": "2026-11-13T16:24:09"
+      }
+    ],
+    "last_at": "Nov 13 16:24:09",
+    "last_tracebacks": [
+      [
+        "764: Nov 13 14:08:37 Traceback (most recent call last):",
+        "765: Nov 13 14:08:37   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/ext/_jobqueue.py\", line 1010, in _run",
+        "766: Nov 13 14:08:37     await self.callback(context)",
+        "767: Nov 13 14:08:37   File \"/home/Carix/ua_order/bindings.py\", line 67, in job",
+        "768: Nov 13 14:08:37     await dispatch_once(runtime.service.repository, deliver)",
+        "769: Nov 13 14:08:37   File \"/home/Carix/ua_order/notifications.py\", line 6, in dispatch_once",
+        "770: Nov 13 14:08:37     claim=await asyncio.to_thread(repository.claim_notification)",
+        "771: Nov 13 14:08:37   File \"/usr/lib/python3.10/asyncio/threads.py\", line 25, in to_thread",
+        "772: Nov 13 14:08:37     return await loop.run_in_executor(None, func_call)",
+        "773: Nov 13 14:08:37   File \"/usr/lib/python3.10/concurrent/futures/thread.py\", line 58, in run",
+        "774: Nov 13 14:08:37     result = self.fn(*self.args, **self.kwargs)",
+        "775: Nov 13 14:08:37   File \"/home/Carix/ua_order/mysql_repository.py\", line 190, in claim_notification",
+        "776: Nov 13 14:08:37     return self._run(claim, write=True)",
+        "777: Nov 13 14:08:37   File \"/home/Carix/ua_order/mysql_repository.py\", line 54, in _run",
+        "778: Nov 13 14:08:37     raise StorageUnavailable('Order storage unavailable') from None",
+        "779: Nov 13 14:08:37 ua_order.storage.StorageUnavailable: Order storage unavailable"
+      ],
+      [
+        "1086: Nov 13 15:33:02 Traceback (most recent call last):",
+        "1087: Nov 13 15:33:02   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/ext/_jobqueue.py\", line 1010, in _run",
+        "1088: Nov 13 15:33:02     await self.callback(context)",
+        "1089: Nov 13 15:33:02   File \"/home/Carix/ua_order/bindings.py\", line 67, in job",
+        "1090: Nov 13 15:33:02     await dispatch_once(runtime.service.repository, deliver)",
+        "1091: Nov 13 15:33:02   File \"/home/Carix/ua_order/notifications.py\", line 6, in dispatch_once",
+        "1092: Nov 13 15:33:02     claim=await asyncio.to_thread(repository.claim_notification)",
+        "1093: Nov 13 15:33:02   File \"/usr/lib/python3.10/asyncio/threads.py\", line 25, in to_thread",
+        "1094: Nov 13 15:33:02     return await loop.run_in_executor(None, func_call)",
+        "1095: Nov 13 15:33:02   File \"/usr/lib/python3.10/concurrent/futures/thread.py\", line 58, in run",
+        "1096: Nov 13 15:33:02     result = self.fn(*self.args, **self.kwargs)",
+        "1097: Nov 13 15:33:02   File \"/home/Carix/ua_order/mysql_repository.py\", line 190, in claim_notification",
+        "1098: Nov 13 15:33:02     return self._run(claim, write=True)",
+        "1099: Nov 13 15:33:02   File \"/home/Carix/ua_order/mysql_repository.py\", line 54, in _run",
+        "1100: Nov 13 15:33:02     raise StorageUnavailable('Order storage unavailable') from None",
+        "1101: Nov 13 15:33:02 ua_order.storage.StorageUnavailable: Order storage unavailable"
+      ],
+      [
+        "1105: Nov 13 16:24:09 Traceback (most recent call last):",
+        "1106: Nov 13 16:24:09   File \"/home/Carix/.local/lib/python3.10/site-packages/telegram/ext/_jobqueue.py\", line 1010, in _run",
+        "1107: Nov 13 16:24:09     await self.callback(context)",
+        "1108: Nov 13 16:24:09   File \"/home/Carix/ua_order/bindings.py\", line 67, in job",
+        "1109: Nov 13 16:24:09     await dispatch_once(runtime.service.repository, deliver)",
+        "1110: Nov 13 16:24:09   File \"/home/Carix/ua_order/notifications.py\", line 6, in dispatch_once",
+        "1111: Nov 13 16:24:09     claim=await asyncio.to_thread(repository.claim_notification)",
+        "1112: Nov 13 16:24:09   File \"/usr/lib/python3.10/asyncio/threads.py\", line 25, in to_thread",
+        "1113: Nov 13 16:24:09     return await loop.run_in_executor(None, func_call)",
+        "1114: Nov 13 16:24:09   File \"/usr/lib/python3.10/concurrent/futures/thread.py\", line 58, in run",
+        "1115: Nov 13 16:24:09     result = self.fn(*self.args, **self.kwargs)",
+        "1116: Nov 13 16:24:09   File \"/home/Carix/ua_order/mysql_repository.py\", line 190, in claim_notification",
+        "1117: Nov 13 16:24:09     return self._run(claim, write=True)",
+        "1118: Nov 13 16:24:09   File \"/home/Carix/ua_order/mysql_repository.py\", line 54, in _run",
+        "1119: Nov 13 16:24:09     raise StorageUnavailable('Order storage unavailable') from None",
+        "1120: Nov 13 16:24:09 ua_order.storage.StorageUnavailable: Order storage unavailable"
+      ]
+    ],
+    "lines": 1120,
+    "longest_incident_seconds": 46,
+    "mysql_line_count": 0,
+    "mysql_lines": []
+  },
+  "run_id": "43575692390",
+  "sources": {
+    "/home/Carix/ua_order/bindings.py": {
+      "sha256": "e07cce08a7b55d16a41a6d1b904c30e928476c012846d9a6eead51dcefc50f9f",
+      "text": "\"\"\"Customer intake and the owner's private inbox in the client bot.\"\"\"\nimport asyncio\nfrom .crm import detail_view\nfrom .notifications import dispatch_once\nfrom .telegram import CRMAdapter, CustomerAdapter, _markup\n\n# All these entrances are present in client_ui.register (27 September 2026).\nCUSTOMER_ENTRY = r'^(?:c_order$|c_ans:|lead_start|buycar:|ready$|custom_order$)'\nCUSTOMER_EXIT = r'^(?:c_menu$|c_cars$|c_car:|c_bron:|c_vopros:|c_terms$|c_contacts$|show_cars$|show_transit$|adm_mycars$|show_terms$|contact_manager$)'\nCUSTOMER_COMMANDS = ('start', 'cancel', 'cars', 'terms', 'help', 'mycar')\nJOB_NAME = 'ua_order_outbox'\n\n\ndef first_group(app):\n    # Imported host modules may add their own groups. Reserve an earlier unused\n    # group only after all host registrations have finished; never clear them.\n    return min(app.handlers, default=0) - 1\n\n\ndef customer(app, runtime):\n    adapter = CustomerAdapter(\n        runtime.service, runtime.strings, runtime.consent_text,\n        media_root=runtime.media_root, allow_update=runtime.allow_update,\n        menu_callback='c_menu',\n    )\n    adapter.register(app, group=first_group(app), entry_pattern=CUSTOMER_ENTRY,\n                     exit_pattern=CUSTOMER_EXIT, exit_commands=CUSTOMER_COMMANDS)\n    return adapter\n\n\ndef owner_inbox(app, runtime, *, owner_id):\n    owner_id = int(owner_id)\n    if owner_id <= 0:\n        raise ValueError('A private owner chat is required for order delivery')\n    if not app.job_queue:\n        raise ValueError('The existing client job queue is required for order delivery')\n    if app.job_queue.get_jobs_by_name(JOB_NAME):\n        raise ValueError('Order delivery is already registered')\n\n    def authorize(update):\n        return bool(update.effective_user and update.effective_chat\n                    and update.effective_chat.type == 'private'\n                    and update.effective_user.id == owner_id\n                    and update.effective_chat.id == owner_id)\n\n    adapter = CRMAdapter(runtime.service.repository, runtime.service.catalog,\n                         authorize=authorize, menu_callback='v_start')\n    adapter.register(app, group=first_group(app))\n\n    async def deliver(row):\n        # The same client bot owns both the notification and its callback.\n        view = detail_view(row, runtime.service.catalog)\n        repository = runtime.service.repository\n        request_id = row['data']['request_id']\n        sent = await asyncio.to_thread(repository.notification_recipients_sent, request_id)\n\n        if owner_id not in sent:\n            parts = view.get('parts', [view['text']])\n            for index, part in enumerate(parts):\n                await app.bot.send_message(\n                    chat_id=owner_id, text=part, parse_mode='HTML',\n                    reply_markup=_markup([[('Открыть лид', f'ld:o:or:{row[\"id\"]}')]]) if index == len(parts)-1 else None,\n                )\n            await asyncio.to_thread(repository.notification_recipient_sent, request_id, owner_id)\n\n    async def job(context):\n        await dispatch_once(runtime.service.repository, deliver)\n\n    app.job_queue.run_repeating(job, interval=5, first=1, name=JOB_NAME)\n    return adapter"
+    },
+    "/home/Carix/ua_order/mysql_repository.py": {
+      "sha256": "21419a04be798df84f6ec210a9086cc1b01d9fa0d76b7e6811d707ec14d6fe9a",
+      "text": "\"\"\"Native MySQL transactions using the host's existing mysqlclient driver.\"\"\"\nimport hashlib\nimport json\nfrom pathlib import Path\nimport secrets\nimport time\n\nfrom .contract import Conflict, encoded\nfrom .mysql_schema import DDL, TABLES\nfrom .storage import NotFound, StorageUnavailable, detail, receipt\n\n\nclass MySQLRepository:\n    def __init__(self, *, host, user, database, defaults_file, clock=time.time):\n        if database not in (user + '$orders', user + '$orders_test'):\n            raise ValueError('An isolated orders database is required')\n        self.options = dict(host=host, user=user, database=database,\n                            read_default_file=str(Path(defaults_file).expanduser().resolve()))\n        self.clock = clock\n\n    def _run(self, operation, *, write=False):\n        # Each call owns its connection. No idle shared connection or connection\n        # sharing across WSGI threads / bot processes.\n        import MySQLdb\n        from MySQLdb.cursors import DictCursor\n        for attempt in range(3):\n            db = None\n            try:\n                db = MySQLdb.connect(**self.options, charset='utf8mb4',\n                                     cursorclass=DictCursor, connect_timeout=3,\n                                     read_timeout=5, write_timeout=5,\n                                     autocommit=False)\n                with db.cursor() as cursor:\n                    cursor.execute('SET SESSION innodb_lock_wait_timeout=3')\n                    cursor.execute(\"SET SESSION sql_mode='STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION'\")\n                    result = operation(cursor)\n                if write:\n                    db.commit()\n                else:\n                    db.rollback()\n                return result  # Never acknowledge before commit.\n            except BaseException as error:\n                if db is not None:\n                    try:\n                        db.rollback()\n                    except MySQLdb.Error:\n                        pass\n                if isinstance(error, MySQLdb.Error):\n                    # Replay only known transaction-abort cases. A lost commit\n                    # response is resolved by the request UUID on client retry.\n                    if error.args and error.args[0] in (1205, 1213) and attempt < 2:\n                        time.sleep(0.025 * (attempt + 1))\n                        continue\n                    raise StorageUnavailable('Order storage unavailable') from None\n                raise\n            finally:\n                if db is not None:\n                    db.close()\n\n    @staticmethod\n    def _tables(cursor):\n        cursor.execute('SELECT TABLE_NAME, ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE()')\n        return {r['TABLE_NAME']: r['ENGINE'] for r in cursor.fetchall()}\n\n    def _check(self, cursor):\n        tables = self._tables(cursor)\n        if set(tables) != TABLES or any(v != 'InnoDB' for v in tables.values()):\n            raise ValueError('The isolated order schema is incomplete or unrelated')\n        cursor.execute('SELECT name, version FROM order_schema')\n        if list(cursor.fetchall()) != [{'name': 'ua_orders', 'version': 1}]:\n            raise ValueError('Unsupported order database version')\n\n    def check_ready(self):\n        self._run(self._check)\n\n    def initialize(self):\n        # DDL is not transactional in MySQL. An interrupted initialization is\n        # rejected, never silently repaired or applied to an unrelated schema.\n        def initialize(cursor):\n            if self._tables(cursor):\n                self._check(cursor)\n                return\n            for statement in DDL:\n                cursor.execute(statement)\n            cursor.execute(\"INSERT INTO order_schema VALUES ('ua_orders', 1)\")\n        self._run(initialize, write=True)\n        self.check_ready()\n\n    def save(self, data, payload_hash, owner, channel, event=None):\n        def save(cursor):\n            request_id, now = data['request_id'], int(self.clock())\n            cursor.execute('''INSERT INTO order_requests\n                (request_id,owner,payload_hash,payload,channel,created_at)\n                VALUES (%s,%s,%s,%s,%s,%s)\n                ON DUPLICATE KEY UPDATE request_id=request_id''',\n                           (request_id, owner, payload_hash, encoded(data), channel, now))\n            cursor.execute('SELECT * FROM order_requests WHERE request_id=%s FOR UPDATE', (request_id,))\n            row = cursor.fetchone()\n            if row['owner'] != owner or row['payload_hash'] != payload_hash:\n                raise Conflict('request_conflict')\n            if event:\n                cursor.execute('''INSERT INTO order_events VALUES (%s,%s)\n                    ON DUPLICATE KEY UPDATE event=event''', (event, request_id))\n                cursor.execute('SELECT request_id FROM order_events WHERE event=%s FOR UPDATE', (event,))\n                if cursor.fetchone()['request_id'] != request_id:\n                    raise Conflict('event_conflict')\n            cursor.execute('''INSERT INTO order_outbox (request_id,available_at) VALUES (%s,%s)\n                ON DUPLICATE KEY UPDATE request_id=request_id''', (request_id, now))\n            return receipt(row)\n        return self._run(save, write=True)\n\n    def _one(self, sql, values, transform):\n        def fetch(cursor):\n            cursor.execute(sql, values)\n            row = cursor.fetchone()\n            if not row:\n                raise NotFound()\n            return transform(row)\n        return self._run(fetch)\n\n    def receipt_for_owner(self, request_id, owner):\n        return self._one('SELECT * FROM order_requests WHERE request_id=%s AND owner=%s',\n                         (request_id, owner), receipt)\n\n    def detail(self, row_id):\n        return self._one('SELECT * FROM order_requests WHERE id=%s', (row_id,), detail)\n\n    def notification_data(self, request_id):\n        return self._one('SELECT * FROM order_requests WHERE request_id=%s', (request_id,), detail)\n\n    def list_requests(self, *, before=None, limit=20):\n        if not isinstance(limit, int) or not 1 <= limit <= 20:\n            raise ValueError('Invalid page size')\n        def fetch(cursor):\n            cursor.execute('SELECT * FROM order_requests WHERE id < %s ORDER BY id DESC LIMIT %s',\n                           (before if before is not None else [N], limit + 1))\n            rows = cursor.fetchall()\n            visible = rows[:limit]\n            return [detail(r) for r in visible], visible[-1]['id'] if len(rows) > limit else None\n        return self._run(fetch)\n\n    def notification_recipients_sent(self, request_id):\n        def fetch(cursor):\n            cursor.execute('SELECT recipient FROM order_notification_receipts WHERE request_id=%s', (request_id,))\n            return {row['recipient'] for row in cursor.fetchall()}\n        return self._run(fetch)\n\n    def notification_recipient_sent(self, request_id, recipient):\n        self._run(lambda cursor: cursor.execute('''INSERT INTO order_notification_receipts VALUES (%s,%s,%s)\n            ON DUPLICATE KEY UPDATE sent_at=sent_at''',\n            (request_id, recipient, int(self.clock()))), write=True)\n\n    def create_draft(self, data, owner):\n[REDACTED_SENSITIVE_LINE]\n        hashed, now = hashlib.sha256(token.encode()).hexdigest(), int(self.clock())\n        def create(cursor):\n            cursor.execute('DELETE FROM order_drafts WHERE expires_at < %s', (now,))\n            cursor.execute('INSERT INTO order_drafts VALUES (%s,%s,%s,%s,NULL)',\n                           (hashed, owner, encoded(data), now + 1800))\n        self._run(create, write=True)\n        return token\n\n    def redeem_draft(self, token, telegram_owner):\n        if not telegram_owner.startswith('telegram:') or len(token) != 32:\n            raise NotFound()\n        hashed = hashlib.sha256(token.encode()).hexdigest()\n        def redeem(cursor):\n            cursor.execute('SELECT * FROM order_drafts WHERE token_hash=%s AND expires_at>%s FOR UPDATE',\n                           (hashed, int(self.clock())))\n            row = cursor.fetchone()\n            if not row or row['telegram_owner'] not in (None, telegram_owner):\n                raise NotFound()\n            cursor.execute('UPDATE order_drafts SET telegram_owner=%s WHERE token_hash=%s', (telegram_owner, hashed))\n            return json.loads(row['payload'])\n        return self._run(redeem, write=True)\n\n    def claim_notification(self):\n        def claim(cursor):\n            now = int(self.clock())\n            cursor.execute('''SELECT * FROM order_outbox WHERE\n                (state='pending' AND available_at<=%s) OR (state='sending' AND lease_until<=%s)\n                ORDER BY id LIMIT 1 FOR UPDATE''', (now, now))\n            row = cursor.fetchone()\n            if not row:\n                return None\n            lease = secrets.token_hex(16)\n            cursor.execute(\"UPDATE order_outbox SET state='sending',lease=%s,lease_until=%s,attempts=attempts+1 WHERE id=%s\",\n                           (lease, int(self.clock()) + 60, row['id']))\n            return dict(id=row['id'], request_id=row['request_id'], lease=lease)\n        return self._run(claim, write=True)\n\n    def finish_notification(self, claim, *, delivered):\n        def finish(cursor):\n            cursor.execute('SELECT attempts FROM order_outbox WHERE id=%s AND lease=%s FOR UPDATE',\n                           (claim['id'], claim['lease']))\n            row = cursor.fetchone()\n            if not row:\n                return\n            if delivered:\n                cursor.execute(\"UPDATE order_outbox SET state='sent',lease=NULL,lease_until=NULL WHERE id=%s AND lease=%s\",\n                               (claim['id'], claim['lease']))\n            else:\n                delay = min(3600, 60 * 2 ** min(6, row['attempts'] - 1))\n                cursor.execute(\"UPDATE order_outbox SET state='pending',available_at=%s,lease=NULL,lease_until=NULL WHERE id=%s AND lease=%s\",\n                               (int(self.clock()) + delay, claim['id'], claim['lease']))\n        self._run(finish, write=True)"
+    },
+    "/home/Carix/ua_order/notifications.py": {
+      "sha256": "1ccd8c1a9d864dd5dc00b320b66569872f1b224d26f4eaae0adce7b5a95ac2bc",
+      "text": "\"\"\"One bounded outbox operation, scheduled by the existing bot job queue.\"\"\"\nimport asyncio\n\n\nasync def dispatch_once(repository, deliver):\n    claim=await asyncio.to_thread(repository.claim_notification)\n    if not claim: return False\n    try:\n        row=await asyncio.to_thread(repository.notification_data,claim['request_id'])\n        # deliver is the existing manager notification adapter, not a new token\n        # or recipient. A timeout can mean delivery succeeded; external delivery\n        # is at-least-once and always carries the same order number.\n        await asyncio.wait_for(deliver(row),timeout=20)\n    except (Exception, asyncio.CancelledError):\n        await asyncio.to_thread(repository.finish_notification,claim,delivered=False)\n        raise\n    await asyncio.to_thread(repository.finish_notification,claim,delivered=True)\n    return True"
+    },
+    "/home/Carix/ua_order/storage.py": {
+      "sha256": "a51d2e5bbc8cc1c25f686bfefb88490f0569b3e8996c8df1943614608ff79b33",
+      "text": "\"\"\"Storage-independent errors and persisted enquiry views.\"\"\"\nimport json\n\n\nclass NotFound(LookupError):\n    pass\n\n\nclass StorageUnavailable(RuntimeError):\n    \"\"\"An operation did not produce a confirmed durable result.\"\"\"\n\n\ndef receipt(row):\n    return {'request_id': row['request_id'], 'number': f'OR-{row[\"id\"]:06d}',\n            'status': 'saved'}\n\n\ndef detail(row):\n    return dict(id=row['id'], number=f'OR-{row[\"id\"]:06d}', created_at=row['created_at'],\n                channel=row['channel'], data=json.loads(row['payload']),\n                telegram_user_id=row['owner'].split(':', 1)[1]\n                if row['owner'].startswith('telegram:') else None)"
+    }
+  },
+  "status": {
+    "/home/Carix/bot.py": 404,
+    "/home/Carix/cars_ui.py": 200,
+    "/home/Carix/start_safe.py": 200,
+    "/home/Carix/ua_order/bindings.py": 200,
+    "/home/Carix/ua_order/mysql_repository.py": 200,
+    "/home/Carix/ua_order/notifications.py": 200,
+    "/home/Carix/ua_order/storage.py": 200,
+    "/var/log/alwayson-log-266084.log": 200
+  },
+  "task_id": "ORDER-STORAGE-CHECK-20261114-R2"
+}

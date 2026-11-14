@@ -1,0 +1,16 @@
+{
+  "evidence_path": "cloud/order_storage_check_001/evidence.json",
+  "live_source_environment": "production",
+  "production_required": false,
+  "request_sha256": "9bbb85fef2434696b6f109fa03626cb2c88ad953cac70fc58ab48b7f7faadfed",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "43575692390",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ORDER-STORAGE-CHECK-20261114-R2",
+  "tests": "PASS",
+  "tests_scope": "ORDER_STORAGE_CHECK",
+  "unexpected_changes": 0
+}
