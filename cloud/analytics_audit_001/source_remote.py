@@ -1,6 +1,10 @@
 """Read-only analytics audit on the server (ANALYTICS-AUDIT-PROBE).
 
-R6 (2026-11-13, ANALYTICS-DIRECT-001): report() breaks down the «direct / unknown» visits: GA4 Direct sessions by
+R7 (2026-11-14, owner: «аналитику заверши глубже, красивое оформление»): report() reads 30 days from all three
+sources for the full analytics report: GA4 (daily, channels, sources, landing and viewed pages, devices, cities, events,
+new vs returning, hours), the own counter (daily, sources, pages, clicks, button labels, read depth, cars, funnel,
+returning visitors) and every visitor by the server log (ua_server_visits, read-only). Car names only from crm.db.
+R6 (2026-11-13, ANALYTICS-DIRECT-001): report_r6() breaks down the «direct / unknown» visits: GA4 Direct sessions by
 landing page, device, browser and hour; own counter sessions with no source; the access log's first page request of
 each visitor-day without a referrer by app (in-app browser user-agent), click id in the address and landing page.
 R5 (old order page) is report_r5. R4 (2026-11-12, owner enabled the Google Analytics Data API): report_r4() asks only the Data API (read-only scope)
@@ -20,9 +24,11 @@ below stay for reference; report() runs the R2 reading only.
 Nothing is written outside this run's own receipt. No personal data is returned.
 """
 import argparse
+import datetime
 from collections import Counter
 import gzip
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -524,7 +530,139 @@ def direct_ga4():
             'direct_new_vs_returning': run(['newVsReturning'], 'sessions')}
 
 
+def full_ga4(days=30):
+    key = next((k for k in KEYS if k.is_file()), None)
+    if not key:
+        return {'error': 'KEY_MISSING'}
+    from google.oauth2 import service_account
+    from google.auth.transport.requests import Request
+    credentials = service_account.Credentials.from_service_account_file(
+        str(key), scopes=['https://www.googleapis.com/auth/analytics.readonly'])
+    credentials.refresh(Request())
+
+    def run(dimensions, metrics, limit=25, order=None):
+        body = {'dateRanges': [{'startDate': '%ddaysAgo' % (days - 1), 'endDate': 'today'}],
+                'dimensions': [{'name': n} for n in dimensions], 'metrics': [{'name': n} for n in metrics],
+                'limit': limit, 'orderBys': [order or {'metric': {'metricName': metrics[0]}, 'desc': True}]}
+        request = urllib.request.Request(DATA, data=json.dumps(body).encode(), method='POST', headers={
+            'Authorization': 'Bearer ' + credentials.token, 'Content-Type': 'application/json'})
+        for attempt in range(2):
+            try:
+                with urllib.request.urlopen(request, timeout=90) as response:
+                    rows = json.loads(response.read()).get('rows', [])
+                return [[c.get('value') for c in r.get('dimensionValues', []) + r.get('metricValues', [])] for r in rows]
+            except urllib.error.HTTPError as error:
+                return {'http': error.code, 'error': error.read(500).decode('utf-8', 'replace')}
+            except (urllib.error.URLError, TimeoutError, OSError) as error:
+                last = type(error).__name__
+        return {'error': last}
+    by_date = {'dimension': {'dimensionName': 'date'}}
+    return {'daily': run(['date'], ['activeUsers', 'sessions', 'screenPageViews', 'engagedSessions'], 40, by_date),
+            'channels': run(['sessionDefaultChannelGroup'], ['sessions', 'activeUsers', 'engagedSessions']),
+            'source_medium': run(['sessionSourceMedium'], ['sessions', 'activeUsers']),
+            'landing': run(['landingPage'], ['sessions', 'engagedSessions']),
+            'pages': run(['pagePath'], ['screenPageViews', 'activeUsers', 'userEngagementDuration']),
+            'devices': run(['deviceCategory'], ['activeUsers', 'sessions']),
+            'cities': run(['city'], ['activeUsers'], 12),
+            'events': run(['eventName'], ['eventCount', 'totalUsers']),
+            'new_returning': run(['newVsReturning'], ['activeUsers', 'sessions']),
+            'hours': run(['hour'], ['sessions'], 24, {'dimension': {'dimensionName': 'hour'}}),
+            'totals': run([], ['activeUsers', 'sessions', 'screenPageViews', 'engagedSessions',
+                               'averageSessionDuration', 'bounceRate'], 1, {'metric': {'metricName': 'sessions'}})}
+
+
+def car_names():
+    try:
+        connection = sqlite3.connect('file:%s?mode=ro' % (HOME/'crm.db'), uri=True, timeout=10)
+        try:
+            rows = connection.execute('SELECT auto_number, brand, model, year FROM cars').fetchall()
+        finally:
+            connection.close()
+    except sqlite3.Error as error:
+        return {'error': type(error).__name__}
+    return {str(n).upper(): ' '.join(str(x) for x in (b, m, y) if x) for n, b, m, y in rows if n}
+
+
+def full_own(days=30):
+    from zoneinfo import ZoneInfo
+    kiev = ZoneInfo('Europe/Kyiv')
+    since = int(time.time()) - days * 86400
+    connection = sqlite3.connect('file:%s?mode=ro' % DB, uri=True, timeout=10)
+    try:
+        events = connection.execute('SELECT ts, tip, stranica, avto, znachenie, vid, sid FROM events WHERE ts>=?',
+                                    (since,)).fetchall()
+        sessions = connection.execute('SELECT sid, vid, nachalo, istochnik FROM sessions WHERE nachalo>=?',
+                                      (since,)).fetchall()
+        first_seen = dict(connection.execute('SELECT vid, pervyy FROM visitors').fetchall())
+    finally:
+        connection.close()
+    day = lambda ts: datetime.datetime.fromtimestamp(ts, kiev).date().isoformat()
+    daily, pages, types, labels, depth, cars, contacts = {}, {}, {}, {}, {}, {}, {}
+    views = ('page', 'card', 'diag')
+    contact_types = ('whatsapp', 'telegram', 'phone', 'zayavka', 'cta')
+    people, saw_car, contacted, page_views = set(), set(), set(), {}
+    for ts, tip, page, car, label, vid, sid in events:
+        d = daily.setdefault(day(ts), {'visitors': set(), 'sessions': set(), 'views': 0, 'contacts': 0})
+        d['visitors'].add(vid)
+        d['sessions'].add(sid)
+        people.add(vid)
+        clean = (page or '').split('?')[0]
+        if tip in views and not (tip == 'diag' and label):
+            d['views'] += 1
+            bump(pages, clean)
+            if car:
+                saw_car.add(vid)
+                bump(cars, car)
+        elif tip == 'scroll':
+            bump(depth.setdefault(clean, {}), label or '?')
+        elif tip != 'start':
+            bump(types, tip)
+            if tip == 'knopka':
+                bump(labels, (label or '')[:40])
+            if tip in contact_types:
+                d['contacts'] += 1
+                contacted.add(vid)
+                if car:
+                    bump(contacts, car)
+    sources, returning = {}, {}
+    per_visitor = {}
+    for sid, vid, start, source_name in sessions:
+        bump(sources, source_name or '(empty)')
+        per_visitor[vid] = per_visitor.get(vid, 0) + 1
+    for vid in people:
+        bump(returning, 'returning' if per_visitor.get(vid, 0) > 1 or first_seen.get(vid, since) < since else 'new')
+    return {'daily': {k: {'visitors': len(v['visitors']), 'sessions': len(v['sessions']), 'views': v['views'],
+                          'contacts': v['contacts']} for k, v in sorted(daily.items())},
+            'sources': top(sources, 20), 'pages': top(pages, 25), 'clicks': top(types, 25),
+            'button_labels': top(labels, 25), 'read_depth': {p: depth[p] for p in list(top(pages, 25)) if p in depth},
+            'cars_viewed': top(cars, 20), 'cars_contacts': top(contacts, 20),
+            'funnel': {'visitors': len(people), 'saw_car': len(saw_car), 'contacted': len(contacted)},
+            'new_returning': returning, 'sessions': len(sessions)}
+
+
+def full_server():
+    module_path = HOME/'ua_server_visits.py'
+    spec = importlib.util.spec_from_file_location('srv_visits_ro', module_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    found = module.from_logs(module._texts())
+    saved = {}
+    if module.BAZA.is_file():
+        connection = sqlite3.connect('file:%s?mode=ro' % module.BAZA, uri=True, timeout=10)
+        try:
+            saved = {d: [p, v] for d, p, v in connection.execute('SELECT den, lyudi, prosmotry FROM days')}
+        finally:
+            connection.close()
+    saved.update({d: list(v) for d, v in found.items()})
+    return {'daily': dict(sorted(saved.items())[-31:])}
+
+
 def report():
+    return {'status': 'PASS', 'google_analytics': guarded(full_ga4), 'own': guarded(full_own),
+            'server_log': guarded(full_server), 'cars': guarded(car_names)}
+
+
+def report_r6():
     logs = log_texts()
     return {'status': 'PASS', 'google_analytics': guarded(direct_ga4), 'own': guarded(direct_own),
             'log': guarded(direct_log, [v['text'] for v in logs.values() if 'text' in v])}
