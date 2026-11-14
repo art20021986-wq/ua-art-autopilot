@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/UA0025-VIN-FILL-PREFLIGHT-20261114.b1a21b766e3a5a34b22a9196e432d9942be81ceaf0ba1f8fa427865e59b4c787.json",
+  "autostart_ledger_sha256": "a745aac35120a643140752103c5859b9796ce9b49d5e0fbeeb41801eb2bec2d0",
+  "autostart_source_commit": "4ef891bd1ad0050123cddee25e3be3980f42ae30",
+  "created_at": "2026-11-14T12:26:44Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-14T12:26:44Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43594712288",
+    "task_id": "UA0025-VIN-FILL-PREFLIGHT-20261114",
+    "task_sha256": "b1a21b766e3a5a34b22a9196e432d9942be81ceaf0ba1f8fa427865e59b4c787"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "card-ua-0025-ffc7a708c158d230",
+  "receipt_path": "state/receipts/UA0025-VIN-FILL-PREFLIGHT-20261114.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/UA0025-VIN-FILL-PREFLIGHT-20261114.json",
+  "request_sha256": "b1a21b766e3a5a34b22a9196e432d9942be81ceaf0ba1f8fa427865e59b4c787",
+  "resource_locks": [
+    "CARD:UA-0025"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "3851d6b40161b8953174d559796efa819e196a96",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-14T12:26:44Z"
+}
