@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ORDER-STORAGE-CHECK-20261114-R2.9bbb85fef2434696b6f109fa03626cb2c88ad953cac70fc58ab48b7f7faadfed.json",
+  "autostart_ledger_sha256": "272ec37ba7fa34904e1d10759deb06101f478afb27652931f153c2488658becb",
+  "autostart_source_commit": "c9f148f4c40aa541667047d95fec5e595529ea8e",
+  "created_at": "2026-11-14T08:26:01Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43575692390",
+    "task_id": "ORDER-STORAGE-CHECK-20261114-R2",
+    "task_sha256": "9bbb85fef2434696b6f109fa03626cb2c88ad953cac70fc58ab48b7f7faadfed"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-aaeef841227fec98-35c870c5b6cc0ef4",
+  "request_path": "tasks/requests/ORDER-STORAGE-CHECK-20261114-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:aaeef841227fec98"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
