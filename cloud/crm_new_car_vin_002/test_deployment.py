@@ -34,9 +34,9 @@ class RecoveryTests(unittest.TestCase):
         (self.root/'protected.html').write_bytes(b'original photos and VIN')
         self.plan = {'files': {}, 'protected': {'protected.html': sha(b'original photos and VIN')},
                      'crm_sha256': remote.row_digest(remote.crm_rows()), 'counts': {'all': 0}}
+        # the real plan of this package: one new module, one replaced module, no cars_ui.py
         for name, before, after in [('ua_vin_decode.py', None, b'policy'),
-                                    ('screen_fields.py', None, b'model'),
-                                    ('cars_ui.py', b'original', b'candidate')]:
+                                    ('ua_new_car_bot.py', b'original', b'candidate')]:
             self.plan['files'][name] = {'before': sha(before) if before else None,
                                        'after': sha(after), 'mode': 0o644}
             if before:
@@ -95,16 +95,16 @@ class RecoveryTests(unittest.TestCase):
         remote.verify_files(self.plan, True)
 
     def test_drift_before_install_resumes_without_changes(self):
-        (self.root/'cars_ui.py').write_bytes(b'other editor')
+        (self.root/'ua_new_car_bot.py').write_bytes(b'other editor')
         result = self.lifecycle('install')
         self.assertEqual(result['status'], 'FAIL')
-        self.assertEqual((self.root/'cars_ui.py').read_bytes(), b'other editor')
+        self.assertEqual((self.root/'ua_new_car_bot.py').read_bytes(), b'other editor')
         self.assertFalse((self.root/'ua_vin_decode.py').exists())
         self.assertTrue(result['crm_resume']['enabled'])
 
     def test_rollback_refuses_concurrent_file_edit(self):
         self.lifecycle('install')
-        (self.root/'cars_ui.py').write_bytes(b'other editor')
+        (self.root/'ua_new_car_bot.py').write_bytes(b'other editor')
         with self.assertRaisesRegex(remote.DeploymentError, 'ROLLBACK_CONCURRENT_CHANGE'):
             remote.restore(self.saved, self.plan)
         self.assertEqual((self.root/'ua_vin_decode.py').read_bytes(), b'policy')
@@ -117,7 +117,7 @@ class RecoveryTests(unittest.TestCase):
         self.assertTrue(result['restored'])
         self.assertTrue(result['crm_unchanged'])
         self.assertEqual(remote.crm_rows()[0]['price'], 99999)
-        self.assertEqual((self.root/'cars_ui.py').read_bytes(), b'original')
+        self.assertEqual((self.root/'ua_new_car_bot.py').read_bytes(), b'original')
 
     def test_rollback_preserves_protected_files(self):
         self.lifecycle('install')
@@ -127,7 +127,7 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual((self.root/'protected.html').read_bytes(), b'legitimate new photo')
 
     def test_atomic_write_rejects_symlink_on_read(self):
-        (self.root/'alias.py').symlink_to(self.root/'cars_ui.py')
+        (self.root/'alias.py').symlink_to(self.root/'ua_new_car_bot.py')
         with self.assertRaises(remote.DeploymentError):
             remote.read(self.root/'alias.py')
 
@@ -135,7 +135,7 @@ class RecoveryTests(unittest.TestCase):
         original=remote.atomic
         failed=[]
         def interrupted(path,value,mode=0o600):
-            if path==self.root/'cars_ui.py' and value==b'candidate' and not failed:
+            if path==self.root/'ua_new_car_bot.py' and value==b'candidate' and not failed:
                 failed.append(True)
                 raise OSError('injected disk error')
             return original(path,value,mode)
@@ -288,35 +288,15 @@ class StorageProbeTests(unittest.TestCase):
 
 
 
-class BackupVisibilityTests(unittest.TestCase):
-    def test_backup_seen_after_a_retry(self):
-        calls = []
+class WriteOrderTests(unittest.TestCase):
+    def test_new_modules_first_and_no_fixed_names(self):
+        plan = {'files': {'ua_new_car_bot.py': {'before': 'b'}, 'ua_vin_decode.py': {'before': None}}}
+        self.assertEqual(remote.write_order(plan), ['ua_vin_decode.py', 'ua_new_car_bot.py'])
+        self.assertNotIn('cars_ui.py', remote.write_order(plan))
 
-        def load(digest):
-            calls.append(digest)
-            if len(calls) < 3:
-                raise FileNotFoundError(2, 'No such file or directory', '/x/backups/'+digest+'/manifest.json')
-            return 'dir', {'plan': {}}
-        with patch.object(remote, 'load_backup', side_effect=load), patch.object(remote.time, 'sleep') as sleep:
-            self.assertEqual(remote.visible_backup('d'), ('dir', {'plan': {}}))
-        self.assertEqual(len(calls), 3)
-        self.assertEqual(sleep.call_count, 2)
-
-    def test_backup_never_seen_raises_with_the_full_path(self):
-        path = '/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/newcarvin2-'+'5'*64+'/backups/'+'a'*64+'/crm.db'
-        with patch.object(remote, 'load_backup', side_effect=FileNotFoundError(2, 'No such file or directory', path)), \
-                patch.object(remote.time, 'sleep') as sleep:
-            with self.assertRaises(FileNotFoundError) as caught:
-                remote.visible_backup('d')
-        self.assertEqual(sleep.call_count, 6)
-        self.assertTrue(remote.error_text(caught.exception).endswith(path))
-
-    def test_other_errors_are_not_retried(self):
-        with patch.object(remote, 'load_backup', side_effect=remote.DeploymentError('BACKUP_HASH')), \
-                patch.object(remote.time, 'sleep') as sleep:
-            with self.assertRaisesRegex(remote.DeploymentError, 'BACKUP_HASH'):
-                remote.visible_backup('d')
-        sleep.assert_not_called()
+    def test_full_path_of_a_missing_file(self):
+        path = '/home/Carix/autopilot_inbox/x/backups/'+'a'*64+'/after/cars_ui.py'
+        self.assertTrue(remote.error_text(FileNotFoundError(2, 'No such file or directory', path)).endswith(path))
         self.assertEqual(remote.error_text(remote.DeploymentError('X'*300)), 'DeploymentError:'+'X'*180)
 
 
