@@ -287,5 +287,38 @@ class StorageProbeTests(unittest.TestCase):
                 remote.storage_probe()
 
 
+
+class BackupVisibilityTests(unittest.TestCase):
+    def test_backup_seen_after_a_retry(self):
+        calls = []
+
+        def load(digest):
+            calls.append(digest)
+            if len(calls) < 3:
+                raise FileNotFoundError(2, 'No such file or directory', '/x/backups/'+digest+'/manifest.json')
+            return 'dir', {'plan': {}}
+        with patch.object(remote, 'load_backup', side_effect=load), patch.object(remote.time, 'sleep') as sleep:
+            self.assertEqual(remote.visible_backup('d'), ('dir', {'plan': {}}))
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(sleep.call_count, 2)
+
+    def test_backup_never_seen_raises_with_the_full_path(self):
+        path = '/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/newcarvin2-'+'5'*64+'/backups/'+'a'*64+'/crm.db'
+        with patch.object(remote, 'load_backup', side_effect=FileNotFoundError(2, 'No such file or directory', path)), \
+                patch.object(remote.time, 'sleep') as sleep:
+            with self.assertRaises(FileNotFoundError) as caught:
+                remote.visible_backup('d')
+        self.assertEqual(sleep.call_count, 6)
+        self.assertTrue(remote.error_text(caught.exception).endswith(path))
+
+    def test_other_errors_are_not_retried(self):
+        with patch.object(remote, 'load_backup', side_effect=remote.DeploymentError('BACKUP_HASH')), \
+                patch.object(remote.time, 'sleep') as sleep:
+            with self.assertRaisesRegex(remote.DeploymentError, 'BACKUP_HASH'):
+                remote.visible_backup('d')
+        sleep.assert_not_called()
+        self.assertEqual(remote.error_text(remote.DeploymentError('X'*300)), 'DeploymentError:'+'X'*180)
+
+
 if __name__ == '__main__':
     unittest.main()
