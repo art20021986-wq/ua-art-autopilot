@@ -17,6 +17,15 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "79f2f8beb4119f04"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-14T03:00:00+00:00",
+      "class": "INSTALL_STEP_BACKUP_NOT_FOUND",
+      "evidence_path": "state/reconciliations/NEW-CAR-VIN-SPEC-INSTALL-20261113.43448599794.authenticated-evidence.json",
+      "message": "Install step stopped at start (FileNotFoundError: backup folder not found by the install process) before any file write; the automatic rollback finished and was verified (ROLLED_BACK). Owner «Да» to lifting the emergency halt. A new install needs a fresh preview.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-13T15:09:50Z",
