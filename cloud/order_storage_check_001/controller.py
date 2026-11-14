@@ -18,7 +18,7 @@ import urllib.parse
 import urllib.request
 
 PACKAGE = 'cloud/order_storage_check_001'
-TASKS = ('ORDER-STORAGE-CHECK-20261114',)
+TASKS = ('ORDER-STORAGE-CHECK-20261114', 'ORDER-STORAGE-CHECK-20261114-R2')
 ROOT = Path(__file__).resolve().parents[2]
 API = 'https://www.pythonanywhere.com/api/v0/user/Carix/'
 LOG = '/var/log/alwayson-log-266084.log'
