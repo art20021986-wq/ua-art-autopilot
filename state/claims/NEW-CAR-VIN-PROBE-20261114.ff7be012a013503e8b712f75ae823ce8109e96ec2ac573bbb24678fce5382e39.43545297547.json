@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/NEW-CAR-VIN-PROBE-20261114.ff7be012a013503e8b712f75ae823ce8109e96ec2ac573bbb24678fce5382e39.json",
+  "autostart_ledger_sha256": "a1ce56a46d88a3c8480225e0c0bfb839ff65667cffb236264df0f7e9444f385f",
+  "autostart_source_commit": "03d8c15335f328e4ab8c0e6b6609387dfeec04dc",
+  "created_at": "2026-11-14T02:17:37Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-14T02:17:37Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43545297547",
+    "task_id": "NEW-CAR-VIN-PROBE-20261114",
+    "task_sha256": "ff7be012a013503e8b712f75ae823ce8109e96ec2ac573bbb24678fce5382e39"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-44efdfa83741a166-84543603b33ce0a7",
+  "receipt_path": "state/receipts/NEW-CAR-VIN-PROBE-20261114.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/NEW-CAR-VIN-PROBE-20261114.json",
+  "request_sha256": "ff7be012a013503e8b712f75ae823ce8109e96ec2ac573bbb24678fce5382e39",
+  "resource_locks": [
+    "PATH_SCOPE:44efdfa83741a166"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "4b78003cc541010edf2ab228927d67f97f0f15ff",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-14T02:17:37Z"
+}
