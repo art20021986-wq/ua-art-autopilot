@@ -7,21 +7,23 @@
   "created_at": "2026-11-14T02:17:37Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-14T02:17:37Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-14T02:18:47Z",
+  "heartbeat_at": "2026-11-14T02:18:47Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43545297547",
     "task_id": "NEW-CAR-VIN-PROBE-20261114",
     "task_sha256": "ff7be012a013503e8b712f75ae823ce8109e96ec2ac573bbb24678fce5382e39"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-44efdfa83741a166-84543603b33ce0a7",
   "receipt_path": "state/receipts/NEW-CAR-VIN-PROBE-20261114.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "efafb1e9e7c94d0c4aeafdfe08777815e87feb8a2a13335579a73c2f0ded4297",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/NEW-CAR-VIN-PROBE-20261114.json",
   "request_sha256": "ff7be012a013503e8b712f75ae823ce8109e96ec2ac573bbb24678fce5382e39",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "4b78003cc541010edf2ab228927d67f97f0f15ff",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92102508544,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.566
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-14T02:17:37Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "d80eacd3a79702e027503a6fcae63cb2c8193d615245b808b683df48b068692a",
+    "file_sha256": {
+      "cloud/new_car_vin_probe_001/test_controller.py": "250405f27a910528556ace0afe6c532969b5842c38d29654caf096105ea24a01"
+    }
+  },
+  "updated_at": "2026-11-14T02:18:47Z"
 }

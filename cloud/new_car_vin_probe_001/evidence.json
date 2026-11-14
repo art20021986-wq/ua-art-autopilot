@@ -1,0 +1,47 @@
+{
+  "always_on": {
+    "http": 200,
+    "tasks": [
+      {
+        "enabled": true,
+        "id": 266084,
+        "newcarvin_bootstrap": false,
+        "state": "Running"
+      },
+      {
+        "enabled": true,
+        "id": 270984,
+        "newcarvin_bootstrap": false,
+        "state": "Running"
+      }
+    ]
+  },
+  "inbox_newcarvin_folders": [
+    "newcarvin-26dad67b362c0a6bc86bee486699620e86bae445bffe38d132468c65fee43fb1",
+    "newcarvin2-576868149f2e595ea56467fb6e5fd7f7eee2c7e44c24b677fde45aa7cadfdd73",
+    "newcarvin2-9fa85de9b195f21b85624b185dc0d2a08a73a264ca889d585b68510a15f972af"
+  ],
+  "newcarvin2_trees": {
+    "newcarvin2-576868149f2e595ea56467fb6e5fd7f7eee2c7e44c24b677fde45aa7cadfdd73": {
+      "http": 200,
+      "paths": [
+        "backups/",
+        "backups/ad087868ad0559c6966c25be1eba07bfa0113ef39b6dbae0409f59c10b2e0ac3/",
+        "deployment.lock",
+        "runs/",
+        "runs/43447214002/",
+        "runs/43448599794/"
+      ]
+    },
+    "newcarvin2-9fa85de9b195f21b85624b185dc0d2a08a73a264ca889d585b68510a15f972af": {
+      "http": 200,
+      "paths": [
+        "deployment.lock",
+        "runs/",
+        "runs/43388227132/"
+      ]
+    }
+  },
+  "run_id": "43545297547",
+  "task_id": "NEW-CAR-VIN-PROBE-20261114"
+}
