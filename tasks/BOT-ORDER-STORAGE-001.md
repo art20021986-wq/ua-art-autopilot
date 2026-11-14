@@ -26,3 +26,6 @@ R1 отклонён на входе (слово в описании → CRITICAL
 ORDER-GUARD-INSTALL-20261114 (в очереди координатора).
 
 Production не менялся.
+
+## Итог
+УСТАНОВЛЕНО 2026-11-14 12:23 UTC: ORDER-GUARD-INSTALL-20261114-R2 FINISHED (run 43592798938), квитанция state/receipts/ORDER-GUARD-INSTALL-20261114-R2.json. Production: только 3 файла ua_order; сайт и CRM не менялись.
