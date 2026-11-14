@@ -17,6 +17,15 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "175a29d11f82a0f8"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-14T03:20:00+00:00",
+      "class": "PACKAGE_INSTALLER_FIXED_FILE_NAME",
+      "evidence_path": "state/reconciliations/NEW-CAR-VIN-SPEC-INSTALL-20261114.43546498402.authenticated-evidence.json",
+      "message": "Install step stopped before any file write: the installer copied from the template wrote a fixed cars_ui.py that this package does not change (FileNotFoundError .../after/cars_ui.py); the automatic rollback finished and was verified. Fixed in #1604. Owner «Да» to lifting the emergency halt.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-14T02:39:08Z",
