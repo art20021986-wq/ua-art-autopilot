@@ -1,0 +1,102 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/NEW-CAR-VIN-SPEC-INSTALL-20261114.5c4dfbe2c86d38522ee319dc8b63bdb2ecc37ce16c9a35d8ba7640ee2894e5d0.json",
+  "autostart_ledger_sha256": "7e0b1d5293a525e15929a9e28d8a3b108f70f6b1d10e2d97a1811edc602ac2a8",
+  "autostart_source_commit": "4ed58ad5006f6f8ed9f2c47f36bcc40ac6bdcc4b",
+  "created_at": "2026-11-14T02:34:54Z",
+  "critical_gate_evidence_sha256": "90221513474a22207a729d2c0b99c54a03737881f42cfde7de5582a60139b063",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "STOP_AFTER_VERIFIED_ROLLBACK",
+      "at": "2026-11-14T02:58:18Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 43546498402",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "175a29d11f82a0f8"
+    }
+  ],
+  "heartbeat_at": "2026-11-14T02:39:08Z",
+  "heartbeat_sequence": 7,
+  "identity": {
+    "run_id": "43546498402",
+    "task_id": "NEW-CAR-VIN-SPEC-INSTALL-20261114",
+    "task_sha256": "5c4dfbe2c86d38522ee319dc8b63bdb2ecc37ce16c9a35d8ba7640ee2894e5d0"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 258.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 319.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-43546498402-5c4dfbe2c86d3852",
+  "production_transaction_path": "state/transactions/NEW-CAR-VIN-SPEC-INSTALL-20261114.5c4dfbe2c86d38522ee319dc8b63bdb2ecc37ce16c9a35d8ba7640ee2894e5d0.43546498402.json",
+  "production_transaction_status": "ROLLED_BACK",
+  "queue_key": "path_scope-051a1d31a326d0a5-b0839769106467df",
+  "receipt_path": "state/receipts/NEW-CAR-VIN-SPEC-INSTALL-20261114.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/NEW-CAR-VIN-SPEC-INSTALL-20261114.json",
+  "request_sha256": "5c4dfbe2c86d38522ee319dc8b63bdb2ecc37ce16c9a35d8ba7640ee2894e5d0",
+  "resource_locks": [
+    "PATH_SCOPE:051a1d31a326d0a5"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "dca862d852a1fb53506091d373cfbcff3f1b214c",
+  "storage_preflight": {
+    "age_seconds": 604.51,
+    "allowed": true,
+    "evidence_path": "state/storage/NEW-CAR-VIN-SPEC-INSTALL-20261114.json",
+    "evidence_sha256": "0f49d6429804664a1e8766597779a304d9eb54eba36b7945b6673e4c1b06b711",
+    "free_bytes": 18182270464,
+    "heavy": true,
+    "measured_at": "2026-11-14T02:26:08.809983+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 48.050655817142854
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "ROLLED_BACK",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/crm_new_car_vin_002/candidate_builder.py": "4ff4e7939dbf8117eb6cfad24c5a66ad3d7cc77bac0aaf4247c88363bc5b1410",
+      "cloud/crm_new_car_vin_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_new_car_vin_002/deployment_bootstrap.py": "14603459a42dd18920ec1e8a8fc73e5cbbf2114b34bbc5027e6c2744a0e23909",
+      "cloud/crm_new_car_vin_002/deployment_remote.py": "8902d12257f0e6de35407f2ba93163e31bae59df5f96ef7f7a31d45f3fb41e8d",
+      "cloud/crm_new_car_vin_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_new_car_vin_002/deployment_transport.py": "cc302259f2a09c040fc54f7643b5f5dfda9265c8f77f68501e5792d08992c0e4",
+      "cloud/crm_new_car_vin_002/make_release.py": "87a01dfc49d24a7b089b92fb3a330f4379900d4cef0afd65644dddc8b28ed17d",
+      "cloud/crm_new_car_vin_002/release_constants.py": "433ae4ca6c57d1101330d8679e3f0edb5f8b9abc12fca7cdf4403231db65d15d",
+      "cloud/crm_new_car_vin_002/test_deployment.py": "68997801947730fcd98031604a89de05df2d69052a0d00d37de5667cfc70c7d2",
+      "cloud/crm_new_car_vin_002/test_vin_decode.py": "10d76d1f47d9858f99206bb0ddd47029a7c66dbd51ff676fb3bdbd4d73034dd7",
+      "cloud/crm_new_car_vin_002/ua_new_car_bot.py": "03f3aff0099d2b0e4c6016f67d97ab04791aa887cc374b00966f198db01ac5dd",
+      "cloud/crm_new_car_vin_002/ua_vin_decode.py": "9df929afadc026bf7e722e1bf8d42dcbd84c4f879c9308d8ac0b71169242c7b0"
+    }
+  },
+  "updated_at": "2026-11-14T02:58:18Z"
+}
