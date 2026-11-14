@@ -30,7 +30,8 @@ OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 # Live data the install must not touch, besides the source files pinned in the plan.
 LIVE_DATA = ['.crm_publish_requests', 'crm.db']
 # Owner's words in chat, filled in when the owner says «да».
-APPROVAL = ''
+APPROVAL = ('«Да» in chat 2026-11-14 (session 28: a short outage of the order storage is not sent as a bot '
+            'error; one report after 5 minutes in a row; MySQL error code to the bot log)')
 
 
 def sha(path):
