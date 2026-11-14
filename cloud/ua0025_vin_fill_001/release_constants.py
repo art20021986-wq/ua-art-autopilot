@@ -1,0 +1,4 @@
+"""UA-0025: fill the empty main fields from the VIN (owner «да» 2026-11-13, NEW-CAR-VIN-SPEC answer 3)."""
+PREVIEW_TASK = 'UA0025-VIN-FILL-PREFLIGHT-20261114'
+INSTALL_TASK = 'UA0025-VIN-FILL-INSTALL-20261114'
+PACKAGE = 'cloud/ua0025_vin_fill_001'
