@@ -1,0 +1,16 @@
+{
+  "claim_before_sha256": "2fb63760713d9e78ead2cdc1cb942df0566c5a34fcc9efa35990fe3812889e08",
+  "error": "RuntimeError: REMOTE_PREVIEW:DeploymentError:ACCOUNT_USAGE:du: cannot access '/home/Carix/..crm_guard_status.json.<tmp>': No such file or directory (a temporary file removed while du walked)",
+  "failed_step": "execute / standard / execute: remote preview (reads only), storage count",
+  "fix": "PR #1667: du result accepted when its only errors are files removed during the walk",
+  "owner_approval": "«1. Да» in chat 2026-11-15 to closing the claim by manual reconciliation (session 30)",
+  "precedent": "state/reconciliations/UA0025-VIN-FILL-PREFLIGHT-20261114.43594712288.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-15T07:45:00+00:00",
+  "remote_mode": "preview (reads only)",
+  "retry": "CRM-BOT-PROFILE-PREFLIGHT-20261115-R3 (R2 run 43688133514 refused RESOURCE_BUSY by this claim; no R2 claim was created)",
+  "run_id": "43687333865",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "CRM-BOT-PROFILE-PREFLIGHT-20261115"
+}
