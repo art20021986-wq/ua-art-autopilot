@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "6f6feb474d9b8cf47513278474b2b60a3c5ec539503482069c54e8a50c8e5f2e",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-15T02:28:09Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-15T02:41:57Z",
+  "heartbeat_at": "2026-11-15T02:41:57Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "43667452453",
     "task_id": "HOME-PHOTO-FIX-INSTALL-20261115",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 388.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 102.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-43667452453-842fb9b0e7541edb",
   "production_transaction_path": "state/transactions/HOME-PHOTO-FIX-INSTALL-20261115.842fb9b0e7541edb674a00e7b60f5c0270d987ba2f3da5fa0ff8b15288b3d7ef.43667452453.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-4288df1b16b44110-9f6f849ab7ca11bf",
   "receipt_path": "state/receipts/HOME-PHOTO-FIX-INSTALL-20261115.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "fa138dba1e51cf9667de1f8d8c7ee45acdc5e0b897e981da8a6c0d4cd2a1f546",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-PHOTO-FIX-INSTALL-20261115.json",
   "request_sha256": "842fb9b0e7541edb674a00e7b60f5c0270d987ba2f3da5fa0ff8b15288b3d7ef",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
     "file_sha256": {
@@ -86,5 +109,5 @@
       "cloud/home_photo_fix_001/ua_home_photo_site.py": "032238fceec1640bcbc06f26e8d373fe85052b4c1ca7f98bf676019a1e9f9332"
     }
   },
-  "updated_at": "2026-11-15T02:28:09Z"
+  "updated_at": "2026-11-15T02:41:57Z"
 }
