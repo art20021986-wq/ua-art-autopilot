@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "6f6feb474d9b8cf47513278474b2b60a3c5ec539503482069c54e8a50c8e5f2e",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-15T02:25:10Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-15T02:28:09Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43667452453",
     "task_id": "HOME-PHOTO-FIX-INSTALL-20261115",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43667452453-842fb9b0e7541edb",
   "production_transaction_path": "state/transactions/HOME-PHOTO-FIX-INSTALL-20261115.842fb9b0e7541edb674a00e7b60f5c0270d987ba2f3da5fa0ff8b15288b3d7ef.43667452453.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-4288df1b16b44110-9f6f849ab7ca11bf",
   "receipt_path": "state/receipts/HOME-PHOTO-FIX-INSTALL-20261115.json",
   "receipt_validation_status": "PENDING",
@@ -86,5 +86,5 @@
       "cloud/home_photo_fix_001/ua_home_photo_site.py": "032238fceec1640bcbc06f26e8d373fe85052b4c1ca7f98bf676019a1e9f9332"
     }
   },
-  "updated_at": "2026-11-15T02:25:10Z"
+  "updated_at": "2026-11-15T02:28:09Z"
 }
