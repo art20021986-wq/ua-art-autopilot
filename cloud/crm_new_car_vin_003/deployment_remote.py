@@ -125,8 +125,8 @@ def prepare(directory):
 
 # Runs in a separate python3.10 (the bot's interpreter) with the candidate files first and the live modules behind
 # them: reads the live lot list (read only), decodes the VIN of its first complete lot through the candidate
-# ua_vin_decode, and decodes the owner's Mercedes VIN through vPIC alone (one read-only HTTPS request). Nothing is
-# written.
+# ua_vin_decode, archives the lots into a temporary database (deleted at once), and decodes the owner's Mercedes VIN
+# through vPIC alone (one read-only HTTPS request). Nothing is written outside the temporary folder.
 SMOKE = r"""
 import json, sys
 after, root = sys.argv[1], sys.argv[2]
@@ -135,8 +135,15 @@ import ua_vin_decode as decode, ua_vin_lots as lots
 with open(lots.LOTS, encoding='utf-8') as handle:
     every = json.load(handle)['lots']
 lot = next(l for l in every if l.get('vin') and l.get('year') and l.get('engine_cc') and l['title'].startswith(l['maker']+' '))
+import tempfile, os
+scratch = tempfile.mkdtemp()
+stored = lots.archive(db=os.path.join(scratch, 'a.sqlite3'))
+again = lots.archived(lot['vin'], db=os.path.join(scratch, 'a.sqlite3'))
+import shutil
+shutil.rmtree(scratch)
 print(json.dumps({'lots': len(every), 'lot': {k: lot[k] for k in ('title', 'maker', 'year', 'engine_cc', 'vin')},
                   'lot_fields': decode.fields(lot['vin']),
+                  'archive': {'stored': stored, 'same': (again or {}).get('title') == lot['title']},
                   'owner_vpic': decode.vpic_fields('WDDZF4KB1KA596783', decode.urllib.request.urlopen)},
                  ensure_ascii=False))
 """
@@ -151,7 +158,9 @@ def smoke(directory):
         raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
     lot, got = value.get('lot', {}), value.get('lot_fields', {})
-    if (value.get('owner_vpic') != OWNER or got.get('model') != lot.get('title', '')[len(lot.get('maker', ''))+1:]
+    if (value.get('owner_vpic') != OWNER or value.get('archive', {}).get('same') is not True
+            or not 0 < value.get('archive', {}).get('stored', 0) <= value.get('lots', 0)
+            or got.get('model') != lot.get('title', '')[len(lot.get('maker', ''))+1:]
             or got.get('year') != lot.get('year') or got.get('engine_cc') != lot.get('engine_cc')):
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:300])
     return value

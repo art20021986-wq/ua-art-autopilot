@@ -70,10 +70,10 @@ def fetch(vin, opener=urllib.request.urlopen):
 
 
 def lot_fields(vin):
-    """Fields of the auction lot with this VIN; {} when there is none or the file cannot be read."""
+    """Fields of the auction lot with this VIN (this week or the archive); {} when there is none."""
     import ua_vin_lots
     try:
-        lot = ua_vin_lots.lot_of(vin)
+        lot = ua_vin_lots.find(vin)
     except (OSError, ValueError):
         return {}
     return ua_vin_lots.raw_fields(lot) if lot else {}
