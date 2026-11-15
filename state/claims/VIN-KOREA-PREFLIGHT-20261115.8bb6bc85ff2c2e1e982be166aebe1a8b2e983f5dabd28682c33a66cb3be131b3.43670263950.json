@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/VIN-KOREA-PREFLIGHT-20261115.8bb6bc85ff2c2e1e982be166aebe1a8b2e983f5dabd28682c33a66cb3be131b3.json",
+  "autostart_ledger_sha256": "e8a820327ccc3d511172e3f2672f0a9203f052b42738f7098fa31359ea80ae2c",
+  "autostart_source_commit": "f801495f5152842be43d64561e388877b75f0379",
+  "created_at": "2026-11-15T03:00:52Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-15T03:00:52Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43670263950",
+    "task_id": "VIN-KOREA-PREFLIGHT-20261115",
+    "task_sha256": "8bb6bc85ff2c2e1e982be166aebe1a8b2e983f5dabd28682c33a66cb3be131b3"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/VIN-KOREA-PREFLIGHT-20261115.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/VIN-KOREA-PREFLIGHT-20261115.json",
+  "request_sha256": "8bb6bc85ff2c2e1e982be166aebe1a8b2e983f5dabd28682c33a66cb3be131b3",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "0f396524f5bca76e8b4898dee0930619ffdc8594",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-15T03:00:52Z"
+}
