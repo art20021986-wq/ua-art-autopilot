@@ -23,7 +23,8 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 P = 'cloud/crm_new_car_vin_003/'
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'ua_vin_decode.py', 'ua_vin_lots.py')]
+                                'make_release.py', 'release_constants.py', 'ua_new_car_bot.py', 'ua_vin_decode.py',
+                                'ua_vin_lots.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_vin_lots.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 # Live data the install must not touch, besides the source files pinned in the plan.
@@ -75,7 +76,7 @@ def preview():
              'description': 'Owner 2026-11-15 (VIN-KOREA-001): Korean domestic VINs get the main fields from the Korean '
                             'auction lot with the same VIN (video/korea/lots.json on the server), then NHTSA vPIC. Bounded '
                             'preview in the existing private inbox: build the candidate from the installed sources (replace '
-                            'ua_vin_decode.py, new ua_vin_lots.py), record hashes and account storage, decode one live lot '
+                            'ua_vin_decode.py and ua_new_car_bot.py, new ua_vin_lots.py with an archive of past lots), record hashes and account storage, decode one live lot '
                             'VIN and the owner VIN once in python3.10. No application source, CRM, HTML, media or bot '
                             'state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
@@ -137,7 +138,7 @@ def install():
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner approved (%s) VIN-KOREA-001: a card created by «Создать новое объявление» gets the '
                               'main fields from the Korean auction lot with the same VIN, then NHTSA vPIC. Replace '
-                              'ua_vin_decode.py, add ua_vin_lots.py. No CRM row change. Existing backup, bot pause, '
+                              'ua_vin_decode.py and ua_new_car_bot.py (schedules the 6-hour lots archive), add ua_vin_lots.py. No CRM row change. Existing backup, bot pause, '
                               'writer locks, data-preservation, rollback and public health checks are kept.' % APPROVAL,
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/katalog.html'],

@@ -71,6 +71,57 @@ class LotTests(unittest.TestCase):
         self.assertEqual(lots.raw_fields(lot), {'mileage_km': 80000})
 
 
+class ArchiveTests(unittest.TestCase):
+    def setUp(self):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.dir = Path(temp.name)
+        self.path = self.dir / 'lots.json'
+        self.db = self.dir / 'archive.sqlite3'
+        self.path.write_text(json.dumps({'lots': [SONATA, {'vin': '', 'title': 'No VIN'}]}))
+
+    def test_archive_keeps_vehicle_fields_only_and_survives_the_next_week(self):
+        self.assertEqual(lots.archive(self.path, self.db), 1)
+        self.path.write_text(json.dumps({'lots': []}))  # next week: the lot left the list
+        self.assertEqual(lots.archive(self.path, self.db), 0)
+        kept = lots.archived(KOREAN, self.db)
+        self.assertEqual(set(kept), set(lots.KEEP))
+        self.assertNotIn('house', kept)
+        self.assertEqual(lots.raw_fields(kept)['model'], 'Sonata')
+
+    def test_newest_values_win(self):
+        lots.archive(self.path, self.db)
+        self.path.write_text(json.dumps({'lots': [dict(SONATA, mileage_km=81000)]}))
+        lots.archive(self.path, self.db)
+        self.assertEqual(lots.archived(KOREAN, self.db)['mileage_km'], 81000)
+
+    def test_no_archive_yet(self):
+        self.assertIsNone(lots.archived(KOREAN, self.dir / 'missing.sqlite3'))
+
+    def test_find_uses_the_archive_when_the_week_has_no_lot(self):
+        lots.archive(self.path, self.db)
+        self.path.write_text(json.dumps({'lots': []}))
+        with patch.object(lots, 'LOTS', self.path), patch.object(lots, 'ARCHIVE', self.db):
+            self.assertEqual(lots.find(KOREAN)['title'], 'Hyundai Sonata')
+            self.assertIsNone(lots.find('WDDZF4KB1KA596783'))
+
+    def test_schedule_once(self):
+        class Queue:
+            def __init__(self):
+                self.jobs = []
+
+            def get_jobs_by_name(self, name):
+                return [j for j in self.jobs if j[1] == name]
+
+            def run_repeating(self, callback, interval, first, name):
+                self.jobs.append((interval, name))
+        app = type('App', (), {'job_queue': Queue()})()
+        lots.schedule(app)
+        lots.schedule(app)
+        self.assertEqual(app.job_queue.jobs, [(6 * 3600, 'vin-lots-archive')])
+        lots.schedule(type('App', (), {'job_queue': None})())  # no job queue: nothing, no error
+
+
 class SourceOrderTests(unittest.TestCase):
     def setUp(self):
         temp = tempfile.TemporaryDirectory()
@@ -79,9 +130,10 @@ class SourceOrderTests(unittest.TestCase):
         self.addCleanup(patcher.stop)
         self.path = Path(temp.name) / 'lots.json'
         self.path.write_text(json.dumps({'lots': [SONATA]}))
-        patcher = patch.object(lots, 'LOTS', self.path)
-        patcher.start()
-        self.addCleanup(patcher.stop)
+        for name, value in (('LOTS', self.path), ('ARCHIVE', Path(temp.name) / 'none.sqlite3')):
+            patcher = patch.object(lots, name, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
 
     def test_korean_vin_from_the_lot(self):
         self.assertEqual(decode.fields(KOREAN, opener_for(VPIC_KOREAN)),
@@ -108,8 +160,9 @@ class SourceOrderTests(unittest.TestCase):
 
 class BuilderTests(unittest.TestCase):
     def test_pins(self):
-        installed = (ROOT / 'cloud/crm_new_car_vin_002/ua_vin_decode.py').read_bytes()
-        self.assertEqual(hashlib.sha256(installed).hexdigest(), candidate_builder.SOURCE_SHA256['ua_vin_decode.py'])
+        for name in ('ua_vin_decode.py', 'ua_new_car_bot.py'):
+            installed = (ROOT / 'cloud/crm_new_car_vin_002' / name).read_bytes()
+            self.assertEqual(hashlib.sha256(installed).hexdigest(), candidate_builder.SOURCE_SHA256[name])
 
     def test_refuses_drift(self):
         with self.assertRaisesRegex(ValueError, 'INPUT_HASH'):
