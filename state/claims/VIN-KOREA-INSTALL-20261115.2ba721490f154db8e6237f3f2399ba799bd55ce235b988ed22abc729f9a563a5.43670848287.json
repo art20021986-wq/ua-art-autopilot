@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "afd19e16de4936515c27ef8b2783ccb4193703de8df1c640596098d99483394a",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-15T03:09:32Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-15T03:12:30Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43670848287",
     "task_id": "VIN-KOREA-INSTALL-20261115",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43670848287-2ba721490f154db8",
   "production_transaction_path": "state/transactions/VIN-KOREA-INSTALL-20261115.2ba721490f154db8e6237f3f2399ba799bd55ce235b988ed22abc729f9a563a5.43670848287.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-66464de6b69721fa-2923b3e9117df31a",
   "receipt_path": "state/receipts/VIN-KOREA-INSTALL-20261115.json",
   "receipt_validation_status": "PENDING",
@@ -88,5 +88,5 @@
       "cloud/crm_new_car_vin_003/ua_vin_lots.py": "c7ddd2224d6ede0afe578a792e952620c02012bedda6de85b18491f02cef9159"
     }
   },
-  "updated_at": "2026-11-15T03:09:32Z"
+  "updated_at": "2026-11-15T03:12:30Z"
 }
