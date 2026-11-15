@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-HOME-BUTTON-PROBE-20261115.ddce850e167736d0254b3b0c469a3772ef47f1108970bd2df7f4218e707822bf.json",
+  "autostart_ledger_sha256": "d05f512daceb70109597227069ca0fa723048742a7c91a7d331a0ec90cc0d93d",
+  "autostart_source_commit": "70c2997f6ccd8494cd4f6893c7ecb862bb9697b0",
+  "created_at": "2026-11-15T02:42:48Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-15T02:42:48Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43667570018",
+    "task_id": "CRM-HOME-BUTTON-PROBE-20261115",
+    "task_sha256": "ddce850e167736d0254b3b0c469a3772ef47f1108970bd2df7f4218e707822bf"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "read_only-fc651e5f3dcd3656-104149a89db6a23d",
+  "receipt_path": "state/receipts/CRM-HOME-BUTTON-PROBE-20261115.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CRM-HOME-BUTTON-PROBE-20261115.json",
+  "request_sha256": "ddce850e167736d0254b3b0c469a3772ef47f1108970bd2df7f4218e707822bf",
+  "resource_locks": [
+    "READ_ONLY:fc651e5f3dcd3656"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "158a8456ec3862054d586cae2b0af95f948cf08e",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-15T02:42:48Z"
+}
