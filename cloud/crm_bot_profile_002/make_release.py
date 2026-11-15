@@ -30,7 +30,7 @@ OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 LIVE_DATA = ['.crm_publish_requests', 'crm.db']
 # Owner's words in chat, filled in when the owner says «да».
 APPROVAL = ('«У нас нету оплата и доставка по условиям… Да, главное меню поставь» in chat 2026-11-15 (session 30: the '
-            'client bot «Меню» with one item «Главное меню»; ua_bot_profile.py replaced; site and CRM not changed)')
+            'client bot «Меню» with one item «Главное меню», «условия оплаты и доставки» removed from its description; ua_bot_profile.py replaced; site and CRM not changed)')
 
 
 def sha(path):
