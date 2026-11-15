@@ -1,0 +1,15 @@
+{
+  "claim_before_sha256": "25dbd7f732870c13b301e4bcae4a6930048576e1833779286104c2ce9b9e5d73",
+  "error": "RuntimeError: REMOTE_PREVIEW:DeploymentError:CARD_COUNT:0 (no cars row with auto_number UA-0025)",
+  "failed_step": "execute / standard / execute: remote preview (reads only)",
+  "next": "read-only probe: the CRM row with VIN WDDZF4KB1KA596783 under any number and the action log for it",
+  "owner_approval": "«1 да» in chat 2026-11-15 to closing the claim by manual reconciliation",
+  "precedent": "state/reconciliations/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113-R3.43396764840.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-15T02:00:00+00:00",
+  "remote_mode": "preview (reads only)",
+  "run_id": "43594712288",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "UA0025-VIN-FILL-PREFLIGHT-20261114"
+}
