@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-HOME-BUTTON-PREFLIGHT-20261115-R2.7ba4c991cd5cd37fdbda587fd3c6aa52f25f70619114b8c5a5987e1f5f0fe1e2.json",
+  "autostart_ledger_sha256": "3fac43925d0b1351e3fca71592b4fe2b577801a0cc517b19982804d0cd47e337",
+  "autostart_source_commit": "c17a309c492645b3d9c2c8c11b287f4f69b552fc",
+  "created_at": "2026-11-15T06:21:25Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43684932564",
+    "task_id": "CRM-HOME-BUTTON-PREFLIGHT-20261115-R2",
+    "task_sha256": "7ba4c991cd5cd37fdbda587fd3c6aa52f25f70619114b8c5a5987e1f5f0fe1e2"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "request_path": "tasks/requests/CRM-HOME-BUTTON-PREFLIGHT-20261115-R2.json",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
