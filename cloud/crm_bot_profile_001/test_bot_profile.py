@@ -14,6 +14,7 @@ if importlib.util.find_spec('telegram') is None:  # CI has no python-telegram-bo
         def __init__(self, command, description):
             self.command, self.description = command, description
     fake.BotCommand = BotCommand
+    fake.Bot = object
     sys.modules['telegram'] = fake
 spec = importlib.util.spec_from_file_location('ua_bot_profile', HERE / 'ua_bot_profile.py')
 p = importlib.util.module_from_spec(spec)
@@ -56,19 +57,26 @@ class Jobs:
 
 
 class ProfileTests(unittest.TestCase):
-    def test_sets_what_differs_then_nothing(self):
+    def test_crm_sets_what_differs_then_nothing(self):
         bot = Bot()
-        self.assertEqual(asyncio.run(p.apply(bot)), ['description', 'short_description', 'commands'])
+        self.assertEqual(asyncio.run(p.apply(bot, p.CRM)), ['description', 'short_description', 'commands'])
         self.assertEqual([(c.command, c.description) for c in bot.c], [('start', '🏠 Главная'), ('cancel', '✖️ Отменить действие')])
         bot.calls.clear()
-        self.assertEqual(asyncio.run(p.apply(bot)), [])
+        self.assertEqual(asyncio.run(p.apply(bot, p.CRM)), [])
         self.assertEqual(bot.calls, [])
 
-    def test_limits(self):
-        self.assertLessEqual(len(p.DESCRIPTION), 512)
-        self.assertLessEqual(len(p.SHORT_DESCRIPTION), 120)
+    def test_client_menu_untouched(self):
+        bot = Bot(commands=(('start', 'Главное меню'), ('cars', 'Авто в Украине')))
+        self.assertEqual(asyncio.run(p.apply(bot, p.CLIENT)), ['description', 'short_description'])
+        self.assertEqual([(c.command, c.description) for c in bot.c], [('start', 'Главное меню'), ('cars', 'Авто в Украине')])
+        self.assertIn('Кореи и Японии', bot.d)
 
-    def test_register_once_after_start_and_failure_only_logs(self):
+    def test_limits(self):
+        for texts in (p.CRM, p.CLIENT):
+            self.assertLessEqual(len(texts['description']), 512)
+            self.assertLessEqual(len(texts['short_description']), 120)
+
+    def test_register_once_and_failures_only_log(self):
         app = NS(job_queue=Jobs())
         p.register(app); p.register(app)
         self.assertEqual(len(app.job_queue.jobs), 1)
@@ -77,8 +85,14 @@ class ProfileTests(unittest.TestCase):
         class Broken(Bot):
             async def get_my_description(self):
                 raise RuntimeError('network')
-        with self.assertLogs(p.log, 'WARNING'):
-            asyncio.run(p._job(NS(bot=Broken())))
+        saved = p.CLIENT_TOKEN_FILE
+        p.CLIENT_TOKEN_FILE = '/nonexistent/bot_token.txt'
+        try:
+            with self.assertLogs(p.log, 'WARNING') as logs:
+                asyncio.run(p._job(NS(bot=Broken())))
+        finally:
+            p.CLIENT_TOKEN_FILE = saved
+        self.assertEqual(len(logs.records), 2)
         p.register(NS(job_queue=None))
 
 

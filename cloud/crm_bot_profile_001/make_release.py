@@ -31,7 +31,8 @@ LIVE_DATA = ['.crm_publish_requests', 'crm.db']
 # Owner's words in chat, filled in when the owner says «да».
 APPROVAL = ('«В форме все грамотно, что ты у меня спрашиваешь, ты больше меня знаешь» in chat 2026-11-15 (session 30, '
             'answer to: bot description «Внутренняя CRM UA ART…» and «Меню» captions «🏠 Главная» / «✖️ Отменить действие»; '
-            'cars_ui.py + one block, new ua_bot_profile.py; site and CRM not changed)')
+            'cars_ui.py + one block, new ua_bot_profile.py; site and CRM not changed); both bots: «у нас же два бота», '
+            'client bot texts «1. Да Осталось все на русском языке» (description «UA ART — авто из Кореи и Японии под заказ в Украину…»)')
 
 
 def sha(path):
@@ -74,10 +75,10 @@ def preview():
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Owner 2026-11-15 (CRM-BOT-PROFILE-001): CRM bot description, profile line and «Меню» '
-                            'captions in Telegram. Bounded preview in the existing private inbox: build the candidate '
+                            'captions; client bot description and profile line (Russian). Bounded preview in the existing private inbox: build the candidate '
                             '(cars_ui.py + one block, new ua_bot_profile.py), record hashes and account storage; in '
                             'python3.10 compile the candidate cars_ui.py, run the module against a stand-in bot and read '
-                            'the current bot texts from Telegram (GET only). No application source, CRM, HTML, media, bot '
+                            'both bots\' names and texts from Telegram (GET only). No application source, CRM, HTML, media, bot '
                             'state or Telegram setting changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 67108864, 'task_id': task,
@@ -137,7 +138,7 @@ def install():
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner approved (%s) CRM-BOT-PROFILE-001: CRM bot description, profile line and «Меню» '
-                              'captions in Telegram, set by the bot after its start. cars_ui.py gets one block, new '
+                              'captions, client bot description and profile line, set after the CRM bot start. cars_ui.py gets one block, new '
                               'ua_bot_profile.py. The install does not change the site or any CRM row. Existing backup, '
                               'bot pause, writer locks, data-preservation, rollback and public health checks are kept.' % APPROVAL,
                'execution': execution(task, True),
