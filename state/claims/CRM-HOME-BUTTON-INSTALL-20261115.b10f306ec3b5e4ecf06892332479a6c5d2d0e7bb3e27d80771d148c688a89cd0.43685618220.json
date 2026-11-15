@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "2e089bfa9c2d36ac7333a45e8c73cecfd3eb594f2d2ccdb322a4bae3bdf8e46b",
   "autostart_source_commit": "ddfb44cbb1311c89088aa80d5504d10c51ef8abc",
   "created_at": "2026-11-15T06:30:09Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "e6b1a70df2b1aa4d1fc7807d97704bb9c1fa54ac284f772d0f634842a689dbe4",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-15T06:30:09Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-15T06:31:26Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "43685618220",
     "task_id": "CRM-HOME-BUTTON-INSTALL-20261115",
     "task_sha256": "b10f306ec3b5e4ecf06892332479a6c5d2d0e7bb3e27d80771d148c688a89cd0"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 123.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 115.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-43685618220-b10f306ec3b5e4ec",
+  "production_transaction_path": "state/transactions/CRM-HOME-BUTTON-INSTALL-20261115.b10f306ec3b5e4ecf06892332479a6c5d2d0e7bb3e27d80771d148c688a89cd0.43685618220.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-172dfad9795fbaef-a419aec02a1f01a8",
   "receipt_path": "state/receipts/CRM-HOME-BUTTON-INSTALL-20261115.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,38 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "466d5888f8de938a5e07c85bc80da855c9c1adb6",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 392.245,
+    "allowed": true,
+    "evidence_path": "state/storage/CRM-HOME-BUTTON-INSTALL-20261115.json",
+    "evidence_sha256": "12009d2dbcb911a0c084668a89cd044c2f5fb0cece8398af377b747111d646f3",
+    "free_bytes": 18144775680,
+    "heavy": true,
+    "measured_at": "2026-11-15T06:24:52.083931+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 48.15778377142857
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-15T06:30:09Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/crm_home_button_001/candidate_builder.py": "4691f29c1dc9e0125aaa10b4199960a8aefa699d3f7f8ef45188dc41ae64896c",
+      "cloud/crm_home_button_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_home_button_001/deployment_bootstrap.py": "12fb78cd073f2b03bc3139ecd3aaff55049e9559e863d7b37662e8a6601a0c42",
+      "cloud/crm_home_button_001/deployment_remote.py": "f5c139a53d918de9877375a7d66cecb956b213272521f0c0ee5da0f544c9a415",
+      "cloud/crm_home_button_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_home_button_001/deployment_transport.py": "a06af54751e190c506a3355cec1fe5206e5b56b49c0d5d713ac758461076a341",
+      "cloud/crm_home_button_001/edit_cars_ui.py": "7f95a1732a3a3448a57a5637e0e3dfe01a0bef48f5fdff8a87d8f57e333c4cc8",
+      "cloud/crm_home_button_001/make_release.py": "37b05da58ac1970c19938313b0fc9376b2ff84236f2c7f86920f6486b6ae86cd",
+      "cloud/crm_home_button_001/release_constants.py": "80fcb297a5d2302354a533751f07d5c203104ddf79f4ba2a5d3311cd369c5a5a",
+      "cloud/crm_home_button_001/test_deployment.py": "883d8f9032baec9bdd43d4c3abec60fde98e425fcb07d2dd345a5ffe47c25d9b",
+      "cloud/crm_home_button_001/test_home_button.py": "1bd5de3f5e59be788f30176afb530d9dc8853cca5c436b7440626b7e70195921",
+      "cloud/crm_home_button_001/ua_home_button.py": "ef104741322769ceffbc1cc87dfbf0905f69d3c28f9f9b4c7fb0c78c5b0b1196"
+    }
+  },
+  "updated_at": "2026-11-15T06:31:26Z"
 }
