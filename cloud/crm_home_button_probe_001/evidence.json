@@ -1,0 +1,2752 @@
+{
+  "completion_meaning": "READ_ONLY_DIAGNOSIS_ONLY",
+  "finished_at": "2026-11-15T02:43:32Z",
+  "http_methods": [
+    "GET"
+  ],
+  "modules_not_reached": [],
+  "modules_read": 135,
+  "modules_unavailable": {},
+  "raw_private_data_persisted": false,
+  "remote_write_count": 0,
+  "request_sha256": "ddce850e167736d0254b3b0c469a3772ef47f1108970bd2df7f4218e707822bf",
+  "run_id": "43667570018",
+  "sanitized_source_excerpts_path": "cloud/crm_home_button_probe_001/sanitized_sources.txt",
+  "source_facts": {
+    "ai.py": {
+      "bytes": 37331,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "5037fe26fb917875002ec4bc7ebc4362298d991a885b8e8536e4e0df25f8a41b"
+    },
+    "ai_fast_schema.py": {
+      "bytes": 6725,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "d2ac2104b2293e3c5cb38930fac6f4de87b9d1d3f35783b1b4e892433fcfd64e"
+    },
+    "ai_filter.py": {
+      "bytes": 26052,
+      "counts": {
+        "application_handler_stop": 3
+      },
+      "definitions": [
+        {
+          "end_line": 514,
+          "excerpt": "EXPORTED",
+          "line": 437,
+          "name": "autosave"
+        },
+        {
+          "end_line": 579,
+          "excerpt": "EXPORTED",
+          "line": 516,
+          "name": "save"
+        }
+      ],
+      "imports_local": [
+        "ai.py",
+        "assistant.py",
+        "cars_schema.py",
+        "db.py",
+        "team_bot.py"
+      ],
+      "sha256": "6a4a7199d9593645aaf634d27d3234c282342a1e20faca2cbb1206478af13a8f"
+    },
+    "analitika_bot.py": {
+      "bytes": 2155,
+      "counts": {},
+      "definitions": [
+        {
+          "end_line": 18,
+          "excerpt": "EXPORTED",
+          "line": 10,
+          "name": "_knopki"
+        }
+      ],
+      "imports_local": [
+        "analitika_yadro.py"
+      ],
+      "sha256": "b650e39854ece6997a71fabf6e6fe093c7b11bbafa8ba64ac6ac909929f48f9b"
+    },
+    "analitika_yadro.py": {
+      "bytes": 17442,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "c9428882b8c04f275b02502a52d6683a446fc494c8d6ff59e0438f1d9e6ace60"
+    },
+    "assistant.py": {
+      "bytes": 12588,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "cars_schema.py"
+      ],
+      "sha256": "9ad353c001734c2e2c56cc4063325d7e60f684a557dc6d31189453834526b9a3"
+    },
+    "card_html.py": {
+      "bytes": 32432,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "card_render.py",
+        "cars_schema.py",
+        "cars_ui.py",
+        "video_helper.py"
+      ],
+      "sha256": "454c45638826f23d6c417e28c27e877db4c77629ca72954c77591fd9034c9f99"
+    },
+    "card_render.py": {
+      "bytes": 15216,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "cars_schema.py",
+        "cars_ui.py",
+        "photo_hide.py"
+      ],
+      "sha256": "01a596eca29a6c0bcd2d4229404cbf0e62fea3e62077782be259c1e713e03a2c"
+    },
+    "cars_schema.py": {
+      "bytes": 24063,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_delivery_status.py"
+      ],
+      "sha256": "16d53277834ecfad1eabc10f75e5cabb1060b35416b61b6f534ec024ce9dbc07"
+    },
+    "cars_ui.py": {
+      "bytes": 212303,
+      "counts": {
+        "application_handler_stop": 122,
+        "message_handler": 2
+      },
+      "definitions": [
+        {
+          "end_line": 511,
+          "excerpt": "EXPORTED",
+          "line": 490,
+          "name": "card_kb"
+        },
+        {
+          "end_line": 597,
+          "excerpt": "EXPORTED",
+          "line": 560,
+          "name": "cars_list"
+        },
+        {
+          "end_line": 644,
+          "excerpt": "EXPORTED",
+          "line": 626,
+          "name": "edit_menu"
+        },
+        {
+          "end_line": 680,
+          "excerpt": "EXPORTED",
+          "line": 647,
+          "name": "edit_ask"
+        },
+        {
+          "end_line": 716,
+          "excerpt": "EXPORTED",
+          "line": 683,
+          "name": "clear_field"
+        },
+        {
+          "end_line": 783,
+          "excerpt": "EXPORTED",
+          "line": 719,
+          "name": "diag_clear"
+        },
+        {
+          "end_line": 878,
+          "excerpt": "EXPORTED",
+          "line": 845,
+          "name": "media_screen"
+        },
+        {
+          "end_line": 913,
+          "excerpt": "EXPORTED",
+          "line": 881,
+          "name": "video_gallery"
+        },
+        {
+          "end_line": 954,
+          "excerpt": "EXPORTED",
+          "line": 916,
+          "name": "gallery"
+        },
+        {
+          "end_line": 983,
+          "excerpt": "EXPORTED",
+          "line": 957,
+          "name": "photo_remove_menu"
+        },
+        {
+          "end_line": 1005,
+          "excerpt": "EXPORTED",
+          "line": 986,
+          "name": "photo_remove"
+        },
+        {
+          "end_line": 1028,
+          "excerpt": "EXPORTED",
+          "line": 1008,
+          "name": "photo_remove_all_ask"
+        },
+        {
+          "end_line": 1076,
+          "excerpt": "EXPORTED",
+          "line": 1031,
+          "name": "photo_remove_all"
+        },
+        {
+          "end_line": 1101,
+          "excerpt": "EXPORTED",
+          "line": 1090,
+          "name": "add_media_start"
+        },
+        {
+          "end_line": 1186,
+          "excerpt": "EXPORTED",
+          "line": 1138,
+          "name": "condition_screen"
+        },
+        {
+          "end_line": 1251,
+          "excerpt": "EXPORTED",
+          "line": 1195,
+          "name": "stage_menu"
+        },
+        {
+          "end_line": 1309,
+          "excerpt": "EXPORTED",
+          "line": 1261,
+          "name": "stage_set"
+        },
+        {
+          "end_line": 1340,
+          "excerpt": "EXPORTED",
+          "line": 1316,
+          "name": "price_screen"
+        },
+        {
+          "end_line": 1358,
+          "excerpt": "EXPORTED",
+          "line": 1343,
+          "name": "save_ai_text"
+        },
+        {
+          "end_line": 1373,
+          "excerpt": "EXPORTED",
+          "line": 1361,
+          "name": "keep_price"
+        },
+        {
+          "end_line": 1519,
+          "excerpt": "EXPORTED",
+          "line": 1418,
+          "name": "auto_catch"
+        },
+        {
+          "end_line": 1592,
+          "excerpt": "EXPORTED",
+          "line": 1548,
+          "name": "client_screen"
+        },
+        {
+          "end_line": 1610,
+          "excerpt": "EXPORTED",
+          "line": 1595,
+          "name": "client_ask"
+        },
+        {
+          "end_line": 1622,
+          "excerpt": "EXPORTED",
+          "line": 1613,
+          "name": "client_unlink"
+        },
+        {
+          "end_line": 1663,
+          "excerpt": "EXPORTED",
+          "line": 1629,
+          "name": "toggle_publish"
+        },
+        {
+          "end_line": 1681,
+          "excerpt": "EXPORTED",
+          "line": 1666,
+          "name": "mark_sold"
+        },
+        {
+          "end_line": 1699,
+          "excerpt": "EXPORTED",
+          "line": 1684,
+          "name": "mark_sold_ok"
+        },
+        {
+          "end_line": 1716,
+          "excerpt": "EXPORTED",
+          "line": 1702,
+          "name": "delete_ask"
+        },
+        {
+          "end_line": 1736,
+          "excerpt": "EXPORTED",
+          "line": 1719,
+          "name": "delete_ok"
+        },
+        {
+          "end_line": 1789,
+          "excerpt": "EXPORTED",
+          "line": 1779,
+          "name": "menu_header"
+        },
+        {
+          "end_line": 1812,
+          "excerpt": "EXPORTED",
+          "line": 1799,
+          "name": "with_stats_button"
+        },
+        {
+          "end_line": 1830,
+          "excerpt": "EXPORTED",
+          "line": 1815,
+          "name": "more_screen"
+        },
+        {
+          "end_line": 1867,
+          "excerpt": "EXPORTED",
+          "line": 1839,
+          "name": "crm_leads"
+        },
+        {
+          "end_line": 1884,
+          "excerpt": "EXPORTED",
+          "line": 1870,
+          "name": "crm_stats"
+        },
+        {
+          "end_line": 1900,
+          "excerpt": "EXPORTED",
+          "line": 1887,
+          "name": "crm_stats_week"
+        },
+        {
+          "end_line": 2114,
+          "excerpt": "EXPORTED",
+          "line": 2080,
+          "name": "optimize_screen"
+        },
+        {
+          "end_line": 2126,
+          "excerpt": "EXPORTED",
+          "line": 2117,
+          "name": "svodka_screen"
+        },
+        {
+          "end_line": 2247,
+          "excerpt": "EXPORTED",
+          "line": 2235,
+          "name": "_v168_start_guard"
+        },
+        {
+          "end_line": 2306,
+          "excerpt": "OMITTED_SENSITIVE",
+          "line": 2266,
+          "name": "voice_undo"
+        },
+        {
+          "end_line": 2576,
+          "excerpt": "EXPORTED",
+          "line": 2551,
+          "name": "_v165_progress_job"
+        },
+        {
+          "end_line": 2995,
+          "excerpt": "OMITTED_SENSITIVE",
+          "line": 2662,
+          "name": "catch_message"
+        },
+        {
+          "end_line": 3100,
+          "excerpt": "EXPORTED",
+          "line": 3079,
+          "name": "video_remove_all_ask"
+        },
+        {
+          "end_line": 3147,
+          "excerpt": "EXPORTED",
+          "line": 3103,
+          "name": "video_remove_all"
+        },
+        {
+          "end_line": 3173,
+          "excerpt": "EXPORTED",
+          "line": 3150,
+          "name": "diag_photo_show"
+        },
+        {
+          "end_line": 3199,
+          "excerpt": "EXPORTED",
+          "line": 3176,
+          "name": "diag_video_show"
+        },
+        {
+          "end_line": 3238,
+          "excerpt": "EXPORTED",
+          "line": 3203,
+          "name": "diag_clear_ask"
+        },
+        {
+          "end_line": 3370,
+          "excerpt": "EXPORTED",
+          "line": 3301,
+          "name": "register"
+        },
+        {
+          "end_line": 3723,
+          "excerpt": "EXPORTED",
+          "line": 3660,
+          "name": "toggle_publish"
+        },
+        {
+          "end_line": 3760,
+          "excerpt": "EXPORTED",
+          "line": 3744,
+          "name": "card_kb"
+        },
+        {
+          "end_line": 3780,
+          "excerpt": "EXPORTED",
+          "line": 3777,
+          "name": "_ua099_back"
+        },
+        {
+          "end_line": 3807,
+          "excerpt": "EXPORTED",
+          "line": 3782,
+          "name": "additional_spec_screen"
+        },
+        {
+          "end_line": 3845,
+          "excerpt": "EXPORTED",
+          "line": 3809,
+          "name": "additional_spec_item"
+        },
+        {
+          "end_line": 3861,
+          "excerpt": "EXPORTED",
+          "line": 3847,
+          "name": "additional_spec_visibility"
+        },
+        {
+          "end_line": 3879,
+          "excerpt": "EXPORTED",
+          "line": 3863,
+          "name": "additional_spec_edit"
+        },
+        {
+          "end_line": 3910,
+          "excerpt": "EXPORTED",
+          "line": 3881,
+          "name": "additional_spec_edit_message"
+        },
+        {
+          "end_line": 3927,
+          "excerpt": "EXPORTED",
+          "line": 3912,
+          "name": "additional_spec_category"
+        },
+        {
+          "end_line": 3939,
+          "excerpt": "EXPORTED",
+          "line": 3929,
+          "name": "additional_spec_set_category"
+        },
+        {
+          "end_line": 3963,
+          "excerpt": "EXPORTED",
+          "line": 3945,
+          "name": "register"
+        },
+        {
+          "end_line": 3996,
+          "excerpt": "EXPORTED",
+          "line": 3971,
+          "name": "additional_spec_screen"
+        },
+        {
+          "end_line": 4007,
+          "excerpt": "EXPORTED",
+          "line": 4002,
+          "name": "register"
+        },
+        {
+          "end_line": 4022,
+          "excerpt": "EXPORTED",
+          "line": 4017,
+          "name": "register"
+        },
+        {
+          "end_line": 4148,
+          "excerpt": "EXPORTED",
+          "line": 4084,
+          "name": "cars_list"
+        },
+        {
+          "end_line": 4163,
+          "excerpt": "EXPORTED",
+          "line": 4151,
+          "name": "card_kb"
+        },
+        {
+          "end_line": 4169,
+          "excerpt": "EXPORTED",
+          "line": 4166,
+          "name": "register"
+        },
+        {
+          "end_line": 4229,
+          "excerpt": "EXPORTED",
+          "line": 4221,
+          "name": "register"
+        },
+        {
+          "end_line": 4255,
+          "excerpt": "EXPORTED",
+          "line": 4252,
+          "name": "register"
+        },
+        {
+          "end_line": 4364,
+          "excerpt": "EXPORTED",
+          "line": 4358,
+          "name": "register"
+        },
+        {
+          "end_line": 4378,
+          "excerpt": "EXPORTED",
+          "line": 4371,
+          "name": "with_stats_button"
+        },
+        {
+          "end_line": 4390,
+          "excerpt": "EXPORTED",
+          "line": 4384,
+          "name": "register"
+        },
+        {
+          "end_line": 4403,
+          "excerpt": "EXPORTED",
+          "line": 4397,
+          "name": "register"
+        },
+        {
+          "end_line": 4416,
+          "excerpt": "EXPORTED",
+          "line": 4410,
+          "name": "register"
+        },
+        {
+          "end_line": 4429,
+          "excerpt": "EXPORTED",
+          "line": 4423,
+          "name": "register"
+        },
+        {
+          "end_line": 4443,
+          "excerpt": "EXPORTED",
+          "line": 4436,
+          "name": "with_stats_button"
+        },
+        {
+          "end_line": 4469,
+          "excerpt": "EXPORTED",
+          "line": 4463,
+          "name": "register"
+        },
+        {
+          "end_line": 4483,
+          "excerpt": "EXPORTED",
+          "line": 4476,
+          "name": "with_stats_button"
+        },
+        {
+          "end_line": 4495,
+          "excerpt": "EXPORTED",
+          "line": 4489,
+          "name": "register"
+        },
+        {
+          "end_line": 4517,
+          "excerpt": "EXPORTED",
+          "line": 4511,
+          "name": "register"
+        },
+        {
+          "end_line": 4530,
+          "excerpt": "EXPORTED",
+          "line": 4524,
+          "name": "register"
+        }
+      ],
+      "imports_local": [
+        "ai.py",
+        "ai_fast_schema.py",
+        "ai_filter.py",
+        "assistant.py",
+        "card_render.py",
+        "cars_schema.py",
+        "crm_online_guard.py",
+        "crm_voice_watchdog.py",
+        "db.py",
+        "konteyner.py",
+        "local_ocr.py",
+        "photo_hide.py",
+        "publication_fence.py",
+        "publikaciya.py",
+        "stranica.py",
+        "ua_additional_spec.py",
+        "ua_card_delete.py",
+        "ua_card_lang_job.py",
+        "ua_card_sold.py",
+        "ua_crm_catalog_folders.py",
+        "ua_crm_orders.py",
+        "ua_crm_public_sync.py",
+        "ua_delivery_status.py",
+        "ua_finance_crm.py",
+        "ua_home_photo_bot.py",
+        "ua_home_stage_bot.py",
+        "ua_kr_prices_bot.py",
+        "ua_menu_extra.py",
+        "ua_new_car_bot.py",
+        "ua_pay_bot.py",
+        "ua_public_freshness.py",
+        "ua_publish_requests.py",
+        "vin_spec_service.py",
+        "visits.py"
+      ],
+      "sha256": "2a28154281d7d648ea7711ca6f54f2ce18b3b8a5811bb766b04f7650da3c6395"
+    },
+    "catalog_design_guard.py": {
+      "bytes": 24180,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_delivery_status.py"
+      ],
+      "sha256": "4066a0db66c08a29a708ee86504412631f33663b6241fb28bd84e8c668f78b01"
+    },
+    "catalog_stage_guard_core.py": {
+      "bytes": 24565,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "66f65031bc84aef83e99b24390ded305e0c7342b944d75a3456f4f7b2bd9227b"
+    },
+    "client_style.py": {
+      "bytes": 2986,
+      "counts": {},
+      "definitions": [
+        {
+          "end_line": 49,
+          "excerpt": "EXPORTED",
+          "line": 46,
+          "name": "contact_row"
+        }
+      ],
+      "imports_local": [],
+      "sha256": "a0ceebc106ede7108e34390e1567945e4cb93dc5d853e9380079284ef432a158"
+    },
+    "client_ui.py": {
+      "bytes": 32132,
+      "counts": {
+        "application_handler_stop": 14,
+        "start_command_handler": 1
+      },
+      "definitions": [
+        {
+          "end_line": 86,
+          "excerpt": "EXPORTED",
+          "line": 77,
+          "name": "knopka_stranicy"
+        },
+        {
+          "end_line": 321,
+          "excerpt": "EXPORTED",
+          "line": 312,
+          "name": "glavnoe_menu"
+        },
+        {
+          "end_line": 401,
+          "excerpt": "EXPORTED",
+          "line": 359,
+          "name": "catalog"
+        },
+        {
+          "end_line": 469,
+          "excerpt": "EXPORTED",
+          "line": 409,
+          "name": "car_screen"
+        },
+        {
+          "end_line": 525,
+          "excerpt": "EXPORTED",
+          "line": 497,
+          "name": "bron"
+        },
+        {
+          "end_line": 544,
+          "excerpt": "EXPORTED",
+          "line": 528,
+          "name": "vopros"
+        },
+        {
+          "end_line": 582,
+          "excerpt": "EXPORTED",
+          "line": 576,
+          "name": "_shag"
+        },
+        {
+          "end_line": 624,
+          "excerpt": "EXPORTED",
+          "line": 585,
+          "name": "order_answer"
+        },
+        {
+          "end_line": 684,
+          "excerpt": "EXPORTED",
+          "line": 670,
+          "name": "terms_screen"
+        },
+        {
+          "end_line": 696,
+          "excerpt": "EXPORTED",
+          "line": 687,
+          "name": "contacts_screen"
+        }
+      ],
+      "imports_local": [
+        "card_render.py",
+        "cars_schema.py",
+        "cars_ui.py",
+        "client_style.py",
+        "crm_online_guard.py",
+        "db.py",
+        "visits.py"
+      ],
+      "sha256": "64c813bc1f6e9eaf4276f76ddffc567091bc9b98bc06e06eb085265373ce271c"
+    },
+    "crm_online_guard.py": {
+      "bytes": 16287,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "cars_ui.py"
+      ],
+      "sha256": "bcbde472f9750ae3719e4af1059c5f4005366f7959cba7d522984f1bf9be2f5b"
+    },
+    "crm_voice_watchdog.py": {
+      "bytes": 8479,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ai.py"
+      ],
+      "sha256": "d6c782b55309d3049472f15195935a113387eba1aec8c3365ef7d875a7303efc"
+    },
+    "db.py": {
+      "bytes": 35214,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "lock4_zhurnal.py",
+        "trace_zhurnal.py",
+        "ua_crm_public_sync.py",
+        "ua_delivery_status.py"
+      ],
+      "sha256": "af7624cbcf227b865ac98c68462ad6da8d18223881bba836f2f9a8669cf1dab7"
+    },
+    "kadry_diagnostiki.py": {
+      "bytes": 16235,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "696a3b73af8e47a79d3352c6ead3a2364dd357b140a9cf7320fc4cad3d3106c0"
+    },
+    "konteyner.py": {
+      "bytes": 25934,
+      "counts": {
+        "application_handler_stop": 25,
+        "message_handler": 1
+      },
+      "definitions": [
+        {
+          "end_line": 153,
+          "excerpt": "EXPORTED",
+          "line": 124,
+          "name": "gde_mashina"
+        },
+        {
+          "end_line": 191,
+          "excerpt": "EXPORTED",
+          "line": 158,
+          "name": "_ekran"
+        },
+        {
+          "end_line": 224,
+          "excerpt": "EXPORTED",
+          "line": 214,
+          "name": "sprosit_nomer"
+        },
+        {
+          "end_line": 237,
+          "excerpt": "EXPORTED",
+          "line": 227,
+          "name": "sprosit_datu"
+        },
+        {
+          "end_line": 251,
+          "excerpt": "EXPORTED",
+          "line": 240,
+          "name": "sprosit_dni"
+        },
+        {
+          "end_line": 264,
+          "excerpt": "EXPORTED",
+          "line": 254,
+          "name": "ochistit_vopros"
+        },
+        {
+          "end_line": 369,
+          "excerpt": "EXPORTED",
+          "line": 285,
+          "name": "prinyat"
+        },
+        {
+          "end_line": 427,
+          "excerpt": "EXPORTED",
+          "line": 372,
+          "name": "posle_statusa"
+        },
+        {
+          "end_line": 588,
+          "excerpt": "EXPORTED",
+          "line": 555,
+          "name": "srok_komanda"
+        }
+      ],
+      "imports_local": [
+        "cars_schema.py",
+        "cars_ui.py",
+        "db.py",
+        "stranica.py",
+        "ua_delivery_status.py"
+      ],
+      "sha256": "cb09e8cfac57f05a004f7dae73d57f76c422132a8e0d6a16f28f0a949647760e"
+    },
+    "lead_bot.py": {
+      "bytes": 100758,
+      "counts": {
+        "conversation_handler": 5,
+        "keyboard_button": 1,
+        "message_handler": 23,
+        "post_init": 3,
+        "reply_keyboard_markup": 2,
+        "reply_keyboard_remove": 5,
+        "set_my_commands": 4,
+        "start_command_handler": 4
+      },
+      "definitions": [
+        {
+          "end_line": 225,
+          "excerpt": "EXPORTED",
+          "line": 218,
+          "name": "manager_button"
+        },
+        {
+          "end_line": 242,
+          "excerpt": "EXPORTED",
+          "line": 228,
+          "name": "lead_cta_markup"
+        },
+        {
+          "end_line": 257,
+          "excerpt": "EXPORTED",
+          "line": 245,
+          "name": "main_menu_markup"
+        },
+        {
+          "end_line": 270,
+          "excerpt": "EXPORTED",
+          "line": 260,
+          "name": "admin_menu_markup"
+        },
+        {
+          "end_line": 279,
+          "excerpt": "EXPORTED",
+          "line": 273,
+          "name": "contact_request_markup"
+        },
+        {
+          "end_line": 651,
+          "excerpt": "EXPORTED",
+          "line": 648,
+          "name": "taken_markup"
+        },
+        {
+          "end_line": 843,
+          "excerpt": "EXPORTED",
+          "line": 823,
+          "name": "_stats_header"
+        },
+        {
+          "end_line": 877,
+          "excerpt": "EXPORTED",
+          "line": 861,
+          "name": "lead_start_from_button"
+        },
+        {
+          "end_line": 1035,
+          "excerpt": "EXPORTED",
+          "line": 993,
+          "name": "finalize_lead"
+        },
+        {
+          "end_line": 1044,
+          "excerpt": "EXPORTED",
+          "line": 1038,
+          "name": "cancel"
+        },
+        {
+          "end_line": 1216,
+          "excerpt": "EXPORTED",
+          "line": 1174,
+          "name": "_render_catalog"
+        },
+        {
+          "end_line": 1337,
+          "excerpt": "EXPORTED",
+          "line": 1281,
+          "name": "send_car_card"
+        },
+        {
+          "end_line": 1434,
+          "excerpt": "EXPORTED",
+          "line": 1396,
+          "name": "buy_contact_received"
+        },
+        {
+          "end_line": 1443,
+          "excerpt": "EXPORTED",
+          "line": 1437,
+          "name": "buy_contact_skip"
+        },
+        {
+          "end_line": 1684,
+          "excerpt": "EXPORTED",
+          "line": 1669,
+          "name": "editstatus_start"
+        },
+        {
+          "end_line": 1699,
+          "excerpt": "EXPORTED",
+          "line": 1687,
+          "name": "editstatus_pick_car"
+        },
+        {
+          "end_line": 1805,
+          "excerpt": "EXPORTED",
+          "line": 1789,
+          "name": "reserve_start"
+        },
+        {
+          "end_line": 1869,
+          "excerpt": "EXPORTED",
+          "line": 1854,
+          "name": "archive_list"
+        },
+        {
+          "end_line": 1895,
+          "excerpt": "EXPORTED",
+          "line": 1882,
+          "name": "sold_cmd"
+        },
+        {
+          "end_line": 1963,
+          "excerpt": "EXPORTED",
+          "line": 1934,
+          "name": "post_init"
+        },
+        {
+          "end_line": 2204,
+          "excerpt": "OMITTED_SENSITIVE",
+          "line": 1969,
+          "name": "build_application"
+        },
+        {
+          "end_line": 2219,
+          "excerpt": "EXPORTED",
+          "line": 2211,
+          "name": "stats_full_cb"
+        },
+        {
+          "end_line": 2230,
+          "excerpt": "EXPORTED",
+          "line": 2222,
+          "name": "stats_week_cb"
+        },
+        {
+          "end_line": 2239,
+          "excerpt": "EXPORTED",
+          "line": 2233,
+          "name": "stats_cmd"
+        },
+        {
+          "end_line": 2264,
+          "excerpt": "EXPORTED",
+          "line": 2246,
+          "name": "_setup_menu"
+        }
+      ],
+      "imports_local": [
+        "analitika_bot.py",
+        "client_ui.py",
+        "db.py",
+        "ua_lead_desk.py",
+        "visits.py"
+      ],
+      "sha256": "4f5441f70411c292a2be3b14db8a1c030f8d82328759ee194d3ed6be3c084b73"
+    },
+    "local_ocr.py": {
+      "bytes": 12796,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "834b86a9dcb36b97e608074326879db494fd6d040eb8c9bab72243d1ea027557"
+    },
+    "lock4_zhurnal.py": {
+      "bytes": 3429,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "6461e34b137f55c3bd6df60f859c04b8d00e8ddea5b42e95fc8f9cde7d00cac9"
+    },
+    "master_card.py": {
+      "bytes": 147781,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "catalog_design_guard.py",
+        "photo_visibility.py",
+        "ua_additional_spec.py",
+        "ua_card_contact.py",
+        "ua_delivery_status.py",
+        "ua_seo_metadata.py",
+        "ua_spec_permanent.py",
+        "ua_tracking_widget.py"
+      ],
+      "sha256": "ddeed6f10e32cbce17778cd62d749202093961355165e49d7b083aa0b09e4a80"
+    },
+    "photo_card.py": {
+      "bytes": 4124,
+      "counts": {},
+      "definitions": [
+        {
+          "end_line": 40,
+          "excerpt": "EXPORTED",
+          "line": 39,
+          "name": "_open"
+        },
+        {
+          "end_line": 57,
+          "excerpt": "EXPORTED",
+          "line": 43,
+          "name": "create_card"
+        }
+      ],
+      "imports_local": [
+        "ai_fast_schema.py",
+        "ai_filter.py",
+        "db.py",
+        "local_ocr.py",
+        "screen_fields.py",
+        "vin_brand.py"
+      ],
+      "sha256": "9e0b629680e25e125e69280f1d3f08d042319714567743ac55d12715f5b5a002"
+    },
+    "photo_hide.py": {
+      "bytes": 8019,
+      "counts": {
+        "application_handler_stop": 6
+      },
+      "definitions": [
+        {
+          "end_line": 118,
+          "excerpt": "EXPORTED",
+          "line": 78,
+          "name": "arhiv"
+        },
+        {
+          "end_line": 158,
+          "excerpt": "EXPORTED",
+          "line": 121,
+          "name": "hide_menu"
+        }
+      ],
+      "imports_local": [
+        "cars_ui.py",
+        "db.py"
+      ],
+      "sha256": "9089c712efe33ca9956766099715f5abd337c4d47b18ec20cc71d345e8667e4e"
+    },
+    "photo_visibility.py": {
+      "bytes": 1279,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "35fbd8c26d0c28200ba1f76a4f3aee6f94ff45038dd479ee5f0ef5b0431ebb2f"
+    },
+    "profile_library.py": {
+      "bytes": 24771,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "1211250019cf16c74f28d96539606803db92fe9a204eddfbb2a7339d174085db"
+    },
+    "publication_fence.py": {
+      "bytes": 9694,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "c739a1017c53c6391dbf875621d6c860216fe8a132b738eef47b8f8019594a21"
+    },
+    "publikaciya.py": {
+      "bytes": 25086,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "master_card.py",
+        "publish_transaction_guard.py",
+        "site_ge_inject.py",
+        "stranica.py",
+        "ua_additional_spec.py",
+        "ua_card_contact.py",
+        "ua_delivery_status.py",
+        "ua_seo_metadata.py",
+        "ua_seo_sitemap.py",
+        "ua_spec_permanent.py"
+      ],
+      "sha256": "8e319f191f6ab4b4e8379ca3b57089d27b03111a543323e682eaef264303cfaf"
+    },
+    "publish_transaction_guard.py": {
+      "bytes": 33481,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "catalog_design_guard.py",
+        "catalog_stage_guard_core.py",
+        "publication_fence.py",
+        "publikaciya.py",
+        "site_ge_inject.py",
+        "stranica.py",
+        "ua_delivery_status.py",
+        "ua_google_tag.py",
+        "ua_seo_index.py",
+        "ua_site_counters.py"
+      ],
+      "sha256": "4b36b2f06f2b3582705b341e67f8361818890922133f3cf2e2a3ace935ec9b95"
+    },
+    "run_all.py": {
+      "bytes": 5823,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "db.py",
+        "kadry_diagnostiki.py",
+        "lead_bot.py",
+        "team_bot.py"
+      ],
+      "sha256": "cc996b82b00fdfd9c95348193cd1d31b7d0a44bc1601fbb0b85b0c561ccb0fa9"
+    },
+    "screen_fields.py": {
+      "bytes": 1848,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "58e11625c86e6b9dd939ec84075186967c58c47f32ec8ad33eb349527816a450"
+    },
+    "site_ge_inject.py": {
+      "bytes": 5620,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_autoria_badge.py",
+        "ua_autoria_text.py",
+        "ua_brand_home.py",
+        "ua_chat_button.py",
+        "ua_google_tag.py",
+        "ua_korea_home.py",
+        "ua_lead_source.py",
+        "ua_own_counter.py",
+        "ua_price_html_v2.py",
+        "ua_service_words.py",
+        "ua_social_links.py",
+        "ua_stage_images.py",
+        "ua_terms_links.py",
+        "ua_tg_script.py"
+      ],
+      "sha256": "8b8195907e24771038d44bd89479321e5c62065c2a49b0654f845d9a2a1f8725"
+    },
+    "source_policy.py": {
+      "bytes": 49018,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "profile_library.py"
+      ],
+      "sha256": "727e871091c2a1858489ccab70085c801c2439aa623d23312bc40d7c1280ef38"
+    },
+    "spec84_collector.py": {
+      "bytes": 25120,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "profile_library.py",
+        "source_policy.py",
+        "spec_catalog_pages.py",
+        "spec_model_profiles.py"
+      ],
+      "sha256": "07ed923b0bb7b15c2b913cbca7c775dbb3cc535762b5fa3589ca3dde282df317"
+    },
+    "spec_catalog_pages.py": {
+      "bytes": 7741,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "profile_library.py",
+        "source_policy.py",
+        "spec_model_profiles.py"
+      ],
+      "sha256": "88a0c3eff866c855b3ff029c31d1ff4466e823dd807dcfd135280f10bb82f265"
+    },
+    "spec_model_profiles.py": {
+      "bytes": 6600,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "profile_library.py"
+      ],
+      "sha256": "1ffcc134d9a4048d8ccab4c1d0b35f388db41e298aa9b5f3548b6ea6a8c6aadb"
+    },
+    "spec_retry84.py": {
+      "bytes": 22178,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "spec_model_profiles.py"
+      ],
+      "sha256": "ddd2e1774a4979537362cf2799c2ef0416c47826108531371760e7f017782abb"
+    },
+    "start_safe.py": {
+      "bytes": 60667,
+      "counts": {
+        "message_handler": 2,
+        "post_init": 1
+      },
+      "definitions": [
+        {
+          "end_line": 794,
+          "excerpt": "EXPORTED",
+          "line": 766,
+          "name": "_send_client_card"
+        },
+        {
+          "end_line": 1101,
+          "excerpt": "EXPORTED",
+          "line": 797,
+          "name": "register_pokaz"
+        },
+        {
+          "end_line": 1405,
+          "excerpt": "EXPORTED",
+          "line": 1380,
+          "name": "avariynyy_rezhim"
+        }
+      ],
+      "imports_local": [
+        "card_html.py",
+        "video_helper.py"
+      ],
+      "sha256": "21aded2b576b36c6cea84b431c691b22eb09105ca5ec13bb6fd0910452c2cbeb"
+    },
+    "stranica.py": {
+      "bytes": 202884,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "photo_visibility.py",
+        "publication_fence.py",
+        "site_ge_inject.py",
+        "ua_card_contact.py",
+        "ua_delivery_status.py",
+        "ua_media_gallery.py",
+        "ua_seo_metadata.py",
+        "ua_spec_permanent.py",
+        "ua_tracking_widget.py"
+      ],
+      "sha256": "3ea203df96b7219fedcd7c7fa2b110bac661bd698cc7f8db88422e45bd369f8b"
+    },
+    "team_bot.py": {
+      "bytes": 64336,
+      "counts": {
+        "conversation_handler": 2,
+        "message_handler": 3,
+        "post_init": 3,
+        "set_my_commands": 1,
+        "start_command_handler": 3
+      },
+      "definitions": [
+        {
+          "end_line": 20,
+          "excerpt": "EXPORTED",
+          "line": 1,
+          "name": "Expr"
+        },
+        {
+          "end_line": 22,
+          "excerpt": "EXPORTED",
+          "line": 22,
+          "name": "Import"
+        },
+        {
+          "end_line": 23,
+          "excerpt": "EXPORTED",
+          "line": 23,
+          "name": "Import"
+        },
+        {
+          "end_line": 24,
+          "excerpt": "EXPORTED",
+          "line": 24,
+          "name": "Import"
+        },
+        {
+          "end_line": 25,
+          "excerpt": "EXPORTED",
+          "line": 25,
+          "name": "Import"
+        },
+        {
+          "end_line": 26,
+          "excerpt": "EXPORTED",
+          "line": 26,
+          "name": "ImportFrom"
+        },
+        {
+          "end_line": 33,
+          "excerpt": "EXPORTED",
+          "line": 28,
+          "name": "ImportFrom"
+        },
+        {
+          "end_line": 42,
+          "excerpt": "EXPORTED",
+          "line": 34,
+          "name": "ImportFrom"
+        },
+        {
+          "end_line": 44,
+          "excerpt": "EXPORTED",
+          "line": 44,
+          "name": "Import"
+        },
+        {
+          "end_line": 45,
+          "excerpt": "EXPORTED",
+          "line": 45,
+          "name": "Import"
+        },
+        {
+          "end_line": 46,
+          "excerpt": "EXPORTED",
+          "line": 46,
+          "name": "Import"
+        },
+        {
+          "end_line": 47,
+          "excerpt": "EXPORTED",
+          "line": 47,
+          "name": "Import"
+        },
+        {
+          "end_line": 48,
+          "excerpt": "EXPORTED",
+          "line": 48,
+          "name": "Import"
+        },
+        {
+          "end_line": 50,
+          "excerpt": "EXPORTED",
+          "line": 50,
+          "name": "BASE_DIR"
+        },
+        {
+          "end_line": 51,
+          "excerpt": "EXPORTED",
+          "line": 51,
+          "name": "TEAM_TOKEN_FILE"
+        },
+        {
+          "end_line": 54,
+          "excerpt": "EXPORTED",
+          "line": 54,
+          "name": "OWNER_ID"
+        },
+        {
+          "end_line": 58,
+          "excerpt": "EXPORTED",
+          "line": 58,
+          "name": "PUBLISH_WITHOUT_APPROVAL"
+        },
+        {
+          "end_line": 68,
+          "excerpt": "EXPORTED",
+          "line": 61,
+          "name": "read_team_token"
+        },
+        {
+          "end_line": 82,
+          "excerpt": "EXPORTED",
+          "line": 74,
+          "name": "who"
+        },
+        {
+          "end_line": 86,
+          "excerpt": "EXPORTED",
+          "line": 85,
+          "name": "is_owner"
+        },
+        {
+          "end_line": 90,
+          "excerpt": "EXPORTED",
+          "line": 89,
+          "name": "is_admin_or_owner"
+        },
+        {
+          "end_line": 94,
+          "excerpt": "EXPORTED",
+          "line": 93,
+          "name": "is_manager"
+        },
+        {
+          "end_line": 134,
+          "excerpt": "EXPORTED",
+          "line": 100,
+          "name": "main_menu"
+        },
+        {
+          "end_line": 168,
+          "excerpt": "EXPORTED",
+          "line": 137,
+          "name": "ai_stop_cb"
+        },
+        {
+          "end_line": 183,
+          "excerpt": "EXPORTED",
+          "line": 171,
+          "name": "ai_resume_cb"
+        },
+        {
+          "end_line": 187,
+          "excerpt": "EXPORTED",
+          "line": 186,
+          "name": "back_btn"
+        },
+        {
+          "end_line": 207,
+          "excerpt": "EXPORTED",
+          "line": 190,
+          "name": "show_menu"
+        },
+        {
+          "end_line": 223,
+          "excerpt": "EXPORTED",
+          "line": 214,
+          "name": "start"
+        },
+        {
+          "end_line": 251,
+          "excerpt": "EXPORTED",
+          "line": 226,
+          "name": "try_invite_code"
+        },
+        {
+          "end_line": 275,
+          "excerpt": "EXPORTED",
+          "line": 257,
+          "name": "detect_kind"
+        },
+        {
+          "end_line": 312,
+          "excerpt": "EXPORTED",
+          "line": 278,
+          "name": "intake"
+        },
+        {
+          "end_line": 429,
+          "excerpt": "EXPORTED",
+          "line": 319,
+          "name": "run_ai_draft"
+        },
+        {
+          "end_line": 475,
+          "excerpt": "EXPORTED",
+          "line": 439,
+          "name": "_pomoshnik"
+        },
+        {
+          "end_line": 507,
+          "excerpt": "EXPORTED",
+          "line": 478,
+          "name": "collect_media"
+        },
+        {
+          "end_line": 558,
+          "excerpt": "EXPORTED",
+          "line": 510,
+          "name": "ai_save"
+        },
+        {
+          "end_line": 562,
+          "excerpt": "EXPORTED",
+          "line": 562,
+          "name": "AI_FIX"
+        },
+        {
+          "end_line": 575,
+          "excerpt": "EXPORTED",
+          "line": 565,
+          "name": "ai_edit_start"
+        },
+        {
+          "end_line": 612,
+          "excerpt": "EXPORTED",
+          "line": 578,
+          "name": "ai_edit_apply"
+        },
+        {
+          "end_line": 617,
+          "excerpt": "EXPORTED",
+          "line": 615,
+          "name": "ai_edit_cancel"
+        },
+        {
+          "end_line": 631,
+          "excerpt": "EXPORTED",
+          "line": 620,
+          "name": "ai_reject"
+        },
+        {
+          "end_line": 661,
+          "excerpt": "EXPORTED",
+          "line": 634,
+          "name": "notify_managers"
+        },
+        {
+          "end_line": 690,
+          "excerpt": "EXPORTED",
+          "line": 667,
+          "name": "inbox_list"
+        },
+        {
+          "end_line": 745,
+          "excerpt": "EXPORTED",
+          "line": 693,
+          "name": "inbox_open"
+        },
+        {
+          "end_line": 755,
+          "excerpt": "EXPORTED",
+          "line": 748,
+          "name": "inbox_dup"
+        },
+        {
+          "end_line": 765,
+          "excerpt": "EXPORTED",
+          "line": 758,
+          "name": "inbox_skip"
+        },
+        {
+          "end_line": 771,
+          "excerpt": "EXPORTED",
+          "line": 771,
+          "name": "CARD_STEP"
+        },
+        {
+          "end_line": 783,
+          "excerpt": "EXPORTED",
+          "line": 774,
+          "name": "CAR_STEPS"
+        },
+        {
+          "end_line": 793,
+          "excerpt": "EXPORTED",
+          "line": 785,
+          "name": "CLIENT_STEPS"
+        },
+        {
+          "end_line": 817,
+          "excerpt": "EXPORTED",
+          "line": 796,
+          "name": "mk_card_start"
+        },
+        {
+          "end_line": 852,
+          "excerpt": "EXPORTED",
+          "line": 820,
+          "name": "mk_card_step"
+        },
+        {
+          "end_line": 860,
+          "excerpt": "EXPORTED",
+          "line": 855,
+          "name": "mk_card_cancel"
+        },
+        {
+          "end_line": 879,
+          "excerpt": "EXPORTED",
+          "line": 863,
+          "name": "notify_admins_review"
+        },
+        {
+          "end_line": 892,
+          "excerpt": "EXPORTED",
+          "line": 885,
+          "name": "CAR_LABELS"
+        },
+        {
+          "end_line": 898,
+          "excerpt": "EXPORTED",
+          "line": 893,
+          "name": "CLIENT_LABELS"
+        },
+        {
+          "end_line": 912,
+          "excerpt": "EXPORTED",
+          "line": 901,
+          "name": "render_card"
+        },
+        {
+          "end_line": 940,
+          "excerpt": "EXPORTED",
+          "line": 915,
+          "name": "card_open"
+        },
+        {
+          "end_line": 987,
+          "excerpt": "EXPORTED",
+          "line": 943,
+          "name": "card_review_action"
+        },
+        {
+          "end_line": 1009,
+          "excerpt": "EXPORTED",
+          "line": 990,
+          "name": "card_log"
+        },
+        {
+          "end_line": 1030,
+          "excerpt": "EXPORTED",
+          "line": 1012,
+          "name": "cards_list"
+        },
+        {
+          "end_line": 1053,
+          "excerpt": "EXPORTED",
+          "line": 1033,
+          "name": "review_list"
+        },
+        {
+          "end_line": 1091,
+          "excerpt": "EXPORTED",
+          "line": 1059,
+          "name": "staff_list"
+        },
+        {
+          "end_line": 1110,
+          "excerpt": "EXPORTED",
+          "line": 1094,
+          "name": "invite_create"
+        },
+        {
+          "end_line": 1129,
+          "excerpt": "EXPORTED",
+          "line": 1113,
+          "name": "staff_toggle"
+        },
+        {
+          "end_line": 1140,
+          "excerpt": "EXPORTED",
+          "line": 1135,
+          "name": "search_start"
+        },
+        {
+          "end_line": 1165,
+          "excerpt": "EXPORTED",
+          "line": 1143,
+          "name": "do_search"
+        },
+        {
+          "end_line": 1184,
+          "excerpt": "EXPORTED",
+          "line": 1168,
+          "name": "stats"
+        },
+        {
+          "end_line": 1208,
+          "excerpt": "EXPORTED",
+          "line": 1187,
+          "name": "audit_list"
+        },
+        {
+          "end_line": 1219,
+          "excerpt": "EXPORTED",
+          "line": 1211,
+          "name": "menu_cb"
+        },
+        {
+          "end_line": 1241,
+          "excerpt": "EXPORTED",
+          "line": 1223,
+          "name": "inbox_ask"
+        },
+        {
+          "end_line": 1259,
+          "excerpt": "EXPORTED",
+          "line": 1244,
+          "name": "error_handler"
+        },
+        {
+          "end_line": 1297,
+          "excerpt": "EXPORTED",
+          "line": 1262,
+          "name": "vvodnye_text"
+        },
+        {
+          "end_line": 1342,
+          "excerpt": "EXPORTED",
+          "line": 1300,
+          "name": "vvodnye_job"
+        },
+        {
+          "end_line": 1350,
+          "excerpt": "EXPORTED",
+          "line": 1345,
+          "name": "backup_job"
+        },
+        {
+          "end_line": 1362,
+          "excerpt": "EXPORTED",
+          "line": 1353,
+          "name": "post_init"
+        },
+        {
+          "end_line": 1369,
+          "excerpt": "EXPORTED",
+          "line": 1369,
+          "name": "Expr"
+        },
+        {
+          "end_line": 1448,
+          "excerpt": "OMITTED_SENSITIVE",
+          "line": 1372,
+          "name": "build_application"
+        },
+        {
+          "end_line": 1458,
+          "excerpt": "EXPORTED",
+          "line": 1451,
+          "name": "main"
+        },
+        {
+          "end_line": 1462,
+          "excerpt": "EXPORTED",
+          "line": 1461,
+          "name": "If"
+        }
+      ],
+      "imports_local": [
+        "ai.py",
+        "ai_fast_schema.py",
+        "ai_filter.py",
+        "assistant.py",
+        "cars_ui.py",
+        "crm_voice_watchdog.py",
+        "db.py",
+        "local_ocr.py",
+        "photo_card.py"
+      ],
+      "sha256": "bfd2ada58521c3d5a3fc37f4ef7b0883c99b85dcaf2eb43597c99d2c07814c03"
+    },
+    "trace_zhurnal.py": {
+      "bytes": 14871,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "fc4b95fc749f3d9b785ce69bfce2705b11ade95a560d6fbd901b50de1423d086"
+    },
+    "ua_additional_spec.py": {
+      "bytes": 37177,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_card_contact.py",
+        "vin_spec_service.py"
+      ],
+      "sha256": "3f4ff691b7867b6a1b7105b54f9a84d339e3f5383927f85aef9eb2f1ba228ace"
+    },
+    "ua_auction_bids.py": {
+      "bytes": 7745,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "e8a612675ff8609daf93dcda750afbf4bc6375e95ddb8a815e3a380fdf3c280f"
+    },
+    "ua_auction_bids_bot.py": {
+      "bytes": 6117,
+      "counts": {
+        "application_handler_stop": 4
+      },
+      "definitions": [],
+      "imports_local": [
+        "db.py",
+        "ua_auction_bids.py",
+        "ua_auction_clients.py",
+        "ua_auction_clients_bot.py"
+      ],
+      "sha256": "0e33bcde0f6ec3b8e79082589864bca9f73c6f4df23a0cc9c95bb8cae01ae8f5"
+    },
+    "ua_auction_clients.py": {
+      "bytes": 6664,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "4120c750e6dd1679bd72f37559c53ea4fbcef31c6df6d0fd30d862f7fd00da4f"
+    },
+    "ua_auction_clients_bot.py": {
+      "bytes": 13795,
+      "counts": {
+        "application_handler_stop": 6,
+        "message_handler": 2
+      },
+      "definitions": [],
+      "imports_local": [
+        "db.py",
+        "ua_auction_bids.py",
+        "ua_auction_bids_bot.py",
+        "ua_auction_clients.py",
+        "ua_auction_clients_view.py",
+        "ua_auction_stats.py",
+        "ua_crm_orders.py"
+      ],
+      "sha256": "665157aa82b8a22f5c35d94809d27ac692cdeeeda869951b25a449221bcd82a6"
+    },
+    "ua_auction_clients_view.py": {
+      "bytes": 14457,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "7b028bfa65c10c2ec480e11c4beb33658ca682181c5e47fa8aed146690694730"
+    },
+    "ua_auction_stats.py": {
+      "bytes": 4453,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_auction_bids.py",
+        "ua_auction_clients.py"
+      ],
+      "sha256": "8104933d12d4779a5674c8e12277564d2a03cd6b0779a34a839f1d5f2ebbb8b7"
+    },
+    "ua_autoria_badge.py": {
+      "bytes": 3936,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "e603708da9eb7479d77111963388ed32dc9380a9a7dfad99005f8b552bb8788f"
+    },
+    "ua_autoria_text.py": {
+      "bytes": 1773,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "f443086e3e8dfa789fc3fe6879167440a4dc8395087d9c4da8e98530041b5ba0"
+    },
+    "ua_brand_home.py": {
+      "bytes": 2953,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "ec4aabfa8777d53b4fb678014617c9dcb6031b8b9ed9ee8a86d23b44b9c00c6e"
+    },
+    "ua_card_contact.py": {
+      "bytes": 8649,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "288a067932397088e7ddf9a65f61e550b72cc344fa3c62eb327d6ef3d7e407db"
+    },
+    "ua_card_delete.py": {
+      "bytes": 1905,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "e50663be0c846293f15bfdb9485c7c4e059071668fc350b606371ff59df4e2f5"
+    },
+    "ua_card_finance.py": {
+      "bytes": 2512,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_finance_partners.py"
+      ],
+      "sha256": "c5f257f7c7f0e9cf4c23addf7dfd75217cf61ee78562b5156d67328a7bea5455"
+    },
+    "ua_card_lang.py": {
+      "bytes": 14437,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "d6165abfc4a678ab285c6d6261dd1c260a749e20a4dea48ef7458fd08fe9d107"
+    },
+    "ua_card_lang_job.py": {
+      "bytes": 2174,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "publication_fence.py",
+        "ua_card_lang.py",
+        "ua_korea_ru.py",
+        "ua_seo_index.py",
+        "ua_seo_sitemap.py"
+      ],
+      "sha256": "4e4a1f5d99c77b12b77fd34d1dc8d83977f0eb545fe5202a221a97b7fdc161bb"
+    },
+    "ua_card_sold.py": {
+      "bytes": 2439,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "0e5af2a9d0d8e123b06fcfacbe40a79309cb84ccbb05e892e68ab241ca8e975a"
+    },
+    "ua_card_urls.py": {
+      "bytes": 1649,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "cd1173958ef77740f2689963993fad8adf14078a49b8585e4c345f543274cfb6"
+    },
+    "ua_chat_button.py": {
+      "bytes": 6342,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "135549d6473fb41c192a16cb8c0a38c0c4d2826305b85ed3e15e20df15ff2114"
+    },
+    "ua_contract_files.py": {
+      "bytes": 2073,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "57f1d6b0681b6134ce17cc1455fcebf37fec41778f133766f0847e359e37060a"
+    },
+    "ua_crm_catalog_folders.py": {
+      "bytes": 5824,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "63cfe41b4ce4d6e5c1f5615235da8cad50c40fde3278a799a82dfae410daf7b0"
+    },
+    "ua_crm_orders.py": {
+      "bytes": 6670,
+      "counts": {
+        "application_handler_stop": 10,
+        "message_handler": 2
+      },
+      "definitions": [
+        {
+          "end_line": 51,
+          "excerpt": "EXPORTED",
+          "line": 49,
+          "name": "markup"
+        }
+      ],
+      "imports_local": [
+        "db.py",
+        "ua_auction_clients_bot.py",
+        "ua_contract_files.py",
+        "ua_crm_orders_view.py",
+        "ua_finance_crm.py",
+        "ua_lead_calendar.py",
+        "ua_order_book.py"
+      ],
+      "sha256": "9426c7b3e7bef9b853a67b4f5cd8b411778c3edf221578d2f5647d72a068f9b8"
+    },
+    "ua_crm_orders_view.py": {
+      "bytes": 4277,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_lead_folders.py",
+        "ua_order_book.py"
+      ],
+      "sha256": "030c3963f385823c12492073e673bbe94893b5ad136b33529b0568ab677a5352"
+    },
+    "ua_crm_public_sync.py": {
+      "bytes": 8200,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "publikaciya.py",
+        "ua_delivery_status.py",
+        "ua_diag_files.py",
+        "ua_public_freshness.py",
+        "ua_publish_requests.py",
+        "ua_seo_metadata.py",
+        "ua_stage_catalog_sync.py"
+      ],
+      "sha256": "25a824be411598566fb837de190c3e6a0057962bbfe7ee1d6dcf90a0ff2027cd"
+    },
+    "ua_delivery_status.py": {
+      "bytes": 2628,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "c544bc121b7b3b66d45519d5b63ed3687567af7e9d5f7011ae2fb53cc372bdd0"
+    },
+    "ua_diag_files.py": {
+      "bytes": 1179,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "245f7fc512e316ebab6a63b53e0bebc7e2246f95ab79ce6235640f35007d445d"
+    },
+    "ua_finance_crm.py": {
+      "bytes": 4882,
+      "counts": {
+        "application_handler_stop": 3
+      },
+      "definitions": [
+        {
+          "end_line": 105,
+          "excerpt": "EXPORTED",
+          "line": 89,
+          "name": "screen"
+        }
+      ],
+      "imports_local": [
+        "analitika_yadro.py",
+        "ua_finance_partners.py"
+      ],
+      "sha256": "f107a940f3e4b702a88b561c54f91c16072bdfd689f3f315808208eb4cf59e61"
+    },
+    "ua_finance_partners.py": {
+      "bytes": 16836,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "7d3ef729bb90c7c1093d32f3128e3dfc4d6baac7688bd2d49f2518cd3bd8756d"
+    },
+    "ua_google_sitemap.py": {
+      "bytes": 1883,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "0b99b8ee4d36a0790ef065d8fdf6f75f955242af4cd7a93b5d22de3d95f2d38a"
+    },
+    "ua_google_tag.py": {
+      "bytes": 2222,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "f5f0a30489d20d7f7d973c27bd31e583e9827fb5a6d1e24a97fb35d1e6a3b6d4"
+    },
+    "ua_home_photo_bot.py": {
+      "bytes": 7473,
+      "counts": {
+        "application_handler_stop": 13,
+        "message_handler": 1
+      },
+      "definitions": [
+        {
+          "end_line": 45,
+          "excerpt": "EXPORTED",
+          "line": 37,
+          "name": "with_button"
+        },
+        {
+          "end_line": 54,
+          "excerpt": "EXPORTED",
+          "line": 53,
+          "name": "_keyboard"
+        }
+      ],
+      "imports_local": [
+        "db.py",
+        "ua_home_photo_crop.py",
+        "ua_home_photo_site.py"
+      ],
+      "sha256": "22943bbac5abdeb43bfaeca4a2f3bd0f624db92deb91d9da1181d245dc05da7d"
+    },
+    "ua_home_photo_crop.py": {
+      "bytes": 3749,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "97aa90a2b599f9d13c2249952a38aad17221cb6c53b46f907c4dc6c4f16a1072"
+    },
+    "ua_home_photo_site.py": {
+      "bytes": 3773,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "032238fceec1640bcbc06f26e8d373fe85052b4c1ca7f98bf676019a1e9f9332"
+    },
+    "ua_home_stage_bot.py": {
+      "bytes": 3684,
+      "counts": {
+        "application_handler_stop": 3
+      },
+      "definitions": [
+        {
+          "end_line": 53,
+          "excerpt": "EXPORTED",
+          "line": 40,
+          "name": "with_button"
+        },
+        {
+          "end_line": 74,
+          "excerpt": "EXPORTED",
+          "line": 56,
+          "name": "place"
+        }
+      ],
+      "imports_local": [
+        "db.py",
+        "ua_home_stage_site.py"
+      ],
+      "sha256": "20a4cce6d6e01df8bd01f45b942d5aa24468f10d37340c265835fa9d5864bece"
+    },
+    "ua_home_stage_site.py": {
+      "bytes": 3722,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "master_card.py",
+        "publication_fence.py"
+      ],
+      "sha256": "5c5cc5d8d3f33a561310601ee95219cbf00619b3898135737214b15efcffd2ba"
+    },
+    "ua_indexnow.py": {
+      "bytes": 1432,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "0faa75073d7fabc2bacf68e53cf5f4811857c206fb1ea4f05b9ff0ea3210407f"
+    },
+    "ua_korea_home.py": {
+      "bytes": 11985,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "2549a9289919abbd55316208e2d28a11bfa3d98da22e33ab634056032dcff96e"
+    },
+    "ua_korea_link.py": {
+      "bytes": 1065,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "295ab8648fc4333a1dfde67a0bc9f39b10bb51cddff57ee334b52b3964fcdfec"
+    },
+    "ua_korea_ru.py": {
+      "bytes": 5508,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_card_lang.py"
+      ],
+      "sha256": "8e561c695dacfeee21745908ea6c3f7c0bbd6746c205427f0b7712fc30ae9bf7"
+    },
+    "ua_kr_prices_bot.py": {
+      "bytes": 7649,
+      "counts": {
+        "application_handler_stop": 7,
+        "message_handler": 2
+      },
+      "definitions": [
+        {
+          "end_line": 32,
+          "excerpt": "EXPORTED",
+          "line": 23,
+          "name": "with_button"
+        },
+        {
+          "end_line": 93,
+          "excerpt": "EXPORTED",
+          "line": 83,
+          "name": "_show"
+        }
+      ],
+      "imports_local": [
+        "db.py",
+        "ua_kr_prices_store.py"
+      ],
+      "sha256": "34783cd46945577ad3952a4748bf9deeed36ad8a21d3fb24949b75756a0f8640"
+    },
+    "ua_kr_prices_store.py": {
+      "bytes": 4128,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "15cdc9a6b23fa12d023134fd8046a0b5d642b7974d794d0c5b653baba70d56f4"
+    },
+    "ua_lead_calendar.py": {
+      "bytes": 2245,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "903775eddd75aa86b11a3e5242600f205d1b9d7e2bcdfbecf851a0da9035de69"
+    },
+    "ua_lead_desk.py": {
+      "bytes": 12539,
+      "counts": {
+        "application_handler_stop": 7,
+        "message_handler": 1
+      },
+      "definitions": [
+        {
+          "end_line": 28,
+          "excerpt": "EXPORTED",
+          "line": 26,
+          "name": "markup"
+        }
+      ],
+      "imports_local": [
+        "db.py",
+        "ua_contract_files.py",
+        "ua_lead_calendar.py",
+        "ua_lead_desk_store.py",
+        "ua_lead_desk_view.py",
+        "ua_lead_sources.py",
+        "ua_order_book.py",
+        "visits.py"
+      ],
+      "sha256": "98f2e1f85a7cb8a23d48d5159bf3aee885c5aca946345293a7889892b8dd693e"
+    },
+    "ua_lead_desk_store.py": {
+      "bytes": 3145,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "943a9cac09f51155419a9e9bc040e6c1cee4751f5eb648b108fb0d098bc89026"
+    },
+    "ua_lead_desk_view.py": {
+      "bytes": 8398,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_lead_calendar.py",
+        "ua_lead_desk_store.py",
+        "ua_lead_folders.py"
+      ],
+      "sha256": "bd9b085ee3070df8f11e0df43d962fce2b1a4d998ce9ab3fca85211d55a2ffe5"
+    },
+    "ua_lead_folders.py": {
+      "bytes": 2344,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "7f8bcdd715977bba71dd915b70f56dad174fffd6aed4fa16cd440b7788e904f2"
+    },
+    "ua_lead_source.py": {
+      "bytes": 4406,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "0c17c951ec91b036f29f89b1e4bfcccef08977a0e9f1f9c5e5397d7ce01b00ca"
+    },
+    "ua_lead_sources.py": {
+      "bytes": 5389,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_lead_folders.py"
+      ],
+      "sha256": "c56398e8ba140dfd88ea9341e96b523deb3db66aa8bef1aa97d05fd21e4a22fa"
+    },
+    "ua_media_gallery.py": {
+      "bytes": 5537,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_media_script.py",
+        "ua_media_styles.py",
+        "ua_photo_copies.py"
+      ],
+      "sha256": "ec0af9e3fdf7d76b6b84b5f00361f2e7fd5168a9bcf0f8ce6d1fa2138070c432"
+    },
+    "ua_media_script.py": {
+      "bytes": 13087,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "071ac43b5aa759f9308c6e8ab067763ffcc66f297044c75c1940be32f3ae1f7e"
+    },
+    "ua_media_styles.py": {
+      "bytes": 3864,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "2c365fb7863dfe3e920320c71f315e167fc8534198f0d9a7699816d9d96e6195"
+    },
+    "ua_menu_extra.py": {
+      "bytes": 1884,
+      "counts": {},
+      "definitions": [
+        {
+          "end_line": 29,
+          "excerpt": "EXPORTED",
+          "line": 14,
+          "name": "with_buttons"
+        }
+      ],
+      "imports_local": [],
+      "sha256": "3672fef09b6e37aaf5b5e0005c6ccede0fd0a7191b936398dd3d09c36d6c9e41"
+    },
+    "ua_new_car_bot.py": {
+      "bytes": 4851,
+      "counts": {
+        "application_handler_stop": 7,
+        "message_handler": 2
+      },
+      "definitions": [
+        {
+          "end_line": 28,
+          "excerpt": "EXPORTED",
+          "line": 25,
+          "name": "rows"
+        }
+      ],
+      "imports_local": [
+        "db.py",
+        "photo_card.py",
+        "ua_vin_decode.py"
+      ],
+      "sha256": "03f3aff0099d2b0e4c6016f67d97ab04791aa887cc374b00966f198db01ac5dd"
+    },
+    "ua_order_book.py": {
+      "bytes": 4964,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "a0d8b3a4ae6f169f35f7cd77f0f5540b48a4771d8da5371fb3d5365f75d1606d"
+    },
+    "ua_own_counter.py": {
+      "bytes": 592,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "e9414d9988d3d3a2b22011cd051a65d6f8d086cde3d7abc1443bb35b45a5fd38"
+    },
+    "ua_pay_bot.py": {
+      "bytes": 16605,
+      "counts": {
+        "application_handler_stop": 8,
+        "message_handler": 2
+      },
+      "definitions": [
+        {
+          "end_line": 88,
+          "excerpt": "EXPORTED",
+          "line": 86,
+          "name": "markup"
+        }
+      ],
+      "imports_local": [
+        "db.py",
+        "ua_crm_orders.py",
+        "ua_crm_orders_view.py",
+        "ua_lead_calendar.py",
+        "ua_pay_lot.py",
+        "ua_pay_rules.py",
+        "ua_pay_store.py",
+        "ua_pay_view.py"
+      ],
+      "sha256": "8b02d675b0a1f5a49f46a29625ceb3dae361385fb4ebb6827d714aeaa247994f"
+    },
+    "ua_pay_lot.py": {
+      "bytes": 3962,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "dd0ca45144a550d90e1636579891b3faa958db67ac893f54f3a0134a28dc4a00"
+    },
+    "ua_pay_rules.py": {
+      "bytes": 3769,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_lead_calendar.py"
+      ],
+      "sha256": "530ea3115c4141420e9370a819e6ec9401a34e8f248359230cd471afbaeedf3a"
+    },
+    "ua_pay_store.py": {
+      "bytes": 13205,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_pay_rules.py"
+      ],
+      "sha256": "e8b2e7539aa91aa0a52e63245de0c0726e790d6bf1c77da58aa548e8a74aa9e5"
+    },
+    "ua_pay_view.py": {
+      "bytes": 14445,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_pay_rules.py"
+      ],
+      "sha256": "dcd4137368160b002fab37618bbfba72e5fc8e9e52329c4e88767b60f1fd1361"
+    },
+    "ua_photo_copies.py": {
+      "bytes": 1375,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "457904fb9ad595eb6443a422ed2428baa9f76bf3638bb6ce17e6c490a9f5d954"
+    },
+    "ua_price_html_v2.py": {
+      "bytes": 2494,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "uaart_public_prices_v1.py"
+      ],
+      "sha256": "b2698517788b8328771deb1d92737148fccfadf265b5ec906a47dc41ebc7b51c"
+    },
+    "ua_public_freshness.py": {
+      "bytes": 2855,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_price_html_v2.py"
+      ],
+      "sha256": "6c750d0ffcfd3959413120905e46b8765049a2a207b77741d7fc5721a225c134"
+    },
+    "ua_publish_requests.py": {
+      "bytes": 3095,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "746657dd1c6b23968582cbb19bb6bb819ed5ad28654c1f4a657b258cd14645a1"
+    },
+    "ua_seo_catalog.py": {
+      "bytes": 3784,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "ec7d887a6da95db1c9509486bccf2aa0e7b48eea4e2876926a8089e50f0b3980"
+    },
+    "ua_seo_finance.py": {
+      "bytes": 9495,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_finance_partners.py",
+        "ua_seo_schema.py"
+      ],
+      "sha256": "0238f0d6fa68df1c1d17dae34f4e89813cb464c014486a3328018e08a736093f"
+    },
+    "ua_seo_header.py": {
+      "bytes": 7801,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_seo_schema.py"
+      ],
+      "sha256": "a560f1eeeb4d5090a6321f95a87a4530714ef2199f881d28e2a3ea665d4efe0f"
+    },
+    "ua_seo_hub_texts.py": {
+      "bytes": 7170,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_seo_ukraine_page.py"
+      ],
+      "sha256": "3445ae0f8a270821338c98e0f210ec3183aabe28f7199d223342f12b47e23506"
+    },
+    "ua_seo_index.py": {
+      "bytes": 2442,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_autoria_badge.py",
+        "ua_brand_home.py",
+        "ua_chat_button.py",
+        "ua_google_sitemap.py",
+        "ua_google_tag.py",
+        "ua_indexnow.py",
+        "ua_own_counter.py",
+        "ua_seo_catalog.py",
+        "ua_seo_landings.py",
+        "ua_seo_sitemap.py",
+        "ua_social_links.py"
+      ],
+      "sha256": "b11667ec23bb84c237955bb5d829621f7f65cf6ef17b325a69a3e292f77c27d3"
+    },
+    "ua_seo_landings.py": {
+      "bytes": 47443,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_card_urls.py",
+        "ua_finance_partners.py",
+        "ua_korea_link.py",
+        "ua_lead_source.py",
+        "ua_photo_copies.py",
+        "ua_seo_finance.py",
+        "ua_seo_header.py",
+        "ua_seo_hub_texts.py",
+        "ua_seo_order_models.py",
+        "ua_seo_quick_form.py",
+        "ua_seo_schema.py",
+        "ua_service_words.py",
+        "ua_terms_links.py"
+      ],
+      "sha256": "4ffe374ae0eb4f368c1a6a8d278153264ce27de0e29aae6f0e0ea5b4a5e81cbe"
+    },
+    "ua_seo_metadata.py": {
+      "bytes": 18556,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_card_finance.py",
+        "ua_card_lang.py",
+        "ua_card_urls.py",
+        "ua_google_tag.py",
+        "ua_own_counter.py",
+        "ua_seo_catalog.py",
+        "ua_seo_landings.py",
+        "ua_seo_schema.py"
+      ],
+      "sha256": "25b820bc70e97b3d235b2536ff664a6305fbfc09cec7ffd95a30fa410073e141"
+    },
+    "ua_seo_order_models.py": {
+      "bytes": 38926,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_seo_ukraine_page.py"
+      ],
+      "sha256": "314432844465b3897c1947fd2c82b04e99606e4669bfa288b05ecbbf53fb2971"
+    },
+    "ua_seo_quick_form.py": {
+      "bytes": 4424,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "ff6090c0109556ac2cc02c6ca131390293cf577cee1346cbd4072e5087728363"
+    },
+    "ua_seo_schema.py": {
+      "bytes": 3222,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_social_links.py"
+      ],
+      "sha256": "9e2ffb359f651582dcfcba1059dcc0170e75d10861b6602e5b32ae5a09b05008"
+    },
+    "ua_seo_sitemap.py": {
+      "bytes": 3394,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "92c3d433d4762cad3d2b46e937938963040b615553077f959d78cb3374c47f1a"
+    },
+    "ua_seo_ukraine_page.py": {
+      "bytes": 12137,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "1406899f6aabe0611e4cebb76590500ee890f3c2aaeb8fcc0d71c3c67762f8d3"
+    },
+    "ua_service_words.py": {
+      "bytes": 24507,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "3b05aba4bfc3ecf36d8cbcec364a4c972eb8e7df63a20e2c2de35a070bbdc900"
+    },
+    "ua_site_counters.py": {
+      "bytes": 17314,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "17f662420284da3e193d7a520b6302b27fce26aa8e38cfff60772299c221277f"
+    },
+    "ua_social_links.py": {
+      "bytes": 6467,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "637021bb35a8e67042fd119a5e51cb48af13e17cb57055a1dcf2d48cad92f60c"
+    },
+    "ua_spec84_runtime.py": {
+      "bytes": 20994,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "spec84_collector.py",
+        "spec_retry84.py",
+        "ua_spec_permanent.py",
+        "vin_spec_service.py"
+      ],
+      "sha256": "7ea2abb92b28321cf52fd64c40f6f364325a91fb401c482c64d5a9a61e23748f"
+    },
+    "ua_spec_permanent.py": {
+      "bytes": 14299,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_additional_spec.py",
+        "ua_spec84_runtime.py"
+      ],
+      "sha256": "2ede3b57f0295cb32aabbc7d4f6e622e3fccf48710c46276d6925252a1cee65d"
+    },
+    "ua_stage_catalog_sync.py": {
+      "bytes": 11053,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "publish_transaction_guard.py",
+        "ua_delivery_status.py",
+        "ua_site_counters.py"
+      ],
+      "sha256": "a8d2784e73d005b5a02328f63c9233d78da665547266276df69291383616a255"
+    },
+    "ua_stage_images.py": {
+      "bytes": 3551,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "9698da21737fc5f3212224e065ffd1d9ed139a709117f2ff150f00dc11ff4c99"
+    },
+    "ua_terms_links.py": {
+      "bytes": 696,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "adb3e32a9d9e765b22435f2aaea70cb94bf92fe14821fe433d543e6efa88b3c5"
+    },
+    "ua_tg_script.py": {
+      "bytes": 1403,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "ce14c5e71135fd990fdbed7a3d7934f634c0437c43ee07a592073a727cfaf1b9"
+    },
+    "ua_tracking_links.py": {
+      "bytes": 1322,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "bfd311edb2a18cf161299890dec373e9fd86cdd4d4ccf4d56be3341610b700d2"
+    },
+    "ua_tracking_widget.py": {
+      "bytes": 3095,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ua_tracking_links.py"
+      ],
+      "sha256": "b5363b55ec9038add3735da45028640e8cb666712b73d442dee6b2da1fd9a42b"
+    },
+    "ua_vin_decode.py": {
+      "bytes": 3346,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "ai_fast_schema.py",
+        "ai_filter.py"
+      ],
+      "sha256": "9df929afadc026bf7e722e1bf8d42dcbd84c4f879c9308d8ac0b71169242c7b0"
+    },
+    "uaart_public_prices_v1.py": {
+      "bytes": 2418,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "uaart_public_renderer_v1.py"
+      ],
+      "sha256": "002a973f83e54f51d8747e58270250e40b4f672bf1c872690f4bd34c8722ed3c"
+    },
+    "uaart_public_renderer_v1.py": {
+      "bytes": 9608,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "35d9f212060b36b60c257db8da3ab1e6aed8b1905e1038cf33bc395b731332ed"
+    },
+    "video_helper.py": {
+      "bytes": 7760,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "401520b51c262790022ef30fe3d4bec6dafd713a39984c17564172b3c2ccb7d9"
+    },
+    "vin_brand.py": {
+      "bytes": 1095,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "bc09ecd10202e3162b13c93825ee6884c67433afbda9f7060c1b5f433cd87c67"
+    },
+    "vin_spec_service.py": {
+      "bytes": 36543,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [
+        "publikaciya.py",
+        "source_policy.py",
+        "ua_spec84_runtime.py"
+      ],
+      "sha256": "1d4d54a6cd70f03dcdf2c599d4a9c6362bfd842f18c40a231dfd0ecbc965ce4a"
+    },
+    "visits.py": {
+      "bytes": 11476,
+      "counts": {},
+      "definitions": [],
+      "imports_local": [],
+      "sha256": "69de9e99f0e5c2cd07166f122e72d91275931d3746a18298cca6fd5b4fad9468"
+    }
+  },
+  "started_at": "2026-11-15T02:43:14Z",
+  "task_id": "CRM-HOME-BUTTON-PROBE-20261115",
+  "totals": {
+    "application_handler_stop": 238,
+    "conversation_handler": 7,
+    "keyboard_button": 1,
+    "message_handler": 43,
+    "post_init": 7,
+    "reply_keyboard_markup": 2,
+    "reply_keyboard_remove": 5,
+    "set_my_commands": 5,
+    "start_command_handler": 8
+  }
+}
