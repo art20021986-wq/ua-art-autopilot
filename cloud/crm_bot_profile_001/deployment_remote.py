@@ -412,7 +412,10 @@ def account_used_bytes():
     result = subprocess.run(['du', '-s', '-B1', str(ROOT), '/tmp'], capture_output=True, text=True,
                             timeout=600, check=False)
     sizes = [int(line.split('\t')[0]) for line in result.stdout.splitlines() if line.strip()]
-    if result.returncode != 0 or len(sizes) != 2:
+    # A temporary file that another program removes while du walks is not an error of the measurement.
+    vanished = all(l.startswith('du: cannot access ') and l.endswith(': No such file or directory')
+                   for l in result.stderr.splitlines() if l.strip())
+    if (result.returncode != 0 and not (result.returncode == 1 and result.stderr.strip() and vanished)) or len(sizes) != 2:
         raise DeploymentError('ACCOUNT_USAGE:'+result.stderr[-160:])
     return sum(sizes)
 
