@@ -7,21 +7,23 @@
   "created_at": "2026-11-15T02:44:46Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-15T02:44:46Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-15T02:52:39Z",
+  "heartbeat_at": "2026-11-15T02:52:39Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "43669038412",
     "task_id": "VIN-KOREA-PROBE-20261115",
     "task_sha256": "62bcd21f58c0794c2032f8e6e225000600e6dad43f6d96fd612a2087a1bda570"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-10fa19252dce4f57-bbd475f0375e8abd",
   "receipt_path": "state/receipts/VIN-KOREA-PROBE-20261115.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "df4de355cf3d8d23cbee6ddd509a9b5fd121ac362c17b1a95158292397dd3c10",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/VIN-KOREA-PROBE-20261115.json",
   "request_sha256": "62bcd21f58c0794c2032f8e6e225000600e6dad43f6d96fd612a2087a1bda570",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "34c0d1044fe024513098d7051f3d1ade4f140d6f",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92095651840,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.57
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-15T02:44:46Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "58c2e3bda46912fe43c238ce94a0e48721c8335d8c8ce74e273c3621f43975a0",
+    "file_sha256": {
+      "cloud/vin_korea_probe_001/bootstrap.py": "dcffe186da467da8effc59a48d4d8feaba274d4c4666057df76719a62e370bc4",
+      "cloud/vin_korea_probe_001/make_request.py": "8eb3d799696ab703e1f5c31370adb344e9cc556db785909992ed37e51d7c04f9",
+      "cloud/vin_korea_probe_001/source_remote.py": "7d0b218959305ed12ab64a9be7e993a6b624c27204b3a8676136d842426d755a",
+      "cloud/vin_korea_probe_001/test_vin_korea_probe.py": "6a68507e72e0e3904c2762209753fe16812d7e4034fa223d7d15f215c2424906",
+      "cloud/vin_korea_probe_001/transport.py": "309eac0f9d0434157a2656b824c5f869b21c367b221e1fe1f234e8d20f17a43f"
+    }
+  },
+  "updated_at": "2026-11-15T02:52:39Z"
 }
