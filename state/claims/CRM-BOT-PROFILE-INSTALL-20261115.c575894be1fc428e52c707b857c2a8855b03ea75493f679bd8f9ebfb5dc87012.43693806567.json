@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "374fa594bfa3fb2defb7992c8ad8a1bbec3a2fa5687de23cedc2e378a7d582a9",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-15T08:20:24Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-15T08:24:24Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "43693806567",
     "task_id": "CRM-BOT-PROFILE-INSTALL-20261115",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-43693806567-c575894be1fc428e",
   "production_transaction_path": "state/transactions/CRM-BOT-PROFILE-INSTALL-20261115.c575894be1fc428e52c707b857c2a8855b03ea75493f679bd8f9ebfb5dc87012.43693806567.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-878902724961de08-c52613216c86a3f8",
   "receipt_path": "state/receipts/CRM-BOT-PROFILE-INSTALL-20261115.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/crm_bot_profile_001/ua_bot_profile.py": "4a8c2f3ab88f4d81284da756898342dc9ddc13914e5960fb66decccd887ac2c4"
     }
   },
-  "updated_at": "2026-11-15T08:20:24Z"
+  "updated_at": "2026-11-15T08:24:24Z"
 }
