@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-PHOTO-FIX-PREFLIGHT-20261115-R2.5965c86c9425d66aba49c881205f55e5614df4e62f387204336682f1acae3c33.json",
+  "autostart_ledger_sha256": "add2bf734cf5c23b4bc07fedb384f58c0ff65be77110543b68dcc3ff0bf91937",
+  "autostart_source_commit": "0c15d24b1045bf33c76bbfaad267bebd9ed8e2a4",
+  "created_at": "2026-11-15T02:18:37Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43667055070",
+    "task_id": "HOME-PHOTO-FIX-PREFLIGHT-20261115-R2",
+    "task_sha256": "5965c86c9425d66aba49c881205f55e5614df4e62f387204336682f1acae3c33"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-a9c25aeb3f50aadb-e0f2654f5a88ac28",
+  "request_path": "tasks/requests/HOME-PHOTO-FIX-PREFLIGHT-20261115-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:a9c25aeb3f50aadb"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
