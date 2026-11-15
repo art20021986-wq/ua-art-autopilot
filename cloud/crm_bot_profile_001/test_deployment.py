@@ -323,8 +323,23 @@ class SmokeTests(unittest.TestCase):
             real = remote.subprocess.run
             local = lambda args, **kw: real([sys.executable] + args[1:], **kw)  # python3.10 on the server
             with patch.object(remote, 'ROOT', root), patch.object(remote.subprocess, 'run', side_effect=local):
-                value = remote.smoke(root)
-        self.assertEqual(value['live_before'], {'error': 'FileNotFoundError'})
+                value = remote.smoke(root, require_live=False)
+        self.assertEqual(value['live_crm'], {'error': 'FileNotFoundError'})
+        self.assertEqual(value['live_client'], {'error': 'FileNotFoundError'})
+
+
+class SmokeBotsTests(unittest.TestCase):
+    def run_with(self, crm, client):
+        out = dict(remote.EXPECTED, live_crm={'getMe': {'username': crm}}, live_client={'getMe': {'username': client}})
+        done = SimpleNamespace(returncode=0, stdout=json.dumps(out), stderr='')
+        with patch.object(remote.subprocess, 'run', return_value=done):
+            return remote.smoke(Path('/nonexistent'))
+
+    def test_two_different_bots_required(self):
+        self.assertEqual(self.run_with('crm_bot', 'client_bot')['live_client']['getMe']['username'], 'client_bot')
+        for crm, client in (('same', 'same'), ('crm_bot', None)):
+            with self.assertRaisesRegex(remote.DeploymentError, 'SMOKE_BOTS'):
+                self.run_with(crm, client)
 
 
 class EditCarsUiTests(unittest.TestCase):

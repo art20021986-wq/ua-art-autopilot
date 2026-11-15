@@ -126,11 +126,11 @@ def prepare(directory):
 
 
 # Runs in a separate python3.10 (the bot's interpreter, its python-telegram-bot) with the candidate files first and the
-# live modules behind them: compiles the candidate cars_ui.py, runs ua_bot_profile.apply against a stand-in bot (sets only
-# what differs, then nothing), and reads the CRM bot's current texts from Telegram (GET only; the token stays on the server
-# and is not printed). Nothing is written.
+# live modules behind them: compiles the candidate cars_ui.py, runs ua_bot_profile.apply against stand-in bots (sets only
+# what differs, then nothing; the client menu is untouched), and reads both bots' names and current texts from Telegram
+# (GET only; tokens stay on the server and are not printed). Nothing is written.
 SMOKE = r"""
-import asyncio, json, sys, types, urllib.request
+import asyncio, json, os, sys, types, urllib.request
 after, root = sys.argv[1], sys.argv[2]
 sys.path[:0] = [after, root]
 source = open(after + '/cars_ui.py', encoding='utf-8').read()
@@ -147,28 +147,39 @@ class Bot:
     async def set_my_short_description(self, v): self.calls.append('s'); self.s = v
     async def set_my_commands(self, v): self.calls.append('c'); self.c = list(v)
 bot = Bot()
-first, second = asyncio.run(p.apply(bot)), asyncio.run(p.apply(bot))
-live = {}
-try:
-    token = open(root + '/team_token.txt', encoding='utf-8').read().strip()
-    for method in ('getMyDescription', 'getMyShortDescription', 'getMyCommands'):
-        with urllib.request.urlopen('https://api.telegram.org/bot%s/%s' % (token, method), timeout=20) as r:
-            live[method] = json.load(r).get('result')
-except Exception as e:
-    live = {'error': type(e).__name__}
-print(json.dumps({'telegram': telegram.__version__, 'first': first, 'second': second,
-                  'commands': [[c.command, c.description] for c in bot.c], 'live_before': live,
+first, second = asyncio.run(p.apply(bot, p.CRM)), asyncio.run(p.apply(bot, p.CRM))
+client = Bot()
+client_first = asyncio.run(p.apply(client, p.CLIENT))
+def live(path):
+    value = {}
+    try:
+        token = open(path, encoding='utf-8').read().strip()
+        for method in ('getMe', 'getMyDescription', 'getMyShortDescription', 'getMyCommands'):
+            with urllib.request.urlopen('https://api.telegram.org/bot%s/%s' % (token, method), timeout=20) as r:
+                result = json.load(r).get('result')
+            value[method] = {'username': result.get('username')} if method == 'getMe' else result
+    except Exception as e:
+        value = {'error': type(e).__name__}
+    return value
+print(json.dumps({'telegram': telegram.__version__, 'first': first, 'second': second, 'client_first': client_first,
+                  'commands': [[c.command, c.description] for c in bot.c],
+                  'client_commands': [[c.command, c.description] for c in client.c],
+                  'live_crm': live(root + '/team_token.txt'), 'live_client': live(root + '/bot_token.txt'),
+                  'client_token_file': os.path.basename(p.CLIENT_TOKEN_FILE) == 'bot_token.txt',
                   'cars_ui_block': source.count('# CRM-BOT-PROFILE-001') == 1}, ensure_ascii=False))
 """
 EXPECTED = {
     'first': ['description', 'short_description', 'commands'],
     'second': [],
+    'client_first': ['description', 'short_description'],
     'commands': [['start', '🏠 Главная'], ['cancel', '✖️ Отменить действие']],
+    'client_commands': [['start', 'Меню']],
+    'client_token_file': True,
     'cars_ui_block': True,
 }
 
 
-def smoke(directory):
+def smoke(directory, require_live=True):
     result = subprocess.run(['python3.10', '-B', '-c', SMOKE, str(directory/'after'), str(ROOT)],
                             capture_output=True, text=True, timeout=120, check=False, cwd=str(directory))
     if result.returncode != 0:
@@ -176,6 +187,10 @@ def smoke(directory):
     value = json.loads(result.stdout.strip().splitlines()[-1])
     if {key: value.get(key) for key in EXPECTED} != EXPECTED:
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:300])
+    if require_live:
+        names = [(value[k].get('getMe') or {}).get('username') for k in ('live_crm', 'live_client')]
+        if not all(names) or names[0] == names[1]:
+            raise DeploymentError('SMOKE_BOTS:'+json.dumps(names))
     return value
 
 
