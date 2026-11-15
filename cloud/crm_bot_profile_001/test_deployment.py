@@ -282,6 +282,14 @@ class StorageProbeTests(unittest.TestCase):
                 with self.assertRaisesRegex(remote.DeploymentError, 'ACCOUNT_USAGE'):
                     remote.storage_probe()
 
+    def test_file_removed_during_walk_is_measured(self):
+        gone = SimpleNamespace(stdout='8000000000\t/home/Carix\n200000000\t/tmp\n', returncode=1,
+                               stderr="du: cannot access '/home/Carix/..x.tmp': No such file or directory\n")
+        shared = SimpleNamespace(total=6*10**12, used=5*10**12, free=10**12)
+        with patch.object(remote.subprocess, 'run', return_value=gone), \
+             patch.object(remote.shutil, 'disk_usage', return_value=shared):
+            self.assertEqual(remote.storage_probe()['used_bytes'], 8200000000)
+
     def test_over_quota_fails_closed(self):
         with patch.object(remote.subprocess, 'run', return_value=self.du('36000000000\t/home/Carix\n0\t/tmp\n')):
             with self.assertRaisesRegex(remote.DeploymentError, 'ACCOUNT_OVER_QUOTA'):
