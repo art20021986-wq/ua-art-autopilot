@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HOME-PHOTO-FIX-INSTALL-20261115.842fb9b0e7541edb674a00e7b60f5c0270d987ba2f3da5fa0ff8b15288b3d7ef.json",
+  "autostart_ledger_sha256": "31896a1ddef2e5b7a0f349a20aa2a196ed4df6d5288569b1b24c2d0ab57d41e1",
+  "autostart_source_commit": "74d0f41823c7054de1aabf3de5fa56ded8b6b1a0",
+  "created_at": "2026-11-15T02:23:45Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-15T02:23:45Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "43667452453",
+    "task_id": "HOME-PHOTO-FIX-INSTALL-20261115",
+    "task_sha256": "842fb9b0e7541edb674a00e7b60f5c0270d987ba2f3da5fa0ff8b15288b3d7ef"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-4288df1b16b44110-9f6f849ab7ca11bf",
+  "receipt_path": "state/receipts/HOME-PHOTO-FIX-INSTALL-20261115.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/HOME-PHOTO-FIX-INSTALL-20261115.json",
+  "request_sha256": "842fb9b0e7541edb674a00e7b60f5c0270d987ba2f3da5fa0ff8b15288b3d7ef",
+  "resource_locks": [
+    "PATH_SCOPE:4288df1b16b44110"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "ceaa85759bdfb633496587dc961c1e9dd7128df4",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-15T02:23:45Z"
+}
