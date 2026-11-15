@@ -12,7 +12,7 @@ from telegram.ext import ApplicationHandlerStop, CommandHandler, MessageHandler,
 log = logging.getLogger(__name__)
 HOME_TEXT = '🏠 Главная'
 NOTE = '🏠 Кнопка «Главная» внизу — одно нажатие возвращает в главное меню.'
-GROUP = -100  # раньше всех обработчиков бота (перехват сообщений CRM — группа -1)
+GROUP = -200  # раньше всех обработчиков бота (самая ранняя у бота — -100, перехват сообщений CRM — -1)
 _SHOWN = '_ua_home_button_shown'
 
 
