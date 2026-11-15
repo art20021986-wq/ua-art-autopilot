@@ -101,6 +101,8 @@ def install():
     task = INSTALL_TASK
     now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
     plan = json.load(open(P + 'deployment_plan.json'))
+    if not plan.get('changes'):
+        raise SystemExit('NOTHING_TO_FILL: the preview found no empty field to fill (or no car with this VIN)')
     preview_value = json.load(open(P + 'deployment_preview.json'))
     probe = preview_value['storage_probe']
     storage = {k: probe[k] for k in ('account_quota_measured', 'free_bytes', 'measured_at', 'measurement_method',

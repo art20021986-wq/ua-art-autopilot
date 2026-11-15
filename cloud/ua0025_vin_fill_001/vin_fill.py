@@ -13,9 +13,10 @@ def empty(value):
 
 
 def changes_for(row, decoded):
-    """[{id, auto_number, published, field, before, after}] for the empty fields the decode fills."""
-    if row.get('auto_number') != CARD or str(row.get('vin') or '').upper() != VIN:
+    """[{id, auto_number, published, field, before, after}] for the empty fields the decode fills.
+    The car is identified by its VIN (UA-0025 at creation); its current number is kept as it is."""
+    if str(row.get('vin') or '').upper() != VIN:
         raise ValueError('CARD_IDENTITY')
-    return [{'id': row['id'], 'auto_number': CARD, 'published': row.get('published'), 'field': field,
+    return [{'id': row['id'], 'auto_number': row.get('auto_number'), 'published': row.get('published'), 'field': field,
              'before': row.get(field), 'after': decoded[field]}
             for field in FIELDS if field in decoded and field in row and empty(row.get(field))]
