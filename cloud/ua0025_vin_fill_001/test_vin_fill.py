@@ -37,10 +37,11 @@ class PlanTests(unittest.TestCase):
         changes = vin_fill.changes_for(self.row(model='E 300', year='', gearbox='механика', engine_cc=0), DECODED)
         self.assertEqual([c['field'] for c in changes], ['year', 'engine_cc', 'fuel', 'drive'])
 
-    def test_other_card_refused(self):
-        for values in ({'auto_number': 'UA-0026'}, {'vin': 'WDD2452322J660244'}):
-            with self.assertRaisesRegex(ValueError, 'CARD_IDENTITY'):
-                vin_fill.changes_for(self.row(**values), DECODED)
+    def test_identity_is_the_vin_not_the_number(self):
+        changes = vin_fill.changes_for(self.row(auto_number='UA-0026'), DECODED)
+        self.assertEqual({c['auto_number'] for c in changes}, {'UA-0026'})
+        with self.assertRaisesRegex(ValueError, 'CARD_IDENTITY'):
+            vin_fill.changes_for(self.row(vin='WDD2452322J660244'), DECODED)
 
 
 class CrmWriteTests(unittest.TestCase):
@@ -69,6 +70,25 @@ class CrmWriteTests(unittest.TestCase):
         self.assertEqual(len(plan['changes']), 6)
         self.assertEqual(plan['row_before_sha256'], remote.row_digest(self.all_rows()[1]))
         self.assertNotEqual(plan['row_after_sha256'], plan['row_before_sha256'])
+
+    def test_missing_car_gives_an_empty_plan_with_the_log(self):
+        with self.connect() as con:
+            con.execute('CREATE TABLE audit(id INTEGER PRIMARY KEY, actor_id, action, entity_type, entity_id, field, '
+                        'old_value, new_value, created_at)')
+            con.executemany('INSERT INTO audit(actor_id, action, entity_type, entity_id, field, old_value, new_value, '
+                            'created_at) VALUES(?,?,?,?,?,?,?,?)',
+                            [(7, 'card_create', 'cars', 25, None, None, None, '2026-11-13T08:54'),
+                             (7, 'card_edit', 'cars', 25, 'vin', None, VIN, '2026-11-13T08:54'),
+                             (7, 'card_delete', 'cars', 25, None, None, None, '2026-11-13T09:10'),
+                             (7, 'card_edit', 'cars', 7, 'vin', None, 'X', '2026-11-01')])
+            con.execute('DELETE FROM cars WHERE id=25')
+            con.commit()
+        with patch.object(remote, 'decoded') as decode:
+            plan = remote.prepare()
+        decode.assert_not_called()
+        self.assertEqual((plan['changes'], plan['found'], plan['crm_write']), ([], False, False))
+        self.assertEqual([h['action'] for h in plan['history']], ['card_create', 'card_edit', 'card_delete'])
+        self.assertNotIn('actor_id', str(plan['history']))
 
     def test_apply_fills_only_the_listed_fields_and_rollback_restores(self):
         before = self.all_rows()

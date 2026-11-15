@@ -18,7 +18,7 @@ import tempfile
 import time
 
 from deployment_transport import API, canonical, sha
-from vin_fill import CARD, FIELDS, VIN, changes_for
+from vin_fill import FIELDS, VIN, changes_for
 
 ROOT = Path('/home/Carix')
 HERE = Path(__file__).resolve().parent
@@ -102,20 +102,34 @@ def decoded():
     return value
 
 
+def history():
+    """What the CRM action log says about the card that had this VIN: action, field and time only (no people)."""
+    with read_only() as connection:
+        ids = [row[0] for row in connection.execute(
+            "SELECT DISTINCT entity_id FROM audit WHERE entity_type='cars' AND UPPER(new_value)=?", (VIN,))]
+        found = []
+        for ident in ids:
+            found += [{'entity_id': ident, 'action': a, 'field': f, 'at': t} for a, f, t in connection.execute(
+                "SELECT action, field, created_at FROM audit WHERE entity_type='cars' AND entity_id=? ORDER BY id",
+                (ident,))]
+    return found[-60:]
+
+
 def prepare():
     with read_only() as connection:
         current = rows(connection)
         types = {name: str(kind).upper() for _, name, kind, *_ in connection.execute('PRAGMA table_info(cars)')}
-    cards = [row for row in current if row['auto_number'] == CARD]
-    if len(cards) != 1:
-        raise DeploymentError('CARD_COUNT:%d' % len(cards))
+    cards = [row for row in current if str(row['vin'] or '').upper() == VIN]
+    if len(cards) > 1:
+        raise DeploymentError('VIN_DUPLICATE:%d' % len(cards))
+    if not cards:
+        return {'schema_version': 'UA0025-VIN-FILL-INSTALL-1', 'changes': [], 'found': False,
+                'history': history(), 'crm_write': False}
     changes = changes_for(cards[0], decoded())
-    if not changes:
-        raise DeploymentError('NOTHING_TO_FILL')
     # the value as SQLite will keep it: a TEXT column (year) stores 2019 as '2019'
     filled = dict(cards[0], **{c['field']: str(c['after']) if 'TEXT' in types[c['field']] else c['after']
                                for c in changes})
-    return {'schema_version': 'UA0025-VIN-FILL-INSTALL-1', 'changes': changes,
+    return {'schema_version': 'UA0025-VIN-FILL-INSTALL-1', 'changes': changes, 'found': True,
             'row_before_sha256': row_digest(cards[0]), 'row_after_sha256': row_digest(filled),
             'protected': {name: sha(read(ROOT/name)) for name in PROTECTED if (ROOT/name).exists()},
             'crm_write': True, 'crm_scope': 'the listed empty fields of UA-0025 only',
