@@ -65,11 +65,16 @@ class ProfileTests(unittest.TestCase):
         self.assertEqual(asyncio.run(p.apply(bot, p.CRM)), [])
         self.assertEqual(bot.calls, [])
 
+    def test_client_description_has_no_payment_terms(self):
+        self.assertNotIn('оплат', p.CLIENT['description'])
+        self.assertNotIn('доставк', p.CLIENT['description'])
+
     def test_client_menu_only_main(self):
         bot = Bot(commands=())
         self.assertEqual(asyncio.run(p.apply(bot, p.CLIENT)), ['description', 'short_description', 'commands'])
         self.assertEqual([(c.command, c.description) for c in bot.c], [('start', 'Главное меню')])
         self.assertIn('Кореи и Японии', bot.d)
+        self.assertNotIn('оплат', bot.d)
 
     def test_limits(self):
         for texts in (p.CRM, p.CLIENT):
