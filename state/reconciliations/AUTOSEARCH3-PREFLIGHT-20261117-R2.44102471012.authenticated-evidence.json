@@ -1,0 +1,16 @@
+{
+  "claim_before_sha256": "ce5dc262445b3355639e49f8cc6c4f14d4c8a6f97854fa73c1ce50e82585c7c5",
+  "error": "deployment_transport.TransportError: NETWORK_TimeoutError (POST files/path …/autosearch3-<bundle>.zip) -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: upload of the bundle to the PythonAnywhere files API (before any server task)",
+  "leftover_temporary_task": "none: no always-on task was created (the upload failed first); a partial upload, if any, is checked by hash before use",
+  "owner_approval": "«Да» in chat 2026-11-17 to closing the claim by manual reconciliation and retrying",
+  "precedent": "state/reconciliations/VIN-MVS-PREFLIGHT-20261117.44047252389.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-17T14:40:00+00:00",
+  "remote_mode": "preview (reads only) — not started",
+  "retry": "AUTOSEARCH3-PREFLIGHT-20261117-R3",
+  "run_id": "44102471012",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "AUTOSEARCH3-PREFLIGHT-20261117-R2"
+}
