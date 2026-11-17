@@ -1,0 +1,101 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-FACTS-INSTALL-20261117.82d5e7553f12750dc1a154041cc2f4a25b532ba941d23c5c9c7b53f3f8ee3b86.json",
+  "autostart_ledger_sha256": "69ffa283bea6f2ac3d774c3b83929da09626c728d0f2857c635b994f5cf49eb7",
+  "autostart_source_commit": "40d4362395fdee45bb9759131a6c2c366a7be7a9",
+  "created_at": "2026-11-17T05:24:50Z",
+  "critical_gate_evidence_sha256": "9a047d5d5cfbfb9e45d08e4f897b1d650d6fae82c61c338f8e54a35965c7323e",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "STOP_AFTER_VERIFIED_ROLLBACK",
+      "at": "2026-11-17T06:12:44Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 44023739157",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "69adeafb8778f033"
+    }
+  ],
+  "heartbeat_at": "2026-11-17T05:31:03Z",
+  "heartbeat_sequence": 7,
+  "identity": {
+    "run_id": "44023739157",
+    "task_id": "CARD-FACTS-INSTALL-20261117",
+    "task_sha256": "82d5e7553f12750dc1a154041cc2f4a25b532ba941d23c5c9c7b53f3f8ee3b86"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 287.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 339.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-44023739157-82d5e7553f12750d",
+  "production_transaction_path": "state/transactions/CARD-FACTS-INSTALL-20261117.82d5e7553f12750dc1a154041cc2f4a25b532ba941d23c5c9c7b53f3f8ee3b86.44023739157.json",
+  "production_transaction_status": "ROLLED_BACK",
+  "queue_key": "card-ua-0021-cf0e311dba07a982",
+  "receipt_path": "state/receipts/CARD-FACTS-INSTALL-20261117.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/CARD-FACTS-INSTALL-20261117.json",
+  "request_sha256": "82d5e7553f12750dc1a154041cc2f4a25b532ba941d23c5c9c7b53f3f8ee3b86",
+  "resource_locks": [
+    "CARD:UA-0021",
+    "CARD:UA-0023",
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "fff8da85ed8e774aaa519e301e29c5903bd7d46a",
+  "storage_preflight": {
+    "age_seconds": 348.604,
+    "allowed": true,
+    "evidence_path": "state/storage/CARD-FACTS-INSTALL-20261117.json",
+    "evidence_sha256": "54449f14a022e39fc3f08d1ac61cc8be3fd1a72dd7032b6a70326a4184bb8a4c",
+    "free_bytes": 18697272832,
+    "heavy": true,
+    "measured_at": "2026-11-17T05:20:15.535654+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 46.57922048
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "ROLLED_BACK",
+  "trusted_package": {
+    "controller_sha256": "3de31a2f63ed0499506eeedfcb67f481da9670108938aa01bd9c2aae3c0a6e25",
+    "file_sha256": {
+      "cloud/card_facts_001/card_facts.py": "236833dd5e902276c667b4a4c551368ce32fc09722560b0bca0cd1b2d537bb64",
+      "cloud/card_facts_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/card_facts_001/deployment_bootstrap.py": "25fe46aaaaa16804df8c5c5bed7bcc4dc03afaca79bea1ff0f447f9eb04bd798",
+      "cloud/card_facts_001/deployment_remote.py": "415354646c8801611beb3c63baf81bb2bf809d63b9a3a992a282272f913c433b",
+      "cloud/card_facts_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/card_facts_001/deployment_transport.py": "09a8904123ba442f14134cec8513f918edcfc13fe8d886f78b0362f7f80f4f8a",
+      "cloud/card_facts_001/make_release.py": "5493d787cf66af534b74111786517bcc5f6484cdd0592e5d42a0aff95fe1abc7",
+      "cloud/card_facts_001/release_constants.py": "7aaffed2c40c33d6316e976995de4b9a11540964d5fe64c59b97cb433778126d",
+      "cloud/card_facts_001/test_card_facts.py": "3ff8d8138109979169bcb74d5b5bbbe7d3f50224a461cc269fcca22c2938fd70"
+    }
+  },
+  "updated_at": "2026-11-17T06:12:44Z"
+}

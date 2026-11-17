@@ -17,6 +17,15 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "69adeafb8778f033"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-17T06:15:41+00:00",
+      "class": "ROLLED_BACK_VERIFIED",
+      "evidence_path": "state/reconciliations/CARD-FACTS-INSTALL-20261117.44023739157.authenticated-evidence.json",
+      "message": "Card language versions of UA-0023 were not rebuilt (no Ukrainian dictionary entry for the new description); rollback restored the previous state and was verified. Owner-authorized halt recovery («Да»); reinstall as CARD-FACTS-INSTALL-20261117-R2 with the dictionary entry edited in the same transaction.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-17T05:31:03Z",
@@ -97,5 +106,5 @@
       "cloud/card_facts_001/test_card_facts.py": "3ff8d8138109979169bcb74d5b5bbbe7d3f50224a461cc269fcca22c2938fd70"
     }
   },
-  "updated_at": "2026-11-17T06:12:44Z"
+  "updated_at": "2026-11-17T06:15:41+00:00"
 }

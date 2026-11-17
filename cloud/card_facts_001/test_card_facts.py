@@ -23,6 +23,8 @@ ROWS = [(21, 'UA-0021', card_facts.SONATA_VIN, 1, 'Sonata', '2022', 'ge_customs'
         (23, 'UA-0023', card_facts.K5_VIN, 1, 'K5', '2021', 'ua_kyiv', None, None, K5_TEXT,
          'Kia K5 2022 — ефектний чорний седан', 17000),
         (7, 'UA-0007', 'WDD2452322J660244', 1, 'B 180', '2012', 'ua_kyiv', '2026-10-01', None, 'Kia K5 2022', None, 9900)]
+SCRIPT = ('(function(){var dictionaries = {"ru":{"Повторити":"Повторить"},"uk":{"Повторить":"Повторити",'
+          '"Kia K5 2022 — эффектный чёрный седан":"Kia K5 2022 — ефектний чорний седан"},"ka":{}};})();')
 COLUMNS = ('id', 'auto_number', 'vin', 'published', 'model', 'year', 'status', 'eta_manual', 'sea_date_out',
            'opisanie', 'opisanie_uk', 'price_uah')
 
@@ -58,6 +60,15 @@ class PlanTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'CARD_IDENTITY'):
             card_facts.plan_for(as_rows(ROWS[0], ROWS[1], ROWS[1]), TODAY)
 
+    def test_script_edit_touches_only_the_k5_entry(self):
+        edited = card_facts.script_edit(SCRIPT)
+        self.assertEqual(edited, SCRIPT.replace('K5 2022', 'K5 2021'))
+        self.assertEqual(card_facts.script_edit(edited), edited)
+        with self.assertRaisesRegex(ValueError, 'SCRIPT_OLD_OUTSIDE_ENTRY'):
+            card_facts.script_edit(SCRIPT + '/* Kia K5 2022 */')
+        with self.assertRaisesRegex(ValueError, 'SCRIPT_ENTRY_MISSING'):
+            card_facts.script_edit(SCRIPT.replace('Kia K5 2022', 'Kia Sorento'))
+
     def test_only_approved_edits_are_allowed(self):
         plan = card_facts.plan_for(as_rows(*ROWS), TODAY)
         self.assertTrue(all(card_facts.allowed(c) for c in plan['changes']))
@@ -76,6 +87,9 @@ class CrmWriteTests(unittest.TestCase):
             con.execute(SCHEMA)
             con.executemany('INSERT INTO cars VALUES(%s)' % ','.join('?' * len(COLUMNS)), ROWS)
             con.commit()
+        (Path(self.temp.name)/'video').mkdir()
+        self.script = Path(self.temp.name)/card_facts.SCRIPT
+        self.script.write_text(SCRIPT, encoding='utf-8')
         patcher = patch.object(remote, 'ROOT', Path(self.temp.name))
         patcher.start()
         self.addCleanup(patcher.stop)
@@ -94,6 +108,8 @@ class CrmWriteTests(unittest.TestCase):
         self.assertEqual(plan['rows_before_sha256'], {'21': remote.row_digest(rows[21]), '23': remote.row_digest(rows[23])})
         self.assertNotEqual(plan['rows_after_sha256']['23'], plan['rows_before_sha256']['23'])
         self.assertEqual(plan['sonata_release_memory'], {'.srok_gruzia.json': None, '.sroki_gruzia.json': None})
+        self.assertEqual(plan['script']['before_sha256'], remote.sha(SCRIPT.encode()))
+        self.assertEqual(plan['script']['after_sha256'], remote.sha(SCRIPT.replace('K5 2022', 'K5 2021').encode()))
 
     def test_apply_writes_only_the_listed_fields_and_rollback_restores(self):
         before = self.all_rows()
@@ -176,6 +192,7 @@ class LifecycleTests(CrmWriteTests):
     def test_install_then_rollback(self):
         self.saved = Path(self.temp.name)/'backup'
         self.saved.mkdir()
+        (self.saved/remote.SCRIPT_COPY).write_text(SCRIPT, encoding='utf-8')
         self.events = []
         before = self.all_rows()
         plan = remote.prepare(TODAY)
@@ -183,10 +200,25 @@ class LifecycleTests(CrmWriteTests):
         self.assertTrue(result['installed'])
         rows = {str(r['id']): r for r in self.all_rows()}
         self.assertEqual({i: remote.row_digest(rows[i]) for i in ('21', '23')}, plan['rows_after_sha256'])
+        self.assertEqual(card_facts.uk_dictionary(self.script.read_text(encoding='utf-8'))['Kia K5 2021 — эффектный чёрный седан'],
+                         'Kia K5 2021 — ефектний чорний седан')
         result = self.run_lifecycle('rollback', plan)
         self.assertTrue(result['restored'])
         self.assertEqual(self.all_rows(), before)
+        self.assertEqual(self.script.read_text(encoding='utf-8'), SCRIPT)
         self.assertEqual(self.events, [False, True, False, True])
+
+    def test_script_changed_by_someone_else_refused_and_crm_kept(self):
+        self.saved = Path(self.temp.name)/'backup'
+        self.saved.mkdir()
+        self.events = []
+        before = self.all_rows()
+        plan = remote.prepare(TODAY)
+        self.script.write_text(SCRIPT + '//', encoding='utf-8')
+        result = self.run_lifecycle('install', plan)
+        self.assertEqual((result['status'], result['error']), ('FAIL', 'DeploymentError:SCRIPT_CONCURRENT_CHANGE'))
+        self.assertEqual(self.all_rows(), before)  # the CRM transaction is not committed
+        self.assertEqual(self.events, [False, True])
 
 
 class PublicVerifyTests(unittest.TestCase):

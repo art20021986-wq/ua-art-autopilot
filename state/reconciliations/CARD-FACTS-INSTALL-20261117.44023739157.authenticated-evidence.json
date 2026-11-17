@@ -1,0 +1,27 @@
+{
+  "backup_receipt": "state/receipts/CARD-FACTS-INSTALL-20261117-BACKUP.json",
+  "backup_started": true,
+  "claim_before_sha256": "03a2e7e41255279619f3e046ab2c26b9bb78191add25eef1c1b2f8d80bf578c7",
+  "claim_status_before": {
+    "critical_gate_status": "PASS_PRODUCTION",
+    "package_compile_status": "PASS",
+    "production_transaction_status": "ROLLED_BACK",
+    "task_execution_status": "ROLLED_BACK"
+  },
+  "crm_unchanged": true,
+  "error": "REPUBLISH_TIMEOUT: ru/UA-0023.html and ua/UA-0023.html were not rebuilt within 900 s — ua_card_lang builds the language versions only when every phrase has Ukrainian in video/ua-site-languages.js, and the new «Kia K5 2021 — …» description had none",
+  "failed_step": "execute / critical / controller_production: public_verify (after install)",
+  "halt_archive": "state/halt_history/CARD-FACTS-INSTALL-20261117.44023739157/halt.json",
+  "live_verify": "PASS (rollback receipt); 2026-11-17 ~06:13Z UA-0021 ru/ua/base show «27 октября 2026» again, UA-0023 ru/ua/base show «K5 2022» again (pre-install state)",
+  "owner_statement": "«Да» (2026-11-17, session 32 chat, question 1: lift the emergency halt)",
+  "precedent": "state/reconciliations/TERMS-LINKS-INSTALL-20261111-R3.43073985305.authenticated-evidence.json",
+  "production_transaction_status": "ROLLED_BACK",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-17T06:15:41+00:00",
+  "rollback_receipt": "state/receipts/CARD-FACTS-INSTALL-20261117-ROLLBACK.json",
+  "rollback_status": "ROLLED_BACK",
+  "run_id": "44023739157",
+  "site_state_after": "pre-install state, restored and verified by the rollback (unexpected_changes 0)",
+  "task_id": "CARD-FACTS-INSTALL-20261117",
+  "workflow_conclusion": "failure"
+}
