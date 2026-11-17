@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "7924d501f8bdcb5e93c0cade9987d57d156e3bf379774e6d89e7f5ac64bdac96",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T15:19:17Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-17T15:33:16Z",
+  "heartbeat_at": "2026-11-17T15:33:16Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "44111527238",
     "task_id": "AUTOSEARCH3-INSTALL-20261117",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 475.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 149.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 148.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-44111527238-66d261b7db3b4c13",
   "production_transaction_path": "state/transactions/AUTOSEARCH3-INSTALL-20261117.66d261b7db3b4c136e31b7a8ca69f6b874185eeb95f409e67866b05d2140d40b.44111527238.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-536d733d3d10032b-86a74471608d21dc",
   "receipt_path": "state/receipts/AUTOSEARCH3-INSTALL-20261117.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "7540ecbc476e26730568fe4e8cf514a84b1f63fc4001f8a6e57904a650365459",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AUTOSEARCH3-INSTALL-20261117.json",
   "request_sha256": "66d261b7db3b4c136e31b7a8ca69f6b874185eeb95f409e67866b05d2140d40b",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "738ea81ec16d0871354f062cd2c88b82c84b65f3f86beb3c3675ebf470720959",
     "file_sha256": {
@@ -104,5 +135,5 @@
       "cloud/autosearch_003/ua_site_managers_view.py": "43a66bed3bdb78b6000c6d9987e04a42f7aca34771d203e5325722bb1842f759"
     }
   },
-  "updated_at": "2026-11-17T15:19:17Z"
+  "updated_at": "2026-11-17T15:33:16Z"
 }
