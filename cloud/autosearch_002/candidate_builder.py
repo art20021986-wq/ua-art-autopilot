@@ -10,14 +10,14 @@ group); the client's own «🔔 Автопошук» and the client-bot Telegram
 - ua_auction_clients_bot.py: requests per viewer, the rights button for the owner, registers ua_lot_alerts_crm;
 - ua_auction_web.py: docstring only (the routes follow ua_lot_alerts_web);
 - lead_bot.py: the AUTOSEARCH-001 hook removed — back to the exact version before AUTOSEARCH-001;
-- video/kabinet.html: the AUTOSEARCH-001 section removed (back to the exact page before it, cabinet_v1 holds that
+- video/kabinet.html: the AUTOSEARCH-001 section removed (back to the exact page before it, cabinet_old holds that
   section), then the manager section added. video/korea.html (lot views) stays.
 """
 import hashlib
 from pathlib import Path
 
 import cabinet_manager
-import cabinet_v1
+import cabinet_old
 
 HERE = Path(__file__).resolve().parent
 CABINET, LEAD = 'video/kabinet.html', 'lead_bot.py'
@@ -62,7 +62,7 @@ def lead(text):
 
 def cabinet(page):
     """«Мій кабінет» without the AUTOSEARCH-001 section, then with the manager section."""
-    for part in (cabinet_v1.SECTION, cabinet_v1.STYLE, cabinet_v1.SCRIPT):
+    for part in (cabinet_old.SECTION, cabinet_old.STYLE, cabinet_old.SCRIPT):
         if page.count(part) != 1:
             raise ValueError('CABINET_V1_UNEXPECTED')
         page = page.replace(part, '')

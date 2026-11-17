@@ -310,6 +310,14 @@ class WebappTests(unittest.TestCase):
             self.assertEqual(controller.intake_field(), 'unexpected_500')
 
 
+class BundleNameTests(unittest.TestCase):
+    def test_every_bundled_file_passes_the_server_unpacker(self):
+        """deployment_bootstrap accepts only [a-z_]+.py|.sql (AUTOSEARCH2 preview 2026-11-17 failed on «cabinet_v1.py»)."""
+        import re
+        names = [p.name for p in Path(controller.HERE).iterdir() if p.is_file() and p.suffix in ('.py', '.sql')]
+        self.assertEqual([n for n in names if not re.fullmatch(r'[a-z_]+\.(?:py|sql)', n)], [])
+
+
 class AccountUsageTests(unittest.TestCase):
     def run_du(self, code, out, err):
         with patch.object(remote.subprocess, 'run', return_value=SimpleNamespace(returncode=code, stdout=out, stderr=err)):
