@@ -1,16 +1,20 @@
-"""Build the KOREA-DRIVE-001 candidate (owner 2026-11-17: the drive in the auction lot cards).
+"""Build the KOREA-DRIVE-001 candidate (owner 2026-11-17, one install): the drive and the colour in the auction lot
+window; fuel, colour, year from/to and mileage lists in the lot search.
 
 1. The collector as KOREA-TILE-COUNTS-INSTALL installed it, with drive.py (new: the drive only as the auction writes it
-   in the trim) and public.py (lots.json carries `drive`). The collector modules come from korea_auction/ in this
-   package (zipped flat as kauc_<module>.py by the transport).
-2. One edit of video/korea.html (drive_page): «Привід» after «КПП» in the lot window.
+   in the trim), color.py (new: colour families), lots.py (the lot page colour field), prices.py (the colour in the lot
+   page cache; entries without it are read again once) and public.py (lots.json carries `drive` and `color`). The
+   collector modules come from korea_auction/ in this package (zipped flat as kauc_<module>.py by the transport).
+2. Two edits of video/korea.html, each its own module: lot_rows («Привід», «Колір» after «КПП» in the lot window), then
+   search_filters (fuel and colour lists, year from/to and mileage as native lists).
 """
 from pathlib import Path
 
-import drive_page
+import lot_rows
+import search_filters
 
 HERE = Path(__file__).resolve().parent
-MODULES = ('catalog', 'collect', 'drive', 'fuel', 'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public',
+MODULES = ('catalog', 'collect', 'color', 'drive', 'fuel', 'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public',
            'selection', 'session', 'ticker')
 # The collector exactly as KOREA-TILE-COUNTS-INSTALL installs it (cloud/korea_tile_counts_001/korea_auction).
 INSTALLED_SHA256 = {
@@ -40,7 +44,7 @@ def build(source, dependencies, here=HERE, sha=None):
     files = {'korea_auction/__init__.py': b''}
     for name in MODULES:
         files['korea_auction/%s.py' % name] = (here / ('kauc_%s.py' % name)).read_bytes()
-    files[KOREA] = drive_page.build(source[KOREA])
+    files[KOREA] = search_filters.build(lot_rows.build(source[KOREA]))
     return files
 
 

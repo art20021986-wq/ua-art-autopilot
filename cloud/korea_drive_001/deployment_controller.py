@@ -9,9 +9,9 @@ from deployment_transport import API, HERE, canonical, sha, upload_package
 
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
-# After the install the Korea page carries KOREA-DRIVE-001 («Привід» in the lot window); the other pages stay healthy.
-# lots.json gets the drive at the job's next run.
-EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': 'function drive(l){',
+# After the install the Korea page carries KOREA-DRIVE-001 («Привід», «Колір» in the lot window, the new search lists);
+# the other pages stay healthy. lots.json gets the drive and colour at the job's next runs.
+EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': 'id="kl-year-to"',
             '/video/katalog.html': '', '/video/podbor.html': 'order/order.js?v=20261112.71'}
 SITE = 'https://www.uaart.com.ua'
 AGENT = 'UAART-KoreaTicker-Verify/1'

@@ -122,7 +122,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'TICKER-FIX4-INSTALL-1','files':files,'job':JOB,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'korea_auction/drive.py (new) + public.py (the drive, as the auction writes it in the trim, in lots.json) + video/korea.html («Привід» after «КПП» in the lot window); no other page or CRM module changes',
+            'site_scope':'korea_auction/drive.py, color.py (new) + lots.py, prices.py, public.py (the drive as the auction writes it in the trim and the lot page colour in lots.json) + video/korea.html («Привід», «Колір» in the lot window; fuel, colour, year from/to and mileage lists in the search); no other page or CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -184,7 +184,16 @@ def smoke(directory):
                                                        start_price_krw=0, auction_start='2026/11/18 13:00'),
                                                   {'USD': 41.0, 'KRW': 0.03, 'date': 'd'}, ['1-1.jpg'])['drive'] == 'full',
                  'page_drive': 'function drive(l){' in read(after/'video/korea.html').decode('utf-8')
-                               and 'row("gear",l.transmission)+drive(l)' in read(after/'video/korea.html').decode('utf-8'),
+                               and 'row("gear",l.transmission)+drive(l)+color(l)' in read(after/'video/korea.html').decode('utf-8'),
+                 'color_in_list': public.lot_view(dict(sample['items'][0], maker='KIA', model='K5', trim='', engine_cc=1999,
+                                                       transmission='AT', house='H', lot_no='1', start_price_krw=0,
+                                                       auction_start='2026/11/18 13:00', color='Pearl White'),
+                                                  {'USD': 41.0, 'KRW': 0.03, 'date': 'd'}, ['1-1.jpg'])['color'] == 'white'
+                                  and __import__('korea_auction.lots', fromlist=['x']).parse_detail(
+                                      '<p>2022 Color Black Mileage 1 km</p>')['color'] == 'Black',
+                 'page_filters': all(piece in read(after/'video/korea.html').decode('utf-8') for piece in (
+                     '<select id="kl-year-to"></select>', '<select id="kl-fuel"></select>', '<select id="kl-color"></select>',
+                     '<select id="kl-km"></select>')),
                  # KOREA-ENGINE-001 stays installed (engine type, models by make, every photo)
                  'page_engine_models': all(piece in read(after/'video/korea.html').decode('utf-8')
                                            for piece in ('function engine(l){', 'createElement("optgroup")')),

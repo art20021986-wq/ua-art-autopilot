@@ -7,7 +7,7 @@ from datetime import datetime
 
 import tempfile
 
-from korea_auction import catalog, drive, fuel, job, lots, model_lots, nbu, prices, public, selection, ticker
+from korea_auction import catalog, color, drive, fuel, job, lots, model_lots, nbu, prices, public, selection, ticker
 
 FIX = pathlib.Path(__file__).with_name('fixtures')
 
@@ -334,6 +334,31 @@ class DriveTest(unittest.TestCase):
         self.assertEqual(public.lot_view(PublicLotsTest.LOT, PublicLotsTest.RATES, [])['drive'], '')
 
 
+class ColorTest(unittest.TestCase):
+    """KOREA-DRIVE-001 (owner 2026-11-17): the body colour from the lot page field, mapped to a few families."""
+
+    def test_families(self):
+        cases = {'White': 'white', 'Pearl White': 'white', 'BLACK': 'black', 'Gun Metal Gray': 'gray', 'Silver': 'silver',
+                 'Navy Blue': 'blue', 'Wine Red': 'red', 'Black/White': 'other', 'Champagne': 'other', '': None, None: None}
+        self.assertEqual({k: color.key(k) for k in cases}, cases)
+
+    def test_page_field(self):
+        page = '<p>Model Year (Registration Date) 2022 Color Pearl White Mileage 30,000 km</p>'
+        self.assertEqual(lots.parse_detail(page)['color'], 'Pearl White')
+        self.assertEqual(lots.parse_detail('<p>2021 Color Mileage 1 km</p>')['color'], '')
+        self.assertEqual(lots.parse_detail('<p>no colour here</p>')['color'], '')
+
+    def test_entry_without_colour_is_read_again_once(self):
+        class Browser:
+            def fetch(self, url):
+                return url, '<p>Fuel: Diesel Color Black Mileage 1 km</p>'
+        day = [{'id': '1', 'detail_url': '/v/1', 'start_price_krw': 0, 'photos': []}]
+        known, left = prices.fill(Browser(), day, {'1': {'krw': 5, 'vin': 'V', 'photos': ['p'], 'fuel': 'Diesel'}})
+        self.assertEqual((known['1']['color'], left), ('Black', 0))
+        view = public.lot_view(dict(PublicLotsTest.LOT, color='Black'), PublicLotsTest.RATES, ['7-1.jpg'])
+        self.assertEqual(view['color'], 'black')
+
+
 class FuelTest(unittest.TestCase):
     """KOREA-ENGINE-001 (owner 2026-11-13): the lot card shows the engine type."""
 
@@ -472,13 +497,13 @@ class PricesTest(unittest.TestCase):
     def test_each_lot_page_read_once_and_remembered(self):
         day = [{'id': str(n), 'detail_url': '/vehicle-detail/kr/%d' % n, 'start_price_krw': 0} for n in range(5)]
         browser = self.Browser()
-        old = {'0': {'krw': 5000000, 'vin': '', 'photos': [], 'fuel': ''}, 'gone': {'krw': 1}}
+        old = {'0': {'krw': 5000000, 'vin': '', 'photos': [], 'fuel': '', 'color': ''}, 'gone': {'krw': 1}}
         known, left = prices.fill(browser, day, old, limit=3)
         self.assertEqual((len(browser.urls), left), (3, 1))  # 3 new pages read, 1 left for the next run
         self.assertNotIn('gone', known)                       # a lot that left the auction is forgotten
         self.assertEqual(known['1'], {'krw': 9400000, 'vin': 'KNAG541BBNA169806',
                                       'photos': ['https://jpauto.auction/cha_auction/2026/1110/1/a1_1.jpg',
-                                                 'https://cdn.example/cha_auction/1/a1_2.jpg'], 'fuel': ''})
+                                                 'https://cdn.example/cha_auction/1/a1_2.jpg'], 'fuel': '', 'color': ''})
         shown = prices.apply([dict(l, photos=['t']) for l in day], known)
         self.assertEqual([l['start_price_krw'] for l in shown][:2], [5000000, 9400000])
         self.assertEqual((shown[1]['vin'], len(shown[1]['photos']), shown[0]['photos'], shown[4]['vin']),

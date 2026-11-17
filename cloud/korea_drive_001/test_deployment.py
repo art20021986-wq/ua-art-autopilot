@@ -306,7 +306,8 @@ class SmokeTests(unittest.TestCase):
                                   'search_checked_boxes': True, 'tile': True, 'ticker_kyiv_time': True,
                                   'fuel_in_list': True, 'page_engine_models': True, 'all_photos': True,
                                   'photos_for_time': True, 'gallery_all': True,
-                                  'drive_in_list': True, 'page_drive': True})
+                                  'drive_in_list': True, 'page_drive': True,
+                                  'color_in_list': True, 'page_filters': True})
 
 
 
