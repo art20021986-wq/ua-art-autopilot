@@ -113,10 +113,13 @@ def install():
     operations = [{'action': 'replace', 'expected_before_sha256': plan['rows_before_sha256'][i],
                    'expected_after_sha256': plan['rows_after_sha256'][i], 'path': 'production/crm/cars/' + numbers[i]}
                   for i in sorted(numbers)]
+    operations.append({'action': 'replace', 'expected_before_sha256': plan['script']['before_sha256'],
+                       'expected_after_sha256': plan['script']['after_sha256'],
+                       'path': 'production/site/' + plan['script']['path']})
     manifest = {'backup_required': True, 'contract_id': 'UA-ART-CRITICAL-ADAPTER-V1.0', 'crm_write': True,
                 'crm_changes': plan['changes'], 'explicit_crm_vehicle_approval': True,
                 'live_verify_required': True, 'operations': operations, 'pending_requests_preserved': True,
-                'protected_paths': sorted(LIVE_DATA + list(plan['protected'])), 'rollback_required': True, 'site_write': False,
+                'protected_paths': sorted(LIVE_DATA + list(plan['protected'])), 'rollback_required': True, 'site_write': True,
                 'task_class': 'CRITICAL', 'task_id': task}
     manifest_path = write('tasks/manifests/%s.json' % task, json.dumps(manifest, sort_keys=True, separators=(',', ':')))
     manifest_sha = cp.sha256_bytes(cp.canonical_json(manifest))
@@ -139,9 +142,11 @@ def install():
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner approved (%s): clear the past manual arrival date of CRM card UA-0021 and replace '
-                              '«K5 2022» with «K5 2021» in the text fields of UA-0023 (listed in the plan with before/after '
-                              'values; compare-and-set, all or none). Every other CRM row and field is preserved and checked. '
-                              'The public sync worker republishes both cards; the controller waits for it. Existing backup, '
+                              '«K5 2022» with «K5 2021» in the text fields of UA-0023 and in its Ukrainian dictionary entry of '
+                              'video/ua-site-languages.js, so the card language versions can be rebuilt (listed in the plan '
+                              'with before/after values and hashes; compare-and-set, all or none). Every other CRM row and '
+                              'field and every other script byte is preserved and checked. The public sync worker and the '
+                              'card language job republish both cards; the controller waits for it. Existing backup, '
                               'bot pause, writer locks, data-preservation, rollback and public health checks are kept.'
                               % APPROVAL,
                'execution': execution(task, True),

@@ -30,6 +30,9 @@ PROTECTED = ('start_safe.py', 'run_all.py', 'team_bot.py', 'lead_bot.py', 'db.py
              'ua_vin_decode.py', 'ua_seo_metadata.py', 'ua_seo_sitemap.py', 'ua_seo_catalog.py', 'ua_seo_index.py', 'ua_seo_landings.py')
 
 
+SCRIPT_COPY = 'ua-site-languages.js'
+
+
 class DeploymentError(RuntimeError):
     pass
 
@@ -103,6 +106,9 @@ def prepare(today=None):
         after[item['id']][item['field']] = item['after']
     touched = sorted({item['id'] for item in plan['changes']})
     sonata = card_facts.card(current, card_facts.SONATA_VIN)
+    script = read(ROOT/card_facts.SCRIPT)
+    plan.update(script={'path': card_facts.SCRIPT, 'before_sha256': sha(script),
+                        'after_sha256': sha(card_facts.script_edit(script.decode('utf-8')).encode('utf-8'))})
     plan.update(schema_version='CARD-FACTS-INSTALL-1',
                 sonata_release_memory=release_memory(sonata['auto_number']),
                 rows_before_sha256={str(i): row_digest(by_id[i]) for i in touched},
@@ -110,7 +116,8 @@ def prepare(today=None):
                 protected={name: sha(read(ROOT/name)) for name in PROTECTED if (ROOT/name).exists()},
                 crm_write=bool(plan['changes']),
                 crm_scope='UA-0021 eta_manual cleared; «K5 2022» → «K5 2021» in UA-0023 text fields',
-                site_write='none directly: the public sync worker republishes the two cards after the bot resumes')
+                site_write='video/ua-site-languages.js: the K5 dictionary entry «K5 2022» → «K5 2021»; the public sync '
+                           'worker and the card language job republish the two cards after the bot resumes')
     return plan
 
 
@@ -129,6 +136,8 @@ def load_backup(digest):
         raise DeploymentError('DATABASE_BACKUP_CHANGED')
     if sha(canonical(manifest['plan'])) != manifest['plan_sha256']:
         raise DeploymentError('BACKUP_PLAN_HASH')
+    if sha(read(directory/SCRIPT_COPY)) != manifest['script_backup_sha256']:
+        raise DeploymentError('SCRIPT_BACKUP_CHANGED')
     return directory, manifest
 
 
@@ -150,8 +159,13 @@ def backup(run_id, expected_plan):
         if target.execute('PRAGMA quick_check').fetchall() != [('ok',)]:
             raise DeploymentError('BACKUP_DATABASE_VERIFY')
         snapshot = row_digest(rows(target))
+    script = read(ROOT/card_facts.SCRIPT)
+    if sha(script) != plan['script']['before_sha256']:
+        raise DeploymentError('SCRIPT_DRIFT')
+    atomic(workspace/SCRIPT_COPY, script)
     manifest = {'plan': plan, 'plan_sha256': expected_plan, 'run_id': run_id,
-                'crm_rows_sha256': snapshot, 'database_backup_sha256': sha(read(database))}
+                'crm_rows_sha256': snapshot, 'database_backup_sha256': sha(read(database)),
+                'script_backup_sha256': sha(script)}
     digest = sha(canonical(manifest))
     atomic(workspace/'manifest.json', canonical(manifest))
     target = HERE/'backups'/digest
@@ -241,6 +255,22 @@ def apply(connection, changes, forward):
     return row_digest(after)
 
 
+def apply_script(plan, directory, forward):
+    """The K5 dictionary entry edit (install) or the saved script (rollback); compare-and-set, idempotent."""
+    path, before, after = ROOT/plan['script']['path'], plan['script']['before_sha256'], plan['script']['after_sha256']
+    current = read(path)
+    old, new = (before, after) if forward else (after, before)
+    if sha(current) == new:
+        return False
+    if sha(current) != old:
+        raise DeploymentError('SCRIPT_CONCURRENT_CHANGE')
+    value = card_facts.script_edit(current.decode('utf-8')).encode('utf-8') if forward else read(directory/SCRIPT_COPY)
+    if sha(value) != new:
+        raise DeploymentError('SCRIPT_RESULT')
+    atomic(path, value, mode=0o644)
+    return True
+
+
 def pending_pages():
     pages = {}
     for folder in ('video', 'site'):
@@ -277,7 +307,13 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
             pages = pending_pages()
             with writer_exclusion() as connection:
                 digest = apply(connection, plan['changes'], mode == 'install')
-                connection.commit()
+                written = apply_script(plan, directory, mode == 'install')
+                try:
+                    connection.commit()
+                except Exception:
+                    if written:
+                        apply_script(plan, directory, mode != 'install')
+                    raise
             if pending_pages() != pages:
                 raise DeploymentError('PAGES_CHANGED_WHILE_PAUSED')
             verify_protected(plan)
@@ -308,6 +344,8 @@ def installed(run_id, expected_plan, backup_sha):
     for change in manifest['plan']['changes']:
         if not same(current[change['id']][change['field']], change['after']):
             raise DeploymentError('VERIFY_FIELD:'+change['field'])
+    if sha(read(ROOT/manifest['plan']['script']['path'])) != manifest['plan']['script']['after_sha256']:
+        raise DeploymentError('VERIFY_SCRIPT')
     verify_protected(manifest['plan'])
     return manifest
 
