@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "7924d501f8bdcb5e93c0cade9987d57d156e3bf379774e6d89e7f5ac64bdac96",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T15:14:56Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-17T15:19:17Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44111527238",
     "task_id": "AUTOSEARCH3-INSTALL-20261117",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44111527238-66d261b7db3b4c13",
   "production_transaction_path": "state/transactions/AUTOSEARCH3-INSTALL-20261117.66d261b7db3b4c136e31b7a8ca69f6b874185eeb95f409e67866b05d2140d40b.44111527238.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-536d733d3d10032b-86a74471608d21dc",
   "receipt_path": "state/receipts/AUTOSEARCH3-INSTALL-20261117.json",
   "receipt_validation_status": "PENDING",
@@ -104,5 +104,5 @@
       "cloud/autosearch_003/ua_site_managers_view.py": "43a66bed3bdb78b6000c6d9987e04a42f7aca34771d203e5325722bb1842f759"
     }
   },
-  "updated_at": "2026-11-17T15:14:56Z"
+  "updated_at": "2026-11-17T15:19:17Z"
 }
