@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "33a6f3f1a7f46c936872f2389a037d7a02ce3d658ae8a48c47e54e1dbd99cb21",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T07:36:17Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-17T07:39:37Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44039588412",
     "task_id": "PAY-LABELS-INSTALL-20261117",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44039588412-be6592ed50ae5029",
   "production_transaction_path": "state/transactions/PAY-LABELS-INSTALL-20261117.be6592ed50ae50296209a2364a5463d7e48654e59d689d1fb02460cc65b3cea3.44039588412.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/PAY-LABELS-INSTALL-20261117.json",
   "receipt_validation_status": "PENDING",
@@ -85,5 +85,5 @@
       "cloud/pay_labels_001/test_pay_labels.py": "0c8cffe1069cbff5e1e9674b306a92d7d42d752e7c8c345fce94412c9aec0019"
     }
   },
-  "updated_at": "2026-11-17T07:36:17Z"
+  "updated_at": "2026-11-17T07:39:37Z"
 }
