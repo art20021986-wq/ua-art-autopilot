@@ -71,6 +71,25 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual((value['KIA K5']['days'], value['HYUNDAI SONATA']['lots'], value['HYUNDAI TUCSON']['lots']),
                          ([('2026/11/13', 1)], 1, 0))
 
+    def test_drive_lines_and_masking(self):
+        class Tools:
+            @staticmethod
+            def text(html):
+                return html
+        class Lots:
+            @staticmethod
+            def parse_detail(html):
+                return {'specs': {'Chassis No.': 'KMHJ381ABCU123456', 'Drive': '4WD'}, 'fuel': 'Diesel', 'body': 'SUV'}
+        value = remote.lot_drive('Fuel: Diesel Drive Type: 4WD Mileage: 123456 km', Tools, Lots)
+        self.assertEqual(value['specs'], {'Chassis No.': '[VIN17]', 'Drive': '4WD'})
+        self.assertTrue(any('Drive Type' in label for label in value['labels']))
+        self.assertTrue(value['drive_lines'] and '[N]' in value['drive_lines'][0] and '123456' not in str(value))
+
+    def test_chosen_suvs_first_then_others(self):
+        lot = lambda i, maker, model: {'id': str(i), 'maker': maker, 'model': model}
+        found = [lot(1, 'KIA', 'MORNING'), lot(2, 'KIA', 'SORENTO'), lot(3, 'BMW', 'X SERIES'), lot(4, 'KIA', 'K5')]
+        self.assertEqual([l['id'] for l in remote.chosen(found)], ['2', '3', '4', '1'])
+
     def test_photo_shape_hides_host_and_numbers(self):
         self.assertEqual(remote.shape('https://cdn.example/a/20261111000123/photo_01.jpg?w=640'),
                          '/a/[N]/photo_01.jpg?w=640')
