@@ -49,3 +49,4 @@ video/kabinet.html (раздел), video/korea.html (учёт открытого
   Повтор — AUTOSEARCH-PREFLIGHT-20261117-R3 после сверки R2 («да» владельца) и «твоя очередь».
 - Перед R3 (координатор): временная база пробы — явно во /tmp сервера; зависание печатает стек (faulthandler, 150 с);
   серверная проверка прогнана локально с python-telegram-bot 21.6 на копии модулей и живом lots.json — все шаги < 1 с.
+- 17.11 УСТАНОВЛЕНО: AUTOSEARCH-INSTALL-20261117 FINISHED (live_verify PASS, CRM не менялась, бот running). Живая проверка PASS.
