@@ -30,7 +30,8 @@ OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 LIVE_DATA = ['.crm_publish_requests']  # crm.db is the approved write target
 # Owner's words in chat, filled in when the owner says «да».
 APPROVAL = ('«1. Да» in chat 2026-11-17 to «Записать обе правки в CRM и на сайт: Sonata — убрать прошедшую дату, '
-            'Kia K5 — «2022» → «2021» в описании?» (after «1. Да 2. 2021» to SEO-AUDIT-20261116)')
+            'Kia K5 — «2022» → «2021» в описании?»; after the R1 rollback «Да» / «Все 4 да» to lifting the halt and '
+            'repeating the install with the K5 dictionary entry edited too')
 
 
 def sha(path):
