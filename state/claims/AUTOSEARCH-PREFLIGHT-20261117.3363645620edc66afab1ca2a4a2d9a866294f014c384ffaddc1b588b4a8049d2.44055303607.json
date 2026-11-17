@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "0c3326b7a74dd73a"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-17T10:20:00+00:00",
+      "class": "PREVIEW_SMOKE_TIMEOUT",
+      "evidence_path": "state/reconciliations/AUTOSEARCH-PREFLIGHT-20261117.44055303607.authenticated-evidence.json",
+      "message": "The read-only preview's smoke subprocess exceeded its 120 s limit; nothing written to the site or CRM. Owner «Да» to closing the claim; retried as -R2 with a staged smoke.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-17T09:26:02Z",
@@ -42,6 +51,6 @@
   "source_commit": "c24cff6c5843dc69dfc660fffc2abddcfc74a3a7",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
+  "task_execution_status": "FAILED",
   "updated_at": "2026-11-17T09:30:40Z"
 }
