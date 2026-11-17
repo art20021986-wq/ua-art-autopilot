@@ -155,8 +155,9 @@ with tempfile.TemporaryDirectory(dir='/tmp') as folder:  # the server's local /t
     stage('options')
     sid = alerts.add_search(phone, {'maker': maker})
     stage('add_search')
-    found = [l for l in lots if alerts.matches(alerts.searches(phone)[0]['criteria'], l)]
-    text = alerts_bot.message(alerts.searches(phone)[0]['criteria'], found)
+    rule = alerts.searches(phone)[0]['criteria']
+    found = [l for l in lots if alerts.matches(rule, l)]
+    text = alerts_bot.message(rule, found)
     stage('match_message')
     code = alerts.new_code(phone)
     stage('new_code')
