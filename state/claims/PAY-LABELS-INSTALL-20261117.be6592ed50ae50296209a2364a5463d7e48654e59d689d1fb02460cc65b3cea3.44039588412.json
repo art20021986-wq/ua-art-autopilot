@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "33a6f3f1a7f46c936872f2389a037d7a02ce3d658ae8a48c47e54e1dbd99cb21",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T07:39:37Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-17T07:54:38Z",
+  "heartbeat_at": "2026-11-17T07:54:38Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "44039588412",
     "task_id": "PAY-LABELS-INSTALL-20261117",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 412.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/info.html",
+        "http_status": 200,
+        "latency_ms": 47.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/info.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-44039588412-be6592ed50ae5029",
   "production_transaction_path": "state/transactions/PAY-LABELS-INSTALL-20261117.be6592ed50ae50296209a2364a5463d7e48654e59d689d1fb02460cc65b3cea3.44039588412.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "homepage-68ed6564ebea221c",
   "receipt_path": "state/receipts/PAY-LABELS-INSTALL-20261117.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "08520ab1014e65d733435ee5d91984fb6897332c21d6614de7851a0922443be5",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/PAY-LABELS-INSTALL-20261117.json",
   "request_sha256": "be6592ed50ae50296209a2364a5463d7e48654e59d689d1fb02460cc65b3cea3",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "a39274177eaf8b16ca53a02d6e946c00a24aab828b979c769fec226e0510f9dc",
     "file_sha256": {
@@ -85,5 +108,5 @@
       "cloud/pay_labels_001/test_pay_labels.py": "0c8cffe1069cbff5e1e9674b306a92d7d42d752e7c8c345fce94412c9aec0019"
     }
   },
-  "updated_at": "2026-11-17T07:39:37Z"
+  "updated_at": "2026-11-17T07:54:38Z"
 }
