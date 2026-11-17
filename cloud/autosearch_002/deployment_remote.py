@@ -119,7 +119,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'AUTOSEARCH2-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'AUTOSEARCH-002: manager search requests on the site and one-tap WhatsApp group messages; ua_lot_alerts.py, ua_lot_alerts_web.py, ua_lot_alerts_view.py replaced, ua_lot_alerts_whatsapp.py and ua_lot_alerts_crm.py new, ua_lot_alerts_bot.py removed; ua_auction_clients_bot.py (requests per viewer, «👔 Права менеджера на сайте» for the owner), ua_auction_web.py (docstring), lead_bot.py back to the version before AUTOSEARCH-001; video/kabinet.html: the client «🔔 Автопошук» removed, the manager section added; alerts.db: AUTOSEARCH-001 tables dropped on first use, new tables created; bot paused and resumed, web app reloaded; no CRM or client record change',
+            'site_scope':'AUTOSEARCH-002: manager search requests and one-tap WhatsApp group messages in the manager cabinet on the site (no Telegram for the manager); ua_lot_alerts.py, ua_lot_alerts_web.py, ua_lot_alerts_view.py replaced, ua_lot_alerts_whatsapp.py new, ua_lot_alerts_bot.py removed; ua_auction_clients_bot.py (requests per viewer, «👔 Права менеджера на сайте» for the owner), ua_auction_web.py (docstring), lead_bot.py back to the version before AUTOSEARCH-001; video/kabinet.html: the client «🔔 Автопошук» removed, the manager section added; alerts.db: AUTOSEARCH-001 tables dropped on first use, new tables created; bot paused and resumed, web app reloaded; no CRM or client record change',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -127,10 +127,10 @@ def prepare(directory):
 
 # Runs in a separate python3.10 (the bots' interpreter) with the candidate modules first on the path and the live
 # server root: the modules import with the installed telegram library; every record goes to a temporary database in the
-# server's local /tmp; matching runs on the live lot list; the CRM screens build from the live clients and staff (read
-# only, counts only); the manager messages go to a stand-in bot; the job registers on a bot application never started.
+# server's local /tmp; matching runs on the live lot list; the manager messages are built as the cabinet shows them;
+# the CRM screens build from the live clients and staff (read only, counts only).
 SMOKE = r"""
-import asyncio, faulthandler, json, sqlite3, sys, tempfile, pathlib, time
+import faulthandler, json, sqlite3, sys, tempfile, pathlib, time, urllib.parse
 faulthandler.dump_traceback_later(150, exit=True)  # a hang prints where it stands, then stops the smoke
 after, root = sys.argv[1], sys.argv[2]
 sys.path[:0] = [after, root]
@@ -148,15 +148,9 @@ if alerts.DB.exists():  # what AUTOSEARCH-001 left (read only), reported for the
             except sqlite3.Error:
                 live[table] = None
 stage('live_counts')
-class Bot:
-    def __init__(self):
-        self.sent = []
-    async def send_message(self, chat, text, **kw):
-        self.sent.append((chat, text, kw.get('reply_markup')))
 with tempfile.TemporaryDirectory(dir='/tmp') as folder:  # the server's local /tmp, not the network home disk
     alerts.DB = pathlib.Path(folder) / 'alerts.db'
-    import ua_lot_alerts_web as web, ua_lot_alerts_view as alerts_view, ua_lot_alerts_crm as crm_job
-    import ua_lot_alerts_whatsapp as whatsapp
+    import ua_lot_alerts_web as web, ua_lot_alerts_view as alerts_view, ua_lot_alerts_whatsapp as whatsapp
     import ua_auction_web, ua_auction_clients as store, ua_auction_clients_bot as crm
     stage('modules')
     options = web.options()
@@ -164,38 +158,42 @@ with tempfile.TemporaryDirectory(dir='/tmp') as folder:  # the server's local /t
     people = store.all_clients()
     manager_phone = '+380000000001'
     alerts.set_manager(manager_phone, 1, 'Smoke', True)
+    me = {'phone': manager_phone}
     own = alerts.own_clients(alerts.manager(manager_phone), people, alerts.manager_phones())
-    client = people[0]['phone'] if people else '+380000000002'
-    rid = alerts.add_request(client, 1, 'https://chat.whatsapp.com/AbCdEfGhIj123', {'maker': maker})
+    client = people[0]['phone'] if people else None
     stage('records')
-    bot = Bot()
-    sent = asyncio.run(crm_job.check(bot))
-    again = asyncio.run(crm_job.check(bot))
+    first = second = third = {}
+    if client:
+        status, first = web.handle('alerts/add', {'client': client, 'maker': maker,
+                                                  'group_link': 'https://chat.whatsapp.com/AbCdEfGhIj123'}, me)
+        rid = first['requests'][0]['id']
+        status, second = web.handle('alerts/sent', {'id': rid}, me)  # the greeting sent
+        lot = next((m['lot'] for m in second['messages'] if m['kind'] == 'lot'), None)
+        status, third = web.handle('alerts/sent', {'id': rid, 'lot': lot}, me) if lot else (status, second)
     stage('manager_messages')
-    status, body = web.handle('alerts', {}, {'phone': manager_phone})
+    status, body = web.handle('alerts', {}, me)
+    refused = web.handle('alerts', {}, {'phone': '+380000000009'})[0]
     home = crm._home_screen(None)
     screen = crm._alerts_screen(None)
     cards = [crm._client_screen(c['phone'], None) for c in people[:5]]
     role = crm._role_screen(people[0]['phone']) if people else {'buttons': [[None]]}
     stage('crm_screens')
-    from telegram.ext import ApplicationBuilder
-    app = ApplicationBuilder().token('123:smoke').build()
-    crm_job.register(app)
-    stage('job')
     after_dir = pathlib.Path(after)
     page = (after_dir / 'video/kabinet.html').read_text(encoding='utf-8')
     lead = (after_dir / 'lead_bot.py').read_text(encoding='utf-8')
-    welcome = bot.sent[0][1] if bot.sent else ''
-    button = bot.sent[0][2].inline_keyboard[0][0].url if bot.sent else ''
-    print(json.dumps({'live_alerts_db': live, 'lots': len(crm_job.lots()[1]), 'makers': len(options['makers']),
-                      'maker': maker, 'clients': len(people), 'own_clients': len(own), 'sent': sent, 'again': again,
-                      'welcome_first': 'Здравствуйте! Создан запрос' in welcome,
-                      'share_button': button.startswith('https://wa.me/?text='),
-                      'api': [status, len(body.get('requests', [])), len(body.get('clients', []))],
+    greeting = first.get('messages', [{}])[0] if first.get('messages') else {}
+    print(json.dumps({'live_alerts_db': live, 'lots': len(web._lots()[0]), 'makers': len(options['makers']),
+                      'maker': maker, 'clients': len(people), 'own_clients': len(own),
+                      'greeting_first': greeting.get('kind') == 'welcome'
+                                        and 'Здравствуйте! Создан запрос' in urllib.parse.unquote(greeting.get('share', '')),
+                      'share_link': str(greeting.get('share', '')).startswith('https://wa.me/?text='),
+                      'lots_after_greeting': sum(m['kind'] == 'lot' for m in second.get('messages', [])),
+                      'sent_counted': third.get('requests', [{}])[0].get('sent') if third.get('requests') else None,
+                      'api': [status, len(body.get('requests', [])), len(body.get('clients', []))], 'client_refused': refused,
                       'home_buttons': [row[0][1] for row in home['buttons']], 'screen_ok': '🔔 Автопоиск' in screen['text'],
                       'cards': len(cards), 'role_choices': len(role['buttons']) - 1,
-                      'job': bool(app.job_queue and app.job_queue.get_jobs_by_name(crm_job.JOB)),
-                      'cabinet_page': page.count('id="mr-form"') == 1 and 'ua-autosearch-v1' not in page,
+                      'cabinet_page': page.count('id="mr-form"') == 1 and page.count('id="mr-msgs"') == 1
+                                      and 'ua-autosearch-v1' not in page,
                       'lead_clean': 'ua_lot_alerts_bot' not in lead}, ensure_ascii=False))
 """
 
@@ -212,11 +210,13 @@ def smoke(directory):
         raise DeploymentError('SMOKE:'+' | '.join(result.stderr.strip().splitlines()[-14:])[-700:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
     value['stages'] = [line for line in result.stderr.splitlines() if line.startswith('STAGE ')][-12:]
-    if (not value.get('lots') or not value.get('sent') or value.get('again') != 0
-            or value.get('welcome_first') is not True or value.get('share_button') is not True
-            or value.get('api', [''])[0] != '200 OK' or value.get('own_clients') != value.get('clients')
+    with_clients = value.get('clients', 0) > 0
+    if (not value.get('lots') or value.get('api', [''])[0] != '200 OK' or value.get('client_refused') != '403 Forbidden'
+            or value.get('own_clients') != value.get('clients')
+            or (with_clients and (value.get('greeting_first') is not True or value.get('share_link') is not True
+                                  or not value.get('lots_after_greeting') or value.get('sent_counted') != 1))
             or value.get('home_buttons') != ['ac:new', 'ac:list', 'ac:days', 'ac:mgrs', 'ac:alerts', 'menu']
-            or value.get('screen_ok') is not True or value.get('job') is not True
+            or value.get('screen_ok') is not True
             or value.get('cabinet_page') is not True or value.get('lead_clean') is not True):
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:600])
     return value

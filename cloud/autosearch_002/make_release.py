@@ -24,7 +24,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 DEPENDENCIES = [P + n for n in ('cabinet_manager.py', 'cabinet_old.py', 'candidate_builder.py', 'deployment_backup.py',
                                 'deployment_bootstrap.py', 'deployment_remote.py', 'deployment_rollback.py',
                                 'deployment_transport.py', 'make_release.py', 'release_constants.py',
-                                'ua_auction_clients_bot.py', 'ua_auction_web.py', 'ua_lot_alerts.py', 'ua_lot_alerts_crm.py',
+                                'ua_auction_clients_bot.py', 'ua_auction_web.py', 'ua_lot_alerts.py',
                                 'ua_lot_alerts_view.py', 'ua_lot_alerts_web.py', 'ua_lot_alerts_whatsapp.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_manager_requests.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
@@ -77,8 +77,8 @@ def preview():
              'description': 'Preview of AUTOSEARCH-002: reads the live auction modules, lead_bot.py and «Мій кабінет» '
                             '(exact installed AUTOSEARCH-001 versions), builds the candidate (lead_bot and the page checked '
                             'back to their exact earlier versions before the manager section), imports it with the bots\' '
-                            'interpreter, saves a request and sends the manager messages to a stand-in bot on a temporary '
-                            'database in /tmp only, builds the live CRM screens (read only, counts only), counts what '
+                            'interpreter, saves a request and builds the manager messages on a temporary database in /tmp '
+                            'only, builds the live CRM screens (read only, counts only), counts what '
                             'AUTOSEARCH-001 left in alerts.db (read only); measures storage. No application source, CRM, '
                             'HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
@@ -139,8 +139,8 @@ def install():
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner request (2026-11-17, AUTOSEARCH-002): a manager on the site saves search criteria '
                               'and the WhatsApp group link for his client; the greeting first, then a link to every matching '
-                              'lot, sent to the group by the manager in one tap (wa.me; a bot may not post to a manually '
-                              'made WhatsApp group); «👔 Права менеджера на сайте» for the owner in the CRM bot; the client '
+                              'lot, in the manager cabinet on the site (no Telegram for the manager), sent to the group in one '
+                              'tap (wa.me; a bot may not post to a manually made WhatsApp group); «👔 Права менеджера на сайте» for the owner in the CRM bot; the client '
                               '«🔔 Автопошук» and the client-bot Telegram link removed (lead_bot.py and the page back to '
                               'their exact earlier versions, ua_lot_alerts_bot.py deleted); AUTOSEARCH-001 tables in '
                               'alerts.db dropped. The bot is paused for the file change and resumed; the web app is '

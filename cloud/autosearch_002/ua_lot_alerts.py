@@ -5,7 +5,7 @@
 клиентов, владелец — всех; статистика в CRM «кто что смотрит … кто на что подписан».
 - managers: логин сайта (телефон) -> сотрудник CRM (Telegram id); «видит всех» — у владельца;
 - requests: запрос на поиск: клиент, сотрудник, ссылка на группу WhatsApp, критерии (как фильтры korea.html);
-- found: какие лоты по запросу уже отданы менеджеру (каждый лот — один раз);
+- posted: какие лоты по запросу менеджер уже отправил в группу (каждый лот — один раз); приветствие — requests.welcomed;
 - views: какие лоты открывали на korea.html вошедшие клиенты.
 Одна база /home/Carix/auction_clients/alerts.db (SQLite, без WAL — сетевой диск). Сверка — чистая функция matches().
 Таблицы AUTOSEARCH-001 (поиски клиентов, привязка Telegram) убраны: владелец 17.11 — клиенту «не надо».
@@ -34,10 +34,10 @@ CREATE TABLE IF NOT EXISTS managers (phone TEXT PRIMARY KEY, staff_id INTEGER NO
                                      sees_all INTEGER NOT NULL, set_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS requests (id INTEGER PRIMARY KEY, client_phone TEXT NOT NULL, staff_id INTEGER NOT NULL,
                                      group_link TEXT NOT NULL, criteria TEXT NOT NULL, created_at TEXT NOT NULL,
-                                     welcomed INTEGER NOT NULL DEFAULT 0, lots_at TEXT NOT NULL DEFAULT '');
+                                     welcomed INTEGER NOT NULL DEFAULT 0);
 CREATE INDEX IF NOT EXISTS requests_client ON requests(client_phone);
-CREATE TABLE IF NOT EXISTS found (request_id INTEGER NOT NULL, lot_id TEXT NOT NULL, found_at TEXT NOT NULL,
-                                  PRIMARY KEY (request_id, lot_id));
+CREATE TABLE IF NOT EXISTS posted (request_id INTEGER NOT NULL, lot_id TEXT NOT NULL, posted_at TEXT NOT NULL,
+                                   PRIMARY KEY (request_id, lot_id));
 CREATE TABLE IF NOT EXISTS views (phone TEXT NOT NULL, lot_id TEXT NOT NULL, title TEXT NOT NULL, count INTEGER NOT NULL,
                                   last_at TEXT NOT NULL, PRIMARY KEY (phone, lot_id));
 '''
@@ -180,7 +180,7 @@ def delete_request(request_id, allowed_phones, db=None):
         row = connection.execute('SELECT client_phone FROM requests WHERE id = ?', (int(request_id),)).fetchone()
         if row is None or row[0] not in allowed_phones:
             return 0
-        connection.execute('DELETE FROM found WHERE request_id = ?', (int(request_id),))
+        connection.execute('DELETE FROM posted WHERE request_id = ?', (int(request_id),))
         return connection.execute('DELETE FROM requests WHERE id = ?', (int(request_id),)).rowcount
 
 
@@ -189,30 +189,25 @@ def mark_welcomed(request_id, db=None):
         connection.execute('UPDATE requests SET welcomed = 1 WHERE id = ?', (request_id,))
 
 
-def mark_checked(request_id, lots_at, db=None):
-    with closing(_connect(db)) as connection, connection:
-        connection.execute('UPDATE requests SET lots_at = ? WHERE id = ?', (lots_at, request_id))
-
-
-def unfound(request_id, lot_ids, db=None):
-    """Лоты из списка, которые по этому запросу ещё не отдавали, в том же порядке."""
+def unposted(request_id, lot_ids, db=None):
+    """Лоты из списка, которые по этому запросу ещё не отправляли в группу, в том же порядке."""
     with closing(_connect(db)) as connection:
-        done = {row[0] for row in connection.execute('SELECT lot_id FROM found WHERE request_id = ?', (request_id,))}
+        done = {row[0] for row in connection.execute('SELECT lot_id FROM posted WHERE request_id = ?', (request_id,))}
     return [lot_id for lot_id in lot_ids if lot_id not in done]
 
 
-def record_found(request_id, lot_ids, db=None):
+def record_posted(request_id, lot_ids, db=None):
     stamp = _now()
     with closing(_connect(db)) as connection, connection:
-        connection.executemany('INSERT OR IGNORE INTO found VALUES (?, ?, ?)',
+        connection.executemany('INSERT OR IGNORE INTO posted VALUES (?, ?, ?)',
                                [(request_id, lot_id, stamp) for lot_id in lot_ids])
 
 
-def found_counts(db=None):
-    """{id запроса: сколько лотов по нему отдано}."""
+def posted_counts(db=None):
+    """{id запроса: сколько лотов по нему отправлено в группу}."""
     with closing(_connect(db)) as connection:
         return {row[0]: row[1] for row in connection.execute(
-            'SELECT request_id, COUNT(*) FROM found GROUP BY request_id')}
+            'SELECT request_id, COUNT(*) FROM posted GROUP BY request_id')}
 
 
 # --- просмотры ---
@@ -241,7 +236,7 @@ def summary(staff_id=None, db=None, now=None):
     own = requests(staff_id=staff_id, db=db) if staff_id is not None else requests(db=db)
     ids = {r['id'] for r in own}
     with closing(_connect(db)) as connection:
-        found_week = sum(1 for row in connection.execute('SELECT request_id FROM found WHERE found_at >= ?', (week,))
+        posted_week = sum(1 for row in connection.execute('SELECT request_id FROM posted WHERE posted_at >= ?', (week,))
                          if row[0] in ids)
         top_viewed = [dict(row) for row in connection.execute(
             'SELECT title, SUM(count) AS views, COUNT(DISTINCT phone) AS clients FROM views '
@@ -251,7 +246,7 @@ def summary(staff_id=None, db=None, now=None):
     for request in own:
         rule = request['criteria']
         wanted.setdefault(rule['title'] or rule['maker'], set()).add(request['client_phone'])
-    return {'requests': own, 'clients': len({r['client_phone'] for r in own}), 'found_week': found_week,
+    return {'requests': own, 'clients': len({r['client_phone'] for r in own}), 'posted_week': posted_week,
             'viewers': viewers, 'top_viewed': top_viewed,
             'top_wanted': sorted(((n, len(p)) for n, p in wanted.items()), key=lambda x: (-x[1], x[0]))[:10]}
 

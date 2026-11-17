@@ -1,5 +1,6 @@
 """AUTOSEARCH-002: manager rights, requests (up to 10 per client), the greeting first, each lot once, the WhatsApp
-share link, the manager API, CRM screens, and the candidate removals giving back the exact earlier files.
+share link, the manager cabinet API (no Telegram for the manager), CRM screens, and the candidate removals giving back
+the exact earlier files.
 
 Telegram and the CRM staff table are stand-ins; every record goes to a temporary database. The live «Мій кабінет»
 (with the AUTOSEARCH-001 section) and a part of the lot list were read from the site on 2026-11-17.
@@ -41,7 +42,6 @@ sys.modules.update({'telegram': telegram, 'telegram.ext': telegram_ext, 'telegra
 
 import candidate_builder  # noqa: E402
 import ua_lot_alerts as alerts  # noqa: E402
-import ua_lot_alerts_crm as crm_job  # noqa: E402
 import ua_lot_alerts_view as alerts_view  # noqa: E402
 import ua_lot_alerts_web as web  # noqa: E402
 import ua_lot_alerts_whatsapp as whatsapp  # noqa: E402
@@ -65,7 +65,6 @@ class Base(unittest.TestCase):
             self.addCleanup(patcher.stop)
         self.generated, self.lots = alerts.read_lots(LOTS)
         web._cache.clear()
-        crm_job._lots.clear()
 
 
 class RecordTests(Base):
@@ -77,7 +76,7 @@ class RecordTests(Base):
         alerts.requests()
         with sqlite3.connect(alerts.DB) as connection:
             names = {row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
-        self.assertEqual(names, {'managers', 'requests', 'found', 'views'})
+        self.assertEqual(names, {'managers', 'requests', 'posted', 'views'})
 
     def test_manager_sees_own_clients_owner_all_and_no_manager_logins(self):
         alerts.set_manager(MANAGER, 11, 'Олег', False)
@@ -132,54 +131,26 @@ class WhatsAppTests(unittest.TestCase):
         self.assertEqual(urllib.parse.unquote(url[len(whatsapp.SHARE):]), text)
 
 
-class Bot:
-    def __init__(self, refuse=()):
-        self.sent, self.refuse = [], refuse
+class MessageTests(Base):
+    def setUp(self):
+        super().setUp()
+        self.rid = alerts.add_request('+380991112233', 11, GROUP, {'maker': 'Kia'})
+        self.kia = sorted((x for x in self.lots if x['maker'] == 'Kia'), key=lambda x: x['auction_start'])
+        self.people = {'+380991112233': 'Іваненко Петро'}
 
-    async def send_message(self, chat, text, **kw):
-        if chat in self.refuse:
-            raise RuntimeError('Forbidden')
-        self.sent.append((chat, text, kw.get('reply_markup')))
-
-
-class ManagerMessageTests(Base):
-    def run_check(self, bot):
-        return asyncio.run(crm_job.check(bot, read=lambda: (self.generated, self.lots), name=lambda phone: 'Іваненко Петро'))
-
-    def test_greeting_first_then_lots_once_up_to_ten(self):
-        rid = alerts.add_request('+380991112233', 11, GROUP, {'maker': 'Kia'})
-        kia = [x for x in self.lots if x['maker'] == 'Kia']
-        bot = Bot()
-        sent = self.run_check(bot)
-        self.assertEqual(sent, 1 + min(10, len(kia)) + (1 if len(kia) > 10 else 0))
-        chat, text, markup = bot.sent[0]
-        self.assertEqual(chat, 11)
-        self.assertIn('Запрос №%03d создан' % rid, text)
-        share, group = markup[0][0], markup[1][0]
-        self.assertEqual(share[0], '📲 Отправить в группу WhatsApp')
-        self.assertIn('Здравствуйте', urllib.parse.unquote(share[1]))
-        self.assertEqual(group, ('👥 Открыть группу', GROUP))
-        self.assertIn('Новый лот по запросу', bot.sent[1][1])
-        if len(kia) > 10:
-            self.assertIn('ещё %d подходящих' % (len(kia) - 10), bot.sent[-1][1])
-        self.assertEqual(self.run_check(bot), 0)
-        self.assertEqual(alerts.found_counts()[rid], len(kia))
-
-    def test_one_unreachable_manager_does_not_stop_others(self):
-        alerts.add_request('+380991112233', 11, GROUP, {'maker': 'Kia'})
-        alerts.add_request('+380991112244', 7, GROUP, {'maker': 'Hyundai'})
-        bot = Bot(refuse=(11,))
-        self.assertGreater(self.run_check(bot), 0)
-        self.assertTrue(all(chat == 7 for chat, _, _ in bot.sent))
-        self.assertEqual(alerts.requests(client_phone='+380991112233')[0]['welcomed'], 0)  # retried next time
-
-    def test_message_text_is_escaped(self):
-        rid = alerts.add_request('+380991112233', 11, GROUP, {'maker': 'Kia'})
-        message, text = crm_job.lot_message(alerts.requests()[0], '<b>X</b>', dict(self.lots[0], title='<i>Y</i>'))
-        self.assertIn('&lt;b&gt;X&lt;/b&gt;', message)
-        self.assertIn('&lt;i&gt;Y&lt;/i&gt;', message)
-        self.assertIn('<i>Y</i>', text)  # the WhatsApp text is plain
-        self.assertTrue(rid)
+    def test_greeting_first_then_new_lots_once_up_to_ten(self):
+        pending, more = web.messages(alerts.requests(), self.people, self.lots)
+        self.assertEqual([(m['id'], m['kind']) for m in pending], [(self.rid, 'welcome')])  # lots only after it
+        self.assertIn('Здравствуйте', urllib.parse.unquote(pending[0]['share']))
+        self.assertEqual(pending[0]['group_link'], GROUP)
+        alerts.mark_welcomed(self.rid)
+        pending, more = web.messages(alerts.requests(), self.people, self.lots)
+        self.assertEqual([m['lot'] for m in pending], [x['id'] for x in self.kia[:10]])
+        self.assertEqual(more, {self.rid: len(self.kia) - 10} if len(self.kia) > 10 else {})
+        alerts.record_posted(self.rid, [self.kia[0]['id']])
+        pending, _ = web.messages(alerts.requests(), self.people, self.lots)
+        self.assertNotIn(self.kia[0]['id'], [m['lot'] for m in pending])
+        self.assertEqual(alerts.posted_counts()[self.rid], 1)
 
 
 class WebTests(Base):
@@ -206,6 +177,15 @@ class WebTests(Base):
         self.assertEqual(web.handle('alerts/add', {'client': '+380991112233', 'maker': 'Kia', 'group_link': 'x'},
                                     {'phone': MANAGER}), ('400 Bad Request', {'error': 'group_link'}))
         rid = body['requests'][0]['id']
+        self.assertEqual(body['messages'][0]['kind'], 'welcome')
+        status, body = web.handle('alerts/sent', {'id': rid}, {'phone': MANAGER})
+        self.assertTrue(body['messages'] and all(m['kind'] == 'lot' for m in body['messages']))
+        lot = body['messages'][0]['lot']
+        status, body = web.handle('alerts/sent', {'id': rid, 'lot': lot}, {'phone': MANAGER})
+        self.assertEqual((status, body['requests'][0]['sent']), ('200 OK', 1))
+        self.assertNotIn(lot, [m['lot'] for m in body['messages']])
+        other = alerts.add_request('+380991112244', 7, GROUP, {'maker': 'Kia'})  # not this manager's client
+        self.assertEqual(web.handle('alerts/sent', {'id': other}, {'phone': MANAGER}), ('400 Bad Request', {'error': 'request'}))
         self.assertEqual(web.handle('alerts/delete', {'id': rid}, {'phone': MANAGER})[1]['requests'], [])
 
     def test_views_for_any_logged_in_client(self):
@@ -232,18 +212,18 @@ class WebTests(Base):
 class CrmViewTests(Base):
     def test_home_block_screen_and_card(self):
         rid = alerts.add_request('+380991112233', 11, GROUP, {'title': 'Kia K5', 'year_from': 2020})
-        alerts.record_found(rid, ['1', '2'])
+        alerts.record_posted(rid, ['1', '2'])
         home = {'text': '<b>🔨 Клиенты аукциона</b>', 'buttons': [[('a', 'ac:new')], [('← Меню', 'menu')]]}
         screen = alerts_view.with_home(home, alerts.summary())
         self.assertEqual([row[0][1] for row in screen['buttons']], ['ac:new', 'ac:alerts', 'menu'])
         self.assertIn('Запросов: 1 · клиентов: 1', screen['text'])
         self.assertEqual(alerts.summary(staff_id=7)['requests'], [])  # another manager sees none of these
         text = alerts_view.screen(alerts.summary(), {'+380991112233': 'Іваненко Петро'}, {11: 'Олег'},
-                                  alerts.found_counts())['text']
-        self.assertIn('№%03d · Іваненко Петро — Kia K5 · от 2020 · менеджер Олег · найдено 2' % rid, text)
+                                  alerts.posted_counts())['text']
+        self.assertIn('№%03d · Іваненко Петро — Kia K5 · от 2020 · менеджер Олег · отправлено 2' % rid, text)
         card = {'text': '<b>B A</b>\n\n<b>Ставки</b> (время Кореи): пока нет',
                 'buttons': [[('x', 'ac:pw:p')], [('К списку клиентов', 'ac:list')]]}
-        owner_card = alerts_view.with_card(card, '+380991112233', alerts.requests(), alerts.found_counts(), [], None, True)
+        owner_card = alerts_view.with_card(card, '+380991112233', alerts.requests(), alerts.posted_counts(), [], None, True)
         self.assertEqual(owner_card['buttons'][-2], [('👔 Права менеджера на сайте', 'ac:role:+380991112233')])
         self.assertLess(owner_card['text'].index('🔔 Автопоиск'), owner_card['text'].index('<b>Ставки</b>'))
         manager_card = alerts_view.with_card(card, '+380991112233', [], {}, [], None, False)

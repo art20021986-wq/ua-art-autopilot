@@ -11,8 +11,8 @@ manager — nothing is sent to the auction from the server, variant А) and «�
 The draft is taken before recording, so a second tap records nothing.
 AUTOSEARCH-002 (owner 2026-11-17): the «🔔 Автопоиск» block and button on the home screen, its screen ('ac:alerts': the
 owner sees every request, a manager his own) and the client's requests, site-manager rights and viewed lots in the card;
-the owner gives a login «👔 Права менеджера на сайте» ('ac:role', 'ac:roleset', 'ac:roleoff'); the manager messages come
-from ua_lot_alerts_crm. Texts in ua_lot_alerts_view, records in ua_lot_alerts.
+the owner gives a login «👔 Права менеджера на сайте» ('ac:role', 'ac:roleset', 'ac:roleoff'); the manager works on the
+site only (owner 2026-11-17: no Telegram for the manager). Texts in ua_lot_alerts_view, records in ua_lot_alerts.
 """
 import asyncio
 import re
@@ -82,7 +82,7 @@ def _client_screen(phone, viewer=None):
         raise store.ClientError('not_found')
     card = view.card(client, stats.of_client(phone), _staff())
     # AUTOSEARCH-002: requests, site-manager rights and viewed lots under the card; the rights button for the owner
-    return alerts_view.with_card(card, phone, alerts.requests(client_phone=phone), alerts.found_counts(),
+    return alerts_view.with_card(card, phone, alerts.requests(client_phone=phone), alerts.posted_counts(),
                                  alerts.views(phone), alerts.manager(phone), viewer in _owners())
 
 
@@ -97,7 +97,7 @@ def _home_screen(viewer=None):
 
 
 def _alerts_screen(viewer=None):
-    return alerts_view.screen(alerts.summary(_scope(viewer)), _names(store.all_clients()), _staff(), alerts.found_counts())
+    return alerts_view.screen(alerts.summary(_scope(viewer)), _names(store.all_clients()), _staff(), alerts.posted_counts())
 
 
 def _role_screen(phone):
@@ -344,12 +344,6 @@ def register(app):
     except Exception as exc:
         import logging
         logging.getLogger(__name__).warning('ua_auction_bids_bot не подключён: %s', exc)
-    try:  # AUTOSEARCH-002: the managers' messages for the clients' WhatsApp groups (module ua_lot_alerts_crm)
-        import ua_lot_alerts_crm
-        ua_lot_alerts_crm.register(app)
-    except Exception as exc:
-        import logging
-        logging.getLogger(__name__).warning('ua_lot_alerts_crm не подключён: %s', exc)
     app.add_handler(CallbackQueryHandler(cancel), group=group)
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text), group=group)
     app.add_handler(MessageHandler(filters.COMMAND, cancel), group=group)
