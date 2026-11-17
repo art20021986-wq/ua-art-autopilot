@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-HOLIDAYS-PREFLIGHT-20261117.b0484337b44706f5343621223b786dd17d722bc6817058660c44fa64ccbf3f52.json",
+  "autostart_ledger_sha256": "0556bb60c7ac27bfbefabd68207f838a72ff0ae46e0433104bed5bb2a8486b42",
+  "autostart_source_commit": "2a420c56afed40d14e00805b1d59249bec2ae2ba",
+  "created_at": "2026-11-17T08:00:35Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-17T08:00:35Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "44042876375",
+    "task_id": "KOREA-HOLIDAYS-PREFLIGHT-20261117",
+    "task_sha256": "b0484337b44706f5343621223b786dd17d722bc6817058660c44fa64ccbf3f52"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-979eead0b18c4f64-1167f0bb42b2a058",
+  "receipt_path": "state/receipts/KOREA-HOLIDAYS-PREFLIGHT-20261117.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/KOREA-HOLIDAYS-PREFLIGHT-20261117.json",
+  "request_sha256": "b0484337b44706f5343621223b786dd17d722bc6817058660c44fa64ccbf3f52",
+  "resource_locks": [
+    "PATH_SCOPE:979eead0b18c4f64"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "d92a251e4d6d33f0cb0fc06fdcd757710b2618a1",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-17T08:00:35Z"
+}
