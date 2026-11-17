@@ -48,6 +48,12 @@ class Tests(unittest.TestCase):
         c.collect(api)
         self.assertFalse(any(m == 'DELETE' for m, _ in api.calls))
 
+    def test_lot_probe_leftover_removed_other_tasks_kept(self):
+        probe = {'id': 905, 'description': 'Card diag probe probe 1', 'enabled': True, 'state': 'running',
+                 'command': 'python3.10 /home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/lotprobe_bootstrap.py --mode probe'}
+        other = {'id': 906, 'description': 'x', 'enabled': True, 'state': 'running', 'command': 'python3.10 watch.py'}
+        self.assertEqual([t['id'] for t in c.leftovers([BOT, probe, other])], [905])
+
     def test_nothing_left_means_no_delete(self):
         api = FakeApi([BOT])
         value = c.collect(api)

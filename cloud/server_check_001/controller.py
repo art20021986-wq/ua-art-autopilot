@@ -3,6 +3,8 @@
 task): the server CPU, the CRM bot task 266084, every always-on task, and removal of leftover temporary tasks of the
 session's own packages only (command runs opod_bootstrap.py or dcnt_bootstrap.py). The bot is never touched. The
 receipt reports what was found; the facts (bot state, leftovers left) are in the evidence.
+SERVER-CHECK-20261117 (KOREA-DRIVE-001): after LOT-PROBE-20261117-R2 stopped on a transport error (owner «Да» to closing
+it), the read-only lot probe's temporary task (command runs lotprobe_bootstrap.py) counts as a leftover too.
 """
 import json
 import os
@@ -12,11 +14,11 @@ import urllib.error
 import urllib.request
 
 PACKAGE = 'cloud/server_check_001'
-TASKS = ('SERVER-CHECK-20261113',)
+TASKS = ('SERVER-CHECK-20261113', 'SERVER-CHECK-20261117')
 ROOT = Path(__file__).resolve().parents[2]
 API = 'https://www.pythonanywhere.com/api/v0/user/Carix/'
 BOT_ID = 266084
-LEFTOVER = re.compile(r'/(opod|dcnt)_bootstrap\.py\b')
+LEFTOVER = re.compile(r'/(opod|dcnt|lotprobe)_bootstrap\.py\b')
 
 
 class ProbeError(RuntimeError):
