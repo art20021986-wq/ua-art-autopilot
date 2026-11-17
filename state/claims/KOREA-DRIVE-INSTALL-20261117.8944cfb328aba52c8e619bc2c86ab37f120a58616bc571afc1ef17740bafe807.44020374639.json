@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "d05af206c175a7e1db7765cfe8234fb9c4b9ba19ee52f941f26ea26d2a0f1e43",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T04:57:53Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-17T05:00:41Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44020374639",
     "task_id": "KOREA-DRIVE-INSTALL-20261117",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44020374639-8944cfb328aba52c",
   "production_transaction_path": "state/transactions/KOREA-DRIVE-INSTALL-20261117.8944cfb328aba52c8e619bc2c86ab37f120a58616bc571afc1ef17740bafe807.44020374639.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-DRIVE-INSTALL-20261117.json",
   "receipt_validation_status": "PENDING",
@@ -114,5 +114,5 @@
       "cloud/korea_drive_001/test_search_filters.py": "6fd1e6c256b8dd8bdf9a714f30763b1d9277f57b9683f5720462e807f76d3f87"
     }
   },
-  "updated_at": "2026-11-17T04:57:53Z"
+  "updated_at": "2026-11-17T05:00:41Z"
 }
