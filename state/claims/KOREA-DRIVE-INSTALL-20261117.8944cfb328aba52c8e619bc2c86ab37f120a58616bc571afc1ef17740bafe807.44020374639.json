@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "d05af206c175a7e1db7765cfe8234fb9c4b9ba19ee52f941f26ea26d2a0f1e43",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T05:00:41Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-17T05:11:44Z",
+  "heartbeat_at": "2026-11-17T05:11:44Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "44020374639",
     "task_id": "KOREA-DRIVE-INSTALL-20261117",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 658.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 305.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 267.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-44020374639-8944cfb328aba52c",
   "production_transaction_path": "state/transactions/KOREA-DRIVE-INSTALL-20261117.8944cfb328aba52c8e619bc2c86ab37f120a58616bc571afc1ef17740bafe807.44020374639.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-DRIVE-INSTALL-20261117.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "3a125d0cee3750cc0ab3e78f0b42484ed249b2f168ce70be29d5f89f61edb1fa",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-DRIVE-INSTALL-20261117.json",
   "request_sha256": "8944cfb328aba52c8e619bc2c86ab37f120a58616bc571afc1ef17740bafe807",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "7ee5fdcc5165d4a966272809c53344f4f777bfa54003d0c9f0968277dcc92efc",
     "file_sha256": {
@@ -114,5 +145,5 @@
       "cloud/korea_drive_001/test_search_filters.py": "6fd1e6c256b8dd8bdf9a714f30763b1d9277f57b9683f5720462e807f76d3f87"
     }
   },
-  "updated_at": "2026-11-17T05:00:41Z"
+  "updated_at": "2026-11-17T05:11:44Z"
 }
