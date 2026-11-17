@@ -51,6 +51,7 @@ class CandidateTests(unittest.TestCase):
         self.assertIn('function engine(l){', page)  # KOREA-ENGINE-001: engine type in the lot card
         self.assertIn('createElement("optgroup")', page)  # KOREA-ENGINE-001: models grouped by make
         self.assertIn('function drive(l){', page)  # KOREA-DRIVE-001: the drive row in the lot window
+        self.assertIn('id="kl-year-to"', page)  # KOREA-DRIVE-001: the search lists
         self.assertIn('korea_auction/public.py', files)
         source = HERE / 'korea_auction'
         for module in candidate_builder.MODULES:
@@ -62,12 +63,12 @@ class CandidateTests(unittest.TestCase):
 
     def test_only_the_engine_modules_differ_from_the_installed_collector(self):
         """The package never rolls back another install: every module but KOREA-ENGINE's own equals the
-        installed one (drive.py is new)."""
-        changed = {'public'}
+        installed one (drive.py and color.py are new)."""
+        changed = {'public', 'lots', 'prices'}
         live = installed()
         for module in candidate_builder.MODULES:
             name = 'korea_auction/%s.py' % module
-            if module == 'drive':
+            if module in ('drive', 'color'):
                 self.assertNotIn(name, live)
                 continue
             mine = (HERE / name).read_bytes()

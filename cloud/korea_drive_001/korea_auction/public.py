@@ -5,7 +5,7 @@ on the site (photo_name), never by the auction's own addresses.
 """
 import hashlib
 
-from . import drive, fuel, nbu
+from . import color, drive, fuel, nbu
 from .collect import display_name
 
 PHOTO_URL = '/video/korea/lots/'
@@ -27,7 +27,7 @@ def lot_view(lot, rates, photos):
         'id': lot['id'], 'title': display_name(lot['maker'], lot['model']), 'maker': lot['maker'].title(),
         'trim': lot['trim'], 'year': lot['year'], 'mileage_km': lot['mileage_km'], 'score': lot['score'],
         'engine_cc': lot['engine_cc'], 'fuel': fuel.key(lot.get('fuel')) or '', 'transmission': lot['transmission'],
-        'drive': drive.key(lot['trim']) or '',
+        'drive': drive.key(lot['trim']) or '', 'color': color.key(lot.get('color')) or '',
         'house': lot['house'], 'lot_no': lot['lot_no'], 'auction_start': lot['auction_start'],
         'start_krw': price, 'start_usd': nbu.krw_to_usd(price, rates) if price else 0, 'vin': lot.get('vin', ''),
         'photos': [PHOTO_URL + name for name in photos[:LIST_PHOTOS]],

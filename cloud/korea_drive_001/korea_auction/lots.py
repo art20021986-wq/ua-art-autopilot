@@ -80,6 +80,9 @@ def parse_detail(html):
         if PHOTO_PATH.search(src) and src not in photos:
             photos.append(src)
     vin = re.search(r'id="chassis_no_value"[^>]*>\s*([A-Za-z0-9-]{5,20})\s*<', html)
+    # KOREA-DRIVE-001: the body colour field of the specs block («… Color White Mileage …»; empty: «Color Mileage»)
+    color = re.search(r'\bColor\s+(.{0,40}?)\s*\bMileage\b', page)
     return {'start_price_krw': max(prices or [0]), 'specs': specs, 'vin': vin.group(1).upper() if vin else '',
             'fuel': extra.get('Fuel', '').strip(), 'history': extra.get('Vehicle History', '').strip(),
-            'body': extra.get('Type', '').strip(), 'market_sold_krw': market, 'photos': photos}
+            'body': extra.get('Type', '').strip(), 'market_sold_krw': market, 'photos': photos,
+            'color': color.group(1).strip()[:40] if color else ''}

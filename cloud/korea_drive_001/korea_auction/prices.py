@@ -3,7 +3,8 @@
 The auction's results table has no start price, no VIN and only 3 photos; each lot page has them. Lot pages are read
 a few hundred per run (the session keeps its pause between requests) and remembered in CACHE, so every lot page is
 read once; lots that left the auction are forgotten. One responsibility: the lot page cache.
-Cache entry: {'krw': start price, 'vin': chassis number, 'photos': [photo addresses], 'fuel': fuel text}; an older
+Cache entry: {'krw': start price, 'vin': chassis number, 'photos': [photo addresses], 'fuel': fuel text,
+'color': colour text} (KOREA-DRIVE-001: entries without the colour text are read again once); an older
 entry without the fuel text is read again once (KOREA-ENGINE-001).
 """
 import json
@@ -38,12 +39,12 @@ def save(known, path=None):
 def entry(html):
     detail = lots.parse_detail(html)
     return {'krw': detail['start_price_krw'], 'vin': detail['vin'],
-            'photos': detail['photos'][:MAX_PHOTOS], 'fuel': detail['fuel']}
+            'photos': detail['photos'][:MAX_PHOTOS], 'fuel': detail['fuel'], 'color': detail['color']}
 
 
 def read(page):
     """The lot page is in the cache with everything the site shows."""
-    return page is not None and 'fuel' in page
+    return page is not None and 'fuel' in page and 'color' in page
 
 
 def fill(session, current_lots, known, limit=PER_RUN):
@@ -66,5 +67,6 @@ def apply(current_lots, known):
     for lot in current_lots:
         page = known.get(lot['id'], {})
         result.append(dict(lot, start_price_krw=page.get('krw') or lot['start_price_krw'], vin=page.get('vin', ''),
-                           photos=page.get('photos') or lot['photos'], fuel=page.get('fuel', '')))
+                           photos=page.get('photos') or lot['photos'], fuel=page.get('fuel', ''),
+                           color=page.get('color', '')))
     return result
