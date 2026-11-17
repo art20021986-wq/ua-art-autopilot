@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/VIN-PATTERN-INSTALL-20261117.5daa656d825f90451653502fe490edaa8004ff7e1e61f4cdc2e82fbbde558e3c.json",
+  "autostart_ledger_sha256": "f81d6358df6865b8bbc0de83a85ec55bb57154d0759f6ad774b637fabf89c8f5",
+  "autostart_source_commit": "356a29d2f48ba6946527abb2750856960f5e8e41",
+  "created_at": "2026-11-17T07:04:06Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-17T07:04:06Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "44035656338",
+    "task_id": "VIN-PATTERN-INSTALL-20261117",
+    "task_sha256": "5daa656d825f90451653502fe490edaa8004ff7e1e61f4cdc2e82fbbde558e3c"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-d152a309b8f5952d-1efdbf9c0190cc44",
+  "receipt_path": "state/receipts/VIN-PATTERN-INSTALL-20261117.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/VIN-PATTERN-INSTALL-20261117.json",
+  "request_sha256": "5daa656d825f90451653502fe490edaa8004ff7e1e61f4cdc2e82fbbde558e3c",
+  "resource_locks": [
+    "PATH_SCOPE:d152a309b8f5952d"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "e227f58166e8ed37ac5fbc8ec731faf1e916aad8",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-17T07:04:06Z"
+}
