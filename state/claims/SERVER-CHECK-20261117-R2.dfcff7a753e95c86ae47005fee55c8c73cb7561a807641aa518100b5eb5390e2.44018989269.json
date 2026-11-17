@@ -7,21 +7,23 @@
   "created_at": "2026-11-17T04:43:47Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T04:43:47Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-17T04:44:45Z",
+  "heartbeat_at": "2026-11-17T04:44:45Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "44018989269",
     "task_id": "SERVER-CHECK-20261117-R2",
     "task_sha256": "dfcff7a753e95c86ae47005fee55c8c73cb7561a807641aa518100b5eb5390e2"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-57424ee18106dc62-78f4e6da3b7c9cba",
   "receipt_path": "state/receipts/SERVER-CHECK-20261117-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "2934727b68f728d258026b660d74c798945c41bf64f169d53eab9deaed07d604",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SERVER-CHECK-20261117-R2.json",
   "request_sha256": "dfcff7a753e95c86ae47005fee55c8c73cb7561a807641aa518100b5eb5390e2",
   "resource_locks": [
@@ -29,8 +31,23 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "c4a1d6ea975c3746ec789855bd551a435a31d042",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92088041472,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.575
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-17T04:43:47Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "a17a0bdf919457b58e5b2bbf64e46923c0160f218a19dfafa81ced614a5289a7",
+    "file_sha256": {
+      "cloud/server_check_001/test_controller.py": "7a460bf22d93b39c2998ffb51901426ba339b65444794ead7b9d5aee96bb7564"
+    }
+  },
+  "updated_at": "2026-11-17T04:44:45Z"
 }
