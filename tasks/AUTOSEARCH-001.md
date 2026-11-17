@@ -32,3 +32,12 @@ ua_auction_clients_view.py (строка).
   Предложено (макет cloud/photos/33-AUTOSEARCH-CRM.png): блок «🔔 Автопоиск» в «🔨 Клиенты аукциона», кнопка
   «🔔 Автопоиск · N» → «Что ищут чаще» + «Кто на что подписан» (имя → карточка), строки поисков в карточке клиента.
   Уточняется: учитывать ли просмотры лотов на сайте вошедшими клиентами («кто что смотрит»).
+- Владелец 17.11: «1. Да 2. Да» — статистика по макету 33-AUTOSEARCH-CRM.png и учёт просмотров лотов вошедшими клиентами.
+
+## Пакет cloud/autosearch_001 (17.11)
+Новые: ua_lot_alerts.py (записи и сверка, база /home/Carix/auction_clients/alerts.db), ua_lot_alerts_web.py
+(/api/auction/alerts*), ua_lot_alerts_bot.py (клиентский бот: /start as-<код>, проверка раз в 10 мин),
+ua_lot_alerts_view.py (тексты CRM). Правки: ua_auction_web.py, ua_auction_clients_bot.py, lead_bot.py (одна вставка),
+video/kabinet.html (раздел), video/korea.html (учёт открытого лота). Тексты бота клиенту — по-украински, как на макете.
+Тесты: test_autosearch.py (23), test_deployment.py (28); раздел кабинета проверен в браузере.
+Проба AUTOSEARCH-PREFLIGHT-20261117 (только чтение) → «да» владельца → установка AUTOSEARCH-INSTALL-20261117 по очереди.
