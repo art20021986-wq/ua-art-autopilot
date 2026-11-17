@@ -1,0 +1,27 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-FACTS-INSTALL-20261117-R2.d7f209fe98997a799be80d30affab1f26b08c50dbf52e5c6156de32d92993686.json",
+  "autostart_ledger_sha256": "7ba06b889306e963cafca40f244f181f4d5247736c0e1e05a5443b513cd7da4b",
+  "autostart_source_commit": "0a0c33107b31647ccad17f50418e906cf40f13d6",
+  "created_at": "2026-11-17T06:32:29Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "44031784944",
+    "task_id": "CARD-FACTS-INSTALL-20261117-R2",
+    "task_sha256": "d7f209fe98997a799be80d30affab1f26b08c50dbf52e5c6156de32d92993686"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "card-ua-0021-cf0e311dba07a982",
+  "request_path": "tasks/requests/CARD-FACTS-INSTALL-20261117-R2.json",
+  "resource_locks": [
+    "CARD:UA-0021",
+    "CARD:UA-0023",
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
