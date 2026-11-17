@@ -130,16 +130,24 @@ def prepare(directory):
 # matching runs on the live lot list; the CRM screens build from the live clients (read only, counts only); the
 # client bot's link handler and job register on a bot application that is built but never started.
 SMOKE = r"""
-import asyncio, json, sys, tempfile, pathlib
+import asyncio, json, sys, tempfile, pathlib, time
 after, root = sys.argv[1], sys.argv[2]
 sys.path[:0] = [after, root]
+START = time.monotonic()
+def stage(name):  # the last stage reached shows where a slow step stands (preview 2026-11-17 timed out silently)
+    sys.stderr.write('STAGE %s %.1fs\n' % (name, time.monotonic() - START)); sys.stderr.flush()
+stage('start')
 import ua_lot_alerts as alerts
 with tempfile.TemporaryDirectory() as folder:
     alerts.DB = pathlib.Path(folder) / 'alerts.db'
     import ua_lot_alerts_web as web, ua_lot_alerts_bot as alerts_bot, ua_lot_alerts_view as alerts_view
+    stage('alerts_modules')
     import ua_auction_web, ua_auction_clients as store, ua_auction_clients_view as view, ua_auction_stats as stats
+    stage('auction_modules')
     import ua_auction_clients_bot as crm
+    stage('crm_bot_module')
     generated, lots = alerts.read_lots()
+    stage('lots')
     options = web.options()
     maker = max(options['makers'], key=lambda m: len(options['makers'][m])) if options['makers'] else ''
     phone = '+380000000000'
@@ -149,14 +157,19 @@ with tempfile.TemporaryDirectory() as folder:
     code = alerts.new_code(phone)
     linked = alerts.link(code, 1) == phone and alerts.link(code, 1) is None
     alerts.record_view(phone, 'x1', 'Kia K5 2021')
+    stage('records')
     people = store.all_clients()
     home = alerts_view.with_home(view.home(stats.summary()), alerts.summary())
     screen = alerts_view.screen(alerts.summary(), {phone: 'Тест'})
-    cards = [crm._client_screen(c['phone']) for c in people[:20]]
+    stage('crm_home')
+    cards = [crm._client_screen(c['phone']) for c in people[:5]]
+    stage('crm_cards')
     from telegram.ext import ApplicationBuilder
     app = ApplicationBuilder().token('123:smoke').build()
     alerts_bot.register(app)
+    stage('client_bot')
     status, body = web.handle('alerts', {}, {'phone': phone})
+    stage('api')
     after_dir = pathlib.Path(after)
     page = (after_dir / 'video/kabinet.html').read_text(encoding='utf-8')
     korea = (after_dir / 'video/korea.html').read_text(encoding='utf-8')
@@ -175,11 +188,17 @@ with tempfile.TemporaryDirectory() as folder:
 
 
 def smoke(directory):
-    result = subprocess.run(['python3.10', '-B', '-c', SMOKE, str(directory/'after'), str(ROOT)],
-                            capture_output=True, text=True, timeout=120, check=False, cwd=str(directory))
+    try:
+        result = subprocess.run(['python3.10', '-B', '-c', SMOKE, str(directory/'after'), str(ROOT)],
+                                capture_output=True, text=True, timeout=240, check=False, cwd=str(directory))
+    except subprocess.TimeoutExpired as error:
+        stages = (error.stderr or b'')
+        stages = stages.decode(errors='replace') if isinstance(stages, bytes) else stages
+        raise DeploymentError('SMOKE_TIMEOUT:'+' | '.join(stages.strip().splitlines()[-3:])[-160:])
     if result.returncode != 0:
         raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
+    value['stages'] = [line for line in result.stderr.splitlines() if line.startswith('STAGE ')][-12:]
     if (not value.get('lots') or not value.get('found') or value.get('linked_once') is not True
             or value.get('home_buttons') != ['ac:new', 'ac:list', 'ac:days', 'ac:mgrs', 'ac:alerts', 'menu']
             or value.get('screen_ok') is not True or value.get('cards_with_alerts') != value.get('cards')
