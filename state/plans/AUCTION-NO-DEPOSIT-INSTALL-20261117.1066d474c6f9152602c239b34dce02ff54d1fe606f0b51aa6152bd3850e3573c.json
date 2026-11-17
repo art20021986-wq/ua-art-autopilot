@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUCTION-NO-DEPOSIT-INSTALL-20261117.1066d474c6f9152602c239b34dce02ff54d1fe606f0b51aa6152bd3850e3573c.json",
+  "autostart_ledger_sha256": "35d5771cf9d8b5061ee2767be5dc05af5d635455245a6fc34d072aa6e9493db6",
+  "autostart_source_commit": "d698d50d137118e0cb0f2b7dd4e15a74c598e6f8",
+  "created_at": "2026-11-17T04:23:23Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "44015913202",
+    "task_id": "AUCTION-NO-DEPOSIT-INSTALL-20261117",
+    "task_sha256": "1066d474c6f9152602c239b34dce02ff54d1fe606f0b51aa6152bd3850e3573c"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-9769fae13beb0517-823ebb591ca6e4a5",
+  "request_path": "tasks/requests/AUCTION-NO-DEPOSIT-INSTALL-20261117.json",
+  "resource_locks": [
+    "PATH_SCOPE:9769fae13beb0517"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
