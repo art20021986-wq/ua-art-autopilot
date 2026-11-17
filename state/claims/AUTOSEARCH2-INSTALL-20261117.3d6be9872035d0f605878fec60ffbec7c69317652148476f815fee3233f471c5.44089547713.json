@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "4f4339daa0b9328ef04641ee2c844a685f2f0f56395e5fcffd085dd236ad4607",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T13:16:16Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-17T13:27:27Z",
+  "heartbeat_at": "2026-11-17T13:27:27Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "44089547713",
     "task_id": "AUTOSEARCH2-INSTALL-20261117",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 314.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 28.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 18.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-44089547713-3d6be9872035d0f6",
   "production_transaction_path": "state/transactions/AUTOSEARCH2-INSTALL-20261117.3d6be9872035d0f605878fec60ffbec7c69317652148476f815fee3233f471c5.44089547713.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-af324bd376983f9d-ba06a52a2d722d9d",
   "receipt_path": "state/receipts/AUTOSEARCH2-INSTALL-20261117.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b7025c7c8e1efd14acd0f8f66561fc5ac9ce2fa1881b6f1ae454e9499225da5f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/AUTOSEARCH2-INSTALL-20261117.json",
   "request_sha256": "3d6be9872035d0f605878fec60ffbec7c69317652148476f815fee3233f471c5",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "794eef7715796ead2d12ecd61b90c286cb63ddb9d59a30a0fe1ba5a796a64e25",
     "file_sha256": {
@@ -101,5 +132,5 @@
       "cloud/autosearch_002/ua_lot_alerts_whatsapp.py": "e21a36b27e3ee031cb2ac9aaed9708dab92495cba17904bcfa37675b8f77d4e5"
     }
   },
-  "updated_at": "2026-11-17T13:16:16Z"
+  "updated_at": "2026-11-17T13:27:27Z"
 }
