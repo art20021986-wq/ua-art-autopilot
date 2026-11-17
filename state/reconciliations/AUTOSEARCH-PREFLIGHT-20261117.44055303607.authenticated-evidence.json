@@ -1,0 +1,16 @@
+{
+  "claim_before_sha256": "7b700d62a4a02b392608693101445c00dd44362153c106b83b5e6eeca4a10e77",
+  "error": "REMOTE_PREVIEW:TimeoutExpired (the package's own smoke subprocess, 120 s) -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: remote preview smoke (reads only; records in a temporary database)",
+  "leftover_temporary_task": "none: the remote preview wrote its receipt, the controller then removes its always-on task",
+  "owner_approval": "«Да» in chat 2026-11-17 to closing the claim by manual reconciliation and retrying",
+  "precedent": "state/reconciliations/VIN-MVS-PREFLIGHT-20261117.44047252389.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-17T10:20:00+00:00",
+  "remote_mode": "preview (reads only) — smoke timed out",
+  "retry": "AUTOSEARCH-PREFLIGHT-20261117-R2",
+  "run_id": "44055303607",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "AUTOSEARCH-PREFLIGHT-20261117"
+}
