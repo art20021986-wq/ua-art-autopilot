@@ -1,0 +1,17 @@
+{
+  "cause": "journal_mode=WAL on PythonAnywhere's network disk; removed (#1757), as the existing auction modules",
+  "claim_before_sha256": "0441eec510057061058fac6ddf5f5b2ea1d3e155265e9affa0ecbf86a3240945",
+  "error": "REMOTE_PREVIEW:DeploymentError:SMOKE_TIMEOUT after stage «lots» (first write to the temporary SQLite database) -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: remote preview smoke (reads only; records in a temporary database)",
+  "leftover_temporary_task": "none: the remote preview wrote its receipt, the controller then removes its always-on task",
+  "owner_approval": "«Да» in chat 2026-11-17 to closing the claim by manual reconciliation and retrying",
+  "precedent": "state/reconciliations/AUTOSEARCH-PREFLIGHT-20261117.44055303607.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-17T10:50:00+00:00",
+  "remote_mode": "preview (reads only) — smoke timed out",
+  "retry": "AUTOSEARCH-PREFLIGHT-20261117-R3",
+  "run_id": "44063423193",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "AUTOSEARCH-PREFLIGHT-20261117-R2"
+}
