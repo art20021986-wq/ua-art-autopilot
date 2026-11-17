@@ -3,8 +3,10 @@ cloud/photos/33-AUTOSEARCH-MANAGER.png — «Да»). Используется �
 
 cabinet(page): под «Мої ставки» — раздел, который видит только менеджер (GET /api/auction/alerts отвечает 200):
 клиент (свои клиенты; у владельца — все), марка, модель, рік від/до, пробіг до, ціна до $, паливо, колір (списки — как
-фильтры korea.html), «Посилання на групу WhatsApp», «💾 Зберегти запит»; «Запити моїх клієнтів» с «🗑». Клиент без прав
-менеджера раздела не видит. Свой стиль и свой скрипт; остальная страница не меняется; каждое место — ровно один раз.
+фильтры korea.html), «Посилання на групу WhatsApp», «💾 Зберегти запит»; «Запити моїх клієнтів» с «🗑»;
+«📬 Повідомлення для груп клієнтів» (макет 33-AUTOSEARCH-SITE-ONLY.png, «Да»): приветствие и новые подходящие лоты с
+«📲 Відправити в групу WhatsApp» (wa.me, отмечается «✅ Відправлено») и «👥 Відкрити групу». Клиент без прав менеджера
+раздела не видит. Менеджеру Telegram не нужен (владелец 17.11). Свой стиль и свой скрипт; остальная страница не меняется; каждое место — ровно один раз.
 """
 import json
 
@@ -41,7 +43,16 @@ SECTION = (
     + '<button type="submit" id="mr-save">💾 ' + _t('Зберегти запит', 'Сохранить запрос', 'მოთხოვნის შენახვა')
     + '</button><p id="mr-msg" class="mr-msg" role="status"></p></form></div>'
     '<div class="cab-card cab-in"><b>' + _t('Запити моїх клієнтів', 'Запросы моих клиентов', 'ჩემი კლიენტების მოთხოვნები')
-    + '</b><div id="mr-list"></div></div></section>')
+    + '</b><div id="mr-list"></div></div>'
+    '<div class="cab-card cab-in"><b>📬 ' + _t('Повідомлення для груп клієнтів', 'Сообщения для групп клиентов',
+                                              'შეტყობინებები კლიენტების ჯგუფებისთვის')
+    + '</b> <span id="mr-new" class="mr-new" hidden></span><div id="mr-msgs"></div><p class="mr-hint">'
+    + _t('Нові лоти з’являються тут самі після кожного оновлення аукціону. «Відправити» відкриває WhatsApp з готовим '
+         'текстом — оберіть групу клієнта.',
+         'Новые лоты появляются здесь сами после каждого обновления аукциона. «Отправить» открывает WhatsApp с готовым '
+         'текстом — выберите группу клиента.',
+         'ახალი ლოტები აქ თავად ჩნდება აუქციონის ყოველი განახლების შემდეგ. «გაგზავნა» ხსნის WhatsApp-ს მზა ტექსტით — '
+         'აირჩიეთ კლიენტის ჯგუფი.') + '</p></div></section>')
 
 STYLE = ('<style id="ua-manager-v1">.mr-sub{margin:0 0 10px;opacity:.85}.mr-grid{display:grid;grid-template-columns:1fr 1fr;'
          'gap:8px 10px}.mr-grid label{display:grid;gap:4px;font-size:13px}.mr-grid .mr-wide{grid-column:1/-1}'
@@ -51,14 +62,28 @@ STYLE = ('<style id="ua-manager-v1">.mr-sub{margin:0 0 10px;opacity:.85}.mr-grid
          '.mr-msg{grid-column:1/-1;margin:0;min-height:1em;color:#fcd34d}.mr-row{display:flex;justify-content:space-between;'
          'align-items:center;gap:10px;padding:9px 0;border-top:1px solid #2a3b55}.mr-row small{display:block;opacity:.7}'
          '.mr-del{padding:7px 12px;border-radius:10px;border:1px solid #2a3b55;background:transparent;color:#fff;'
-         'cursor:pointer}@media(max-width:520px){.mr-grid{grid-template-columns:1fr}}</style>')
+         'cursor:pointer}.mr-new{font-size:12px;font-weight:800;padding:2px 9px;border-radius:99px;background:#3b2f0b;'
+         'color:#fcd34d}.mr-m{border-top:1px solid #2a3b55;padding:10px 0}.mr-h{font-size:13px;font-weight:700;'
+         'margin-bottom:4px}.mr-t{white-space:pre-wrap;background:#0B1524;border:1px solid #2a3b55;border-radius:10px;'
+         'padding:8px 10px;font-size:14px}.mr-b{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.mr-wa{padding:8px 12px;'
+         'border-radius:10px;background:#1f7a4d;color:#fff!important;font-weight:700;text-decoration:none}.mr-gr{'
+         'padding:8px 12px;border-radius:10px;border:1px solid #2a3b55;color:#fff!important;text-decoration:none}'
+         '.mr-ok{color:#86efac;font-weight:700;font-size:13px;margin-top:6px}.mr-hint{opacity:.7;font-size:13px;'
+         'margin:8px 0 0}@media(max-width:520px){.mr-grid{grid-template-columns:1fr}}</style>')
 
 # [uk, ru, ka] for the texts the script writes
 TEXT = {
     'any': ['Будь-який', 'Любой', 'ნებისმიერი'],
     'pick': ['Оберіть клієнта', 'Выберите клиента', 'აირჩიეთ კლიენტი'],
     'none': ['Поки немає.', 'Пока нет.', 'ჯერ არ არის.'],
-    'found': ['знайдено {n}', 'найдено {n}', 'ნაპოვნია {n}'],
+    'sent': ['надіслано в групу {n}', 'отправлено в группу {n}', 'ჯგუფში გაგზავნილია {n}'],
+    'more': ['ще {n} підходящих — на сайті', 'ещё {n} подходящих — на сайте', 'კიდევ {n} შესაფერისი — საიტზე'],
+    'new': ['{n} нових', '{n} новых', '{n} ახალი'],
+    'welcome': ['привітання', 'приветствие', 'მისალმება'],
+    'lot': ['новий лот', 'новый лот', 'ახალი ლოტი'],
+    'send': ['📲 Відправити в групу WhatsApp', '📲 Отправить в группу WhatsApp', '📲 გაგზავნა WhatsApp ჯგუფში'],
+    'open': ['👥 Відкрити групу', '👥 Открыть группу', '👥 ჯგუფის გახსნა'],
+    'done': ['✅ Відправлено', '✅ Отправлено', '✅ გაგზავნილია'],
     'from': ['від', 'от', 'დან'], 'to': ['до', 'до', 'მდე'],
     'maker': ['Оберіть марку або модель.', 'Выберите марку или модель.', 'აირჩიეთ მარკა ან მოდელი.'],
     'client': ['Оберіть клієнта.', 'Выберите клиента.', 'აირჩიეთ კლიენტი.'],
@@ -66,9 +91,9 @@ TEXT = {
                    'Вставьте ссылку-приглашение группы WhatsApp (https://chat.whatsapp.com/…).',
                    'ჩასვით WhatsApp ჯგუფის მოწვევის ბმული (https://chat.whatsapp.com/…).'],
     'limit': ['У клієнта вже 10 запитів.', 'У клиента уже 10 запросов.', 'კლიენტს უკვე 10 მოთხოვნა აქვს.'],
-    'saved': ['Запит збережено. Привітання для групи прийде вам у CRM-бот.',
-              'Запрос сохранён. Приветствие для группы придёт вам в CRM-бот.',
-              'მოთხოვნა შენახულია. ჯგუფის მისალმება CRM-ბოტში მოგივათ.'],
+    'saved': ['Запит збережено. Привітання для групи — нижче, у «Повідомлення для груп клієнтів».',
+              'Запрос сохранён. Приветствие для группы — ниже, в «Сообщения для групп клиентов».',
+              'მოთხოვნა შენახულია. ჯგუფის მისალმება — ქვემოთ, «შეტყობინებები კლიენტების ჯგუფებისთვის».'],
     'error': ['Не вдалося. Спробуйте ще раз.', 'Не удалось. Попробуйте ещё раз.', 'ვერ მოხერხდა. სცადეთ ისევ.'],
     'fuel_gasoline': ['бензин', 'бензин', 'ბენზინი'], 'fuel_diesel': ['дизель', 'дизель', 'დიზელი'],
     'fuel_hybrid': ['гібрид', 'гибрид', 'ჰიბრიდი'], 'fuel_electric': ['електро', 'электро', 'ელექტრო'],
@@ -116,11 +141,19 @@ SCRIPT = (
     'st.requests.forEach(function(r){var del=el("button","mr-del","🗑");del.type="button";'
     'del.addEventListener("click",function(){call("delete",{id:r.id});});'
     'box.appendChild(el("div","mr-row",null,[el("div",null,num(r.id)+" · "+r.client_name+" · "+desc(r.criteria),'
-    '[el("small",null,t("found",{n:r.found}))]),del]));});}'
+    '[el("small",null,t("sent",{n:r.sent})+(r.more?" · "+t("more",{n:r.more}):""))]),del]));});'
+    'var mb=$("mr-msgs");mb.textContent="";$("mr-new").hidden=!st.messages.length;'
+    '$("mr-new").textContent=t("new",{n:st.messages.length});if(!st.messages.length)mb.appendChild(el("div","mr-m",t("none")));'
+    # a message: the WhatsApp share link opens in a new tab (the official wa.me «share»); the tap marks it as sent
+    'st.messages.forEach(function(m){var wa=el("a","mr-wa",t("send")),gr=el("a","mr-gr",t("open")),box;'
+    'wa.href=m.share;wa.target="_blank";wa.rel="noopener";gr.href=m.group_link;gr.target="_blank";gr.rel="noopener";'
+    'box=el("div","mr-m",null,[el("div","mr-h",num(m.id)+" · "+m.client_name+" · "+t(m.kind)),el("div","mr-t",m.text),'
+    'el("div","mr-b",null,[wa,gr])]);wa.addEventListener("click",function(){box.appendChild(el("div","mr-ok",t("done")));'
+    'call("sent",m.lot?{id:m.id,lot:m.lot}:{id:m.id},true).catch(function(){});});mb.appendChild(box);});}'
     'function msg(k){$("mr-msg").textContent=k?t(k):"";}'
-    'function call(a,b){return fetch(API+"/"+a,{method:"POST",credentials:"same-origin",'
+    'function call(a,b,quiet){return fetch(API+"/"+a,{method:"POST",credentials:"same-origin",'
     'headers:{"Content-Type":"application/json"},body:JSON.stringify(b||{})}).then(function(r){'
-    'return r.json().then(function(d){if(!r.ok)throw d;var o=st.options;st=d;st.options=o;render();return d;});})'
+    'return r.json().then(function(d){if(!r.ok)throw d;if(!quiet){st=d;render();}return d;});})'
     '.catch(function(e){var k=e&&e.error;msg(T[k]?k:"error");throw e;});}'
     'function init(){if(!$("mr"))return;fetch(API,{credentials:"same-origin",cache:"no-store"}).then(function(r){'
     'return r.ok?r.json():null;}).then(function(d){if(d){st=d;lists();render();}}).catch(function(){});'

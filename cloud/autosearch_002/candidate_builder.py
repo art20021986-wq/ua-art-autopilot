@@ -2,12 +2,12 @@
 
 Owner 17.11: a manager logs in on the site (a login the owner gives «👔 Права менеджера на сайте» in the CRM bot), saves
 search criteria and the WhatsApp group link for his client; the first message is the owner's greeting, then a link to
-every matching lot; the manager sends it to the group in one tap (wa.me — a bot may not post to a manually made WhatsApp
-group); the client's own «🔔 Автопошук» and the client-bot Telegram link of AUTOSEARCH-001 go away («ему не надо»).
-- ua_lot_alerts.py (records: managers, requests, found, views), ua_lot_alerts_web.py (manager API),
-  ua_lot_alerts_view.py (CRM texts): replaced; new ua_lot_alerts_whatsapp.py (WhatsApp texts and share link) and
-  ua_lot_alerts_crm.py (manager messages in the CRM bot); ua_lot_alerts_bot.py (client bot) removed;
-- ua_auction_clients_bot.py: requests per viewer, the rights button for the owner, registers ua_lot_alerts_crm;
+every matching lot, in the manager's cabinet on the site (owner: no Telegram for the manager), sent to the group in one
+tap (wa.me — a bot may not post to a manually made WhatsApp group); the client's own «🔔 Автопошук» and the client-bot Telegram link of AUTOSEARCH-001 go away («ему не надо»).
+- ua_lot_alerts.py (records: managers, requests, posted, views), ua_lot_alerts_web.py (manager API),
+  ua_lot_alerts_view.py (CRM texts): replaced; new ua_lot_alerts_whatsapp.py (WhatsApp texts and share link);
+  ua_lot_alerts_bot.py (client bot) removed;
+- ua_auction_clients_bot.py: requests per viewer, the rights button for the owner;
 - ua_auction_web.py: docstring only (the routes follow ua_lot_alerts_web);
 - lead_bot.py: the AUTOSEARCH-001 hook removed — back to the exact version before AUTOSEARCH-001;
 - video/kabinet.html: the AUTOSEARCH-001 section removed (back to the exact page before it, cabinet_old holds that
@@ -23,7 +23,7 @@ HERE = Path(__file__).resolve().parent
 CABINET, LEAD = 'video/kabinet.html', 'lead_bot.py'
 REPLACED = ('ua_lot_alerts.py', 'ua_lot_alerts_web.py', 'ua_lot_alerts_view.py', 'ua_auction_clients_bot.py',
             'ua_auction_web.py')
-NEW = ('ua_lot_alerts_whatsapp.py', 'ua_lot_alerts_crm.py')
+NEW = ('ua_lot_alerts_whatsapp.py',)
 REMOVED = ('ua_lot_alerts_bot.py',)
 # Installed versions (AUTOSEARCH-001) this package was written against; any other version stops the build.
 SOURCE_SHA256 = {
