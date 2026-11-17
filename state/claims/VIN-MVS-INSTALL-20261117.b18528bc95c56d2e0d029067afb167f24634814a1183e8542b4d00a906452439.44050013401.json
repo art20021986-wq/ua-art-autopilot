@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "794676bac255b412baa8613d0437fbbbcdee586822e63af8f2282b0d18bbec3d",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T08:52:23Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-17T08:56:15Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44050013401",
     "task_id": "VIN-MVS-INSTALL-20261117",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44050013401-b18528bc95c56d2e",
   "production_transaction_path": "state/transactions/VIN-MVS-INSTALL-20261117.b18528bc95c56d2e0d029067afb167f24634814a1183e8542b4d00a906452439.44050013401.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-10e74a7a7fc3cc13-8fb67c626fe84bee",
   "receipt_path": "state/receipts/VIN-MVS-INSTALL-20261117.json",
   "receipt_validation_status": "PENDING",
@@ -88,5 +88,5 @@
       "cloud/crm_new_car_vin_005/ua_vin_mvs.py": "a2376389d13ef9f6baa305681f0ddbe5a4c1022d1eeb25c96d3dae9d828cdaf5"
     }
   },
-  "updated_at": "2026-11-17T08:52:23Z"
+  "updated_at": "2026-11-17T08:56:15Z"
 }
