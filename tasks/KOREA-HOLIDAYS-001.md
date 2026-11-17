@@ -18,3 +18,5 @@ cloud/korea_holidays_001: day_reason_page.py (3 правки korea.html: под�
 Файлы установки — по образцу korea_gallery_001 (меняется только video/korea.html). Тесты: day_reason_page 3/3, release, deployment OK.
 Живая korea.html = образец (17.11, после KOREA-DRIVE). Картинка cloud/photos/24-holidays.png. Заявка KOREA-HOLIDAYS-PREFLIGHT-20261117 — не запущена.
 Владелец 17.11 «1. Да 2. Да»: ставить; будний день без лотов (кроме сегодня) — «Лоти з'являться за 1–2 дні» (сделано, браузер OK).
+
+УСТАНОВЛЕНО 17.11: KOREA-HOLIDAYS-INSTALL-20261117 FINISHED (run 44044058180); живые uk/ru: Чт/Пт/Пн «Лоти з'являться за 1–2 дні», Сб/Нд «Вихідний», ошибок 0.
