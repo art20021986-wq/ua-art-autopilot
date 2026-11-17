@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "4f4339daa0b9328ef04641ee2c844a685f2f0f56395e5fcffd085dd236ad4607",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T13:10:17Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-17T13:16:16Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44089547713",
     "task_id": "AUTOSEARCH2-INSTALL-20261117",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44089547713-3d6be9872035d0f6",
   "production_transaction_path": "state/transactions/AUTOSEARCH2-INSTALL-20261117.3d6be9872035d0f605878fec60ffbec7c69317652148476f815fee3233f471c5.44089547713.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-af324bd376983f9d-ba06a52a2d722d9d",
   "receipt_path": "state/receipts/AUTOSEARCH2-INSTALL-20261117.json",
   "receipt_validation_status": "PENDING",
@@ -101,5 +101,5 @@
       "cloud/autosearch_002/ua_lot_alerts_whatsapp.py": "e21a36b27e3ee031cb2ac9aaed9708dab92495cba17904bcfa37675b8f77d4e5"
     }
   },
-  "updated_at": "2026-11-17T13:10:17Z"
+  "updated_at": "2026-11-17T13:16:16Z"
 }
