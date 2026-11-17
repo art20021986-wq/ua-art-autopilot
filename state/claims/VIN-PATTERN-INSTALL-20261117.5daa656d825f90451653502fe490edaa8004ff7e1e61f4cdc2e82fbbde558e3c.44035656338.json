@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "5916ae52c360cefd13d310d47d2c85d8fc6e79517347501120550b13f61372c5",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T07:10:38Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-17T07:24:33Z",
+  "heartbeat_at": "2026-11-17T07:24:33Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "44035656338",
     "task_id": "VIN-PATTERN-INSTALL-20261117",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 389.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 22.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-44035656338-5daa656d825f9045",
   "production_transaction_path": "state/transactions/VIN-PATTERN-INSTALL-20261117.5daa656d825f90451653502fe490edaa8004ff7e1e61f4cdc2e82fbbde558e3c.44035656338.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-d152a309b8f5952d-1efdbf9c0190cc44",
   "receipt_path": "state/receipts/VIN-PATTERN-INSTALL-20261117.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "efbba260dd132294d1aa77fcb8a408a0c1cadafbce5b1b98da5b985783466420",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/VIN-PATTERN-INSTALL-20261117.json",
   "request_sha256": "5daa656d825f90451653502fe490edaa8004ff7e1e61f4cdc2e82fbbde558e3c",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
     "file_sha256": {
@@ -87,5 +110,5 @@
       "cloud/crm_new_car_vin_004/ua_vin_pattern.py": "f4026a895cf39b477c034fa0f788969206d9472328a806c131cff56c391e348e"
     }
   },
-  "updated_at": "2026-11-17T07:10:38Z"
+  "updated_at": "2026-11-17T07:24:33Z"
 }
