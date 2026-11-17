@@ -21,12 +21,12 @@ import control_plane as cp  # noqa: E402
 P = 'cloud/autosearch_002/'
 from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
-DEPENDENCIES = [P + n for n in ('cabinet_manager.py', 'cabinet_v1.py', 'candidate_builder.py', 'deployment_backup.py',
+DEPENDENCIES = [P + n for n in ('cabinet_manager.py', 'cabinet_old.py', 'candidate_builder.py', 'deployment_backup.py',
                                 'deployment_bootstrap.py', 'deployment_remote.py', 'deployment_rollback.py',
                                 'deployment_transport.py', 'make_release.py', 'release_constants.py',
                                 'ua_auction_clients_bot.py', 'ua_auction_web.py', 'ua_lot_alerts.py', 'ua_lot_alerts_crm.py',
                                 'ua_lot_alerts_view.py', 'ua_lot_alerts_web.py', 'ua_lot_alerts_whatsapp.py')]
-TESTS = [P + n for n in ('test_deployment.py', 'test_autosearch2.py')]
+TESTS = [P + n for n in ('test_deployment.py', 'test_manager_requests.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'master_card.py',
              'publication_fence.py', 'publikaciya.py', 'run_all.py', 'site_ge_inject.py',
