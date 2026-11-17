@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "bb672da4f2fe9a3c24e1c082ebdb3590b9a5787bbf9172a01f52a935c1fbaf4f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T04:24:46Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-17T04:29:05Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44015913202",
     "task_id": "AUCTION-NO-DEPOSIT-INSTALL-20261117",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44015913202-1066d474c6f91526",
   "production_transaction_path": "state/transactions/AUCTION-NO-DEPOSIT-INSTALL-20261117.1066d474c6f9152602c239b34dce02ff54d1fe606f0b51aa6152bd3850e3573c.44015913202.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-9769fae13beb0517-823ebb591ca6e4a5",
   "receipt_path": "state/receipts/AUCTION-NO-DEPOSIT-INSTALL-20261117.json",
   "receipt_validation_status": "PENDING",
@@ -96,5 +96,5 @@
       "cloud/auction_no_deposit_001/ua_auction_clients_view.py": "f3f1f04fc26d8bcdaba8e9e98a35d6572acb4bbfd2faaf76c57b577288cafb0c"
     }
   },
-  "updated_at": "2026-11-17T04:24:46Z"
+  "updated_at": "2026-11-17T04:29:05Z"
 }
