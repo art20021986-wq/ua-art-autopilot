@@ -328,10 +328,20 @@ class DriveTest(unittest.TestCase):
                  'AWD 2WD': None, 'sDrive20i': None, 'X5 xDrive40i': 'full'}
         self.assertEqual({t: drive.key(t) for t in cases}, cases)
 
+    def test_front_only_models(self):
+        self.assertEqual(drive.key('2.0 Smart', 'Hyundai Avante'), 'front')
+        self.assertEqual(drive.key('', 'Kia Carnival'), 'front')
+        self.assertEqual(drive.key('2.0 AWD', 'Hyundai Sonata'), 'full')  # the auction's own mark first
+        self.assertIsNone(drive.key('2.5', 'Hyundai Grandeur'))  # also sold with all-wheel drive
+        self.assertIsNone(drive.key('AWD 2WD', 'Hyundai Avante'))  # two marks: nothing
+        self.assertEqual(drive.key('1.6 2WD', 'Kia Niro'), 'front')  # 2WD of a front-only model
+        self.assertEqual(drive.key('2.2 2WD', 'Kia Sorento'), 'two')
+
     def test_lot_list_carries_the_drive(self):
         view = public.lot_view(dict(PublicLotsTest.LOT, trim='3.8 AWD 7'), PublicLotsTest.RATES, ['7-1.jpg'])
         self.assertEqual(view['drive'], 'full')
-        self.assertEqual(public.lot_view(PublicLotsTest.LOT, PublicLotsTest.RATES, [])['drive'], '')
+        self.assertEqual(public.lot_view(PublicLotsTest.LOT, PublicLotsTest.RATES, [])['drive'], '')  # Kia Sorento
+        self.assertEqual(public.lot_view(dict(PublicLotsTest.LOT, model='MORNIG'), PublicLotsTest.RATES, [])['drive'], 'front')
 
 
 class ColorTest(unittest.TestCase):

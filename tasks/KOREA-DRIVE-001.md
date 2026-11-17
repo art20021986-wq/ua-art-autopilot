@@ -46,3 +46,11 @@
 Заявка KOREA-DRIVE-PREFLIGHT-20261117 пересоздана, не запущена.
 
 Владелец 17.11: «1 да 2 да 3 да 4 да» — ставить весь пакет; 2WD как «одна вісь (2WD)»; сделать словарь моделей с однозначным приводом; закрыть claim LOT-PROBE-20261117-R2 сверкой (сделано: claim → FAILED, state/reconciliations/LOT-PROBE-20261117-R2.44010602826.authenticated-evidence.json).
+
+## Словарь моделей (владелец «3 да», 17.11)
+drive.FRONT_ONLY — модели корейского рынка только с передним приводом во всех версиях (Avante, Accent, i30, i40, Casper, Venue,
+Veloster, Ioniq, Sonata; Morning, Ray, K3, K7, Forte, Pride, Stonic, Niro, Niro Plus, Carens, Carnival, Soul; Spark, Matiz,
+Aveo, Cruze, Malibu, Volt; SM3, SM5, SM6, SM7, Clio, XM3, QM3, Zoe). Модели, где бывает полный привод (Grandeur, K5, Tucson,
+Santa Fe, Genesis …), не входят. Пометка аукциона главнее; 2WD у такой модели = передний.
+Покрытие на живых данных 17.11: 1052 из 2867 (37 %): передний 902, полный 53, одна вісь (2WD) 97 (было 5 %).
+Заявка KOREA-DRIVE-PREFLIGHT-20261117 пересоздана, не запущена; установка — по «твоя очередь».
