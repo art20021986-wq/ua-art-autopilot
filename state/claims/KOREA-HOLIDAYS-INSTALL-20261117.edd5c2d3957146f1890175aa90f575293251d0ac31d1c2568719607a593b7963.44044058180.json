@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "19cbf21fba40d24ae0706229de14b1c44efe708a254a960c8e633a29d3610f7f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-17T08:10:26Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-17T08:15:39Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44044058180",
     "task_id": "KOREA-HOLIDAYS-INSTALL-20261117",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44044058180-edd5c2d3957146f1",
   "production_transaction_path": "state/transactions/KOREA-HOLIDAYS-INSTALL-20261117.edd5c2d3957146f1890175aa90f575293251d0ac31d1c2568719607a593b7963.44044058180.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-0f4dd31705a5ee1d-158d0e91cfe028c7",
   "receipt_path": "state/receipts/KOREA-HOLIDAYS-INSTALL-20261117.json",
   "receipt_validation_status": "PENDING",
@@ -96,5 +96,5 @@
       "cloud/korea_holidays_001/test_release.py": "08796294f114f32ba3c5d55d362467d1a6b71f2c184a4d89104a394a9b7c74ec"
     }
   },
-  "updated_at": "2026-11-17T08:10:26Z"
+  "updated_at": "2026-11-17T08:15:39Z"
 }
