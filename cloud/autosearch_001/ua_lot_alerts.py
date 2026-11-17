@@ -50,7 +50,6 @@ def _connect(db=None):
     path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     connection = sqlite3.connect(str(path), timeout=10)
     connection.row_factory = sqlite3.Row
-    connection.execute('PRAGMA journal_mode=WAL')
     connection.executescript(SCHEMA)
     return connection
 

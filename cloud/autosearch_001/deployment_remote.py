@@ -151,10 +151,14 @@ with tempfile.TemporaryDirectory() as folder:
     options = web.options()
     maker = max(options['makers'], key=lambda m: len(options['makers'][m])) if options['makers'] else ''
     phone = '+380000000000'
+    stage('options')
     sid = alerts.add_search(phone, {'maker': maker})
+    stage('add_search')
     found = [l for l in lots if alerts.matches(alerts.searches(phone)[0]['criteria'], l)]
     text = alerts_bot.message(alerts.searches(phone)[0]['criteria'], found)
+    stage('match_message')
     code = alerts.new_code(phone)
+    stage('new_code')
     linked = alerts.link(code, 1) == phone and alerts.link(code, 1) is None
     alerts.record_view(phone, 'x1', 'Kia K5 2021')
     stage('records')
