@@ -41,3 +41,6 @@ ua_lot_alerts_view.py (тексты CRM). Правки: ua_auction_web.py, ua_au
 video/kabinet.html (раздел), video/korea.html (учёт открытого лота). Тексты бота клиенту — по-украински, как на макете.
 Тесты: test_autosearch.py (23), test_deployment.py (28); раздел кабинета проверен в браузере.
 Проба AUTOSEARCH-PREFLIGHT-20261117 (только чтение) → «да» владельца → установка AUTOSEARCH-INSTALL-20261117 по очереди.
+- 17.11 проба AUTOSEARCH-PREFLIGHT-20261117 (run 44055303607): FAILED — серверная проверка не уложилась в 120 с
+  (без указания шага). Production не менялся. Исправлено: отметки шагов, лимит 240 с, карточки CRM — 5 клиентов.
+  Повтор — AUTOSEARCH-PREFLIGHT-20261117-R2 по «твоя очередь» координатора.
