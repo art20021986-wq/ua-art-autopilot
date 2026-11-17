@@ -85,6 +85,17 @@ class RemoteTests(unittest.TestCase):
         self.assertTrue(any('Drive Type' in label for label in value['labels']))
         self.assertTrue(value['drive_lines'] and '[N]' in value['drive_lines'][0] and '123456' not in str(value))
 
+    def test_color_value_and_masked_markup(self):
+        class Tools:
+            @staticmethod
+            def text(html):
+                return 'Model Year (Registration Date) 2021 Color Pearl White Mileage 12,345 km'
+        html = '<th>Color</th><td>Pearl White</td><th>Chassis</th><td>KMHJ381ABCU123456</td>'
+        value = remote.lot_color(html, Tools)
+        self.assertEqual(value['color_text'], 'Pearl White')
+        self.assertIn('<th>Color</th>', value['color_markup'])
+        self.assertNotIn('KMHJ381ABCU123456', value['color_markup'])
+
     def test_chosen_suvs_first_then_others(self):
         lot = lambda i, maker, model: {'id': str(i), 'maker': maker, 'model': model}
         found = [lot(1, 'KIA', 'MORNING'), lot(2, 'KIA', 'SORENTO'), lot(3, 'BMW', 'X SERIES'), lot(4, 'KIA', 'K5')]
