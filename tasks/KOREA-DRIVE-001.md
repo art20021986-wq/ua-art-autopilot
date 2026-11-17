@@ -44,3 +44,5 @@
 Тесты: korea_auction 66/66, lot_rows 3/3, search_filters 4/4, release, deployment OK. Браузер iPhone 13: фильтры вместе
 и с сортировкой работают, ошибок 0. Картинка cloud/photos/24-drive.png (поиск и карточка: было/станет).
 Заявка KOREA-DRIVE-PREFLIGHT-20261117 пересоздана, не запущена.
+
+Владелец 17.11: «1 да 2 да 3 да 4 да» — ставить весь пакет; 2WD как «одна вісь (2WD)»; сделать словарь моделей с однозначным приводом; закрыть claim LOT-PROBE-20261117-R2 сверкой (сделано: claim → FAILED, state/reconciliations/LOT-PROBE-20261117-R2.44010602826.authenticated-evidence.json).
