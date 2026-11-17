@@ -1,0 +1,16 @@
+{
+  "claim_before_sha256": "35fc3023fa6a5a07e25eae3f246771cfd447d9b9ee2538f33e1d6319db152940",
+  "error": "deployment_transport.TransportError: NETWORK_TimeoutError (POST always_on/) -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: Execute STANDARD controller (before the remote preview started)",
+  "leftover_temporary_task": "possible if the POST reached PythonAnywhere; removed by the package before its next run (remove_leftovers)",
+  "owner_approval": "«Да» in chat 2026-11-17 to closing the claim by manual reconciliation and retrying",
+  "precedent": "state/reconciliations/NEW-CAR-VIN-SPEC-PREFLIGHT-20261113.43388227132.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-17T09:10:00+00:00",
+  "remote_mode": "preview (reads only) — not started",
+  "retry": "VIN-MVS-PREFLIGHT-20261117-B",
+  "run_id": "44047252389",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "VIN-MVS-PREFLIGHT-20261117"
+}
