@@ -130,7 +130,8 @@ def prepare(directory):
 # matching runs on the live lot list; the CRM screens build from the live clients (read only, counts only); the
 # client bot's link handler and job register on a bot application that is built but never started.
 SMOKE = r"""
-import asyncio, json, sys, tempfile, pathlib, time
+import asyncio, faulthandler, json, sys, tempfile, pathlib, time
+faulthandler.dump_traceback_later(150, exit=True)  # a hang prints where it stands, then stops the smoke
 after, root = sys.argv[1], sys.argv[2]
 sys.path[:0] = [after, root]
 START = time.monotonic()
@@ -138,7 +139,7 @@ def stage(name):  # the last stage reached shows where a slow step stands (previ
     sys.stderr.write('STAGE %s %.1fs\n' % (name, time.monotonic() - START)); sys.stderr.flush()
 stage('start')
 import ua_lot_alerts as alerts
-with tempfile.TemporaryDirectory() as folder:
+with tempfile.TemporaryDirectory(dir='/tmp') as folder:  # the server's local /tmp, not the network home disk
     alerts.DB = pathlib.Path(folder) / 'alerts.db'
     import ua_lot_alerts_web as web, ua_lot_alerts_bot as alerts_bot, ua_lot_alerts_view as alerts_view
     stage('alerts_modules')
@@ -198,9 +199,9 @@ def smoke(directory):
     except subprocess.TimeoutExpired as error:
         stages = (error.stderr or b'')
         stages = stages.decode(errors='replace') if isinstance(stages, bytes) else stages
-        raise DeploymentError('SMOKE_TIMEOUT:'+' | '.join(stages.strip().splitlines()[-3:])[-160:])
+        raise DeploymentError('SMOKE_TIMEOUT:'+' | '.join(stages.strip().splitlines()[-12:])[-700:])
     if result.returncode != 0:
-        raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
+        raise DeploymentError('SMOKE:'+' | '.join(result.stderr.strip().splitlines()[-14:])[-700:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
     value['stages'] = [line for line in result.stderr.splitlines() if line.startswith('STAGE ')][-12:]
     if (not value.get('lots') or not value.get('found') or value.get('linked_once') is not True
@@ -509,7 +510,7 @@ def main():
                              code_sha256={name: item['after'] for name, item in manifest['plan']['files'].items()})
             value['safe_to_stop'] = True
         except Exception as error:
-            value['error'] = type(error).__name__+':'+str(error)[:180]
+            value['error'] = type(error).__name__+':'+str(error)[:900]
             if args.mode in ('preview', 'backup', 'verify'):
                 value['safe_to_stop'] = True
             else:
