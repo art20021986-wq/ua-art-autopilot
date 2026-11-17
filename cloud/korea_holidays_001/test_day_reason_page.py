@@ -12,6 +12,7 @@ class DayReasonTest(unittest.TestCase):
         out = day_reason_page.build(LIVE).decode('utf-8')
         self.assertIn('"<small>"+reason(d,c)+"</small></button>"', out)
         self.assertIn('"dayoff": ["Вихідний", "Выходной", "დასვენების დღე"]', out)
+        self.assertIn('"soon": ["Лоти з\'являться за 1–2 дні", "Лоты появятся за 1–2 дня", "ლოტები გამოჩნდება 1–2 დღეში"]', out)
         self.assertIn('var HOL={"2026/12/25":["Різдво","Рождество","შობა"]};', out)
         self.assertIn('t("days")+"</b><small>"+n(lots.length)+" "+t("cars")', out)  # «Усі дні» keeps its count
         rest = out
