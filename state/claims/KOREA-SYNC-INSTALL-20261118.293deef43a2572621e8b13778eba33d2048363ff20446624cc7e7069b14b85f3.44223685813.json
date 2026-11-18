@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "18ca7c564f191e48c44ec9a590020e2fe09ce160ce465943a2a6a19831835dd0",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-18T02:32:46Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-18T02:36:40Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44223685813",
     "task_id": "KOREA-SYNC-INSTALL-20261118",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44223685813-293deef43a257262",
   "production_transaction_path": "state/transactions/KOREA-SYNC-INSTALL-20261118.293deef43a2572621e8b13778eba33d2048363ff20446624cc7e7069b14b85f3.44223685813.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-SYNC-INSTALL-20261118.json",
   "receipt_validation_status": "PENDING",
@@ -111,5 +111,5 @@
       "cloud/korea_sync_001/test_release.py": "e8b6f45fea2148a3b7a0ec975086d9a93067c1c2ed8c5a96211280548d4f14f6"
     }
   },
-  "updated_at": "2026-11-18T02:32:46Z"
+  "updated_at": "2026-11-18T02:36:40Z"
 }
