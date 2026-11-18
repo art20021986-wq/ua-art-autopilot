@@ -695,7 +695,7 @@ class TileCountsTest(unittest.TestCase):
 
             with mock.patch.multiple(job, OUT=out, LOCK=out / 'lock', PENDING=out / 'pending', WAITING=out / 'waiting',
                                      STATE=out / 'state.json', due=lambda *a: True, read_login=lambda: ('a', 'b'),
-                                     localize_photos=lambda items, folder: items, priced=lambda d, b: (d, False),
+                                     localize_photos=lambda items, folder: items, priced=lambda d, b, until=None: (d, False),
                                      publish_lots=publish), \
                     mock.patch.object(job.session, 'Session', lambda: None), \
                     mock.patch.object(job.collect, 'collect', lambda *a, **k: data):
@@ -709,6 +709,32 @@ class TileCountsTest(unittest.TestCase):
         self.assertIn('Торги Ср, 18.11</span></span><span class="kt-num"><b>1</b>', final)
         self.assertNotIn('1 005', final)
         self.assertEqual([i['id'] for i in state['items']], ['2'])
+
+
+class PageTimeTest(unittest.TestCase):
+    """KOREA-SYNC-001: lot pages are read only for PAGE_SECONDS, so the run keeps time for the new lots' photos."""
+
+    def test_pages_stop_at_the_page_deadline(self):
+        lots_ = [{'id': str(n), 'detail_url': '/d/%d' % n, 'start_price_krw': 0, 'photos': ['t%d' % n]} for n in range(5)]
+        reads = []
+
+        class Browser:
+            def fetch(self, url):
+                reads.append(url)
+                return 200, ''
+
+        now = [0]
+
+        def clock():
+            now[0] += 60
+            return now[0]
+        with unittest.mock.patch.object(prices, 'load', lambda: {}), \
+                unittest.mock.patch.object(prices, 'save', lambda known: None):
+            data, left = job.priced({'upcoming_lots': lots_}, Browser(), until=150, clock=clock)
+        self.assertEqual(reads, ['/d/0', '/d/1'])  # clock 60, 120 read; 180 >= 150 stops
+        self.assertEqual(left, 3)
+        self.assertEqual(len(data['upcoming_lots']), 5)  # unread lots keep the table's own photos
+        self.assertLess(job.PAGE_SECONDS, job.RUN_SECONDS)
 
 
 class RolloverTest(unittest.TestCase):

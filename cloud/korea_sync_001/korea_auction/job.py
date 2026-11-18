@@ -36,6 +36,9 @@ PHOTO_WORKERS = 6
 # KOREA-ENGINE-001 (owner 2026-11-13: every photo in the lot card): photos are copied for a time, not a count, so a run
 # ends before the next hourly start and no hourly run is skipped (6000 copies took ~70 min after the lot pages).
 RUN_SECONDS = 50 * 60  # photo copying stops this long after the run started
+# KOREA-SYNC-001 (owner 2026-11-18): lot pages are read only this long after the run started, so the new day's lots get
+# their first photos in the same run (18.11: 600 lot pages took the whole run, no photo was copied, the day stayed off)
+PAGE_SECONDS = 25 * 60
 FIRST_PHOTOS = 3  # copied for every lot before the rest
 
 
@@ -144,10 +147,12 @@ def copy_lot_photos(lots, folder, fetch=fetch_photo, deadline=None, clock=time.m
     return photos, bool(late)
 
 
-def priced(data, browser):
-    """The coming days' lots with start price, VIN and photos from their lot pages (prices.py). -> (data, unread)"""
+def priced(data, browser, until=None, clock=time.monotonic):
+    """The coming days' lots with start price, VIN and photos from their lot pages (prices.py), lot pages read only
+    before `until` (clock()). -> (data, unread)"""
     known = prices.load()
-    known, left = prices.fill(browser, data['upcoming_lots'], known)
+    known, left = prices.fill(browser, data['upcoming_lots'], known,
+                              done=lambda: until is not None and clock() >= until)
     prices.save(known)
     return dict(data, upcoming_lots=prices.apply(data['upcoming_lots'], known)), left
 
@@ -274,7 +279,8 @@ def main(now=None):
             roll(now)
             print(json.dumps({'at': now.isoformat(timespec='minutes'), 'rollover': True}))
             return 0
-        deadline = time.monotonic() + RUN_SECONDS
+        started = time.monotonic()
+        deadline = started + RUN_SECONDS
         browser = session.Session()
         data = collect.collect(*read_login(), now=now, session=browser)
         pages_left = photos_left = False
@@ -289,7 +295,7 @@ def main(now=None):
             WAITING.touch()
             shown = 0
         else:
-            data_priced, pages_left = priced(data, browser)
+            data_priced, pages_left = priced(data, browser, started + PAGE_SECONDS)
             shown, photos_left = publish_lots(data_priced, now, OUT, deadline)
             # KOREA-SYNC-001 (owner 2026-11-18): the ticker after the lot list, with only the cars the list has, so
             # each ticker card opens its lot and the tile counts the same list as the Korea page day buttons

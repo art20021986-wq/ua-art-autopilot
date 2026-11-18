@@ -76,7 +76,7 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of KOREA-SYNC-001 (owner 2026-11-18, one install): the collector update (job.py: the home ticker written after the lot list, with only the cars the list has; after the Korea midnight the day change without the auction; rollover.py new), smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of KOREA-SYNC-001 (owner 2026-11-18, one install): the collector update (job.py: the home ticker written after the lot list, with only the cars the list has; after the Korea midnight the day change without the auction; lot pages read for 25 min so the new lots get photos in the same run; prices.py: page reading stops on time; rollover.py new), smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
              'title': 'Preview Korea tile, ticker and lot list sync'}
@@ -132,7 +132,7 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner request (2026-11-18), one install: the home tile, the ticker and the Korea page always agree — the ticker is written after the lot list with only the cars the list has (each ticker card opens its lot), and after the Korea midnight the lot list, the order page carousels, the tile and the ticker move to the new day. Collector job.py and rollover.py (new); pages, CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
+               'description': 'Owner request (2026-11-18), one install: the home tile, the ticker and the Korea page always agree — the ticker is written after the lot list with only the cars the list has (each ticker card opens its lot), and after the Korea midnight the lot list, the order page carousels, the tile and the ticker move to the new day. The lot pages are read for 25 minutes of a run, so the lots of a new day get their photos and show the same run. Collector job.py, prices.py and rollover.py (new); pages, CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],
