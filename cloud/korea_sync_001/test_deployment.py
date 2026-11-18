@@ -311,7 +311,7 @@ class SmokeTests(unittest.TestCase):
                                       'photos_for_time': True, 'gallery_all': True,
                                       'drive_in_list': True, 'page_drive': True,
                                       'color_in_list': True, 'page_filters': True,
-                                      'sync_listed': True, 'sync_rollover': True})
+                                      'sync_listed': True, 'sync_rollover': True, 'sync_page_time': True})
 
 
 class RunSoonTests(unittest.TestCase):

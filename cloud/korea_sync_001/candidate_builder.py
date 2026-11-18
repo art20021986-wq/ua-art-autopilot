@@ -1,7 +1,8 @@
 """Build the KOREA-SYNC-001 candidate (owner 2026-11-18): the home tile, the ticker and the Korea page always agree.
 
 The collector as KOREA-DRIVE-INSTALL installed it, with job.py (the ticker written after the lot list, with only the
-cars the list has; after the Korea midnight the day change) and rollover.py (new: the day change as pure functions).
+cars the list has; after the Korea midnight the day change; lot pages read only for PAGE_SECONDS), prices.py (the lot
+page reading stops on time, so the run keeps time for the new lots' photos) and rollover.py (new: the day change).
 The collector modules come from korea_auction/ in this package (zipped flat as kauc_<module>.py by the transport).
 No page changes: the Korea page, the home page and the order page read the files the job writes.
 """

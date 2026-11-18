@@ -123,7 +123,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'TICKER-FIX4-INSTALL-1','files':files,'job':JOB,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'korea_auction/job.py (the ticker after the lot list, only listed cars; the Korea midnight day change) + rollover.py (new); no page or CRM module changes',
+            'site_scope':'korea_auction/job.py (the ticker after the lot list, only listed cars; the Korea midnight day change; lot pages read for 25 min) + prices.py (lot page reading stops on time) + rollover.py (new); no page or CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -212,6 +212,10 @@ def smoke(directory):
                                   and rollover.current_lots({'lots': [{'auction_start': '2026/11/18 13:00'},
                                                                       {'auction_start': '2026/11/19 13:00'}]},
                                                             '2026/11/19') == {'lots': [{'auction_start': '2026/11/19 13:00'}]},
+                 # KOREA-SYNC-001: lot pages read only for part of the run, so the new lots get their photos
+                 'sync_page_time': 0 < job.PAGE_SECONDS < job.RUN_SECONDS
+                                   and 'done' in __import__('inspect').signature(
+                                       __import__('korea_auction.prices', fromlist=['x']).fill).parameters,
                  # KOREA-PHOTOS-ALL-001 stays installed (never rolled back to 40 photos)
                  'all_photos': __import__('korea_auction.prices', fromlist=['x']).MAX_PHOTOS is None}
     finally:

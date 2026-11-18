@@ -52,8 +52,8 @@ class CandidateTests(unittest.TestCase):
             compile(value, name, 'exec')
         self.assertFalse(any(candidate_builder.is_page(name) for name in files))
 
-    def test_only_job_differs_from_the_installed_collector(self):
-        """The package never rolls back another install: every module but job.py equals the installed one
+    def test_only_job_and_prices_differ_from_the_installed_collector(self):
+        """The package never rolls back another install: every module but job.py and prices.py equals the installed one
         (rollover.py is new)."""
         live = installed()
         for module in candidate_builder.MODULES:
@@ -61,7 +61,7 @@ class CandidateTests(unittest.TestCase):
             if module == 'rollover':
                 self.assertNotIn(name, live)
                 continue
-            self.assertEqual((HERE / name).read_bytes() != live[name], module == 'job', name)
+            self.assertEqual((HERE / name).read_bytes() != live[name], module in ('job', 'prices'), name)
 
     def test_other_installed_collector_is_refused(self):
         source = installed()

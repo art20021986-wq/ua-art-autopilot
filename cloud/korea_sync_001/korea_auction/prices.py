@@ -47,12 +47,15 @@ def read(page):
     return page is not None and 'fuel' in page and 'color' in page
 
 
-def fill(session, current_lots, known, limit=PER_RUN):
-    """Known lot pages for these lots, reading at most `limit` new ones. -> (known, lots still unread)."""
+def fill(session, current_lots, known, limit=PER_RUN, done=lambda: False):
+    """Known lot pages for these lots, reading at most `limit` new ones, and none once `done()` (KOREA-SYNC-001: the
+    run's time for the lot photos is kept). -> (known, lots still unread)."""
     current = {lot['id'] for lot in current_lots}
     known = {k: v for k, v in known.items() if k in current}
     missing = [lot for lot in current_lots if not read(known.get(lot['id']))]
     for lot in missing[:limit]:
+        if done():
+            break
         try:
             _, html = session.fetch(lot['detail_url'])
         except OSError:
