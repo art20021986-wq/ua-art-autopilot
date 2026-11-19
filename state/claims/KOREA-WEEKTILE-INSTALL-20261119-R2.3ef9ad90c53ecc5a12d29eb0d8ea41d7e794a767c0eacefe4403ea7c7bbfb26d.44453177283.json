@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "3e60ed62fb9aed7f4ffc89db820d2d7169dc7e9abfcbd233ebd9325aea128159",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-19T03:44:20Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-19T03:49:15Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44453177283",
     "task_id": "KOREA-WEEKTILE-INSTALL-20261119-R2",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44453177283-3ef9ad90c53ecc5a",
   "production_transaction_path": "state/transactions/KOREA-WEEKTILE-INSTALL-20261119-R2.3ef9ad90c53ecc5a12d29eb0d8ea41d7e794a767c0eacefe4403ea7c7bbfb26d.44453177283.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-WEEKTILE-INSTALL-20261119-R2.json",
   "receipt_validation_status": "PENDING",
@@ -118,5 +118,5 @@
       "cloud/korea_week_tile_001/test_release.py": "34013a83b3c7248f720297e6bd8a49c3a62ba47fe2f0481a6248f51c05375023"
     }
   },
-  "updated_at": "2026-11-19T03:44:20Z"
+  "updated_at": "2026-11-19T03:49:15Z"
 }
