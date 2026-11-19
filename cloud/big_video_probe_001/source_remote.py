@@ -20,7 +20,7 @@ import time
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
 WORK = HERE.parent / 'bigvideo_probe_work'
-PACKAGES = ('telethon==1.46.0', 'pyaes', 'rsa', 'cryptg')
+PACKAGES = ('telethon==1.46.0', 'pyaes', 'rsa', 'cryptg==0.4.0')  # R2: newer cryptg lacks decrypt_ige
 BIG = 20 * 1024 * 1024
 SCAN = 1000
 LONG_NUMBER = re.compile(r'\d{6,}')
