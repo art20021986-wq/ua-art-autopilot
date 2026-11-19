@@ -13,6 +13,9 @@ R2 (the first run: UA-0011 got 22 photos saved at 02:08-02:19 UTC, the card show
 focus card only, its change history (field names, times, actor ids masked, value lengths only), the rows of every
 crm.db table that reference it from the last 3 days (column names, times, value lengths only), the photo backup
 folders (.otkat_media) and the published photo folder times; and the sanitized db.py source.
+R3 (owner: it started when a video was sent into «Добавить фото» by accident): per card, the Telegram file kind of every
+item in its photo lists (first 4 characters of the file id only: AgAC photo, BAAC video, BQAC document, DQAC video
+note, CgAC animation), and for the focus card every media table row of any date (kind, mime, file extension, times).
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -240,6 +243,33 @@ def focus(now):
                                  'files': sorted(p.name for p in folder.iterdir())[:200] if folder.is_dir() else None}}
 
 
+def kinds():
+    """Per card and photo section: how many items of each Telegram file kind (file id prefix only)."""
+    database = HOME / 'crm.db'
+    result = {}
+    with closing(sqlite3.connect(database.as_uri() + '?mode=ro', uri=True, timeout=5)) as connection:
+        connection.execute('PRAGMA query_only=ON')
+        connection.row_factory = sqlite3.Row
+        for row in connection.execute('SELECT id, auto_number, photos, condition_photos FROM cars'):
+            for section in ('photos', 'condition_photos'):
+                try:
+                    items = json.loads(row[section] or '[]')
+                except Exception:
+                    continue
+                ids = [str(i.get('file_id') if isinstance(i, dict) else i) for i in items if i]
+                if ids:
+                    result['%s:%s' % (row['auto_number'], section)] = dict(Counter(i[:4] for i in ids))
+        media = []
+        car = connection.execute('SELECT id FROM cars WHERE auto_number=?', (FOCUS,)).fetchone()
+        if car is not None:
+            for row in connection.execute('SELECT * FROM media WHERE car_id=? ORDER BY id', (car['id'],)):
+                row = dict(row)
+                media.append({'vid': row.get('vid'), 'status': row.get('status'), 'kind': str(row.get('file_id') or '')[:4],
+                              'mime': row.get('mime'), 'ext': Path(str(row.get('put') or '')).suffix[:8],
+                              'kogda': row.get('kogda'), 'poryadok': row.get('poryadok')})
+    return {'photo_kinds': result, 'focus_media': media}
+
+
 def report(now=None):
     now = int(time.time()) if now is None else now
     value = {'status': 'PASS', 'now': now}
@@ -248,7 +278,7 @@ def report(now=None):
                       ('spool', lambda: grouped(HOME / '.crm_media_spool.jsonl', 'accepted_at', now)),
                       ('ledger', lambda: grouped(HOME / '.crm_media_receipts.jsonl', 'saved_at', now)),
                       ('crm', crm), ('published', published), ('sources', sources),
-                      ('focus', lambda: focus(now))):
+                      ('focus', lambda: focus(now)), ('kinds', kinds)):
         try:
             value[key] = call()
         except Exception as error:
