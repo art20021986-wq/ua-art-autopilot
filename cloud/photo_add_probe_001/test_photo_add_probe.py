@@ -57,6 +57,26 @@ class RemoteTests(unittest.TestCase):
         for leak in ('AgACAgIAAxkBAAIabcdefghij', '380501234567', 'BOT_TOKEN'):
             self.assertNotIn(leak, text)
 
+    def test_focus_card_history_lengths_only(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = self.home(temp)
+            with sqlite3.connect(home / 'crm.db') as con:
+                con.execute("ALTER TABLE cars ADD COLUMN history TEXT")
+                con.execute("UPDATE cars SET auto_number='UA-0011', history=? WHERE id=30", (json.dumps(
+                    [{'field': 'photos', 'at': '2026-11-19T02:33:24', 'old': '[1,2]', 'new': '[]', 'by': 123456789}]),))
+                con.execute('CREATE TABLE changes (car_id INTEGER, field TEXT, old TEXT, new TEXT, kogda TEXT)')
+                con.execute("INSERT INTO changes VALUES (30, 'photos', '[1,2]', '[]', '2026-11-19T02:33:24')")
+                con.execute("INSERT INTO changes VALUES (30, 'photos', '[1]', '[]', '2020-01-01T00:00:00')")
+            (home / '.otkat_media/UA-0011_foto_20261119_023324').mkdir(parents=True)
+            with patch.object(remote, 'HOME', home):
+                value = remote.focus(NOW)
+        self.assertEqual(value['history'][0], {'field': 'photos', 'at': '2026-11-19T02:33:24', 'old': {'list': 2},
+                                               'new': {'list': 0}, 'by': '[N]'})
+        self.assertEqual(len(value['tables']['changes']['rows']), 1)
+        self.assertEqual(value['tables']['changes']['rows'][0]['old'], {'list': 2})
+        self.assertEqual(value['backups'][0]['name'], 'UA-0011_foto_20261119_023324')
+        self.assertNotIn('380501234567', json.dumps(value))
+
     def test_database_opened_read_only(self):
         with tempfile.TemporaryDirectory() as temp:
             with patch.object(remote, 'HOME', self.home(temp)):
