@@ -11,6 +11,9 @@ Reads only:
 R2 (stage B, coordinator 2026-11-19): the full sanitized source of the bot start files and of the files that download
 or convert card videos for the site, and whether the owner's key file /home/Carix/telegram_api.txt is there with two
 non-empty lines (only that: the file content is never put in the report).
+R3 (stage B): every server line that calls the Telegram cloud directly or reads the CRM bot token (api.telegram.org,
+team_token, Bot(, ApplicationBuilder), so that switching the CRM bot to a local Bot API server misses none; the key
+file check also tells whether line 2 is 32 hex characters (only yes/no).
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -174,7 +177,8 @@ def key_file():
         return {'present': False}
     lines = [line.strip() for line in path.read_text(encoding='utf-8', errors='replace').splitlines() if line.strip()]
     return {'present': True, 'two_non_empty_lines': len(lines) == 2, 'first_line_is_number': bool(lines) and
-            lines[0].isdigit(), 'mode_octal': oct(path.stat().st_mode & 0o777)}
+            lines[0].isdigit(), 'second_line_is_32_hex': len(lines) > 1 and bool(re.fullmatch(r'[0-9a-fA-F]{32}', lines[1])),
+            'mode_octal': oct(path.stat().st_mode & 0o777)}
 
 
 def full_sources():
@@ -187,11 +191,33 @@ def full_sources():
     return found
 
 
+CLOUD_NEEDLE = re.compile(r'api\.telegram\.org|team_token|telegram\.Bot\(|\bBot\(token|ApplicationBuilder\(\)|'
+                          r'base_url|getUpdates|get_updates|logOut|log_out')
+
+
+def cloud_calls():
+    found = {}
+    for path in sorted(list(HOME.glob('*.py')) + list(HOME.glob('*/*.py'))):
+        relative = path.relative_to(HOME)
+        if any(part.startswith('.') or part in SKIP_DIRS for part in relative.parts[:-1]):
+            continue
+        name = relative.name
+        if re.match(r'(arch|med|test|check|play|pesok|fix|filtr|baseline|lock|chern|ai3)', name):
+            continue
+        text = text_of(path)
+        if text is None or not CLOUD_NEEDLE.search(text):
+            continue
+        lines = text.splitlines()
+        found[str(relative)] = [{'line': n + 1, 'text': sanitized_line(line)[:220]}
+                                for n, line in enumerate(lines) if CLOUD_NEEDLE.search(line)][:40]
+    return found
+
+
 def report():
     value = {'status': 'PASS'}
     for key, call in (('machine', machine), ('localhost', localhost), ('telegram', telegram),
                       ('videos', videos), ('sources', sources), ('key_file', key_file),
-                      ('full_sources', full_sources)):
+                      ('full_sources', full_sources), ('cloud_calls', cloud_calls)):
         try:
             value[key] = call()
         except Exception as error:
