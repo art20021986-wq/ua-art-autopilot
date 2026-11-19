@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PHOTO-ORDER-INSTALL-20261119.e190ad8162d35f0c0624a053ce5456946a891e7482b61fcca6790220b1f9e925.json",
+  "autostart_ledger_sha256": "5002053ffee64ad1fb4d0eed02c94a553f07d06fc9f764bea89c0f5f0bd3700f",
+  "autostart_source_commit": "9e3db0e839e9f6c6096b3ba3a5f482269779ced0",
+  "created_at": "2026-11-19T07:21:13Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-19T07:21:13Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "44478751068",
+    "task_id": "PHOTO-ORDER-INSTALL-20261119",
+    "task_sha256": "e190ad8162d35f0c0624a053ce5456946a891e7482b61fcca6790220b1f9e925"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-d0df081223f03bb5-64aedd582edbd4b9",
+  "receipt_path": "state/receipts/PHOTO-ORDER-INSTALL-20261119.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/PHOTO-ORDER-INSTALL-20261119.json",
+  "request_sha256": "e190ad8162d35f0c0624a053ce5456946a891e7482b61fcca6790220b1f9e925",
+  "resource_locks": [
+    "PATH_SCOPE:d0df081223f03bb5"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "80dfe99cbe2db222af0de252910c35181c4fb0d3",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-19T07:21:13Z"
+}
