@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "102d9ad48a290acad04624f618a837432b59807c7749f110ec7b0303af1116f2",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-19T11:34:47Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-19T11:38:41Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44515608952",
     "task_id": "TELEGRAM-KEY-INSTALL-20261119",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44515608952-3f8d7d3641f1385f",
   "production_transaction_path": "state/transactions/TELEGRAM-KEY-INSTALL-20261119.3f8d7d3641f1385f98a229091af2e87b3c3b58d8eb738392f0cb38efb58632cc.44515608952.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-abb4e05c6211cbac-6e35a216c58d80a5",
   "receipt_path": "state/receipts/TELEGRAM-KEY-INSTALL-20261119.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/telegram_key_bot_001/ua_telegram_key.py": "f8dc61b412b2d3df40833b633a0eaa168967590a71046f5db0c8caf9bec9e408"
     }
   },
-  "updated_at": "2026-11-19T11:34:47Z"
+  "updated_at": "2026-11-19T11:38:41Z"
 }
