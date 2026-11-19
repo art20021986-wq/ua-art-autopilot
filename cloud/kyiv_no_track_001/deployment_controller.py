@@ -159,7 +159,7 @@ def run(operation=None):
                'protected_files_unchanged': True, 'crm_unchanged': True,
                'public_checks':public,'restart':value['crm_resume'],
                'code_sha256':verified['code_sha256'],
-               'sync_after_resume':verified.get('sync'),'kyiv_cards_live':kyiv_cards_live(preview['smoke']['kyiv_published']),
+               'sync_after_resume':verified.get('sync'),'kyiv_cards_live':kyiv_cards_live(sorted(set(preview['smoke']['kyiv_published']) | set(preview['smoke']['orphan_codes']))),
                'acceptance_scope':'FILES_INSTALLATION_BOT_RESUME_AND_PUBLIC_HEALTH',
                'full_publication_acceptance':False,'database_migration_executed':False,
                'data_preservation_scope':value['preservation_scope']}

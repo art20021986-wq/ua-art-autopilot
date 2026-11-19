@@ -24,8 +24,8 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'edit_generators.py', 'edit_metadata.py', 'make_release.py', 'release_constants.py',
-                                'stage_preview.py')]
+                                'edit_generators.py', 'edit_metadata.py', 'make_release.py', 'orphan_pages.py',
+                                'release_constants.py', 'stage_preview.py')]
 TESTS = [P + n for n in ('test_kyiv_no_track.py', 'test_deployment.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'cars_ui.py', 'catalog_design_guard.py', 'crm.db', 'db.py',
@@ -76,7 +76,8 @@ def preview():
              'description': 'Preview of KYIV-NO-TRACK-001 (a car in Kyiv shows no container tracking): reads the live '
                             'card generators and ua_seo_metadata.py, builds the candidate, renders every CRM car delivery '
                             'block with the generator stage section before and after (read-only CRM), lists which '
-                            'published card pages show tracking now, counts the legacy client bot list; measures storage. '
+                            'published card pages show tracking now, edits old Kyiv pages of cars no longer in the CRM in memory, counts the '
+                            'legacy client bot list; measures storage. '
                             'No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
@@ -136,7 +137,7 @@ def install():
                'description': 'Owner approved KYIV-NO-TRACK-001 install: the card generators (stranica.py, master_card.py '
                               'and any other with the tracking hook) no longer render the container tracking block for a car '
                               'in Kyiv (stage 4); other stages unchanged; SEO_REVISION KYIV-NO-TRACK-001 so the existing CRM '
-                              'public sync republishes every card once after the bot resumes. No CRM change. Existing backup, '
+                              'public sync republishes every card once after the bot resumes; old card pages of cars no longer in the CRM at stage 4 (UA-0007/0008/0019/0020 at preview) lose only the tracking widget. No CRM change. Existing backup, '
                               'bot pause, writer locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/katalog.html'],

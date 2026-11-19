@@ -9,6 +9,7 @@ sys.path.insert(0, str(HERE.parent / 'container_tracking_001'))  # ua_tracking_w
 import candidate_builder
 import edit_generators
 import edit_metadata
+import orphan_pages
 import stage_preview
 
 FIXTURES = HERE.parent / 'card_lead_001' / 'fixtures'
@@ -97,7 +98,43 @@ class CandidateTests(unittest.TestCase):
                 candidate_builder.targets(root)
             (root / 'master_card.py').write_bytes(GENERATORS['master_card.py'].read_bytes())
             (root / 'yadro.py').write_bytes(b'# no hook\n')
+            import sqlite3
+            with sqlite3.connect(root / 'crm.db') as connection:
+                connection.execute('CREATE TABLE cars(auto_number TEXT)')
             self.assertEqual(candidate_builder.targets(root), ('stranica.py', 'master_card.py', 'ua_seo_metadata.py'))
+
+
+class OrphanPageTests(unittest.TestCase):
+    def setUp(self):
+        import tempfile
+        self.folder = tempfile.TemporaryDirectory()
+        self.addCleanup(self.folder.cleanup)
+        self.root = Path(self.folder.name)
+        page = (HERE / 'fixtures' / 'orphan_kyiv_page.txt').read_bytes()
+        for name in ('video/UA-0007.html', 'video/UA-0007-de6e3ebe.html', 'site/UA-0007.html', 'video/UA-0011.html'):
+            (self.root / name).parent.mkdir(parents=True, exist_ok=True)
+            (self.root / name).write_bytes(page)
+        (self.root / 'video/UA-0005.html').write_bytes(page.replace(b'data-ua-stage-current="4"', b'data-ua-stage-current="2"'))
+        (self.root / 'video/katalog.html').write_bytes(page)
+
+    def test_only_kyiv_pages_of_cars_not_in_crm(self):
+        self.assertEqual(orphan_pages.find(self.root, {'UA-0011', 'UA-0012'}),
+                         ('video/UA-0007-de6e3ebe.html', 'video/UA-0007.html', 'site/UA-0007.html'))
+
+    def test_build_removes_only_the_tracking(self):
+        source = (self.root / 'video/UA-0007.html').read_bytes()
+        after = orphan_pages.build(source).decode()
+        self.assertEqual(stage_preview.page_state(after), {'stage': 4, 'tracking': 'none'})
+        self.assertNotIn('Номер отправки ещё не указан', after)
+        self.assertNotIn('<div class="ua-stage-v1-meta"></div>', after)
+        self.assertIn('Автомобиль в Киеве — можно приехать на осмотр', after)
+        self.assertEqual(after, stage_preview.without_tracking(source.decode()))
+        with self.assertRaisesRegex(ValueError, 'ORPHAN_TRACKING_NOT_REMOVED'):
+            orphan_pages.build(after.encode())
+
+    def test_not_kyiv_is_refused(self):
+        with self.assertRaisesRegex(ValueError, 'ORPHAN_NOT_KYIV'):
+            orphan_pages.build((self.root / 'video/UA-0005.html').read_bytes())
 
 
 if __name__ == '__main__':
