@@ -1,0 +1,39 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KYIV-NO-TRACK-INSTALL-20261119.6044a59f11575d87e0439a4daaf36fceba8658f61bfebc52339bf317a37aef87.json",
+  "autostart_ledger_sha256": "0ad69ae56b8d289ec248b09223a0e0626ea65a9a91e1776a8ed484a8d04de171",
+  "autostart_source_commit": "489e3990bd57b275aefb1b519e6c2fa63016a317",
+  "created_at": "2026-11-19T07:58:46Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-19T07:58:46Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "44483584199",
+    "task_id": "KYIV-NO-TRACK-INSTALL-20261119",
+    "task_sha256": "6044a59f11575d87e0439a4daaf36fceba8658f61bfebc52339bf317a37aef87"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "card-ua-0007-0db4649c339124f1",
+  "receipt_path": "state/receipts/KYIV-NO-TRACK-INSTALL-20261119.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/KYIV-NO-TRACK-INSTALL-20261119.json",
+  "request_sha256": "6044a59f11575d87e0439a4daaf36fceba8658f61bfebc52339bf317a37aef87",
+  "resource_locks": [
+    "CARD:UA-0007",
+    "CARD:UA-0008",
+    "CARD:UA-0019",
+    "CARD:UA-0020"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "c98d9859084fb9646413ab052ad75dc0838b0b2a",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-19T07:58:46Z"
+}
