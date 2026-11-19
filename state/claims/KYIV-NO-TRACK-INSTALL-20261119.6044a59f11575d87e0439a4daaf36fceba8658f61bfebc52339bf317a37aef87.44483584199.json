@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "9028c1e5e774868521f73b54124f71c8fc5b86699ce180e6681c5328a681e7f9",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-19T08:00:00Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-19T08:04:58Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44483584199",
     "task_id": "KYIV-NO-TRACK-INSTALL-20261119",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44483584199-6044a59f11575d87",
   "production_transaction_path": "state/transactions/KYIV-NO-TRACK-INSTALL-20261119.6044a59f11575d87e0439a4daaf36fceba8658f61bfebc52339bf317a37aef87.44483584199.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "card-ua-0007-0db4649c339124f1",
   "receipt_path": "state/receipts/KYIV-NO-TRACK-INSTALL-20261119.json",
   "receipt_validation_status": "PENDING",
@@ -92,5 +92,5 @@
       "cloud/kyiv_no_track_001/test_kyiv_no_track.py": "7706e3f16f35b985dc9eb262066e80edbd305aea1e800b7478391edfc1a6e5ff"
     }
   },
-  "updated_at": "2026-11-19T08:00:00Z"
+  "updated_at": "2026-11-19T08:04:58Z"
 }
