@@ -7,21 +7,23 @@
   "created_at": "2026-11-19T08:19:37Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-19T08:19:37Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-19T08:22:24Z",
+  "heartbeat_at": "2026-11-19T08:22:24Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "44486435460",
     "task_id": "KOREA-WEEK2-PROBE-20261119-R3",
     "task_sha256": "8611a7d5b5aa2b8ad427bb89e552386780cba7f6d56f37bcce4af823ecf210ac"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-ab920ff25a308544-527e518c190020e9",
   "receipt_path": "state/receipts/KOREA-WEEK2-PROBE-20261119-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "447839cd596437105a6b2363bdc53343dc5faa34f28331b7beb0778193999a7c",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-WEEK2-PROBE-20261119-R3.json",
   "request_sha256": "8611a7d5b5aa2b8ad427bb89e552386780cba7f6d56f37bcce4af823ecf210ac",
   "resource_locks": [
@@ -29,8 +31,28 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "905340e92ec0b7803f81f6c6a5542eaf4f614697",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 95581990912,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.321
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-19T08:19:37Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "0b6e94b8540566c9ee38b194685f3c9807606339c7cf9c9d3b07113dc1b19c44",
+    "file_sha256": {
+      "cloud/korea_week_002/bootstrap.py": "e686b4579fd9dded2981aeda69a30f9cb267ebfa4cd07ab61b682e193cd9e037",
+      "cloud/korea_week_002/make_request.py": "c37ddbdfdd110ed352b4fa27966a1aa64cae4e05f2ce4ab262d1862edd1ca156",
+      "cloud/korea_week_002/source_remote.py": "37b4046510bc330894ff2e34987e1bfb1c4257905f008351b2ce07110a583d64",
+      "cloud/korea_week_002/test_korea_week.py": "c8fe219c9f92c599192f633a5f96107b28b8c742efb9e2e5c9a419f253fe90b6",
+      "cloud/korea_week_002/transport.py": "a099bde4f89423d8efd942bf1e5030ccffcefd4670f85cec84c1af57a538bcec",
+      "cloud/korea_week_002/week.py": "88b2047157610ecbbbbf47fa7948d26c88f7d3409ca5543d2678a2dcd079d349"
+    }
+  },
+  "updated_at": "2026-11-19T08:22:24Z"
 }
