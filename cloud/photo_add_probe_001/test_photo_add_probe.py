@@ -97,6 +97,26 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(value['focus_media'][0]['ext'], '.mp4')
         self.assertNotIn('abcdefghij', json.dumps(value))
 
+    def test_order_positions_only(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = self.home(temp)
+            with sqlite3.connect(home / 'crm.db') as con:
+                con.execute("ALTER TABLE cars ADD COLUMN cover_photo TEXT")
+                con.execute("UPDATE cars SET auto_number='UA-0011', photos=? WHERE id=30", (json.dumps(
+                    [{'file_id': 'AgACBBBBBBBBBBBBBBBBBBBB2', 'tag': ''}, {'file_id': 'AgACAAAAAAAAAAAAAAAAAAAA1', 'tag': ''}]),))
+                con.execute('DROP TABLE media')
+                con.execute('CREATE TABLE media (id INTEGER, car_id INTEGER, vid TEXT, file_id TEXT, poryadok INTEGER, put TEXT, status TEXT)')
+                con.execute("INSERT INTO media VALUES (1, 30, 'foto', 'AgACAAAAAAAAAAAAAAAAAAAA1', 1, '/x/1.jpg', 'ready')")
+                con.execute("INSERT INTO media VALUES (2, 30, 'foto', 'AgACBBBBBBBBBBBBBBBBBBBB2', 2, '/x/2.jpg', 'ready')")
+            (home / 'video/UA-0011.html').write_text('<img src="foto/UA-0011/m/2.jpg"><img src="foto/UA-0011/m/1.jpg">')
+            (home / 'team_bot.py').write_text('app = ApplicationBuilder().token(T).concurrent_updates(True).build()\n')
+            with patch.object(remote, 'HOME', home):
+                value = remote.photo_order()
+        self.assertEqual([c['media_poryadok'] for c in value['card']], [[2], [1]])
+        self.assertEqual(value['pages']['UA-0011.html'], ['2.jpg', '1.jpg'])
+        self.assertEqual(len(value['bot']['team_bot.py']), 1)
+        self.assertNotIn('AAAAAAAAAAAA', json.dumps(value))
+
     def test_database_opened_read_only(self):
         with tempfile.TemporaryDirectory() as temp:
             with patch.object(remote, 'HOME', self.home(temp)):
