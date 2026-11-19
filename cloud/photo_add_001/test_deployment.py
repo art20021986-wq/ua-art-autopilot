@@ -318,7 +318,8 @@ class SmokeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
             (root/'after').mkdir()
-            intake = (here/'fixtures/cars_ui_intake.py').read_text(encoding='utf-8')
+            intake = ((here/'fixtures/cars_ui_intake.py').read_text(encoding='utf-8')
+                      + (here/'fixtures/cars_ui_media_wait.py').read_text(encoding='utf-8'))
             guard = (here/'fixtures/crm_online_guard_media.py').read_text(encoding='utf-8')
             (root/'after/cars_ui.py').write_text(replace_once(intake, edit_cars_ui.PAIRS, 'c'), encoding='utf-8')
             (root/'after/crm_online_guard.py').write_text(

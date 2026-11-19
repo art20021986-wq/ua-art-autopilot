@@ -24,7 +24,8 @@ P = 'cloud/photo_add_001/'
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
                                 'edit_cars_ui.py', 'edit_crm_online_guard.py', 'edits.py', 'make_release.py',
-                                'release_constants.py', 'fixtures/cars_ui_intake.py', 'fixtures/crm_online_guard_media.py')]
+                                'release_constants.py', 'fixtures/cars_ui_intake.py', 'fixtures/cars_ui_media_wait.py',
+                                'fixtures/crm_online_guard_media.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_photo_add.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 # Live data the install must not touch, besides the source files pinned in the plan.
@@ -32,7 +33,9 @@ LIVE_DATA = ['.crm_publish_requests', 'crm.db']
 # Owner's words in chat, filled in when the owner says «да».
 APPROVAL = ('«Да, делай все, что нужно, фото я удалил, там их нет» in chat 2026-11-19 (session 35, answer to: fix the '
             'CRM bot photo intake — a photo counts as a duplicate only while it is still in the card, so a removed photo '
-            'can be sent again, plus a test; cars_ui.py and crm_online_guard.py; site and CRM not changed)')
+            'can be sent again, plus a test; cars_ui.py and crm_online_guard.py; site and CRM not changed); and on the video: '
+            '«Сбой пошел из-за того, что я загрузил случайно фото-видео… не загружается просто видео, если оно загружено в '
+            'фотогалерее» (2026-11-19)')
 
 
 def sha(path):
@@ -75,7 +78,8 @@ def preview():
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Owner 2026-11-19 (PHOTO-ADD-001): a photo removed from a car card in the CRM bot can be '
-                            'sent again (the photo receipt ledger counts a duplicate only while the photo is still in the card). '
+                            'sent again (the photo receipt ledger counts a duplicate only while the photo is still in the card); a photo '
+                            'section takes photos only (a video sent there is answered and not saved). '
                             'Bounded preview in the existing private inbox: build the candidate (two exact edits in cars_ui.py '
                             'and crm_online_guard.py), record hashes and account storage; in python3.10 compile both candidate '
                             'files, run the candidate ledger in a temporary folder and read the live ledger counts (read only). '
@@ -138,8 +142,8 @@ def install():
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner approved (%s) PHOTO-ADD-001: a photo removed from a car card in the CRM bot can be '
-                              'sent again; a photo still in the card stays a duplicate. Two exact edits in cars_ui.py and '
-                              'crm_online_guard.py. The install does not change the site or any CRM row. Existing backup, '
+                              'sent again; a photo still in the card stays a duplicate; a video or file sent into a photo section is '
+                              'not saved there. Exact edits in cars_ui.py and crm_online_guard.py. The install does not change the site or any CRM row. Existing backup, '
                               'bot pause, writer locks, data-preservation, rollback and public health checks are kept.' % APPROVAL,
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/katalog.html'],

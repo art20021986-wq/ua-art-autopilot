@@ -3,6 +3,7 @@
 
 Runs the live photo intake code (excerpts in fixtures/, from PHOTO-ADD-PROBE-20261119) before and after the edits.
 """
+import asyncio
 import importlib.util
 import json
 from pathlib import Path
@@ -19,7 +20,8 @@ import edit_crm_online_guard  # noqa: E402
 from edits import replace_once  # noqa: E402
 
 GUARD = (HERE / 'fixtures/crm_online_guard_media.py').read_text(encoding='utf-8')
-INTAKE = (HERE / 'fixtures/cars_ui_intake.py').read_text(encoding='utf-8')
+INTAKE = ((HERE / 'fixtures/cars_ui_intake.py').read_text(encoding='utf-8')
+          + (HERE / 'fixtures/cars_ui_media_wait.py').read_text(encoding='utf-8'))
 CARD = 18
 
 
@@ -29,6 +31,23 @@ def load(path, name):
     sys.modules[name] = module
     spec.loader.exec_module(module)
     return module
+
+
+class Stop(Exception):
+    pass
+
+
+class Message:
+    def __init__(self, kind, file_id):
+        media = types.SimpleNamespace(file_id=file_id, file_unique_id='U-' + file_id)
+        self.photo = [media] if kind == 'photo' else []
+        self.video = media if kind == 'video' else None
+        self.video_note = None
+        self.document = media if kind == 'document' else None
+        self.message_id, self.chat_id, self.text, self.replies = 1, 1, None, []
+
+    async def reply_text(self, text, **kwargs):
+        self.replies.append(text)
 
 
 class Bot:
@@ -50,6 +69,10 @@ class Bot:
         ns.card_of = lambda cid: dict(self.cards[cid]) if cid in self.cards else None
         ns.jload = lambda value, default=None: json.loads(value) if value else (default or [])
         ns.save_media = self.save_media
+        ns.ApplicationHandlerStop = Stop
+        ns.asyncio = asyncio
+        ns._orient = lambda video: 'video_h'
+        ns._v165_schedule_progress = lambda *args, **kwargs: None
         ns._V165_SPOOL = str(folder / 'spool.jsonl')
         ns._V165_SPOOL_LOCK = str(folder / 'spool.lock')
         ns._V165_DRAIN_LOCK = str(folder / 'drain.lock')
@@ -69,11 +92,28 @@ class Bot:
         self.ns._v165_spool_drain(100)
         return state
 
+    def message(self, kind, file_id, target='photos'):
+        """A message sent while the card section is open, through the live handler; then the queue worker."""
+        msg = Message(kind, file_id)
+        context = types.SimpleNamespace(user_data={'car_media_wait': {'card_id': CARD, 'target': target}})
+        with _stop():
+            asyncio.run(self.ns.media_wait(None, context, msg, 1))
+        self.ns._v165_spool_drain(100)
+        return msg.replies
+
     def photos(self):
         return [item['file_id'] for item in json.loads(self.cards[CARD]['photos'])]
 
     def remove_all(self):
         self.cards[CARD]['photos'] = '[]'
+
+
+class _stop:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, kind, value, trace):
+        return kind is Stop
 
 
 class OwnerCase(unittest.TestCase):
@@ -116,6 +156,39 @@ class OwnerCase(unittest.TestCase):
             bot.guard.media_mark('k', CARD, 'photos')
             lines = (Path(temp) / 'receipts.jsonl').read_text().splitlines()
         self.assertEqual(len(lines), 2)
+
+
+class VideoInPhotosTests(unittest.TestCase):
+    """It began with a video sent into «Добавить фото» (UA-0011, 19.11): it was saved among the photos."""
+    def run_case(self, fixed, kind):
+        with tempfile.TemporaryDirectory() as temp:
+            bot = Bot(Path(temp), fixed)
+            bot.message('photo', 'P1')
+            replies = bot.message(kind, 'V1')
+            return bot.photos(), replies
+
+    def test_bug_reproduced_on_the_live_code(self):
+        self.assertEqual(self.run_case(False, 'video')[0], ['P1', 'V1'])
+
+    def test_video_and_file_not_saved_among_photos(self):
+        for kind in ('video', 'document'):
+            photos, replies = self.run_case(True, kind)
+            self.assertEqual(photos, ['P1'])
+            self.assertIn('Добавить видео', replies[0])
+
+    def test_photos_still_saved(self):
+        with tempfile.TemporaryDirectory() as temp:
+            bot = Bot(Path(temp), True)
+            bot.message('photo', 'P1')
+            bot.message('photo', 'P2')
+            self.assertEqual(bot.photos(), ['P1', 'P2'])
+
+    def test_video_section_still_takes_video(self):
+        with tempfile.TemporaryDirectory() as temp:
+            bot = Bot(Path(temp), True)
+            bot.cards[CARD]['videos'] = '[]'
+            self.assertEqual(bot.message('video', 'V1', target='videos'), ['Сохранено.'])
+            self.assertEqual(json.loads(bot.cards[CARD]['videos'])[0]['file_id'], 'V1')
 
 
 class EditTests(unittest.TestCase):
