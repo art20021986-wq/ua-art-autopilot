@@ -122,7 +122,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'TICKER-FIX4-INSTALL-1','files':files,'job':JOB,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'korea_auction schedule.py, holidays.py, week_tile.py, check.py (new) + collect.py, ticker.py, job.py (clocks and the week on the tile; the ticker checked before it is written) + video/korea.html (day buttons: no auction that day); no other page or CRM module changes',
+            'site_scope':'korea_auction schedule.py, holidays.py, week_tile.py, check.py, alert.py (new: the CRM bot tells the CRM owners of a failed check) + collect.py, ticker.py, job.py (clocks and the week on the tile; the ticker checked before it is written) + video/korea.html (day buttons: no auction that day); no other page or CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -136,7 +136,7 @@ def smoke(directory):
             compile(read(after/name), name, 'exec')
     sys.path.insert(0, str(after))
     try:
-        from korea_auction import check, job, public, rollover, schedule, selection, ticker, week_tile
+        from korea_auction import alert, check, job, public, rollover, schedule, selection, ticker, week_tile
         sample = {'lots_on_date': 2, 'own': [], 'items': [{
             'id': '1', 'title': 'Kia K5', 'model': 'K5', 'year': 2022, 'mileage_km': 1000, 'score': 'A',
             'fuel': 'Gasoline', 'start_price_krw': 10000000, 'start_price_usd': 7000, 'photo': '/video/korea/img/1.jpg',
@@ -227,7 +227,8 @@ def smoke(directory):
                  'ticker_check': check.problems({'items': [], 'lots_today': 0,
                                                  'week': week_tile.week([], None, '2026/11/19')}, [], '2026/11/19') == []
                                  and check.problems({'items': [], 'lots_today': 0}, [], '2026/11/19') != []
-                                 and callable(job.checked),
+                                 and callable(job.checked)
+                                 and str(alert.TOKEN) == str(ROOT/'team_token.txt') and 'Причина: X' in alert.text(['X']),
                  'page_none': 't("none")' in read(after/'video/korea.html').decode('utf-8')
                               and 'SCH=d.schedule||null;days();' in read(after/'video/korea.html').decode('utf-8'),
                  # KOREA-PHOTOS-ALL-001 stays installed (never rolled back to 40 photos)

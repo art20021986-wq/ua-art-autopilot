@@ -25,7 +25,7 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
                                 'make_release.py', 'release_constants.py', 'day_none_page.py')] + [
-    P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'check', 'collect', 'color', 'drive', 'fuel', 'holidays',
+    P + 'korea_auction/%s.py' % n for n in ('__init__', 'alert', 'catalog', 'check', 'collect', 'color', 'drive', 'fuel', 'holidays',
                                             'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public',
                                             'rollover', 'schedule', 'selection', 'session', 'ticker', 'week_tile')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_day_none_page.py',
@@ -77,7 +77,7 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of KOREA-WEEKTILE-001 (owner 2026-11-19, one install): the collector update (schedule.py, holidays.py, week_tile.py, check.py new; collect.py, ticker.py, job.py: the yellow tile shows clocks for Korea, Japan and Kyiv and the week ahead by the auction schedule; the ticker is checked against the lot list before it is written) and one video/korea.html edit (day buttons: no auction that day), smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of KOREA-WEEKTILE-001 (owner 2026-11-19, one install): the collector update (schedule.py, holidays.py, week_tile.py, check.py, alert.py new; collect.py, ticker.py, job.py: the yellow tile shows clocks for Korea, Japan and Kyiv and the week ahead by the auction schedule; the ticker is checked against the lot list before it is written) and one video/korea.html edit (day buttons: no auction that day), smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
              'title': 'Preview Korea week tile, clocks, ticker check'}
@@ -133,7 +133,7 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner requests (2026-11-19), one install: the home yellow tile shows live clocks (Korea, Japan, Kyiv) and the week ahead (7 days: car count when listed, else lots soon, no auctions, day off or holiday, with the auction houses by the auction schedule read each run); the ticker is written only when it agrees with the lot list (else the last good one stays, the reason is logged); the Korea page day buttons say no auctions when the schedule has none or a later day is listed. Collector schedule.py, holidays.py, week_tile.py, check.py (new), collect.py, ticker.py, job.py; video/korea.html; CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
+               'description': 'Owner requests (2026-11-19), one install: the home yellow tile shows live clocks (Korea, Japan, Kyiv) and the week ahead (7 days: car count when listed, else lots soon, no auctions, day off or holiday, with the auction houses by the auction schedule read each run); the ticker is written only when it agrees with the lot list (else the last good one stays, the reason is logged and the CRM bot tells the CRM owners); the Korea page day buttons say no auctions when the schedule has none or a later day is listed. Collector schedule.py, holidays.py, week_tile.py, check.py, alert.py (new), collect.py, ticker.py, job.py; video/korea.html; CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],

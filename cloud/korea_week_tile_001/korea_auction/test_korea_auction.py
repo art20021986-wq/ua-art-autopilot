@@ -980,8 +980,12 @@ class WeekTileTest(unittest.TestCase):
             out = pathlib.Path(tmp)
             (out / 'ticker.html').write_text('last good ticker')
             (out / 'state.json').write_text(json.dumps({'items': [], 'own': [own]}))
-            job.roll(datetime(2026, 11, 19, 0, 7, tzinfo=selection.JST), out, out / 'state.json', out / 'check.json')
+            told = []
+            with unittest.mock.patch.object(job, 'notify', told.append):
+                job.roll(datetime(2026, 11, 19, 0, 7, tzinfo=selection.JST), out, out / 'state.json',
+                         out / 'check.json')
             self.assertEqual((out / 'ticker.html').read_text(), 'last good ticker')
+            self.assertIn('TILE_TODAY_WRONG', told[0])  # the owners are told
             record = json.loads((out / 'check.json').read_text())
             (out / 'lots.json').write_text(json.dumps({'lots': [{'id': '1', 'auction_start': '2026/11/19 13:00',
                                                                   'house': 'H'}]}))
@@ -990,6 +994,43 @@ class WeekTileTest(unittest.TestCase):
             self.assertTrue(json.loads((out / 'check.json').read_text())['ok'])
         self.assertEqual(record['ok'], False)
         self.assertIn('TILE_TODAY_WRONG', record['problems'])
+
+
+class AlertTest(unittest.TestCase):
+    """KOREA-WEEKTILE-001: the CRM owners hear of a failed check once per problem, again after REPEAT_SECONDS."""
+
+    def test_send_once_per_problem(self):
+        from korea_auction import alert
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = pathlib.Path(tmp)
+            (folder / 'token').write_text('123:abc\n')
+            sent, now = [], [1000.0]
+
+            def deliver(token, chat, message):
+                sent.append((token, chat, message))
+
+            def go(problems):
+                return alert.send(problems, folder / 'sent.json', folder / 'token', lambda: [11, 22], deliver,
+                                  lambda: now[0])
+            self.assertEqual(go(['CAR_NOT_IN_LIST:5']), 2)
+            self.assertEqual([(t, c) for t, c, _ in sent], [('123:abc', 11), ('123:abc', 22)])
+            self.assertIn('Причина: CAR_NOT_IN_LIST:5', sent[0][2])
+            self.assertEqual(go(['CAR_NOT_IN_LIST:7']), 0)  # the same problem kind: not again
+            self.assertEqual(go(['TILE_TODAY_WRONG']), 2)  # a new problem: told
+            now[0] += alert.REPEAT_SECONDS
+            self.assertEqual(go(['TILE_TODAY_WRONG']), 2)  # it lasts: told again
+
+    def test_a_failed_send_never_stops_the_job(self):
+        from korea_auction import alert
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = pathlib.Path(tmp)
+
+            def broken(*args):
+                raise OSError('network')
+            self.assertEqual(alert.send(['X'], folder / 'sent.json', folder / 'missing-token', lambda: [1], broken), 0)
+            (folder / 'token').write_text('t')
+            self.assertEqual(alert.send(['X'], folder / 'sent.json', folder / 'token', lambda: [1], broken), 0)
+            self.assertFalse((folder / 'sent.json').exists())  # nothing told: tried again next time
 
 
 if __name__ == '__main__':
