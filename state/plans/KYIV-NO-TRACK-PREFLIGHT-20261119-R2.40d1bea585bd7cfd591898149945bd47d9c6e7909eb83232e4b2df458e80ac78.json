@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KYIV-NO-TRACK-PREFLIGHT-20261119-R2.40d1bea585bd7cfd591898149945bd47d9c6e7909eb83232e4b2df458e80ac78.json",
+  "autostart_ledger_sha256": "f7cf341c346c38f3dbcc8e0744211fbf9ea34a1be7dfe4db96c18bef0460f00d",
+  "autostart_source_commit": "6e6de87aabf27f81c7006687ad776d6ce6f3e073",
+  "created_at": "2026-11-19T07:49:52Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "44482440735",
+    "task_id": "KYIV-NO-TRACK-PREFLIGHT-20261119-R2",
+    "task_sha256": "40d1bea585bd7cfd591898149945bd47d9c6e7909eb83232e4b2df458e80ac78"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-89f17ab592ce0029-aa7420a606fc6c7d",
+  "request_path": "tasks/requests/KYIV-NO-TRACK-PREFLIGHT-20261119-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:89f17ab592ce0029"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
