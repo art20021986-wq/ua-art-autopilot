@@ -22,7 +22,7 @@ HOME = Path('/home/Carix')
 WORK = HERE.parent / 'bigvideo_probe_work'
 PACKAGES = ('telethon==1.46.0', 'pyaes', 'rsa', 'cryptg')
 BIG = 20 * 1024 * 1024
-SCAN = 400
+SCAN = 1000
 LONG_NUMBER = re.compile(r'\d{6,}')
 
 
@@ -91,17 +91,26 @@ async def probe(value):
             low += 100
         window = await any_from(low)
         low = max([m.id for m in window] or [low])
-        newest, found = low, None
+        newest, found, seen = low, None, []
+        value['newest_message'] = newest
         for start in range(newest, max(0, newest - SCAN), -100):
             batch = await existing(list(range(max(1, start - 99), start + 1)))
             for message in sorted(batch, key=lambda m: m.id, reverse=True):
                 sender = getattr(getattr(message, 'peer_id', None), 'user_id', None)
+                media = getattr(message, 'media', None)
+                document = getattr(media, 'document', None)
+                seen.append({'back': newest - message.id, 'out': bool(message.out), 'owner': sender in owner_ids,
+                             'media': type(media).__name__ if media else None,
+                             'mime': str(getattr(document, 'mime_type', ''))[:20] if document else None,
+                             'mb': round(int(getattr(document, 'size', 0) or 0) / 2**20, 1) if document else None})
                 if not message.out and sender in owner_ids and video_size(message) > BIG:
                     found = message
                     break
             if found:
                 break
         value['scanned_from_newest'] = SCAN
+        value['media_seen'] = [s for s in seen if s['media']][:60]
+        value['messages_seen'] = len(seen)
         if not found:
             value['found'] = False
             return
@@ -137,8 +146,12 @@ def report():
     except Exception as error:
         value.update(status='FAIL', error=type(error).__name__ + ':' + clean(error))
     finally:
-        shutil.rmtree(WORK, ignore_errors=True)
+        problems = []
+        shutil.rmtree(WORK, onerror=lambda function, path, info: problems.append(
+            type(info[1]).__name__ + ':' + os.path.relpath(path, WORK)[:80]))
         value['work_removed'] = not WORK.exists()
+        if problems:
+            value['remove_problems'] = problems[:5]
     return value
 
 
