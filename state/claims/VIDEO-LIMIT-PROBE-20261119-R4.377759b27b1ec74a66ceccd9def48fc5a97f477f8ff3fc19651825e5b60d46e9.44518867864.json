@@ -7,21 +7,23 @@
   "created_at": "2026-11-19T11:55:23Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-19T11:55:23Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-19T12:00:41Z",
+  "heartbeat_at": "2026-11-19T12:00:41Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "44518867864",
     "task_id": "VIDEO-LIMIT-PROBE-20261119-R4",
     "task_sha256": "377759b27b1ec74a66ceccd9def48fc5a97f477f8ff3fc19651825e5b60d46e9"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-7aaaa40e3c222cfd-dc6a13a9ef27147c",
   "receipt_path": "state/receipts/VIDEO-LIMIT-PROBE-20261119-R4.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "84a6c94820228b8f94339e747c47e99565b991dc392ee8cb9445d52e58260cc9",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/VIDEO-LIMIT-PROBE-20261119-R4.json",
   "request_sha256": "377759b27b1ec74a66ceccd9def48fc5a97f477f8ff3fc19651825e5b60d46e9",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "5a5a40c2679076d30b3f699e12c3e6eaf58281b9",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92040105984,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.606
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-19T11:55:23Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "a94b7d3de78a932c8c070485c7a81ac8750ca99e3289af5069f3d782278eecf2",
+    "file_sha256": {
+      "cloud/video_limit_probe_001/bootstrap.py": "c16866c27a90c7a566308b1815fa193cb5a40e1d86c1c594bd28790aae989a2b",
+      "cloud/video_limit_probe_001/make_request.py": "725c9286240f68b287c65e6245584e31038d14237406f8dcf23597ff20efc710",
+      "cloud/video_limit_probe_001/source_remote.py": "a0598e2baf7838e57d19c256f01ab47fd63ec332da0577c35c50c9267af64324",
+      "cloud/video_limit_probe_001/test_video_limit_probe.py": "a154764fc4e4c5cbd5d34fc56f21bdf3a5f7dff9646fd99fecdd8103617fa2f0",
+      "cloud/video_limit_probe_001/transport.py": "a55a801074663a1604f84cef8083f9b56fce56c4059c089153f04d12e630cf1a"
+    }
+  },
+  "updated_at": "2026-11-19T12:00:41Z"
 }
