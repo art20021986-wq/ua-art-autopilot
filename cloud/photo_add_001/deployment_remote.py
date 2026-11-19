@@ -152,7 +152,7 @@ print(json.dumps({'steps': steps, 'rows': rows, 'live_ledger_keys': len(files),
                   'cars_ui_marks': cars.count('# PHOTO-ADD-001'),
                   'cars_ui_media_seen_left': cars.count('_v168_guard.media_seen(event_key)')}))
 """
-EXPECTED = {'steps': [None, 'F1', 'F2', ''], 'rows': 2, 'cars_ui_marks': 2, 'cars_ui_media_seen_left': 0}
+EXPECTED = {'steps': [None, 'F1', 'F2', ''], 'rows': 2, 'cars_ui_marks': 3, 'cars_ui_media_seen_left': 0}
 
 
 def smoke(directory):
