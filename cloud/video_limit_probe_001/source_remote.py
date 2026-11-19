@@ -8,6 +8,9 @@ Reads only:
   answer from here (a TCP connect only, nothing is sent);
 - published card videos (count, total and largest size, durations via ffprobe if present) and disk use of the video folder;
 - the sanitized server lines that download, convert and limit card videos (getFile, ffmpeg, size limits).
+R2 (stage B, coordinator 2026-11-19): the full sanitized source of the bot start files and of the files that download
+or convert card videos for the site, and whether the owner's key file /home/Carix/telegram_api.txt is there with two
+non-empty lines (only that: the file content is never put in the report).
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -159,10 +162,36 @@ def sources():
     return found
 
 
+FULL_SOURCES = ('start_safe.py', 'run_all.py', 'team_bot.py', 'card_html.py', 'master_card.py', 'stranica.py',
+                'publikaciya.py', 'ua_crm_public_sync.py')
+KEY_FILE = 'telegram_api.txt'
+
+
+def key_file():
+    """Only whether the key file is there with two non-empty lines; its content never leaves this function."""
+    path = HOME / KEY_FILE
+    if not path.is_file() or path.is_symlink():
+        return {'present': False}
+    lines = [line.strip() for line in path.read_text(encoding='utf-8', errors='replace').splitlines() if line.strip()]
+    return {'present': True, 'two_non_empty_lines': len(lines) == 2, 'first_line_is_number': bool(lines) and
+            lines[0].isdigit(), 'mode_octal': oct(path.stat().st_mode & 0o777)}
+
+
+def full_sources():
+    found = {}
+    for name in FULL_SOURCES:
+        text = text_of(HOME / name)
+        found[name] = None if text is None else {
+            'sha256': hashlib.sha256(text.encode()).hexdigest()[:16],
+            'source': '\n'.join(sanitized_line(x) for x in text.splitlines())}
+    return found
+
+
 def report():
     value = {'status': 'PASS'}
     for key, call in (('machine', machine), ('localhost', localhost), ('telegram', telegram),
-                      ('videos', videos), ('sources', sources)):
+                      ('videos', videos), ('sources', sources), ('key_file', key_file),
+                      ('full_sources', full_sources)):
         try:
             value[key] = call()
         except Exception as error:

@@ -38,6 +38,26 @@ class RemoteTests(unittest.TestCase):
         self.assertNotIn('AAAAAAAA', text)
 
 
+class KeyFileTests(unittest.TestCase):
+    def test_key_content_never_reported(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            (home / 'telegram_api.txt').write_text('1234567\nabcdefabcdefabcdefabcdefabcdef12\n')
+            (home / 'start_safe.py').write_text('API_HASH = "abcdefabcdefabcdefabcdefabcdef12"\napp = ApplicationBuilder()\n')
+            with patch.object(remote, 'HOME', home):
+                key, full = remote.key_file(), remote.full_sources()
+        text = json.dumps([key, full])
+        self.assertEqual((key['present'], key['two_non_empty_lines'], key['first_line_is_number']), (True, True, True))
+        self.assertNotIn('abcdefabcdef', text)
+        self.assertNotIn('1234567', text)
+        self.assertIn('ApplicationBuilder', text)
+
+    def test_missing_key_file(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with patch.object(remote, 'HOME', Path(temp)):
+                self.assertEqual(remote.key_file(), {'present': False})
+
+
 class FakeAPI:
     def __init__(self, report):
         self.report = report
