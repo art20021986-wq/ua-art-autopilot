@@ -1,8 +1,8 @@
 """SEO-HOME-001 edits against copies of the live files (2026-11-19): ua_card_lang.py, ua_seo_metadata.py, the home
 page, a card and its Ukrainian version."""
 from pathlib import Path
+import importlib.util
 import tempfile
-import types
 import unittest
 
 import candidate_builder
@@ -15,8 +15,12 @@ F = Path(__file__).resolve().parent / 'fixtures'
 
 
 def module(source, name):
-    value = types.ModuleType(name)
-    exec(compile(source, name, 'exec'), value.__dict__)
+    """Load the module text from a temporary file, as the server imports it."""
+    folder = Path(tempfile.mkdtemp())
+    (folder / (name + '.py')).write_bytes(source)
+    spec = importlib.util.spec_from_file_location(name, folder / (name + '.py'))
+    value = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(value)
     return value
 
 
