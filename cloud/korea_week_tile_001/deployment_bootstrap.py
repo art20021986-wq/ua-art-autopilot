@@ -24,10 +24,10 @@ def main():
     for value in (args.plan, args.backup):
         if value and not re.fullmatch(r'[0-9a-f]{64}', value):
             raise ValueError('HASH')
-    archive = BASE / ('ktsync1-' + args.bundle + '.zip')
+    archive = BASE / ('ktweek1-' + args.bundle + '.zip')
     if hashlib.sha256(archive.read_bytes()).hexdigest() != args.bundle:
         raise ValueError('BUNDLE_HASH')
-    package = BASE / ('ktsync1-' + args.bundle)
+    package = BASE / ('ktweek1-' + args.bundle)
     package.mkdir(mode=0o700, exist_ok=True)
     if package.is_symlink() or package.resolve() != package:
         raise ValueError('PACKAGE_PATH')

@@ -176,6 +176,7 @@ def publish_lots(data, now, folder, deadline=None):
     photos, left = copy_lot_photos(data['upcoming_lots'], folder / 'lots', deadline=deadline)
     value = public.build(data['upcoming_lots'], data['auction_date'], data['rates'], photos,
                          now.isoformat(timespec='minutes'))
+    value['schedule'] = data.get('schedule')  # KOREA-WEEKTILE-001: the Korea page day buttons read the auction days
     write(folder / 'lots.json', json.dumps(value, ensure_ascii=False, separators=(',', ':')).encode('utf-8'))
     publish_galleries({view['id']: photos[view['id']] for view in value['lots']}, folder / 'gallery')
     # KOREA-MODEL-LOTS-001: the order page model carousels show the week's lots of each model (from the list above)

@@ -923,7 +923,7 @@ class WeekTileTest(unittest.TestCase):
         lots_ = [{'id': str(n), 'auction_start': '2026/11/19 13:00', 'house': 'K-Car O-San'} for n in range(3)]
         days = week_tile.week(lots_, self.schedule(), '2026/11/19')
         self.assertEqual([(d['date'][5:], d['state'], d['lots']) for d in days],
-                         [('11/19', 'cars', 3), ('11/20', 'soon', 0), ('11/21', 'dayoff', 0), ('11/22', 'dayoff', 0),
+                         [('11/19', 'cars', 3), ('11/20', 'none', 0), ('11/21', 'dayoff', 0), ('11/22', 'dayoff', 0),
                           ('11/23', 'soon', 0), ('11/24', 'soon', 0), ('11/25', 'soon', 0)])
         self.assertEqual(days[0]['houses'], [{'name': 'K-Car O-San', 'start': '2026/11/19 13:00'}])  # listed: start
         self.assertEqual(days[6]['houses'], [{'name': 'Auto Hub Auction'}, {'name': 'AutoHands'}])  # planned
@@ -931,6 +931,18 @@ class WeekTileTest(unittest.TestCase):
         xmas = week_tile.week([], self.schedule(), '2026/12/21')
         self.assertEqual((xmas[4]['state'], xmas[4]['holiday'][0], xmas[4]['houses']), ('holiday', 'Різдво', []))
         self.assertEqual(week_tile.week([], None, '2026/11/23')[0]['state'], 'cars')  # today without lots: 0 авто
+
+    def test_no_auctions_when_a_later_day_is_listed(self):
+        """Owner 2026-11-19: Friday without lots while Monday is already listed — «Аукціонів немає», not «soon»."""
+        from korea_auction import week_tile
+        full = [['AutoPlus'], [], ['Auto Hub Auction'], ['K-Car O-San'], ['AutoPlus'], [], []]
+        monday = [{'id': '1', 'auction_start': '2026/11/23 12:00', 'house': 'AutoPlus'}]
+        days = {d['date'][5:]: d['state'] for d in week_tile.week(monday, full, '2026/11/19')}
+        self.assertEqual((days['11/20'], days['11/23'], days['11/24'], days['11/25']), ('none', 'cars', 'none', 'soon'))
+        days = {d['date'][5:]: d['state'] for d in week_tile.week([], full, '2026/11/19')}
+        self.assertEqual((days['11/20'], days['11/24']), ('soon', 'none'))  # Tuesday: no auction in the schedule
+        days = {d['date'][5:]: d['state'] for d in week_tile.week(monday, None, '2026/11/19')}
+        self.assertEqual((days['11/20'], days['11/24']), ('none', 'soon'))  # no schedule read: later lots decide
 
     def test_tile_renders_the_week_and_clocks(self):
         from korea_auction import collect

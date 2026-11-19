@@ -1,4 +1,4 @@
-"""Bounded KOREA-SYNC-001 release (the home tile, the ticker and the Korea page agree); preserve live data and pending requests."""
+"""Bounded KOREA-WEEKTILE-001 release (clocks and the week on the tile, the ticker check); preserve live data and pending requests."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -30,7 +30,6 @@ PAGES = ('video/katalog.html', 'site/katalog.html', 'video/index.html', 'site/in
 # This release changes no job output (only the ticker card links); a rollback removes nothing.
 OUTPUTS = ()
 JOB = {'command': JOB_COMMAND, 'interval': 'hourly', 'minute': JOB_MINUTE}
-KOREA_PAGE = ROOT/'video/korea.html'  # KOREA-SYNC-001 leaves it as it is; the smoke checks the installed page
 PROTECTED = ('start_safe.py', 'run_all.py', 'ua_site_counters.py',
              'publication_fence.py', 'catalog_design_golden.html')
 
@@ -50,7 +49,7 @@ def read(path):
 
 def atomic(path, value, mode=0o600):
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    descriptor, name = tempfile.mkstemp(dir=path.parent, prefix='.ktsync1-')
+    descriptor, name = tempfile.mkstemp(dir=path.parent, prefix='.ktweek1-')
     temporary = Path(name)
     try:
         with os.fdopen(descriptor, 'wb') as handle:
@@ -123,7 +122,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'TICKER-FIX4-INSTALL-1','files':files,'job':JOB,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'korea_auction/job.py (the ticker after the lot list, only listed cars; the Korea midnight day change; lot pages read for 25 min) + prices.py (lot page reading stops on time) + rollover.py (new); no page or CRM module changes',
+            'site_scope':'korea_auction schedule.py, holidays.py, week_tile.py, check.py (new) + collect.py, ticker.py, job.py (clocks and the week on the tile; the ticker checked before it is written) + video/korea.html (day buttons: no auction that day); no other page or CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -137,7 +136,7 @@ def smoke(directory):
             compile(read(after/name), name, 'exec')
     sys.path.insert(0, str(after))
     try:
-        from korea_auction import job, public, rollover, selection, ticker
+        from korea_auction import check, job, public, rollover, schedule, selection, ticker, week_tile
         sample = {'lots_on_date': 2, 'own': [], 'items': [{
             'id': '1', 'title': 'Kia K5', 'model': 'K5', 'year': 2022, 'mileage_km': 1000, 'score': 'A',
             'fuel': 'Gasoline', 'start_price_krw': 10000000, 'start_price_usd': 7000, 'photo': '/video/korea/img/1.jpg',
@@ -184,19 +183,19 @@ def smoke(directory):
                                                        engine_cc=2151, transmission='AT', house='H', lot_no='1',
                                                        start_price_krw=0, auction_start='2026/11/18 13:00'),
                                                   {'USD': 41.0, 'KRW': 0.03, 'date': 'd'}, ['1-1.jpg'])['drive'] == 'full',
-                 'page_drive': 'function drive(l){' in read(KOREA_PAGE).decode('utf-8')
-                               and 'row("gear",l.transmission)+drive(l)+color(l)' in read(KOREA_PAGE).decode('utf-8'),
+                 'page_drive': 'function drive(l){' in read(after/'video/korea.html').decode('utf-8')
+                               and 'row("gear",l.transmission)+drive(l)+color(l)' in read(after/'video/korea.html').decode('utf-8'),
                  'color_in_list': public.lot_view(dict(sample['items'][0], maker='KIA', model='K5', trim='', engine_cc=1999,
                                                        transmission='AT', house='H', lot_no='1', start_price_krw=0,
                                                        auction_start='2026/11/18 13:00', color='Pearl White'),
                                                   {'USD': 41.0, 'KRW': 0.03, 'date': 'd'}, ['1-1.jpg'])['color'] == 'white'
                                   and __import__('korea_auction.lots', fromlist=['x']).parse_detail(
                                       '<p>2022 Color Black Mileage 1 km</p>')['color'] == 'Black',
-                 'page_filters': all(piece in read(KOREA_PAGE).decode('utf-8') for piece in (
+                 'page_filters': all(piece in read(after/'video/korea.html').decode('utf-8') for piece in (
                      '<select id="kl-year-to"></select>', '<select id="kl-fuel"></select>', '<select id="kl-color"></select>',
                      '<select id="kl-km"></select>')),
                  # KOREA-ENGINE-001 stays installed (engine type, models by make, every photo)
-                 'page_engine_models': all(piece in read(KOREA_PAGE).decode('utf-8')
+                 'page_engine_models': all(piece in read(after/'video/korea.html').decode('utf-8')
                                            for piece in ('function engine(l){', 'createElement("optgroup")')),
                  # KOREA-ENGINE-001: every lot photo — copying for a time per run; the list keeps 3, the gallery has all
                  'photos_for_time': job.RUN_SECONDS < 3600 and not hasattr(job, 'PHOTOS_PER_RUN'),
@@ -216,6 +215,21 @@ def smoke(directory):
                  'sync_page_time': 0 < job.PAGE_SECONDS < job.RUN_SECONDS
                                    and 'done' in __import__('inspect').signature(
                                        __import__('korea_auction.prices', fromlist=['x']).fill).parameters,
+                 # KOREA-WEEKTILE-001: the schedule, the week, the clocks, the check, the page rule
+                 'week_tile': [d['state'] for d in week_tile.week(
+                     [{'id': '1', 'auction_start': '2026/11/23 12:00', 'house': 'AutoPlus'}],
+                     [['AutoPlus'], [], ['Auto Hub Auction'], [], ['AutoPlus'], [], []], '2026/11/19')]
+                              == ['cars', 'none', 'dayoff', 'dayoff', 'cars', 'none', 'soon']
+                              and schedule.parse('') == [[]] * 7,
+                 'tile_clocks': all(piece in ticker.render(dict(sample, week=week_tile.week([], None, '2026/11/19')))
+                                    for piece in ('data-kt-tz="Asia/Seoul"', 'data-kt-tz="Asia/Tokyo"',
+                                                  'data-kt-tz="Europe/Kyiv"', 'Сьогодні, Чт, 19.11')),
+                 'ticker_check': check.problems({'items': [], 'lots_today': 0,
+                                                 'week': week_tile.week([], None, '2026/11/19')}, [], '2026/11/19') == []
+                                 and check.problems({'items': [], 'lots_today': 0}, [], '2026/11/19') != []
+                                 and callable(job.checked),
+                 'page_none': 't("none")' in read(after/'video/korea.html').decode('utf-8')
+                              and 'SCH=d.schedule||null;days();' in read(after/'video/korea.html').decode('utf-8'),
                  # KOREA-PHOTOS-ALL-001 stays installed (never rolled back to 40 photos)
                  'all_photos': __import__('korea_auction.prices', fromlist=['x']).MAX_PHOTOS is None}
     finally:

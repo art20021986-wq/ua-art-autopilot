@@ -37,6 +37,7 @@ T = {
     'week_today': ('Сьогодні, {d}', 'Сегодня, {d}', 'დღეს, {d}'),
     'soon': ("Лоти з'являться за 1–2 дні", 'Лоты появятся за 1–2 дня', 'ლოტები გამოჩნდება 1–2 დღეში'),
     'dayoff': ('Вихідний', 'Выходной', 'დასვენების დღე'),
+    'none': ('Аукціонів немає', 'Аукционов нет', 'აუქციონები არ არის'),
     'tz_korea': ('Корея', 'Корея', 'კორეა'), 'tz_japan': ('Японія', 'Япония', 'იაპონია'),
     'tz_kyiv': ('Київ', 'Киев', 'კიევი'),
     # an auction house's start in Kyiv time, on its tile tag (owner 2026-11-13: «старт время по Украине»)
@@ -319,7 +320,7 @@ CSS = (
     'border-top:1px solid rgba(11,21,36,.18);font-size:15px;font-weight:700;line-height:1.2}'
     '.kt-wd .kt-num{justify-self:end;text-align:right;font-size:13px;white-space:normal}'
     '.kt-wd .kt-num b{font-size:20px;font-variant-numeric:tabular-nums}'
-    '.kt-wd-dayoff,.kt-wd-holiday{opacity:.6}'
+    '.kt-wd-dayoff,.kt-wd-holiday,.kt-wd-none{opacity:.6}'
     '.kt-wd .kt-houses{margin-top:3px;gap:4px}.kt-wd .kt-houses>span{padding:2px 8px;font-size:11.5px}'
     '.kt-wd-soon .kt-houses>span{background:none;border:1px dashed rgba(11,21,36,.4)}'
     '.kt-legend{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:12.5px;line-height:1.25}'

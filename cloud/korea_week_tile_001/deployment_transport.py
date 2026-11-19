@@ -141,7 +141,7 @@ class API:
     def upload(self, path, payload):
         if not str(path).startswith(INBOX+'/') or '..' in PurePosixPath(path).parts:
             raise TransportError('INBOX_SCOPE')
-        boundary = '----ktsync1-'+uuid.uuid4().hex
+        boundary = '----ktweek1-'+uuid.uuid4().hex
         content = ('--'+boundary+'\r\nContent-Disposition: form-data; name="content"; filename="'+PurePosixPath(path).name+'"\r\nContent-Type: application/octet-stream\r\n\r\n').encode()+payload+('\r\n--'+boundary+'--\r\n').encode()
         self.request('POST', 'files/path'+urllib.parse.quote(path, safe='/'), content,
                      'multipart/form-data; boundary='+boundary, (200, 201))
@@ -154,11 +154,11 @@ class API:
         for value in (bundle_sha, plan_sha, backup_sha):
             if value and not re.fullmatch(r'[0-9a-f]{64}', value):
                 raise TransportError('RUN_HASH')
-        receipt = INBOX+'/ktsync1-'+bundle_sha+'/runs/'+run_id+'/receipt-'+mode+'.json'
+        receipt = INBOX+'/ktweek1-'+bundle_sha+'/runs/'+run_id+'/receipt-'+mode+'.json'
         prior = self.file(receipt, missing=True)
         if prior:
             return json.loads(prior)
-        args = ['python3.10', INBOX+'/ktsync1_bootstrap.py', '--bundle', bundle_sha,
+        args = ['python3.10', INBOX+'/ktweek1_bootstrap.py', '--bundle', bundle_sha,
                 '--run', run_id, '--mode', mode, '--plan', plan_sha, '--backup', backup_sha]
         trigger = self.json('POST', 'always_on/', {'command': shlex.join(args),
                    'description': 'quick lead '+mode+' '+run_id, 'enabled': 'true'}, (200, 201, 202))
@@ -193,6 +193,6 @@ def upload_package(api):
             archive.writestr(entry, path.read_bytes())
     payload = output.getvalue()
     digest = sha(payload)
-    api.upload(INBOX+'/ktsync1-'+digest+'.zip', payload)
-    api.upload(INBOX+'/ktsync1_bootstrap.py', (HERE/'deployment_bootstrap.py').read_bytes())
+    api.upload(INBOX+'/ktweek1-'+digest+'.zip', payload)
+    api.upload(INBOX+'/ktweek1_bootstrap.py', (HERE/'deployment_bootstrap.py').read_bytes())
     return digest
