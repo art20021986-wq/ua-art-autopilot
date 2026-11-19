@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TELEGRAM-KEY-PREFLIGHT-20261119-R2.5de598c5a38105566836df59683c96eb0a5d258ce29ba96348ed243c73f7267b.json",
+  "autostart_ledger_sha256": "94c91a826688c68461710dc8dacf4decf6b24cafcaee824712a63d5b8a68b9e0",
+  "autostart_source_commit": "048634d92c8b3f4164bcfe182c55f3383bdcc35c",
+  "created_at": "2026-11-19T11:22:33Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-19T11:22:33Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "44514003405",
+    "task_id": "TELEGRAM-KEY-PREFLIGHT-20261119-R2",
+    "task_sha256": "5de598c5a38105566836df59683c96eb0a5d258ce29ba96348ed243c73f7267b"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-8c0c13c5c1158167-03924a0603cee4a3",
+  "receipt_path": "state/receipts/TELEGRAM-KEY-PREFLIGHT-20261119-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TELEGRAM-KEY-PREFLIGHT-20261119-R2.json",
+  "request_sha256": "5de598c5a38105566836df59683c96eb0a5d258ce29ba96348ed243c73f7267b",
+  "resource_locks": [
+    "PATH_SCOPE:8c0c13c5c1158167"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "52652800e6d17af8047fdb164f5746207202395f",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-19T11:22:33Z"
+}
