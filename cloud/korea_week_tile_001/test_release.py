@@ -61,7 +61,7 @@ class CandidateTests(unittest.TestCase):
         live = installed()
         for module in candidate_builder.MODULES:
             name = 'korea_auction/%s.py' % module
-            if module in ('schedule', 'holidays', 'week_tile', 'check'):
+            if module in ('schedule', 'holidays', 'week_tile', 'check', 'alert'):
                 self.assertNotIn(name, live)
                 continue
             self.assertEqual((HERE / name).read_bytes() != live[name], module in ('collect', 'ticker', 'job'), name)

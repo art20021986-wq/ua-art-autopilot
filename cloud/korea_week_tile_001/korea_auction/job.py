@@ -17,7 +17,7 @@ import tempfile
 import time
 import urllib.request
 
-from . import check, collect, model_lots, prices, public, rollover, session, ticker
+from . import alert, check, collect, model_lots, prices, public, rollover, session, ticker
 from .selection import JST
 
 ROOT = Path('/home/Carix')
@@ -226,6 +226,11 @@ def save_state(data, path=None):
                                     ensure_ascii=False, separators=(',', ':')).encode('utf-8'))
 
 
+def notify(found):
+    """KOREA-WEEKTILE-001 (owner «4 — да»): the CRM owners hear of a failed check (alert.py)."""
+    alert.send(found)
+
+
 def checked(data, folder, now, record=None):
     """KOREA-WEEKTILE-001 (owner 2026-11-19: never again a ticker that disagrees with the Korea page): True when the
     ticker data agrees with the published lot list (check.py); the result goes to CHECKED and, when wrong, to the log.
@@ -235,6 +240,7 @@ def checked(data, folder, now, record=None):
                                          'problems': found[:20]}).encode('utf-8'))
     if found:
         print('KOREA_TICKER_CHECK_FAILED %s' % ' '.join(found[:20]), file=sys.stderr)
+        notify(found)
     return not found
 
 

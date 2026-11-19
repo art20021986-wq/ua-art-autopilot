@@ -2,7 +2,8 @@
 week ahead by the auction schedule; the ticker is checked before it is written; the Korea page day buttons say
 «Аукціонів немає» when there is no auction that day.
 
-1. The collector as KOREA-SYNC-INSTALL installed it, with schedule.py, holidays.py, week_tile.py and check.py (new),
+1. The collector as KOREA-SYNC-INSTALL installed it, with schedule.py, holidays.py, week_tile.py, check.py and alert.py
+   (new: the CRM bot tells the CRM owners when the check fails),
    collect.py (the schedule from the search page it reads anyway; the tile week), ticker.py (clocks, week rows), job.py
    (the check before each ticker write; lots.json carries the schedule). Zipped flat as kauc_<module>.py.
 2. One edit of video/korea.html (day_none_page): the day button rule; every other byte stays.
@@ -12,7 +13,7 @@ from pathlib import Path
 import day_none_page
 
 HERE = Path(__file__).resolve().parent
-MODULES = ('catalog', 'check', 'collect', 'color', 'drive', 'fuel', 'holidays', 'html_tools', 'job', 'lots', 'model_lots',
+MODULES = ('alert', 'catalog', 'check', 'collect', 'color', 'drive', 'fuel', 'holidays', 'html_tools', 'job', 'lots', 'model_lots',
            'nbu', 'prices', 'public', 'rollover', 'schedule', 'selection', 'session', 'ticker', 'week_tile')
 # The collector exactly as KOREA-SYNC-INSTALL installs it (cloud/korea_sync_001/korea_auction).
 INSTALLED_SHA256 = {
