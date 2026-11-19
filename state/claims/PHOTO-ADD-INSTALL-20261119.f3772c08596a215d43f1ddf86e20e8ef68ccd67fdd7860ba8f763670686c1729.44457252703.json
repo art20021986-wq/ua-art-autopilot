@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "1173d017f77f0b3c4074364045c8ab2dcd8254d3a2ae9d907599a39a503a0824",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-19T04:20:11Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-19T04:24:19Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44457252703",
     "task_id": "PHOTO-ADD-INSTALL-20261119",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44457252703-f3772c08596a215d",
   "production_transaction_path": "state/transactions/PHOTO-ADD-INSTALL-20261119.f3772c08596a215d43f1ddf86e20e8ef68ccd67fdd7860ba8f763670686c1729.44457252703.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/PHOTO-ADD-INSTALL-20261119.json",
   "receipt_validation_status": "PENDING",
@@ -91,5 +91,5 @@
       "cloud/photo_add_001/test_photo_add.py": "bb392f179f3dbe77a264a41fd7a0ffb50702f62fced90489d63b03a86dd3c9e8"
     }
   },
-  "updated_at": "2026-11-19T04:20:11Z"
+  "updated_at": "2026-11-19T04:24:19Z"
 }
