@@ -1,0 +1,16 @@
+{
+  "claim_before_sha256": "6873a7d50393e1884300ba23b6427992b6566a084f51334f4ee97a83e232f068",
+  "error": "execution_contract.ExecutionContractError: DEPENDENCY_SHA_MISMATCH:cloud/photo_order_001/make_release.py",
+  "failed_step": "execute / standard / persist: re-validation of the request after the preview (make_release.py changed on main by PR #1844 during the run)",
+  "leftover_temporary_task": "the read-only preview task removes itself after its receipt; any leftover of this package is removed by the next run (remove_leftovers)",
+  "owner_approval": "«Да» in chat 2026-11-19 (session 35) to closing the claim by manual reconciliation and retrying",
+  "precedent": "state/reconciliations/AUTOSEARCH3-PREFLIGHT-20261117-R2.44102471012.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-19T06:50:00+00:00",
+  "remote_mode": "preview (reads only)",
+  "retry": "PHOTO-ORDER-PREFLIGHT-20261119-R3",
+  "run_id": "44465192910",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "PHOTO-ORDER-PREFLIGHT-20261119"
+}
