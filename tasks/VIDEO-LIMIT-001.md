@@ -20,3 +20,18 @@ localhost внутри задачи, связь с Telegram, видео на с�
   (ширина ≤ 640, x264 crf 32). Квота 35 ГБ, свободно ~17,5 ГБ.
 - Предложение: бот принимает до 2000 МБ через свой сервер Telegram Bot API (--local) внутри задачи бота; на сайт —
   только сжатая копия, оригинал удаляется; предел 10 мин на видео. Нужны api_id/api_hash владельца (просит координатор).
+
+## ОТЛОЖЕНО ВЛАДЕЛЬЦЕМ (2026-11-19, через координатора: «Пока Ключ не нужен»)
+Решение владельца по пределу: «Давай до 60 минут» (одно видео ≤ 60 мин и ≤ 2000 МБ — что раньше).
+Ничего не собрано и не установлено. План для возобновления:
+- Секрет — файлом, как jpauto_login.txt: /home/Carix/telegram_api.txt (строка 1 — api_id, строка 2 — api_hash);
+  кладёт владелец: my.telegram.org → вход по номеру → «API development tools» → App title «UA ART CRM», Short name
+  «uaartcrm», Platform «Other» → «Create application» → api_id и api_hash; PythonAnywhere → Files → /home/Carix/ →
+  New file telegram_api.txt → Save. В репозиторий и чат ключ не попадает.
+- (А) VIDEO-SERVER-BUILD: после сброса CPU (10:06 UTC), 1 поток, nice: gperf из исходников + tdlib/telegram-bot-api
+  в /home/Carix/tg_bot_api (~400 МБ, ~1–2 ч CPU); бот и сайт не трогаются; проверка — версия программы.
+- (Б) проба чтения: запуск бота (start_safe.py/run_all.py/team_bot.py), скачивание и сжатие видео (getFile, card_html.py).
+- (В) VIDEO-LIMIT-INSTALL: сервер --local на 127.0.0.1 внутри задачи бота; бот один раз logOut из облака и работает
+  через свой сервер (base_url/base_file_url/local_mode); _V140_PREDEL_VIDEO → ~1900 МБ, предел 60 мин; на сайт —
+  сжатая копия (card_html.py), оригинал удаляется; очередь сжатия в пределах дневного CPU.
+  Откат: бот вне связи ~10 мин (Telegram: после logOut вернуться в облако можно через 10 мин).
