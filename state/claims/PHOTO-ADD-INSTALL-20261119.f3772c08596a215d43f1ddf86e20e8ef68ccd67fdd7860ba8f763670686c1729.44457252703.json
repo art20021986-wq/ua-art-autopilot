@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "e621d8f64360d962475cb00c4f93bab2d4b4abdc8c7ca3d3f488b2aff08d7c4c",
   "autostart_source_commit": "a552d9ba0a5fa4764e793bcc656fc7fd6fe0e615",
   "created_at": "2026-11-19T04:18:49Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "1173d017f77f0b3c4074364045c8ab2dcd8254d3a2ae9d907599a39a503a0824",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-19T04:18:49Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-19T04:20:11Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "44457252703",
     "task_id": "PHOTO-ADD-INSTALL-20261119",
     "task_sha256": "f3772c08596a215d43f1ddf86e20e8ef68ccd67fdd7860ba8f763670686c1729"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 315.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 308.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-44457252703-f3772c08596a215d",
+  "production_transaction_path": "state/transactions/PHOTO-ADD-INSTALL-20261119.f3772c08596a215d43f1ddf86e20e8ef68ccd67fdd7860ba8f763670686c1729.44457252703.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/PHOTO-ADD-INSTALL-20261119.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,42 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "5eb17389e360a6365962e782cafd2467b3a34d2e",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 423.9,
+    "allowed": true,
+    "evidence_path": "state/storage/PHOTO-ADD-INSTALL-20261119.json",
+    "evidence_sha256": "bf352579f3e4fdff440861e3caf788f743d76b1f7e350dc2bea6a6c0b7770ccf",
+    "free_bytes": 17540062720,
+    "heavy": true,
+    "measured_at": "2026-11-19T04:13:04.621258+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 49.88553508571429
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-19T04:18:49Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/photo_add_001/candidate_builder.py": "05bc2cdd618aebdf12addc502b345c6f6f69f27dd8b95470f11339ed0f474c07",
+      "cloud/photo_add_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/photo_add_001/deployment_bootstrap.py": "89da8b0682f801716db91f8622d28baca13aa6ebd4029128479f8ee7b6efd52d",
+      "cloud/photo_add_001/deployment_remote.py": "55fab9e64cb2e25a73d8a0489ff649004caee2548cf246a8dff7ba618ccde455",
+      "cloud/photo_add_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/photo_add_001/deployment_transport.py": "f551f9214943f17c4148776f745e98555eaa20e15e9b82e85030366239ce501d",
+      "cloud/photo_add_001/edit_cars_ui.py": "2a60b6a735c010332cdfc9f391569f1d601c11b8035a913dde1285665378f3b5",
+      "cloud/photo_add_001/edit_crm_online_guard.py": "537a2899b80062ede40cef62b62fe116e768972ccc91fb449772220852d75c8b",
+      "cloud/photo_add_001/edits.py": "265393a467603c880a9a616f6760dabae7962c2898eabbd6cf794ec91c9490ef",
+      "cloud/photo_add_001/fixtures/cars_ui_intake.py": "697e4958905c12cf558454a93b36793d2508132b712ac8fa253400b11da5e7ff",
+      "cloud/photo_add_001/fixtures/cars_ui_media_wait.py": "c5b2c9b08eb713c3df0a997f1a9f00a3ceb2f9e272f7401e17cd060b44745b32",
+      "cloud/photo_add_001/fixtures/crm_online_guard_media.py": "8de6459c103552e668d7aa98b1dc6d0d3c6c694dc3a226a144525d33a1f02d32",
+      "cloud/photo_add_001/make_release.py": "97e53e50912a71a730b9f787ed68691ba2500cfc03953511f5d73d55eb500b6e",
+      "cloud/photo_add_001/release_constants.py": "e0bf1b896c53c915e8a3522cb467441544f140bd646c71cc557e65829c717e27",
+      "cloud/photo_add_001/test_deployment.py": "962984dbe245e6df8cb5c7a3aba4274854ded2e2ff684bf750e3dc6667e2e9af",
+      "cloud/photo_add_001/test_photo_add.py": "bb392f179f3dbe77a264a41fd7a0ffb50702f62fced90489d63b03a86dd3c9e8"
+    }
+  },
+  "updated_at": "2026-11-19T04:20:11Z"
 }
