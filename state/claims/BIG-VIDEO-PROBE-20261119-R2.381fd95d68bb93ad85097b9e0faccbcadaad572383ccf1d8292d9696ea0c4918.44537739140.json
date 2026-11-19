@@ -7,21 +7,23 @@
   "created_at": "2026-11-19T13:53:36Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-19T13:53:36Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-19T14:00:00Z",
+  "heartbeat_at": "2026-11-19T14:00:00Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "44537739140",
     "task_id": "BIG-VIDEO-PROBE-20261119-R2",
     "task_sha256": "381fd95d68bb93ad85097b9e0faccbcadaad572383ccf1d8292d9696ea0c4918"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-ec1397e1ee87ccd5-df0cea1ecf6382ac",
   "receipt_path": "state/receipts/BIG-VIDEO-PROBE-20261119-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "2a38738e1a3b4b8b8586723422b8de0424f4d1e74487a25fe87f7dd3cdf6e5cf",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/BIG-VIDEO-PROBE-20261119-R2.json",
   "request_sha256": "381fd95d68bb93ad85097b9e0faccbcadaad572383ccf1d8292d9696ea0c4918",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "e78dbd174c9076acd5a93136b4fe50c88991811d",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92040466432,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 2684354560,
+    "status": "PASS",
+    "usage_percent": 40.606
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-19T13:53:36Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "151d4cbe4e1eb8732ae93ff6f5303127f02943754152c96881844b87b1ef7a62",
+    "file_sha256": {
+      "cloud/big_video_probe_001/bootstrap.py": "b24b370e59e27582dde62aa78daaa523642e8b45f75dd63d4dbae2cc630ede97",
+      "cloud/big_video_probe_001/make_request.py": "b28da66afb6de9f35cddef800429d9039b5f6b033779b75f1e84f257fe572e3f",
+      "cloud/big_video_probe_001/source_remote.py": "7a0024b6236825c4d154d15dfae0729eb2d07115e2bbf8eca8d804ffdbd9c706",
+      "cloud/big_video_probe_001/test_big_video_probe.py": "7200a275b3f80812942e0fe1ef4d6829e7704aa6646efacf6bbe2f4091bfcf67",
+      "cloud/big_video_probe_001/transport.py": "b3def6585e831577be160666a3912cc755aedd8857a43313e66d88d1eda8b5dc"
+    }
+  },
+  "updated_at": "2026-11-19T14:00:00Z"
 }
