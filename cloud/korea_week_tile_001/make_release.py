@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Write the KOREA-SYNC preview request, then (after the preview) the install request set (run from the repo root).
+"""Write the KOREA-WEEKTILE preview request, then (after the preview) the install request set (run from the repo root).
 
-Usage: python3 cloud/korea_sync_001/make_release.py preview   # PR, merge, then: launch preview
-       python3 cloud/korea_sync_001/make_release.py launch TASK_ID
-       python3 cloud/korea_sync_001/make_release.py install   # right after the preview: writes gate, manifest,
+Usage: python3 cloud/korea_week_tile_001/make_release.py preview   # PR, merge, then: launch preview
+       python3 cloud/korea_week_tile_001/make_release.py launch TASK_ID
+       python3 cloud/korea_week_tile_001/make_release.py install   # right after the preview: writes gate, manifest,
                                                                 # owner approval, storage probe, request and launch
-KOREA-SYNC-001 (tasks/KOREA-SYNC-001.md): the home tile, the ticker and the Korea page always agree (owner 2026-11-18).
+KOREA-WEEKTILE-001 (tasks/KOREA-WEEKTILE-001.md): clocks and the week on the yellow tile, the ticker check (owner 2026-11-19).
 The install request is written only after the owner's «Да».
 """
 import datetime
@@ -15,20 +15,21 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, 'automation')
-sys.path.insert(0, 'cloud/korea_sync_001')
+sys.path.insert(0, 'cloud/korea_week_tile_001')
 import autostart_intake  # noqa: E402
 import control_plane as cp  # noqa: E402
 
-P = 'cloud/korea_sync_001/'
+P = 'cloud/korea_week_tile_001/'
 from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py')] + [
-    P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'collect', 'color', 'drive', 'fuel', 'html_tools', 'job',
-                                            'lots', 'model_lots', 'nbu', 'prices', 'public', 'rollover', 'selection',
-                                            'session', 'ticker')]
-TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'korea_auction/test_korea_auction.py')]
+                                'make_release.py', 'release_constants.py', 'day_none_page.py')] + [
+    P + 'korea_auction/%s.py' % n for n in ('__init__', 'catalog', 'check', 'collect', 'color', 'drive', 'fuel', 'holidays',
+                                            'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public',
+                                            'rollover', 'schedule', 'selection', 'session', 'ticker', 'week_tile')]
+TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_day_none_page.py',
+                         'korea_auction/test_korea_auction.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'lead_bot.py',
              'publication_fence.py', 'run_all.py', 'site_ge_inject.py',
@@ -76,10 +77,10 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of KOREA-SYNC-001 (owner 2026-11-18, one install): the collector update (job.py: the home ticker written after the lot list, with only the cars the list has; after the Korea midnight the day change without the auction; lot pages read for 25 min so the new lots get photos in the same run; prices.py: page reading stops on time; rollover.py new), smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of KOREA-WEEKTILE-001 (owner 2026-11-19, one install): the collector update (schedule.py, holidays.py, week_tile.py, check.py new; collect.py, ticker.py, job.py: the yellow tile shows clocks for Korea, Japan and Kyiv and the week ahead by the auction schedule; the ticker is checked against the lot list before it is written) and one video/korea.html edit (day buttons: no auction that day), smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview Korea tile, ticker and lot list sync'}
+             'title': 'Preview Korea week tile, clocks, ticker check'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -107,7 +108,7 @@ def install():
     storage_path = write('state/storage/%s.json' % task, json.dumps(storage, sort_keys=True, separators=(',', ':')))
     operations = [{'action': 'replace' if item['before'] else 'create', 'expected_after_sha256': item['after'],
                    **({'expected_before_sha256': item['before']} if item['before'] else {}),
-                   'path': 'production/ktsync1/' + name} for name, item in sorted(plan['files'].items())]
+                   'path': 'production/ktweek1/' + name} for name, item in sorted(plan['files'].items())]
     manifest = {'backup_required': True, 'contract_id': 'UA-ART-CRITICAL-ADAPTER-V1.0', 'crm_write': False,
                 'live_verify_required': True, 'operations': operations, 'pending_requests_preserved': True,
                 'protected_paths': PROTECTED, 'rollback_required': True, 'site_write': True, 'task_class': 'CRITICAL',
@@ -132,13 +133,13 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner request (2026-11-18), one install: the home tile, the ticker and the Korea page always agree — the ticker is written after the lot list with only the cars the list has (each ticker card opens its lot), and after the Korea midnight the lot list, the order page carousels, the tile and the ticker move to the new day. The lot pages are read for 25 minutes of a run, so the lots of a new day get their photos and show the same run. Collector job.py, prices.py and rollover.py (new); pages, CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
+               'description': 'Owner requests (2026-11-19), one install: the home yellow tile shows live clocks (Korea, Japan, Kyiv) and the week ahead (7 days: car count when listed, else lots soon, no auctions, day off or holiday, with the auction houses by the auction schedule read each run); the ticker is written only when it agrees with the lot list (else the last good one stays, the reason is logged); the Korea page day buttons say no auctions when the schedule has none or a later day is listed. Collector schedule.py, holidays.py, week_tile.py, check.py (new), collect.py, ticker.py, job.py; video/korea.html; CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install Korea tile, ticker and lot list sync'}
+               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install Korea week tile, clocks, ticker check'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),

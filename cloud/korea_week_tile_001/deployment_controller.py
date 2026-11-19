@@ -9,9 +9,9 @@ from deployment_transport import API, HERE, canonical, sha, upload_package
 
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
-# KOREA-SYNC-001 changes only the collector (job.py, rollover.py): the pages stay as they are and healthy; the ticker and
-# the lot list follow at the job's next runs.
-EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': 'id="kl-year-to"',
+# KOREA-WEEKTILE-001: the Korea page carries the day button rule («Аукціонів немає»); the tile follows at the job's
+# next run; the other pages stay healthy.
+EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': 't("none")',
             '/video/katalog.html': '', '/video/podbor.html': 'order/order.js?v=20261112.71'}
 SITE = 'https://www.uaart.com.ua'
 AGENT = 'UAART-KoreaTicker-Verify/1'
