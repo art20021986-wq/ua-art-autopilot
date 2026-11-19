@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "6255a4607c5098fe7e93658423c5a20e296717780504b914a1c51e7e103dc314",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-19T07:22:44Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-19T07:27:45Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "44478751068",
     "task_id": "PHOTO-ORDER-INSTALL-20261119",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-44478751068-e190ad8162d35f0c",
   "production_transaction_path": "state/transactions/PHOTO-ORDER-INSTALL-20261119.e190ad8162d35f0c0624a053ce5456946a891e7482b61fcca6790220b1f9e925.44478751068.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-d0df081223f03bb5-64aedd582edbd4b9",
   "receipt_path": "state/receipts/PHOTO-ORDER-INSTALL-20261119.json",
   "receipt_validation_status": "PENDING",
@@ -88,5 +88,5 @@
       "cloud/photo_order_001/test_photo_order.py": "f447587101a3968826dc632a57b0fbac2d67e52ab15a50f9607ce5e9e6857126"
     }
   },
-  "updated_at": "2026-11-19T07:22:44Z"
+  "updated_at": "2026-11-19T07:27:45Z"
 }
