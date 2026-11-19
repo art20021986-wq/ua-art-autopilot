@@ -16,6 +16,9 @@ folders (.otkat_media) and the published photo folder times; and the sanitized d
 R3 (owner: it started when a video was sent into «Добавить фото» by accident): per card, the Telegram file kind of every
 item in its photo lists (first 4 characters of the file id only: AgAC photo, BAAC video, BQAC document, DQAC video
 note, CgAC animation), and for the focus card every media table row of any date (kind, mime, file extension, times).
+R5 (owner: photos must show in the order they were sent, the first one is the main one): for the focus card, the
+position of each card photo in the media table and in the published card pages (matched by file id inside the probe,
+only positions are reported), and the bot start lines that decide whether updates are handled one by one.
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -270,6 +273,50 @@ def kinds():
     return {'photo_kinds': result, 'focus_media': media}
 
 
+ORDER_NEEDLE = re.compile(r'concurrent_updates|ApplicationBuilder|block=False|run_polling')
+
+
+def photo_order():
+    """Card photo order vs media table order and the published pages' image order (positions only)."""
+    database = HOME / 'crm.db'
+    with closing(sqlite3.connect(database.as_uri() + '?mode=ro', uri=True, timeout=5)) as connection:
+        connection.row_factory = sqlite3.Row
+        car = connection.execute('SELECT id, photos, cover_photo FROM cars WHERE auto_number=?', (FOCUS,)).fetchone()
+        ids = [str(i.get('file_id') if isinstance(i, dict) else i) for i in json.loads(car['photos'] or '[]')]
+        tags = [bool(i.get('tag')) if isinstance(i, dict) else False for i in json.loads(car['photos'] or '[]')]
+        rows = connection.execute("SELECT id, file_id, poryadok, put, status FROM media WHERE car_id=? AND vid='foto'",
+                                  (car['id'],)).fetchall()
+    by_file = {}
+    for row in rows:
+        by_file.setdefault(str(row['file_id']), []).append(row)
+    card = []
+    for index, file_id in enumerate(ids, 1):
+        found = by_file.get(file_id, [])
+        card.append({'card': index, 'tagged': tags[index - 1], 'media_poryadok': [r['poryadok'] for r in found],
+                     'media_row_id': [r['id'] for r in found], 'status': [r['status'] for r in found],
+                     'file': [Path(str(r['put'] or '')).name for r in found]})
+    pages = {}
+    for folder in ('', 'ua/', 'ru/'):
+        path = HOME / 'video' / folder / (FOCUS + '.html')
+        text = text_of(path) if path.is_file() else None
+        if text:
+            pages[folder + FOCUS + '.html'] = re.findall(r'foto/%s/(?:[sm]/)?([A-Za-z0-9_.-]+\.jpg)' % FOCUS, text)[:120]
+    folder = HOME / 'video' / 'foto' / FOCUS
+    files = {str(p.relative_to(folder)): round(p.stat().st_mtime) for p in sorted(folder.glob('**/*.jpg'))[:300]} if folder.is_dir() else None
+    bot = {}
+    for name in ('team_bot.py', 'run_all.py', 'start_safe.py'):
+        text = text_of(HOME / name)
+        if text:
+            bot[name] = [sanitized_line(x)[:200] for x in text.splitlines() if ORDER_NEEDLE.search(x)][:20]
+    return {'cover_set': bool(car['cover_photo']), 'card': card, 'pages': pages, 'folder_files': files, 'bot': bot}
+
+
+def text_of(path):
+    if not path.is_file() or path.is_symlink() or path.stat().st_size > MAX_SOURCE:
+        return None
+    return path.read_bytes().decode('utf-8', 'replace')
+
+
 def report(now=None):
     now = int(time.time()) if now is None else now
     value = {'status': 'PASS', 'now': now}
@@ -278,7 +325,8 @@ def report(now=None):
                       ('spool', lambda: grouped(HOME / '.crm_media_spool.jsonl', 'accepted_at', now)),
                       ('ledger', lambda: grouped(HOME / '.crm_media_receipts.jsonl', 'saved_at', now)),
                       ('crm', crm), ('published', published), ('sources', sources),
-                      ('focus', lambda: focus(now)), ('kinds', kinds)):
+                      ('focus', lambda: focus(now)), ('kinds', kinds),
+                      ('order', photo_order)):
         try:
             value[key] = call()
         except Exception as error:
