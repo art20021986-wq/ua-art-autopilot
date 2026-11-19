@@ -42,6 +42,29 @@ def site_lots():
         return []
 
 
+JOB_LOG = Path('/var/log/schedule-log-1576351.log')  # the hourly ticker task (PythonAnywhere schedule log)
+DATA = ROOT / 'korea_auction_data'
+
+
+def diagnostics():
+    """KOREA-WEEKTILE diagnosis (read only): the ticker check record, the alert mark, the saved ticker state and the end
+    of the hourly task log (long numbers masked)."""
+    out = {}
+    for name in ('ticker_check.json', 'ticker_alert.json'):
+        try:
+            out[name] = json.loads((DATA / name).read_text(encoding='utf-8'))
+        except (OSError, ValueError) as error:
+            out[name] = type(error).__name__
+    state = DATA / 'ticker_state.json'
+    out['ticker_state_bytes'] = state.stat().st_size if state.exists() else None
+    try:
+        text = JOB_LOG.read_text(encoding='utf-8', errors='replace')
+        out['job_log_tail'] = LONG_NUMBER.sub('[N]', text[-7000:])
+    except OSError as error:
+        out['job_log_tail'] = type(error).__name__
+    return out
+
+
 def report():
     sys.path.insert(0, str(ROOT))
     from korea_auction import collect, job, session
@@ -55,6 +78,7 @@ def report():
     today = datetime.now(JST).strftime('%Y/%m/%d')
     shown = site_lots()
     return {'status': 'PASS', 'no_bid_placed': True, 'today_kst': today, 'schedule': week.schedule(page),
+            'diagnostics': diagnostics(),
             'schedule_html': schedule_fragment(page),
             'lots_total': total, 'lots_parsed': len(lots), 'site_lots': len(shown),
             'week': week.week(lots, shown, today), 'requests': browser.requests}
