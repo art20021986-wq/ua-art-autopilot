@@ -77,6 +77,26 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(value['backups'][0]['name'], 'UA-0011_foto_20261119_023324')
         self.assertNotIn('380501234567', json.dumps(value))
 
+    def test_kinds_prefix_only(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = self.home(temp)
+            with sqlite3.connect(home / 'crm.db') as con:
+                con.execute("ALTER TABLE cars ADD COLUMN condition_photos TEXT")
+                con.execute("UPDATE cars SET auto_number='UA-0011', photos=? WHERE id=30", (json.dumps(
+                    [{'file_id': 'AgACAgIAAxkBAAIabcdefghij'}, {'file_id': 'BAACAgIAAxkBAAIabcdefghij'}]),))
+                con.execute("ALTER TABLE media ADD COLUMN file_id TEXT")
+                con.execute("ALTER TABLE media ADD COLUMN mime TEXT")
+                con.execute("ALTER TABLE media ADD COLUMN put TEXT")
+                con.execute("ALTER TABLE media ADD COLUMN poryadok INTEGER")
+                con.execute("ALTER TABLE media ADD COLUMN id INTEGER")
+                con.execute("UPDATE media SET file_id='BAACAgIAAxkBAAIabcdefghij', mime='video/mp4', put='/x/UA-0011/2.mp4'")
+            with patch.object(remote, 'HOME', home):
+                value = remote.kinds()
+        self.assertEqual(value['photo_kinds'], {'UA-0011:photos': {'AgAC': 1, 'BAAC': 1}})
+        self.assertEqual(value['focus_media'][0]['kind'], 'BAAC')
+        self.assertEqual(value['focus_media'][0]['ext'], '.mp4')
+        self.assertNotIn('abcdefghij', json.dumps(value))
+
     def test_database_opened_read_only(self):
         with tempfile.TemporaryDirectory() as temp:
             with patch.object(remote, 'HOME', self.home(temp)):
