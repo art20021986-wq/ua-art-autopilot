@@ -9,6 +9,10 @@ Reads only:
   counts per section and status (no texts, no client data);
 - how many photo files each published card folder (video/foto/<number>) holds;
 - the sanitized source of the photo intake modules (cars_ui.py, crm_online_guard.py, cars_schema.py).
+R2 (the first run: UA-0011 got 22 photos saved at 02:08-02:19 UTC, the card shows 0 and changed at 02:33): for the
+focus card only, its change history (field names, times, actor ids masked, value lengths only), the rows of every
+crm.db table that reference it from the last 3 days (column names, times, value lengths only), the photo backup
+folders (.otkat_media) and the published photo folder times; and the sanitized db.py source.
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -29,7 +33,10 @@ BOT_LOG = Path('/var/log/alwayson-log-266084.log')
 TAIL = 4 * 1024 * 1024
 DAYS = 7
 MAX_LINES = 1500
-SOURCES = ('cars_ui.py', 'crm_online_guard.py', 'cars_schema.py')
+SOURCES = ('cars_ui.py', 'crm_online_guard.py', 'cars_schema.py', 'db.py')
+FOCUS = 'UA-0011'
+FOCUS_DAYS = 3
+CAR_REFERENCE = ('car_id', 'card_id', 'record_id', 'cid', 'auto_number', 'entity_id', 'row_id')
 MAX_SOURCE = 900 * 1024
 SECTIONS = ('photos', 'condition_photos', 'videos', 'condition_videos')
 LOG_TOPIC = re.compile(r'(?i)photo|фото|media|spool|предел|limit|album|альбом|traceback|error|exception')
@@ -154,6 +161,85 @@ def sources():
     return found
 
 
+def shape(value):
+    """Value kind and length only: never the text itself (no client data)."""
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return value if abs(value) < 10 ** 6 else '[N]'
+    text = str(value)
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, list):
+            return {'list': len(parsed)}
+        if isinstance(parsed, dict):
+            return {'dict_keys': sorted(parsed)[:20]}
+    except Exception:
+        pass
+    return {'text_len': len(text)}
+
+
+def is_time(column):
+    name = str(column).casefold()
+    return name in ('at', 'ts', 'dt', 'when', 'kogda') or name.endswith('_at') or any(
+        word in name for word in ('time', 'date', 'kogda'))
+
+
+def focus_history(entries):
+    if not isinstance(entries, list):
+        return shape(entries)
+    result = []
+    for entry in entries[-120:]:
+        if isinstance(entry, dict):
+            result.append({key: (entry[key] if is_time(key) or key in ('field', 'pole', 'action', 'kind', 'role')
+                                 else shape(entry[key])) for key in entry})
+        else:
+            result.append(shape(entry))
+    return result
+
+
+def focus(now):
+    database = HOME / 'crm.db'
+    since = time.strftime('%Y-%m-%d', time.gmtime(now - 86400 * FOCUS_DAYS))
+    with closing(sqlite3.connect(database.as_uri() + '?mode=ro', uri=True, timeout=5)) as connection:
+        connection.execute('PRAGMA query_only=ON')
+        connection.row_factory = sqlite3.Row
+        car = connection.execute('SELECT * FROM cars WHERE auto_number=?', (FOCUS,)).fetchone()
+        if car is None:
+            return None
+        car = dict(car)
+        history = None
+        try:
+            history = focus_history(json.loads(car.get('history') or '[]'))
+        except Exception:
+            history = shape(car.get('history'))
+        tables = {}
+        for (name,) in connection.execute("SELECT name FROM sqlite_master WHERE type='table'"):
+            columns = [row[1] for row in connection.execute('PRAGMA table_info("%s")' % name.replace('"', ''))]
+            refs = [c for c in columns if c in CAR_REFERENCE]
+            times = [c for c in columns if is_time(c)]
+            if not refs or name == 'cars':
+                continue
+            where = ' OR '.join('"%s" IN (?, ?)' % c for c in refs)
+            rows = connection.execute('SELECT * FROM "%s" WHERE (%s) %s LIMIT 400' % (
+                name, where, ('AND (' + ' OR '.join('(typeof("%s")=\'text\' AND "%s" >= ?) OR (typeof("%s") IN (\'integer\', \'real\') AND "%s" >= ?)'
+                                          % (c, c, c, c) for c in times) + ')') if times else ''),
+                [v for _ in refs for v in (car['id'], FOCUS)] + [v for _ in times for v in (since, now - 86400 * FOCUS_DAYS)]
+            ).fetchall()
+            tables[name] = {'columns': columns, 'rows': [
+                {k: (row[k] if is_time(k) or k in refs or k in ('field', 'pole', 'vid', 'status', 'action', 'kind')
+                     else shape(row[k])) for k in columns} for row in rows]}
+    backups = HOME / '.otkat_media'
+    folder = HOME / 'video' / 'foto' / FOCUS
+    return {'card': {k: (car[k] if is_time(k) or k in ('id', 'auto_number', 'status', 'published') else shape(car[k]))
+                     for k in car if k != 'history'},
+            'history': history, 'tables': tables,
+            'backups': [{'name': p.name, 'files': len(list(p.iterdir())), 'mtime': round(p.stat().st_mtime)}
+                        for p in sorted(backups.glob(FOCUS + '_*'))] if backups.is_dir() else None,
+            'published_folder': {'exists': folder.is_dir(), 'mtime': round(folder.stat().st_mtime) if folder.is_dir() else None,
+                                 'files': sorted(p.name for p in folder.iterdir())[:200] if folder.is_dir() else None}}
+
+
 def report(now=None):
     now = int(time.time()) if now is None else now
     value = {'status': 'PASS', 'now': now}
@@ -161,7 +247,8 @@ def report(now=None):
                       ('bot_log', lambda: journal(BOT_LOG, now, LOG_TOPIC)),
                       ('spool', lambda: grouped(HOME / '.crm_media_spool.jsonl', 'accepted_at', now)),
                       ('ledger', lambda: grouped(HOME / '.crm_media_receipts.jsonl', 'saved_at', now)),
-                      ('crm', crm), ('published', published), ('sources', sources)):
+                      ('crm', crm), ('published', published), ('sources', sources),
+                      ('focus', lambda: focus(now))):
         try:
             value[key] = call()
         except Exception as error:
