@@ -29,7 +29,9 @@ OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 # Live data the install must not touch, besides the source files pinned in the plan.
 LIVE_DATA = ['.crm_publish_requests', 'crm.db']
 # Owner's words in chat, filled in when the owner says «да».
-APPROVAL = ''  # the owner's words in this chat, filled in when the owner says «да»
+APPROVAL = ('«Да» in chat 2026-11-19 (session 35, answer to: «Ставить бота для приёма ключа Telegram?» — the owner sends the '
+            'Telegram API key to the CRM bot in one message, the bot saves it to a closed file and deletes the message); via '
+            'the coordinator «1. Да» / «Да, делай бот ключа через бот CRM»')
 
 
 def sha(path):
