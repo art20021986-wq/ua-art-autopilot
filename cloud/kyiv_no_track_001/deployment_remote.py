@@ -115,7 +115,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'KYIV-NO-TRACK-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'card generators (stranica.py, master_card.py and any other with the tracking hook): a car in Kyiv (stage 4) shows no container tracking, other stages unchanged; SEO_REVISION KYIV-NO-TRACK-001, so after the bot resumes the existing CRM public sync republishes every card once',
+            'site_scope':'card generators (stranica.py, master_card.py and any other with the tracking hook): a car in Kyiv (stage 4) shows no container tracking, other stages unchanged; SEO_REVISION KYIV-NO-TRACK-001, so after the bot resumes the existing CRM public sync republishes every card once; old card pages of cars no longer in the CRM at stage 4 lose only the tracking widget',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -172,8 +172,11 @@ def smoke(directory):
         raise DeploymentError('SMOKE_GENERATORS_DIFFER')
     first = generators[sorted(generators)[0]]
     published = [code for code in first['kyiv_changed'] if 'video/%s.html' % code in value['pages']]
+    plan = json.loads(read(directory/'plan.json'))
+    orphans = sorted(name for name in plan['files'] if name.endswith('.html'))
     return {'cars': first['cars'], 'kyiv_changed': first['kyiv_changed'], 'kyiv_published': published,
-            'unchanged_cars': first['unchanged'],
+            'unchanged_cars': first['unchanged'], 'orphan_pages': orphans,
+            'orphan_codes': sorted({re.match(r'(?:video/|site/)(?:ru/|ua/)?(UA-[0-9]{4,})', n).group(1) for n in orphans}),
             'generators': sorted(generators), 'pages': value['pages'], 'lead_bot_cars': value['lead_bot_cars'],
             'lead_bot_tracking_buttons': value['lead_bot_tracking_buttons']}
 

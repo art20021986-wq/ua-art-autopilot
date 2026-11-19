@@ -290,8 +290,11 @@ class SmokeTests(unittest.TestCase):
     def run_smoke(self, generators):
         output = json.dumps({'generators': generators, 'pages': {'video/UA-0011.html': {'stage': 4, 'tracking': 'button'}},
                              'lead_bot_cars': 'absent', 'lead_bot_tracking_buttons': 1})
+        folder = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        (folder/'plan.json').write_text(json.dumps({'files': {'stranica.py': {}, 'video/UA-0007.html': {},
+                                                              'site/UA-0007.html': {}}}))
         with patch.object(remote.subprocess, 'run', return_value=SimpleNamespace(returncode=0, stdout=output, stderr='')):
-            return remote.smoke(Path('/tmp'))
+            return remote.smoke(folder)
 
     def result(self, problems=None):
         return {'cars': {'UA-0011': {'stage': 4, 'before': 'button', 'after': 'none'}}, 'problems': problems or {},
@@ -300,6 +303,8 @@ class SmokeTests(unittest.TestCase):
     def test_pass(self):
         value = self.run_smoke({'stranica.py': self.result(), 'master_card.py': self.result()})
         self.assertEqual(value['kyiv_published'], ['UA-0011'])
+        self.assertEqual(value['orphan_codes'], ['UA-0007'])
+        self.assertEqual(value['orphan_pages'], ['site/UA-0007.html', 'video/UA-0007.html'])
         self.assertEqual(value['generators'], ['master_card.py', 'stranica.py'])
 
     def test_problem_fails(self):
