@@ -7,21 +7,23 @@
   "created_at": "2026-11-19T07:49:52Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-19T07:49:52Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-19T07:54:38Z",
+  "heartbeat_at": "2026-11-19T07:54:38Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "44482440735",
     "task_id": "KYIV-NO-TRACK-PREFLIGHT-20261119-R2",
     "task_sha256": "40d1bea585bd7cfd591898149945bd47d9c6e7909eb83232e4b2df458e80ac78"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-89f17ab592ce0029-aa7420a606fc6c7d",
   "receipt_path": "state/receipts/KYIV-NO-TRACK-PREFLIGHT-20261119-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "e89190948328d0d23081b669cb4dd74ebbaaf319440d28fca4a3ddf0f00c7e3c",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KYIV-NO-TRACK-PREFLIGHT-20261119-R2.json",
   "request_sha256": "40d1bea585bd7cfd591898149945bd47d9c6e7909eb83232e4b2df458e80ac78",
   "resource_locks": [
@@ -29,8 +31,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "7f42f0ebb848e7d0b3a668020be0f0bc15290b6b",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 95698399232,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.246
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-19T07:49:52Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "3025b487e3d105711dc2d58a9c23821e98e5c9aa340b124c6e332a9c166cbdc8",
+    "file_sha256": {
+      "cloud/kyiv_no_track_001/candidate_builder.py": "a10e2d6201ea455a768426e22735d8b4238b1c9ed2171a61853ddede4234771a",
+      "cloud/kyiv_no_track_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/kyiv_no_track_001/deployment_bootstrap.py": "334e2a7a217233351a8f0f38b85f337c88ed5c8834a2301a176a5c8c588b1627",
+      "cloud/kyiv_no_track_001/deployment_remote.py": "ae3e9d29b364ab81f91fe3caf3f0ebf4f2217990802af0cea58449666ad9497f",
+      "cloud/kyiv_no_track_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/kyiv_no_track_001/deployment_transport.py": "f8412ebb724279b1cb0e0e6309b4e99e8f9b4d2e60d72af16a33b4fdb7d4401b",
+      "cloud/kyiv_no_track_001/edit_generators.py": "5a08f68c016867b3e7465b6df9aa711703be1415494e838c21f4d1c56852597c",
+      "cloud/kyiv_no_track_001/edit_metadata.py": "f3dbf277daacb2bf99d4ba8f872901a88da8b41b90543ac735d5f04289215b79",
+      "cloud/kyiv_no_track_001/make_release.py": "32bfca7e4beb6433df9562286dd269b282d3bbd66830c54522f147f283ef5a05",
+      "cloud/kyiv_no_track_001/orphan_pages.py": "c14145abb7b4d24bc897cba936fd700f7be62013d3d47c2dc785ef72f55e60d0",
+      "cloud/kyiv_no_track_001/release_constants.py": "3c0777c9f6fa1249e58c01b5cf9c7f89aadab03c848d9c4d29e82739f636cacd",
+      "cloud/kyiv_no_track_001/stage_preview.py": "a0156537078b08a59c1a3b039ef803f8c3d49075e46d1dd56fb653003b4eeb42",
+      "cloud/kyiv_no_track_001/test_deployment.py": "80ccba6c6f27eb4fcdbd6b0d404c0143489219744981cdfefc3176b1c74153c3",
+      "cloud/kyiv_no_track_001/test_kyiv_no_track.py": "7706e3f16f35b985dc9eb262066e80edbd305aea1e800b7478391edfc1a6e5ff"
+    }
+  },
+  "updated_at": "2026-11-19T07:54:38Z"
 }
