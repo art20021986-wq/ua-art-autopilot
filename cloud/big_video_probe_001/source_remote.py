@@ -20,7 +20,7 @@ import time
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
 WORK = HERE.parent / 'bigvideo_probe_work'
-PACKAGES = ('telethon==1.46.0', 'pyaes', 'rsa', 'cryptg==0.4.0')  # R2: newer cryptg lacks decrypt_ige
+PACKAGES = ('telethon==1.46.0', 'pyaes', 'rsa')  # no cryptg: it did not load on the server; Telethon uses the system OpenSSL (libssl)
 BIG = 20 * 1024 * 1024
 SCAN = 1000
 LONG_NUMBER = re.compile(r'\d{6,}')
@@ -140,8 +140,8 @@ def report():
     value = {'status': 'PASS'}
     try:
         value['install_seconds'] = install()
-        import cryptg  # noqa: F401  (fast decryption present)
-        value['cryptg'] = True
+        from telethon.crypto import libssl
+        value['aes_backend'] = 'libssl' if libssl.decrypt_ige else 'python'
         asyncio.run(probe(value))
     except Exception as error:
         value.update(status='FAIL', error=type(error).__name__ + ':' + clean(error))
