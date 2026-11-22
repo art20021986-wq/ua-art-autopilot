@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "817562df91f2f909b03f99543247c4900c50786f61ac4716b15741d4f62fda71",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-22T11:20:15Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-22T11:24:49Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45016549836",
     "task_id": "SEO-SITE-INSTALL-20261122",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45016549836-851c81dfcbee7eaa",
   "production_transaction_path": "state/transactions/SEO-SITE-INSTALL-20261122.851c81dfcbee7eaad93b051ce9e7872866d50d5335205dd156a5d38365bb98b1.45016549836.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "card-ua-0007-0db4649c339124f1",
   "receipt_path": "state/receipts/SEO-SITE-INSTALL-20261122.json",
   "receipt_validation_status": "PENDING",
@@ -93,5 +93,5 @@
       "cloud/seo_site_001/uk_head.py": "f61db1923e56b008896559655573a811f7dcaa088b9f501c8b93cfce99068ad6"
     }
   },
-  "updated_at": "2026-11-22T11:20:15Z"
+  "updated_at": "2026-11-22T11:24:49Z"
 }
