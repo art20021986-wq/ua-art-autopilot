@@ -1,0 +1,26 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-NOTE-INSTALL-20261123.3fae25c8cdc50677686db1010874d412eb8c95ae4f3a27d0d4fcca11941fbe9f.json",
+  "autostart_ledger_sha256": "a42a7434cb4661f61b043db10312ddfb18c88ed03dfda09bfb1ff7cccf5de36a",
+  "autostart_source_commit": "7838ee5b1df74f580665a2dbc09ff8c672b59d57",
+  "created_at": "2026-11-23T00:21:36Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45088146197",
+    "task_id": "CARD-NOTE-INSTALL-20261123",
+    "task_sha256": "3fae25c8cdc50677686db1010874d412eb8c95ae4f3a27d0d4fcca11941fbe9f"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "card-ua-0005-40a6e483404e0025",
+  "request_path": "tasks/requests/CARD-NOTE-INSTALL-20261123.json",
+  "resource_locks": [
+    "CARD:UA-0005",
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
