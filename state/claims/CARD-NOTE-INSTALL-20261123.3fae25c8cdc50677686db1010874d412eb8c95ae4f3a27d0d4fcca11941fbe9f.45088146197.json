@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "9f71f49c349315e570ff2137cb18909ee75621445a24dbb2b6aacb924ed3ceae",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-23T00:23:10Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-23T00:26:14Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45088146197",
     "task_id": "CARD-NOTE-INSTALL-20261123",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45088146197-3fae25c8cdc50677",
   "production_transaction_path": "state/transactions/CARD-NOTE-INSTALL-20261123.3fae25c8cdc50677686db1010874d412eb8c95ae4f3a27d0d4fcca11941fbe9f.45088146197.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "card-ua-0005-40a6e483404e0025",
   "receipt_path": "state/receipts/CARD-NOTE-INSTALL-20261123.json",
   "receipt_validation_status": "PENDING",
@@ -85,5 +85,5 @@
       "cloud/card_note_001/test_card_note.py": "0748bc7b767110422e5b624f651d7427362e664bbe4f63bc41f9bf5797141103"
     }
   },
-  "updated_at": "2026-11-23T00:23:10Z"
+  "updated_at": "2026-11-23T00:26:14Z"
 }
