@@ -1,4 +1,5 @@
-"""Card note fix: the CRM bot's edit hint removed from the UA-0005 card text; preserve every other value."""
+"""Card note fix: the CRM bot's edit message removed from the UA-0005 card text (and its new first line added to the
+site script dictionaries); preserve every other value."""
 import argparse
 from contextlib import closing, contextmanager
 import datetime
@@ -29,6 +30,9 @@ PROTECTED = ('start_safe.py', 'run_all.py', 'team_bot.py', 'lead_bot.py', 'db.py
              'stranica.py', 'master_card.py', 'publish_transaction_guard.py', 'ua_crm_public_sync.py',
              'ua_vin_decode.py', 'ua_seo_metadata.py', 'ua_seo_sitemap.py', 'ua_seo_catalog.py', 'ua_seo_index.py', 'ua_seo_landings.py')
 
+
+
+SCRIPT_COPY = 'ua-site-languages.js'
 
 
 class DeploymentError(RuntimeError):
@@ -92,14 +96,21 @@ def prepare():
     for item in plan['changes']:
         after[item['id']][item['field']] = item['after']
     touched = sorted({item['id'] for item in plan['changes']})
+    lines = sorted({line for line in map(card_note.new_line, plan['changes']) if line})
+    if len(lines) > 1:
+        raise DeploymentError('SEVERAL_NEW_LINES')
+    script = read(ROOT/card_note.SCRIPT)
+    edited = card_note.script_edit(script.decode('utf-8'), lines[0]).encode('utf-8') if lines else script
+    plan.update(script={'path': card_note.SCRIPT, 'line': lines[0] if lines else None,
+                        'before_sha256': sha(script), 'after_sha256': sha(edited)})
     plan.update(schema_version='CARD-NOTE-INSTALL-1',
                 rows_before_sha256={str(i): row_digest(by_id[i]) for i in touched},
                 rows_after_sha256={str(i): row_digest(after[i]) for i in touched},
                 protected={name: sha(read(ROOT/name)) for name in PROTECTED if (ROOT/name).exists()},
                 crm_write=True,
                 crm_scope='UA-0005: the CRM bot edit hint line removed from its text field(s)',
-                site_write='none directly: the public sync worker and the card language job republish UA-0005 '
-                           '(base, ru/, ua/) after the bot resumes')
+                site_write='video/ua-site-languages.js: the new first line added to the uk and ka dictionaries; the '
+                           'public sync worker and the card language job republish UA-0005 (base, ru/, ua/) after the bot resumes')
     return plan
 
 
@@ -118,6 +129,8 @@ def load_backup(digest):
         raise DeploymentError('DATABASE_BACKUP_CHANGED')
     if sha(canonical(manifest['plan'])) != manifest['plan_sha256']:
         raise DeploymentError('BACKUP_PLAN_HASH')
+    if sha(read(directory/SCRIPT_COPY)) != manifest['script_backup_sha256']:
+        raise DeploymentError('SCRIPT_BACKUP_CHANGED')
     return directory, manifest
 
 
@@ -139,8 +152,13 @@ def backup(run_id, expected_plan):
         if target.execute('PRAGMA quick_check').fetchall() != [('ok',)]:
             raise DeploymentError('BACKUP_DATABASE_VERIFY')
         snapshot = row_digest(rows(target))
+    script = read(ROOT/card_note.SCRIPT)
+    if sha(script) != plan['script']['before_sha256']:
+        raise DeploymentError('SCRIPT_DRIFT')
+    atomic(workspace/SCRIPT_COPY, script)
     manifest = {'plan': plan, 'plan_sha256': expected_plan, 'run_id': run_id,
-                'crm_rows_sha256': snapshot, 'database_backup_sha256': sha(read(database))}
+                'crm_rows_sha256': snapshot, 'database_backup_sha256': sha(read(database)),
+                'script_backup_sha256': sha(script)}
     digest = sha(canonical(manifest))
     atomic(workspace/'manifest.json', canonical(manifest))
     target = HERE/'backups'/digest
@@ -230,6 +248,25 @@ def apply(connection, changes, forward):
     return row_digest(after)
 
 
+def apply_script(plan, directory, forward):
+    """The dictionary entries added (install) or the saved script back (rollback); compare-and-set, idempotent."""
+    path, before, after = ROOT/plan['script']['path'], plan['script']['before_sha256'], plan['script']['after_sha256']
+    if before == after:
+        return False
+    current = read(path)
+    old, new = (before, after) if forward else (after, before)
+    if sha(current) == new:
+        return False
+    if sha(current) != old:
+        raise DeploymentError('SCRIPT_CONCURRENT_CHANGE')
+    value = (card_note.script_edit(current.decode('utf-8'), plan['script']['line']).encode('utf-8') if forward
+             else read(directory/SCRIPT_COPY))
+    if sha(value) != new:
+        raise DeploymentError('SCRIPT_RESULT')
+    atomic(path, value, mode=0o644)
+    return True
+
+
 def pending_pages():
     pages = {}
     for folder in ('video', 'site'):
@@ -266,7 +303,13 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
             pages = pending_pages()
             with writer_exclusion() as connection:
                 digest = apply(connection, plan['changes'], mode == 'install')
-                connection.commit()
+                written = apply_script(plan, directory, mode == 'install')
+                try:
+                    connection.commit()
+                except Exception:
+                    if written:
+                        apply_script(plan, directory, mode != 'install')
+                    raise
             if pending_pages() != pages:
                 raise DeploymentError('PAGES_CHANGED_WHILE_PAUSED')
             verify_protected(plan)
@@ -297,6 +340,8 @@ def installed(run_id, expected_plan, backup_sha):
     for change in manifest['plan']['changes']:
         if not same(current[change['id']][change['field']], change['after']):
             raise DeploymentError('VERIFY_FIELD:'+change['field'])
+    if sha(read(ROOT/manifest['plan']['script']['path'])) != manifest['plan']['script']['after_sha256']:
+        raise DeploymentError('VERIFY_SCRIPT')
     verify_protected(manifest['plan'])
     return manifest
 

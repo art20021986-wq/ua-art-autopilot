@@ -6,14 +6,17 @@ service parts are shown to visitors on every version of the card. Only those par
 first line, the «Сейчас: » prefix of the next line, the two instruction lines, and the blank lines this leaves
 doubled at the end. Every other line, field and row stays as it is.
 """
+import json
+
 NUMBER = 'UA-0005'
 HINT = 'Чтобы изменить — пришлите новый текст. Он полностью заменит нынешний. Каждый пункт с новой строки.'
 PROMPT = 'Пришлите новое значение текстом или голосом.'
 LABEL = 'Описание'
 NOW = 'Сейчас: '
-# Visible on the published card: the Russian line (base and ru/) and its Ukrainian translation (ua/).
-MARKS = {'': 'Чтобы изменить — пришлите новый текст', 'ru/': 'Чтобы изменить — пришлите новый текст',
-         'ua/': 'Щоб змінити — надішліть новий текст'}  # the card shows each line as its own item
+# Visible on the published card, each line as its own item: Russian on the base and ru/ pages, Ukrainian on ua/.
+RU_MARKS = ('<div>Описание</div>', 'Сейчас: 🚘', 'Чтобы изменить — пришлите новый текст', 'Пришлите новое значение текстом')
+UK_MARKS = ('<div>Опис</div>', 'Зараз: 🚘', 'Щоб змінити — надішліть новий текст', 'Надішліть нове значення текстом')
+MARKS = {'': RU_MARKS, 'ru/': RU_MARKS, 'ua/': UK_MARKS}
 IDENTITY = ('id', 'auto_number', 'vin')
 
 
@@ -54,3 +57,49 @@ def allowed(item):
     return (item['auto_number'] == NUMBER and item['field'] not in IDENTITY and isinstance(before, str)
             and HINT in before and item['after'] == without_hint(before)
             and not any(text in item['after'] for text in (HINT, PROMPT, NOW)))
+
+
+# The site script translates every card line by its dictionaries; the card language versions are built only when
+# each line has Ukrainian. The «Сейчас: <line>» entry exists, the bare <line> does not: it is added to the Ukrainian
+# and Georgian dictionaries with the same translation minus the «Зараз: » / «ახლა: » prefix. Nothing else changes.
+SCRIPT = 'video/ua-site-languages.js'
+DICTIONARIES = 'var dictionaries = '
+PREFIXES = {'uk': 'Зараз: ', 'ka': 'ახლა: '}
+
+
+def dictionaries(script):
+    start = script.index(DICTIONARIES) + len(DICTIONARIES)
+    return json.JSONDecoder().raw_decode(script[start:])[0]
+
+
+def new_line(change):
+    """The first line the text starts with after the fix, when it came from a «Сейчас: » line; else None."""
+    lines = change['before'].split('\n')
+    if len(lines) > 1 and lines[0].strip() == LABEL and lines[1].startswith(NOW):
+        return lines[1][len(NOW):]
+    return None
+
+
+def script_edit(script, line):
+    """The script with «line» added to the uk and ka dictionaries next to the «Сейчас: line» entry (idempotent)."""
+    before = dictionaries(script)
+    wanted = {lang: dict(words) for lang, words in before.items()}
+    edited = script
+    for lang, prefix in PREFIXES.items():
+        old_value = before[lang].get(NOW + line)
+        if old_value is None or not old_value.startswith(prefix):
+            raise ValueError('SCRIPT_ENTRY_MISSING:' + lang)
+        value = old_value[len(prefix):]
+        wanted[lang][line] = value
+        if before[lang].get(line) == value:
+            continue
+        if line in before[lang]:
+            raise ValueError('SCRIPT_ENTRY_DIFFERS:' + lang)
+        entry = json.dumps(NOW + line, ensure_ascii=False) + ':' + json.dumps(old_value, ensure_ascii=False)
+        if edited.count(entry) != 1:
+            raise ValueError('SCRIPT_ENTRY_NOT_UNIQUE:' + lang)
+        added = ',' + json.dumps(line, ensure_ascii=False) + ':' + json.dumps(value, ensure_ascii=False)
+        edited = edited.replace(entry, entry + added)
+    if dictionaries(edited) != wanted:
+        raise ValueError('SCRIPT_DICTIONARY_DRIFT')
+    return edited

@@ -66,7 +66,7 @@ def fetch(name):
 def stale_marks(changes):
     """Card page -> text that is on it before the fix and must be gone after it (each version in its language)."""
     numbers = sorted({change['auto_number'] for change in changes})
-    return {folder+number+'.html': {text} for number in numbers for folder, text in card_note.MARKS.items()}
+    return {folder+number+'.html': set(texts) for number in numbers for folder, texts in card_note.MARKS.items()}
 
 
 def public_verify(changes, forward=True, fetch=fetch, sleep=time.sleep, clock=time.monotonic):
