@@ -29,8 +29,9 @@ OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 # Live data the install must not touch, besides the source files pinned in the plan.
 LIVE_DATA = ['.crm_publish_requests']  # crm.db is the approved write target
 # Owner's words in chat, filled in when the owner says «да».
-APPROVAL = ('«Да все четыре» in chat 2026-11-21 to «1. Удалить служебную строку из описания Mercedes UA-0005 в CRM? '
-            '(да / нет)» (SEO-FIX-20261121)')
+APPROVAL = ('«Да все четыре» in chat 2026-11-21 to «1. Удалить служебную строку из описания Mercedes UA-0005 в CRM?»; '
+            'after the preview «Да» in chat 2026-11-22 to «Убрать у Mercedes UA-0005 все четыре служебных куска, а не '
+            'только одну строку, и добавить перевод в словарь?» (SEO-FIX-20261121)')
 
 
 def sha(path):
@@ -113,10 +114,15 @@ def install():
     operations = [{'action': 'replace', 'expected_before_sha256': plan['rows_before_sha256'][i],
                    'expected_after_sha256': plan['rows_after_sha256'][i], 'path': 'production/crm/cars/' + numbers[i]}
                   for i in sorted(numbers)]
+    if plan['script']['before_sha256'] != plan['script']['after_sha256']:
+        operations.append({'action': 'replace', 'expected_before_sha256': plan['script']['before_sha256'],
+                           'expected_after_sha256': plan['script']['after_sha256'],
+                           'path': 'production/site/' + plan['script']['path']})
     manifest = {'backup_required': True, 'contract_id': 'UA-ART-CRITICAL-ADAPTER-V1.0', 'crm_write': True,
                 'crm_changes': plan['changes'], 'explicit_crm_vehicle_approval': True,
                 'live_verify_required': True, 'operations': operations, 'pending_requests_preserved': True,
-                'protected_paths': sorted(LIVE_DATA + list(plan['protected'])), 'rollback_required': True, 'site_write': False,
+                'protected_paths': sorted(LIVE_DATA + list(plan['protected'])), 'rollback_required': True,
+                'site_write': plan['script']['before_sha256'] != plan['script']['after_sha256'],
                 'task_class': 'CRITICAL', 'task_id': task}
     manifest_path = write('tasks/manifests/%s.json' % task, json.dumps(manifest, sort_keys=True, separators=(',', ':')))
     manifest_sha = cp.sha256_bytes(cp.canonical_json(manifest))
@@ -138,10 +144,13 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved (%s): remove the CRM bot edit hint line «Чтобы изменить — пришлите новый '
-                              'текст. Он полностью заменит нынешний. Каждый пункт с новой строки.» from the text field(s) of '
-                              'CRM card UA-0005 (listed in the plan with before/after values and hashes; compare-and-set, all '
-                              'or none). Every other CRM row, field and line is preserved and checked. The public sync worker '
+               'description': 'Owner approved (%s): remove the copied CRM bot edit message from the text of CRM card UA-0005 '
+                              '(the «Описание» first line, the «Сейчас: » prefix, the lines «Чтобы изменить — пришлите новый '
+                              'текст…» and «Пришлите новое значение текстом или голосом.»; listed in the plan with before/after '
+                              'values and hashes; compare-and-set, all or none) and add the new first line to the uk and ka '
+                              'dictionaries of video/ua-site-languages.js (same translation without the prefix), so the card '
+                              'language versions rebuild. Every other CRM row, field, line and script byte is preserved and '
+                              'checked. The public sync worker '
                               'and the card language job republish the card (base, ru, ua); the controller waits for it. '
                               'Existing backup, bot pause, writer locks, data-preservation, rollback and public health checks '
                               'are kept.' % APPROVAL,
