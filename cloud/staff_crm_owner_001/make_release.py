@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Write the CRM-OWNER preview request, then (after the preview) the install request set (run from the repo root).
+"""Write the CRM-FULL-ACCESS preview request, then (after the preview) the install request set (run from the repo root).
 
 Usage: python3 cloud/staff_crm_owner_001/make_release.py preview   # PR, merge, then:
        python3 cloud/staff_crm_owner_001/make_release.py launch TASK_ID
        python3 cloud/staff_crm_owner_001/make_release.py install   # right after the preview: writes gate, manifest,
                                                                # owner approval, storage probe, request and launch
-STAFF-FULL-ACCESS-001 step 1 (BOT CRM): the manager @Beetle204 becomes «Владелец»; guard/svyaz alerts to every owner.
+STAFF-FULL-ACCESS-001 (BOT CRM): «Управляющий администратор» gets the owner's rights; the roles stay (ua_full_access).
 """
 import datetime
 import hashlib
@@ -21,15 +21,17 @@ import control_plane as cp  # noqa: E402
 P = 'cloud/staff_crm_owner_001/'
 from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
+EDITS = ('edit_ai.py', 'edit_bezopasnost.py', 'edit_cars_schema.py', 'edit_cars_ui.py', 'edit_home_photo.py',
+         'edit_home_stage.py', 'edit_kr_prices.py', 'edit_pay_bot.py', 'edit_svyaz.py', 'edit_team_bot.py',
+         'edit_telegram_key.py')
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
-                                'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'edit_bezopasnost.py', 'edit_svyaz.py', 'edits.py', 'make_release.py',
-                                'release_constants.py', 'staff_role.py', 'ua_owners.py')]
-TESTS = [P + n for n in ('test_deployment.py', 'test_edits.py', 'test_staff_role.py', 'test_ua_owners.py')]
+                                'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py', 'edits.py',
+                                'make_release.py', 'release_constants.py', 'ua_full_access.py') + EDITS]
+TESTS = [P + n for n in ('test_deployment.py', 'test_edits.py', 'test_ua_full_access.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
-PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'master_card.py',
+PROTECTED = ['.crm_publish_requests', 'catalog_design_guard.py', 'crm.db', 'db.py', 'master_card.py',
              'publication_fence.py', 'publikaciya.py', 'run_all.py', 'site_ge_inject.py',
-             'start_safe.py', 'stranica.py', 'team_bot.py', 'ua_additional_spec.py', 'ua_google_sitemap.py', 'ua_indexnow.py',
+             'start_safe.py', 'stranica.py', 'ua_additional_spec.py', 'ua_google_sitemap.py', 'ua_indexnow.py',
              'ua_public_freshness.py', 'ua_seo_catalog.py', 'ua_seo_order_models.py',
              'ua_seo_schema.py', 'ua_seo_sitemap.py', 'ua_site_counters.py']
 
@@ -73,15 +75,14 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of STAFF-FULL-ACCESS-001 step 1, BOT CRM (owner 2026-11-24 «Сначала бот CRM»): '
-                            'reads the live bezopasnost.py and svyaz.py, checks their hashes, builds the candidate (new '
-                            'ua_owners.py and exact edits), compiles it and imports ua_owners with the bots\' interpreter '
-                            '(the vladelec.txt owner first); checks read-only that the CRM has one active owner and one '
-                            'active admin @Beetle204 to promote (yes/no); measures storage. No source, CRM, HTML, media '
-                            'or bot state changes.',
+             'description': 'Preview of STAFF-FULL-ACCESS-001, BOT CRM (owner 2026-11-24: «у Олега должно быть всё то же '
+                            'самое, как у меня в боте CRM, у меня владелец, у него управляющий»): reads the live BOT CRM '
+                            'sources, builds the candidate (new ua_full_access.py and exact context edits), compiles every '
+                            'file and imports ua_full_access with the bots\' interpreter (yes/no, counts only); measures '
+                            'storage. No source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview BOT CRM second owner'}
+             'title': 'Preview BOT CRM full rights for the managing admin'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -111,13 +112,7 @@ def install():
                    **({'expected_after_sha256': item['after']} if item['after'] else {}),
                    **({'expected_before_sha256': item['before']} if item['before'] else {}),
                    'path': 'production/crmownerfix/' + name} for name, item in sorted(plan['files'].items())]
-    role = plan['crm_scope']
-    operations.append({'action': 'replace', 'expected_before_sha256': hashlib.sha256(role['role'][0].encode()).hexdigest(),
-                       'expected_after_sha256': hashlib.sha256(role['role'][1].encode()).hexdigest(),
-                       'path': 'production/crm/staff/%s-role' % role['username']})
-    manifest = {'backup_required': True, 'contract_id': 'UA-ART-CRITICAL-ADAPTER-V1.0', 'crm_write': True,
-                'crm_changes': [{'table': 'staff', 'username': role['username'], 'field': 'role',
-                                 'before': role['role'][0], 'after': role['role'][1], 'audit_rows': 1}],
+    manifest = {'backup_required': True, 'contract_id': 'UA-ART-CRITICAL-ADAPTER-V1.0', 'crm_write': False,
                 'live_verify_required': True, 'operations': operations, 'pending_requests_preserved': True,
                 'protected_paths': PROTECTED, 'rollback_required': True, 'site_write': True, 'task_class': 'CRITICAL',
                 'task_id': task}
@@ -141,21 +136,19 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved STAFF-FULL-ACCESS-001 step 1, BOT CRM (owner «Сделать как у меня '
-                              'идентично параллельно бот CRM с Олегом», «Сначала бот CRM», 2026-11-24): the manager '
-                              '@Beetle204 (OlG) gets the role «Владелец» in the CRM staff (the same two writes as the CRM\'s '
-                              'own set_staff_role: one staff role and one audit row), so BOT CRM gives him the owner\'s menu, '
-                              'actions and notifications; the alerts of the CRM guard (bezopasnost.py) and of svyaz.py go '
-                              'to every owner (new ua_owners.py) and every owner may use /dostup and /kopiya; nothing of the '
-                              'guard is switched off. One write transaction under the writer locks while the bot is paused; '
-                              'every other CRM row, page and pending request is preserved and checked. Existing backup, bot '
-                              'pause, writer locks, data-preservation, rollback (files and the role back) and public health '
-                              'checks are kept.',
+               'description': 'Owner approved STAFF-FULL-ACCESS-001, BOT CRM (2026-11-24: «у Олега должно быть всё то '
+                              'же самое, как у меня в боте CRM, у меня владелец, у него управляющий»): new ua_full_access.py '
+                              '(full rights = «Владелец» + «Управляющий администратор»); every owner-only check, owner '
+                              'notification and owner money view of BOT CRM asks it (team_bot, cars_ui, cars_schema, ai, home '
+                              'photo, home stage, Korea prices, telegram key, payments, the guard bezopasnost, svyaz). The '
+                              'roles and every CRM row stay as they are; nothing of the guard is switched off. The bot is '
+                              'paused for the file change and resumed. Existing backup, bot pause, writer locks, '
+                              'data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/katalog.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install BOT CRM second owner'}
+               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install BOT CRM full rights for the managing admin'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),

@@ -1,0 +1,9 @@
+def render_card(car, role="owner", today=None):
+    """Card.
+
+    role: "owner" видит деньги, "admin"/"manager" — нет.
+    """
+    lines = []
+    if role == "owner":
+        lines.append("money")
+    return lines

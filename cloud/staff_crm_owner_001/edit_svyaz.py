@@ -1,5 +1,5 @@
-"""svyaz.py: its warnings go to every owner (ua_owners), each with its own interval record (the configured owner
-keeps the old one). If ua_owners cannot be loaded, vladelec.txt alone, as before."""
+"""svyaz.py: its warnings go to everyone with full rights (ua_full_access: owner + managing admin), each with its own interval record (the configured owner
+keeps the old one). If ua_full_access cannot be loaded, vladelec.txt alone, as before."""
 NAME = 'svyaz.py'
 EDITS = (
     ('def _vladelcu(tekst, povod, chasov=6):\n'
@@ -8,8 +8,8 @@ EDITS = (
      '    # STAFF-FULL-ACCESS-001: kazhdomu vladelcu (vladelec.txt pervym + «Vladelcy» CRM)\n'
      '    pervyy = _fayl("vladelec.txt")\n'
      '    try:\n'
-     '        import ua_owners\n'
-     '        vladelcy = ua_owners.ids(pervyy)\n'
+     '        import ua_full_access\n'
+     '        vladelcy = ua_full_access.ids(pervyy)\n'
      '    except Exception as e:\n'
      '        _log("vladelcy: " + repr(e))\n'
      '        vladelcy = [pervyy] if pervyy else []\n'

@@ -1,7 +1,5 @@
-"""Bounded BOT CRM release (STAFF-FULL-ACCESS step 1): the manager becomes an owner, owner alerts reach every owner.
-
-One write transaction under the writer locks: the guard/svyaz files and the one staff role (+ its audit row);
-every other CRM row, page and pending request is preserved and checked."""
+"""Bounded BOT CRM release (STAFF-FULL-ACCESS-001): the managing admin gets the owner's rights and notifications;
+the roles, the CRM data, pages and pending requests are preserved and checked."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -23,7 +21,6 @@ import time
 
 from deployment_transport import API, canonical, sha
 from candidate_builder import SOURCE_FILES, DEPENDENCY_SHA256, build
-import staff_role
 
 ROOT = Path('/home/Carix')
 HERE = Path(__file__).resolve().parent
@@ -122,48 +119,40 @@ def prepare(directory):
         if value is not None: atomic(directory/'after'/name,value,mode)
     # A source-only plan stays valid across legitimate operator edits. Actual
     # CRM/page snapshots are captured again under locks at the write boundary.
-    plan = {'schema_version':'CRM-OWNER-INSTALL-1','files':files,
-            'protected':protected,'crm_write':True,'site_write':True,
-            'crm_scope':{'table':'staff','username':staff_role.USERNAME,'role':[staff_role.FROM,staff_role.TO],
-                         'audit_rows':1,'other_crm_data':'unchanged'},
-            'site_scope':'BOT CRM only, no page: new ua_owners.py; the owner alerts of bezopasnost and svyaz go to every owner (vladelec.txt + active CRM owners) and every owner may use /dostup and /kopiya',
+    plan = {'schema_version':'CRM-FULL-ACCESS-INSTALL-1','files':files,
+            'protected':protected,'crm_write':False,'site_write':True,
+            'site_scope':'BOT CRM only, no page, no CRM row: new ua_full_access.py (full rights = «Владелец» + «Управляющий администратор»); every owner-only check, owner notification and owner money view of BOT CRM (team_bot, cars_ui, cars_schema, ai, home photo, home stage, Korea prices, telegram key, payments, guard, svyaz) asks it',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
 
 
 # Runs in a separate python3.10 (the bots' interpreter) with the candidate modules first on the path and the live
-# server root: every candidate compiles, ua_owners imports with the live db.py and puts the vladelec.txt owner
-# first. Yes/no and counts only, no id. Nothing is written.
+# server root: every candidate compiles, ua_full_access imports with the live db.py, gives the owner and admin roles
+# and puts the vladelec.txt owner first. Yes/no and counts only, no id. Nothing is written.
 SMOKE = r"""
 import json, os, sys
-after, root = sys.argv[1], sys.argv[2]
+after, root, names = sys.argv[1], sys.argv[2], sys.argv[3].split(',')
 sys.path[:0] = [after, root]
 os.chdir(root)
-for name in ('bezopasnost.py', 'svyaz.py', 'ua_owners.py'):
+for name in names:
     compile(open(after + '/' + name, 'rb').read(), name, 'exec')
-import ua_owners
+import db, ua_full_access
 owner = open(root + '/vladelec.txt', encoding='utf-8').read().split()[0]
-ids = ua_owners.ids(owner)
-print(json.dumps({'owners': len(ids), 'vladelec_first': bool(ids) and str(ids[0]) == owner}))
+ids = ua_full_access.ids(owner)
+print(json.dumps({'compiled': len(names), 'full_ids': len(ids), 'vladelec_first': bool(ids) and str(ids[0]) == owner,
+                  'roles_ok': ua_full_access.roles() == (db.ROLE_OWNER, db.ROLE_ADMIN)}))
 """
 
 
-def role_check():
-    """Read-only: exactly one active owner and exactly one active @USERNAME admin to promote (yes/no only)."""
-    with closing(sqlite3.connect((ROOT/'crm.db').as_uri()+'?mode=ro', uri=True, timeout=5)) as connection:
-        staff_role.owner(connection)
-        staff_role.target(connection)
-    return {'one_owner': True, 'one_target': True}
-
-
 def smoke(directory):
-    result = subprocess.run(['python3.10', '-B', '-c', SMOKE, str(directory/'after'), str(ROOT)],
+    names = ','.join(sorted(str(p.relative_to(directory/'after')) for p in (directory/'after').rglob('*.py')))
+    result = subprocess.run(['python3.10', '-B', '-c', SMOKE, str(directory/'after'), str(ROOT), names],
                             capture_output=True, text=True, timeout=120, check=False, cwd=str(directory))
     if result.returncode != 0:
         raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
-    if value.get('vladelec_first') is not True:
+    if value.get('vladelec_first') is not True or value.get('roles_ok') is not True:
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:300])
     return value
 
@@ -245,7 +234,7 @@ def writer_exclusion():
             with closing(sqlite3.connect((ROOT/'crm.db').as_uri()+'?mode=rw', uri=True, timeout=5)) as connection:
                 connection.execute('BEGIN IMMEDIATE')
                 try:
-                    yield connection  # the caller commits
+                    yield
                 finally:
                     connection.rollback()
     finally:
@@ -289,25 +278,6 @@ def restore(directory, plan):
     verify_files(plan,False)
 
 
-def stamp():
-    """The CRM's own timestamp format (db.now), read before the writer locks are taken."""
-    return load(ROOT/'db.py', 'crmowner_db').now()
-
-
-def undo_role(connection, role, when):
-    """Rollback of the role: owner → admin for the journaled person, logged like the CRM does; committed here."""
-    if not role:
-        return False
-    current = connection.execute('SELECT role FROM staff WHERE user_id=?', (role['user_id'],)).fetchone()
-    if not current or current[0] != staff_role.TO:
-        return False
-    before = staff_role.snapshot(connection)
-    staff_role.demote(connection, role['user_id'], role['actor'], when)
-    staff_role.verify(before, staff_role.snapshot(connection), role['user_id'], staff_role.TO, staff_role.FROM)
-    connection.commit()
-    return True
-
-
 def lifecycle(mode, run_id, expected_plan, backup_sha):
     directory,manifest = load_backup(backup_sha)
     if manifest['plan_sha256'] != expected_plan or manifest['run_id'] != run_id:
@@ -328,14 +298,13 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
     if state['stage'] not in ('RESUME','FINISHED'):
         applied=bool(previous and previous.get('stage')=='APPLYING')
         try:
-            api.set_bot(False); no_bot_processes(); when=stamp()
-            with writer_exclusion() as connection:
+            api.set_bot(False); no_bot_processes()
+            with writer_exclusion():
                 before=protected_data(plan)
                 if mode=='rollback' or applied:
                     restore(directory,plan)
-                    role_undone=undo_role(connection,(owner if mode=='rollback' else state).get('role'),when)
                     result={'status':'PASS' if mode=='rollback' else 'FAIL',
-                            'restored':True,'interrupted_install':applied,'role_restored':role_undone}
+                            'restored':True,'interrupted_install':applied}
                 else:
                     verify_files(plan,False)
                     state.update(stage='APPLYING',data_before=before)
@@ -348,28 +317,20 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
                                 atomic(ROOT/relative,read(directory/'after'/relative),plan['files'][relative]['mode'])
                         verify_files(plan,True)
                         if protected_data(plan)!=before: raise DeploymentError('PROTECTED_DATA_CHANGED_DURING_INSTALL')
-                        # The one staff role (+ its audit row), checked exactly, then committed with nothing else.
-                        role_before=staff_role.snapshot(connection)
-                        user_id,actor=staff_role.promote(connection,when)
-                        staff_role.verify(role_before,staff_role.snapshot(connection),user_id,staff_role.FROM,staff_role.TO)
-                        state.update(role={'user_id':user_id,'actor':actor});atomic(journal,canonical(state))
-                        connection.commit()
-                        result={'status':'PASS','installed':True,'crm_change_verified':True}
+                        result={'status':'PASS','installed':True}
                     except BaseException:
                         restore(directory,plan);applied=False
                         raise
                 if protected_data(plan)!=before:
                     raise DeploymentError('PROTECTED_DATA_CHANGED_DURING_OPERATION')
-                result.update(crm_other_data_unchanged=True,protected_files_unchanged=True,
-                              preservation_scope='ALL_CRM_DATA_EXCEPT_ONE_STAFF_ROLE_AND_ITS_AUDIT_ROW_WHILE_BOT_PAUSED_UNDER_WRITER_LOCKS',
+                result.update(crm_unchanged=True,protected_files_unchanged=True,
+                              preservation_scope='WHILE_BOT_PAUSED_UNDER_WRITER_LOCKS',
                               protected_data_sha256=sha(canonical(before)))
         except Exception as error:
             result={'status':'FAIL','error':type(error).__name__+':'+str(error)[:180]}
             if applied:
                 try:
-                    with writer_exclusion() as connection:
-                        restore(directory,plan)
-                        result['role_restored']=undo_role(connection,state.get('role'),stamp())
+                    with writer_exclusion(): restore(directory,plan)
                     result['restored']=True
                 except Exception as restore_error:
                     result['rollback_error']=type(restore_error).__name__+':'+str(restore_error)[:160]
@@ -408,7 +369,7 @@ def protected_data(plan):
             part=Path(str(ledger)+suffix)
             if part.exists(): pages[str(part.relative_to(ROOT))]=sha(read(part))
     with closing(sqlite3.connect((ROOT/'crm.db').as_uri()+'?mode=ro',uri=True,timeout=5)) as con:
-        database=staff_role.snapshot(con)['rest']
+        database=sha(('\n'.join(con.iterdump())+'\n').encode())
     return {'database_logical_sha256':database,'pages_and_pending_ledger':pages}
 
 def account_used_bytes():
@@ -446,8 +407,7 @@ def installed(run_id, expected_plan, backup_sha):
     result=journal.get('result',{})
     if journal.get('stage')!='FINISHED' or result.get('status')!='PASS' or result.get('installed') is not True:
         raise DeploymentError('INSTALL_JOURNAL_NOT_FINISHED')
-    if result.get('crm_change_verified') is not True or result.get('crm_other_data_unchanged') is not True \
-            or result.get('protected_files_unchanged') is not True:
+    if result.get('crm_unchanged') is not True or result.get('protected_files_unchanged') is not True:
         raise DeploymentError('INSTALL_DATA_PRESERVATION')
     return manifest, result
 
@@ -468,7 +428,7 @@ def main():
     receipt = work/('receipt-'+args.mode+'.json')
     if receipt.exists():
         return 0 if json.loads(read(receipt))['status'] == 'PASS' else 1
-    value = {'run_id': args.run, 'mode': args.mode, 'status': 'FAIL', 'crm_write': args.mode in ('install', 'rollback')}
+    value = {'run_id': args.run, 'mode': args.mode, 'status': 'FAIL', 'crm_write': False}
     with (HERE/'deployment.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         if receipt.exists():
@@ -476,7 +436,7 @@ def main():
         try:
             if args.mode == 'preview':
                 plan = prepare(work/'preview')
-                value.update(status='PASS', plan=plan, plan_sha256=sha(canonical(plan)), smoke=smoke(work/'preview'), role=role_check(), sync=sync_state())
+                value.update(status='PASS', plan=plan, plan_sha256=sha(canonical(plan)), smoke=smoke(work/'preview'), sync=sync_state())
                 value['storage_probe'] = storage_probe()
             elif args.mode == 'backup':
                 value.update(backup(args.run, args.plan), status='PASS')
@@ -485,8 +445,7 @@ def main():
             else:
                 manifest, result = installed(args.run, args.plan, args.backup)
                 value.update(status='PASS',backup_manifest_sha256=args.backup,sync=sync_state(),
-                             plan_sha256=args.plan,crm_change_verified=True,crm_other_data_unchanged=True,
-                             protected_files_unchanged=True,
+                             plan_sha256=args.plan,crm_unchanged=True,protected_files_unchanged=True,
                              preservation_scope=result['preservation_scope'],
                              code_sha256={name: item['after'] for name, item in manifest['plan']['files'].items()})
             value['safe_to_stop'] = True

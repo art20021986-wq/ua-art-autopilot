@@ -1,0 +1,6 @@
+def render_draft(parsed: dict, issues=None, role: str = "owner") -> str:
+    out = []
+    if parsed:
+        if role == "owner":
+            out.append("price")
+    return "".join(out)

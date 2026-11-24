@@ -1,33 +1,36 @@
-"""Build the BOT CRM candidate from the exact installed sources (LEAD-DESK-PROBE-20261112-R4 / 20261124).
+"""Build the BOT CRM candidate (STAFF-FULL-ACCESS-001, owner 2026-11-24): the managing admin gets the owner's rights.
 
-New ua_owners.py (who the owners are: vladelec.txt first, then every active CRM «Владелец»); exact fragment edits
-send the alerts of the CRM guard (bezopasnost.py) and of svyaz.py to every owner and let every owner use /dostup and
-/kopiya. Any drift of an installed file stops the plan.
+New ua_full_access.py (who has full rights: «Владелец» and «Управляющий администратор»); exact fragment edits make
+every owner-only check, owner notification and owner money view of BOT CRM ask it. The roles stay as they are.
+
+The files are shared with other sessions and change often, so the build is bound by exact context, not by whole-file
+hashes: every original fragment must occur exactly once and an applied fragment is refused (edits.apply). The
+preview records each file's before/after hash and the install applies only that previewed plan.
 """
-import hashlib
 from pathlib import Path
 
+import edit_ai
 import edit_bezopasnost
+import edit_cars_schema
+import edit_cars_ui
+import edit_home_photo
+import edit_home_stage
+import edit_kr_prices
+import edit_pay_bot
 import edit_svyaz
+import edit_team_bot
+import edit_telegram_key
 import edits
 
 HERE = Path(__file__).resolve().parent
-EDITORS = (edit_bezopasnost, edit_svyaz)
-SOURCE_SHA256 = {
-    'bezopasnost.py': '2d59ef2e441a5d48039836a3cfacea024f547d573de94946abc138cf941a79d5',
-    'svyaz.py': '6493b4acd1d3d037ae774677d74a6ed0ad1292b8d25f39172dbd267cfa5ac3db',
-}
-SOURCE_FILES = tuple(SOURCE_SHA256)
-# ua_owners reads db.staff_ids_by_role(db.ROLE_OWNER); the smoke check imports it with the live db.py.
+EDITORS = (edit_team_bot, edit_cars_ui, edit_cars_schema, edit_ai, edit_home_photo, edit_home_stage, edit_kr_prices,
+           edit_telegram_key, edit_pay_bot, edit_bezopasnost, edit_svyaz)
+SOURCE_FILES = tuple(module.NAME for module in EDITORS)
 DEPENDENCY_SHA256 = {}
-NEW = ('ua_owners.py',)
+NEW = ('ua_full_access.py',)
 
 
 def build(source, dependencies):
-    for name, digest in {**SOURCE_SHA256, **DEPENDENCY_SHA256}.items():
-        value = source.get(name, dependencies.get(name))
-        if value is None or hashlib.sha256(value).hexdigest() != digest:
-            raise ValueError('INPUT_HASH:' + name)
     result = {module.NAME: edits.apply(source[module.NAME], module.EDITS) for module in EDITORS}
     result.update({name: (HERE / name).read_bytes() for name in NEW})
     return result

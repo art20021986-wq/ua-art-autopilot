@@ -1,7 +1,7 @@
-"""bezopasnost.py (the CRM guard): its owner alerts go to every owner and every owner may use /dostup and /kopiya.
+"""bezopasnost.py (the CRM guard): its owner alerts go to everyone with full rights (owner + managing admin), who may all use /dostup and /kopiya.
 
 Nothing of the guard is switched off: the access list, invite codes and the database copy target stay as they are;
-the one-time /dostup code goes to the owner who asked for it. If ua_owners cannot be loaded, vladelec.txt alone.
+the one-time /dostup code goes to the owner who asked for it. If ua_full_access cannot be loaded, vladelec.txt alone.
 """
 NAME = 'bezopasnost.py'
 EDITS = (
@@ -14,10 +14,10 @@ EDITS = (
      '\n'
      '\n'
      'def _vladelcy():\n'
-     '    # STAFF-FULL-ACCESS-001: vladelec.txt pervym + vse aktivnye «Vladelcy» CRM (ua_owners)\n'
+     '    # STAFF-FULL-ACCESS-001: vladelec.txt pervym + vse aktivnye «Vladelcy» CRM (ua_full_access)\n'
      '    try:\n'
-     '        import ua_owners\n'
-     '        return [str(i) for i in ua_owners.ids(_vladelec())]\n'
+     '        import ua_full_access\n'
+     '        return [str(i) for i in ua_full_access.ids(_vladelec())]\n'
      '    except Exception as e:\n'
      '        _log("vladelcy: " + repr(e))\n'
      '        return [_vladelec()] if _vladelec() else []\n'

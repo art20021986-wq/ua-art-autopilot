@@ -1,5 +1,5 @@
 """Recovery rehearsal against temporary files and a temporary CRM database."""
-from contextlib import contextmanager, nullcontext
+from contextlib import nullcontext
 from io import BytesIO
 import json
 import os
@@ -18,16 +18,6 @@ from deployment_transport import canonical, sha
 from deployment_transport import API, BOT_ID, BOT_COMMAND, TransportError
 
 
-STAFF_SCHEMA = """
-CREATE TABLE staff (user_id INTEGER PRIMARY KEY, full_name TEXT, username TEXT, role TEXT NOT NULL,
-                    active INTEGER NOT NULL DEFAULT 1, added_by INTEGER, added_at TEXT NOT NULL, note TEXT);
-CREATE TABLE audit (id INTEGER PRIMARY KEY AUTOINCREMENT, actor_id INTEGER, action TEXT NOT NULL, entity_type TEXT,
-                    entity_id INTEGER, field TEXT, old_value TEXT, new_value TEXT, created_at TEXT NOT NULL);
-INSERT INTO staff VALUES (1, 'Owner', 'own', 'owner', 1, NULL, 't0', NULL);
-INSERT INTO staff VALUES (2, 'OlG', 'Beetle204', 'admin', 1, 1, 't1', NULL);
-"""
-
-
 class RecoveryTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -41,7 +31,6 @@ class RecoveryTests(unittest.TestCase):
         with sqlite3.connect(self.root/'crm.db') as connection:
             connection.execute('CREATE TABLE cars(id INTEGER PRIMARY KEY, status TEXT, vin TEXT, price INTEGER)')
             connection.execute("INSERT INTO cars VALUES(1,'archive','VIN-PRESERVED',12345)")
-            connection.executescript(STAFF_SCHEMA)
         (self.root/'protected.html').write_bytes(b'original photos and VIN')
         self.plan = {'files': {}, 'protected': {'protected.html': sha(b'original photos and VIN')},
                      'crm_sha256': remote.row_digest(remote.crm_rows()), 'counts': {'all': 0}}
@@ -72,47 +61,18 @@ class RecoveryTests(unittest.TestCase):
     def lifecycle(self, mode):
         with patch.object(remote, 'API', self.api), \
              patch.object(remote, 'load_backup', return_value=(self.saved, self.manifest)), \
-             patch.object(remote, 'writer_exclusion', side_effect=self.locked), \
-             patch.object(remote, 'stamp', return_value='t'), \
+             patch.object(remote, 'writer_exclusion', side_effect=nullcontext), \
              patch.object(remote, 'no_bot_processes'):
             return remote.lifecycle(mode, '123', self.plan_sha, 'a'*64)
 
-    @contextmanager
-    def locked(self):
-        connection = sqlite3.connect(self.root/'crm.db')
-        try:
-            yield connection
-        finally:
-            connection.rollback()
-            connection.close()
-
-    def role(self):
-        with sqlite3.connect(self.root/'crm.db') as connection:
-            return connection.execute('SELECT role FROM staff WHERE user_id=2').fetchone()[0]
-
-
-    def test_no_single_target_restores_files_and_writes_nothing(self):
-        with sqlite3.connect(self.root/'crm.db') as connection:
-            connection.execute("UPDATE staff SET active=0 WHERE user_id=2")
-        result = self.lifecycle('install')
-        self.assertEqual(result['status'], 'FAIL')
-        self.assertIn('ROLE_TARGET_COUNT', result['error'])
-        remote.verify_files(self.plan, False)  # restored inside the failed step
-        with sqlite3.connect(self.root/'crm.db') as connection:
-            self.assertEqual(connection.execute('SELECT count(*) FROM audit').fetchone(), (0,))
-        self.assertEqual(self.events, [False, True])
 
     def test_install_and_real_file_rollback(self):
         result = self.lifecycle('install')
         self.assertTrue(result['installed'])
-        self.assertTrue(result['crm_change_verified'])
-        self.assertEqual(self.role(), 'owner')
         remote.verify_files(self.plan, True)
         result = self.lifecycle('rollback')
         self.assertTrue(result['restored'])
-        self.assertTrue(result['role_restored'])
-        self.assertEqual(self.role(), 'admin')
-        self.assertTrue(result['crm_other_data_unchanged'])
+        self.assertTrue(result['crm_unchanged'])
         remote.verify_files(self.plan, False)
         self.assertEqual(self.events, [False, True, False, True])
 
@@ -166,7 +126,7 @@ class RecoveryTests(unittest.TestCase):
             connection.execute('UPDATE cars SET price=99999 WHERE id=1')
         result=self.lifecycle('rollback')
         self.assertTrue(result['restored'])
-        self.assertTrue(result['crm_other_data_unchanged'])
+        self.assertTrue(result['crm_unchanged'])
         self.assertEqual(remote.crm_rows()[0]['price'], 99999)
         self.assertEqual((self.root/'db.py').read_bytes(), b'original')
 
