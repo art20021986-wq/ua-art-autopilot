@@ -59,6 +59,11 @@ def install():
     return round(time.monotonic() - started)
 
 
+def sender_of(message):
+    """Who sent it: from_id in groups, the private chat peer otherwise."""
+    return getattr(getattr(message, 'from_id', None), 'user_id', None) or getattr(getattr(message, 'peer_id', None), 'user_id', None)
+
+
 def video_size(message):
     document = getattr(getattr(message, 'media', None), 'document', None)
     if document is None or not str(getattr(document, 'mime_type', '')).startswith('video/'):
@@ -96,10 +101,11 @@ async def probe(value):
         for start in range(newest, max(0, newest - SCAN), -100):
             batch = await existing(list(range(max(1, start - 99), start + 1)))
             for message in sorted(batch, key=lambda m: m.id, reverse=True):
-                sender = getattr(getattr(message, 'peer_id', None), 'user_id', None)
+                sender = sender_of(message)
                 media = getattr(message, 'media', None)
                 document = getattr(media, 'document', None)
                 seen.append({'back': newest - message.id, 'out': bool(message.out), 'owner': sender in owner_ids,
+                             'chat': type(getattr(message, 'peer_id', None)).__name__,
                              'media': type(media).__name__ if media else None,
                              'mime': str(getattr(document, 'mime_type', ''))[:20] if document else None,
                              'mb': round(int(getattr(document, 'size', 0) or 0) / 2**20, 1) if document else None})
@@ -109,7 +115,8 @@ async def probe(value):
             if found:
                 break
         value['scanned_from_newest'] = SCAN
-        value['media_seen'] = [s for s in seen if s['media']][:60]
+        value['media_seen'] = [s for s in seen if s['media'] and not s['out']][:60]  # incoming only (R2 of 20261124)
+        value['outgoing_media'] = sum(1 for s in seen if s['media'] and s['out'])
         value['messages_seen'] = len(seen)
         if not found:
             value['found'] = False

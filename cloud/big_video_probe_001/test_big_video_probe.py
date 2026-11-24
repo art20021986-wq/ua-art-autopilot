@@ -49,6 +49,11 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(remote.video_size(types.SimpleNamespace(media=types.SimpleNamespace(document=photo))), 0)
         self.assertEqual(remote.video_size(types.SimpleNamespace(media=None)), 0)
 
+    def test_sender_in_groups_and_private_chats(self):
+        group = types.SimpleNamespace(from_id=types.SimpleNamespace(user_id=5), peer_id=types.SimpleNamespace(chat_id=9))
+        private = types.SimpleNamespace(from_id=None, peer_id=types.SimpleNamespace(user_id=7))
+        self.assertEqual((remote.sender_of(group), remote.sender_of(private)), (5, 7))
+
     def test_pinned_packages(self):
         self.assertIn('telethon==1.46.0', remote.PACKAGES)
 
