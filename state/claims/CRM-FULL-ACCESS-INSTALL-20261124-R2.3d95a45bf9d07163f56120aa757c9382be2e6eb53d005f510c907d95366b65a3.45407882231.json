@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "aaf4e86dd41c08f56b392938183d59f21402bd255abb1745e6e28091fea29418",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-24T13:55:06Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-24T13:59:15Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45407882231",
     "task_id": "CRM-FULL-ACCESS-INSTALL-20261124-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45407882231-3d95a45bf9d07163",
   "production_transaction_path": "state/transactions/CRM-FULL-ACCESS-INSTALL-20261124-R2.3d95a45bf9d07163f56120aa757c9382be2e6eb53d005f510c907d95366b65a3.45407882231.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-FULL-ACCESS-INSTALL-20261124-R2.json",
   "receipt_validation_status": "PENDING",
@@ -99,5 +99,5 @@
       "cloud/staff_crm_owner_001/ua_full_access.py": "b90f88cacc7193beb0757f0b1236f2daad4b28ac88eb0f20cc3c9b5580b1e781"
     }
   },
-  "updated_at": "2026-11-24T13:55:06Z"
+  "updated_at": "2026-11-24T13:59:15Z"
 }
