@@ -25,7 +25,7 @@ def request(day):
         'description': 'Read-only probe BIG-VIDEO (owner 2026-11-19 allowed Telethon only for downloading videos over 20 MB; '
                        'the owner sent a test video to the CRM bot). Bounded run in the existing private inbox: upload this package, '
                        'run source_remote.py once in a temporary always-on task (removed after its receipt; never the CRM bot) '
-                       'which, inside the inbox folder bigvideo_probe_work only: installs Telethon 1.46.0 (+pyaes, rsa, cryptg) '
+                       'which, inside the inbox folder bigvideo_probe_work only: installs Telethon 1.46.0 (+pyaes, rsa) '
                        'there, logs in as the CRM bot over MTProto in memory with updates off (no logOut, the bot keeps running '
                        'on the Bot API), finds the newest video over 20 MB from an owner by message number, downloads it to the '
                        'temporary folder, measures size, duration, speed and CPU, then deletes the folder. Key and token values '
