@@ -1,6 +1,6 @@
 """Build the STAFF-FULL-ACCESS candidate from the exact installed sources (LEAD-DESK-PROBE-20261112-R2/R3/R4).
 
-New ua_full_access.py (who the client bot's owners are); exact fragment edits make every client bot screen, command and
+New ua_owners.py (who the client bot's owners are); exact fragment edits make every client bot screen, command and
 notification use it instead of one owner chat. Any drift of an installed file stops the plan.
 """
 import hashlib
@@ -36,9 +36,9 @@ SOURCE_SHA256 = {
     'svyaz.py': '6493b4acd1d3d037ae774677d74a6ed0ad1292b8d25f39172dbd267cfa5ac3db',
 }
 SOURCE_FILES = tuple(SOURCE_SHA256)
-# ua_full_access reads db.staff_ids_by_role(db.ROLE_OWNER); the smoke check imports it with the live db.py.
+# ua_owners reads db.staff_ids_by_role(db.ROLE_OWNER); the smoke check imports it with the live db.py.
 DEPENDENCY_SHA256 = {}
-NEW = ('ua_full_access.py',)
+NEW = ('ua_owners.py',)
 
 
 def build(source, dependencies):

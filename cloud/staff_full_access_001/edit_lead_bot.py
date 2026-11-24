@@ -1,17 +1,17 @@
-"""lead_bot.py (the client bot): everyone with full rights (ua_full_access: owner + managing admin) is an admin and gets every notification.
+"""lead_bot.py (the client bot): every owner from ua_owners is an admin and gets every notification.
 
-The configured MANAGER_CHAT_ID stays the first owner; owners() adds every active CRM «Владелец» and «Управляющий администратор». Admin checks, the
+The configured MANAGER_CHAT_ID stays the first owner; owners() adds every active CRM «Владелец». Admin checks, the
 owner command menus and all sends to the manager chat use owners(), each owner separately; the screens, the order
 inbox and the lead desk get the same owners function. Nothing else changes.
 """
 NAME = 'lead_bot.py'
 EDITS = (
     ('ADMIN_IDS = [int(MANAGER_CHAT_ID)] if str(MANAGER_CHAT_ID).lstrip("-").isdigit() else []\n',
-     'import ua_full_access  # STAFF-FULL-ACCESS-001: this chat + every active CRM «Владелец» and «Управляющий администратор»\n'
+     'import ua_owners  # STAFF-FULL-ACCESS-001: this chat + every active CRM «Владелец»\n'
      '\n'
      '\n'
      'def owners():\n'
-     '    return ua_full_access.ids(MANAGER_CHAT_ID)\n'),
+     '    return ua_owners.ids(MANAGER_CHAT_ID)\n'),
     ('    return user_id in ADMIN_IDS\n',
      '    return user_id in owners()\n'),
     # send_to_manager: each owner separately; the lead counts as delivered when at least one owner got it.

@@ -1,4 +1,4 @@
-"""ua_order/bindings.py: the owner inbox serves everyone with full rights (ua_full_access: owner + managing admin), each in a private chat with the bot.
+"""ua_order/bindings.py: the owner inbox serves every owner from ua_owners, each in a private chat with the bot.
 
 Every owner gets each order once (the per-recipient record already exists); a failed send retries only those not
 yet sent. Nothing else changes.
@@ -10,7 +10,7 @@ EDITS = (
      '    if owner_id <= 0:\n'
      "        raise ValueError('A private owner chat is required for order delivery')\n",
      'def owner_inbox(app, runtime, *, owners):\n'
-     '    # STAFF-FULL-ACCESS-001: owners() returns the owner chat ids (ua_full_access).\n'
+     '    # STAFF-FULL-ACCESS-001: owners() returns the owner chat ids (ua_owners).\n'
      '    if not owners():\n'
      "        raise ValueError('A private owner chat is required for order delivery')\n"),
     ("                    and update.effective_chat.type == 'private'\n"

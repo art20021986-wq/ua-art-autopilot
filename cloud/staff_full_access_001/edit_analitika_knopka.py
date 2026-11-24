@@ -1,6 +1,6 @@
-"""analitika_knopka.py (the client bot's «📊 Аналитика»): everyone with full rights (ua_full_access: owner + managing admin) passes (vladelec.txt first)."""
+"""analitika_knopka.py (the client bot's «📊 Аналитика»): every owner from ua_owners passes (vladelec.txt first)."""
 NAME = 'analitika_knopka.py'
 EDITS = (
     ('        return int(kto) == int(vladelec_id())\n',
-     '        import ua_full_access  # STAFF-FULL-ACCESS-001: every owner (vladelec.txt first + CRM «Владельцы» и «Управляющие»)\n        return int(kto) in ua_full_access.ids(vladelec_id())\n'),
+     '        import ua_owners  # STAFF-FULL-ACCESS-001: every owner (vladelec.txt first + CRM «Владельцы»)\n        return int(kto) in ua_owners.ids(vladelec_id())\n'),
 )
