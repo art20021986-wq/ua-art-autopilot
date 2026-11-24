@@ -15,7 +15,8 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ()  # STAFF-FULL-ACCESS-001 R8: menu check after the install
+FULL = ('lead_bot.py', 'client_ui.py', 'vitrina.py', 'ua_order/bindings.py', 'ua_order/host.py', 'ua_lead_desk.py',
+        'analitika_bot.py', 'analitika_knopka.py', 'karta_klienta.py')  # STAFF-FULL-ACCESS-001 R9: client bot step
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -115,7 +116,7 @@ def report(home=None):
                                                      "('lead_state','lead_state_reminders','crm_orders','crm_order_stages')")
         desk = {'tables': tables, 'track_from': track[0] if track else None, 'aggregates': aggregates}
     return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone,
-            'lead_desk': desk, 'owners': owners(), 'menus': menus()}
+            'lead_desk': desk, 'owners': owners()}
 
 
 def menus():

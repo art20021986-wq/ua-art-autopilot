@@ -22,10 +22,10 @@ def request(day):
     task = 'LEAD-DESK-PROBE-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Read-only check after CRM-FULL-ACCESS-INSTALL-20261124 (STAFF-FULL-ACCESS-001): the BOT CRM main '
-                       'menu built by the live team_bot/cars_ui for stand-in owner, managing admin and manager records '
-                       '(button labels only; no real person, id or row) and whether the managing admin sees the same '
-                       'as the owner. Bounded run in the existing private inbox in a temporary always-on task (never '
+        'description': 'Read-only check for STAFF-FULL-ACCESS-001, client bot step (owner «Да» 2026-11-24): full sanitized '
+                       'lead_bot.py, client_ui.py, vitrina.py, ua_order/bindings.py, ua_order/host.py, ua_lead_desk.py, '
+                       'analitika_bot.py, analitika_knopka.py, karta_klienta.py and every owner-naming line (sanitized; no '
+                       'ids, names or rows). Bounded run in the existing private inbox in a temporary always-on task (never '
                        'the CRM bot). No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
