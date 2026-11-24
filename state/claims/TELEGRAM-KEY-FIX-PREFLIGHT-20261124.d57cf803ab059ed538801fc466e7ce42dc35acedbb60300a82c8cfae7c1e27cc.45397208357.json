@@ -7,21 +7,23 @@
   "created_at": "2026-11-24T12:51:05Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-24T12:51:05Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-24T12:57:49Z",
+  "heartbeat_at": "2026-11-24T12:57:49Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45397208357",
     "task_id": "TELEGRAM-KEY-FIX-PREFLIGHT-20261124",
     "task_sha256": "d57cf803ab059ed538801fc466e7ce42dc35acedbb60300a82c8cfae7c1e27cc"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-20f7797b0483ebb4-f48d0cc8ff460043",
   "receipt_path": "state/receipts/TELEGRAM-KEY-FIX-PREFLIGHT-20261124.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "921f97550fec42ddf79085f808a48bc93d0567d961c0f06930b9e3ced01d89b2",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/TELEGRAM-KEY-FIX-PREFLIGHT-20261124.json",
   "request_sha256": "d57cf803ab059ed538801fc466e7ce42dc35acedbb60300a82c8cfae7c1e27cc",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "bbf61215974f20981bb3ed67cd37bd02a706443f",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91913846784,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 40.687
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-24T12:51:05Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/telegram_key_fix_001/candidate_builder.py": "a9394ed043057baa4ae2972e5cd6240b42410bc5c119c5f0b058e82530e87e22",
+      "cloud/telegram_key_fix_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/telegram_key_fix_001/deployment_bootstrap.py": "df37d81057c5dc49066f33a07547b1e6c2b440ef2419482e4c89b1416c4f6245",
+      "cloud/telegram_key_fix_001/deployment_remote.py": "b01d21d929a75d93b294a319370b3ee944b71ad8176fe2548e93b7060fd5ea7b",
+      "cloud/telegram_key_fix_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/telegram_key_fix_001/deployment_transport.py": "9d4118aafa34ad8db5f954f62fe9bf69918f876ceb4b2d00cea8af1e40f259d8",
+      "cloud/telegram_key_fix_001/make_release.py": "95ad78dda0d81fdd81e458486e1f4f2c923354164854e86fd922e29c97c113f0",
+      "cloud/telegram_key_fix_001/release_constants.py": "760ab1f17e29e26186cab5a0a7935beaf9371e658713e2d7dffefeb955d46b86",
+      "cloud/telegram_key_fix_001/test_deployment.py": "5e0214ad5a40fa46831876cee192092d630287650dbda1b541615c2b08dc5d54",
+      "cloud/telegram_key_fix_001/test_telegram_key.py": "b90fe6e99a118579d3061d6580b1abd7d4b65d7c36147e4d99a1407f7539b56f",
+      "cloud/telegram_key_fix_001/ua_telegram_key.py": "628fcbc465265664a414597552e21a465c6dd7722b64396448f037c13c75b2f4"
+    }
+  },
+  "updated_at": "2026-11-24T12:57:49Z"
 }
