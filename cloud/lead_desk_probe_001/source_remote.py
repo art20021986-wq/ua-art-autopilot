@@ -15,7 +15,7 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ()  # STAFF-FULL-ACCESS-001 R5: staff check only
+FULL = ('bezopasnost.py',)  # STAFF-FULL-ACCESS-001 R6: CRM bot step
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -145,7 +145,25 @@ def owners():
         client_user = 'beetle204' in names
     except Exception as error:
         client_user = type(error).__name__
-    return {'hits': hits, 'lead_bot': client, 'crm_staff': crm, 'beetle204_in_client_bot': client_user}
+    # R6 (2026-11-24): every line naming the owner's chat id literally (sanitized), and which bot token file the
+    # line before svyaz's «kto = _fayl("vladelec.txt")» reads (a file name only, never its content).
+    literal = []
+    for path in sorted(list(HOME.glob('*.py')) + list(HOME.glob('ua_order/*.py'))):
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_SOURCE:
+            continue
+        for n, line in enumerate(path.read_text(encoding='utf-8', errors='replace').splitlines()):
+            if '397376186' in line and len(literal) < 200:
+                literal.append({'file': str(path.relative_to(HOME)), 'line': n + 1, 'text': sanitized_line(line)[:200]})
+    svyaz_token = None
+    raw = read('svyaz.py')
+    if raw is not None:
+        lines = raw.decode('utf-8', 'replace').splitlines()
+        for n, line in enumerate(lines):
+            if line.strip() == 'kto = _fayl("vladelec.txt")':
+                window = ' '.join(lines[max(0, n - 3):n])
+                svyaz_token = [name for name in ('team_token.txt', 'bot_token.txt') if name in window]
+    return {'hits': hits, 'lead_bot': client, 'crm_staff': crm, 'beetle204_in_client_bot': client_user,
+            'owner_id_literal': literal, 'svyaz_token_file': svyaz_token}
 
 
 def staff():
