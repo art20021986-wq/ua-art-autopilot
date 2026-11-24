@@ -38,7 +38,7 @@ class EditTests(unittest.TestCase):
             with self.subTest(module.NAME):
                 result = edits.apply((HERE / 'fixtures' / fixture).read_bytes(), module.EDITS).decode()
                 self.assertIsNone(re.search(single, result))
-                self.assertIn('ua_owners', result)
+                self.assertIn("ua_full_access", result)
                 with self.assertRaisesRegex(ValueError, 'FRAGMENT_NOT_UNIQUE'):
                     edits.apply(result.encode(), module.EDITS)
 
