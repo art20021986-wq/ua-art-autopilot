@@ -1,0 +1,17 @@
+{
+  "cause": "The live client bot changed after the 2026-11-12 probes (ua_order/bindings.py gained an outbox guard); the preview's hash pin stopped the build before any write, as designed",
+  "claim_before_sha256": "dc5adbebb1c23959532f355ed4b0e09a3c414b9e9cdb320c5a88ce6fd7d86140",
+  "error": "REMOTE_PREVIEW:ValueError:INPUT_HASH:ua_order/bindings.py -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: remote preview candidate build (reads only)",
+  "leftover_temporary_task": "none: the remote preview wrote its receipt, the controller then removes its always-on task",
+  "owner_approval": "«Да» in chat 2026-11-24 to closing the old stopped claim of 12.11 (nothing changes on the server)",
+  "precedent": "state/reconciliations/AUTOSEARCH-PREFLIGHT-20261117-R2.44063423193.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-24T23:26:59+00:00",
+  "remote_mode": "preview (reads only) — stopped at the input hash check",
+  "retry": "CLIENT-FULL-ACCESS-PREFLIGHT-20261124 (rebuilt on the installed ua_full_access, bound by exact context)",
+  "run_id": "45382898089",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "STAFF-ACCESS-PREFLIGHT-20261112"
+}
