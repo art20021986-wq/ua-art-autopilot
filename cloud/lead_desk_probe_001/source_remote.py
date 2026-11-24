@@ -15,8 +15,7 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('team_bot.py', 'cars_ui.py', 'ua_home_photo_bot.py', 'ua_home_stage_bot.py', 'ua_kr_prices_bot.py',
-        'ua_telegram_key.py', 'ua_pay_bot.py', 'svyaz.py')  # STAFF-FULL-ACCESS-001 R7: managing admin = owner rights
+FULL = ()  # STAFF-FULL-ACCESS-001 R8: menu check after the install
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -116,7 +115,28 @@ def report(home=None):
                                                      "('lead_state','lead_state_reminders','crm_orders','crm_order_stages')")
         desk = {'tables': tables, 'track_from': track[0] if track else None, 'aggregates': aggregates}
     return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone,
-            'lead_desk': desk, 'owners': owners()}
+            'lead_desk': desk, 'owners': owners(), 'menus': menus()}
+
+
+def menus():
+    """STAFF-FULL-ACCESS-001 (after the install), read-only: the BOT CRM main menu as each role sees it, built by the
+    live team_bot/cars_ui for a stand-in staff record (no real person, no id); button labels only."""
+    import sys
+    try:
+        sys.path.insert(0, str(HOME))
+        os.chdir(HOME)
+        import team_bot
+        import cars_ui
+
+        def labels(role):
+            staff = {'user_id': 0, 'role': role, 'active': 1, 'full_name': '', 'username': ''}
+            markup = cars_ui.with_stats_button(team_bot.main_menu(staff))
+            return [re.sub(r'\s*\(\d+\)$', '', b.text) for row in markup.inline_keyboard for b in row]
+        owner, admin, manager = labels('owner'), labels('admin'), labels('manager')
+        return {'owner': owner, 'admin': admin, 'manager': manager, 'admin_same_as_owner': owner == admin,
+                'owner_only_checks': {name: team_bot.is_owner({'role': name}) for name in ('owner', 'admin', 'manager')}}
+    except Exception as error:
+        return {'error': type(error).__name__ + ':' + str(error)[:200]}
 
 
 RECIPIENT = re.compile(r'vladelec|VLADELEC|OWNER_ID|MANAGER_CHAT_ID|ADMIN_IDS|owner_id|is_admin\(|ROLE_OWNER|staff_ids_by_role')
