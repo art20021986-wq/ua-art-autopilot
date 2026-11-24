@@ -28,7 +28,8 @@ FAILED = 'Ключ не сохранён: ошибка записи на сер�
 def is_owner(user_id):
     import db
     staff = db.get_staff(user_id)
-    return bool(staff) and staff.get('role') == db.ROLE_OWNER
+    import ua_full_access  # STAFF-FULL-ACCESS-001: the owner and the managing admin have the same rights
+    return bool(staff) and staff.get('role') in ua_full_access.roles()
 
 
 def write_key(api_id, api_hash, path=None):
