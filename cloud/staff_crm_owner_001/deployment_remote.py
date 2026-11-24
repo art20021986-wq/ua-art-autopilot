@@ -1,4 +1,5 @@
-"""Bounded STAFF-FULL-ACCESS release (client bot owners from the CRM staff); preserve live data and pending requests."""
+"""Bounded BOT CRM release (STAFF-FULL-ACCESS-001): the managing admin gets the owner's rights and notifications;
+the roles, the CRM data, pages and pending requests are preserved and checked."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -118,45 +119,40 @@ def prepare(directory):
         if value is not None: atomic(directory/'after'/name,value,mode)
     # A source-only plan stays valid across legitimate operator edits. Actual
     # CRM/page snapshots are captured again under locks at the write boundary.
-    plan = {'schema_version':'STAFF-ACCESS-INSTALL-1','files':files,
+    plan = {'schema_version':'CRM-FULL-ACCESS-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'bots only, no page: new ua_owners.py; the client bot (lead_bot, client_ui, vitrina, ua_order bindings/host, lead desk, analytics) and the owner alerts of bezopasnost, karta_klienta and svyaz ask ua_owners (the configured chat + active CRM owners) instead of one owner chat',
+            'site_scope':'BOT CRM only, no page, no CRM row: new ua_full_access.py (full rights = «Владелец» + «Управляющий администратор»); every owner-only check, owner notification and owner money view of BOT CRM (team_bot, cars_ui, cars_schema, ai, home photo, home stage, Korea prices, telegram key, payments, guard, svyaz) asks it',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
 
 
 # Runs in a separate python3.10 (the bots' interpreter) with the candidate modules first on the path and the live
-# server root: ua_owners and the lead desk import with the installed libraries and the live db.py, every candidate
-# compiles, the configured chat is the first owner and is the chat in vladelec.txt. Yes/no and counts only, no id.
-# Nothing is written.
+# server root: every candidate compiles, ua_full_access imports with the live db.py, gives the owner and admin roles
+# and puts the vladelec.txt owner first. Yes/no and counts only, no id. Nothing is written.
 SMOKE = r"""
-import json, os, re, sys
-after, root = sys.argv[1], sys.argv[2]
+import json, os, sys
+after, root, names = sys.argv[1], sys.argv[2], sys.argv[3].split(',')
 sys.path[:0] = [after, root]
 os.chdir(root)
-for name in ('lead_bot.py', 'client_ui.py', 'vitrina.py', 'ua_order/bindings.py', 'ua_order/host.py', 'ua_lead_desk.py',
-             'analitika_bot.py', 'analitika_knopka.py', 'bezopasnost.py', 'karta_klienta.py', 'svyaz.py', 'ua_owners.py'):
+for name in names:
     compile(open(after + '/' + name, 'rb').read(), name, 'exec')
-import ua_owners, ua_lead_desk
-owner = open(root + '/vladelec.txt', encoding='utf-8').read().strip()
-source = open(root + '/lead_bot.py', encoding='utf-8').read()
-found = re.search(r'MANAGER_CHAT_ID = os\.environ\.get\("MANAGER_CHAT_ID", "([0-9]+)"\)', source)
-manager = os.environ.get('MANAGER_CHAT_ID') or (found.group(1) if found else '')
-ids = ua_owners.ids(manager)
-print(json.dumps({'owners': len(ids), 'manager_first': bool(ids) and str(ids[0]) == manager,
-                  'vladelec_is_manager': bool(owner) and owner == manager, 'desk_button': ua_lead_desk.BUTTON},
-                 ensure_ascii=False))
+import db, ua_full_access
+owner = open(root + '/vladelec.txt', encoding='utf-8').read().split()[0]
+ids = ua_full_access.ids(owner)
+print(json.dumps({'compiled': len(names), 'full_ids': len(ids), 'vladelec_first': bool(ids) and str(ids[0]) == owner,
+                  'roles_ok': ua_full_access.roles() == (db.ROLE_OWNER, db.ROLE_ADMIN)}))
 """
 
 
 def smoke(directory):
-    result = subprocess.run(['python3.10', '-B', '-c', SMOKE, str(directory/'after'), str(ROOT)],
+    names = ','.join(sorted(str(p.relative_to(directory/'after')) for p in (directory/'after').rglob('*.py')))
+    result = subprocess.run(['python3.10', '-B', '-c', SMOKE, str(directory/'after'), str(ROOT), names],
                             capture_output=True, text=True, timeout=120, check=False, cwd=str(directory))
     if result.returncode != 0:
         raise DeploymentError('SMOKE:'+result.stderr.strip()[-300:])
     value = json.loads(result.stdout.strip().splitlines()[-1])
-    if value.get('manager_first') is not True or value.get('vladelec_is_manager') is not True:
+    if value.get('vladelec_first') is not True or value.get('roles_ok') is not True:
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value, ensure_ascii=False)[:300])
     return value
 
