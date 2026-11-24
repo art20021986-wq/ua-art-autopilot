@@ -15,7 +15,8 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('bezopasnost.py',)  # STAFF-FULL-ACCESS-001 R6: CRM bot step
+FULL = ('team_bot.py', 'cars_ui.py', 'ua_home_photo_bot.py', 'ua_home_stage_bot.py', 'ua_kr_prices_bot.py',
+        'ua_telegram_key.py', 'ua_pay_bot.py', 'svyaz.py')  # STAFF-FULL-ACCESS-001 R7: managing admin = owner rights
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -162,8 +163,20 @@ def owners():
             if line.strip() == 'kto = _fayl("vladelec.txt")':
                 window = ' '.join(lines[max(0, n - 3):n])
                 svyaz_token = [name for name in ('team_token.txt', 'bot_token.txt') if name in window]
+    # R7 (2026-11-24): every owner-role check in any .py under the home (subfolders too, not backups or the inbox).
+    role_checks = []
+    wanted = re.compile(r'ROLE_OWNER|[\'"]owner[\'"]|is_owner|staff_ids_by_role')
+    for path in sorted(HOME.rglob('*.py')):
+        parts = path.relative_to(HOME).parts
+        if any(p.startswith('.') or p in ('backups', 'autopilot_inbox', 'node_modules', 'runs') for p in parts):
+            continue
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_SOURCE:
+            continue
+        for n, line in enumerate(path.read_text(encoding='utf-8', errors='replace').splitlines()):
+            if wanted.search(line) and len(role_checks) < 800:
+                role_checks.append({'file': str(path.relative_to(HOME)), 'line': n + 1, 'text': sanitized_line(line)[:200]})
     return {'hits': hits, 'lead_bot': client, 'crm_staff': crm, 'beetle204_in_client_bot': client_user,
-            'owner_id_literal': literal, 'svyaz_token_file': svyaz_token}
+            'owner_id_literal': literal, 'svyaz_token_file': svyaz_token, 'role_checks': role_checks}
 
 
 def staff():
