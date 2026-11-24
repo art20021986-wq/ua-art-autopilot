@@ -1,0 +1,63 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TELEGRAM-KEY-FIX-PREFLIGHT-20261124-R2.5322958e94d6bac92b097cb6dc9a212e7f578015fedcc1d1932cd82fe7805722.json",
+  "autostart_ledger_sha256": "1fd443e9c44cec592c6c375f568754d059e7fc5ca9ab24f1a6baff52f535e9eb",
+  "autostart_source_commit": "c2231ca97d3a896f0f39cca07c4e4d6754e665fe",
+  "created_at": "2026-11-24T14:24:38Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-24T14:31:33Z",
+  "heartbeat_at": "2026-11-24T14:31:33Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "45413438081",
+    "task_id": "TELEGRAM-KEY-FIX-PREFLIGHT-20261124-R2",
+    "task_sha256": "5322958e94d6bac92b097cb6dc9a212e7f578015fedcc1d1932cd82fe7805722"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-20f7797b0483ebb4-f48d0cc8ff460043",
+  "receipt_path": "state/receipts/TELEGRAM-KEY-FIX-PREFLIGHT-20261124-R2.json",
+  "receipt_sha256": "34aeff55dd1ecc5e1784f8cf0935f4e957ebf7525e4a949b873ad34068b995d3",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/TELEGRAM-KEY-FIX-PREFLIGHT-20261124-R2.json",
+  "request_sha256": "5322958e94d6bac92b097cb6dc9a212e7f578015fedcc1d1932cd82fe7805722",
+  "resource_locks": [
+    "PATH_SCOPE:20f7797b0483ebb4"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "dc13e9dcd623cf6e656cc8241f6dff35235ea149",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91906330624,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 40.692
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/telegram_key_fix_001/candidate_builder.py": "daf52fd3aaf91431088d19f8391f76dcba7786eeac88146f18be4a271a375f50",
+      "cloud/telegram_key_fix_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/telegram_key_fix_001/deployment_bootstrap.py": "df37d81057c5dc49066f33a07547b1e6c2b440ef2419482e4c89b1416c4f6245",
+      "cloud/telegram_key_fix_001/deployment_remote.py": "b01d21d929a75d93b294a319370b3ee944b71ad8176fe2548e93b7060fd5ea7b",
+      "cloud/telegram_key_fix_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/telegram_key_fix_001/deployment_transport.py": "9d4118aafa34ad8db5f954f62fe9bf69918f876ceb4b2d00cea8af1e40f259d8",
+      "cloud/telegram_key_fix_001/make_release.py": "95ad78dda0d81fdd81e458486e1f4f2c923354164854e86fd922e29c97c113f0",
+      "cloud/telegram_key_fix_001/release_constants.py": "1ca0e116444696419dbb9fc6f06a5391a60cce0fdab3ff50d72bfbebcf8eddac",
+      "cloud/telegram_key_fix_001/test_deployment.py": "5e0214ad5a40fa46831876cee192092d630287650dbda1b541615c2b08dc5d54",
+      "cloud/telegram_key_fix_001/test_telegram_key.py": "b90fe6e99a118579d3061d6580b1abd7d4b65d7c36147e4d99a1407f7539b56f",
+      "cloud/telegram_key_fix_001/ua_telegram_key.py": "2147408909a84d4581569f196c32fdf61c720d7cb5cb4d2b1bbefc7381a5da32"
+    }
+  },
+  "updated_at": "2026-11-24T14:31:33Z"
+}
