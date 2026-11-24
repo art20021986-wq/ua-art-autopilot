@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "aaf4e86dd41c08f56b392938183d59f21402bd255abb1745e6e28091fea29418",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-24T13:59:15Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-24T14:15:10Z",
+  "heartbeat_at": "2026-11-24T14:15:10Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "45407882231",
     "task_id": "CRM-FULL-ACCESS-INSTALL-20261124-R2",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 673.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 288.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-45407882231-3d95a45bf9d07163",
   "production_transaction_path": "state/transactions/CRM-FULL-ACCESS-INSTALL-20261124-R2.3d95a45bf9d07163f56120aa757c9382be2e6eb53d005f510c907d95366b65a3.45407882231.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "crm_db-4f274cdbaba2da1a",
   "receipt_path": "state/receipts/CRM-FULL-ACCESS-INSTALL-20261124-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "51a8324e66f7baceca58ee9a4975b2604776cc2209984b0f5447f64415d5446c",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CRM-FULL-ACCESS-INSTALL-20261124-R2.json",
   "request_sha256": "3d95a45bf9d07163f56120aa757c9382be2e6eb53d005f510c907d95366b65a3",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "5fc5148bd39900870a5891e05f5fc415f02d42127f77b07db7c67722d809ff3f",
     "file_sha256": {
@@ -99,5 +122,5 @@
       "cloud/staff_crm_owner_001/ua_full_access.py": "b90f88cacc7193beb0757f0b1236f2daad4b28ac88eb0f20cc3c9b5580b1e781"
     }
   },
-  "updated_at": "2026-11-24T13:59:15Z"
+  "updated_at": "2026-11-24T14:15:10Z"
 }
