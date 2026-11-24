@@ -1,0 +1,323 @@
+# -*- coding: utf-8 -*-
+# svyaz.py - obshchiy sloy svyazi dvuh botov UA ART.
+# Pravilo: CRM - edinstvennyy istochnik. Klientskiy bot tolko chitaet.
+# Modul samopodklyuchaemyy (usercustomize), rabochie fayly ne pravit.
+
+import os
+import sys
+import json
+import time
+import sqlite3
+import urllib.parse
+import urllib.request
+
+BAZA = "/home/Carix"
+DB = os.path.join(BAZA, "crm.db")
+LOG = os.path.join(BAZA, "svyaz_log.txt")
+SIGNAL = os.path.join(BAZA, ".svyaz_signal.json")
+PAPKA_VIDEO = os.path.join(BAZA, "video")
+PAPKA_SITE = os.path.join(BAZA, "site")
+
+# tablicy, kotorye mozhet menyat tolko CRM
+ZASHCHISHCHENO = ("cars", "ns_video")
+# fayly klientskoy chasti - iz nih zapis v cars zapreshchena
+KLIENTSKIE = ("client_ui.py", "lead_bot.py", "client_style.py")
+
+SQL_OK = getattr(sqlite3, "SQLITE_OK", 0)
+SQL_IGNORE = getattr(sqlite3, "SQLITE_IGNORE", 2)
+D_INSERT = getattr(sqlite3, "SQLITE_INSERT", 18)
+D_UPDATE = getattr(sqlite3, "SQLITE_UPDATE", 23)
+D_DELETE = getattr(sqlite3, "SQLITE_DELETE", 9)
+
+
+def _log(stroka):
+    try:
+        with open(LOG, "a", encoding="utf-8") as f:
+            f.write(time.strftime("%Y-%m-%d %H:%M:%S") + "  " + str(stroka) + "\n")
+        if os.path.getsize(LOG) > 400000:
+            with open(LOG, "r", encoding="utf-8", errors="ignore") as f:
+                hvost = f.readlines()[-1500:]
+            with open(LOG, "w", encoding="utf-8") as f:
+                f.writelines(hvost)
+    except Exception:
+        pass
+
+
+def _fayl(imya):
+    try:
+        with open(os.path.join(BAZA, imya), "r", encoding="utf-8", errors="ignore") as f:
+            return f.read().strip()
+    except Exception:
+        return ""
+
+
+def _signaly():
+    try:
+        with open(SIGNAL, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _zapomnit(povod):
+    d = _signaly()
+    d[povod] = time.time()
+    try:
+        with open(SIGNAL, "w", encoding="utf-8") as f:
+            json.dump(d, f)
+    except Exception:
+        pass
+
+
+def _pora(povod, chasov=6):
+    bylo = _signaly().get(povod, 0)
+    return (time.time() - bylo) > chasov * 3600
+
+
+def _vladelcu(tekst, povod, chasov=6):
+    if not _pora(povod, chasov):
+        return
+[REDACTED]
+    kto = _fayl("vladelec.txt")
+    if not token or not kto:
+        return
+    try:
+        dannye = urllib.parse.urlencode({"chat_id": kto, "text": tekst}).encode()
+        urllib.request.urlopen(
+            "[URL]" + token + "/sendMessage", dannye, timeout=20
+        ).read()
+        _zapomnit(povod)
+    except Exception as e:
+        _log("ne otpravil vladelcu: " + repr(e))
+
+
+# ---------------------------------------------------------------- zashchita
+def _otkuda_zapis():
+    """Vozvrashchaet imya klientskogo fayla, esli zapis idyot iz vitriny."""
+    try:
+        kadr = sys._getframe(1)
+        shag = 0
+        while kadr is not None and shag < 60:
+            imya = os.path.basename(kadr.f_code.co_filename)
+            if imya in KLIENTSKIE:
+                return imya
+            kadr = kadr.f_back
+            shag += 1
+    except Exception:
+        pass
+    return None
+
+
+def _avtorizator(deystvie, imya1, imya2, imya_bazy, trigger):
+    try:
+        if deystvie in (D_INSERT, D_UPDATE, D_DELETE):
+            tablica = (imya1 or "").lower()
+            if tablica in ZASHCHISHCHENO:
+                otkuda = _otkuda_zapis()
+                if otkuda:
+                    _log("ZAPRESHCHENO: " + otkuda + " pytalsya menyat tablicu " + tablica)
+                    _vladelcu(
+                        "Связь ботов: клиентский бот попытался изменить карточку "
+                        "в CRM (" + tablica + ", " + otkuda + "). Изменение отклонено — "
+                        "CRM остаётся единственным источником. Подробности в svyaz_log.txt",
+                        "zapis_" + tablica,
+                        6,
+                    )
+                    return SQL_IGNORE
+    except Exception:
+        pass
+    return SQL_OK
+
+
+_nastoyashchiy_connect = sqlite3.connect
+
+
+def _connect(*a, **kw):
+    con = _nastoyashchiy_connect(*a, **kw)
+    try:
+        put = a[0] if a else kw.get("database", "")
+        if isinstance(put, str) and os.path.basename(put).lower() == "crm.db":
+            con.set_authorizer(_avtorizator)
+    except Exception:
+        pass
+    return con
+
+
+_connect._ua_art = True
+
+if not getattr(sqlite3.connect, "_ua_art", False):
+    sqlite3.connect = _connect
+    _log("zashchita cars vklyuchena")
+
+
+# ---------------------------------------------------------------- proverka
+def _mashiny():
+    spisok = []
+    try:
+        con = _nastoyashchiy_connect(DB, timeout=20)
+        con.row_factory = sqlite3.Row
+        try:
+            ryady = con.execute("SELECT * FROM cars ORDER BY id").fetchall()
+        finally:
+            con.close()
+        for r in ryady:
+            spisok.append(dict(r))
+    except Exception as e:
+        _log("ne prochital bazu: " + repr(e))
+    return spisok
+
+
+def _kadrov(mashina):
+    def skolko(pole):
+        try:
+            znach = mashina.get(pole)
+            if not znach:
+                return 0
+            if isinstance(znach, str):
+                znach = json.loads(znach)
+            return len(znach or [])
+        except Exception:
+            return 0
+
+    vsego = skolko("photos")
+    skrytyh = skolko("hidden_photos")
+    vidno = vsego - skrytyh
+    return vsego, (vidno if vidno > 0 else 0), skolko("videos")
+
+
+def _stranica(nomer):
+    for papka in (PAPKA_VIDEO, PAPKA_SITE):
+        put = os.path.join(papka, str(nomer) + ".html")
+        if os.path.exists(put):
+            try:
+                with open(put, "r", encoding="utf-8", errors="ignore") as f:
+                    tekst = f.read()
+                return put, tekst
+            except Exception:
+                return put, ""
+    return "", ""
+
+
+def otchet():
+    stroki = []
+    stroki.append("ПРОВЕРКА СВЯЗИ")
+    stroki.append(time.strftime("%d.%m.%Y %H:%M") + " (время сервера)")
+    stroki.append("")
+
+    # 1. sloi sistemy
+    stroki.append("СЛОИ")
+    for imya, podpis in (
+        ("svyaz.py", "правило доступа"),
+        ("karta_klienta.py", "кнопка карточки"),
+        ("stranica_klienta.py", "пересборка страницы"),
+        ("zashchita.py", "снимки и откат"),
+        ("card_html.py", "сборка страницы"),
+    ):
+        est = os.path.exists(os.path.join(BAZA, imya))
+        stroki.append(("  есть  " if est else "  НЕТ   ") + imya + " — " + podpis)
+    stroki.append("  " + ("есть  " if getattr(sqlite3.connect, "_ua_art", False) else "НЕТ   ")
+                  + "запрет записи из витрины (в этом процессе)")
+    stroki.append("")
+
+    # 2. mashiny
+    mashiny = _mashiny()
+    opublikovano = 0
+    bedy = []
+    stroki.append("МАШИНЫ: " + str(len(mashiny)))
+    for m in mashiny:
+        nomer = m.get("auto_number") or ("id" + str(m.get("id")))
+        pokaz = str(m.get("published") or "0") in ("1", "True", "true")
+        cena = m.get("price_uah")
+        vsego, vidno, video = _kadrov(m)
+        put, tekst = _stranica(nomer)
+        na_stranice = tekst.count("data:image") if tekst else 0
+        est_video = ("<video" in tekst) if tekst else False
+        if pokaz:
+            opublikovano += 1
+
+        stroka = "  " + str(nomer) + ": "
+        stroka += "показ ДА, " if pokaz else "показ нет, "
+        stroka += ("цена есть, " if cena else "ЦЕНЫ НЕТ, ")
+        stroka += "фото " + str(vidno) + ", видео " + str(video)
+        stroki.append(stroka)
+        if put:
+            stroki.append("     страница: " + os.path.basename(os.path.dirname(put))
+                          + "/ · кадров " + str(na_stranice)
+                          + (" · видео есть" if est_video else " · видео НЕТ"))
+        else:
+            stroki.append("     страница: НЕ СОБРАНА")
+
+        if pokaz and not cena:
+            bedy.append(str(nomer) + " — опубликована без цены")
+        if pokaz and not put:
+            bedy.append(str(nomer) + " — опубликована, но страницы нет")
+        if pokaz and put and vidno and na_stranice < vidno * 0.8:
+            bedy.append(str(nomer) + " — на странице меньше кадров, чем в базе")
+        if pokaz and put and video and not est_video:
+            bedy.append(str(nomer) + " — на странице нет видео")
+
+    stroki.append("")
+    stroki.append("ОТМЕЧЕНО «Показать клиентам»: " + str(opublikovano))
+
+    # 3. popytki zapisi iz vitriny
+    popytok = 0
+    try:
+        with open(LOG, "r", encoding="utf-8", errors="ignore") as f:
+            segodnya = time.strftime("%Y-%m-%d")
+            for s in f:
+                if s.startswith(segodnya) and "ZAPRESHCHENO" in s:
+                    popytok += 1
+    except Exception:
+        pass
+    stroki.append("Попыток записи из витрины за сегодня: " + str(popytok))
+
+    stroki.append("")
+    if not mashiny:
+        stroki.append("ВЫВОД: в базе нет машин.")
+    elif opublikovano == 0:
+        stroki.append("ВЫВОД: клиенты не видят ничего — ни одна машина не отмечена "
+                      "«Показать клиентам». Нажмите эту кнопку в карточке CRM.")
+    elif bedy:
+        stroki.append("ВЫВОД: есть замечания —")
+        for b in bedy[:10]:
+            stroki.append("  · " + b)
+    else:
+        stroki.append("ВЫВОД: связь в порядке, всё опубликованное доходит до клиента.")
+
+    return "\n".join(stroki)
+
+
+async def _komanda_svyaz(update, context):
+    try:
+        tekst = otchet()
+    except Exception as e:
+        tekst = "Проверка не прошла: " + repr(e)
+    try:
+        await update.effective_message.reply_text(tekst[:4000])
+    except Exception as e:
+        _log("ne otvetil na /svyaz: " + repr(e))
+
+
+# ------------------------------------------------- podklyuchenie komandy
+try:
+    from telegram.ext import ApplicationBuilder, CommandHandler
+
+    _sborka = ApplicationBuilder.build
+
+    def _build(self, *a, **kw):
+        app = _sborka(self, *a, **kw)
+        try:
+[REDACTED]
+            crm = _fayl("team_token.txt")
+[REDACTED]
+                app.add_handler(CommandHandler("svyaz", _komanda_svyaz), group=-3)
+                _log("komanda /svyaz podklyuchena k CRM-botu")
+        except Exception as e:
+            _log("ne podklyuchil /svyaz: " + repr(e))
+        return app
+
+    _build._ua_art = True
+    if not getattr(ApplicationBuilder.build, "_ua_art", False):
+        ApplicationBuilder.build = _build
+except Exception as e:
+    _log("telegram.ext nedostupen: " + repr(e))
