@@ -22,12 +22,11 @@ def request(day):
     task = 'LEAD-DESK-PROBE-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Read-only check for STAFF-FULL-ACCESS-001, BOT CRM (owner 2026-11-24: the managing admin keeps '
-                       'the role name and gets the owner rights): full sanitized team_bot.py, cars_ui.py, '
-                       'ua_home_photo_bot.py, ua_home_stage_bot.py, ua_kr_prices_bot.py, ua_telegram_key.py, ua_pay_bot.py, '
-                       'svyaz.py, and every owner-role check line in any .py under the home (sanitized; no ids, names or '
-                       'rows). Bounded run in the existing private inbox in a temporary always-on task (never the CRM '
-                       'bot). No source, CRM, HTML, media or bot change.',
+        'description': 'Read-only check after CRM-FULL-ACCESS-INSTALL-20261124 (STAFF-FULL-ACCESS-001): the BOT CRM main '
+                       'menu built by the live team_bot/cars_ui for stand-in owner, managing admin and manager records '
+                       '(button labels only; no real person, id or row) and whether the managing admin sees the same '
+                       'as the owner. Bounded run in the existing private inbox in a temporary always-on task (never '
+                       'the CRM bot). No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
