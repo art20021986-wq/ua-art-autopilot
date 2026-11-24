@@ -1,4 +1,4 @@
-"""client_ui.py (the client bot's screens): notifications go to every owner from ua_owners, not to one chat.
+"""client_ui.py (the client bot's screens): notifications go to everyone with full rights (ua_full_access: owner + managing admin), not to one chat.
 
 register() takes a function that returns the owner chat ids (lead_bot passes it); each owner is sent to separately,
 so one failed delivery does not stop the other. Nothing else changes.
@@ -6,7 +6,7 @@ so one failed delivery does not stop the other. Nothing else changes.
 NAME = 'client_ui.py'
 EDITS = (
     ('VLADELEC = None          # заполняется при register из lead_bot.MANAGER_CHAT_ID\n',
-     'VLADELCY = None          # STAFF-FULL-ACCESS-001: функция «кто владельцы» (ua_owners), задаётся в register\n'
+     'VLADELCY = None          # STAFF-FULL-ACCESS-001: функция «кто владельцы» (ua_full_access), задаётся в register\n'
      '\n'
      '\n'
      'def _vladelcy():\n'

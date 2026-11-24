@@ -2,6 +2,8 @@
 import asyncio
 from .crm import detail_view
 from .notifications import dispatch_once
+from .outbox_guard import OutageGuard
+from .storage import StorageUnavailable
 from .telegram import CRMAdapter, CustomerAdapter, _markup
 
 # All these entrances are present in client_ui.register (27 September 2026).
@@ -63,8 +65,17 @@ def owner_inbox(app, runtime, *, owner_id):
                 )
             await asyncio.to_thread(repository.notification_recipient_sent, request_id, owner_id)
 
+    guard = OutageGuard()
+
     async def job(context):
-        await dispatch_once(runtime.service.repository, deliver)
+        # A short storage outage is retried by the next run in 5 s; only a long one reaches the error handler.
+        try:
+            await dispatch_once(runtime.service.repository, deliver)
+        except StorageUnavailable:
+            if guard.failed():
+                raise StorageUnavailable('Order storage unavailable for 5+ minutes') from None
+            return
+        guard.ok()
 
     app.job_queue.run_repeating(job, interval=5, first=1, name=JOB_NAME)
     return adapter
