@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TELEGRAM-KEY-FIX-INSTALL-20261124.555f053bb92b25e934a5b3ff171a134b7118db1599ede453fc18d8554ed4d4a0.json",
+  "autostart_ledger_sha256": "07efa4a006cf22dd900e4d9c8fa8b4fc4c42759e856933c2e035c918d99a4f96",
+  "autostart_source_commit": "08773293354b2d35854e3579a199f2522652ada6",
+  "created_at": "2026-11-24T23:49:10Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-24T23:49:10Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "45512880124",
+    "task_id": "TELEGRAM-KEY-FIX-INSTALL-20261124",
+    "task_sha256": "555f053bb92b25e934a5b3ff171a134b7118db1599ede453fc18d8554ed4d4a0"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-78b9df94e63a25f7-36c3ce503d46f292",
+  "receipt_path": "state/receipts/TELEGRAM-KEY-FIX-INSTALL-20261124.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/TELEGRAM-KEY-FIX-INSTALL-20261124.json",
+  "request_sha256": "555f053bb92b25e934a5b3ff171a134b7118db1599ede453fc18d8554ed4d4a0",
+  "resource_locks": [
+    "PATH_SCOPE:78b9df94e63a25f7"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "ac40dc9c520a6e5e17bfb703aeaef46a4e667151",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-24T23:49:10Z"
+}
