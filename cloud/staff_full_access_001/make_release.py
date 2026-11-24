@@ -5,7 +5,7 @@ Usage: python3 cloud/staff_full_access_001/make_release.py preview   # PR, merge
        python3 cloud/staff_full_access_001/make_release.py launch TASK_ID
        python3 cloud/staff_full_access_001/make_release.py install   # right after the preview: writes gate, manifest,
                                                                # owner approval, storage probe, request and launch
-STAFF-FULL-ACCESS-001: the client bot's owners are the configured chat + every active CRM «Владелец» (ua_owners).
+STAFF-FULL-ACCESS-001 step 2: the client bot's owner screens and notifications for everyone with full rights (ua_full_access).
 """
 import datetime
 import hashlib
@@ -21,14 +21,12 @@ import control_plane as cp  # noqa: E402
 P = 'cloud/staff_full_access_001/'
 from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
+EDITS = ('edit_analitika_bot.py', 'edit_analitika_knopka.py', 'edit_client_ui.py', 'edit_karta_klienta.py',
+         'edit_lead_bot.py', 'edit_lead_desk.py', 'edit_order_bindings.py', 'edit_order_host.py', 'edit_vitrina.py')
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
-                                'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'edit_analitika_bot.py', 'edit_analitika_knopka.py', 'edit_bezopasnost.py',
-                                'edit_client_ui.py', 'edit_karta_klienta.py', 'edit_lead_bot.py', 'edit_lead_desk.py',
-                                'edit_order_bindings.py', 'edit_order_host.py', 'edit_svyaz.py', 'edit_vitrina.py', 'edits.py',
-                                'make_release.py',
-                                'release_constants.py', 'ua_owners.py')]
-TESTS = [P + n for n in ('test_deployment.py', 'test_edits.py', 'test_ua_owners.py')]
+                                'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py', 'edits.py',
+                                'make_release.py', 'release_constants.py') + EDITS]
+TESTS = [P + n for n in ('test_deployment.py', 'test_edits.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'master_card.py',
              'publication_fence.py', 'publikaciya.py', 'run_all.py', 'site_ge_inject.py',
@@ -76,14 +74,14 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of STAFF-FULL-ACCESS-001 (owner 2026-11-12): reads the live client bot sources, '
-                            'checks their hashes, builds the candidate (new ua_owners.py and exact edits), compiles it and '
-                            'imports ua_owners and the lead desk with the bots\' interpreter; the configured chat is the first '
-                            'owner and the vladelec.txt chat (yes/no); measures storage. No application source, CRM, HTML, '
-                            'media or bot state changes.',
+             'description': 'Preview of STAFF-FULL-ACCESS-001 step 2, client bot (owner «Да» 2026-11-24): reads the live '
+                            'client bot sources, builds the candidate (exact context edits on the installed ua_full_access), '
+                            'compiles every file and imports ua_full_access and the lead desk with the bots\' interpreter; '
+                            'the configured chat is first and is the vladelec.txt chat (yes/no, counts only); measures '
+                            'storage. No source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview client bot owners from CRM'}
+             'title': 'Preview client bot full rights for the managing admin'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -137,19 +135,18 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner approved STAFF-FULL-ACCESS-001 (2026-11-12): the client bot\'s owners are the '
-                              'configured chat and every active CRM «Владелец» (new ua_owners.py); lead_bot, client_ui, '
-                              'vitrina, ua_order bindings/host and the lead desk send every owner notification to each owner '
-                              'and give each owner the owner screens, analytics and commands; the alerts of the CRM guard (bezopasnost), '
-                              'karta_klienta and svyaz go to each owner and every owner may use /dostup and /kopiya (nothing of '
-                              'the guard is switched off). The bot is paused for the file change and '
-                              'resumed. No CRM, page or table change. Existing backup, bot pause, writer locks, '
-                              'data-preservation, rollback and public health checks are kept.',
+               'description': 'Owner approved STAFF-FULL-ACCESS-001 step 2, client bot («Да» 2026-11-24 to doing the '
+                              'same as in BOT CRM): lead_bot, client_ui, vitrina, ua_order bindings/host, the lead desk, '
+                              'analitika_bot/knopka and karta_klienta ask the installed ua_full_access (the configured chat + '
+                              'active owners and managing admins) instead of one owner chat, so the managing admin gets the '
+                              'owner screens, commands, analytics and every owner notification. No CRM row, page or table '
+                              'change. The bot is paused for the file change and resumed. Existing backup, bot pause, writer '
+                              'locks, data-preservation, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/katalog.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install client bot owners from CRM'}
+               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install client bot full rights for the managing admin'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),
