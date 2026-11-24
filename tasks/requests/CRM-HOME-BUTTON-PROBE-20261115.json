@@ -1,0 +1,35 @@
+{
+  "ai_requested": false,
+  "changed_paths": [
+    "cloud/crm_home_button_probe_001/evidence.json",
+    "cloud/crm_home_button_probe_001/sanitized_sources.txt"
+  ],
+  "complexity": 2,
+  "control_plane_version": "TASK107-R2",
+  "description": "Read-only facts for the CRM bot «🏠 Главная» button (CRM-HOME-BUTTON-001, owner 2026-11-15): fixed GETs of the /home/Carix listing, team_bot.py and the bot modules it imports (where the command list / menu button is set, where a reply keyboard is sent or removed, how /start and the message catcher are registered). No remote writes, no data.",
+  "execution": {
+    "controller_path": "cloud/crm_home_button_probe_001/controller.py",
+    "controller_sha256": "50244929698b6cd501e16ed7e40995acee56ca73699ee91772b13f6572bbf56e",
+    "dependency_paths": [],
+    "evidence_paths": [
+      "cloud/crm_home_button_probe_001/evidence.json",
+      "cloud/crm_home_button_probe_001/sanitized_sources.txt",
+      "state/receipts/CRM-HOME-BUTTON-PROBE-20261115.json"
+    ],
+    "file_sha256": {
+      "cloud/crm_home_button_probe_001/test_contract.py": "9cf0a4902d56be888ae9614da728c61b6b2815c46f016869b5f4bbd0fd947b21"
+    },
+    "production_required": false,
+    "receipt_path": "state/receipts/CRM-HOME-BUTTON-PROBE-20261115.json",
+    "test_paths": [
+      "cloud/crm_home_button_probe_001/test_contract.py"
+    ],
+    "timeout_seconds": 900
+  },
+  "production_required": false,
+  "read_only": true,
+  "requested_min_class": "STANDARD",
+  "storage_required_bytes": 16777216,
+  "task_id": "CRM-HOME-BUTTON-PROBE-20261115",
+  "title": "Read-only facts for the CRM home button"
+}

@@ -1,0 +1,17 @@
+{
+  "cause": "bundle file names; renamed and a test added (#1772)",
+  "claim_before_sha256": "e5f8daba208a3867d759c9972eefe2d0c55a0f06025d3d86576196453c74cbda",
+  "error": "deployment_transport.TransportError: REMOTE_PENDING_TRIGGER_283266 -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: the server unpacker refused the bundle (file names cabinet_v1.py, test_autosearch2.py outside [a-z_]+.py), so the remote preview never started",
+  "leftover_temporary_task": "none: the controller deleted the always-on task 283266 after the preview wait",
+  "owner_approval": "«Да» in chat 2026-11-17 to closing the claim by manual reconciliation and retrying",
+  "precedent": "state/reconciliations/AUTOSEARCH-PREFLIGHT-20261117-R2.44063423193.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-17T13:10:00+00:00",
+  "remote_mode": "preview (reads only) — not started",
+  "retry": "AUTOSEARCH2-PREFLIGHT-20261117-R2",
+  "run_id": "44082190717",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "AUTOSEARCH2-PREFLIGHT-20261117"
+}

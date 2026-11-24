@@ -1,0 +1,23 @@
+{
+  "claim_before_sha256": "2b01f62f302e547efe9161ca3dd5f68fff8de159dd67fc8e21ee481fbd693608",
+  "claim_status_before": {
+    "production_transaction_status": "ROLLED_BACK",
+    "task_execution_status": "ROLLED_BACK"
+  },
+  "crm_unchanged": true,
+  "error": "RuntimeError: REMOTE_INSTALL:FileNotFoundError: [Errno 2] No such file or directory: '/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/newcarvin2-5768…/backups/ad087…' (truncated by the controller)",
+  "failed_step": "execute / critical / controller_production: remote install lifecycle -> load_backup, before any application write",
+  "halt_archive": "state/halt_history/NEW-CAR-VIN-SPEC-INSTALL-20261113.43448599794/halt.json",
+  "live_verify": "PASS (rollback receipt state/receipts/NEW-CAR-VIN-SPEC-INSTALL-20261113-ROLLBACK.json: restored, crm_unchanged, protected_files_unchanged, live_verify PASS, bot resumed)",
+  "next": "read-only server probe of the backup folder before any new install; new install only after a fresh preview and the coordinator queue",
+  "owner_statement": "«Да» in chat 2026-11-14 to lifting the emergency halt",
+  "precedent": "state/reconciliations/KOREA-HOW-SYNC-INSTALL-20261111-R3.43011010327.authenticated-evidence.json",
+  "production_transaction_status": "ROLLED_BACK (closed by the autopilot recover job 2026-11-13T15:32:27Z)",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-14T03:00:00+00:00",
+  "rollback_status": "PASS (automatic, run 43448599794)",
+  "run_id": "43448599794",
+  "site_state_after": "unchanged",
+  "task_id": "NEW-CAR-VIN-SPEC-INSTALL-20261113",
+  "workflow_conclusion": "failure"
+}

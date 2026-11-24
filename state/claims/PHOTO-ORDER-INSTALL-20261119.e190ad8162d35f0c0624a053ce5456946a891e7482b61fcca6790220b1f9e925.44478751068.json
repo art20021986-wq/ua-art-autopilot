@@ -1,0 +1,115 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PHOTO-ORDER-INSTALL-20261119.e190ad8162d35f0c0624a053ce5456946a891e7482b61fcca6790220b1f9e925.json",
+  "autostart_ledger_sha256": "5002053ffee64ad1fb4d0eed02c94a553f07d06fc9f764bea89c0f5f0bd3700f",
+  "autostart_source_commit": "9e3db0e839e9f6c6096b3ba3a5f482269779ced0",
+  "created_at": "2026-11-19T07:21:13Z",
+  "critical_gate_evidence_sha256": "6255a4607c5098fe7e93658423c5a20e296717780504b914a1c51e7e103dc314",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-19T07:42:55Z",
+  "heartbeat_at": "2026-11-19T07:42:55Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "44478751068",
+    "task_id": "PHOTO-ORDER-INSTALL-20261119",
+    "task_sha256": "e190ad8162d35f0c0624a053ce5456946a891e7482b61fcca6790220b1f9e925"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 514.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 116.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 278.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 292.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-44478751068-e190ad8162d35f0c",
+  "production_transaction_path": "state/transactions/PHOTO-ORDER-INSTALL-20261119.e190ad8162d35f0c0624a053ce5456946a891e7482b61fcca6790220b1f9e925.44478751068.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "path_scope-d0df081223f03bb5-64aedd582edbd4b9",
+  "receipt_path": "state/receipts/PHOTO-ORDER-INSTALL-20261119.json",
+  "receipt_sha256": "9f2c59f1b57756c72427ac3bc08aeef944e83707bff70d01a32dd7efefb07aab",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/PHOTO-ORDER-INSTALL-20261119.json",
+  "request_sha256": "e190ad8162d35f0c0624a053ce5456946a891e7482b61fcca6790220b1f9e925",
+  "resource_locks": [
+    "PATH_SCOPE:d0df081223f03bb5"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "80dfe99cbe2db222af0de252910c35181c4fb0d3",
+  "storage_preflight": {
+    "age_seconds": 372.15,
+    "allowed": true,
+    "evidence_path": "state/storage/PHOTO-ORDER-INSTALL-20261119.json",
+    "evidence_sha256": "779d8480c9f5b3547d503f3f9071b7d787e03f98f06fed9e6611d7d1494ab73a",
+    "free_bytes": 17508097536,
+    "heavy": true,
+    "measured_at": "2026-11-19T07:16:28.936343+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 49.97686418285714
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/photo_order_001/candidate_builder.py": "700dcbbd630722df23e4815dee87075b1cdf995aba1a01874c8f6b787882e5b4",
+      "cloud/photo_order_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/photo_order_001/deployment_bootstrap.py": "d878cc03a5b3cb818bb60337c411c962f74191aee11021c8ef33f4c137e5e2ca",
+      "cloud/photo_order_001/deployment_remote.py": "7f263df2d1a111c7c07124d74064ef676f842be491e218b6720c4547f1056845",
+      "cloud/photo_order_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/photo_order_001/deployment_transport.py": "122d7a1180a528a95f30166a656d4c653b29dc98da0346e298989e4608dffced",
+      "cloud/photo_order_001/edit_cars_ui.py": "fd92fa81b0d52506045188981055457262d1c9b3efe8439055ce4b2b7036c145",
+      "cloud/photo_order_001/edits.py": "265393a467603c880a9a616f6760dabae7962c2898eabbd6cf794ec91c9490ef",
+      "cloud/photo_order_001/fixtures/cars_ui_photos.py": "91d9988d2d20dc5524c913934d5d49dc79ddc3eec0e387fc08851e3129ab670a",
+      "cloud/photo_order_001/make_release.py": "ae294b64e9a2fa1964b9390713d3acedee73f57c6f5550faf7362453213e7ea4",
+      "cloud/photo_order_001/release_constants.py": "92316dcd178fa48d4be0400ad6afbf1e550831a067c39761201fc79c39a71d70",
+      "cloud/photo_order_001/test_deployment.py": "399eed5f3a1a89ac9a820feb35eb2a77143a4cb0357314ddb61246b117ccf511",
+      "cloud/photo_order_001/test_photo_order.py": "f447587101a3968826dc632a57b0fbac2d67e52ab15a50f9607ce5e9e6857126"
+    }
+  },
+  "updated_at": "2026-11-19T07:42:55Z"
+}

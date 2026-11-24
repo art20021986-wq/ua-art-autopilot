@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/video_limit_probe_001/20261119-R3.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "5230b0da77dfb6f086d4d1ffa1914cc04cc684ffcc1d4ba3d414a3dca8cba4cc",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "44499483347",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "VIDEO-LIMIT-PROBE-20261119-R3",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}

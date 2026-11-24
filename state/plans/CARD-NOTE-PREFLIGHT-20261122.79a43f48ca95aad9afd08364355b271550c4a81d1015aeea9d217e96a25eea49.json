@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CARD-NOTE-PREFLIGHT-20261122.79a43f48ca95aad9afd08364355b271550c4a81d1015aeea9d217e96a25eea49.json",
+  "autostart_ledger_sha256": "6efbd4ad6efe30c22d6ed36d7b3025612d8189d275ecaeda70a0e387d0963f84",
+  "autostart_source_commit": "a2713da73afc32df8f1eab5a853c2d1cd0fb38bf",
+  "created_at": "2026-11-22T11:02:12Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45014539594",
+    "task_id": "CARD-NOTE-PREFLIGHT-20261122",
+    "task_sha256": "79a43f48ca95aad9afd08364355b271550c4a81d1015aeea9d217e96a25eea49"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-248988214ee83c69-c6554e3e513369eb",
+  "request_path": "tasks/requests/CARD-NOTE-PREFLIGHT-20261122.json",
+  "resource_locks": [
+    "PATH_SCOPE:248988214ee83c69"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

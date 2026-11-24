@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-FAQ-PREFLIGHT-20261113.d25e1dd95ce1dc33a4315dd963911889e65b343b230ed3d7c82396f8dbfcd34e.json",
+  "autostart_ledger_sha256": "c4e944e4488af3f8f1d6109b6eb25e6bd732e774fcb38d6a5dcb42a38b3b09eb",
+  "autostart_source_commit": "98198a1ac7145d5a6c97ef86ce441da93f3e2e01",
+  "created_at": "2026-11-13T12:13:47Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43423206958",
+    "task_id": "KOREA-FAQ-PREFLIGHT-20261113",
+    "task_sha256": "d25e1dd95ce1dc33a4315dd963911889e65b343b230ed3d7c82396f8dbfcd34e"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-018bc45d40616890-48e8afd552a295e1",
+  "request_path": "tasks/requests/KOREA-FAQ-PREFLIGHT-20261113.json",
+  "resource_locks": [
+    "PATH_SCOPE:018bc45d40616890"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

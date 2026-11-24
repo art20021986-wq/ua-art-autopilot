@@ -48,6 +48,12 @@ class Tests(unittest.TestCase):
         c.collect(api)
         self.assertFalse(any(m == 'DELETE' for m, _ in api.calls))
 
+    def test_lot_probe_leftover_removed_other_tasks_kept(self):
+        probe = {'id': 905, 'description': 'Card diag probe probe 1', 'enabled': True, 'state': 'running',
+                 'command': 'python3.10 /home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/lotprobe_bootstrap.py --mode probe'}
+        other = {'id': 906, 'description': 'x', 'enabled': True, 'state': 'running', 'command': 'python3.10 watch.py'}
+        self.assertEqual([t['id'] for t in c.leftovers([BOT, probe, other])], [905])
+
     def test_nothing_left_means_no_delete(self):
         api = FakeApi([BOT])
         value = c.collect(api)
@@ -73,6 +79,20 @@ class Tests(unittest.TestCase):
         self.assertEqual(receipt['status'], 'FINISHED')
         evidence = json.loads((root/c.PACKAGE/'evidence.json').read_text())
         self.assertEqual([t['id'] for t in evidence['leftovers_found']], [900])
+
+    def test_later_check_has_its_own_evidence_file(self):
+        root = Path(tempfile.mkdtemp())
+        (root/c.PACKAGE).mkdir(parents=True)
+        (root/c.PACKAGE/'evidence.json').write_text('{}')  # the 13.11 evidence stays
+        task = 'SERVER-CHECK-20261117-R2'
+        request = root/'tasks/requests'/(task + '.json')
+        request.parent.mkdir(parents=True)
+        request.write_text(json.dumps({'production_required': False}))
+        env = {'UAART_TASK_ID': task, 'UAART_RUN_ID': '2', 'UAART_RECEIPT_PATH': 'state/receipts/%s.json' % task,
+               'UAART_REQUEST_PATH': 'tasks/requests/%s.json' % task, 'UAART_REQUEST_SHA256': c.sha(request.read_bytes())}
+        receipt = c.execute(env, root=root, api=FakeApi([BOT, LEFT]))
+        self.assertEqual(receipt['evidence_path'], c.PACKAGE + '/evidence-%s.json' % task)
+        self.assertEqual((root/c.PACKAGE/'evidence.json').read_text(), '{}')
 
     def test_wrong_identity_refused(self):
         with self.assertRaisesRegex(c.ProbeError, 'IDENTITY'):

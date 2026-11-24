@@ -25,3 +25,6 @@ ANALYTICS-AUDIT-PROBE-20261113: 0 запросов к странице за 10 �
   API PythonAnywhere при удалении временной задачи (серверный бэкап завершился). open/install/rollback не выполнялись,
   сайт и CRM не менялись. Владелец «Да» → сверка #1451 (образец #175). SERVER-CHECK-20261113 (run 43374904889): бот Running,
   временных задач нет, CPU 38% — причина таймаута разовая задержка API. Повтор: превью R3 → INSTALL-R2 в конце очереди.
+- УСТАНОВЛЕНО 2026-11-13 ~14:45 UTC: превью R3 PASS (run 43442651276), OLD-PODBOR-INSTALL-20261113-R2 FINISHED
+  (run 43443700975): backup/live_verify PASS, CRM и защищённые файлы без изменений, бот running. Живой сайт:
+  video/order/podbor.html 404; video/podbor.html 200 с выбором стран; video/order/order.js, order.css 200.

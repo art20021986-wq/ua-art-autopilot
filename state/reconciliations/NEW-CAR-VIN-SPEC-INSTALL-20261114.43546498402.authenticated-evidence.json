@@ -1,0 +1,24 @@
+{
+  "claim_before_sha256": "d280e06233741383643982083842e52cc9ee59cad438dd4a06a8dc2218451227",
+  "claim_status_before": {
+    "production_transaction_status": "ROLLED_BACK",
+    "task_execution_status": "ROLLED_BACK"
+  },
+  "crm_unchanged": true,
+  "error": "RuntimeError: REMOTE_INSTALL:FileNotFoundError:No such file or directory:/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/newcarvin2-34c90b60…/backups/d845c38b…/after/cars_ui.py",
+  "failed_step": "execute / critical / controller_production: remote install lifecycle, before any application write",
+  "fix": "#1604: write_order(plan) from the plan; tests on the real plan (fail on the old installer)",
+  "halt_archive": "state/halt_history/NEW-CAR-VIN-SPEC-INSTALL-20261114.43546498402/halt.json",
+  "live_verify": "PASS (rollback receipt state/receipts/NEW-CAR-VIN-SPEC-INSTALL-20261114-ROLLBACK.json: restored, crm_unchanged, protected_files_unchanged, live_verify PASS)",
+  "owner_statement": "«Да» in chat 2026-11-14 to lifting the emergency halt and to a new install with the fixed installer",
+  "precedent": "state/reconciliations/NEW-CAR-VIN-SPEC-INSTALL-20261113.43448599794.authenticated-evidence.json",
+  "production_transaction_status": "ROLLED_BACK (closed by the autopilot recover job 2026-11-14T02:58:18Z)",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-14T03:20:00+00:00",
+  "rollback_status": "PASS (automatic, run 43546498402)",
+  "root_cause": "deployment_remote.lifecycle wrote a fixed 'cars_ui.py' last (template line); the plan of this package has ua_new_car_bot.py and ua_vin_decode.py only. Same cause as NEW-CAR-VIN-SPEC-INSTALL-20261113.",
+  "run_id": "43546498402",
+  "site_state_after": "unchanged",
+  "task_id": "NEW-CAR-VIN-SPEC-INSTALL-20261114",
+  "workflow_conclusion": "failure"
+}

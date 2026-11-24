@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-HOME-BUTTON-INSTALL-20261115.b10f306ec3b5e4ecf06892332479a6c5d2d0e7bb3e27d80771d148c688a89cd0.json",
+  "autostart_ledger_sha256": "2e089bfa9c2d36ac7333a45e8c73cecfd3eb594f2d2ccdb322a4bae3bdf8e46b",
+  "autostart_source_commit": "ddfb44cbb1311c89088aa80d5504d10c51ef8abc",
+  "created_at": "2026-11-15T06:30:09Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43685618220",
+    "task_id": "CRM-HOME-BUTTON-INSTALL-20261115",
+    "task_sha256": "b10f306ec3b5e4ecf06892332479a6c5d2d0e7bb3e27d80771d148c688a89cd0"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-172dfad9795fbaef-a419aec02a1f01a8",
+  "request_path": "tasks/requests/CRM-HOME-BUTTON-INSTALL-20261115.json",
+  "resource_locks": [
+    "PATH_SCOPE:172dfad9795fbaef"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

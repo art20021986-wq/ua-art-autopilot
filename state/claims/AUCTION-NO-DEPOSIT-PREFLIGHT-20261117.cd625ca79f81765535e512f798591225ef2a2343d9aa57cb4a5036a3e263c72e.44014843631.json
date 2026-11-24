@@ -1,0 +1,65 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUCTION-NO-DEPOSIT-PREFLIGHT-20261117.cd625ca79f81765535e512f798591225ef2a2343d9aa57cb4a5036a3e263c72e.json",
+  "autostart_ledger_sha256": "ba542a88489f03521d457c91d17144f85c2ba4986defc337362a491199e85cf7",
+  "autostart_source_commit": "4c1e48639b39f89531d8d60a69eb3a0bfe8827f9",
+  "created_at": "2026-11-17T04:08:08Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-17T04:14:21Z",
+  "heartbeat_at": "2026-11-17T04:14:21Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "44014843631",
+    "task_id": "AUCTION-NO-DEPOSIT-PREFLIGHT-20261117",
+    "task_sha256": "cd625ca79f81765535e512f798591225ef2a2343d9aa57cb4a5036a3e263c72e"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-5888ed38468e4140-5df5a985d81ba96a",
+  "receipt_path": "state/receipts/AUCTION-NO-DEPOSIT-PREFLIGHT-20261117.json",
+  "receipt_sha256": "7c581298d41dc9f4bec32a4f0b0bbdfcd1ad2e5869e6033dad76cde3ae7df096",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/AUCTION-NO-DEPOSIT-PREFLIGHT-20261117.json",
+  "request_sha256": "cd625ca79f81765535e512f798591225ef2a2343d9aa57cb4a5036a3e263c72e",
+  "resource_locks": [
+    "PATH_SCOPE:5888ed38468e4140"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "f81c567ba36b5341edd195af4467a864abae7d07",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92083482624,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.578
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "d235df7a16643ef13ce0b089793e94768680307b18a4c21269cec055c23e1a35",
+    "file_sha256": {
+      "cloud/auction_no_deposit_001/candidate_builder.py": "59adf8ec1740b3d02a769e9b72f91d395d219832adacb880257dbbbaacfb6762",
+      "cloud/auction_no_deposit_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/auction_no_deposit_001/deployment_bootstrap.py": "2d462d6ce0c11899c2d016175496db8d649c8427712e614c7ab7d5d0926f6718",
+      "cloud/auction_no_deposit_001/deployment_remote.py": "244e1233816cf9b59c709096515930fa2429df4b3e42129ce9a2c45cf52fdc11",
+      "cloud/auction_no_deposit_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/auction_no_deposit_001/deployment_transport.py": "9c483b4a58e1596d86a9f1b9386969666672deaf00f04f39c9666082c2371245",
+      "cloud/auction_no_deposit_001/make_release.py": "6cfdd6d581ed3bf992ab9a1d4472ed84156b266fdaebd645b89dc981614a07dd",
+      "cloud/auction_no_deposit_001/release_constants.py": "d15f0e42936dc878aa25e460950fb64b34f5a7d00ced331c0a4dc6689beb00f7",
+      "cloud/auction_no_deposit_001/test_deployment.py": "684ea91eb1a01486ac56268649ccc57ed191ebc6887333be1a76cbca356b8678",
+      "cloud/auction_no_deposit_001/test_no_deposit.py": "fd0037ead088ebc65a9e3f9fc29f3812ee69f563f2ecd82ec5f7f8cf4d1898e3",
+      "cloud/auction_no_deposit_001/ua_auction_clients.py": "b11af703b02c2b078db7e4bea55e95643f0c0d5a8232e259582664dbf312a797",
+      "cloud/auction_no_deposit_001/ua_auction_clients_bot.py": "363d603e61856bce6729b862562f75463b1d6abd1511ea80b6564c3d7fcb14ce",
+      "cloud/auction_no_deposit_001/ua_auction_clients_view.py": "f3f1f04fc26d8bcdaba8e9e98a35d6572acb4bbfd2faaf76c57b577288cafb0c"
+    }
+  },
+  "updated_at": "2026-11-17T04:14:21Z"
+}

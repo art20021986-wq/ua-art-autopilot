@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/AUTOSEARCH2-PREFLIGHT-20261117-R3.d7124c69c78966e1e01b3cfd8b79c66f7fec7d7bcdb1ccf32a5b46005427eef6.json",
+  "autostart_ledger_sha256": "7d87a623aade914b689fef876ddf6386d6ff2ac3603052ad097b4837c1b2d8f6",
+  "autostart_source_commit": "9bc1460ce4a0d495dacc02cfe2063875160fb0e9",
+  "created_at": "2026-11-17T13:00:22Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "44088185488",
+    "task_id": "AUTOSEARCH2-PREFLIGHT-20261117-R3",
+    "task_sha256": "d7124c69c78966e1e01b3cfd8b79c66f7fec7d7bcdb1ccf32a5b46005427eef6"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-311d4224ce5c4a13-679ef16f21cc8bdf",
+  "request_path": "tasks/requests/AUTOSEARCH2-PREFLIGHT-20261117-R3.json",
+  "resource_locks": [
+    "PATH_SCOPE:311d4224ce5c4a13"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

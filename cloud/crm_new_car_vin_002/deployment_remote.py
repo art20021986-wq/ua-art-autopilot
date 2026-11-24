@@ -271,6 +271,19 @@ def restore(directory, plan):
     verify_files(plan,False)
 
 
+def error_text(error):
+    """Error for the receipt; a missing file keeps its full path (the old 180-character cut hid it)."""
+    if isinstance(error, OSError) and error.filename:
+        return '%s:%s:%s' % (type(error).__name__, error.strerror, error.filename)
+    return type(error).__name__+':'+str(error)[:180]
+
+
+def write_order(plan):
+    """New modules first, then the replaced ones, so a replaced file never imports a module not yet written."""
+    files = plan['files']
+    return sorted(files, key=lambda name: (files[name]['before'] is not None, name))
+
+
 def lifecycle(mode, run_id, expected_plan, backup_sha):
     directory,manifest = load_backup(backup_sha)
     if manifest['plan_sha256'] != expected_plan or manifest['run_id'] != run_id:
@@ -303,8 +316,7 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
                     state.update(stage='APPLYING',data_before=before)
                     atomic(journal,canonical(state));applied=True
                     try:
-                        ordered=[n for n in plan['files'] if n!='cars_ui.py']+['cars_ui.py']
-                        for relative in ordered:
+                        for relative in write_order(plan):
                             atomic(ROOT/relative,read(directory/'after'/relative),plan['files'][relative]['mode'])
                         verify_files(plan,True)
                         if protected_data()!=before: raise DeploymentError('PROTECTED_DATA_CHANGED_DURING_INSTALL')
@@ -318,7 +330,7 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
                               preservation_scope='WHILE_BOT_PAUSED_UNDER_WRITER_LOCKS',
                               protected_data_sha256=sha(canonical(before)))
         except Exception as error:
-            result={'status':'FAIL','error':type(error).__name__+':'+str(error)[:180]}
+            result={'status':'FAIL','error':error_text(error)}
             if applied:
                 try:
                     with writer_exclusion(): restore(directory,plan)
@@ -431,7 +443,7 @@ def main():
                              code_sha256={name: item['after'] for name, item in manifest['plan']['files'].items()})
             value['safe_to_stop'] = True
         except Exception as error:
-            value['error'] = type(error).__name__+':'+str(error)[:180]
+            value['error'] = error_text(error)
             if args.mode in ('preview', 'backup', 'verify'):
                 value['safe_to_stop'] = True
             else:

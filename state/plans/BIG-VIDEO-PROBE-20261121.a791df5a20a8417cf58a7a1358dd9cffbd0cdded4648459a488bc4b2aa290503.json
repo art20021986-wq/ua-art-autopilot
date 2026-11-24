@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/BIG-VIDEO-PROBE-20261121.a791df5a20a8417cf58a7a1358dd9cffbd0cdded4648459a488bc4b2aa290503.json",
+  "autostart_ledger_sha256": "be4fd14ca3f4f477b2630ec223eaaa6ce32e3cffd39b45aca330b1fc185d86d6",
+  "autostart_source_commit": "e133f290bd740a0f407ba23667ef7f675e24cebb",
+  "created_at": "2026-11-21T04:10:57Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "44864668665",
+    "task_id": "BIG-VIDEO-PROBE-20261121",
+    "task_sha256": "a791df5a20a8417cf58a7a1358dd9cffbd0cdded4648459a488bc4b2aa290503"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-ec1397e1ee87ccd5-df0cea1ecf6382ac",
+  "request_path": "tasks/requests/BIG-VIDEO-PROBE-20261121.json",
+  "resource_locks": [
+    "PATH_SCOPE:ec1397e1ee87ccd5"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

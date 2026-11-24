@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ORDER-GUARD-INSTALL-20261114-R2.87c2010d1341526cfd64622a362ab634cdbff60ce91aebf90716166f659d5a92.json",
+  "autostart_ledger_sha256": "c6c1c676e3e994d0e155e81cef73c207b0e5f075ffa6a66ee5605b92e6f44b39",
+  "autostart_source_commit": "214ed2b80cac5f753d0ae31c2e79992e7316da30",
+  "created_at": "2026-11-14T12:03:25Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43592798938",
+    "task_id": "ORDER-GUARD-INSTALL-20261114-R2",
+    "task_sha256": "87c2010d1341526cfd64622a362ab634cdbff60ce91aebf90716166f659d5a92"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-9d7d2cb63e5c87e1-75797be5b1d210de",
+  "request_path": "tasks/requests/ORDER-GUARD-INSTALL-20261114-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:9d7d2cb63e5c87e1"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

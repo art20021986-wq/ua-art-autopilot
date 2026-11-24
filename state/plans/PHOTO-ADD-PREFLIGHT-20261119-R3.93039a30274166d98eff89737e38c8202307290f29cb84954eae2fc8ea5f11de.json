@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PHOTO-ADD-PREFLIGHT-20261119-R3.93039a30274166d98eff89737e38c8202307290f29cb84954eae2fc8ea5f11de.json",
+  "autostart_ledger_sha256": "43c37467ef4fa68b39cf30ead253cc0c12806a906b140cda71e286fd9c95c767",
+  "autostart_source_commit": "9a6db78bfa4b9d0637896d78553540c77acc121f",
+  "created_at": "2026-11-19T04:09:14Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "44456168936",
+    "task_id": "PHOTO-ADD-PREFLIGHT-20261119-R3",
+    "task_sha256": "93039a30274166d98eff89737e38c8202307290f29cb84954eae2fc8ea5f11de"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-3ebdb7d77c6ec671-ced0b26ed2b69a8b",
+  "request_path": "tasks/requests/PHOTO-ADD-PREFLIGHT-20261119-R3.json",
+  "resource_locks": [
+    "PATH_SCOPE:3ebdb7d77c6ec671"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

@@ -35,3 +35,17 @@
 Пакет cloud/chat_brand_001 (на основе cloud/chat_button_002, который больше не запускать). Фото для владельца:
 cloud/photos/26-CHAT-BRAND.png, cloud/photos/26-CHAT-BRAND-AUTORIA.png, cloud/photos/26-CHAT-BRAND-SEO.png. Порядок: CHAT-BRAND-PREFLIGHT-20261113 (проба PASS, без AUTO.RIA) → CHAT-BRAND-PREFLIGHT-20261113-R2 (проба с AUTO.RIA, сайт не меняется) → «да» владельца (получено 13.11) → новая проба R3 на живых файлах после 23/16/25/24/12, только по «твоя очередь» координатора →
 CHAT-BRAND-INSTALL-20261113 (бэкап/откат/проверки) — только в свою очередь установок.
+
+## 5. Письмо AUTO.RIA (13.11, владелец через координатора; скрин cloud/photos/26-autoria-request.jpg)
+- Текст кнопки отзывов на главной «Усі відгуки та продані авто» → «Дивіться всі авто та відгуки від UA ART COMPANY на
+  AUTO.RIA» (ru «Смотрите все авто и отзывы UA ART COMPANY на AUTO.RIA», ka по смыслу). Старый текст есть только на
+  главной (проверены все страницы sitemap). Модуль ua_autoria_text.py (apply/revert), подключён в сборку и inject_html,
+  откат возвращает прежний текст. Готово.
+- Логотип: их правильный — «auto» (красный) + «RIA» со звездой и «.com» (синий). Файл подготовила сессия «Авто РИА
+  задача» из сообщения AUTO.RIA (владелец там: «Обработай», «да» на текст и логотип): cloud/photos/autoria-logo-official.svg
+  (135×40, как живой). В пакете — autoria_logo.py (сборщик переносит только .py), заменяет video/brand/autoria-logo.svg на
+  месте: кнопка отзывов и все значки «Ми на AUTO.RIA» обновятся. Кэш не мешает (сервер: no-cache, must-revalidate).
+  Проба в браузере: cloud/photos/26-CHAT-BRAND-AUTORIA-LOGO.png. Тесты 53/53.
+
+## Итог
+УСТАНОВЛЕНО 2026-11-13: CHAT-BRAND-INSTALL-20261113 FINISHED (run 43433941183), все проверки PASS; живая проверка 80/80 страниц OK.

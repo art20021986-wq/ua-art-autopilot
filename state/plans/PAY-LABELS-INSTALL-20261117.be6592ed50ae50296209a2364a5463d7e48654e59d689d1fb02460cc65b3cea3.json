@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PAY-LABELS-INSTALL-20261117.be6592ed50ae50296209a2364a5463d7e48654e59d689d1fb02460cc65b3cea3.json",
+  "autostart_ledger_sha256": "6a6b5d683350a36f400f128ca3ba2c08658b8137af0b97882d11bea5b9541da9",
+  "autostart_source_commit": "97c8534421a4200ccb551bbd23e5379796e4e917",
+  "created_at": "2026-11-17T07:34:49Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "44039588412",
+    "task_id": "PAY-LABELS-INSTALL-20261117",
+    "task_sha256": "be6592ed50ae50296209a2364a5463d7e48654e59d689d1fb02460cc65b3cea3"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "homepage-68ed6564ebea221c",
+  "request_path": "tasks/requests/PAY-LABELS-INSTALL-20261117.json",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-WEEKTILE-PREFLIGHT-20261119.4a678c7e340be10786bef442542c768e323dd5770b713333cd260d321bfdad3b.json",
+  "autostart_ledger_sha256": "ad1d7436e291b8c9625d7135545157e6815d10833f15049ab911dbc301b46ed2",
+  "autostart_source_commit": "412d6c27722bcd51f8c11fa4ddf84d627848cf1d",
+  "created_at": "2026-11-19T02:29:28Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "44444501247",
+    "task_id": "KOREA-WEEKTILE-PREFLIGHT-20261119",
+    "task_sha256": "4a678c7e340be10786bef442542c768e323dd5770b713333cd260d321bfdad3b"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-c047d5b0380fc618-7d966647fdecc8c1",
+  "request_path": "tasks/requests/KOREA-WEEKTILE-PREFLIGHT-20261119.json",
+  "resource_locks": [
+    "PATH_SCOPE:c047d5b0380fc618"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

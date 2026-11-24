@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/GSC-REPORT-20261116.4bdd32fffae55f7eb35fbb956f9e812e0e53a853665d38034e3c618e50104e39.json",
+  "autostart_ledger_sha256": "9de4fea60511ab1028cc1a98cc40acd6da5b25a4956ff309f016d2ce73310ce3",
+  "autostart_source_commit": "4689fd0626c7f1f6e5c6ca81c0332c3a966089c2",
+  "created_at": "2026-11-16T07:26:50Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "43823748387",
+    "task_id": "GSC-REPORT-20261116",
+    "task_sha256": "4bdd32fffae55f7eb35fbb956f9e812e0e53a853665d38034e3c618e50104e39"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-d9ce891d7afeb2d6-1b6981d0b5bc1f3c",
+  "request_path": "tasks/requests/GSC-REPORT-20261116.json",
+  "resource_locks": [
+    "PATH_SCOPE:d9ce891d7afeb2d6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

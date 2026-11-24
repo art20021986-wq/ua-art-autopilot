@@ -1,0 +1,57 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PHOTO-ADD-PROBE-20261119-R3.1671b29cec15123c16650061b745b9f83392b2501b2a994cf8a3156da5230491.json",
+  "autostart_ledger_sha256": "b7488d565b5bbb532416a3ace099d96fc03419da2c9725b8d0522ffbef6a1c1f",
+  "autostart_source_commit": "acc072384017ece731608acf6d836b8f5ec3b509",
+  "created_at": "2026-11-19T03:22:53Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-19T03:27:03Z",
+  "heartbeat_at": "2026-11-19T03:27:03Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "44450440727",
+    "task_id": "PHOTO-ADD-PROBE-20261119-R3",
+    "task_sha256": "1671b29cec15123c16650061b745b9f83392b2501b2a994cf8a3156da5230491"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-dca48db4a8cc3596-a775a07aa5f3ba03",
+  "receipt_path": "state/receipts/PHOTO-ADD-PROBE-20261119-R3.json",
+  "receipt_sha256": "0f55fd383ee6cd877ed24695d524e9198f31340dc30bf83aa4943f104606a8cc",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/PHOTO-ADD-PROBE-20261119-R3.json",
+  "request_sha256": "1671b29cec15123c16650061b745b9f83392b2501b2a994cf8a3156da5230491",
+  "resource_locks": [
+    "PATH_SCOPE:dca48db4a8cc3596"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "4284fc59c70a9960c55cc17a3929b14aafdd3154",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92041113600,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.605
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "2b294ebcbedbff9a0cd5de05b93c76ed740743976ec1719a4d1ea9bf413f86c1",
+    "file_sha256": {
+      "cloud/photo_add_probe_001/bootstrap.py": "b17e9e0bbe2ff0a10c005812b675545370178f48e6ecc4e4744a66f8a9b90855",
+      "cloud/photo_add_probe_001/make_request.py": "e7141d1cee518119db2490fb55fc52b7d10e68c95ee3da6f107dd59a1e62d1fb",
+      "cloud/photo_add_probe_001/source_remote.py": "1f020c2103b9909febc85e54abb0f8df838983e7b249344bfe3448ad15a781e3",
+      "cloud/photo_add_probe_001/test_photo_add_probe.py": "10330f5dcaa9cfa23e452034a8109d30acc965d3a334b9a0f7f30a459fd18151",
+      "cloud/photo_add_probe_001/transport.py": "d6a41b3462308c9b4a52e7fedc1254462e081d4acf3d98e10c2dcc020950407f"
+    }
+  },
+  "updated_at": "2026-11-19T03:27:03Z"
+}

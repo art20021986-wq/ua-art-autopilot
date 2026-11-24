@@ -1,0 +1,64 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CRM-HOME-BUTTON-PREFLIGHT-20261115-R2.7ba4c991cd5cd37fdbda587fd3c6aa52f25f70619114b8c5a5987e1f5f0fe1e2.json",
+  "autostart_ledger_sha256": "3fac43925d0b1351e3fca71592b4fe2b577801a0cc517b19982804d0cd47e337",
+  "autostart_source_commit": "c17a309c492645b3d9c2c8c11b287f4f69b552fc",
+  "created_at": "2026-11-15T06:21:25Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-15T06:28:04Z",
+  "heartbeat_at": "2026-11-15T06:28:04Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "43684932564",
+    "task_id": "CRM-HOME-BUTTON-PREFLIGHT-20261115-R2",
+    "task_sha256": "7ba4c991cd5cd37fdbda587fd3c6aa52f25f70619114b8c5a5987e1f5f0fe1e2"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "crm_db-4f274cdbaba2da1a",
+  "receipt_path": "state/receipts/CRM-HOME-BUTTON-PREFLIGHT-20261115-R2.json",
+  "receipt_sha256": "62e1ce5219a9d1990e9bf7e1a4aaa3f8d230fa336056e6ae89b2d7bc9f407539",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CRM-HOME-BUTTON-PREFLIGHT-20261115-R2.json",
+  "request_sha256": "7ba4c991cd5cd37fdbda587fd3c6aa52f25f70619114b8c5a5987e1f5f0fe1e2",
+  "resource_locks": [
+    "CRM_DB"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "91de3dc444893b1f2e80271374f5963ff47a822f",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92095197184,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 40.57
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/crm_home_button_001/candidate_builder.py": "4691f29c1dc9e0125aaa10b4199960a8aefa699d3f7f8ef45188dc41ae64896c",
+      "cloud/crm_home_button_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/crm_home_button_001/deployment_bootstrap.py": "12fb78cd073f2b03bc3139ecd3aaff55049e9559e863d7b37662e8a6601a0c42",
+      "cloud/crm_home_button_001/deployment_remote.py": "f5c139a53d918de9877375a7d66cecb956b213272521f0c0ee5da0f544c9a415",
+      "cloud/crm_home_button_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/crm_home_button_001/deployment_transport.py": "a06af54751e190c506a3355cec1fe5206e5b56b49c0d5d713ac758461076a341",
+      "cloud/crm_home_button_001/edit_cars_ui.py": "7f95a1732a3a3448a57a5637e0e3dfe01a0bef48f5fdff8a87d8f57e333c4cc8",
+      "cloud/crm_home_button_001/make_release.py": "37b05da58ac1970c19938313b0fc9376b2ff84236f2c7f86920f6486b6ae86cd",
+      "cloud/crm_home_button_001/release_constants.py": "80fcb297a5d2302354a533751f07d5c203104ddf79f4ba2a5d3311cd369c5a5a",
+      "cloud/crm_home_button_001/test_deployment.py": "883d8f9032baec9bdd43d4c3abec60fde98e425fcb07d2dd345a5ffe47c25d9b",
+      "cloud/crm_home_button_001/test_home_button.py": "1bd5de3f5e59be788f30176afb530d9dc8853cca5c436b7440626b7e70195921",
+      "cloud/crm_home_button_001/ua_home_button.py": "ef104741322769ceffbc1cc87dfbf0905f69d3c28f9f9b4c7fb0c78c5b0b1196"
+    }
+  },
+  "updated_at": "2026-11-15T06:28:04Z"
+}

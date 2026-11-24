@@ -1,0 +1,62 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PAY-LABELS-PREFLIGHT-20261117.2c4d22520db87b0dbfb7bd10cfdad586b60aaf68ff41f837a42f38ed5ed03b15.json",
+  "autostart_ledger_sha256": "e9120fe42594ab97d86b9f4d96816cffb01d8455234b910e11329d80b637c1c2",
+  "autostart_source_commit": "86dd1e713560b7f87bf6e7505140654565fdc95d",
+  "created_at": "2026-11-17T07:27:18Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-17T07:32:04Z",
+  "heartbeat_at": "2026-11-17T07:32:04Z",
+  "heartbeat_sequence": 5,
+  "identity": {
+    "run_id": "44038624890",
+    "task_id": "PAY-LABELS-PREFLIGHT-20261117",
+    "task_sha256": "2c4d22520db87b0dbfb7bd10cfdad586b60aaf68ff41f837a42f38ed5ed03b15"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-bd2d8dc55e31a2ce-3471413e0d7ec84a",
+  "receipt_path": "state/receipts/PAY-LABELS-PREFLIGHT-20261117.json",
+  "receipt_sha256": "47e27da679bb8606d25992842f41d5dbbdd6411da6035eecf76f4a422372333a",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/PAY-LABELS-PREFLIGHT-20261117.json",
+  "request_sha256": "2c4d22520db87b0dbfb7bd10cfdad586b60aaf68ff41f837a42f38ed5ed03b15",
+  "resource_locks": [
+    "PATH_SCOPE:bd2d8dc55e31a2ce"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "fb7dda1e50881f193bd8249640fc9a293b65e9f4",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 92077883392,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.582
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "STANDARD",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "a39274177eaf8b16ca53a02d6e946c00a24aab828b979c769fec226e0510f9dc",
+    "file_sha256": {
+      "cloud/pay_labels_001/candidate_builder.py": "6ab55939ad02fab92c2f6b6e21a15b239a3da27a8a8a0d4ece93805daa44aeff",
+      "cloud/pay_labels_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/pay_labels_001/deployment_bootstrap.py": "4c597397abef8f7d2d71b510b9e5996553e3baa2da30c3a04427ee6bedcf2c51",
+      "cloud/pay_labels_001/deployment_remote.py": "e69f17267ab5e20e1f412ffdd1667519b8b5a2548a76e458267f04d69130961b",
+      "cloud/pay_labels_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/pay_labels_001/deployment_transport.py": "68e37ebae035133f8d5c56bc82bf78e36cf51a5ccbe3b0fd496c0c44793ffc79",
+      "cloud/pay_labels_001/make_release.py": "36c4adef278b68dc1240b3280d2f16b67b546d96e594b3dfee0e7676e87c575d",
+      "cloud/pay_labels_001/pay_labels.py": "b8890f38d6bd756cbf6c320312cd71049134dde6dc11a675414509fffcf319da",
+      "cloud/pay_labels_001/release_constants.py": "519f419574011bc857ea31a832fc41643c9798fcdb26a6022057ebc2895a4188",
+      "cloud/pay_labels_001/test_pay_labels.py": "0c8cffe1069cbff5e1e9674b306a92d7d42d752e7c8c345fce94412c9aec0019"
+    }
+  },
+  "updated_at": "2026-11-17T07:32:04Z"
+}

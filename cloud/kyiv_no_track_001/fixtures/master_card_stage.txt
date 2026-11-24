@@ -1,0 +1,185 @@
+# Stage section of the live master_card.py (sanitized copy cloud/card_lead_001/fixtures/master_card.txt), unchanged.
+import datetime as _ua_stage_dt
+import html as _ua_stage_html
+import json as _ua_stage_json
+import os as _ua_stage_os
+try:
+    from zoneinfo import ZoneInfo as _UaStageZoneInfo
+except Exception:
+    _UaStageZoneInfo = None
+
+_UA_STAGE_START = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:START -->"
+_UA_STAGE_END = "<!-- UA-ART-DELIVERY-STAGES-PERMANENT-V1:END -->"
+_UA_STAGE_LABELS = ("Корея", "Паром", "Грузия", "Киев")
+_UA_STAGE_DETAILS = (
+    "Выкуплен · стоянка в Корее",
+    "Паром · Корея → Грузия",
+    "Грузия · оформление",
+    "Киев · выдача автомобиля",
+)
+_UA_STAGE_MONTHS = (
+    "января", "февраля", "марта", "апреля", "мая", "июня",
+    "июля", "августа", "сентября", "октября", "ноября", "декабря",
+)
+
+
+def _ua_stage_escape(value):
+    try:
+        return ekran(str(value))
+    except Exception:
+        return _ua_stage_html.escape(str(value), quote=True)
+
+
+def _ua_stage_number(m):
+    status = str(m.get("status") or "").strip().lower()
+    if status.startswith("kr_"):
+        return 1
+    if status.startswith("sea_"):
+        return 2
+    if status == "ge_to_kyiv" or status.startswith("ge_"):
+        return 3
+    if status.startswith("ua_"):
+        return 4
+    try:
+        saved = int(m.get("stage") or 0)
+        if 1 <= saved <= 4:
+            return saved
+    except Exception:
+        pass
+    return 1
+
+
+def _ua_stage_date(value):
+    text = str(value or "").strip()
+    if not text:
+        return None
+    for pattern, width in (("%Y-%m-%d", 10), ("%d.%m.%Y", 10), ("%d/%m/%Y", 10)):
+        try:
+            return _ua_stage_dt.datetime.strptime(text[:width], pattern).date()
+        except Exception:
+            pass
+    return None
+
+
+def _ua_stage_today():
+    if _UaStageZoneInfo is not None:
+        try:
+            return _ua_stage_dt.datetime.now(_UaStageZoneInfo("Europe/Kyiv")).date()
+        except Exception:
+            pass
+    zone = _ua_stage_dt.timezone(_ua_stage_dt.timedelta(hours=3))
+    return _ua_stage_dt.datetime.now(zone).date()
+
+
+def _ua_stage_pretty(value):
+    return "%d %s %d" % (value.day, _UA_STAGE_MONTHS[value.month - 1], value.year)
+
+
+def _ua_stage_plural(value):
+    value = abs(int(value))
+    if value % 10 == 1 and value % 100 != 11:
+        return "день"
+    if value % 10 in (2, 3, 4) and value % 100 not in (12, 13, 14):
+        return "дня"
+    return "дней"
+
+
+def _ua_stage_saved_release(m):
+    for key in ("ge_released", "ge_to_kyiv_at"):
+        value = _ua_stage_date(m.get(key))
+        if value is not None:
+            return value
+    identifier = str(m.get("auto_number") or "").strip()
+    if not identifier:
+        return None
+    for path in ("/home/Carix/.srok_gruzia.json", "/home/Carix/.sroki_gruzia.json"):
+        try:
+            with open(path, "r", encoding="utf-8") as handle:
+                memory = _ua_stage_json.load(handle)
+            value = _ua_stage_date((memory.get(identifier) or {}).get("vyehal"))
+            if value is not None:
+                return value
+        except Exception:
+            pass
+    return None
+
+
+def _ua_stage_eta(m, stage):
+    status = str(m.get("status") or "").strip().lower()
+    if stage >= 4 or status.startswith("ua_"):
+        return ("arrived", None, None)
+    manual = _ua_stage_date(m.get("eta_manual"))
+    if manual is not None:
+        target = manual
+    elif status == "ge_to_kyiv":
+        released = _ua_stage_saved_release(m)
+        target = released + _ua_stage_dt.timedelta(days=15) if released else None
+    elif status.startswith("ge_"):
+        target = None
+    else:
+        shipped = _ua_stage_date(m.get("sea_date_out"))
+        target = shipped + _ua_stage_dt.timedelta(days=75) if shipped else None
+    if target is None:
+        return ("georgia" if status.startswith("ge_") else "unknown", None, None)
+    days = max((target - _ua_stage_today()).days, 0)
+    return ("due" if days else "soon", days, target)
+
+
+def _ua_delivery_stage_anchor(m):
+    stage = _ua_stage_number(m)
+    progress = int(round((stage - 1) * 100.0 / 3.0))
+    status = str(m.get("status") or "").strip().lower()
+    details = list(_UA_STAGE_DETAILS)
+    if status == "ge_to_kyiv":
+        details[2] = "Грузия · отправлен в Киев"
+    css = r"""<style>
+.ua-delivery-v1{position:relative;margin:14px 0;padding:18px 16px 16px;overflow:hidden;border:1px solid rgba(240,166,60,.30);border-radius:18px;background:linear-gradient(145deg,rgba(19,37,59,.98),rgba(10,25,42,.98));box-shadow:0 16px 38px rgba(0,0,0,.20)}
+.ua-delivery-v1:before{content:"";position:absolute;inset:-90px auto auto -80px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(240,166,60,.12),transparent 68%);pointer-events:none}
+.ua-stage-v1-head{position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:17px}.ua-stage-v1-title{font-size:18px;font-weight:850;letter-spacing:.1px;color:#f3f6fb}.ua-stage-v1-count{flex:0 0 auto;padding:6px 9px;border:1px solid rgba(240,166,60,.35);border-radius:999px;color:#f5bf70;background:rgba(240,166,60,.08);font-size:10px;font-weight:850;letter-spacing:.65px}
+.ua-stage-v1-route{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px}.ua-stage-v1-track{position:absolute;z-index:0;top:19px;left:12.5%;right:12.5%;height:3px;border-radius:4px;background:rgba(154,169,189,.18);overflow:hidden}.ua-stage-v1-fill{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#d68c2d,#ffc05a);box-shadow:0 0 13px rgba(240,166,60,.55)}
+.ua-stage-v1-step{position:relative;z-index:1;min-width:0;text-align:center}.ua-stage-v1-node{display:grid;place-items:center;width:40px;height:40px;margin:0 auto 8px;border:2px solid rgba(154,169,189,.30);border-radius:50%;background:#13243a;color:#8595aa;font-size:14px;font-weight:900;box-shadow:0 0 0 4px #102238}.ua-stage-v1-step.is-done .ua-stage-v1-node{border-color:#d89435;background:#d89435;color:#101a28}.ua-stage-v1-step.is-current .ua-stage-v1-node{border-color:#ffc05a;background:#f2a63b;color:#111b29;box-shadow:0 0 0 5px rgba(240,166,60,.13),0 0 23px rgba(240,166,60,.52)}.ua-stage-v1-name{display:block;overflow:hidden;color:#8291a5;font-size:11.5px;font-weight:750;text-overflow:ellipsis;white-space:nowrap}.ua-stage-v1-step.is-done .ua-stage-v1-name,.ua-stage-v1-step.is-current .ua-stage-v1-name{color:#f1ad4e}.ua-stage-v1-now{display:inline-flex;min-height:17px;align-items:center;justify-content:center;margin-top:5px;padding:2px 6px;border-radius:999px;background:#f0a63c;color:#101a28;font-size:8px;font-weight:950;letter-spacing:.7px}.ua-stage-v1-future{display:block;height:17px;margin-top:5px}
+.ua-stage-v1-current{display:flex;align-items:center;gap:10px;margin-top:16px;padding:11px 12px;border:1px solid rgba(240,166,60,.20);border-radius:13px;background:rgba(240,166,60,.065)}.ua-stage-v1-current-icon{display:grid;place-items:center;flex:0 0 auto;width:30px;height:30px;border-radius:9px;background:rgba(240,166,60,.15);font-size:16px}.ua-stage-v1-current-copy{min-width:0}.ua-stage-v1-current-copy small{display:block;margin-bottom:2px;color:#f0a63c;font-size:9px;font-weight:900;letter-spacing:.8px}.ua-stage-v1-current-copy b{display:block;color:#edf2f8;font-size:13px;line-height:1.25}
+.ua-stage-v1-meta{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:13px}.ua-stage-v1-container-row{display:inline-flex;align-items:center;flex-wrap:nowrap;flex:0 0 auto;gap:10px;max-width:100%;min-width:0;white-space:nowrap}.ua-stage-v1-badge{padding:7px 9px;border:1px solid rgba(142,160,183,.18);border-radius:10px;background:rgba(255,255,255,.035);color:#b9c5d4;font-size:11px}.ua-stage-v1-badge b{color:#eef3f8}.ua-stage-v1-container-row .ua-stage-v1-badge{flex:0 0 auto;white-space:nowrap}.ua-stage-v1-eta{margin-top:13px;padding-top:13px;border-top:1px solid rgba(142,160,183,.14)}.ua-stage-v1-eta-row{display:flex;align-items:baseline;gap:9px}.ua-stage-v1-days{color:#f0a63c;font-size:44px;font-weight:900;line-height:.95}.ua-stage-v1-days-copy{color:#eef3f8;font-size:14px;font-weight:750;line-height:1.3}.ua-stage-v1-date{margin-top:7px;color:#aebccd;font-size:12.5px}.ua-stage-v1-date b{color:#e8eef5}.ua-stage-v1-state{color:#f2b45d;font-size:16px;font-weight:850;line-height:1.3}.ua-stage-v1-note{margin-top:4px;color:#aebccd;font-size:12.5px;line-height:1.4}.ua-stage-v1-track-link{position:relative;display:inline-flex;align-items:center;flex:0 0 auto;min-height:32px;padding:6px 2px;color:#f2ba69;font-size:11px;font-weight:850;line-height:1;white-space:nowrap;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}.ua-stage-v1-track-link:hover{color:#ffd18c}.ua-stage-v1-track-link:focus-visible{outline:2px solid #ffc05a;outline-offset:3px;border-radius:4px}
+@media(max-width:380px){.ua-delivery-v1{padding:16px 11px 14px}.ua-stage-v1-name{font-size:10.5px}.ua-stage-v1-node{width:36px;height:36px}.ua-stage-v1-track{top:17px}.ua-stage-v1-title{font-size:17px}.ua-stage-v1-count{font-size:9px}.ua-stage-v1-container-row{gap:7px}.ua-stage-v1-container-row .ua-stage-v1-badge{padding-left:7px;padding-right:7px;font-size:10px}.ua-stage-v1-track-link{font-size:10px}}@media(max-width:340px){.ua-stage-v1-container-row{gap:5px}.ua-stage-v1-container-row .ua-stage-v1-badge{padding-left:6px;padding-right:6px;font-size:9.2px}.ua-stage-v1-track-link{font-size:9.5px}}
+@media(prefers-reduced-motion:no-preference){.ua-stage-v1-step.is-current .ua-stage-v1-node{animation:uaStagePulse 2.6s ease-in-out infinite}@keyframes uaStagePulse{0%,100%{box-shadow:0 0 0 5px rgba(240,166,60,.11),0 0 17px rgba(240,166,60,.35)}50%{box-shadow:0 0 0 7px rgba(240,166,60,.18),0 0 27px rgba(240,166,60,.58)}}}
+</style>"""
+    out = [_UA_STAGE_START, "<!--v173-marshrut--><!--ua-art-karta-v177-->", css]
+    out.append('<section class="ua-delivery-v1" data-ua-stage-current="%d" aria-label="Путь автомобиля: этап %d из 4">' % (stage, stage))
+    out.append('<div class="ua-stage-v1-head"><div class="ua-stage-v1-title">Путь автомобиля</div><div class="ua-stage-v1-count">ЭТАП %d ИЗ 4</div></div>' % stage)
+    out.append('<div class="ua-stage-v1-route" role="list"><div class="ua-stage-v1-track" aria-hidden="true"><span class="ua-stage-v1-fill" style="width:%d%%"></span></div>' % progress)
+    for number, label in enumerate(_UA_STAGE_LABELS, 1):
+        state = "is-done" if number < stage else ("is-current" if number == stage else "is-future")
+        icon = "✓" if number < stage else str(number)
+        current = ' aria-current="step"' if number == stage else ""
+        out.append('<div class="ua-stage-v1-step %s" data-ua-stage="%d" data-ua-state="%s" role="listitem"%s><div class="ua-stage-v1-node">%s</div><span class="ua-stage-v1-name" data-ua-stage-label="%s">%s</span>%s</div>' % (
+            state, number, state[3:], current, icon, label, label,
+            '<span class="ua-stage-v1-now">СЕЙЧАС</span>' if number == stage else '<span class="ua-stage-v1-future"></span>',
+        ))
+    out.append('</div><div class="ua-stage-v1-current"><span class="ua-stage-v1-current-icon">%s</span><span class="ua-stage-v1-current-copy"><small>ТЕКУЩИЙ ЭТАП</small><b>%s</b></span></div>' % (("🇰🇷", "🚢", "📋", "📍")[stage - 1], details[stage - 1]))
+
+    from ua_tracking_widget import render_tracking
+    shipped = _ua_stage_date(m.get("sea_date_out"))
+    out.append('<div class="ua-stage-v1-meta">')
+    out.append(render_tracking(m.get("sea_container")))
+    if shipped is not None:
+        out.append('<span class="ua-stage-v1-badge">Отправлен: <b>%s</b></span>' % _ua_stage_pretty(shipped))
+    out.append('</div>')
+
+    kind, days, target = _ua_stage_eta(m, stage)
+    out.append('<div class="ua-stage-v1-eta">')
+    if kind == "arrived":
+        out.append('<div class="ua-stage-v1-state">Автомобиль в Киеве — можно приехать на осмотр</div><div class="ua-stage-v1-note">Осмотр в офисе на Победы 20</div>')
+    elif kind == "due":
+        out.append('<div class="ua-stage-v1-eta-row"><span class="ua-stage-v1-days">%d</span><span class="ua-stage-v1-days-copy">%s до выдачи<br>в Киеве</span></div><div class="ua-stage-v1-date">Ориентировочная дата выдачи — <b>%s</b></div>' % (days, _ua_stage_plural(days), _ua_stage_pretty(target)))
+    elif kind == "soon":
+        out.append('<div class="ua-stage-v1-state">Прибытие в Киев ожидается со дня на день</div><div class="ua-stage-v1-date">Ориентировочная дата — <b>%s</b></div>' % _ua_stage_pretty(target))
+    elif kind == "georgia":
+        out.append('<div class="ua-stage-v1-state">Автомобиль в Грузии</div><div class="ua-stage-v1-note">Дата отправления в Украину уточняется</div>')
+    else:
+        out.append('<div class="ua-stage-v1-state">Дата прибытия уточняется</div><div class="ua-stage-v1-note">Сообщим точный срок после отправки контейнера</div>')
+    out.append('</div></section>')
+    out.append(_UA_STAGE_END)
+    return "".join(out)
+
+# UA-CARDS-STAGE-ANCHOR-001-V1.1-MASTER-FINAL
+_UA_MASTER_DIAG_MARKER = "<!--ua-art-diagnostics-permanent-v1-->"

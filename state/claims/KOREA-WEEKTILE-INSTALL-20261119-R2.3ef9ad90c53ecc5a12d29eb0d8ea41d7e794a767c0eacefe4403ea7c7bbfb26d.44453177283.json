@@ -1,0 +1,153 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-WEEKTILE-INSTALL-20261119-R2.3ef9ad90c53ecc5a12d29eb0d8ea41d7e794a767c0eacefe4403ea7c7bbfb26d.json",
+  "autostart_ledger_sha256": "fd3d240184394012a1fc6c0a99f5a13bc4407b86f48b69235db360a654c3c8c1",
+  "autostart_source_commit": "68315089155850e90f8c92a9000ec9f1928f82b3",
+  "created_at": "2026-11-19T03:42:56Z",
+  "critical_gate_evidence_sha256": "3e60ed62fb9aed7f4ffc89db820d2d7169dc7e9abfcbd233ebd9325aea128159",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-19T04:04:30Z",
+  "heartbeat_at": "2026-11-19T04:04:30Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "44453177283",
+    "task_id": "KOREA-WEEKTILE-INSTALL-20261119-R2",
+    "task_sha256": "3ef9ad90c53ecc5a12d29eb0d8ea41d7e794a767c0eacefe4403ea7c7bbfb26d"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 710.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 295.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 339.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 253.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 264.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 269.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-44453177283-3ef9ad90c53ecc5a",
+  "production_transaction_path": "state/transactions/KOREA-WEEKTILE-INSTALL-20261119-R2.3ef9ad90c53ecc5a12d29eb0d8ea41d7e794a767c0eacefe4403ea7c7bbfb26d.44453177283.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "receipt_path": "state/receipts/KOREA-WEEKTILE-INSTALL-20261119-R2.json",
+  "receipt_sha256": "09b094a18cdf5e1e353249646e5083335afe81bd7c7776a79ed6b6ac1e297bf4",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/KOREA-WEEKTILE-INSTALL-20261119-R2.json",
+  "request_sha256": "3ef9ad90c53ecc5a12d29eb0d8ea41d7e794a767c0eacefe4403ea7c7bbfb26d",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "e819f3e03fb6284b623c33b3f6c16cdcea5b475b",
+  "storage_preflight": {
+    "age_seconds": 354.316,
+    "allowed": true,
+    "evidence_path": "state/storage/KOREA-WEEKTILE-INSTALL-20261119-R2.json",
+    "evidence_sha256": "63f664e872fcb2775133ab41f8577a59aa4b7eabd38338325751add07f5725a6",
+    "free_bytes": 17549352448,
+    "heavy": true,
+    "measured_at": "2026-11-19T03:38:23.905747+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 49.85899300571428
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "206763ddc0093fdefbe99efb20d7e5ff91507c52b27c28ce220493de0fe8a647",
+    "file_sha256": {
+      "cloud/korea_week_tile_001/candidate_builder.py": "d6474c13e419f1845c5e0e819a39fb0f36578501e8501cb3ac0264fe89e3ee06",
+      "cloud/korea_week_tile_001/day_none_page.py": "0813c71508105a3aa29eeb89550b1fdceff188fd85ac248c1f0406af567adc71",
+      "cloud/korea_week_tile_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/korea_week_tile_001/deployment_bootstrap.py": "8e08232567b926781abea4732bd828ea457b92ab0eb0404690655933efb8ee21",
+      "cloud/korea_week_tile_001/deployment_remote.py": "6c1e33ee9ca7b09d387d11703ccc656372092d3434a079b81b8cb93418550169",
+      "cloud/korea_week_tile_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/korea_week_tile_001/deployment_transport.py": "9965df400b598fbfaf94c6a52338b189c96629bdf3bac510fc08111325973a7b",
+      "cloud/korea_week_tile_001/korea_auction/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cloud/korea_week_tile_001/korea_auction/alert.py": "5ce013152e510547e0b66b5d1c05bfe91fd921bcff896d82c53e0783e98ae5d7",
+      "cloud/korea_week_tile_001/korea_auction/catalog.py": "8bd5fb28edade7696228c43826831d856aa9bd9b1b2e620cfc1c652992b40f3c",
+      "cloud/korea_week_tile_001/korea_auction/check.py": "a039d4f87fa3dd545d54c06da23d5eea132a06d5905006b2e51a3820e6df2815",
+      "cloud/korea_week_tile_001/korea_auction/collect.py": "7402f4db9f275a823daa18e7a62ee56689fd46388810aab45703515716c65cde",
+      "cloud/korea_week_tile_001/korea_auction/color.py": "7040bd2dfb3546534ef8eabe14a55a13c70fdde19bb56308ddcd12cbe13ad501",
+      "cloud/korea_week_tile_001/korea_auction/drive.py": "8de0f090a74441282346da98b5604b08745fbc25e1388a2bf67dbf89203c7dce",
+      "cloud/korea_week_tile_001/korea_auction/fuel.py": "4a51b053b72dec115e5a5468f843199071598229a0bdce56ee46562404e8c676",
+      "cloud/korea_week_tile_001/korea_auction/holidays.py": "68768be6f5b929211006b519d4761d7fd0322002f2f9f5e8f644f0d30156b79e",
+      "cloud/korea_week_tile_001/korea_auction/html_tools.py": "2baacd8a4ed1402b352c70c14475954eedd0c1aff98aa602fcab1a6ad20a9802",
+      "cloud/korea_week_tile_001/korea_auction/job.py": "dbfabaf0949f028f66f99e4eff609409ff8970d3affaca8f5c0f50bb1d5812fc",
+      "cloud/korea_week_tile_001/korea_auction/lots.py": "db18b0c94a2f5128dc0f1cb4b356dfb6d713b25f4d1260b44cd0e06d90528d24",
+      "cloud/korea_week_tile_001/korea_auction/model_lots.py": "13b43e123fd08137a991e87d23f399e8a0012d40e8de32f748b9f39e5f769a10",
+      "cloud/korea_week_tile_001/korea_auction/nbu.py": "0b1abeb8a940b3ccd70e31a4eecc8e8e5cbcaf24c528fc38ac9d56152f148b25",
+      "cloud/korea_week_tile_001/korea_auction/prices.py": "491c3fb95371c86c2e37100ebff91506cecc8fd250eecac45b7c875c8b4f6a33",
+      "cloud/korea_week_tile_001/korea_auction/public.py": "ea9e70d529af14d6d52b27c502ffe27bfcc81290a5cb382451615c79a11d858b",
+      "cloud/korea_week_tile_001/korea_auction/rollover.py": "4bc8a99d5bc4b7a9e08fc50decb1d4226012be135ca79a58b3fd2f7b58c74650",
+      "cloud/korea_week_tile_001/korea_auction/schedule.py": "b02a576af1f29ed5314ec260ea6920975cedcfd0ec765dbe610483ef5592c89a",
+      "cloud/korea_week_tile_001/korea_auction/selection.py": "895c4eda62e2fb829d8d48eb15a62f87d62f6f40898ae2cd8c2b0684595e6eeb",
+      "cloud/korea_week_tile_001/korea_auction/session.py": "a39f03ec675ad2f8817efbcd76ef81e3d11bfd647ed4992ec65a1b2db79c18f9",
+      "cloud/korea_week_tile_001/korea_auction/test_korea_auction.py": "df8c751837a50282602bd78d84a6ea1f722de9ab5831a6f10e883b1a59afa368",
+      "cloud/korea_week_tile_001/korea_auction/ticker.py": "2200a59ee0a596784f900d553eb0e038eaa9546b49f0023545d80e3ca5b6fbbf",
+      "cloud/korea_week_tile_001/korea_auction/week_tile.py": "035822b24b988a36344e0208da1e408dac7e21ccf0bd00055183a2522cb68aae",
+      "cloud/korea_week_tile_001/make_release.py": "f224c5e79384b2000dda10a9d72c8da201a8f5fcd61a2f0862ea61d823d93150",
+      "cloud/korea_week_tile_001/release_constants.py": "7d96f8cd9542b490d752472d513827c801184008830b227ce11df7f101b30aed",
+      "cloud/korea_week_tile_001/test_day_none_page.py": "e3b3d46a9c5e42002077c5a9eed7401100b33654f133820771fe8c2c673f8205",
+      "cloud/korea_week_tile_001/test_deployment.py": "693d3a027d7197b9ce5268bbfaa2819e311e93dc43d3b52a3882cc22941d0108",
+      "cloud/korea_week_tile_001/test_release.py": "34013a83b3c7248f720297e6bd8a49c3a62ba47fe2f0481a6248f51c05375023"
+    }
+  },
+  "updated_at": "2026-11-19T04:04:30Z"
+}

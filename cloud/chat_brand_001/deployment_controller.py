@@ -32,14 +32,25 @@ def blocks(body, caption=True):
             and body.count(RIA) == 1 and RIA_LOGO in body)
 
 
-EXPECTED = {'/video/index.html': lambda body: blocks(body, caption=False) and LINK in body,
+# AUTO.RIA's wording on the home page reviews button (the old one gone).
+RIA_TEXT = 'Дивіться всі авто та відгуки від UA ART COMPANY на AUTO.RIA'
+RIA_OLD = 'Усі відгуки та продані авто'
+
+
+# AUTO.RIA's official logo file (their .com version) in place of the old one.
+LOGO_MARK = 'aria-label="AUTO.RIA"><image'
+
+
+EXPECTED = {'/video/index.html': lambda body: (blocks(body, caption=False) and LINK in body and RIA_TEXT in body
+                                              and RIA_OLD not in body),
             '/video/korea.html': blocks,
             '/video/ru/korea.html': blocks,
             '/video/katalog.html': blocks,
             '/video/podbor.html': blocks,
             '/video/info.html': blocks,
             '/video/seo/ua/avto-z-korei-do-kyieva-pid-kluch.html': lambda body: blocks(body) and ADDED in body,
-            '/video/seo/gu/kia-k5-koreidan-sakartveloshi.html': lambda body: ROW in body and ADDED in body}
+            '/video/seo/gu/kia-k5-koreidan-sakartveloshi.html': lambda body: ROW in body and ADDED in body,
+            '/video/brand/autoria-logo.svg': lambda body: LOGO_MARK in body}
 
 
 def context():

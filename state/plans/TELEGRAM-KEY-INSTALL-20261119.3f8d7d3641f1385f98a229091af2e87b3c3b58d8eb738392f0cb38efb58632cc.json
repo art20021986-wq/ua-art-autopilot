@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/TELEGRAM-KEY-INSTALL-20261119.3f8d7d3641f1385f98a229091af2e87b3c3b58d8eb738392f0cb38efb58632cc.json",
+  "autostart_ledger_sha256": "2527f9e41af9cd257240211c5da35c8a8916cec963f9711423e79ce5e8778db8",
+  "autostart_source_commit": "6c9a778d8f296a12713caaf7725b2e36b7155b18",
+  "created_at": "2026-11-19T11:33:09Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "44515608952",
+    "task_id": "TELEGRAM-KEY-INSTALL-20261119",
+    "task_sha256": "3f8d7d3641f1385f98a229091af2e87b3c3b58d8eb738392f0cb38efb58632cc"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-abb4e05c6211cbac-6e35a216c58d80a5",
+  "request_path": "tasks/requests/TELEGRAM-KEY-INSTALL-20261119.json",
+  "resource_locks": [
+    "PATH_SCOPE:abb4e05c6211cbac"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

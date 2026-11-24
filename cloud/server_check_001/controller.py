@@ -3,6 +3,9 @@
 task): the server CPU, the CRM bot task 266084, every always-on task, and removal of leftover temporary tasks of the
 session's own packages only (command runs opod_bootstrap.py or dcnt_bootstrap.py). The bot is never touched. The
 receipt reports what was found; the facts (bot state, leftovers left) are in the evidence.
+SERVER-CHECK-20261117 (KOREA-DRIVE-001): after LOT-PROBE-20261117-R2 stopped on a transport error (owner «Да» to closing
+it), the read-only lot probe's temporary task (command runs lotprobe_bootstrap.py) counts as a leftover too.
+R2: the first run wrote over the 13.11 evidence.json and stopped (FileExistsError); every later check has its own file.
 """
 import json
 import os
@@ -12,11 +15,11 @@ import urllib.error
 import urllib.request
 
 PACKAGE = 'cloud/server_check_001'
-TASKS = ('SERVER-CHECK-20261113',)
+TASKS = ('SERVER-CHECK-20261113', 'SERVER-CHECK-20261117-R2')
 ROOT = Path(__file__).resolve().parents[2]
 API = 'https://www.pythonanywhere.com/api/v0/user/Carix/'
 BOT_ID = 266084
-LEFTOVER = re.compile(r'/(opod|dcnt)_bootstrap\.py\b')
+LEFTOVER = re.compile(r'/(opod|dcnt|lotprobe)_bootstrap\.py\b')
 
 
 class ProbeError(RuntimeError):
@@ -100,7 +103,8 @@ def execute(env, *, root=None, api=None):
     request_sha, run_id = validate_identity(env, root)
     task = env['UAART_TASK_ID']
     result = collect(api or Api(env.get('PYTHONANYWHERE_API_TOKEN', '')))
-    evidence = PACKAGE + '/evidence.json'
+    # Each check has its own evidence file (SERVER-CHECK-20261117 stopped: the 13.11 evidence.json was there).
+    evidence = PACKAGE + ('/evidence.json' if task == 'SERVER-CHECK-20261113' else '/evidence-%s.json' % task)
     write(root, evidence, dump({'task_id': task, 'run_id': run_id, **result}))
     receipt = {'task_id': task, 'status': 'FINISHED', 'task_class': 'STANDARD', 'target_environment': 'shadow',
                'live_source_environment': 'production', 'tests': 'PASS', 'tests_scope': 'SERVER_CHECK',

@@ -1,0 +1,112 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PAY-LABELS-INSTALL-20261117.be6592ed50ae50296209a2364a5463d7e48654e59d689d1fb02460cc65b3cea3.json",
+  "autostart_ledger_sha256": "6a6b5d683350a36f400f128ca3ba2c08658b8137af0b97882d11bea5b9541da9",
+  "autostart_source_commit": "97c8534421a4200ccb551bbd23e5379796e4e917",
+  "created_at": "2026-11-17T07:34:49Z",
+  "critical_gate_evidence_sha256": "33a6f3f1a7f46c936872f2389a037d7a02ce3d658ae8a48c47e54e1dbd99cb21",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-17T07:54:38Z",
+  "heartbeat_at": "2026-11-17T07:54:38Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "44039588412",
+    "task_id": "PAY-LABELS-INSTALL-20261117",
+    "task_sha256": "be6592ed50ae50296209a2364a5463d7e48654e59d689d1fb02460cc65b3cea3"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 412.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/info.html",
+        "http_status": 200,
+        "latency_ms": 47.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/info.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 337.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/info.html",
+        "http_status": 200,
+        "latency_ms": 292.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/info.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-44039588412-be6592ed50ae5029",
+  "production_transaction_path": "state/transactions/PAY-LABELS-INSTALL-20261117.be6592ed50ae50296209a2364a5463d7e48654e59d689d1fb02460cc65b3cea3.44039588412.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "homepage-68ed6564ebea221c",
+  "receipt_path": "state/receipts/PAY-LABELS-INSTALL-20261117.json",
+  "receipt_sha256": "08520ab1014e65d733435ee5d91984fb6897332c21d6614de7851a0922443be5",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/PAY-LABELS-INSTALL-20261117.json",
+  "request_sha256": "be6592ed50ae50296209a2364a5463d7e48654e59d689d1fb02460cc65b3cea3",
+  "resource_locks": [
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "b5a7a6076df8398375e15be1c1228dc8660a049b",
+  "storage_preflight": {
+    "age_seconds": 341.774,
+    "allowed": true,
+    "evidence_path": "state/storage/PAY-LABELS-INSTALL-20261117.json",
+    "evidence_sha256": "aa310b3ccda7889ac8710af674cedc0120c3ebc58e3b95a2feedadea69c4d658",
+    "free_bytes": 20479905280,
+    "heavy": true,
+    "measured_at": "2026-11-17T07:30:32.506813+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.485984914285716
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "a39274177eaf8b16ca53a02d6e946c00a24aab828b979c769fec226e0510f9dc",
+    "file_sha256": {
+      "cloud/pay_labels_001/candidate_builder.py": "6ab55939ad02fab92c2f6b6e21a15b239a3da27a8a8a0d4ece93805daa44aeff",
+      "cloud/pay_labels_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/pay_labels_001/deployment_bootstrap.py": "4c597397abef8f7d2d71b510b9e5996553e3baa2da30c3a04427ee6bedcf2c51",
+      "cloud/pay_labels_001/deployment_remote.py": "e69f17267ab5e20e1f412ffdd1667519b8b5a2548a76e458267f04d69130961b",
+      "cloud/pay_labels_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/pay_labels_001/deployment_transport.py": "68e37ebae035133f8d5c56bc82bf78e36cf51a5ccbe3b0fd496c0c44793ffc79",
+      "cloud/pay_labels_001/make_release.py": "36c4adef278b68dc1240b3280d2f16b67b546d96e594b3dfee0e7676e87c575d",
+      "cloud/pay_labels_001/pay_labels.py": "b8890f38d6bd756cbf6c320312cd71049134dde6dc11a675414509fffcf319da",
+      "cloud/pay_labels_001/release_constants.py": "519f419574011bc857ea31a832fc41643c9798fcdb26a6022057ebc2895a4188",
+      "cloud/pay_labels_001/test_pay_labels.py": "0c8cffe1069cbff5e1e9674b306a92d7d42d752e7c8c345fce94412c9aec0019"
+    }
+  },
+  "updated_at": "2026-11-17T07:54:38Z"
+}

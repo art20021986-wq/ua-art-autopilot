@@ -1,0 +1,131 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-HOLIDAYS-INSTALL-20261117.edd5c2d3957146f1890175aa90f575293251d0ac31d1c2568719607a593b7963.json",
+  "autostart_ledger_sha256": "fbb20817ee40b034fdc7d9db32549632281ed05e159daed475868110918fab1f",
+  "autostart_source_commit": "e89d2125532ab97b674d43b7975b14703250fd0d",
+  "created_at": "2026-11-17T08:09:01Z",
+  "critical_gate_evidence_sha256": "19cbf21fba40d24ae0706229de14b1c44efe708a254a960c8e633a29d3610f7f",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-17T08:28:42Z",
+  "heartbeat_at": "2026-11-17T08:28:42Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "44044058180",
+    "task_id": "KOREA-HOLIDAYS-INSTALL-20261117",
+    "task_sha256": "edd5c2d3957146f1890175aa90f575293251d0ac31d1c2568719607a593b7963"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 397.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 52.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 38.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 299.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 342.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 261.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-44044058180-edd5c2d3957146f1",
+  "production_transaction_path": "state/transactions/KOREA-HOLIDAYS-INSTALL-20261117.edd5c2d3957146f1890175aa90f575293251d0ac31d1c2568719607a593b7963.44044058180.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "path_scope-0f4dd31705a5ee1d-158d0e91cfe028c7",
+  "receipt_path": "state/receipts/KOREA-HOLIDAYS-INSTALL-20261117.json",
+  "receipt_sha256": "3c4ae94919d5d483894230f958a5f322292305c055f77cf749248fe95d350898",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/KOREA-HOLIDAYS-INSTALL-20261117.json",
+  "request_sha256": "edd5c2d3957146f1890175aa90f575293251d0ac31d1c2568719607a593b7963",
+  "resource_locks": [
+    "PATH_SCOPE:0f4dd31705a5ee1d"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "a50adc059f8f5288d2943a6a46afdb7b3ef8df6d",
+  "storage_preflight": {
+    "age_seconds": 352.035,
+    "allowed": true,
+    "evidence_path": "state/storage/KOREA-HOLIDAYS-INSTALL-20261117.json",
+    "evidence_sha256": "82c2456dfb97722f5c7ba7b07d1e82a12c2ca7d174023cb24fa6d3d2556122f8",
+    "free_bytes": 20469489152,
+    "heavy": true,
+    "measured_at": "2026-11-17T08:04:31.000200+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.51574528
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "e1c220c5ae8af4a3cc5645b0114f518e0a3eec622cc8190b8aeba8ba79b723f8",
+    "file_sha256": {
+      "cloud/korea_holidays_001/candidate_builder.py": "0668383730e7ee5f83b889c2be939272ee495350a16b5d92be8d6f91da42a437",
+      "cloud/korea_holidays_001/day_reason_page.py": "04eacf23afdb811dc53aa2076b664b99d5845f8f7bd8c63dc9c451ad0df0d53e",
+      "cloud/korea_holidays_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/korea_holidays_001/deployment_bootstrap.py": "3d6ebfe7f4f2834c2dc7b1c8a234126ff02fb869e6840d66686013e93514a755",
+      "cloud/korea_holidays_001/deployment_remote.py": "4692b0ede058aaefa57a9fabbe9138382c99d0c42aede5759afae266f4b0d9ce",
+      "cloud/korea_holidays_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/korea_holidays_001/deployment_transport.py": "ceaece9f348564f254a967f0079cd18773850b14884af4558d54f3c931a976b6",
+      "cloud/korea_holidays_001/korea_holidays.py": "a5173a0f70e0ff6f02b33d727cb5894aa154bd0f3f6deba587e3567f3fe191b6",
+      "cloud/korea_holidays_001/make_release.py": "8db8dd2d7aa57037de317f65c50879db9d246240b3440ee977b848d2b578c370",
+      "cloud/korea_holidays_001/release_constants.py": "729ab80b8e9a2d3fa6d826fee4777f317c34f967765bc8afe8f3d77a94ae839d",
+      "cloud/korea_holidays_001/test_day_reason_page.py": "9f2b322fc707c1f9e4dc84e2efb8761d463d73a3279f6cff2cc36de5855a2648",
+      "cloud/korea_holidays_001/test_deployment.py": "1b0e8bc3207ea957a542ac983b22412ba7e01331480e27e8f120d5a721b369fd",
+      "cloud/korea_holidays_001/test_release.py": "08796294f114f32ba3c5d55d362467d1a6b71f2c184a4d89104a394a9b7c74ec"
+    }
+  },
+  "updated_at": "2026-11-17T08:28:43Z"
+}

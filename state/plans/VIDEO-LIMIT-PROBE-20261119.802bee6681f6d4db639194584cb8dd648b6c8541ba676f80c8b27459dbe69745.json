@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/VIDEO-LIMIT-PROBE-20261119.802bee6681f6d4db639194584cb8dd648b6c8541ba676f80c8b27459dbe69745.json",
+  "autostart_ledger_sha256": "477dcc2062f211aa54a89f23c96ae884829c0f362863cb59fa0e40d8d1528ddc",
+  "autostart_source_commit": "24d92834ff3a36857e44250b81e1e47bcca1449e",
+  "created_at": "2026-11-19T05:34:58Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "44465398486",
+    "task_id": "VIDEO-LIMIT-PROBE-20261119",
+    "task_sha256": "802bee6681f6d4db639194584cb8dd648b6c8541ba676f80c8b27459dbe69745"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-7aaaa40e3c222cfd-dc6a13a9ef27147c",
+  "request_path": "tasks/requests/VIDEO-LIMIT-PROBE-20261119.json",
+  "resource_locks": [
+    "PATH_SCOPE:7aaaa40e3c222cfd"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}

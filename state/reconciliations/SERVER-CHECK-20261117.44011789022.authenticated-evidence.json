@@ -1,0 +1,15 @@
+{
+  "claim_before_sha256": "9bbebfb18638bd96b70152b4e114fe312ac666af993b4e7896c639d7fe333926",
+  "error": "SERVER_CHECK_STOP:FileExistsError (evidence.json of 13.11) -> ExecutionContractError: CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: SERVER-CHECK controller, writing its evidence after the API calls",
+  "owner_approval": "\u00ab\u0414\u0430\u00bb in chat 2026-11-17 to closing the SERVER-CHECK-20261117 claim by manual reconciliation and retrying",
+  "precedent": "state/reconciliations/LOT-PROBE-20261117-R2.44010602826.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-17T04:05:00+00:00",
+  "remote_mode": "PythonAnywhere API only (cpu/, always_on/; DELETE only of lotprobe/opod/dcnt leftovers, never the bot 266084)",
+  "retry": "SERVER-CHECK-20261117-R2 (own evidence file, #1698)",
+  "run_id": "44011789022",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "SERVER-CHECK-20261117"
+}
