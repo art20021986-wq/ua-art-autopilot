@@ -1,0 +1,90 @@
+{
+  "apply": false,
+  "before": [
+    {
+      "category": "CONVERTED_LEAD",
+      "countingType": "MANY_PER_CLICK",
+      "name": "UA ART (web) close_convert_lead",
+      "primaryForGoal": false,
+      "resourceName": "customers/4680747874/conversionActions/7916489405",
+      "status": "HIDDEN",
+      "type": "GOOGLE_ANALYTICS_4_CLOSE_CONVERT_LEAD"
+    },
+    {
+      "category": "QUALIFIED_LEAD",
+      "countingType": "MANY_PER_CLICK",
+      "name": "UA ART (web) qualify_lead",
+      "primaryForGoal": false,
+      "resourceName": "customers/4680747874/conversionActions/7916489408",
+      "status": "HIDDEN",
+      "type": "GOOGLE_ANALYTICS_4_QUALIFY_LEAD"
+    },
+    {
+      "category": "PURCHASE",
+      "countingType": "MANY_PER_CLICK",
+      "name": "UA ART (web) purchase",
+      "primaryForGoal": false,
+      "resourceName": "customers/4680747874/conversionActions/7916489411",
+      "status": "HIDDEN",
+      "type": "GOOGLE_ANALYTICS_4_PURCHASE"
+    },
+    {
+      "category": "SUBMIT_LEAD_FORM",
+      "countingType": "MANY_PER_CLICK",
+      "name": "UA ART (web) generate_lead",
+      "primaryForGoal": false,
+      "resourceName": "customers/4680747874/conversionActions/7916489414",
+      "status": "HIDDEN",
+      "type": "GOOGLE_ANALYTICS_4_GENERATE_LEAD"
+    },
+    {
+      "category": "CONTACT",
+      "countingType": "MANY_PER_CLICK",
+      "name": "UA ART (web) contact",
+      "primaryForGoal": false,
+      "resourceName": "customers/4680747874/conversionActions/7916489417",
+      "status": "HIDDEN",
+      "type": "GOOGLE_ANALYTICS_4_CUSTOM"
+    }
+  ],
+  "mode": "probe",
+  "mutate": {
+    "errors": [
+      {
+        "code": "fieldError=IMMUTABLE_FIELD",
+        "message": "The field attempted to be mutated is immutable."
+      },
+      {
+        "code": "fieldError=IMMUTABLE_FIELD",
+        "message": "The field attempted to be mutated is immutable."
+      }
+    ],
+    "http": 400,
+    "message": "Request contains an invalid argument.",
+    "status": "INVALID_ARGUMENT"
+  },
+  "operations": [
+    {
+      "update": {
+        "countingType": "ONE_PER_CLICK",
+        "primaryForGoal": true,
+        "resourceName": "customers/4680747874/conversionActions/7916489414",
+        "status": "ENABLED"
+      },
+      "updateMask": "counting_type,primary_for_goal,status"
+    },
+    {
+      "update": {
+        "countingType": "ONE_PER_CLICK",
+        "resourceName": "customers/4680747874/conversionActions/7916489417",
+        "status": "ENABLED"
+      },
+      "updateMask": "counting_type,status"
+    }
+  ],
+  "remote_write_count": 0,
+  "run_id": "45547800865",
+  "safe_to_stop": true,
+  "status": "FAIL",
+  "task_id": "ADS-CONV-20261125"
+}
