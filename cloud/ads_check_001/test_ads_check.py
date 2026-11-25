@@ -45,6 +45,9 @@ class Google:
             body = {'error': {'status': 'PERMISSION_DENIED', 'message': 'denied', 'details': [
                 {'errors': [{'errorCode': {'authorizationError': 'DEVELOPER_TOKEN_NOT_APPROVED'}, 'message': 'x'}]}]}}
             raise urllib.error.HTTPError(request.full_url, 403, 'x', {}, io.BytesIO(json.dumps(body).encode()))
+        for part, answer in getattr(self, 'answers', {}).items():
+            if part in request.full_url or (part == 'GEO' and request.data and b'geo_target_constant' in request.data):
+                return Response(json.dumps(answer).encode())
         if 'listAccessibleCustomers' in request.full_url:
             return Response(b'{"resourceNames": ["customers/4680747874"]}')
         return Response(b'{"results": [{"customer": {"descriptiveName": "UA ART"}}]}')
@@ -64,7 +67,7 @@ class RemoteTests(unittest.TestCase):
         value = json.loads(text)
         self.assertEqual(value['status'], 'PASS')
         self.assertEqual(value['google_ads']['accessible'], ['customers/4680747874'])
-        self.assertEqual(set(value['google_ads']) - {'token', 'scope', 'accessible'}, set(remote.QUERIES))
+        self.assertEqual(set(value['google_ads']) - {'token', 'scope', 'accessible', 'planner', 'forecast', 'geo', 'kyiv_locations'}, set(remote.QUERIES))
         for secret in list(KEYS.values())[:4] + [ACCESS]:
             self.assertNotIn(secret, text)
         urls = [url for _, url, _, _ in google.calls]
@@ -73,6 +76,30 @@ class RemoteTests(unittest.TestCase):
         search = [h for _, u, h, _ in google.calls if 'googleAds:search' in u]
         self.assertTrue(all(h['Login-customer-id'] == '9054959760' for h in search))
         self.assertNotIn('mutate', Path(remote.__file__).read_text().lower().replace('no mutate call', ''))
+
+    def test_planner_and_forecast_numbers(self):
+        google = Google()
+        google.answers = {':generateKeywordIdeas': {'results': [{'text': 'авто з кореї', 'keywordIdeaMetrics': {
+            'avgMonthlySearches': '1900', 'competition': 'HIGH', 'lowTopOfPageBidMicros': '5000000',
+            'highTopOfPageBidMicros': '25500000'}}]},
+            'GEO': {'results': [
+                {'geoTargetConstant': {'resourceName': 'geoTargetConstants/1', 'name': 'Kyiv Oblast', 'targetType': 'Region',
+                                       'status': 'ENABLED'}},
+                {'geoTargetConstant': {'resourceName': 'geoTargetConstants/2', 'name': 'Kyiv', 'targetType': 'City',
+                                       'status': 'ENABLED'}}]},
+            ':generateKeywordForecastMetrics': {'campaignForecastMetrics': {'clicks': 300.5, 'costMicros': '9000000000'}}}
+        with tempfile.TemporaryDirectory() as temp:
+            value = json.loads(remote.report(self.keys_file(temp), google))['google_ads']
+        self.assertEqual(value['planner']['uk']['ideas'][0], {'text': 'авто з кореї', 'searches': 1900, 'competition': 'HIGH',
+                                                               'low_bid': 5.0, 'high_bid': 25.5, 'avg_cpc': None})
+        self.assertEqual(value['geo'], ['geoTargetConstants/1'])
+        self.assertEqual(value['forecast']['500']['clicks'], 300.5)
+        ideas = [json.loads(d) for _, u, _, d in google.calls if 'Ideas' in u]
+        self.assertEqual(ideas[0]['geoTargetConstants'], ['geoTargetConstants/1'])
+        bodies = [json.loads(d) for _, u, _, d in google.calls if 'Forecast' in u]
+        self.assertEqual([b['campaign']['biddingStrategy']['maximizeClicksBiddingStrategy']['dailyTargetSpendMicros']
+                          for b in bodies], ['300000000', '500000000', '1000000000'])
+        self.assertEqual(bodies[0]['campaign']['geoModifiers'], [{'geoTargetConstant': 'geoTargetConstants/1'}])
 
     def test_google_error_code_reported(self):
         with tempfile.TemporaryDirectory() as temp:

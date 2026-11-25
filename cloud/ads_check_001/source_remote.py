@@ -5,10 +5,16 @@ a fresh access token from the refresh token, then only reading calls of the offi
 - customers:listAccessibleCustomers;
 - googleAds:search on the manager account (its client accounts) and on the advertiser account (account settings,
   campaigns, conversion actions, billing setup).
+R2 (owner 2026-11-25 «сделай мне аналитику, какая стоимость будет за лид»): the Keyword Planner (generateKeywordIdeas,
+generateKeywordHistoricalMetrics, Ukrainian and Russian) and Google's forecast for one Search campaign
+(generateKeywordForecastMetrics). Owner 2026-11-25: «начнем снимать сливки … с Киевской области»: the Kyiv city and
+Kyiv Oblast locations are looked up in Google's location list and used for the planner and the forecast; the whole
+of Ukraine only for the seed words, to compare — planning calls that only return numbers; no plan or campaign is saved.
 Nothing is created, changed or spent: no mutate call exists in this file. The report holds account names, statuses and
 Google's error codes only; every key value is checked to be absent before the report is written.
 """
 import argparse
+import datetime
 import json
 import os
 from pathlib import Path
@@ -35,6 +41,18 @@ QUERIES = {
                               'FROM conversion_action'),
     'billing': ('client', 'SELECT billing_setup.id, billing_setup.status FROM billing_setup'),
 }
+UKRAINE = 'geoTargetConstants/2804'
+LANGUAGES = {'uk': 'languageConstants/1036', 'ru': 'languageConstants/1031'}
+SEEDS = {
+    'uk': ['авто з кореї під ключ', 'авто з кореї', 'пригон авто з кореї', 'авто з кореї під замовлення', 'авто з кореї київ',
+           'kia k5 з кореї', 'hyundai sonata з кореї', 'hyundai tucson з кореї', 'kia sportage з кореї',
+           'hyundai santa fe з кореї', 'аукціон авто корея', 'авто з сша під ключ', 'пригон авто'],
+    'ru': ['авто из кореи под ключ', 'авто из кореи', 'пригон авто из кореи', 'авто из кореи под заказ', 'авто из кореи киев',
+           'киа к5 из кореи', 'хюндай соната из кореи', 'туссан из кореи', 'спортейдж из кореи', 'санта фе из кореи',
+           'аукцион авто корея', 'авто из сша под ключ', 'пригон авто'],
+}
+FORECAST_KEYWORDS = SEEDS['uk'][:11] + SEEDS['ru'][:11]
+FORECAST_BUDGETS = (300, 500, 1000)  # UAH a day, Maximize clicks; the account currency is checked first
 KEY_NAMES = ('developer_token', 'client_id', 'client_secret', 'refresh_token')
 
 
@@ -90,6 +108,82 @@ def check(keys, opener=urllib.request.urlopen):
         status, answer = call(API + 'customers/%s/googleAds:search' % customer, json.dumps({'query': query}).encode(),
                               headers, opener)
         value[name] = answer.get('results', []) if status == 200 else {'http': status, **errors(answer)}
+    geo, value['kyiv_locations'] = kyiv(keys['customer_id'], headers, opener)
+    value['geo'] = geo = geo or [UKRAINE]
+    value['planner'] = planner(keys['customer_id'], headers, geo, opener)
+    today = datetime.date.today()
+    value['forecast'] = forecast(keys['customer_id'], headers, geo, (today + datetime.timedelta(days=1)).isoformat(),
+                                 (today + datetime.timedelta(days=30)).isoformat(), opener)
+    return value
+
+
+def metrics(item):
+    m = item.get('keywordIdeaMetrics') or item.get('keywordMetrics') or {}
+    micros = lambda name: round(int(m[name]) / 1e6, 2) if m.get(name) else None  # noqa: E731
+    return {'text': item.get('text'), 'searches': int(m.get('avgMonthlySearches') or 0),
+            'competition': m.get('competition'), 'low_bid': micros('lowTopOfPageBidMicros'),
+            'high_bid': micros('highTopOfPageBidMicros'), 'avg_cpc': micros('averageCpcMicros')}
+
+
+GEO_QUERY = ("SELECT geo_target_constant.resource_name, geo_target_constant.name, geo_target_constant.target_type, "
+             "geo_target_constant.canonical_name, geo_target_constant.status FROM geo_target_constant "
+             "WHERE geo_target_constant.country_code = 'UA' AND geo_target_constant.name LIKE '%Kyiv%'")
+
+
+def kyiv(customer, headers, opener=urllib.request.urlopen):
+    """(resource names, found rows): Kyiv region-level locations (city region and oblast), else the city."""
+    status, answer = call(API + 'customers/%s/googleAds:search' % customer, json.dumps({'query': GEO_QUERY}).encode(),
+                          headers, opener)
+    rows = [r.get('geoTargetConstant', {}) for r in answer.get('results', [])] if status == 200 else []
+    rows = [r for r in rows if r.get('status', 'ENABLED') == 'ENABLED']
+    chosen = [r['resourceName'] for r in rows if r.get('targetType') == 'Region']
+    chosen = chosen or [r['resourceName'] for r in rows if r.get('targetType') == 'City' and r.get('name') == 'Kyiv']
+    found = rows if status == 200 else {'http': status, **errors(answer)}
+    return chosen, found
+
+
+def historical(customer, headers, lang, geo, opener=urllib.request.urlopen):
+    body = {'language': LANGUAGES[lang], 'geoTargetConstants': geo, 'keywordPlanNetwork': 'GOOGLE_SEARCH',
+            'historicalMetricsOptions': {'includeAverageCpc': True}, 'keywords': SEEDS[lang]}
+    status, answer = call(API + 'customers/%s:generateKeywordHistoricalMetrics' % customer, json.dumps(body).encode(),
+                          headers, opener)
+    return [metrics(r) for r in answer.get('results', [])] if status == 200 else {'http': status, **errors(answer)}
+
+
+def planner(customer, headers, geo, opener=urllib.request.urlopen):
+    """Keyword Planner numbers for the given locations (seeds also for all Ukraine); nothing is saved."""
+    value = {}
+    for lang, constant in LANGUAGES.items():
+        base = {'language': constant, 'geoTargetConstants': geo, 'keywordPlanNetwork': 'GOOGLE_SEARCH',
+                'historicalMetricsOptions': {'includeAverageCpc': True}}
+        exact = historical(customer, headers, lang, geo, opener)
+        status, answer = call(API + 'customers/%s:generateKeywordIdeas' % customer,
+                              json.dumps(dict(base, keywordSeed={'keywords': SEEDS[lang]}, pageSize=150,
+                                              includeAdultKeywords=False)).encode(), headers, opener)
+        ideas = sorted((metrics(r) for r in answer.get('results', [])), key=lambda x: -x['searches'])[:120] \
+            if status == 200 else {'http': status, **errors(answer)}
+        value[lang] = {'seeds': exact, 'ideas': ideas, 'seeds_ukraine': historical(customer, headers, lang, [UKRAINE], opener)}
+    return value
+
+
+def forecast(customer, headers, geo, start, end, opener=urllib.request.urlopen):
+    """Google's 30-day forecast for one Search campaign at each daily budget (Maximize clicks); nothing saved."""
+    value = {}
+    for budget in FORECAST_BUDGETS:
+        keywords = [{'keyword': {'text': text, 'matchType': 'PHRASE'}} for text in FORECAST_KEYWORDS]
+        body = {'currencyCode': 'UAH', 'forecastPeriod': {'startDate': start, 'endDate': end},
+                'campaign': {'languageConstants': list(LANGUAGES.values()), 'keywordPlanNetwork': 'GOOGLE_SEARCH',
+                             'geoModifiers': [{'geoTargetConstant': g} for g in geo],
+                             'biddingStrategy': {'maximizeClicksBiddingStrategy': {
+                                 'dailyTargetSpendMicros': str(budget * 1000000)}},
+                             'adGroups': [{'biddableKeywords': keywords}]}}
+        status, answer = call(API + 'customers/%s:generateKeywordForecastMetrics' % customer,
+                              json.dumps(body).encode(), headers, opener)
+        m = answer.get('campaignForecastMetrics', {}) if status == 200 else None
+        value[str(budget)] = ({k: m.get(k) for k in ('impressions', 'clicks', 'costMicros', 'averageCpcMicros',
+                                                     'clickThroughRate', 'conversions', 'conversionRate',
+                                                     'averageCpaMicros')}
+                              if m is not None else {'http': status, **errors(answer)})
     return value
 
 
