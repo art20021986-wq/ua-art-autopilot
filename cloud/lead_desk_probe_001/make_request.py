@@ -22,11 +22,11 @@ def request(day):
     task = 'LEAD-DESK-PROBE-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Read-only check for STAFF-FULL-ACCESS-001, client bot step (owner «Да» 2026-11-24): full sanitized '
-                       'lead_bot.py, client_ui.py, vitrina.py, ua_order/bindings.py, ua_order/host.py, ua_lead_desk.py, '
-                       'analitika_bot.py, analitika_knopka.py, karta_klienta.py and every owner-naming line (sanitized; no '
-                       'ids, names or rows). Bounded run in the existing private inbox in a temporary always-on task (never '
-                       'the CRM bot). No source, CRM, HTML, media or bot change.',
+        'description': 'Read-only check after CLIENT-FULL-ACCESS-INSTALL (STAFF-FULL-ACCESS-001): for everyone with full '
+                       'rights the live client bot start screen (vitrina.ekran_start) has «Лиды» and «Аналитика» and the '
+                       'analytics check passes; a stranger has neither (yes/no and counts only; no id, name or row). '
+                       'Bounded run in the existing private inbox in a temporary always-on task (never the CRM bot). '
+                       'No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
