@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PAGES-LAG-FIX-INSTALL-20261125.9a0d80211f091dbdff6df1dc6dc4b449c77dd51c08a113a03c9b7ea55863f0bd.json",
+  "autostart_ledger_sha256": "d485b4cc6a7ff1fa8c5ce84cfa38cdbc89d5c3bce814721e5c50c985b0653650",
+  "autostart_source_commit": "159f49f926a86c1dcfd03b6d3b483c7c7a8c9a0d",
+  "created_at": "2026-11-25T13:47:40Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45626899501",
+    "task_id": "PAGES-LAG-FIX-INSTALL-20261125",
+    "task_sha256": "9a0d80211f091dbdff6df1dc6dc4b449c77dd51c08a113a03c9b7ea55863f0bd"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-5f3e4f32adbfab94-a81a0d6ef70a3c18",
+  "request_path": "tasks/requests/PAGES-LAG-FIX-INSTALL-20261125.json",
+  "resource_locks": [
+    "PATH_SCOPE:5f3e4f32adbfab94"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
