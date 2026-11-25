@@ -64,11 +64,11 @@ class RemoteTests(unittest.TestCase):
         path.write_text(json.dumps(KEYS))
         return path
 
-    def test_default_is_validate_only(self):
-        self.assertFalse(remote.APPLY)
+    def test_validate_only(self):
+        self.assertTrue(remote.APPLY)  # R2: saved
         google = Google()
         with tempfile.TemporaryDirectory() as temp:
-            text = remote.report(self.keys_file(temp), opener=google)
+            text = remote.report(self.keys_file(temp), apply=False, opener=google)
         value = json.loads(text)
         mutate = [b for u, b in google.calls if u.endswith(':mutate')]
         self.assertEqual(len(mutate), 1)
@@ -85,9 +85,8 @@ class RemoteTests(unittest.TestCase):
         ops = [b for u, b in google.calls if u.endswith(':mutate')][0]
         self.assertFalse(ops['validateOnly'])
         self.assertEqual([o['update']['resourceName'] for o in ops['operations']], [R + '1', R + '2'])
-        self.assertEqual(ops['operations'][0]['updateMask'], 'counting_type,primary_for_goal,status')
-        self.assertEqual(ops['operations'][1]['update'], {'resourceName': R + '2', 'status': 'ENABLED',
-                                                         'countingType': 'ONE_PER_CLICK'})
+        self.assertEqual(ops['operations'][0]['updateMask'], 'primary_for_goal,status')
+        self.assertEqual(ops['operations'][1]['update'], {'resourceName': R + '2', 'status': 'ENABLED'})
         self.assertEqual((value['status'], value['left'], value['before']), ('PASS', [], ROWS))
         after = {r['resourceName']: r for r in value['after']}
         self.assertEqual((after[R + '1']['status'], after[R + '1']['primaryForGoal']), ('ENABLED', True))
