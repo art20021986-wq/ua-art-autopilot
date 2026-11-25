@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/ads_location_001/20261125.json",
+  "live_source_environment": "production",
+  "probe_status": "FAIL",
+  "production_required": false,
+  "request_sha256": "e99b59d47f2d9ebf471c1eb6d2ab909225b2e774ec61cee86bc472ca99815b48",
+  "rollback_ready": true,
+  "rollback_ready_scope": "BEFORE_STATE_IN_REPORT_NO_SITE_OR_CRM_WRITES",
+  "run_id": "45605412603",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ADS-LOCATION-20261125",
+  "tests": "PASS",
+  "tests_scope": "GOOGLE_ADS_LOCATION_LINK",
+  "unexpected_changes": 0
+}

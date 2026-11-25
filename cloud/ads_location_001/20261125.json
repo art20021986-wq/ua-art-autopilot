@@ -1,0 +1,15 @@
+{
+  "before": [],
+  "mode": "probe",
+  "mutate": {
+    "errors": [],
+    "http": 400,
+    "message": "Invalid JSON payload received. Unknown name \"customerAssetSetOperation\" at 'mutate_operations[1]': Cannot find field.",
+    "status": "INVALID_ARGUMENT"
+  },
+  "remote_write_count": 1,
+  "run_id": "45605412603",
+  "safe_to_stop": true,
+  "status": "FAIL",
+  "task_id": "ADS-LOCATION-20261125"
+}
