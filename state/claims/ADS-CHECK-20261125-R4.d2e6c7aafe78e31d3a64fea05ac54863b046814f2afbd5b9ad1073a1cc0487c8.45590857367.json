@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ADS-CHECK-20261125-R4.d2e6c7aafe78e31d3a64fea05ac54863b046814f2afbd5b9ad1073a1cc0487c8.json",
+  "autostart_ledger_sha256": "6662e531509994b4fe7c9ae4a8a222e0a86e63798df2fb72383061d94ac3e651",
+  "autostart_source_commit": "91d8fb7fbecf7a4af0ceb37fedb16f9e82272f44",
+  "created_at": "2026-11-25T10:02:26Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-25T10:02:26Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "45590857367",
+    "task_id": "ADS-CHECK-20261125-R4",
+    "task_sha256": "d2e6c7aafe78e31d3a64fea05ac54863b046814f2afbd5b9ad1073a1cc0487c8"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-689f5b8705993385-071a6bdce4383f25",
+  "receipt_path": "state/receipts/ADS-CHECK-20261125-R4.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/ADS-CHECK-20261125-R4.json",
+  "request_sha256": "d2e6c7aafe78e31d3a64fea05ac54863b046814f2afbd5b9ad1073a1cc0487c8",
+  "resource_locks": [
+    "PATH_SCOPE:689f5b8705993385"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "23673fc0682f6fd509378a8a355f3591e3b6d4da",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-25T10:02:26Z"
+}
