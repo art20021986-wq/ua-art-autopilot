@@ -1,0 +1,278 @@
+{
+  "google_ads": {
+    "accessible": [
+      "customers/4680747874",
+      "customers/9054959760"
+    ],
+    "account": [
+      {
+        "customer": {
+          "autoTaggingEnabled": true,
+          "conversionTrackingSetting": {
+            "conversionTrackingStatus": "NOT_CONVERSION_TRACKED"
+          },
+          "currencyCode": "UAH",
+          "descriptiveName": "UA ART сomapny LLC",
+          "id": "4680747874",
+          "resourceName": "customers/4680747874",
+          "status": "ENABLED",
+          "testAccount": false,
+          "timeZone": "Europe/Kiev"
+        }
+      }
+    ],
+    "billing": [
+      {
+        "billingSetup": {
+          "id": "8661262148",
+          "resourceName": "customers/4680747874/billingSetups/8661262148",
+          "status": "APPROVED"
+        }
+      }
+    ],
+    "campaigns": [],
+    "conversions": [
+      {
+        "conversionAction": {
+          "category": "CONVERTED_LEAD",
+          "id": "7916489405",
+          "name": "UA ART (web) close_convert_lead",
+          "primaryForGoal": false,
+          "resourceName": "customers/4680747874/conversionActions/7916489405",
+          "status": "HIDDEN",
+          "type": "GOOGLE_ANALYTICS_4_CLOSE_CONVERT_LEAD"
+        }
+      },
+      {
+        "conversionAction": {
+          "category": "QUALIFIED_LEAD",
+          "id": "7916489408",
+          "name": "UA ART (web) qualify_lead",
+          "primaryForGoal": false,
+          "resourceName": "customers/4680747874/conversionActions/7916489408",
+          "status": "HIDDEN",
+          "type": "GOOGLE_ANALYTICS_4_QUALIFY_LEAD"
+        }
+      },
+      {
+        "conversionAction": {
+          "category": "PURCHASE",
+          "id": "7916489411",
+          "name": "UA ART (web) purchase",
+          "primaryForGoal": false,
+          "resourceName": "customers/4680747874/conversionActions/7916489411",
+          "status": "HIDDEN",
+          "type": "GOOGLE_ANALYTICS_4_PURCHASE"
+        }
+      },
+      {
+        "conversionAction": {
+          "category": "SUBMIT_LEAD_FORM",
+          "id": "7916489414",
+          "name": "UA ART (web) generate_lead",
+          "primaryForGoal": false,
+          "resourceName": "customers/4680747874/conversionActions/7916489414",
+          "status": "HIDDEN",
+          "type": "GOOGLE_ANALYTICS_4_GENERATE_LEAD"
+        }
+      },
+      {
+        "conversionAction": {
+          "category": "CONTACT",
+          "id": "7916489417",
+          "name": "UA ART (web) contact",
+          "primaryForGoal": false,
+          "resourceName": "customers/4680747874/conversionActions/7916489417",
+          "status": "HIDDEN",
+          "type": "GOOGLE_ANALYTICS_4_CUSTOM"
+        }
+      }
+    ],
+    "forecast": {
+      "1000": {
+        "errors": [],
+        "http": 400,
+        "message": "Invalid JSON payload received. Unknown name \"keywordPlanNetwork\" at 'campaign': Cannot find field.\nInvalid JSON payload received. Unknown name \"geoModifiers\" at 'campaign': Cannot find field.\nInvalid ",
+        "status": "INVALID_ARGUMENT"
+      },
+      "300": {
+        "errors": [],
+        "http": 400,
+        "message": "Invalid JSON payload received. Unknown name \"keywordPlanNetwork\" at 'campaign': Cannot find field.\nInvalid JSON payload received. Unknown name \"geoModifiers\" at 'campaign': Cannot find field.\nInvalid ",
+        "status": "INVALID_ARGUMENT"
+      },
+      "500": {
+        "errors": [],
+        "http": 400,
+        "message": "Invalid JSON payload received. Unknown name \"keywordPlanNetwork\" at 'campaign': Cannot find field.\nInvalid JSON payload received. Unknown name \"geoModifiers\" at 'campaign': Cannot find field.\nInvalid ",
+        "status": "INVALID_ARGUMENT"
+      }
+    },
+    "geo": [
+      "geoTargetConstants/21118",
+      "geoTargetConstants/21580"
+    ],
+    "kyiv_locations": [
+      {
+        "canonicalName": "Kyiv city,Ukraine",
+        "name": "Kyiv city",
+        "resourceName": "geoTargetConstants/21118",
+        "status": "ENABLED",
+        "targetType": "Region"
+      },
+      {
+        "canonicalName": "Kyiv Oblast,Ukraine",
+        "name": "Kyiv Oblast",
+        "resourceName": "geoTargetConstants/21580",
+        "status": "ENABLED",
+        "targetType": "Region"
+      },
+      {
+        "canonicalName": "Kyiv,Kyiv city,Ukraine",
+        "name": "Kyiv",
+        "resourceName": "geoTargetConstants/1012852",
+        "status": "ENABLED",
+        "targetType": "City"
+      },
+      {
+        "canonicalName": "Kyivskyi District,Odesa Oblast,Ukraine",
+        "name": "Kyivskyi District",
+        "resourceName": "geoTargetConstants/9198249",
+        "status": "ENABLED",
+        "targetType": "District"
+      },
+      {
+        "canonicalName": "Kyivs'kyi district,Poltava Oblast,Ukraine",
+        "name": "Kyivs'kyi district",
+        "resourceName": "geoTargetConstants/9216509",
+        "status": "ENABLED",
+        "targetType": "District"
+      },
+      {
+        "canonicalName": "Kyivskyi District,Kharkiv Oblast,Ukraine",
+        "name": "Kyivskyi District",
+        "resourceName": "geoTargetConstants/9222577",
+        "status": "ENABLED",
+        "targetType": "District"
+      },
+      {
+        "canonicalName": "Kyiv City,Kyiv city,Ukraine",
+        "name": "Kyiv City",
+        "resourceName": "geoTargetConstants/9241435",
+        "status": "ENABLED",
+        "targetType": "District"
+      }
+    ],
+    "manager": [
+      {
+        "customerClient": {
+          "descriptiveName": "UA ART Manager",
+          "id": "9054959760",
+          "level": "0",
+          "manager": true,
+          "resourceName": "customers/9054959760/customerClients/9054959760",
+          "status": "ENABLED"
+        }
+      },
+      {
+        "customerClient": {
+          "descriptiveName": "UA ART сomapny LLC",
+          "id": "4680747874",
+          "level": "1",
+          "manager": false,
+          "resourceName": "customers/9054959760/customerClients/4680747874",
+          "status": "ENABLED"
+        }
+      }
+    ],
+    "planner": {
+      "ru": {
+        "ideas": {
+          "errors": [
+            {
+              "code": "authorizationError=DEVELOPER_TOKEN_NOT_APPROVED",
+              "message": "This method is not allowed for use with explorer access. Please apply for basic or standard access."
+            }
+          ],
+          "http": 403,
+          "message": "The caller does not have permission",
+          "status": "PERMISSION_DENIED"
+        },
+        "seeds": {
+          "errors": [
+            {
+              "code": "authorizationError=DEVELOPER_TOKEN_NOT_APPROVED",
+              "message": "This method is not allowed for use with explorer access. Please apply for basic or standard access."
+            }
+          ],
+          "http": 403,
+          "message": "The caller does not have permission",
+          "status": "PERMISSION_DENIED"
+        },
+        "seeds_ukraine": {
+          "errors": [
+            {
+              "code": "authorizationError=DEVELOPER_TOKEN_NOT_APPROVED",
+              "message": "This method is not allowed for use with explorer access. Please apply for basic or standard access."
+            }
+          ],
+          "http": 403,
+          "message": "The caller does not have permission",
+          "status": "PERMISSION_DENIED"
+        }
+      },
+      "uk": {
+        "ideas": {
+          "errors": [
+            {
+              "code": "authorizationError=DEVELOPER_TOKEN_NOT_APPROVED",
+              "message": "This method is not allowed for use with explorer access. Please apply for basic or standard access."
+            }
+          ],
+          "http": 403,
+          "message": "The caller does not have permission",
+          "status": "PERMISSION_DENIED"
+        },
+        "seeds": {
+          "errors": [
+            {
+              "code": "authorizationError=DEVELOPER_TOKEN_NOT_APPROVED",
+              "message": "This method is not allowed for use with explorer access. Please apply for basic or standard access."
+            }
+          ],
+          "http": 403,
+          "message": "The caller does not have permission",
+          "status": "PERMISSION_DENIED"
+        },
+        "seeds_ukraine": {
+          "errors": [
+            {
+              "code": "authorizationError=DEVELOPER_TOKEN_NOT_APPROVED",
+              "message": "This method is not allowed for use with explorer access. Please apply for basic or standard access."
+            }
+          ],
+          "http": 403,
+          "message": "The caller does not have permission",
+          "status": "PERMISSION_DENIED"
+        }
+      }
+    },
+    "scope": "https://www.googleapis.com/auth/adwords",
+    "token": "PASS"
+  },
+  "keys_mode": "0o600",
+  "keys_present": {
+    "client_id": true,
+    "client_secret": true,
+    "customer_id": true,
+    "developer_token": true,
+    "login_customer_id": true,
+    "refresh_token": true
+  },
+  "mode": "probe",
+  "remote_write_count": 0,
+  "run_id": "45546622264",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "ADS-CHECK-20261125-R2"
+}
