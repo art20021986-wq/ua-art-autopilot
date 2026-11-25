@@ -104,6 +104,15 @@ class RemoteTests(unittest.TestCase):
         for secret in list(KEYS.values())[:4]:
             self.assertNotIn(secret, text)
 
+    def test_diag_never_saves(self):
+        self.assertTrue(remote.DIAG)
+        google = Google()
+        with tempfile.TemporaryDirectory() as temp:
+            value = json.loads(remote.report(self.keys_file(temp), apply=True, opener=google))
+        self.assertTrue([b for u, b in google.calls if u.endswith(':mutate')][0]['validateOnly'])
+        self.assertEqual(len(value['candidates']), len(set(value['candidates'])))
+
+    @patch.object(remote, 'DIAG', False)
     def test_apply_creates_paused_once(self):
         google = Google()
         with tempfile.TemporaryDirectory() as temp:

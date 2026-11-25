@@ -19,6 +19,33 @@ import source_check as check
 
 HERE = Path(__file__).resolve().parent
 APPLY = False
+DIAG = True  # R3: every Ukrainian text alone in a test ad (validate-only, never saved) to find what Google flags
+
+
+def candidates():
+    texts = []
+    for group in plan.groups():
+        if group['name'].startswith('UA'):
+            texts += [t for t in group['headlines'] + group['descriptions'] if t not in texts]
+    return texts
+
+
+def diag_operations(customer):
+    """A paused test campaign: one ad group per Ukrainian text, its ad = that text + neutral Russian texts."""
+    ops = operations(customer)[:2]
+    base = 'customers/%s/' % customer
+    neutral_head, neutral_desc = ['Авто из Кореи', 'Услуга — 600 $', 'Официальный договор'], plan.RU_DESC[:2]
+    for n, text in enumerate(candidates()):
+        ad_group = base + 'adGroups/-%d' % (100 + n)
+        ops.append({'adGroupOperation': {'create': {'resourceName': ad_group, 'name': 'diag %d' % n,
+                                                    'campaign': base + 'campaigns/-2', 'status': 'ENABLED',
+                                                    'type': 'SEARCH_STANDARD'}}})
+        head, desc = list(neutral_head), list(neutral_desc)
+        (head if len(text) <= 30 else desc).append(text)
+        ops.append({'adGroupAdOperation': {'create': {'adGroup': ad_group, 'status': 'ENABLED', 'ad': {
+            'finalUrls': [plan.SITE + 'seo/ua/avto-z-korei-do-kyieva-pid-kluch.html'], 'responsiveSearchAd': {
+                'headlines': [{'text': h} for h in head], 'descriptions': [{'text': d} for d in desc]}}}}})
+    return ops
 
 
 def operations(customer):
@@ -98,7 +125,10 @@ def run(keys, apply=APPLY, opener=urllib.request.urlopen):
     if before:
         value['status'] = 'ALREADY_THERE'
         return value
-    ops = operations(customer)
+    ops = diag_operations(customer) if DIAG else operations(customer)
+    if DIAG:
+        apply = False
+        value['candidates'] = candidates()
     value['operation_count'] = len(ops)
     status, answer = check.call(check.API + 'customers/%s/googleAds:mutate' % customer,
                                 json.dumps({'mutateOperations': ops, 'validateOnly': not apply}).encode(), headers, opener)
