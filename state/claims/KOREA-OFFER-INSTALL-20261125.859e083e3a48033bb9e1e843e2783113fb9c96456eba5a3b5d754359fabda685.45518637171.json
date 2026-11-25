@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "3a8ff8aadedd1631242f88c7ac9da7ad8c69d551489c7c93109de96b96041521",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T00:36:45Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-25T00:48:38Z",
+  "heartbeat_at": "2026-11-25T00:48:38Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "45518637171",
     "task_id": "KOREA-OFFER-INSTALL-20261125",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 548.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 217.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-45518637171-859e083e3a48033b",
   "production_transaction_path": "state/transactions/KOREA-OFFER-INSTALL-20261125.859e083e3a48033bb9e1e843e2783113fb9c96456eba5a3b5d754359fabda685.45518637171.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-5b9dc9985883fde4-de3763ef55ea3ac1",
   "receipt_path": "state/receipts/KOREA-OFFER-INSTALL-20261125.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "dd0da46e66e6f98ccc041f7514e95ff3dd5bfa59314bce7c512699b1992aeb9d",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-OFFER-INSTALL-20261125.json",
   "request_sha256": "859e083e3a48033bb9e1e843e2783113fb9c96456eba5a3b5d754359fabda685",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "1c6c527ec56c64516b50edf3940ee35b6e0ac46928532b88e8c3ce786771f660",
     "file_sha256": {
@@ -86,5 +109,5 @@
       "cloud/korea_offer_001/test_offer.py": "85607c35436449c732cf06bd96fd1242ea48e58a40244f261968aed0569b59de"
     }
   },
-  "updated_at": "2026-11-25T00:36:45Z"
+  "updated_at": "2026-11-25T00:48:38Z"
 }
