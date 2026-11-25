@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "a9c3a73dd569fb62d5fc4820c9393320382e963e84fa7dac8f8e3a7c1fdb70d8",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T13:49:18Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-25T13:53:21Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45626899501",
     "task_id": "PAGES-LAG-FIX-INSTALL-20261125",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45626899501-9a0d80211f091dbd",
   "production_transaction_path": "state/transactions/PAGES-LAG-FIX-INSTALL-20261125.9a0d80211f091dbdff6df1dc6dc4b449c77dd51c08a113a03c9b7ea55863f0bd.45626899501.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-5f3e4f32adbfab94-a81a0d6ef70a3c18",
   "receipt_path": "state/receipts/PAGES-LAG-FIX-INSTALL-20261125.json",
   "receipt_validation_status": "PENDING",
@@ -88,5 +88,5 @@
       "cloud/pages_lag_fix_001/test_pages_lag_fix.py": "ca841bdf91b95be03fd02badd78d0c32ab4f7d2c35c3efcff3e5c4d77c104844"
     }
   },
-  "updated_at": "2026-11-25T13:49:18Z"
+  "updated_at": "2026-11-25T13:53:21Z"
 }
