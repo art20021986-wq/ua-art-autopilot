@@ -51,6 +51,18 @@ QUERIES = {
     'auto_apply': ('client', 'SELECT recommendation_subscription.type, recommendation_subscription.status '
                              'FROM recommendation_subscription'),
 }
+# R4 (owner 2026-11-25 «сколько показов, сколько зашло»): today's numbers of the campaign, its groups and searches.
+QUERIES.update({
+    'today': ('client', "SELECT campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, "
+                        "metrics.average_cpc, metrics.conversions, metrics.search_impression_share FROM campaign "
+                        "WHERE campaign.name = '%s' AND segments.date DURING TODAY" % CAMPAIGN),
+    'today_groups': ('client', "SELECT ad_group.name, metrics.impressions, metrics.clicks, metrics.cost_micros, "
+                               "metrics.conversions FROM ad_group WHERE campaign.name = '%s' AND segments.date DURING TODAY "
+                               "AND metrics.impressions > 0" % CAMPAIGN),
+    'today_terms': ('client', "SELECT search_term_view.search_term, metrics.impressions, metrics.clicks, "
+                              "metrics.cost_micros FROM search_term_view WHERE campaign.name = '%s' "
+                              "AND segments.date DURING TODAY" % CAMPAIGN),
+})
 PLANNING = False  # R2: the Keyword Planner needs Basic access (DEVELOPER_TOKEN_NOT_APPROVED); R3 skips it
 UKRAINE = 'geoTargetConstants/2804'
 LANGUAGES = {'uk': 'languageConstants/1036', 'ru': 'languageConstants/1031'}
