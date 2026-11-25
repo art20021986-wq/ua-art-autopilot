@@ -1,0 +1,48 @@
+{
+  "after": {
+    "budget": {
+      "amountMicros": "300000000",
+      "resourceName": "customers/4680747874/campaignBudgets/16104358943"
+    },
+    "campaign": {
+      "resourceName": "customers/4680747874/campaigns/24540607407",
+      "status": "ENABLED"
+    }
+  },
+  "before": {
+    "budget": {
+      "amountMicros": "500000000",
+      "resourceName": "customers/4680747874/campaignBudgets/16104358943"
+    },
+    "campaign": {
+      "resourceName": "customers/4680747874/campaigns/24540607407",
+      "status": "PAUSED"
+    }
+  },
+  "mode": "probe",
+  "operations": [
+    {
+      "campaignBudgetOperation": {
+        "update": {
+          "amountMicros": "300000000",
+          "resourceName": "customers/4680747874/campaignBudgets/16104358943"
+        },
+        "updateMask": "amount_micros"
+      }
+    },
+    {
+      "campaignOperation": {
+        "update": {
+          "resourceName": "customers/4680747874/campaigns/24540607407",
+          "status": "ENABLED"
+        },
+        "updateMask": "status"
+      }
+    }
+  ],
+  "remote_write_count": 1,
+  "run_id": "45570414194",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "ADS-ENABLE-20261125"
+}

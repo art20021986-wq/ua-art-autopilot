@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/ads_enable_001/20261125.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "bf23fe5903ab98d57be781fea00ec9faac22be8b0d7966bf6221183d66c52fdd",
+  "rollback_ready": true,
+  "rollback_ready_scope": "BEFORE_STATE_IN_REPORT_NO_SITE_OR_CRM_WRITES",
+  "run_id": "45570414194",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ADS-ENABLE-20261125",
+  "tests": "PASS",
+  "tests_scope": "GOOGLE_ADS_CAMPAIGN_ENABLE",
+  "unexpected_changes": 0
+}
