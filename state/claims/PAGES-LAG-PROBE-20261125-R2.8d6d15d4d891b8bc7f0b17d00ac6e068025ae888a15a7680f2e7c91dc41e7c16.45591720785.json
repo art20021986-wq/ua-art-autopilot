@@ -7,21 +7,23 @@
   "created_at": "2026-11-25T10:07:41Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T10:07:41Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-25T10:11:55Z",
+  "heartbeat_at": "2026-11-25T10:11:55Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45591720785",
     "task_id": "PAGES-LAG-PROBE-20261125-R2",
     "task_sha256": "8d6d15d4d891b8bc7f0b17d00ac6e068025ae888a15a7680f2e7c91dc41e7c16"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-59b0e0423b375961-0556ccd11e0b3c05",
   "receipt_path": "state/receipts/PAGES-LAG-PROBE-20261125-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "6243ea35cd770e11ff65b8fa5fe9ea6c577c9a3c01b304f140e70b8c9490e66a",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/PAGES-LAG-PROBE-20261125-R2.json",
   "request_sha256": "8d6d15d4d891b8bc7f0b17d00ac6e068025ae888a15a7680f2e7c91dc41e7c16",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "36be4164afcb2361dcf4a820f52c977ede04dddf",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 95556128768,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.338
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-25T10:07:41Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "62aef7f255a8d8084086c169cdc4afdc3df09c1783ebce679b038a686e08891f",
+    "file_sha256": {
+      "cloud/pages_lag_probe_001/bootstrap.py": "c4fc4954c1dd24b6bb11dbfbe4adde391a7ba0b342ba4dbfdfed133106397c71",
+      "cloud/pages_lag_probe_001/make_request.py": "44ac4995a14038e8b505611feb71d97c349dec2788a07632a9cff036ddc9f3ff",
+      "cloud/pages_lag_probe_001/source_remote.py": "1ea5446fbca3deedca2e0d1ccba5c7b8477ac36d913c4bdf63629b4b4bc76c69",
+      "cloud/pages_lag_probe_001/test_pages_lag_probe.py": "5a38f866c85dbc78e78e99d4715d74de1d8d7033690fba24a04f3c396bd531a0",
+      "cloud/pages_lag_probe_001/transport.py": "914962ccde37327add65e06631beb81527aefe08a40a276e7a054ce5ae61c1e0"
+    }
+  },
+  "updated_at": "2026-11-25T10:11:55Z"
 }
