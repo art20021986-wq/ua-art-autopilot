@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "cbd738da073f43d2a7f5a33597d82f8321dc4efd74bbb8f8230505a69d20db50",
   "autostart_source_commit": "1988ab8e45e21841b8a2a71239593bd76c537ca5",
   "created_at": "2026-11-25T06:11:00Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "d97eaa470eec928ba79be50f003635e1a66d38e2479e5db0cbcd220819e8c3d4",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T06:11:00Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-25T06:12:20Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "45558522551",
     "task_id": "HUB-FORM-INSTALL-20261125",
     "task_sha256": "6b0ce77e328d2b0029cecf21882644f2778bab02c22cf8aed7795ce0d0365ebd"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 66.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 48.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-45558522551-6b0ce77e328d2b00",
+  "production_transaction_path": "state/transactions/HUB-FORM-INSTALL-20261125.6b0ce77e328d2b0029cecf21882644f2778bab02c22cf8aed7795ce0d0365ebd.45558522551.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-d53e3fad3ce7eef8-b8c8f31c45ad7ac1",
   "receipt_path": "state/receipts/HUB-FORM-INSTALL-20261125.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "350973b2fdeb0c615c545423feba92d633acdd97",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 514.176,
+    "allowed": true,
+    "evidence_path": "state/storage/HUB-FORM-INSTALL-20261125.json",
+    "evidence_sha256": "aa77beb9621b80fcc1b4dcdc9801af87e90800d71021306f8bf7dbec05638ad5",
+    "free_bytes": 18956885504,
+    "heavy": true,
+    "measured_at": "2026-11-25T06:03:44.491308+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 45.83746998857143
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-25T06:11:00Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "5f792c0cc8d0dfe31fc813271b94c291735c211d74c1bda349d36436f66a336c",
+    "file_sha256": {
+      "cloud/hub_form_001/candidate_builder.py": "80df28f02f1baf759e332724919edc12e3de44cc31d239d47ea902aaf5c6cd55",
+      "cloud/hub_form_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/hub_form_001/deployment_bootstrap.py": "fc132bf026720de963eaa9312843fbafd8b932592643ea6da5d1aaa0d414636d",
+      "cloud/hub_form_001/deployment_remote.py": "90b9c9d05ae695c2ad7185358efdf81d8779cb26092b621c7c5336d765a8cbbb",
+      "cloud/hub_form_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/hub_form_001/deployment_transport.py": "3a01f6fe5329be8172169ebb42421608d8651957fa23d9e3e832a91f6efb3ad5",
+      "cloud/hub_form_001/make_release.py": "83bfe316412d6673ebf3610b6b2a34a5bf6cc5564b7a40b6431b46c082b9c04d",
+      "cloud/hub_form_001/release_constants.py": "1e7b5d5ad990a2840c95c86061852d123a986cef024298f8d284da51bbe761ff",
+      "cloud/hub_form_001/test_deployment.py": "6a1a9e1f716f2a4c3d08ab2b36028f174498ee869a7b2123a5b1bd4212c61d9e",
+      "cloud/hub_form_001/test_hub_form.py": "27dfc45818d3395df6f262a1e5284101f487db926599af8dfa73f4e0d8fb7764"
+    }
+  },
+  "updated_at": "2026-11-25T06:12:20Z"
 }
