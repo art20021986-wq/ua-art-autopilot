@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/LEAD-FIND-PROBE-20261125.eddb1c8eb5a37ba4d0cba66e0b87d20214d96e7a29e401787eba386432ba072d.json",
+  "autostart_ledger_sha256": "56f1e0d3f30d5d6cd9692cf80faac36ba7f4b6d8b5e8b2eeeaf916ffba03b7fb",
+  "autostart_source_commit": "ddf93a627b6bbfcd772c69fcb8c858ee9d75f6f6",
+  "created_at": "2026-11-25T08:01:59Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45571672942",
+    "task_id": "LEAD-FIND-PROBE-20261125",
+    "task_sha256": "eddb1c8eb5a37ba4d0cba66e0b87d20214d96e7a29e401787eba386432ba072d"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-19088b51cc66238a-a4266926074b9feb",
+  "request_path": "tasks/requests/LEAD-FIND-PROBE-20261125.json",
+  "resource_locks": [
+    "PATH_SCOPE:19088b51cc66238a"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
