@@ -5,20 +5,53 @@
   "autostart_ledger_sha256": "96f9ed05a51b949bc2ebf2e7f444d91a6e15f3daba7dec0cb54f2af20cb1dda2",
   "autostart_source_commit": "cccca75f61011d32db686dfc1d84ab870a2d0653",
   "created_at": "2026-11-25T02:48:58Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "bf25a3e11e2b7918cf1e235c23d42456aa704744d724febf59fe852a903ee8f7",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T02:48:58Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-25T02:50:19Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "45535429064",
     "task_id": "ADS-KEYS-INSTALL-20261125",
     "task_sha256": "6c936bea851698faa52f5fa7f86c31ba0439ceb1dceec6e0bc1677a124da0502"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 79.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 66.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 41.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-45535429064-6c936bea851698fa",
+  "production_transaction_path": "state/transactions/ADS-KEYS-INSTALL-20261125.6c936bea851698faa52f5fa7f86c31ba0439ceb1dceec6e0bc1677a124da0502.45535429064.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "security_control_plane-624743b552936e51",
   "receipt_path": "state/receipts/ADS-KEYS-INSTALL-20261125.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +62,41 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "356def11caa2b5ff89f4753236bec58b320cd704",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 288.827,
+    "allowed": true,
+    "evidence_path": "state/storage/ADS-KEYS-INSTALL-20261125.json",
+    "evidence_sha256": "150b527b8154d17cff7caa345b7a7090a183da76c6374d91daffa7aeab62a86a",
+    "free_bytes": 19089108480,
+    "heavy": true,
+    "measured_at": "2026-11-25T02:45:27.556756+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 45.45969005714286
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-25T02:48:58Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "6af96e491feacf82f9a6a563dd9303629bf416ef6b3f050490e12f16dd69bf9c",
+    "file_sha256": {
+      "cloud/ads_keys_001/candidate_builder.py": "dfc852d353fe18b3205dffe2f61539031ff62389aae23e9ad9e5566f37276329",
+      "cloud/ads_keys_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/ads_keys_001/deployment_bootstrap.py": "876e40e1b8228c9aef3eef2140e33f5ccfb7d25c3367c04dddc3cb6e0439d388",
+      "cloud/ads_keys_001/deployment_remote.py": "94ea64b2cf5d5d6caabf74f0f93c063e49853cdc27e479d93328c43c31adef4b",
+      "cloud/ads_keys_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/ads_keys_001/deployment_transport.py": "42dc241c3446ac7a339c511b2b4c77acda6410d358cc03278c505576f89fa81b",
+      "cloud/ads_keys_001/edit_cars_ui.py": "2dfcb41014d35813af3a7df164a7bd7948b816360a5361139a4140c3671441a9",
+      "cloud/ads_keys_001/edit_order_host.py": "15b184eebee30a4b8206fa6ec848db2675c1f8c8eebcf571639e5a307f4a037b",
+      "cloud/ads_keys_001/make_release.py": "7ce5477a53472d3935b40b1259be7a2e3bf378fb21807904d3006f54ac3d046f",
+      "cloud/ads_keys_001/release_constants.py": "b6d50415cdd83fdcc6bd2f9d2d086e6dc007f747dc9074d3db4b27d14e8a64be",
+      "cloud/ads_keys_001/test_ads_keys.py": "18aedf6fbc8ba6edf068444d1b802d3392eac78d05360c7a6a96529a63926101",
+      "cloud/ads_keys_001/test_deployment.py": "f7c73ee6dbf0c30abcfd04b69b9b9e4ec0f848c88bee2a74bc93150a81df5d0e",
+      "cloud/ads_keys_001/ua_google_ads_auth.py": "9ab8fd648e63a66d6a3bd6c5b619514b9784a6fd6f480003619d0d4eb8fca750",
+      "cloud/ads_keys_001/ua_google_ads_key.py": "61a68a5739db1fc3892aa13bcd5b156686d7bd733808fdebbfe89e43c41cd950",
+      "cloud/ads_keys_001/ua_google_ads_oauth_web.py": "8916775feee5a49e908cf4d880c81c580fdb5565ae5245cc5ff79c125dff3c35"
+    }
+  },
+  "updated_at": "2026-11-25T02:50:19Z"
 }
