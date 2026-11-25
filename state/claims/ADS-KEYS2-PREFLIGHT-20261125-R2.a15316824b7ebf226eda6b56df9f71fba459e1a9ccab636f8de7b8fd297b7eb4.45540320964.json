@@ -7,21 +7,23 @@
   "created_at": "2026-11-25T03:30:57Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T03:30:57Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-25T03:38:51Z",
+  "heartbeat_at": "2026-11-25T03:38:51Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45540320964",
     "task_id": "ADS-KEYS2-PREFLIGHT-20261125-R2",
     "task_sha256": "a15316824b7ebf226eda6b56df9f71fba459e1a9ccab636f8de7b8fd297b7eb4"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-c1ff54252fc4b40f-cd755326993bbe5c",
   "receipt_path": "state/receipts/ADS-KEYS2-PREFLIGHT-20261125-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "18de544459d255185c081418d9d424f22fc88b17715259d1cd7588e7ad4a509f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ADS-KEYS2-PREFLIGHT-20261125-R2.json",
   "request_sha256": "a15316824b7ebf226eda6b56df9f71fba459e1a9ccab636f8de7b8fd297b7eb4",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "fc91507ad7dc1e6f2b164e2a487b3891994c303a",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91910115328,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 40.69
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-25T03:30:57Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
+    "file_sha256": {
+      "cloud/ads_keys_002/candidate_builder.py": "0fcbc3f775af93b1dc4a39bb33a35ea94574eec36442d1df1b34ab3df59aca76",
+      "cloud/ads_keys_002/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/ads_keys_002/deployment_bootstrap.py": "6c3891503bfb0fea2fa51ab4ba1549855a6172b2e3fea56b784ea9b50d8bd650",
+      "cloud/ads_keys_002/deployment_remote.py": "fa0572a0f54a771835dd2c2be842385cc07233280f567585cf5f3dc305fdc3d3",
+      "cloud/ads_keys_002/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/ads_keys_002/deployment_transport.py": "5216c90605f09316becd3b91491af6ddc49dffa2f707ccdc37f1d40c29458cfd",
+      "cloud/ads_keys_002/make_release.py": "6ecc56a0c7180ba2c4b418d45db3ebe2b74b118ff2b7528dd0ea66bdfd1cc906",
+      "cloud/ads_keys_002/release_constants.py": "4bc136ba7aa03cc3fcc9453e5666fa3b2bac42b2d7584cdcbe76fce0aafbf6aa",
+      "cloud/ads_keys_002/test_ads_key_steps.py": "b96b6c3258cc6b36cc9823a18fdda582c490ccb9af32beee8a32bf9f11832095",
+      "cloud/ads_keys_002/test_deployment.py": "b54bf461817ae5222061ce6d21835a1c6e1b6ab506e5b4d73d568374d38462b8",
+      "cloud/ads_keys_002/ua_google_ads_key.py": "f6817e6000742c57920c84315c6ab54325d3bd35f29f1532df11607fe24a07b3"
+    }
+  },
+  "updated_at": "2026-11-25T03:38:51Z"
 }
