@@ -1,4 +1,4 @@
-"""The Kyiv Search campaign as data (R2: Google flagged CAPITALIZATION — «LPi» and «AUTO.RIA» removed from ad texts) (owner 2026-11-25: Kyiv city and oblast first, «минимальная стоимость лида»;
+"""The Kyiv Search campaign as data (R2: Google flagged CAPITALIZATION — «LPi» and «AUTO.RIA» removed; R4 found the Ukrainian pair «Отримайте пропозицію» + «Залиште заявку…» flagged together — the headline removed) (owner 2026-11-25: Kyiv city and oblast first, «минимальная стоимость лида»;
 «Да»: 1 lead in 10 becomes a contract, ads 9:00–20:00, prepayment 1 000 $). Pure: no network.
 
 One campaign, PAUSED; Kyiv city + Kyiv Oblast, people located there only; Ukrainian and Russian; every day 9:00–20:00;
@@ -21,8 +21,7 @@ NEGATIVE = ['запчастини', 'запчасти', 'розборка', 'р�
 
 UK_HEAD = ['Пригон авто з Кореї', 'Послуга — 600 $', 'Ціна фіксується в договорі', 'Офіс у Києві, Перемоги 20',
            'VIN, фото, відео, діагностика', 'Передоплата в ціні авто', 'Понад 5 років досвіду',
-           'Понад 130 проданих авто', 'Етап доставки онлайн', 'Кредит і лізинг', 'Отримайте пропозицію',
-           'Офіційний договір']
+           'Понад 130 проданих авто', 'Етап доставки онлайн', 'Кредит і лізинг', 'Офіційний договір']
 UK_DESC = ['Купуємо на аукціоні Кореї, перевіряємо й робимо пригон під ключ до Києва.',
            'Фіксована послуга 600 $. Ціна під ключ у договорі: викуп, доставка, розмитнення.',
            'Фото, відео, VIN і етап доставки кожного авто. Огляд в офісі на Перемоги, 20.',

@@ -47,6 +47,12 @@ class Google:
 
 
 class PlanTests(unittest.TestCase):
+    def test_flagged_pair_absent(self):
+        for group in plan.groups():
+            self.assertFalse('Отримайте пропозицію' in group['headlines']
+                             and any(d.startswith('Залиште заявку') for d in group['descriptions']), group['name'])
+            self.assertFalse(any('LPi' in t or 'AUTO.RIA' in t for t in group['headlines'] + group['descriptions']))
+
     def test_text_limits(self):
         for group in plan.groups():
             self.assertTrue(3 <= len(group['headlines']) <= 15, group['name'])
@@ -93,27 +99,27 @@ class RemoteTests(unittest.TestCase):
         path.write_text(json.dumps(KEYS))
         return path
 
-    def test_default_validate_only(self):
-        self.assertFalse(remote.APPLY)
+    def test_validate_only(self):
+        self.assertTrue(remote.APPLY)  # R5: saved, PAUSED
         google = Google()
         with tempfile.TemporaryDirectory() as temp:
-            text = remote.report(self.keys_file(temp), opener=google)
+            text = remote.report(self.keys_file(temp), apply=False, opener=google)
         value = json.loads(text)
         self.assertEqual(value['status'], 'PASS')
         self.assertTrue([b for u, b in google.calls if u.endswith(':mutate')][0]['validateOnly'])
         for secret in list(KEYS.values())[:4]:
             self.assertNotIn(secret, text)
 
+    @patch.object(remote, 'DIAG', True)
     def test_diag_never_saves(self):
-        self.assertTrue(remote.DIAG)
         google = Google()
         with tempfile.TemporaryDirectory() as temp:
             value = json.loads(remote.report(self.keys_file(temp), apply=True, opener=google))
         self.assertTrue([b for u, b in google.calls if u.endswith(':mutate')][0]['validateOnly'])
         self.assertEqual(len(value['candidates']), len(set(value['candidates'])))
 
-    @patch.object(remote, 'DIAG', False)
     def test_apply_creates_paused_once(self):
+        self.assertFalse(remote.DIAG)
         google = Google()
         with tempfile.TemporaryDirectory() as temp:
             first = json.loads(remote.report(self.keys_file(temp), apply=True, opener=google))
