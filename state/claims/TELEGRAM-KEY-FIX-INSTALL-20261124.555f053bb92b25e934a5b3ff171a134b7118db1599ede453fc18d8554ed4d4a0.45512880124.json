@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "8f3756ce62701ed8ab97fc02cd13f3041f44a9c53a1fc4b13b68b4e1cca0304c",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-24T23:54:43Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-25T00:10:51Z",
+  "heartbeat_at": "2026-11-25T00:10:51Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "45512880124",
     "task_id": "TELEGRAM-KEY-FIX-INSTALL-20261124",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 702.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 299.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-45512880124-555f053bb92b25e9",
   "production_transaction_path": "state/transactions/TELEGRAM-KEY-FIX-INSTALL-20261124.555f053bb92b25e934a5b3ff171a134b7118db1599ede453fc18d8554ed4d4a0.45512880124.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-78b9df94e63a25f7-36c3ce503d46f292",
   "receipt_path": "state/receipts/TELEGRAM-KEY-FIX-INSTALL-20261124.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "07ab4e4b713cc5a7ce39b7b7c5a598fee3b894b8c3bf60d4e31649dd87b5c9e2",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/TELEGRAM-KEY-FIX-INSTALL-20261124.json",
   "request_sha256": "555f053bb92b25e934a5b3ff171a134b7118db1599ede453fc18d8554ed4d4a0",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "177cac80c4fe9c3d828f0da8c2446ba5549473ce76378d2982652d06ee4044d7",
     "file_sha256": {
@@ -86,5 +109,5 @@
       "cloud/telegram_key_fix_001/ua_telegram_key.py": "2147408909a84d4581569f196c32fdf61c720d7cb5cb4d2b1bbefc7381a5da32"
     }
   },
-  "updated_at": "2026-11-24T23:54:43Z"
+  "updated_at": "2026-11-25T00:10:51Z"
 }
