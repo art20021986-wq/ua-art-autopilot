@@ -24,6 +24,10 @@ class RemoteTests(unittest.TestCase):
         (self.home / 'run_all.py').write_text('import samokontrol\nsamokontrol.shag()\n', encoding='utf-8')
         (self.home / 'samokontrol.log').write_text('2026-11-20 ok\n2026-11-25 08:53 sborka FAIL Traceback x@y.com\n',
                                                    encoding='utf-8')
+        (self.home / 'samokontrol_log.txt').write_text('2026-11-25 08:00:01  сторож запущен (UA-V74)\n'
+                                                       '2026-11-25 08:00:02  сторож запущен (UA-V74)\n', encoding='utf-8')
+        (self.home / 'start_safe_log.txt').write_text('2026-11-24 ok\n2026-11-25 07:31 restart: Conflict getMe\n'
+                                                      '2026-11-25 07:32 idle\n', encoding='utf-8')
         (self.home / '.crm_public_sync_state.json').write_text('{"retry": {"10": {"error": "BASE"}}}', encoding='utf-8')
         (self.home / 'video').mkdir()
         (self.home / 'video/UA-0011.html').write_text('x', encoding='utf-8')
@@ -53,6 +57,10 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual((car['auto_number'], car['updated_at']), ('UA-0011', '2026-11-25 08:50:00'))
         self.assertIn('video', car['pages'])
         self.assertIsNone(value['full_sources']['ua_public_freshness.py'])
+        self.assertIn('import samokontrol', value['restart_sources']['run_all.py']['source'])
+        self.assertEqual(value['watchman_starts'], {'2026-11-25 08': 2})
+        log = value['restart_logs'][str(self.home / 'start_safe_log.txt')]['lines']
+        self.assertEqual(log, ['2026-11-25 07:31 restart: Conflict getMe'])
 
     def test_main_writes_only_its_receipt(self):
         with patch.object(remote, 'HOME', self.home), patch.object(remote, 'HERE', self.home / 'pkg'), \

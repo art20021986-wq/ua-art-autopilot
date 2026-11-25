@@ -7,6 +7,9 @@ Reads only:
 - the self-check's state and log files and the CRM public sync state (sanitized; log lines of 24–25.11 and errors only);
 - per CRM car: status, published flag, change-time columns, and the modification time of its published pages;
 - the publication request ledger (counts by status) and the database file time.
+R2 (coordinator 2026-11-25: the bot restarted about 40 times 06:06–08:09 UTC): who restarts it — the sanitized source of
+the start files and the restart lines of the bot modules, the bot/guard log files and the hosting's always-on task log
+(lines of 24–25.11 and error lines), and the self-check start count per hour.
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -148,10 +151,69 @@ def crm_and_pages():
     return result
 
 
+RESTART_SOURCES = ('start_safe.py', 'run_all.py')
+RESTART_NEEDLE = re.compile(r'os\._exit|sys\.exit|execv|restart|перезапуск|getMe|get_me|kill|SIGTERM|Conflict|'
+                            r'always_on|alwayson|watchdog|stop\(|shutdown', re.I)
+RESTART_FILES = re.compile(r'(?i)start_safe|run_all|bot|guard|online|crash|restart|watchdog|alwayson|zapusk')
+RESTART_LINE = re.compile(r'restart|перезап|запущ|start|stop|exit|Traceback|Error|Exception|getMe|kill|SIGTERM|'
+                          r'Conflict|timed? ?out|memory|Killed', re.I)
+DAY = re.compile(r'2026-11-2[45]')
+
+
+def restart_sources():
+    found = {}
+    for name in RESTART_SOURCES:
+        text = text_of(HOME / name)
+        found[name] = None if text is None else {
+            'sha256': hashlib.sha256(text.encode()).hexdigest()[:16], 'mtime': stamp((HOME / name).stat().st_mtime),
+            'source': '\n'.join(sanitized_line(x) for x in text.splitlines())[:60000]}
+    lines = {}
+    for name in ('crm_online_guard.py', 'team_bot.py', 'cars_ui.py', 'lead_bot.py'):
+        text = text_of(HOME / name)
+        if text:
+            lines[name] = [{'line': n + 1, 'text': sanitized_line(line)[:220]}
+                           for n, line in enumerate(text.splitlines()) if RESTART_NEEDLE.search(line)][:80]
+    found['restart_lines'] = lines
+    return found
+
+
+def restart_logs():
+    found = {}
+    places = [p for p in HOME.iterdir() if p.is_file() and not p.is_symlink() and RESTART_FILES.search(p.name)
+              and not p.name.endswith(('.py', '.json', '.db', '.sqlite3', '.lock', '.zip'))]
+    var = Path('/var/log')
+    try:
+        places += [p for p in var.iterdir() if p.is_file() and ('alwayson' in p.name or 'Carix' in p.name.lower()
+                                                                  or 'carix' in p.name)]
+    except Exception as error:
+        found['/var/log'] = {'error': type(error).__name__}
+    for path in sorted(places, key=lambda p: p.stat().st_mtime, reverse=True)[:25]:
+        try:
+            info = path.stat()
+            lines = tail_lines(path, 1200 * 1024)
+            day = [x for x in lines if DAY.search(x)]
+            chosen = [x for x in (day or lines) if RESTART_LINE.search(x)] or (day or lines)[-40:]
+            found[str(path)] = {'bytes': info.st_size, 'mtime': stamp(info.st_mtime),
+                                'lines': [sanitized_line(x)[:260] for x in chosen][-200:]}
+        except Exception as error:
+            found[str(path)] = {'error': type(error).__name__}
+    return found
+
+
+def watchman_starts():
+    path = HOME / 'samokontrol_log.txt'
+    counts = {}
+    for line in tail_lines(path, 3 * 1024 * 1024):
+        if 'сторож запущен' in line and DAY.match(line):
+            counts[line[:13]] = counts.get(line[:13], 0) + 1
+    return counts
+
+
 def report():
     value = {'status': 'PASS', 'now': stamp(datetime.datetime.now(datetime.timezone.utc).timestamp())}
     for key, call in (('full_sources', full_sources), ('callers', callers), ('state_files', state_files),
-                      ('crm_and_pages', crm_and_pages)):
+                      ('crm_and_pages', crm_and_pages), ('restart_sources', restart_sources),
+                      ('restart_logs', restart_logs), ('watchman_starts', watchman_starts)):
         try:
             value[key] = call()
         except Exception as error:

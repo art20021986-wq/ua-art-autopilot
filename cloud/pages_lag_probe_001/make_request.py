@@ -27,7 +27,8 @@ def request(day):
                        'temporary always-on task (removed after its receipt; never the CRM bot) which reads, read-only: the sanitized '
                        'source of samokontrol.py, ua_public_freshness.py and ua_crm_public_sync.py and the lines that start the '
                        'self-check, its state and log files (24-25.11 and error lines), per CRM car status and change times with '
-                       'the times of its published pages, and the publication ledger counts; the controller reads the account CPU '
+                       'the times of its published pages, the publication ledger counts; R2: start files and restart lines of the bot '
+                       'modules, bot/guard logs and the hosting always-on log (24-25.11), self-check starts per hour; the controller reads the account CPU '
                        'allowance. No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
