@@ -1,0 +1,122 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/CLIENT-FULL-ACCESS-INSTALL-20261124.671ec2c850316ed777e0de68e66e2617019a18ba7414fa6f11b93f577c22aade.json",
+  "autostart_ledger_sha256": "91980c1fffdeeac4edf25bde02e47d7133c9987dbf61286fd75a4e925cc9114c",
+  "autostart_source_commit": "14aa5146d9c658da2a4ae80f724c489a1cedfe6e",
+  "created_at": "2026-11-25T01:03:56Z",
+  "critical_gate_evidence_sha256": "c777e31075f47ab79766b0b583760e5ec286c3e55a7a2d8c6893c94bca04161c",
+  "critical_gate_status": "PASS_PRODUCTION",
+  "execution_mode": "AUTOMATIC",
+  "finished_at": "2026-11-25T01:26:03Z",
+  "heartbeat_at": "2026-11-25T01:26:03Z",
+  "heartbeat_sequence": 9,
+  "identity": {
+    "run_id": "45522709877",
+    "task_id": "CLIENT-FULL-ACCESS-INSTALL-20261124",
+    "task_sha256": "671ec2c850316ed777e0de68e66e2617019a18ba7414fa6f11b93f577c22aade"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PASS",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 343.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 86.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 264.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 336.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
+  "production_required": true,
+  "production_transaction_id": "tx-45522709877-671ec2c850316ed7",
+  "production_transaction_path": "state/transactions/CLIENT-FULL-ACCESS-INSTALL-20261124.671ec2c850316ed777e0de68e66e2617019a18ba7414fa6f11b93f577c22aade.45522709877.json",
+  "production_transaction_status": "FINISHED",
+  "queue_key": "path_scope-c84cb91e9e81bfc3-35236c99c54c9f82",
+  "receipt_path": "state/receipts/CLIENT-FULL-ACCESS-INSTALL-20261124.json",
+  "receipt_sha256": "0993ca6455660fefa115628b6060bec4716825b8944e15938e9767cef3bdceba",
+  "receipt_validation_status": "PASS",
+  "request_path": "tasks/requests/CLIENT-FULL-ACCESS-INSTALL-20261124.json",
+  "request_sha256": "671ec2c850316ed777e0de68e66e2617019a18ba7414fa6f11b93f577c22aade",
+  "resource_locks": [
+    "PATH_SCOPE:c84cb91e9e81bfc3"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "8f1cf4c05a0fe20fb2460bf1107a026f99c0c22b",
+  "storage_preflight": {
+    "age_seconds": 492.964,
+    "allowed": true,
+    "evidence_path": "state/storage/CLIENT-FULL-ACCESS-INSTALL-20261124.json",
+    "evidence_sha256": "f2c54eebeb9869484cbe013f79e098c6a7b9b1666f70aa677c763cbc1af6c22a",
+    "free_bytes": 16964668928,
+    "heavy": true,
+    "measured_at": "2026-11-25T00:57:02.633258+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 51.52951734857143
+  },
+  "storage_preflight_status": "PASS",
+  "task_class": "CRITICAL",
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "5fc5148bd39900870a5891e05f5fc415f02d42127f77b07db7c67722d809ff3f",
+    "file_sha256": {
+      "cloud/staff_full_access_001/candidate_builder.py": "61e9e770491094cfcfb78678d8c345c18af921ec818963f5740620efa76e757c",
+      "cloud/staff_full_access_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/staff_full_access_001/deployment_bootstrap.py": "8bfecca43294bf56331734cc1cdd8c290a3c125295e43a3059b4a985eb17aaaf",
+      "cloud/staff_full_access_001/deployment_remote.py": "06aa5e15f9ffa53b84229ac801e05f8c874114da56b9686ab4e43836e2a5d2b4",
+      "cloud/staff_full_access_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/staff_full_access_001/deployment_transport.py": "d66e7794c0af289eaea6307cb2ce0e83566215f1a30202b773539053b96941fc",
+      "cloud/staff_full_access_001/edit_analitika_bot.py": "dd7fa3e28723d1f32fecf45300989f5a63e502c41e2bd64f3ae5936388955c73",
+      "cloud/staff_full_access_001/edit_analitika_knopka.py": "3bf6f74d991d6c7db64a136e9a2398342e3aa15574978988ea7d91adf9010a22",
+      "cloud/staff_full_access_001/edit_client_ui.py": "0d2bdf2a2b234603faeb515a6d3a64ab428e83098b56fcf88b7703ecdad10900",
+      "cloud/staff_full_access_001/edit_karta_klienta.py": "890edbb9163c83befe1c6c642d0bce0877fec27c6adb9060e3a59a861daf4130",
+      "cloud/staff_full_access_001/edit_lead_bot.py": "2693266ebf4288851040841d68fbc4a7ffb9b169c05c5072656cdf475eadf321",
+      "cloud/staff_full_access_001/edit_lead_desk.py": "b69d4347b3dfefc932b02d75f00a6334ec6c4da0b93aba2468394b8ffa66a26a",
+      "cloud/staff_full_access_001/edit_order_bindings.py": "589804da0a41629202d94d1883d84a8a39504e590ac94ca556a90c5e900a4379",
+      "cloud/staff_full_access_001/edit_order_host.py": "08e4fcd2c64b2f67b4d33c3f6643eed23dfbdbbabf0fa73b657f976919c9b3b5",
+      "cloud/staff_full_access_001/edit_vitrina.py": "c6e3ee0bd9c365df6757f53b6ad4af905dad497126ff8556e6a93120ba966d50",
+      "cloud/staff_full_access_001/edits.py": "788f1b9d96fe5b60293e7d516318401739c330f8febb6a736f065b0de71d768b",
+      "cloud/staff_full_access_001/make_release.py": "555b5edde2128abefc22436dcf9562c2be8f4939f21d7ba767f78a4618232410",
+      "cloud/staff_full_access_001/release_constants.py": "69fed6ecf4bc5e55bad9dc474165b3a3e752f177e4d841df3f36ec49f5481846",
+      "cloud/staff_full_access_001/test_deployment.py": "cb4b0088436299083770bd2db9ea1d6f5e02950b0ac9d82b725bfa23bb854be8",
+      "cloud/staff_full_access_001/test_edits.py": "0fbfc6f54296efcc36c4a7a072e9a407be8aa2f9839ff0137438f8c45faced11"
+    }
+  },
+  "updated_at": "2026-11-25T01:26:03Z"
+}
