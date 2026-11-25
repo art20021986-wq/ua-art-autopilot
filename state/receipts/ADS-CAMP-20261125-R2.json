@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/ads_campaign_001/20261125-R2.json",
+  "live_source_environment": "production",
+  "probe_status": "FAIL",
+  "production_required": false,
+  "request_sha256": "bf0b5948874b2cb6376f439f5cff8bdda48f59771a5a8983f04cfb5fdc2be35d",
+  "rollback_ready": true,
+  "rollback_ready_scope": "BEFORE_STATE_IN_REPORT_NO_SITE_OR_CRM_WRITES",
+  "run_id": "45549393077",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ADS-CAMP-20261125-R2",
+  "tests": "PASS",
+  "tests_scope": "GOOGLE_ADS_PAUSED_CAMPAIGN",
+  "unexpected_changes": 0
+}
