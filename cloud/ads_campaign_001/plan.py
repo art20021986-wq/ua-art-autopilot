@@ -1,4 +1,4 @@
-"""The Kyiv Search campaign as data (R2: Google flagged CAPITALIZATION — «LPi» and «AUTO.RIA» removed; R4 found the Ukrainian pair «Отримайте пропозицію» + «Залиште заявку…» flagged together — the headline removed) (owner 2026-11-25: Kyiv city and oblast first, «минимальная стоимость лида»;
+"""The Kyiv Search campaign as data (R2: Google flagged CAPITALIZATION — «LPi» and «AUTO.RIA» removed; R4 found the Ukrainian pair «Отримайте пропозицію» + «Залиште заявку…» flagged together — the headline removed; R5: UA Sonata alone still flagged — its second headline changed) (owner 2026-11-25: Kyiv city and oblast first, «минимальная стоимость лида»;
 «Да»: 1 lead in 10 becomes a contract, ads 9:00–20:00, prepayment 1 000 $). Pure: no network.
 
 One campaign, PAUSED; Kyiv city + Kyiv Oblast, people located there only; Ukrainian and Russian; every day 9:00–20:00;
@@ -39,7 +39,7 @@ MODELS = [
     ('kia-k5', 'Kia K5', ['kia k5', 'кіа к5'], ['kia k5', 'киа к5'], 'kia-k5-koreya-kyiv', 'kia-k5-koreya-kiev', 'K5 на заводському газу',
      'K5 на заводском газе', 'від 10 500 $', 'от 10 500 $'),
     ('hyundai-sonata', 'Hyundai Sonata', ['hyundai sonata', 'хюндай соната'], ['hyundai sonata', 'хендай соната',
-     'хюндай соната'], 'hyundai-sonata-koreya-kyiv', 'hyundai-sonata-koreya-kiev', 'Sonata на заводському газу',
+     'хюндай соната'], 'hyundai-sonata-koreya-kyiv', 'hyundai-sonata-koreya-kiev', 'Седан на заводському газу',
      'Sonata на заводском газе', 'від 10 000 $', 'от 10 000 $'),
     ('hyundai-tucson', 'Hyundai Tucson', ['hyundai tucson', 'хюндай туксон'], ['hyundai tucson', 'хендай туксон',
      'туссан'], 'hyundai-tucson-koreya-kyiv', 'hyundai-tucson-koreya-kiev', 'Tucson дизель', 'Tucson дизель', '', ''),
