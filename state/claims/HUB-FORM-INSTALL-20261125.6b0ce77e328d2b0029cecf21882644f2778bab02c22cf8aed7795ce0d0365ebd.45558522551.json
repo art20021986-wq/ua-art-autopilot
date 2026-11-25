@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "d97eaa470eec928ba79be50f003635e1a66d38e2479e5db0cbcd220819e8c3d4",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T06:17:15Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-25T06:29:15Z",
+  "heartbeat_at": "2026-11-25T06:29:15Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "45558522551",
     "task_id": "HUB-FORM-INSTALL-20261125",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 840.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 150.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-45558522551-6b0ce77e328d2b00",
   "production_transaction_path": "state/transactions/HUB-FORM-INSTALL-20261125.6b0ce77e328d2b0029cecf21882644f2778bab02c22cf8aed7795ce0d0365ebd.45558522551.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-d53e3fad3ce7eef8-b8c8f31c45ad7ac1",
   "receipt_path": "state/receipts/HUB-FORM-INSTALL-20261125.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "de31c6cfbadcf0a6e20e87ac1b825e67c2771ddd7cae67e6f49b7a080a10c836",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HUB-FORM-INSTALL-20261125.json",
   "request_sha256": "6b0ce77e328d2b0029cecf21882644f2778bab02c22cf8aed7795ce0d0365ebd",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "5f792c0cc8d0dfe31fc813271b94c291735c211d74c1bda349d36436f66a336c",
     "file_sha256": {
@@ -85,5 +108,5 @@
       "cloud/hub_form_001/test_hub_form.py": "27dfc45818d3395df6f262a1e5284101f487db926599af8dfa73f4e0d8fb7764"
     }
   },
-  "updated_at": "2026-11-25T06:17:15Z"
+  "updated_at": "2026-11-25T06:29:15Z"
 }
