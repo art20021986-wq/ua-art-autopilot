@@ -1,0 +1,131 @@
+{
+  "google_ads": {
+    "accessible": [
+      "customers/4680747874",
+      "customers/9054959760"
+    ],
+    "account": [
+      {
+        "customer": {
+          "autoTaggingEnabled": true,
+          "conversionTrackingSetting": {
+            "conversionTrackingStatus": "NOT_CONVERSION_TRACKED"
+          },
+          "currencyCode": "UAH",
+          "descriptiveName": "UA ART сomapny LLC",
+          "id": "4680747874",
+          "resourceName": "customers/4680747874",
+          "status": "ENABLED",
+          "testAccount": false,
+          "timeZone": "Europe/Kiev"
+        }
+      }
+    ],
+    "billing": [
+      {
+        "billingSetup": {
+          "id": "8661262148",
+          "resourceName": "customers/4680747874/billingSetups/8661262148",
+          "status": "APPROVED"
+        }
+      }
+    ],
+    "campaigns": [],
+    "conversions": [
+      {
+        "conversionAction": {
+          "category": "CONVERTED_LEAD",
+          "id": "7916489405",
+          "name": "UA ART (web) close_convert_lead",
+          "primaryForGoal": false,
+          "resourceName": "customers/4680747874/conversionActions/7916489405",
+          "status": "HIDDEN",
+          "type": "GOOGLE_ANALYTICS_4_CLOSE_CONVERT_LEAD"
+        }
+      },
+      {
+        "conversionAction": {
+          "category": "QUALIFIED_LEAD",
+          "id": "7916489408",
+          "name": "UA ART (web) qualify_lead",
+          "primaryForGoal": false,
+          "resourceName": "customers/4680747874/conversionActions/7916489408",
+          "status": "HIDDEN",
+          "type": "GOOGLE_ANALYTICS_4_QUALIFY_LEAD"
+        }
+      },
+      {
+        "conversionAction": {
+          "category": "PURCHASE",
+          "id": "7916489411",
+          "name": "UA ART (web) purchase",
+          "primaryForGoal": false,
+          "resourceName": "customers/4680747874/conversionActions/7916489411",
+          "status": "HIDDEN",
+          "type": "GOOGLE_ANALYTICS_4_PURCHASE"
+        }
+      },
+      {
+        "conversionAction": {
+          "category": "SUBMIT_LEAD_FORM",
+          "id": "7916489414",
+          "name": "UA ART (web) generate_lead",
+          "primaryForGoal": false,
+          "resourceName": "customers/4680747874/conversionActions/7916489414",
+          "status": "HIDDEN",
+          "type": "GOOGLE_ANALYTICS_4_GENERATE_LEAD"
+        }
+      },
+      {
+        "conversionAction": {
+          "category": "CONTACT",
+          "id": "7916489417",
+          "name": "UA ART (web) contact",
+          "primaryForGoal": false,
+          "resourceName": "customers/4680747874/conversionActions/7916489417",
+          "status": "HIDDEN",
+          "type": "GOOGLE_ANALYTICS_4_CUSTOM"
+        }
+      }
+    ],
+    "manager": [
+      {
+        "customerClient": {
+          "descriptiveName": "UA ART Manager",
+          "id": "9054959760",
+          "level": "0",
+          "manager": true,
+          "resourceName": "customers/9054959760/customerClients/9054959760",
+          "status": "ENABLED"
+        }
+      },
+      {
+        "customerClient": {
+          "descriptiveName": "UA ART сomapny LLC",
+          "id": "4680747874",
+          "level": "1",
+          "manager": false,
+          "resourceName": "customers/9054959760/customerClients/4680747874",
+          "status": "ENABLED"
+        }
+      }
+    ],
+    "scope": "https://www.googleapis.com/auth/adwords",
+    "token": "PASS"
+  },
+  "keys_mode": "0o600",
+  "keys_present": {
+    "client_id": true,
+    "client_secret": true,
+    "customer_id": true,
+    "developer_token": true,
+    "login_customer_id": true,
+    "refresh_token": true
+  },
+  "mode": "probe",
+  "remote_write_count": 0,
+  "run_id": "45545752020",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "ADS-CHECK-20261125"
+}
