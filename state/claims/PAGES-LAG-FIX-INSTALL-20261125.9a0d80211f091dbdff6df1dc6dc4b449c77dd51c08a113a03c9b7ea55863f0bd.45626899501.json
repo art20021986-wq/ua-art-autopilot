@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "d485b4cc6a7ff1fa8c5ce84cfa38cdbc89d5c3bce814721e5c50c985b0653650",
   "autostart_source_commit": "159f49f926a86c1dcfd03b6d3b483c7c7a8c9a0d",
   "created_at": "2026-11-25T13:47:40Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "a9c3a73dd569fb62d5fc4820c9393320382e963e84fa7dac8f8e3a7c1fdb70d8",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T13:47:40Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-25T13:49:18Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "45626899501",
     "task_id": "PAGES-LAG-FIX-INSTALL-20261125",
     "task_sha256": "9a0d80211f091dbdff6df1dc6dc4b449c77dd51c08a113a03c9b7ea55863f0bd"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 277.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 270.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-45626899501-9a0d80211f091dbd",
+  "production_transaction_path": "state/transactions/PAGES-LAG-FIX-INSTALL-20261125.9a0d80211f091dbdff6df1dc6dc4b449c77dd51c08a113a03c9b7ea55863f0bd.45626899501.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-5f3e4f32adbfab94-a81a0d6ef70a3c18",
   "receipt_path": "state/receipts/PAGES-LAG-FIX-INSTALL-20261125.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,39 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "87605465a7910e8e0ee9eff13ccd12d34e57bc39",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 426.642,
+    "allowed": true,
+    "evidence_path": "state/storage/PAGES-LAG-FIX-INSTALL-20261125.json",
+    "evidence_sha256": "4428907c83935c33643b1e5f4007b389f1cbe251153bca5bd38e708de4d242f0",
+    "free_bytes": 16533515776,
+    "heavy": true,
+    "measured_at": "2026-11-25T13:42:08.252469+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 52.76138349714286
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-25T13:47:40Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "f14111c177ccf0ee96e9402a70fb9c5b3ff9630bc27c8ca04c365094c2993711",
+    "file_sha256": {
+      "cloud/pages_lag_fix_001/candidate_builder.py": "6f1a8d6da48fd440ac30375801b4f3e9eb16edacf54e472069df9f98c6d2c27f",
+      "cloud/pages_lag_fix_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/pages_lag_fix_001/deployment_bootstrap.py": "6d08c1e906083dc918299c6dd3dbd4fc36c625f018aaceb3806bf0887655abcb",
+      "cloud/pages_lag_fix_001/deployment_remote.py": "b5f50229d1bc17641c76ae09c3f00cacf5b85dcc718dc566268e2875c1cae08c",
+      "cloud/pages_lag_fix_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/pages_lag_fix_001/deployment_transport.py": "705d9be89b35a121b7f769ab3c1920b61bc7c8dac3eb883417becb97937106c6",
+      "cloud/pages_lag_fix_001/edit_samokontrol.py": "aec6e5ea2eaf96b3cb076f7d89ac0bf2d77447a105982ac9bf8793ae98bac488",
+      "cloud/pages_lag_fix_001/edit_usercustomize.py": "d974d71ff6d5e42873af400c61bf8f0ade53c0e0faa42d380a76143b45dad075",
+      "cloud/pages_lag_fix_001/edits.py": "265393a467603c880a9a616f6760dabae7962c2898eabbd6cf794ec91c9490ef",
+      "cloud/pages_lag_fix_001/make_release.py": "bcfda6bc605abef62b9d8a5f87589a708d84835fca92e147cda7314b69cd19b2",
+      "cloud/pages_lag_fix_001/release_constants.py": "7252b023523c46a1889131e08652e6796ad6c34f0c6a4f194895442a40b9fd89",
+      "cloud/pages_lag_fix_001/test_deployment.py": "3b3f9692ca8b4b54804940413d29fe0e39f7b7d74df32f917036c0337f7c5c69",
+      "cloud/pages_lag_fix_001/test_pages_lag_fix.py": "ca841bdf91b95be03fd02badd78d0c32ab4f7d2c35c3efcff3e5c4d77c104844"
+    }
+  },
+  "updated_at": "2026-11-25T13:49:18Z"
 }
