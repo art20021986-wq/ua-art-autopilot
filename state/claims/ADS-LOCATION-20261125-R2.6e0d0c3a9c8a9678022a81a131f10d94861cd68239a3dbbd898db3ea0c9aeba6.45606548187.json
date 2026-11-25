@@ -7,21 +7,23 @@
   "created_at": "2026-11-25T11:41:42Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T11:41:42Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-25T11:47:56Z",
+  "heartbeat_at": "2026-11-25T11:47:56Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45606548187",
     "task_id": "ADS-LOCATION-20261125-R2",
     "task_sha256": "6e0d0c3a9c8a9678022a81a131f10d94861cd68239a3dbbd898db3ea0c9aeba6"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-16b44dd556523151-0edf9bf2b09157a3",
   "receipt_path": "state/receipts/ADS-LOCATION-20261125-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "181e481395ef24915deb821ab52f47c1155715cf6a8eff1c5a080efb0cb41114",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ADS-LOCATION-20261125-R2.json",
   "request_sha256": "6e0d0c3a9c8a9678022a81a131f10d94861cd68239a3dbbd898db3ea0c9aeba6",
   "resource_locks": [
@@ -29,8 +31,28 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "c898e8b6363193572ab475a4271643785af4ed96",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91904155648,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.694
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-25T11:41:42Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "cd90382a18feb106a4d53bf8b420cd38b90890010bad5cf9fdc8246add6202dd",
+    "file_sha256": {
+      "cloud/ads_location_001/bootstrap.py": "de8a93ffec1ba34584734b249ddfcce8927376bea7ca4d11a0be19f3978d803e",
+      "cloud/ads_location_001/make_request.py": "3241a668f221c3255266da1216d518a6660bab5131666d4804b6b9f02b4eb2cc",
+      "cloud/ads_location_001/source_check.py": "7732c704d3eaa30e77ff3bbc7b274d423c1d5d8076640ceb0164bfb7dc2fd87c",
+      "cloud/ads_location_001/source_remote.py": "76513f1c14ff4c1ca97aacd24b74b4f1722a1af67333e82413bc940113c99c78",
+      "cloud/ads_location_001/test_ads_location.py": "572e4aecc6fd6ed6c3606a801597d8717c7d471dd2b84d661b920563eda47a8c",
+      "cloud/ads_location_001/transport.py": "8d0217706f1381655cec687245307133e0665d1dedbd395793906192eb483eb9"
+    }
+  },
+  "updated_at": "2026-11-25T11:47:56Z"
 }
