@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ADS-KEYS-INSTALL-20261125.6c936bea851698faa52f5fa7f86c31ba0439ceb1dceec6e0bc1677a124da0502.json",
+  "autostart_ledger_sha256": "96f9ed05a51b949bc2ebf2e7f444d91a6e15f3daba7dec0cb54f2af20cb1dda2",
+  "autostart_source_commit": "cccca75f61011d32db686dfc1d84ab870a2d0653",
+  "created_at": "2026-11-25T02:48:58Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-25T02:48:58Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "45535429064",
+    "task_id": "ADS-KEYS-INSTALL-20261125",
+    "task_sha256": "6c936bea851698faa52f5fa7f86c31ba0439ceb1dceec6e0bc1677a124da0502"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "security_control_plane-624743b552936e51",
+  "receipt_path": "state/receipts/ADS-KEYS-INSTALL-20261125.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/ADS-KEYS-INSTALL-20261125.json",
+  "request_sha256": "6c936bea851698faa52f5fa7f86c31ba0439ceb1dceec6e0bc1677a124da0502",
+  "resource_locks": [
+    "SECURITY_CONTROL_PLANE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "356def11caa2b5ff89f4753236bec58b320cd704",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-25T02:48:58Z"
+}
