@@ -7,21 +7,23 @@
   "created_at": "2026-11-25T00:54:42Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T00:54:42Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-25T00:58:27Z",
+  "heartbeat_at": "2026-11-25T00:58:27Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45521561938",
     "task_id": "CLIENT-FULL-ACCESS-PREFLIGHT-20261124-R3",
     "task_sha256": "cad5398b1067b496ac45b358b9c977628c49d493a750423c31993deab6290144"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-d1873a9693fded3a-b79f9ef578cc7aac",
   "receipt_path": "state/receipts/CLIENT-FULL-ACCESS-PREFLIGHT-20261124-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "17f13b53ae96478eda2bb25c8cc963b95285192fda1c92f0e38028f40570675c",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/CLIENT-FULL-ACCESS-PREFLIGHT-20261124-R3.json",
   "request_sha256": "cad5398b1067b496ac45b358b9c977628c49d493a750423c31993deab6290144",
   "resource_locks": [
@@ -29,8 +31,42 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "04568c77bf29d4fdf8ce0ae19a946e43b6ba669b",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 95563001856,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.333
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-25T00:54:42Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "5fc5148bd39900870a5891e05f5fc415f02d42127f77b07db7c67722d809ff3f",
+    "file_sha256": {
+      "cloud/staff_full_access_001/candidate_builder.py": "61e9e770491094cfcfb78678d8c345c18af921ec818963f5740620efa76e757c",
+      "cloud/staff_full_access_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/staff_full_access_001/deployment_bootstrap.py": "8bfecca43294bf56331734cc1cdd8c290a3c125295e43a3059b4a985eb17aaaf",
+      "cloud/staff_full_access_001/deployment_remote.py": "06aa5e15f9ffa53b84229ac801e05f8c874114da56b9686ab4e43836e2a5d2b4",
+      "cloud/staff_full_access_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/staff_full_access_001/deployment_transport.py": "d66e7794c0af289eaea6307cb2ce0e83566215f1a30202b773539053b96941fc",
+      "cloud/staff_full_access_001/edit_analitika_bot.py": "dd7fa3e28723d1f32fecf45300989f5a63e502c41e2bd64f3ae5936388955c73",
+      "cloud/staff_full_access_001/edit_analitika_knopka.py": "3bf6f74d991d6c7db64a136e9a2398342e3aa15574978988ea7d91adf9010a22",
+      "cloud/staff_full_access_001/edit_client_ui.py": "0d2bdf2a2b234603faeb515a6d3a64ab428e83098b56fcf88b7703ecdad10900",
+      "cloud/staff_full_access_001/edit_karta_klienta.py": "890edbb9163c83befe1c6c642d0bce0877fec27c6adb9060e3a59a861daf4130",
+      "cloud/staff_full_access_001/edit_lead_bot.py": "2693266ebf4288851040841d68fbc4a7ffb9b169c05c5072656cdf475eadf321",
+      "cloud/staff_full_access_001/edit_lead_desk.py": "b69d4347b3dfefc932b02d75f00a6334ec6c4da0b93aba2468394b8ffa66a26a",
+      "cloud/staff_full_access_001/edit_order_bindings.py": "589804da0a41629202d94d1883d84a8a39504e590ac94ca556a90c5e900a4379",
+      "cloud/staff_full_access_001/edit_order_host.py": "08e4fcd2c64b2f67b4d33c3f6643eed23dfbdbbabf0fa73b657f976919c9b3b5",
+      "cloud/staff_full_access_001/edit_vitrina.py": "c6e3ee0bd9c365df6757f53b6ad4af905dad497126ff8556e6a93120ba966d50",
+      "cloud/staff_full_access_001/edits.py": "788f1b9d96fe5b60293e7d516318401739c330f8febb6a736f065b0de71d768b",
+      "cloud/staff_full_access_001/make_release.py": "555b5edde2128abefc22436dcf9562c2be8f4939f21d7ba767f78a4618232410",
+      "cloud/staff_full_access_001/release_constants.py": "69fed6ecf4bc5e55bad9dc474165b3a3e752f177e4d841df3f36ec49f5481846",
+      "cloud/staff_full_access_001/test_deployment.py": "cb4b0088436299083770bd2db9ea1d6f5e02950b0ac9d82b725bfa23bb854be8",
+      "cloud/staff_full_access_001/test_edits.py": "0fbfc6f54296efcc36c4a7a072e9a407be8aa2f9839ff0137438f8c45faced11"
+    }
+  },
+  "updated_at": "2026-11-25T00:58:27Z"
 }
