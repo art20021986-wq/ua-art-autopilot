@@ -1,0 +1,17 @@
+{
+  "cause": "Two vitrina.py edit fragments used the sanitized fixture line with the WhatsApp link («[URL]») as context, which never matches the real file; fixed (#1977) and guarded by a test",
+  "claim_before_sha256": "ef7cc60e6efd3909652ed8b158ceaa0819ec30d6d9a1e0e4f99a4b9bffd6d8ba",
+  "error": "REMOTE_PREVIEW:ValueError:FRAGMENT_NOT_UNIQUE -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: remote preview candidate build (reads only)",
+  "leftover_temporary_task": "none: the remote preview wrote its receipt, the controller then removes its always-on task",
+  "owner_approval": "«Да» in chat 2026-11-25 to closing the stopped client bot check and launching the fixed one",
+  "precedent": "state/reconciliations/STAFF-ACCESS-PREFLIGHT-20261112.45382898089.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-25T00:24:21+00:00",
+  "remote_mode": "preview (reads only) — stopped at the fragment check",
+  "retry": "CLIENT-FULL-ACCESS-PREFLIGHT-20261124-R3",
+  "run_id": "45510850258",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "CLIENT-FULL-ACCESS-PREFLIGHT-20261124-R2"
+}
