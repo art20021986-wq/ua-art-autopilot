@@ -1,0 +1,55 @@
+{
+  "apply": false,
+  "details": "[{\"@type\": \"type.googleapis.com/google.ads.googleads.v26.errors.GoogleAdsFailure\", \"errors\": [{\"errorCode\": {\"policyFindingError\": \"POLICY_FINDING\"}, \"message\": \"The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED.\", \"location\": {\"fieldPathElements\": [{\"fieldName\": \"mutate_operations\", \"index\": 76}, {\"fieldName\": \"ad_group_ad_operation\"}, {\"fieldName\": \"create\"}, {\"fieldName\": \"ad\"}]}, \"details\": {\"policyFindingDetails\": {\"policyTopicEntries\": [{\"type\": \"PROHIBITED\", \"topic\": \"CAPITALIZATION\"}]}}}, {\"errorCode\": {\"policyFindingError\": \"POLICY_FINDING\"}, \"message\": \"The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED.\", \"location\": {\"fieldPathElements\": [{\"fieldName\": \"mutate_operations\", \"index\": 104}, {\"fieldName\": \"ad_group_ad_operation\"}, {\"fieldName\": \"create\"}, {\"fieldName\": \"ad\"}]}, \"details\": {\"policyFindingDetails\": {\"policyTopicEntries\": [{\"type\": \"PROHIBITED\", \"topic\": \"CAPITALIZATION\"}]}}}, {\"errorCode\": {\"policyFindingError\": \"POLICY_FINDING\"}, \"message\": \"The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED.\", \"location\": {\"fieldPathElements\": [{\"fieldName\": \"mutate_operations\", \"index\": 128}, {\"fieldName\": \"ad_group_ad_operation\"}, {\"fieldName\": \"create\"}, {\"fieldName\": \"ad\"}]}, \"details\": {\"policyFindingDetails\": {\"policyTopicEntries\": [{\"type\": \"PROHIBITED\", \"topic\": \"CAPITALIZATION\"}]}}}, {\"errorCode\": {\"policyFindingError\": \"POLICY_FINDING\"}, \"message\": \"The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED.\", \"location\": {\"fieldPathElements\": [{\"fieldName\": \"mutate_operations\", \"index\": 142}, {\"fieldName\": \"ad_group_ad_operation\"}, {\"fieldName\": \"create\"}, {\"fieldName\": \"ad\"}]}, \"details\": {\"policyFindingDetails\": {\"policyTopicEntries\": [{\"type\": \"PROHIBITED\", \"topic\": \"CAPITALIZATION\"}]}}}, {\"errorCode\": {\"policyFindingError\": \"POLICY_FINDING\"}, \"message\": \"The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED.\", \"location\": {\"fieldPathElements\": [{\"fieldName\": \"mutate_operations\", \"index\": 156}, {\"fieldName\": \"ad_group_ad_operation\"}, {\"fieldName\": \"create\"}, {\"fieldName\": \"ad\"}]}, \"details\": {\"policyFindingDetails\": {\"policyTopicEntries\": [{\"type\": \"PROHIBITED\", \"topic\": \"CAPITALIZATION\"}]}}}, {\"errorCode\": {\"policyFindingError\": \"POLICY_FINDING\"}, \"message\": \"The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED.\", \"location\": {\"fieldPathElements\": [{\"fieldName\": \"mutate_operations\", \"index\": 176}, {\"fieldName\": \"ad_group_ad_operation\"}, {\"fieldName\": \"create\"}, {\"fieldName\": \"ad\"}]}, \"details\": {\"policyFindingDetails\": {\"policyTopicEntries\": [{\"type\": \"PROHIBITED\", \"topic\": \"CAPITALIZATION\"}]}}}, {\"errorCode\": {\"policyFindingError\": \"POLICY_FINDING\"}, \"message\": \"The resource has been disapproved since the policy summary includes policy topi",
+  "existing_before": [],
+  "groups": [
+    "UA — Корея під ключ",
+    "RU — Корея под ключ",
+    "UA — Аукціони Кореї",
+    "RU — Аукционы Кореи",
+    "UA — Kia K5",
+    "RU — Kia K5",
+    "UA — Hyundai Sonata",
+    "RU — Hyundai Sonata",
+    "UA — Hyundai Tucson",
+    "RU — Hyundai Tucson",
+    "UA — Kia Sportage",
+    "RU — Kia Sportage",
+    "UA — Hyundai Santa Fe",
+    "RU — Hyundai Santa Fe"
+  ],
+  "mode": "probe",
+  "mutate": {
+    "errors": [
+      {
+        "code": "policyFindingError=POLICY_FINDING",
+        "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED."
+      },
+      {
+        "code": "policyFindingError=POLICY_FINDING",
+        "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED."
+      },
+      {
+        "code": "policyFindingError=POLICY_FINDING",
+        "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED."
+      },
+      {
+        "code": "policyFindingError=POLICY_FINDING",
+        "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED."
+      },
+      {
+        "code": "policyFindingError=POLICY_FINDING",
+        "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED."
+      }
+    ],
+    "http": 400,
+    "message": "Request contains an invalid argument.",
+    "status": "INVALID_ARGUMENT"
+  },
+  "operation_count": 295,
+  "remote_write_count": 0,
+  "run_id": "45548206137",
+  "safe_to_stop": true,
+  "status": "FAIL",
+  "task_id": "ADS-CAMP-20261125"
+}
