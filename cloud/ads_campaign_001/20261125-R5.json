@@ -1,0 +1,45 @@
+{
+  "apply": true,
+  "existing_before": [],
+  "findings": [
+    {
+      "code": "{\"policyFindingError\": \"POLICY_FINDING\"}",
+      "index": 156,
+      "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED.",
+      "topics": [
+        [
+          "PROHIBITED",
+          "CAPITALIZATION",
+          []
+        ]
+      ]
+    }
+  ],
+  "groups": [
+    "UA — Корея під ключ",
+    "RU — Корея под ключ",
+    "UA — Аукціони Кореї",
+    "RU — Аукционы Кореи",
+    "UA — Kia K5",
+    "RU — Kia K5",
+    "UA — Hyundai Sonata",
+    "RU — Hyundai Sonata",
+    "UA — Hyundai Tucson",
+    "RU — Hyundai Tucson",
+    "UA — Kia Sportage",
+    "RU — Kia Sportage",
+    "UA — Hyundai Santa Fe",
+    "RU — Hyundai Santa Fe"
+  ],
+  "mode": "probe",
+  "mutate": {
+    "http": 400,
+    "message": "Request contains an invalid argument."
+  },
+  "operation_count": 295,
+  "remote_write_count": 1,
+  "run_id": "45552876053",
+  "safe_to_stop": true,
+  "status": "FAIL",
+  "task_id": "ADS-CAMP-20261125-R5"
+}
