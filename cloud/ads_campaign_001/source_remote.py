@@ -2,7 +2,7 @@
 
 One googleAds:mutate call builds the budget, the campaign (status PAUSED), its locations, languages, schedule and
 negative keywords, the ad groups with keywords and one responsive search ad each, and the sitelink, callout and call
-assets. APPLY False = Google checks everything without saving (validateOnly); True = saved. A campaign with the same
+assets (R6: partialFailure — what Google accepts is saved, refused operations are listed). APPLY False = Google checks everything without saving (validateOnly); True = saved. A campaign with the same
 name is never created twice. A paused campaign shows no ads and spends nothing; turning it on is a separate step,
 only with the owner's «да». No site, CRM or bot change; no key value in the report.
 """
@@ -135,12 +135,15 @@ def run(keys, apply=APPLY, opener=urllib.request.urlopen):
         value['candidates'] = candidates()
     value['operation_count'] = len(ops)
     status, answer = check.call(check.API + 'customers/%s/googleAds:mutate' % customer,
-                                json.dumps({'mutateOperations': ops, 'validateOnly': not apply}).encode(), headers, opener)
+                                json.dumps({'mutateOperations': ops, 'validateOnly': not apply,
+                                           'partialFailure': bool(apply and not DIAG)}).encode(), headers, opener)
     if status != 200:
         value.update(status='FAIL', mutate={'http': status, 'message': str(answer.get('error', {}).get('message'))[:200]},
                      findings=findings(answer))
         return value
-    value['created'] = len(answer.get('mutateOperationResponses', []))
+    value['created'] = len([r for r in answer.get('mutateOperationResponses', []) if r])
+    if answer.get('partialFailureError'):  # R6: what passed is saved; the refused operations are listed
+        value['partial'] = findings({'error': answer['partialFailureError']})
     value['after'] = existing(customer, headers, opener)
     value['status'] = 'PASS' if (not apply and not value['after']) or (
         apply and [c.get('status') for c in value['after']] == ['PAUSED']) else 'UNEXPECTED'

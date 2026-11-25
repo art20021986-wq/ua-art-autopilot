@@ -126,6 +126,7 @@ class RemoteTests(unittest.TestCase):
             second = json.loads(remote.report(self.keys_file(temp), apply=True, opener=google))
         self.assertEqual((first['status'], second['status']), ('PASS', 'ALREADY_THERE'))
         self.assertEqual(len([u for u, _ in google.calls if u.endswith(':mutate')]), 1)
+        self.assertTrue([b for u, b in google.calls if u.endswith(':mutate')][0]['partialFailure'])
 
 
 class FindingTests(unittest.TestCase):
