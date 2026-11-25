@@ -16,7 +16,9 @@ import resource
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
 FILES = ('ua_seo_landings.py', 'ua_seo_quick_form.py', 'ua_order/quick.py', 'ua_order/contract.py',
-         'video/order/quick-lead.js')
+         'video/order/quick-lead.js', 'ua_order/auction.py', 'ua_order/crm.py', 'video/order/quick-lead.css')
+# R2 (owner «да» 2026-11-25 to the form on the «під ключ» pages): the general Korea enquiry (auction schema) and its
+# inbox view, to check it accepts these pages as the source.
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|api_hash|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
 LONG_NUMBER = re.compile(r'(?<!\d)\+?\d[\d\s()-]{8,}\d(?!\d)')
