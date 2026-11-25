@@ -2,8 +2,10 @@
 
 The GA4 events are already linked to the advertiser account but stay HIDDEN and secondary, so ads cannot learn which
 click brought a lead. This turns on:
-- «UA ART (web) generate_lead» (site enquiry forms): ENABLED, primary for the goal, one conversion per click;
+- «UA ART (web) generate_lead» (site enquiry forms): ENABLED, primary for the goal;
 - «UA ART (web) contact» (phone / messenger buttons): ENABLED, secondary (counted, not used for bidding).
+R1 (validate-only): Google refused counting_type for GA4 imports (IMMUTABLE_FIELD: counting follows GA4, one form
+sent = one event), so R2 changes status and primary only, saved (APPLY True; the mutate is all-or-nothing).
 The other GA4 actions (purchase, qualify_lead, close_convert_lead) stay as they are.
 APPLY False = Google checks the change without saving it (validateOnly); True = the change is saved. Each run reads the
 actions before and after; the before-state is in the report, so a rollback is one call back. No campaign, budget or
@@ -20,16 +22,16 @@ import urllib.request
 import source_check as check
 
 HERE = Path(__file__).resolve().parent
-APPLY = False
+APPLY = True
 QUERY = ('SELECT conversion_action.resource_name, conversion_action.name, conversion_action.status, '
          'conversion_action.type, conversion_action.category, conversion_action.primary_for_goal, '
          'conversion_action.counting_type FROM conversion_action')
 WANT = {  # type -> wanted fields
-    'GOOGLE_ANALYTICS_4_GENERATE_LEAD': {'status': 'ENABLED', 'primaryForGoal': True, 'countingType': 'ONE_PER_CLICK'},
-    'GOOGLE_ANALYTICS_4_CUSTOM': {'status': 'ENABLED', 'primaryForGoal': False, 'countingType': 'ONE_PER_CLICK'},
+    'GOOGLE_ANALYTICS_4_GENERATE_LEAD': {'status': 'ENABLED', 'primaryForGoal': True},
+    'GOOGLE_ANALYTICS_4_CUSTOM': {'status': 'ENABLED', 'primaryForGoal': False},
 }
 CUSTOM_NAME = 'UA ART (web) contact'
-MASK = {'status': 'status', 'primaryForGoal': 'primary_for_goal', 'countingType': 'counting_type'}
+MASK = {'status': 'status', 'primaryForGoal': 'primary_for_goal'}
 
 
 def actions(customer, headers, opener=urllib.request.urlopen):
