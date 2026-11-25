@@ -20,3 +20,9 @@
   after owner approval) and to read daily performance reports (campaign, keyword, search terms, conversions).
 - API services: Campaign management and Reporting. No access for third parties. Tool design: server-side script,
   OAuth for our own user, changes reviewed by the business owner before applying.
+
+## Ход (25.11)
+- A: управляющий аккаунт UA ART Manager 905-495-9760 создан. B: 468-074-7874 привязан (владелец принял).
+- C: Центр API — токен создан (уровень «тест»), владелец хранит его у себя (в чат не присылать).
+- Документ для заявки на Basic access: `cloud/ads_audit_20261125/UA_ART_Google_Ads_API_Design.pdf`.
+- Передача токена на сервер — как ключ Telegram: сообщение в личный чат бота CRM (нужен пакет и «да» владельца).
