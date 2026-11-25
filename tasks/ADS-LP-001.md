@@ -9,3 +9,4 @@
 Пакет `cloud/hub_form_001` (образец service_words_001 + перезапуск сайта и проверка приёма заявки): ua_seo_quick_form
 (+hub_block), ua_seo_landings (абзац, вызов формы), ua_order/auction.py (принимает две страницы). Исходники с сервера:
 LP-SOURCE-PROBE-20261125-R2. Тесты: 30. Установка — после «можно» координатора.
+- HUB-FORM-INSTALL-20261125 FINISHED; вживую uk/ru форма + «пригон»; тестовая OR-000008 дошла до бота.
