@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ADS-TUNE-20261125.d422be35e69aa79d3a86354c022da5164b01732258487445816b3fdf576e9534.json",
+  "autostart_ledger_sha256": "6700434c139603d1cd01b96acc1cf9aa3642c8fdb2bbee8a936314ef1340f688",
+  "autostart_source_commit": "5841ec39b294b27f2a5fc229290d34765650e526",
+  "created_at": "2026-11-25T12:56:53Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45618422191",
+    "task_id": "ADS-TUNE-20261125",
+    "task_sha256": "d422be35e69aa79d3a86354c022da5164b01732258487445816b3fdf576e9534"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-9b28eb9901f80161-dda0437d92e548d3",
+  "request_path": "tasks/requests/ADS-TUNE-20261125.json",
+  "resource_locks": [
+    "PATH_SCOPE:9b28eb9901f80161"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
