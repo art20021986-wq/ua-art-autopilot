@@ -19,32 +19,36 @@ import source_check as check
 
 HERE = Path(__file__).resolve().parent
 APPLY = False
-DIAG = True  # R3: every Ukrainian text alone in a test ad (validate-only, never saved) to find what Google flags
+DIAG = True  # R3: each Ukrainian text alone (all passed); R4: the full Ukrainian hub ad minus one text at a time
+
+
+def variants():
+    """(label, headlines, descriptions, path) of the Ukrainian hub ad: as is, without paths, and minus each text."""
+    hub = plan.groups()[0]
+    found = [('full', hub['headlines'], hub['descriptions'], hub['path']), ('no path', hub['headlines'], hub['descriptions'], None)]
+    found += [('-' + h, [x for x in hub['headlines'] if x != h], hub['descriptions'], hub['path']) for h in hub['headlines']]
+    found += [('-' + d, hub['headlines'], [x for x in hub['descriptions'] if x != d], hub['path']) for d in hub['descriptions']]
+    return found
 
 
 def candidates():
-    texts = []
-    for group in plan.groups():
-        if group['name'].startswith('UA'):
-            texts += [t for t in group['headlines'] + group['descriptions'] if t not in texts]
-    return texts
+    return [v[0] for v in variants()]
 
 
 def diag_operations(customer):
-    """A paused test campaign: one ad group per Ukrainian text, its ad = that text + neutral Russian texts."""
+    """A paused test campaign: one ad group per variant of the Ukrainian hub ad (validate-only)."""
     ops = operations(customer)[:2]
     base = 'customers/%s/' % customer
-    neutral_head, neutral_desc = ['Авто из Кореи', 'Услуга — 600 $', 'Официальный договор'], plan.RU_DESC[:2]
-    for n, text in enumerate(candidates()):
+    for n, (label, head, desc, path) in enumerate(variants()):
         ad_group = base + 'adGroups/-%d' % (100 + n)
         ops.append({'adGroupOperation': {'create': {'resourceName': ad_group, 'name': 'diag %d' % n,
                                                     'campaign': base + 'campaigns/-2', 'status': 'ENABLED',
                                                     'type': 'SEARCH_STANDARD'}}})
-        head, desc = list(neutral_head), list(neutral_desc)
-        (head if len(text) <= 30 else desc).append(text)
+        rsa = {'headlines': [{'text': h} for h in head], 'descriptions': [{'text': d} for d in desc]}
+        if path:
+            rsa.update(path1=path[0], path2=path[1])
         ops.append({'adGroupAdOperation': {'create': {'adGroup': ad_group, 'status': 'ENABLED', 'ad': {
-            'finalUrls': [plan.SITE + 'seo/ua/avto-z-korei-do-kyieva-pid-kluch.html'], 'responsiveSearchAd': {
-                'headlines': [{'text': h} for h in head], 'descriptions': [{'text': d} for d in desc]}}}}})
+            'finalUrls': [plan.SITE + 'seo/ua/avto-z-korei-do-kyieva-pid-kluch.html'], 'responsiveSearchAd': rsa}}}})
     return ops
 
 
