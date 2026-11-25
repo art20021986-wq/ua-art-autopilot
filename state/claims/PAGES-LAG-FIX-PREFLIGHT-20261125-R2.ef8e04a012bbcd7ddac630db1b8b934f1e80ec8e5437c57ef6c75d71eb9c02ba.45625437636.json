@@ -7,21 +7,23 @@
   "created_at": "2026-11-25T13:38:50Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T13:38:50Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-25T13:44:40Z",
+  "heartbeat_at": "2026-11-25T13:44:40Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45625437636",
     "task_id": "PAGES-LAG-FIX-PREFLIGHT-20261125-R2",
     "task_sha256": "ef8e04a012bbcd7ddac630db1b8b934f1e80ec8e5437c57ef6c75d71eb9c02ba"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-5cc9f4d3ad0e6f79-7e46262a676d31f1",
   "receipt_path": "state/receipts/PAGES-LAG-FIX-PREFLIGHT-20261125-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "ceb955e9e4bde317b20ccf699f676b226c79b787db0541d06d511da69c0d7732",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/PAGES-LAG-FIX-PREFLIGHT-20261125-R2.json",
   "request_sha256": "ef8e04a012bbcd7ddac630db1b8b934f1e80ec8e5437c57ef6c75d71eb9c02ba",
   "resource_locks": [
@@ -29,8 +31,35 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "706549342d883cab4a7a2de7f8d73456f0a5d22e",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91903410176,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 40.694
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-25T13:38:50Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "f14111c177ccf0ee96e9402a70fb9c5b3ff9630bc27c8ca04c365094c2993711",
+    "file_sha256": {
+      "cloud/pages_lag_fix_001/candidate_builder.py": "6f1a8d6da48fd440ac30375801b4f3e9eb16edacf54e472069df9f98c6d2c27f",
+      "cloud/pages_lag_fix_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/pages_lag_fix_001/deployment_bootstrap.py": "6d08c1e906083dc918299c6dd3dbd4fc36c625f018aaceb3806bf0887655abcb",
+      "cloud/pages_lag_fix_001/deployment_remote.py": "b5f50229d1bc17641c76ae09c3f00cacf5b85dcc718dc566268e2875c1cae08c",
+      "cloud/pages_lag_fix_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/pages_lag_fix_001/deployment_transport.py": "705d9be89b35a121b7f769ab3c1920b61bc7c8dac3eb883417becb97937106c6",
+      "cloud/pages_lag_fix_001/edit_samokontrol.py": "aec6e5ea2eaf96b3cb076f7d89ac0bf2d77447a105982ac9bf8793ae98bac488",
+      "cloud/pages_lag_fix_001/edit_usercustomize.py": "d974d71ff6d5e42873af400c61bf8f0ade53c0e0faa42d380a76143b45dad075",
+      "cloud/pages_lag_fix_001/edits.py": "265393a467603c880a9a616f6760dabae7962c2898eabbd6cf794ec91c9490ef",
+      "cloud/pages_lag_fix_001/make_release.py": "bcfda6bc605abef62b9d8a5f87589a708d84835fca92e147cda7314b69cd19b2",
+      "cloud/pages_lag_fix_001/release_constants.py": "7252b023523c46a1889131e08652e6796ad6c34f0c6a4f194895442a40b9fd89",
+      "cloud/pages_lag_fix_001/test_deployment.py": "3b3f9692ca8b4b54804940413d29fe0e39f7b7d74df32f917036c0337f7c5c69",
+      "cloud/pages_lag_fix_001/test_pages_lag_fix.py": "ca841bdf91b95be03fd02badd78d0c32ab4f7d2c35c3efcff3e5c4d77c104844"
+    }
+  },
+  "updated_at": "2026-11-25T13:44:40Z"
 }
