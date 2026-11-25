@@ -1,7 +1,7 @@
 """Link the company's Google Business Profile to the ads (owner 2026-11-25: Oleg gave the owner access to the profile
 «ТОВ "ЮА АРТ КОМПАНІ"»; the profile's «Связанные аккаунты» page shows no request yet).
 
-One all-or-nothing googleAds:mutate: a location asset set synced from the Business Profile of the owner's account
+Two creates (R2: googleAds:mutate has no customer asset set operation): a location asset set synced from the Business Profile of the owner's account
 (BUSINESS_OWNER, by the profile manager's e-mail) and its link to the whole advertiser account, so every ad can show
 the address, rating and route. Google then sends the link request to the profile («Запросы»), which the owner accepts.
 Nothing is created twice; no campaign, budget or spending change; no site, CRM or bot change; no key value in the report.
@@ -33,13 +33,19 @@ def read(customer, headers, query, opener=urllib.request.urlopen):
     return answer.get('results', [])
 
 
-def operations(customer):
-    asset_set = 'customers/%s/assetSets/-1' % customer
-    return [{'assetSetOperation': {'create': {
-                'resourceName': asset_set, 'name': NAME, 'type': 'LOCATION_SYNC',
-                'locationSet': {'locationOwnershipType': 'BUSINESS_OWNER',
-                                'businessProfileLocationSet': {'emailAddress': PROFILE_EMAIL}}}}},
-            {'customerAssetSetOperation': {'create': {'assetSet': asset_set, 'customer': 'customers/%s' % customer}}}]
+def mutate(customer, headers, service, operation, opener=urllib.request.urlopen):
+    """One create through the service's own mutate (googleAds:mutate has no customer asset set operation)."""
+    status, answer = check.call(check.API + 'customers/%s/%s:mutate' % (customer, service),
+                                json.dumps({'operations': [{'create': operation}]}).encode(), headers, opener)
+    if status != 200:
+        raise check.CheckError('%s_%s:%s' % (service.upper(), status, json.dumps(check.errors(answer))[:300]))
+    return answer['results'][0]['resourceName']
+
+
+def location_set():
+    return {'name': NAME, 'type': 'LOCATION_SYNC',
+            'locationSet': {'locationOwnershipType': 'BUSINESS_OWNER',
+                            'businessProfileLocationSet': {'emailAddress': PROFILE_EMAIL}}}
 
 
 def run(keys, opener=urllib.request.urlopen):
@@ -48,18 +54,20 @@ def run(keys, opener=urllib.request.urlopen):
                'login-customer-id': keys['login_customer_id'], 'Content-Type': 'application/json'}
     customer = keys['customer_id']
     before = read(customer, headers, QUERY, opener)
-    value = {'before': before}
-    if [r for r in before if r['assetSet'].get('status') != 'REMOVED']:
-        value['status'] = 'ALREADY_THERE'
-    else:
-        status, answer = check.call(check.API + 'customers/%s/googleAds:mutate' % customer,
-                                    json.dumps({'mutateOperations': operations(customer)}).encode(), headers, opener)
-        if status != 200:
-            value.update(status='FAIL', mutate={'http': status, **check.errors(answer)})
-            return value
-        value['status'] = 'PASS'
+    value = {'before': before, 'created': []}
+    live = [r['assetSet']['resourceName'] for r in before if r['assetSet'].get('status') != 'REMOVED']
+    asset_set = live[0] if live else mutate(customer, headers, 'assetSets', location_set(), opener)
+    if not live:
+        value['created'].append('asset_set')
+    linked = [r['customerAssetSet'] for r in read(customer, headers, LINKS, opener)
+              if r['customerAssetSet'].get('assetSet') == asset_set and r['customerAssetSet'].get('status') != 'REMOVED']
+    if not linked:
+        mutate(customer, headers, 'customerAssetSets', {'assetSet': asset_set, 'customer': 'customers/%s' % customer},
+               opener)
+        value['created'].append('customer_link')
     value['after'] = read(customer, headers, QUERY, opener)
     value['links'] = read(customer, headers, LINKS, opener)
+    value['status'] = 'PASS' if value['created'] else 'ALREADY_THERE'
     return value
 
 

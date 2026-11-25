@@ -31,18 +31,22 @@ class Response(io.BytesIO):
 
 class Google:
     def __init__(self):
-        self.sets, self.calls = [], []
+        self.sets, self.links, self.calls = [], [], []
 
     def __call__(self, request, timeout=None):
         if request.full_url == remote.check.TOKEN_ENDPOINT:
             return Response(json.dumps({'access_token': 'ya' + '29.' + 'a' * 30}).encode())
         body = json.loads(request.data)
         self.calls.append((request.full_url, body))
-        if request.full_url.endswith('googleAds:mutate'):
+        if request.full_url.endswith('/assetSets:mutate'):
             self.sets.append({'assetSet': {'resourceName': 'customers/1/assetSets/5', 'status': 'ENABLED'}})
-            return Response(b'{}')
+            return Response(b'{"results": [{"resourceName": "customers/1/assetSets/5"}]}')
+        if request.full_url.endswith('/customerAssetSets:mutate'):
+            self.links.append({'customerAssetSet': {'assetSet': body['operations'][0]['create']['assetSet'],
+                                                    'status': 'ENABLED'}})
+            return Response(b'{"results": [{"resourceName": "customers/1/customerAssetSets/5"}]}')
         if 'customer_asset_set' in body['query']:
-            return Response(b'{"results": []}')
+            return Response(json.dumps({'results': self.links}).encode())
         return Response(json.dumps({'results': self.sets}).encode())
 
 
@@ -57,15 +61,24 @@ class RemoteTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             first = json.loads(remote.report(self.keys_file(temp), google))
             second = json.loads(remote.report(self.keys_file(temp), google))
-        self.assertEqual((first['status'], second['status']), ('PASS', 'ALREADY_THERE'))
-        mutate = [b for u, b in google.calls if u.endswith(':mutate')]
-        self.assertEqual(len(mutate), 1)
-        ops = mutate[0]['mutateOperations']
-        location = ops[0]['assetSetOperation']['create']
+        self.assertEqual((first['status'], first['created']), ('PASS', ['asset_set', 'customer_link']))
+        self.assertEqual(second['status'], 'ALREADY_THERE')
+        sets = [b for u, b in google.calls if u.endswith('/assetSets:mutate')]
+        links = [b for u, b in google.calls if u.endswith('/customerAssetSets:mutate')]
+        self.assertEqual((len(sets), len(links)), (1, 1))
+        location = sets[0]['operations'][0]['create']
         self.assertEqual((location['type'], location['locationSet']['locationOwnershipType']),
                          ('LOCATION_SYNC', 'BUSINESS_OWNER'))
-        self.assertEqual(ops[1]['customerAssetSetOperation']['create']['assetSet'], location['resourceName'])
-        self.assertFalse([o for o in ops if 'campaignOperation' in o or 'campaignBudgetOperation' in o])
+        self.assertEqual(links[0]['operations'][0]['create'], {'assetSet': 'customers/1/assetSets/5',
+                                                               'customer': 'customers/4680747874'})
+        self.assertFalse([u for u, _ in google.calls if 'campaign' in u])
+
+    def test_set_without_link_gets_linked(self):
+        google = Google()
+        google.sets.append({'assetSet': {'resourceName': 'customers/1/assetSets/5', 'status': 'ENABLED'}})
+        with tempfile.TemporaryDirectory() as temp:
+            value = json.loads(remote.report(self.keys_file(temp), google))
+        self.assertEqual(value['created'], ['customer_link'])
 
 
 class FakeAPI:
