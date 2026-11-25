@@ -58,6 +58,13 @@ class EditTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'FRAGMENT_NOT_UNIQUE'):
                     edits.apply(result.encode(), module.EDITS)
 
+    def test_no_fragment_holds_sanitized_text(self):
+        # The fixtures are sanitized; a fragment with [URL], [N] or [REDACTED] can never match the real file.
+        for module, _, _ in CASES:
+            for old, _ in module.EDITS:
+                for mark in ('[URL]', '[N]', '[REDACTED]'):
+                    self.assertNotIn(mark, old, module.NAME)
+
     def test_edited_files_compile(self):
         for module, fixture, _ in CASES:
             source = (HERE / 'fixtures' / fixture).read_bytes()
