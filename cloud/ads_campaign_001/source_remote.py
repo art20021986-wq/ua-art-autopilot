@@ -64,6 +64,21 @@ def operations(customer):
     return ops
 
 
+def findings(answer):
+    """Every refused operation: its index, the policy topics and Google's evidence text."""
+    found = []
+    for detail in answer.get('error', {}).get('details', []) or []:
+        for item in detail.get('errors', []) or []:
+            path = item.get('location', {}).get('fieldPathElements', [])
+            entries = item.get('details', {}).get('policyFindingDetails', {}).get('policyTopicEntries', [])
+            found.append({'index': path[0].get('index') if path else None,
+                          'code': json.dumps(item.get('errorCode', {})), 'message': str(item.get('message', ''))[:120],
+                          'topics': [(e.get('type'), e.get('topic'),
+                                      [t for ev in e.get('evidences', []) for t in ev.get('textList', {}).get('texts', [])])
+                                     for e in entries]})
+    return found
+
+
 def existing(customer, headers, opener=urllib.request.urlopen):
     query = "SELECT campaign.resource_name, campaign.status FROM campaign WHERE campaign.name = '%s'" % plan.NAME
     status, answer = check.call(check.API + 'customers/%s/googleAds:search' % customer,
@@ -88,8 +103,8 @@ def run(keys, apply=APPLY, opener=urllib.request.urlopen):
     status, answer = check.call(check.API + 'customers/%s/googleAds:mutate' % customer,
                                 json.dumps({'mutateOperations': ops, 'validateOnly': not apply}).encode(), headers, opener)
     if status != 200:
-        value.update(status='FAIL', mutate={'http': status, **check.errors(answer)},
-                     details=json.dumps(answer.get('error', {}).get('details', []), ensure_ascii=False)[:3000])
+        value.update(status='FAIL', mutate={'http': status, 'message': str(answer.get('error', {}).get('message'))[:200]},
+                     findings=findings(answer))
         return value
     value['created'] = len(answer.get('mutateOperationResponses', []))
     value['after'] = existing(customer, headers, opener)

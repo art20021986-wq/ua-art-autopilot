@@ -113,6 +113,16 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(len([u for u, _ in google.calls if u.endswith(':mutate')]), 1)
 
 
+class FindingTests(unittest.TestCase):
+    def test_policy_findings_listed(self):
+        answer = {'error': {'details': [{'errors': [{'errorCode': {'policyFindingError': 'POLICY_FINDING'}, 'message': 'x',
+                  'location': {'fieldPathElements': [{'fieldName': 'mutate_operations', 'index': 76}]},
+                  'details': {'policyFindingDetails': {'policyTopicEntries': [{'type': 'PROHIBITED', 'topic': 'CAPITALIZATION',
+                              'evidences': [{'textList': {'texts': ['LPi']}}]}]}}}]}]}}
+        self.assertEqual(remote.findings(answer)[0]['topics'], [('PROHIBITED', 'CAPITALIZATION', ['LPi'])])
+        self.assertEqual(remote.findings(answer)[0]['index'], 76)
+
+
 class FakeAPI:
     def __init__(self, report):
         self.report = report

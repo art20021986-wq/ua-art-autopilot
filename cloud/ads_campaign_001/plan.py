@@ -1,4 +1,4 @@
-"""The Kyiv Search campaign as data (owner 2026-11-25: Kyiv city and oblast first, «минимальная стоимость лида»;
+"""The Kyiv Search campaign as data (R2: Google flagged CAPITALIZATION — «LPi» and «AUTO.RIA» removed from ad texts) (owner 2026-11-25: Kyiv city and oblast first, «минимальная стоимость лида»;
 «Да»: 1 lead in 10 becomes a contract, ads 9:00–20:00, prepayment 1 000 $). Pure: no network.
 
 One campaign, PAUSED; Kyiv city + Kyiv Oblast, people located there only; Ukrainian and Russian; every day 9:00–20:00;
@@ -21,14 +21,14 @@ NEGATIVE = ['запчастини', 'запчасти', 'розборка', 'р�
 
 UK_HEAD = ['Пригон авто з Кореї', 'Послуга — 600 $', 'Ціна фіксується в договорі', 'Офіс у Києві, Перемоги 20',
            'VIN, фото, відео, діагностика', 'Передоплата в ціні авто', 'Понад 5 років досвіду',
-           '132 продані авто на AUTO.RIA', 'Етап доставки онлайн', 'Кредит і лізинг', 'Отримайте пропозицію',
+           'Понад 130 проданих авто', 'Етап доставки онлайн', 'Кредит і лізинг', 'Отримайте пропозицію',
            'Офіційний договір']
 UK_DESC = ['Купуємо на аукціоні Кореї, перевіряємо й робимо пригон під ключ до Києва.',
            'Фіксована послуга 600 $. Ціна під ключ у договорі: викуп, доставка, розмитнення.',
            'Фото, відео, VIN і етап доставки кожного авто. Огляд в офісі на Перемоги, 20.',
            'Залиште заявку — менеджер напише у Viber або Telegram.']
 RU_HEAD = ['Пригон авто из Кореи', 'Услуга — 600 $', 'Цена фиксируется в договоре', 'Офис в Киеве, Победы 20',
-           'VIN, фото, видео, диагностика', 'Предоплата в цене авто', 'Более 5 лет опыта', '132 проданных авто AUTO.RIA',
+           'VIN, фото, видео, диагностика', 'Предоплата в цене авто', 'Более 5 лет опыта', 'Более 130 проданных авто',
            'Этап доставки онлайн', 'Кредит и лизинг', 'Получите предложение', 'Официальный договор']
 RU_DESC = ['Покупаем на аукционе Кореи, проверяем и делаем пригон под ключ в Киев.',
            'Фиксированная услуга 600 $. Цена под ключ в договоре: выкуп, доставка, растаможка.',
@@ -37,11 +37,11 @@ RU_DESC = ['Покупаем на аукционе Кореи, проверяе�
 
 # (key, lang, first headlines, keywords, landing page, path1, path2)
 MODELS = [
-    ('kia-k5', 'Kia K5', ['kia k5', 'кіа к5'], ['kia k5', 'киа к5'], 'kia-k5-koreya-kyiv', 'kia-k5-koreya-kiev', 'Kia K5 на газу LPi',
-     'Kia K5 на газе LPi', 'від 10 500 $', 'от 10 500 $'),
+    ('kia-k5', 'Kia K5', ['kia k5', 'кіа к5'], ['kia k5', 'киа к5'], 'kia-k5-koreya-kyiv', 'kia-k5-koreya-kiev', 'K5 на заводському газу',
+     'K5 на заводском газе', 'від 10 500 $', 'от 10 500 $'),
     ('hyundai-sonata', 'Hyundai Sonata', ['hyundai sonata', 'хюндай соната'], ['hyundai sonata', 'хендай соната',
-     'хюндай соната'], 'hyundai-sonata-koreya-kyiv', 'hyundai-sonata-koreya-kiev', 'Sonata на газу LPi',
-     'Sonata на газе LPi', 'від 10 000 $', 'от 10 000 $'),
+     'хюндай соната'], 'hyundai-sonata-koreya-kyiv', 'hyundai-sonata-koreya-kiev', 'Sonata на заводському газу',
+     'Sonata на заводском газе', 'від 10 000 $', 'от 10 000 $'),
     ('hyundai-tucson', 'Hyundai Tucson', ['hyundai tucson', 'хюндай туксон'], ['hyundai tucson', 'хендай туксон',
      'туссан'], 'hyundai-tucson-koreya-kyiv', 'hyundai-tucson-koreya-kiev', 'Tucson дизель', 'Tucson дизель', '', ''),
     ('kia-sportage', 'Kia Sportage', ['kia sportage', 'кіа спортейдж'], ['kia sportage', 'киа спортейдж'],
@@ -92,7 +92,7 @@ SITELINKS = [('Аукціони Кореї', 'Лоти й ціни щодня', 
              ('Авто в наявності', 'Огляд в офісі в Києві', 'Фото, відео, VIN', SITE + 'katalog.html'),
              ('Скільки коштує під ключ', 'Реальні ціни з каталогу', 'Що входить у вартість',
               SITE + 'seo/ua/skilky-koshtuie-avto-z-korei-pid-kliuch.html'),
-             ('Авто на заводському газу', 'Kia K5 і Sonata LPi', 'Економні на щодень',
+             ('Авто на заводському газу', 'Kia K5 і Sonata на газу', 'Економні на щодень',
               SITE + 'seo/ua/avto-z-korei-na-gazu-lpi.html')]
 CALLOUTS = ['Офіційний договір', 'Фото й відео авто', 'Діагностика', 'Офіс у Києві', 'Послуга 600 $', 'Кредит і лізинг']
 PHONE = '+380992222002'
