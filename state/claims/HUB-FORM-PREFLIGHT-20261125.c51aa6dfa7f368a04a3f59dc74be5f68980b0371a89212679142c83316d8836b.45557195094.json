@@ -7,21 +7,23 @@
   "created_at": "2026-11-25T05:59:50Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T05:59:50Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-25T06:07:48Z",
+  "heartbeat_at": "2026-11-25T06:07:48Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45557195094",
     "task_id": "HUB-FORM-PREFLIGHT-20261125",
     "task_sha256": "c51aa6dfa7f368a04a3f59dc74be5f68980b0371a89212679142c83316d8836b"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-75ea0d66c1798776-413659c614c117c4",
   "receipt_path": "state/receipts/HUB-FORM-PREFLIGHT-20261125.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "683e5bfcefc26023e2a3aea85c90a4af001e3678b57c19b25608f74e626b6bfe",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HUB-FORM-PREFLIGHT-20261125.json",
   "request_sha256": "c51aa6dfa7f368a04a3f59dc74be5f68980b0371a89212679142c83316d8836b",
   "resource_locks": [
@@ -29,8 +31,32 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "0a0837cd5afa0fcfffe30113d17da5e2fa8fea98",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91906973696,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.692
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-25T05:59:50Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "5f792c0cc8d0dfe31fc813271b94c291735c211d74c1bda349d36436f66a336c",
+    "file_sha256": {
+      "cloud/hub_form_001/candidate_builder.py": "80df28f02f1baf759e332724919edc12e3de44cc31d239d47ea902aaf5c6cd55",
+      "cloud/hub_form_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/hub_form_001/deployment_bootstrap.py": "fc132bf026720de963eaa9312843fbafd8b932592643ea6da5d1aaa0d414636d",
+      "cloud/hub_form_001/deployment_remote.py": "90b9c9d05ae695c2ad7185358efdf81d8779cb26092b621c7c5336d765a8cbbb",
+      "cloud/hub_form_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/hub_form_001/deployment_transport.py": "3a01f6fe5329be8172169ebb42421608d8651957fa23d9e3e832a91f6efb3ad5",
+      "cloud/hub_form_001/make_release.py": "83bfe316412d6673ebf3610b6b2a34a5bf6cc5564b7a40b6431b46c082b9c04d",
+      "cloud/hub_form_001/release_constants.py": "1e7b5d5ad990a2840c95c86061852d123a986cef024298f8d284da51bbe761ff",
+      "cloud/hub_form_001/test_deployment.py": "6a1a9e1f716f2a4c3d08ab2b36028f174498ee869a7b2123a5b1bd4212c61d9e",
+      "cloud/hub_form_001/test_hub_form.py": "27dfc45818d3395df6f262a1e5284101f487db926599af8dfa73f4e0d8fb7764"
+    }
+  },
+  "updated_at": "2026-11-25T06:07:48Z"
 }
