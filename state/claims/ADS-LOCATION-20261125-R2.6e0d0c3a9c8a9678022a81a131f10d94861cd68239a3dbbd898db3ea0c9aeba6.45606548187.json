@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ADS-LOCATION-20261125-R2.6e0d0c3a9c8a9678022a81a131f10d94861cd68239a3dbbd898db3ea0c9aeba6.json",
+  "autostart_ledger_sha256": "1418e51ac0bc07403b34ec034352ea6c368370e6264d566eb654ff4a45d9e5de",
+  "autostart_source_commit": "099b2732b1b0ea363ee8c52d75d1f81d5be01745",
+  "created_at": "2026-11-25T11:41:42Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-25T11:41:42Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "45606548187",
+    "task_id": "ADS-LOCATION-20261125-R2",
+    "task_sha256": "6e0d0c3a9c8a9678022a81a131f10d94861cd68239a3dbbd898db3ea0c9aeba6"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-16b44dd556523151-0edf9bf2b09157a3",
+  "receipt_path": "state/receipts/ADS-LOCATION-20261125-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/ADS-LOCATION-20261125-R2.json",
+  "request_sha256": "6e0d0c3a9c8a9678022a81a131f10d94861cd68239a3dbbd898db3ea0c9aeba6",
+  "resource_locks": [
+    "PATH_SCOPE:16b44dd556523151"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "c898e8b6363193572ab475a4271643785af4ed96",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-25T11:41:42Z"
+}
