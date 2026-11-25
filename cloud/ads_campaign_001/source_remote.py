@@ -18,8 +18,8 @@ import plan
 import source_check as check
 
 HERE = Path(__file__).resolve().parent
-APPLY = False
-DIAG = True  # R3: each Ukrainian text alone (all passed); R4: the full Ukrainian hub ad minus one text at a time
+APPLY = True
+DIAG = False  # R3: each Ukrainian text alone (all passed); R4: the full Ukrainian hub ad minus one text at a time
 
 
 def variants():
