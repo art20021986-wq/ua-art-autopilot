@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "bf25a3e11e2b7918cf1e235c23d42456aa704744d724febf59fe852a903ee8f7",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T02:54:18Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-25T03:10:31Z",
+  "heartbeat_at": "2026-11-25T03:10:31Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "45535429064",
     "task_id": "ADS-KEYS-INSTALL-20261125",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 764.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 276.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 239.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-45535429064-6c936bea851698fa",
   "production_transaction_path": "state/transactions/ADS-KEYS-INSTALL-20261125.6c936bea851698faa52f5fa7f86c31ba0439ceb1dceec6e0bc1677a124da0502.45535429064.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "security_control_plane-624743b552936e51",
   "receipt_path": "state/receipts/ADS-KEYS-INSTALL-20261125.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "06c4d2b032bc2634e20a529e9715dc8bbd35dc350e62e0779fe8aa64dd86aeea",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ADS-KEYS-INSTALL-20261125.json",
   "request_sha256": "6c936bea851698faa52f5fa7f86c31ba0439ceb1dceec6e0bc1677a124da0502",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "6af96e491feacf82f9a6a563dd9303629bf416ef6b3f050490e12f16dd69bf9c",
     "file_sha256": {
@@ -98,5 +129,5 @@
       "cloud/ads_keys_001/ua_google_ads_oauth_web.py": "8916775feee5a49e908cf4d880c81c580fdb5565ae5245cc5ff79c125dff3c35"
     }
   },
-  "updated_at": "2026-11-25T02:54:18Z"
+  "updated_at": "2026-11-25T03:10:31Z"
 }
