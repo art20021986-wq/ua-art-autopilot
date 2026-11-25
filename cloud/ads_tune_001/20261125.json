@@ -1,0 +1,187 @@
+{
+  "after": {
+    "campaign": {
+      "resourceName": "customers/4680747874/campaigns/24540607407",
+      "status": "ENABLED",
+      "targetSpend": {
+        "cpcBidCeilingMicros": "15000000"
+      }
+    },
+    "negatives": [
+      "auto ria",
+      "ceed",
+      "olx",
+      "wiki",
+      "автория",
+      "авторіа",
+      "аренда",
+      "безкоштовно",
+      "беларусь",
+      "бесплатно",
+      "бу в киеве",
+      "бу в києві",
+      "вакансия",
+      "вакансія",
+      "вики",
+      "відгуки власників",
+      "вікі",
+      "запчасти",
+      "запчастини",
+      "игрушка",
+      "инструкция",
+      "картинки",
+      "малюнок",
+      "минск",
+      "обзор",
+      "огляд",
+      "оренда",
+      "отзывы владельцев",
+      "работа",
+      "разборка",
+      "размер",
+      "рб",
+      "ремонт",
+      "рисунок",
+      "робота",
+      "розборка",
+      "розмір",
+      "россия",
+      "росія",
+      "своими руками",
+      "своїми руками",
+      "тюнинг",
+      "тюнінг",
+      "форум",
+      "фото",
+      "характеристики",
+      "шини",
+      "шины",
+      "іграшка",
+      "інструкція"
+    ]
+  },
+  "before": {
+    "campaign": {
+      "resourceName": "customers/4680747874/campaigns/24540607407",
+      "status": "ENABLED",
+      "targetSpend": {
+        "cpcBidCeilingMicros": "25000000"
+      }
+    },
+    "negatives": [
+      "auto ria",
+      "olx",
+      "wiki",
+      "автория",
+      "авторіа",
+      "аренда",
+      "безкоштовно",
+      "бесплатно",
+      "бу в киеве",
+      "бу в києві",
+      "вакансия",
+      "вакансія",
+      "вики",
+      "відгуки власників",
+      "вікі",
+      "запчасти",
+      "запчастини",
+      "игрушка",
+      "инструкция",
+      "картинки",
+      "малюнок",
+      "обзор",
+      "огляд",
+      "оренда",
+      "отзывы владельцев",
+      "работа",
+      "разборка",
+      "размер",
+      "ремонт",
+      "рисунок",
+      "робота",
+      "розборка",
+      "розмір",
+      "россия",
+      "росія",
+      "своими руками",
+      "своїми руками",
+      "тюнинг",
+      "тюнінг",
+      "форум",
+      "фото",
+      "характеристики",
+      "шини",
+      "шины",
+      "іграшка",
+      "інструкція"
+    ]
+  },
+  "mode": "probe",
+  "operations": [
+    {
+      "campaignOperation": {
+        "update": {
+          "resourceName": "customers/4680747874/campaigns/24540607407",
+          "targetSpend": {
+            "cpcBidCeilingMicros": "15000000"
+          }
+        },
+        "updateMask": "target_spend.cpc_bid_ceiling_micros"
+      }
+    },
+    {
+      "campaignCriterionOperation": {
+        "create": {
+          "campaign": "customers/4680747874/campaigns/24540607407",
+          "keyword": {
+            "matchType": "PHRASE",
+            "text": "рб"
+          },
+          "negative": true
+        }
+      }
+    },
+    {
+      "campaignCriterionOperation": {
+        "create": {
+          "campaign": "customers/4680747874/campaigns/24540607407",
+          "keyword": {
+            "matchType": "PHRASE",
+            "text": "беларусь"
+          },
+          "negative": true
+        }
+      }
+    },
+    {
+      "campaignCriterionOperation": {
+        "create": {
+          "campaign": "customers/4680747874/campaigns/24540607407",
+          "keyword": {
+            "matchType": "PHRASE",
+            "text": "минск"
+          },
+          "negative": true
+        }
+      }
+    },
+    {
+      "campaignCriterionOperation": {
+        "create": {
+          "campaign": "customers/4680747874/campaigns/24540607407",
+          "keyword": {
+            "matchType": "PHRASE",
+            "text": "ceed"
+          },
+          "negative": true
+        }
+      }
+    }
+  ],
+  "remote_write_count": 1,
+  "run_id": "45618422191",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "ADS-TUNE-20261125"
+}
