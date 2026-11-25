@@ -1,0 +1,189 @@
+import sys
+D = '/home/Carix'
+if D not in sys.path:
+    sys.path.insert(0, D)
+try:
+    stroka = ' '.join(sys.argv)
+    if 'start_safe' in stroka or 'run_all' in stroka \
+       or 'team_bot' in stroka or 'lead_bot' in stroka:
+        pass  # stranica_hranitel отключён: страницу строит новая сборка
+except Exception:
+    pass
+
+import sys
+if '/home/Carix' not in sys.path:
+    sys.path.insert(0, '/home/Carix')
+try:
+    pass  # karta_knopka отключён: кнопку ставит единая карточка
+except Exception:
+    pass
+
+import sys
+if '/home/Carix' not in sys.path:
+    sys.path.insert(0, '/home/Carix')
+try:
+    pass  # oformlenie отключён: страницу строит новая сборка
+except Exception:
+    pass
+
+import sys
+if '/home/Carix' not in sys.path:
+    sys.path.insert(0, '/home/Carix')
+try:
+    pass  # stranica_klienta отключён: страницу строит новая сборка
+except Exception:
+    pass
+
+import sys
+if '/home/Carix' not in sys.path:
+    sys.path.insert(0, '/home/Carix')
+try:
+    import zapusk_stroka
+except Exception:
+    pass
+
+import sys
+if '/home/Carix' not in sys.path:
+    sys.path.insert(0, '/home/Carix')
+try:
+    import otvet_knopki
+except Exception:
+    pass
+
+try:
+    pass  # karta_klienta отключён: кнопку ставит единая карточка
+except Exception:
+    pass
+
+# UA ART - sloy svyazi botov (v32)
+try:
+    import sys
+    if '/home/Carix' not in sys.path:
+        sys.path.insert(0, '/home/Carix')
+    import svyaz
+except Exception:
+    pass
+
+try:
+    pass  # старый сборщик выключен
+except Exception as _e:
+    pass
+
+try:
+    import odna_karta; odna_karta.start()
+except Exception:
+    pass
+
+# UA ART - zashchita
+try:
+    import sys
+    if '/home/Carix' not in sys.path:
+        sys.path.insert(0, '/home/Carix')
+    import bezopasnost
+except Exception:
+    pass
+
+try:
+    import vitrina; vitrina.start()
+except Exception:
+    pass
+
+# UA-V50 odin_adres
+try:
+    import sys
+    if '/home/Carix' not in sys.path:
+        sys.path.insert(0, '/home/Carix')
+    pass
+except Exception:
+    pass
+
+# UA-V51 zamok_kartochki
+try:
+    import sys
+    if '/home/Carix' not in sys.path:
+        sys.path.insert(0, '/home/Carix')
+    pass
+except Exception:
+    pass
+
+# UA-V54 tehsostoyanie
+try:
+    import sys
+    if '/home/Carix' not in sys.path:
+        sys.path.insert(0, '/home/Carix')
+    pass
+except Exception:
+    pass
+
+# UA-V55 svezhiy_hesh
+try:
+    import sys
+    if '/home/Carix' not in sys.path:
+        sys.path.insert(0, '/home/Carix')
+    import svezhiy_hesh
+except Exception:
+    pass
+
+# UA-V57 opisanie_avto
+try:
+    import sys
+    if '/home/Carix' not in sys.path:
+        sys.path.insert(0, '/home/Carix')
+    pass
+except Exception:
+    pass
+
+# UA-V71 avtoperedacha
+try:
+    import sys
+    if '/home/Carix' not in sys.path:
+        sys.path.insert(0, '/home/Carix')
+    import avtoperedacha
+except Exception:
+    pass
+
+# UA-V74 samokontrol
+try:
+    import sys
+    if '/home/Carix' not in sys.path:
+        sys.path.insert(0, '/home/Carix')
+    import samokontrol
+except Exception:
+    pass
+
+# UA-V79 video_universal
+try:
+    import sys
+    if '/home/Carix' not in sys.path:
+        sys.path.insert(0, '/home/Carix')
+    import video_universal
+except Exception:
+    pass
+
+# UA-V114 video_sinhron
+try:
+    import sys
+    if '/home/Carix' not in sys.path:
+        sys.path.insert(0, '/home/Carix')
+    import video_sinhron
+except Exception:
+    pass
+
+# UA-V123 · кнопка меню клиентского бота
+import sys as _sys_v123
+if '/home/Carix' not in _sys_v123.path:
+    _sys_v123.path.insert(0, '/home/Carix')
+try:
+    import menu_knopka  # UA-V123
+except Exception:
+    pass
+
+# --- UA-LOCK4-V1 ---
+try:
+    import sys as _ua_sys
+    if '/home/Carix' not in _ua_sys.path:
+        _ua_sys.path.insert(0, '/home/Carix')
+    import lock4_zhurnal
+except Exception:
+    pass
+# --- конец UA-LOCK4-V1 ---

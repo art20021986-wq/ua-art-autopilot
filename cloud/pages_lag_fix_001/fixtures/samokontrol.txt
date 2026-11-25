@@ -1,0 +1,362 @@
+# -*- coding: utf-8 -*-
+# UA-V74 - самоконтроль CRM-половины.
+
+import glob
+import importlib
+import json
+import os
+import sqlite3
+import subprocess
+import sys
+import threading
+import time
+import urllib.parse
+import urllib.request
+
+BAZA = "/home/Carix"
+BD = os.path.join(BAZA, "crm.db")
+SBORSHCHIK = os.path.join(BAZA, "stranica.py")
+PAPKA_VID = os.path.join(BAZA, "video")
+LOG = os.path.join(BAZA, "samokontrol_log.txt")
+SOSTOYANIE = os.path.join(BAZA, ".samokontrol.json")
+
+PAUZA = 300          # проверка раз в 5 минут
+MOLCHANIE = 6 * 3600  # об одной беде не чаще раза в 6 часов
+OTSTAVANIE = 900     # страницы старше базы на 15 минут - непорядок
+
+MOI_MODULI = ["avtoperedacha", "kadry_diagnostiki", "schetchik",
+              "svezhiy_hesh"]
+
+
+def log(stroka):
+    try:
+        with open(LOG, "a", encoding="utf-8") as f:
+            f.write(time.strftime("%Y-%m-%d %H:%M:%S") + "  "
+                    + stroka + "\n")
+    except Exception:
+        pass
+
+
+def sostoyanie_prochest():
+    try:
+        with open(SOSTOYANIE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def sostoyanie_zapisat(dannye):
+    try:
+        vremenno = SOSTOYANIE + ".vremenno"
+        with open(vremenno, "w", encoding="utf-8") as f:
+            json.dump(dannye, f, ensure_ascii=False)
+        os.replace(vremenno, SOSTOYANIE)
+    except Exception:
+        pass
+
+
+# ------------------------------------------------------- сообщение вам
+
+def komu():
+    for imya in ("vladelec.txt", "manager.txt", "owner.txt"):
+        try:
+            with open(os.path.join(BAZA, imya), "r",
+                      encoding="utf-8") as f:
+                znachenie = f.read().strip()
+            if znachenie:
+                return znachenie
+        except Exception:
+            pass
+    return ""
+
+
+def token():
+    for imya in ("team_token.txt", "bot_token.txt"):
+        try:
+            with open(os.path.join(BAZA, imya), "r",
+                      encoding="utf-8") as f:
+                znachenie = f.read().strip()
+            if znachenie:
+                return znachenie
+        except Exception:
+            pass
+    return ""
+
+
+def soobshchit(klyuch, tekst):
+    """Пишет владельцу, но не чаще раза в 6 часов на одну беду."""
+    dannye = sostoyanie_prochest()
+    kogda = dannye.get("skazano") or {}
+    if time.time() - float(kogda.get(klyuch) or 0) < MOLCHANIE:
+        return
+    kogda[klyuch] = time.time()
+    dannye["skazano"] = kogda
+    sostoyanie_zapisat(dannye)
+
+    log("СООБЩАЮ: " + tekst.replace("\n", " | "))
+    tok, chat = token(), komu()
+    if not tok or not chat:
+        return
+    try:
+        adres = ("https://api.telegram.org/bot" + tok + "/sendMessage?"
+                 + urllib.parse.urlencode({"chat_id": chat,
+                                           "text": tekst}))
+        urllib.request.urlopen(adres, timeout=30).read()
+    except Exception as e:
+        log("не отправить сообщение: " + repr(e))
+
+
+def vsyo_horosho(klyuch):
+    """Беда прошла - разрешаем сообщить о ней снова."""
+    dannye = sostoyanie_prochest()
+    kogda = dannye.get("skazano") or {}
+    if klyuch in kogda:
+        kogda.pop(klyuch, None)
+        dannye["skazano"] = kogda
+        sostoyanie_zapisat(dannye)
+
+
+# ------------------------------------------------------------- проверки
+
+def kolonki():
+    try:
+        soed = sqlite3.connect(BD, timeout=20)
+        est = [r[1] for r in soed.execute("PRAGMA table_info(cars)")]
+        soed.close()
+        return est
+    except Exception as e:
+        log("база: " + repr(e))
+        return []
+
+
+def pole_nomera(est):
+    for imya in ("auto_number", "code", "number", "nomer"):
+        if imya in est:
+            return imya
+    return None
+
+
+def proverit_bazu():
+    est = kolonki()
+    if not est:
+        soobshchit("baza", "CRM: не читается база crm.db. "
+                           "Страницы сайта обновляться не будут.")
+        return None, None
+    pole = pole_nomera(est)
+    if not pole and "id" not in est:
+        soobshchit("nomer", "CRM: в базе не найдено, где лежит номер "
+                            "машины. Скажите об этом помощнику.")
+        return est, None
+    vsyo_horosho("baza")
+    return est, pole
+
+
+def proverit_moduli():
+    bedy = []
+    for imya in MOI_MODULI:
+        put = os.path.join(BAZA, imya + ".py")
+        if not os.path.exists(put):
+            continue
+        try:
+            if imya in sys.modules:
+                compile(open(put, "rb").read(), put, "exec")
+            else:
+                importlib.import_module(imya)
+            vsyo_horosho("modul_" + imya)
+        except Exception as e:
+            bedy.append(imya)
+            soobshchit("modul_" + imya,
+                       "CRM: модуль " + imya + " не запускается.\n"
+                       + repr(e)[:200])
+    return bedy
+
+
+def svezhie_sboi():
+    """Сбои в логах модулей за последний час."""
+    granica = time.time() - 3600
+    nashlos = []
+    for imya in MOI_MODULI:
+        put = os.path.join(BAZA, imya + "_log.txt")
+        if not os.path.exists(put):
+            continue
+        try:
+            if os.path.getmtime(put) < granica:
+                continue
+            with open(put, "r", encoding="utf-8",
+                      errors="ignore") as f:
+                hvost = f.read()[-4000:]
+        except Exception:
+            continue
+        for stroka in hvost.strip().split("\n")[-15:]:
+            nizhny = stroka.lower()
+            if ("error" in nizhny or "сбой" in nizhny
+                    or "не прочитать" in nizhny):
+                nashlos.append(imya + ": " + stroka.strip()[-120:])
+                break
+    return nashlos
+
+
+def stranicy_otstali():
+    """База менялась, а страницы старые."""
+    try:
+        baza_kogda = os.path.getmtime(BD)
+    except Exception:
+        return False
+    stranicy = glob.glob(os.path.join(PAPKA_VID, "UA-*.html"))
+    if not stranicy:
+        return True
+    svezhaya = max(os.path.getmtime(p) for p in stranicy)
+    return (baza_kogda - svezhaya) > OTSTAVANIE
+
+
+def sobrat():
+    if not os.path.exists(SBORSHCHIK):
+        soobshchit("sborshchik",
+                   "CRM: не нахожу stranica.py — страницы собирать "
+                   "нечем.")
+        return False
+    try:
+        itog = subprocess.run([sys.executable, SBORSHCHIK], cwd=BAZA,
+                              capture_output=True, text=True,
+                              timeout=600)
+        log("сборка запущена сторожем, код " + str(itog.returncode))
+        return itog.returncode == 0
+    except Exception as e:
+        log("сборка не прошла: " + repr(e))
+        return False
+
+
+def kadry_ne_dokachany(est, pole):
+    """Сколько кадров диагностики в базе и сколько файлов на диске."""
+    if not est or "condition_photos" not in est:
+        return []
+    berem = [k for k in (pole, "id", "condition_photos",
+                         "condition_videos") if k and k in est]
+    try:
+        soed = sqlite3.connect(BD, timeout=20)
+        soed.row_factory = sqlite3.Row
+        ryady = soed.execute(
+            "SELECT " + ", ".join(berem) + " FROM cars").fetchall()
+        soed.close()
+    except Exception:
+        return []
+
+    otstayut = []
+    for ryad in ryady:
+        nom = ""
+        if pole:
+            try:
+                nom = str(ryad[pole] or "").strip()
+            except Exception:
+                nom = ""
+        if not nom:
+            try:
+                nom = "UA-%04d" % int(ryad["id"])
+            except Exception:
+                continue
+        try:
+            v_baze = len(json.loads(ryad["condition_photos"] or "[]"))
+        except Exception:
+            v_baze = 0
+        if not v_baze:
+            continue
+        papka = os.path.join(PAPKA_VID, "diag", nom)
+        na_diske = len(glob.glob(os.path.join(papka, "*.jpg")))
+        if na_diske < v_baze:
+            otstayut.append((nom, v_baze, na_diske))
+    return otstayut
+
+
+# ------------------------------------------------------------ проход
+
+def shag(tiho=True):
+    otchet = []
+
+    est, pole = proverit_bazu()
+    if est:
+        otchet.append("база: колонок " + str(len(est))
+                      + ", номер в " + str(pole))
+
+    slomannye = proverit_moduli()
+    otchet.append("модули: "
+                  + ("все живы" if not slomannye
+                     else "не грузятся — " + ", ".join(slomannye)))
+
+    sboi = svezhie_sboi()
+    if sboi:
+        otchet.append("свежие сбои в логах: " + str(len(sboi)))
+        soobshchit("sboi", "CRM: в логах свежие сбои.\n"
+                   + "\n".join(sboi[:3]))
+    else:
+        vsyo_horosho("sboi")
+
+    if stranicy_otstali():
+        otchet.append("страницы отстали — собираю")
+        if sobrat():
+            vsyo_horosho("sborka")
+        else:
+            soobshchit("sborka", "CRM: страницы сайта отстали от базы, "
+                                 "и пересобрать их не получилось.")
+    else:
+        otchet.append("страницы свежие")
+        vsyo_horosho("sborka")
+
+    otstayut = kadry_ne_dokachany(est, pole)
+    if otstayut:
+        otchet.append("кадры диагностики отстают: "
+                      + ", ".join("%s %d/%d" % (n, d, b)
+                                  for n, b, d in otstayut))
+        try:
+            if "kadry_diagnostiki" in sys.modules:
+                sys.modules["kadry_diagnostiki"].shag()
+            else:
+                importlib.import_module("kadry_diagnostiki").shag()
+        except Exception as e:
+            soobshchit("kadry", "CRM: кадры диагностики не "
+                                "скачиваются.\n" + repr(e)[:200])
+    else:
+        otchet.append("кадры диагностики на месте")
+        vsyo_horosho("kadry")
+
+    stop = os.path.join(BAZA, "avtoperedacha_stop.txt")
+    if os.path.exists(stop):
+        otchet.append("автопередача выключена стоп-файлом")
+        soobshchit("stop", "CRM: автоматическая сборка сайта выключена "
+                           "(стоит файл avtoperedacha_stop.txt). "
+                           "Пока он есть, изменения на сайт не идут.")
+    else:
+        vsyo_horosho("stop")
+
+    if not tiho:
+        return otchet
+    return otchet
+
+
+def _cikl():
+    time.sleep(90)
+    while True:
+        try:
+            shag()
+        except Exception as e:
+            log("сбой сторожа: " + repr(e))
+        time.sleep(PAUZA)
+
+
+_zapushchen = False
+
+
+def start():
+    global _zapushchen
+    if _zapushchen:
+        return
+    _zapushchen = True
+    if BAZA not in sys.path:
+        sys.path.insert(0, BAZA)
+    threading.Thread(target=_cikl, daemon=True).start()
+    log("сторож запущен (UA-V74)")
+
+
+try:
+    start()
+except Exception:
+    pass
