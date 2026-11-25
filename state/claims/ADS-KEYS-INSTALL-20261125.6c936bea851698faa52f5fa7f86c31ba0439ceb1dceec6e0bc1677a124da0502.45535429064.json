@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "bf25a3e11e2b7918cf1e235c23d42456aa704744d724febf59fe852a903ee8f7",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T02:50:19Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-25T02:54:18Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45535429064",
     "task_id": "ADS-KEYS-INSTALL-20261125",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45535429064-6c936bea851698fa",
   "production_transaction_path": "state/transactions/ADS-KEYS-INSTALL-20261125.6c936bea851698faa52f5fa7f86c31ba0439ceb1dceec6e0bc1677a124da0502.45535429064.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "security_control_plane-624743b552936e51",
   "receipt_path": "state/receipts/ADS-KEYS-INSTALL-20261125.json",
   "receipt_validation_status": "PENDING",
@@ -98,5 +98,5 @@
       "cloud/ads_keys_001/ua_google_ads_oauth_web.py": "8916775feee5a49e908cf4d880c81c580fdb5565ae5245cc5ff79c125dff3c35"
     }
   },
-  "updated_at": "2026-11-25T02:50:19Z"
+  "updated_at": "2026-11-25T02:54:18Z"
 }
