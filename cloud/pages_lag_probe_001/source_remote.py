@@ -10,6 +10,9 @@ Reads only:
 R2 (coordinator 2026-11-25: the bot restarted about 40 times 06:06–08:09 UTC): who restarts it — the sanitized source of
 the start files and the restart lines of the bot modules, the bot/guard log files and the hosting's always-on task log
 (lines of 24–25.11 and error lines), and the self-check start count per hour.
+R3 (coordinator 2026-11-25): where the self-check gets started — the user's usercustomize/sitecustomize and .pth files
+for each Python version (and their saved copies), zapusk.py, every server line that imports zapusk or samokontrol, and
+the account's running processes (age, thread count and program name only) to count how many self-checks live at once.
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -209,11 +212,79 @@ def watchman_starts():
     return counts
 
 
+IMPORT_NEEDLE = re.compile(r'zapusk|samokontrol|usercustomize|sitecustomize')
+
+
+def startup_files():
+    found = {}
+    base = HOME / '.local' / 'lib'
+    for site in sorted(base.glob('python*/site-packages')) if base.is_dir() else []:
+        for path in sorted(site.iterdir()):
+            if not path.is_file() or path.is_symlink():
+                continue
+            name = path.name
+            if not (name.startswith(('usercustomize', 'sitecustomize')) or name.endswith('.pth')):
+                continue
+            info = path.stat()
+            item = {'bytes': info.st_size, 'mtime': stamp(info.st_mtime)}
+            text = text_of(path)
+            if text is not None and info.st_size <= 200 * 1024:
+                item['source'] = [sanitized_line(x)[:240] for x in text.splitlines()][:400]
+            found[str(path.relative_to(HOME))] = item
+    for name in ('zapusk.py', 'sitecustomize.py', 'usercustomize.py'):
+        text = text_of(HOME / name)
+        if text is not None:
+            found[name] = {'mtime': stamp((HOME / name).stat().st_mtime),
+                           'source': [sanitized_line(x)[:240] for x in text.splitlines()][:600]}
+    return found
+
+
+def importers():
+    found = {}
+    for path in sorted(list(HOME.glob('*.py')) + list(HOME.glob('*/*.py'))):
+        relative = path.relative_to(HOME)
+        if any(part.startswith('.') or part in SKIP_DIRS for part in relative.parts[:-1]):
+            continue
+        text = text_of(path)
+        if text is None or not IMPORT_NEEDLE.search(text):
+            continue
+        hits = [{'line': n + 1, 'text': sanitized_line(line)[:200]} for n, line in enumerate(text.splitlines())
+                if IMPORT_NEEDLE.search(line) and re.search(r'import|start\(|exec|run', line)]
+        if hits:
+            found[str(relative)] = hits[:15]
+    return found
+
+
+def processes():
+    rows = []
+    uid = os.getuid()
+    clock = os.sysconf('SC_CLK_TCK')
+    uptime = float(Path('/proc/uptime').read_text().split()[0])
+    for item in Path('/proc').glob('[0-9]*'):
+        try:
+            if item.stat().st_uid != uid:
+                continue
+            args = (item / 'cmdline').read_bytes().decode('utf-8', 'replace').split('\0')
+            fields = (item / 'stat').read_text().rsplit(')', 1)[1].split()
+            age = uptime - int(fields[19]) / clock
+            threads = [x for x in (item / 'status').read_text().splitlines() if x.startswith('Threads:')]
+            names = [Path(a).name for a in args if a][:4]
+            rows.append({'pid': int(item.name), 'age_seconds': int(age), 'threads': threads[0].split()[1] if threads else '?',
+                         'program': [sanitized_line(n)[:60] for n in names]})
+        except Exception:
+            continue
+    rows.sort(key=lambda r: -r['age_seconds'])
+    python = [r for r in rows if r['program'] and 'python' in r['program'][0]]
+    return {'count': len(rows), 'python': len(python),
+            'python_older_than_90s': sum(r['age_seconds'] > 90 for r in python), 'rows': rows[:60]}
+
+
 def report():
     value = {'status': 'PASS', 'now': stamp(datetime.datetime.now(datetime.timezone.utc).timestamp())}
     for key, call in (('full_sources', full_sources), ('callers', callers), ('state_files', state_files),
                       ('crm_and_pages', crm_and_pages), ('restart_sources', restart_sources),
-                      ('restart_logs', restart_logs), ('watchman_starts', watchman_starts)):
+                      ('restart_logs', restart_logs), ('watchman_starts', watchman_starts),
+                      ('startup_files', startup_files), ('importers', importers), ('processes', processes)):
         try:
             value[key] = call()
         except Exception as error:

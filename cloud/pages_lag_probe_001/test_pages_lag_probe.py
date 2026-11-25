@@ -26,6 +26,9 @@ class RemoteTests(unittest.TestCase):
                                                    encoding='utf-8')
         (self.home / 'samokontrol_log.txt').write_text('2026-11-25 08:00:01  сторож запущен (UA-V74)\n'
                                                        '2026-11-25 08:00:02  сторож запущен (UA-V74)\n', encoding='utf-8')
+        site = self.home / '.local/lib/python3.10/site-packages'
+        site.mkdir(parents=True)
+        (site / 'usercustomize.py').write_text('try:\n    import zapusk\nexcept Exception:\n    pass\n', encoding='utf-8')
         (self.home / 'start_safe_log.txt').write_text('2026-11-24 ok\n2026-11-25 07:31 restart: Conflict getMe\n'
                                                       '2026-11-25 07:32 idle\n', encoding='utf-8')
         (self.home / '.crm_public_sync_state.json').write_text('{"retry": {"10": {"error": "BASE"}}}', encoding='utf-8')
@@ -59,6 +62,9 @@ class RemoteTests(unittest.TestCase):
         self.assertIsNone(value['full_sources']['ua_public_freshness.py'])
         self.assertIn('import samokontrol', value['restart_sources']['run_all.py']['source'])
         self.assertEqual(value['watchman_starts'], {'2026-11-25 08': 2})
+        self.assertIn('import zapusk', ''.join(value['startup_files']['.local/lib/python3.10/site-packages/usercustomize.py']['source']))
+        self.assertIn('run_all.py', value['importers'])
+        self.assertGreaterEqual(value['processes']['python'], 1)
         log = value['restart_logs'][str(self.home / 'start_safe_log.txt')]['lines']
         self.assertEqual(log, ['2026-11-25 07:31 restart: Conflict getMe'])
 
