@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/HUB-FORM-INSTALL-20261125.6b0ce77e328d2b0029cecf21882644f2778bab02c22cf8aed7795ce0d0365ebd.json",
+  "autostart_ledger_sha256": "cbd738da073f43d2a7f5a33597d82f8321dc4efd74bbb8f8230505a69d20db50",
+  "autostart_source_commit": "1988ab8e45e21841b8a2a71239593bd76c537ca5",
+  "created_at": "2026-11-25T06:11:00Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45558522551",
+    "task_id": "HUB-FORM-INSTALL-20261125",
+    "task_sha256": "6b0ce77e328d2b0029cecf21882644f2778bab02c22cf8aed7795ce0d0365ebd"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-d53e3fad3ce7eef8-b8c8f31c45ad7ac1",
+  "request_path": "tasks/requests/HUB-FORM-INSTALL-20261125.json",
+  "resource_locks": [
+    "PATH_SCOPE:d53e3fad3ce7eef8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
