@@ -63,6 +63,31 @@ QUERIES.update({
                               "metrics.cost_micros FROM search_term_view WHERE campaign.name = '%s' "
                               "AND segments.date DURING TODAY" % CAMPAIGN),
 })
+# R5 (owner 2026-11-25 «18 гривен это очень много… сэкономить цену за переход»): what sets the click price.
+QUERIES.update({
+    'today_keywords': ('client', "SELECT ad_group.name, ad_group_criterion.keyword.text, ad_group_criterion.keyword.match_type, "
+                                 "ad_group_criterion.quality_info.quality_score, "
+                                 "ad_group_criterion.quality_info.creative_quality_score, "
+                                 "ad_group_criterion.quality_info.post_click_quality_score, "
+                                 "ad_group_criterion.quality_info.search_predicted_ctr, "
+                                 "ad_group_criterion.position_estimates.first_page_cpc_micros, "
+                                 "ad_group_criterion.position_estimates.top_of_page_cpc_micros, "
+                                 "metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.average_cpc "
+                                 "FROM keyword_view WHERE campaign.name = '%s' AND segments.date DURING TODAY "
+                                 "AND metrics.impressions > 0" % CAMPAIGN),
+    'today_devices': ('client', "SELECT segments.device, metrics.impressions, metrics.clicks, metrics.cost_micros "
+                                "FROM campaign WHERE campaign.name = '%s' AND segments.date DURING TODAY" % CAMPAIGN),
+    'today_hours': ('client', "SELECT segments.hour, metrics.impressions, metrics.clicks, metrics.cost_micros "
+                              "FROM campaign WHERE campaign.name = '%s' AND segments.date DURING TODAY" % CAMPAIGN),
+    'today_share': ('client', "SELECT metrics.search_impression_share, metrics.search_rank_lost_impression_share, "
+                              "metrics.search_budget_lost_impression_share, metrics.search_top_impression_share, "
+                              "metrics.search_absolute_top_impression_share, metrics.ctr, metrics.conversions, "
+                              "metrics.interactions FROM campaign WHERE campaign.name = '%s' "
+                              "AND segments.date DURING TODAY" % CAMPAIGN),
+    'today_locations': ('client', "SELECT user_location_view.country_criterion_id, metrics.impressions, metrics.clicks "
+                                  "FROM user_location_view WHERE campaign.name = '%s' AND segments.date DURING TODAY"
+                                  % CAMPAIGN),
+})
 PLANNING = False  # R2: the Keyword Planner needs Basic access (DEVELOPER_TOKEN_NOT_APPROVED); R3 skips it
 UKRAINE = 'geoTargetConstants/2804'
 LANGUAGES = {'uk': 'languageConstants/1036', 'ru': 'languageConstants/1031'}
