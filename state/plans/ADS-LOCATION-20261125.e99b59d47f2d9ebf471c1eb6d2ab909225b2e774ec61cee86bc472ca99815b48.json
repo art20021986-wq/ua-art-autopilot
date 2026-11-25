@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ADS-LOCATION-20261125.e99b59d47f2d9ebf471c1eb6d2ab909225b2e774ec61cee86bc472ca99815b48.json",
+  "autostart_ledger_sha256": "39b36a30cdf266e438bfaf143b4175c1c39bd0bb993dc22c18bb22096ab94e24",
+  "autostart_source_commit": "0003dd6260988f3f76ecce4bf850f4cafbeeb089",
+  "created_at": "2026-11-25T11:34:22Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45605412603",
+    "task_id": "ADS-LOCATION-20261125",
+    "task_sha256": "e99b59d47f2d9ebf471c1eb6d2ab909225b2e774ec61cee86bc472ca99815b48"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-16b44dd556523151-0edf9bf2b09157a3",
+  "request_path": "tasks/requests/ADS-LOCATION-20261125.json",
+  "resource_locks": [
+    "PATH_SCOPE:16b44dd556523151"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
