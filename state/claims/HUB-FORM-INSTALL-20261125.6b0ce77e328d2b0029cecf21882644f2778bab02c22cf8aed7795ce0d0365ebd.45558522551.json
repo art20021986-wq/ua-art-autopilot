@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "d97eaa470eec928ba79be50f003635e1a66d38e2479e5db0cbcd220819e8c3d4",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-25T06:12:20Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-25T06:17:15Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45558522551",
     "task_id": "HUB-FORM-INSTALL-20261125",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45558522551-6b0ce77e328d2b00",
   "production_transaction_path": "state/transactions/HUB-FORM-INSTALL-20261125.6b0ce77e328d2b0029cecf21882644f2778bab02c22cf8aed7795ce0d0365ebd.45558522551.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-d53e3fad3ce7eef8-b8c8f31c45ad7ac1",
   "receipt_path": "state/receipts/HUB-FORM-INSTALL-20261125.json",
   "receipt_validation_status": "PENDING",
@@ -85,5 +85,5 @@
       "cloud/hub_form_001/test_hub_form.py": "27dfc45818d3395df6f262a1e5284101f487db926599af8dfa73f4e0d8fb7764"
     }
   },
-  "updated_at": "2026-11-25T06:12:20Z"
+  "updated_at": "2026-11-25T06:17:15Z"
 }
