@@ -1,0 +1,719 @@
+{
+  "callers": {
+    "proof.py": [
+      {
+        "line": 6,
+        "text": "# journal_mode НЕ меняет. SQL, db.py, avtoperedacha.py, samokontrol.py, сайт,"
+      },
+      {
+        "line": 249,
+        "text": "        s.append(\"SAMOKONTROL IN_TRANSACTION AT FAIL   : \" + est_tranz(\"samokontrol\"))"
+      },
+      {
+        "line": 535,
+        "text": "    print(\"PRODUCTION ЛОГИКА ИЗМЕНЕНА: NO (journal_mode, SQL, avtoperedacha, samokontrol не тронуты)\")"
+      }
+    ],
+    "trace_zhurnal.py": [
+      {
+        "line": 229,
+        "text": "        s.append(\"SAMOKONTROL IN_TRANSACTION AT FAIL   : \" + est_tranz(\"samokontrol\"))"
+      }
+    ],
+    "who9.py": [
+      {
+        "line": 230,
+        "text": "                 \"poryadok.py\", \"avtoperedacha.py\", \"samokontrol.py\", \"stranica.py\"):"
+      }
+    ]
+  },
+  "cpu": {
+    "daily_cpu_limit_seconds": 10000,
+    "daily_cpu_total_usage_seconds": 4525.279703,
+    "next_reset_time": "2026-11-25T10:19:19+00:00"
+  },
+  "crm_and_pages": {
+    "cars": [
+      {
+        "auto_number": "UA-0001",
+        "created_at": "2026-08-08T09:48:02",
+        "ge_to_kyiv_at": null,
+        "id": "7",
+        "pages": {
+          "site": "2026-11-25T08:58:30Z",
+          "video": "2026-11-25T08:58:30Z",
+          "video/ru": "2026-11-25T08:59:22Z",
+          "video/ua": "2026-11-25T08:59:22Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "ua_arrived",
+        "updated_at": "2026-11-09T06:43:47"
+      },
+      {
+        "auto_number": "UA-0003",
+        "created_at": "2026-08-16T15:06:31",
+        "ge_to_kyiv_at": null,
+        "id": "9",
+        "pages": {
+          "site": "2026-11-25T08:58:30Z",
+          "video": "2026-11-25T08:58:30Z",
+          "video/ru": "2026-11-25T08:59:22Z",
+          "video/ua": "2026-11-25T08:59:22Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "kr_bought",
+        "updated_at": "2026-08-18T01:05:56"
+      },
+      {
+        "auto_number": "UA-0004",
+        "created_at": "2026-08-16T17:10:23",
+        "ge_to_kyiv_at": null,
+        "id": "10",
+        "pages": {
+          "site": "2026-11-25T08:58:31Z",
+          "video": "2026-11-25T08:58:31Z",
+          "video/ru": "2026-11-25T08:59:22Z",
+          "video/ua": "2026-11-25T08:59:22Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "kr_bought",
+        "updated_at": "2026-09-06T17:08:45"
+      },
+      {
+        "auto_number": "UA-0005",
+        "created_at": "2026-08-18T01:48:05",
+        "ge_to_kyiv_at": null,
+        "id": "11",
+        "pages": {
+          "site": "2026-11-25T08:58:31Z",
+          "video": "2026-11-25T08:58:31Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:22Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "sea_loaded",
+        "updated_at": "2026-09-06T17:39:40"
+      },
+      {
+        "auto_number": "UA-0006",
+        "created_at": "2026-08-21T06:02:10",
+        "ge_to_kyiv_at": null,
+        "id": "12",
+        "pages": {
+          "site": "2026-11-25T08:58:31Z",
+          "video": "2026-11-25T08:58:31Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "sea_loaded",
+        "updated_at": "2026-08-27T19:50:42"
+      },
+      {
+        "auto_number": "UA-0009",
+        "created_at": "2026-08-25T10:59:37",
+        "ge_to_kyiv_at": null,
+        "id": "15",
+        "pages": {
+          "site": "2026-11-25T08:58:32Z",
+          "video": "2026-11-25T08:58:32Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "ge_waiting",
+        "updated_at": "2026-09-22T12:39:24"
+      },
+      {
+        "auto_number": "UA-0010",
+        "created_at": "2026-08-28T06:24:57",
+        "ge_to_kyiv_at": null,
+        "id": "16",
+        "pages": {
+          "site": "2026-11-25T08:58:32Z",
+          "video": "2026-11-25T08:58:32Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "ge_waiting",
+        "updated_at": "2026-09-13T06:28:09"
+      },
+      {
+        "auto_number": "UA-0011",
+        "created_at": "2026-08-28T08:28:16",
+        "ge_to_kyiv_at": null,
+        "id": "18",
+        "pages": {
+          "site": "2026-11-25T08:58:33Z",
+          "video": "2026-11-25T08:58:33Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "ua_arrived",
+        "updated_at": "2026-11-19T13:35:04"
+      },
+      {
+        "auto_number": "UA-0012",
+        "created_at": "2026-08-29T06:11:52",
+        "ge_to_kyiv_at": null,
+        "id": "19",
+        "pages": {
+          "site": "2026-11-25T08:58:33Z",
+          "video": "2026-11-25T08:58:33Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "ge_waiting",
+        "updated_at": "2026-10-22T12:58:45"
+      },
+      {
+        "auto_number": "UA-0013",
+        "created_at": "2026-08-29T06:48:54",
+        "ge_to_kyiv_at": null,
+        "id": "20",
+        "pages": {
+          "site": "2026-11-25T08:58:33Z",
+          "video": "2026-11-25T08:58:33Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "sea_loaded",
+        "updated_at": "2026-08-29T07:14:07"
+      },
+      {
+        "auto_number": "UA-0014",
+        "created_at": "2026-08-29T08:55:29",
+        "ge_to_kyiv_at": null,
+        "id": "21",
+        "pages": {
+          "site": "2026-11-25T08:58:34Z",
+          "video": "2026-11-25T08:58:34Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "sea_loaded",
+        "updated_at": "2026-08-31T03:10:45"
+      },
+      {
+        "auto_number": "UA-0015",
+        "created_at": "2026-08-29T11:26:37",
+        "ge_to_kyiv_at": null,
+        "id": "22",
+        "pages": {
+          "site": "2026-11-25T08:58:34Z",
+          "video": "2026-11-25T08:58:34Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "kr_bought",
+        "updated_at": "2026-09-06T17:33:19"
+      },
+      {
+        "auto_number": "UA-0016",
+        "created_at": "2026-08-29T12:00:20",
+        "ge_to_kyiv_at": null,
+        "id": "25",
+        "pages": {
+          "site": "2026-11-25T08:58:35Z",
+          "video": "2026-11-25T08:58:35Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "kr_bought",
+        "updated_at": "2026-09-27T14:31:03"
+      },
+      {
+        "auto_number": "UA-0017",
+        "created_at": "2026-09-05T08:12:07",
+        "ge_to_kyiv_at": null,
+        "id": "26",
+        "pages": {
+          "site": "2026-11-25T08:58:35Z",
+          "video": "2026-11-25T08:58:35Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "ua_arrived",
+        "updated_at": "2026-11-09T06:53:18"
+      },
+      {
+        "auto_number": "UA-0018",
+        "created_at": "2026-09-06T16:46:42",
+        "ge_to_kyiv_at": null,
+        "id": "28",
+        "pages": {
+          "site": "2026-11-25T08:58:35Z",
+          "video": "2026-11-25T08:58:35Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "ua_arrived",
+        "updated_at": "2026-10-29T02:58:23"
+      },
+      {
+        "auto_number": "UA-0021",
+        "created_at": "2026-09-15T13:23:24",
+        "ge_to_kyiv_at": null,
+        "id": "31",
+        "pages": {
+          "site": "2026-11-25T08:58:36Z",
+          "video": "2026-11-25T08:58:36Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "ge_waiting",
+        "updated_at": "2026-11-09T06:44:19"
+      },
+      {
+        "auto_number": "UA-0022",
+        "created_at": "2026-09-16T05:16:46",
+        "ge_to_kyiv_at": null,
+        "id": "32",
+        "pages": {
+          "site": "2026-11-25T08:58:36Z",
+          "video": "2026-11-25T08:58:36Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "sea_loaded",
+        "updated_at": "2026-11-09T06:41:24"
+      },
+      {
+        "auto_number": "UA-0023",
+        "created_at": "2026-09-27T08:30:35",
+        "ge_to_kyiv_at": null,
+        "id": "33",
+        "pages": {
+          "site": "2026-11-25T08:58:37Z",
+          "video": "2026-11-25T08:58:37Z",
+          "video/ru": "2026-11-25T08:59:23Z",
+          "video/ua": "2026-11-25T08:59:23Z"
+        },
+        "publish_pending": "0",
+        "published": "1",
+        "status": "sea_loaded",
+        "updated_at": "2026-11-24T11:27:27"
+      }
+    ],
+    "crm_db_mtime": "2026-11-25T08:53:54Z",
+    "publish_ledger": {
+      "mtime": "2026-11-24T11:27:39Z",
+      "tables": {
+        "requests": 3
+      }
+    },
+    "time_columns": [
+      "published",
+      "created_at",
+      "updated_at",
+      "publish_pending",
+      "ge_to_kyiv_at"
+    ]
+  },
+  "full_sources": {
+    "samokontrol.py": {
+      "mtime": "2026-08-29T10:12:13Z",
+      "sha256": "486a43802c32b1d9",
+      "source": "# -*- coding: utf-8 -*-\n# UA-V74 - самоконтроль CRM-половины.\n\nimport glob\nimport importlib\nimport json\nimport os\nimport sqlite3\nimport subprocess\nimport sys\nimport threading\nimport time\nimport urllib.parse\nimport urllib.request\n\nBAZA = \"/home/Carix\"\nBD = os.path.join(BAZA, \"crm.db\")\nSBORSHCHIK = os.path.join(BAZA, \"stranica.py\")\nPAPKA_VID = os.path.join(BAZA, \"video\")\nLOG = os.path.join(BAZA, \"samokontrol_log.txt\")\nSOSTOYANIE = os.path.join(BAZA, \".samokontrol.json\")\n\nPAUZA = 300          # проверка раз в 5 минут\nMOLCHANIE = 6 * 3600  # об одной беде не чаще раза в 6 часов\nOTSTAVANIE = 900     # страницы старше базы на 15 минут - непорядок\n\nMOI_MODULI = [\"avtoperedacha\", \"kadry_diagnostiki\", \"schetchik\",\n              \"svezhiy_hesh\"]\n\n\ndef log(stroka):\n    try:\n        with open(LOG, \"a\", encoding=\"utf-8\") as f:\n            f.write(time.strftime(\"%Y-%m-%d %H:%M:%S\") + \"  \"\n                    + stroka + \"\\n\")\n    except Exception:\n        pass\n\n\ndef sostoyanie_prochest():\n    try:\n        with open(SOSTOYANIE, \"r\", encoding=\"utf-8\") as f:\n            return json.load(f)\n    except Exception:\n        return {}\n\n\ndef sostoyanie_zapisat(dannye):\n    try:\n        vremenno = SOSTOYANIE + \".vremenno\"\n        with open(vremenno, \"w\", encoding=\"utf-8\") as f:\n            json.dump(dannye, f, ensure_ascii=False)\n        os.replace(vremenno, SOSTOYANIE)\n    except Exception:\n        pass\n\n\n# ------------------------------------------------------- сообщение вам\n\ndef komu():\n    for imya in (\"vladelec.txt\", \"manager.txt\", \"owner.txt\"):\n        try:\n            with open(os.path.join(BAZA, imya), \"r\",\n                      encoding=\"utf-8\") as f:\n                znachenie = f.read().strip()\n            if znachenie:\n                return znachenie\n        except Exception:\n            pass\n    return \"\"\n\n\ndef token():\n    for imya in (\"team_token.txt\", \"bot_token.txt\"):\n        try:\n            with open(os.path.join(BAZA, imya), \"r\",\n                      encoding=\"utf-8\") as f:\n                znachenie = f.read().strip()\n            if znachenie:\n                return znachenie\n        except Exception:\n            pass\n    return \"\"\n\n\ndef soobshchit(klyuch, tekst):\n    \"\"\"Пишет владельцу, но не чаще раза в 6 часов на одну беду.\"\"\"\n    dannye = sostoyanie_prochest()\n    kogda = dannye.get(\"skazano\") or {}\n    if time.time() - float(kogda.get(klyuch) or 0) < MOLCHANIE:\n        return\n    kogda[klyuch] = time.time()\n    dannye[\"skazano\"] = kogda\n    sostoyanie_zapisat(dannye)\n\n    log(\"СООБЩАЮ: \" + tekst.replace(\"\\n\", \" | \"))\n    tok, chat = token(), komu()\n    if not tok or not chat:\n        return\n    try:\n        adres = (\"https://api.telegram.org/bot\" + tok + \"/sendMessage?\"\n                 + urllib.parse.urlencode({\"chat_id\": chat,\n                                           \"text\": tekst}))\n        urllib.request.urlopen(adres, timeout=30).read()\n    except Exception as e:\n        log(\"не отправить сообщение: \" + repr(e))\n\n\ndef vsyo_horosho(klyuch):\n    \"\"\"Беда прошла - разрешаем сообщить о ней снова.\"\"\"\n    dannye = sostoyanie_prochest()\n    kogda = dannye.get(\"skazano\") or {}\n    if klyuch in kogda:\n        kogda.pop(klyuch, None)\n        dannye[\"skazano\"] = kogda\n        sostoyanie_zapisat(dannye)\n\n\n# ------------------------------------------------------------- проверки\n\ndef kolonki():\n    try:\n        soed = sqlite3.connect(BD, timeout=20)\n        est = [r[1] for r in soed.execute(\"PRAGMA table_info(cars)\")]\n        soed.close()\n        return est\n    except Exception as e:\n        log(\"база: \" + repr(e))\n        return []\n\n\ndef pole_nomera(est):\n    for imya in (\"auto_number\", \"code\", \"number\", \"nomer\"):\n        if imya in est:\n            return imya\n    return None\n\n\ndef proverit_bazu():\n    est = kolonki()\n    if not est:\n        soobshchit(\"baza\", \"CRM: не читается база crm.db. \"\n                           \"Страницы сайта обновляться не будут.\")\n        return None, None\n    pole = pole_nomera(est)\n    if not pole and \"id\" not in est:\n        soobshchit(\"nomer\", \"CRM: в базе не найдено, где лежит номер \"\n                            \"машины. Скажите об этом помощнику.\")\n        return est, None\n    vsyo_horosho(\"baza\")\n    return est, pole\n\n\ndef proverit_moduli():\n    bedy = []\n    for imya in MOI_MODULI:\n        put = os.path.join(BAZA, imya + \".py\")\n        if not os.path.exists(put):\n            continue\n        try:\n            if imya in sys.modules:\n                compile(open(put, \"rb\").read(), put, \"exec\")\n            else:\n                importlib.import_module(imya)\n            vsyo_horosho(\"modul_\" + imya)\n        except Exception as e:\n            bedy.append(imya)\n            soobshchit(\"modul_\" + imya,\n                       \"CRM: модуль \" + imya + \" не запускается.\\n\"\n                       + repr(e)[:200])\n    return bedy\n\n\ndef svezhie_sboi():\n    \"\"\"Сбои в логах модулей за последний час.\"\"\"\n    granica = time.time() - 3600\n    nashlos = []\n    for imya in MOI_MODULI:\n        put = os.path.join(BAZA, imya + \"_log.txt\")\n        if not os.path.exists(put):\n            continue\n        try:\n            if os.path.getmtime(put) < granica:\n                continue\n            with open(put, \"r\", encoding=\"utf-8\",\n                      errors=\"ignore\") as f:\n                hvost = f.read()[-4000:]\n        except Exception:\n            continue\n        for stroka in hvost.strip().split(\"\\n\")[-15:]:\n            nizhny = stroka.lower()\n            if (\"error\" in nizhny or \"сбой\" in nizhny\n                    or \"не прочитать\" in nizhny):\n                nashlos.append(imya + \": \" + stroka.strip()[-120:])\n                break\n    return nashlos\n\n\ndef stranicy_otstali():\n    \"\"\"База менялась, а страницы старые.\"\"\"\n    try:\n        baza_kogda = os.path.getmtime(BD)\n    except Exception:\n        return False\n    stranicy = glob.glob(os.path.join(PAPKA_VID, \"UA-*.html\"))\n    if not stranicy:\n        return True\n    svezhaya = max(os.path.getmtime(p) for p in stranicy)\n    return (baza_kogda - svezhaya) > OTSTAVANIE\n\n\ndef sobrat():\n    if not os.path.exists(SBORSHCHIK):\n        soobshchit(\"sborshchik\",\n                   \"CRM: не нахожу stranica.py — страницы собирать \"\n                   \"нечем.\")\n        return False\n    try:\n        itog = subprocess.run([sys.executable, SBORSHCHIK], cwd=BAZA,\n                              capture_output=True, text=True,\n                              timeout=600)\n        log(\"сборка запущена сторожем, код \" + str(itog.returncode))\n        return itog.returncode == 0\n    except Exception as e:\n        log(\"сборка не прошла: \" + repr(e))\n        return False\n\n\ndef kadry_ne_dokachany(est, pole):\n    \"\"\"Сколько кадров диагностики в базе и сколько файлов на диске.\"\"\"\n    if not est or \"condition_photos\" not in est:\n        return []\n    berem = [k for k in (pole, \"id\", \"condition_photos\",\n                         \"condition_videos\") if k and k in est]\n    try:\n        soed = sqlite3.connect(BD, timeout=20)\n        soed.row_factory = sqlite3.Row\n        ryady = soed.execute(\n            \"SELECT \" + \", \".join(berem) + \" FROM cars\").fetchall()\n        soed.close()\n    except Exception:\n        return []\n\n    otstayut = []\n    for ryad in ryady:\n        nom = \"\"\n        if pole:\n            try:\n                nom = str(ryad[pole] or \"\").strip()\n            except Exception:\n                nom = \"\"\n        if not nom:\n            try:\n                nom = \"UA-%04d\" % int(ryad[\"id\"])\n            except Exception:\n                continue\n        try:\n            v_baze = len(json.loads(ryad[\"condition_photos\"] or \"[]\"))\n        except Exception:\n            v_baze = 0\n        if not v_baze:\n            continue\n        papka = os.path.join(PAPKA_VID, \"diag\", nom)\n        na_diske = len(glob.glob(os.path.join(papka, \"*.jpg\")))\n        if na_diske < v_baze:\n            otstayut.append((nom, v_baze, na_diske))\n    return otstayut\n\n\n# ------------------------------------------------------------ проход\n\ndef shag(tiho=True):\n    otchet = []\n\n    est, pole = proverit_bazu()\n    if est:\n        otchet.append(\"база: колонок \" + str(len(est))\n                      + \", номер в \" + str(pole))\n\n    slomannye = proverit_moduli()\n    otchet.append(\"модули: \"\n                  + (\"все живы\" if not slomannye\n                     else \"не грузятся — \" + \", \".join(slomannye)))\n\n    sboi = svezhie_sboi()\n    if sboi:\n        otchet.append(\"свежие сбои в логах: \" + str(len(sboi)))\n        soobshchit(\"sboi\", \"CRM: в логах свежие сбои.\\n\"\n                   + \"\\n\".join(sboi[:3]))\n    else:\n        vsyo_horosho(\"sboi\")\n\n    if stranicy_otstali():\n        otchet.append(\"страницы отстали — собираю\")\n        if sobrat():\n            vsyo_horosho(\"sborka\")\n        else:\n            soobshchit(\"sborka\", \"CRM: страницы сайта отстали от базы, \"\n                                 \"и пересобрать их не получилось.\")\n    else:\n        otchet.append(\"страницы свежие\")\n        vsyo_horosho(\"sborka\")\n\n    otstayut = kadry_ne_dokachany(est, pole)\n    if otstayut:\n        otchet.append(\"кадры диагностики отстают: \"\n                      + \", \".join(\"%s %d/%d\" % (n, d, b)\n                                  for n, b, d in otstayut))\n        try:\n            if \"kadry_diagnostiki\" in sys.modules:\n                sys.modules[\"kadry_diagnostiki\"].shag()\n            else:\n                importlib.import_module(\"kadry_diagnostiki\").shag()\n        except Exception as e:\n            soobshchit(\"kadry\", \"CRM: кадры диагностики не \"\n                                \"скачиваются.\\n\" + repr(e)[:200])\n    else:\n        otchet.append(\"кадры диагностики на месте\")\n        vsyo_horosho(\"kadry\")\n\n    stop = os.path.join(BAZA, \"avtoperedacha_stop.txt\")\n    if os.path.exists(stop):\n        otchet.append(\"автопередача выключена стоп-файлом\")\n        soobshchit(\"stop\", \"CRM: автоматическая сборка сайта выключена \"\n                           \"(стоит файл avtoperedacha_stop.txt). \"\n                           \"Пока он есть, изменения на сайт не идут.\")\n    else:\n        vsyo_horosho(\"stop\")\n\n    if not tiho:\n        return otchet\n    return otchet\n\n\ndef _cikl():\n    time.sleep(90)\n    while True:\n        try:\n            shag()\n        except Exception as e:\n            log(\"сбой сторожа: \" + repr(e))\n        time.sleep(PAUZA)\n\n\n_zapushchen = False\n\n\ndef start():\n    global _zapushchen\n    if _zapushchen:\n        return\n    _zapushchen = True\n    if BAZA not in sys.path:\n        sys.path.insert(0, BAZA)\n    threading.Thread(target=_cikl, daemon=True).start()\n    log(\"сторож запущен (UA-V74)\")\n\n\ntry:\n    start()\nexcept Exception:\n    pass"
+    },
+    "ua_crm_public_sync.py": {
+      "mtime": "2026-10-12T09:54:46Z",
+      "sha256": "25a824be41159856",
+      "source": "\"\"\"CRM publication reconciliation using the existing transactional publisher.\nNo CRM writes. Persistent revision ledger, per-card retry, one publisher worker.\n\"\"\"\nimport fcntl\nimport hashlib\nimport json\nimport logging\nimport os\nfrom pathlib import Path\nimport sqlite3\nimport tempfile\nimport threading\nimport time\n\nROOT = Path('/home/Carix')\nSTATE = ROOT / '.crm_public_sync_state.json'\nLOCK = ROOT / '.crm_public_sync_worker.lock'\nLOG = logging.getLogger(__name__)\n_wake = threading.Event()\n_thread = None\n_start_lock = threading.Lock()\n\n\ndef snapshot():\n    from ua_delivery_status import public_status\n    from ua_diag_files import names as diag_names\n    from ua_seo_metadata import SEO_REVISION\n    conn = sqlite3.connect((ROOT / 'crm.db').as_uri() + '?mode=ro', uri=True, timeout=5)\n    conn.row_factory = sqlite3.Row\n    try:\n        rows = [dict(r) for r in conn.execute('SELECT * FROM cars WHERE published=1')]\n    finally:\n        conn.close()\n    result = {}\n    codes = set()\n    for row in rows:\n        code = str(row.get('auto_number') or '')\n        if not code or code in codes:\n            raise RuntimeError('Missing or duplicate published auto_number')\n        codes.add(code)\n        diag_files = diag_names(code)\n        source = dict(row, _diag_files=diag_files) if diag_files else row\n        source = dict(source, _seo_revision=SEO_REVISION)\n        raw = json.dumps(source, sort_keys=True, ensure_ascii=False, default=str).encode()\n        result[str(row['id'])] = {'code': code, 'sha256': hashlib.sha256(raw).hexdigest(), 'delivery_status': public_status(row.get('status'))}\n    return result\n\n\ndef save_state(state):\n    fd, name = tempfile.mkstemp(prefix='.crm_public_sync_state.', dir=str(ROOT))\n    try:\n        with os.fdopen(fd, 'w') as out:\n            os.fchmod(out.fileno(), 0o600)\n            json.dump(state, out, sort_keys=True)\n            out.flush()\n            os.fsync(out.fileno())\n        os.replace(name, STATE)\n    finally:\n        if os.path.exists(name):\n            os.unlink(name)\n\n\ndef initialize():\n    if STATE.exists():\n        raise RuntimeError('State already exists; refusing to reset pending revisions')\n    # Existing rows are an installation baseline, not a claim of verification.\n    # UA-0022 was explicitly published before installation; other cards untouched.\n    save_state({'version': 1, 'baseline_at': time.time(), 'revisions': snapshot(),\n                'retry': {}, 'last_success': None})\n\n\ndef notify():\n    \"\"\"Called after DB commit; cannot block the Telegram handler.\"\"\"\n    _wake.set()\n\n\ndef reconcile_once(publish=None, clock=time.time):\n    with open(LOCK, 'a') as lock:\n        os.chmod(LOCK, 0o600)\n        try:\n            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)\n        except BlockingIOError:\n            return 'busy'\n        with STATE.open() as source:\n            state = json.load(source)\n        if state.get('version') != 1:\n            raise RuntimeError('Unsupported sync state')\n        rows = snapshot()\n        retry = state.setdefault('retry', {})\n        import ua_publish_requests as requests\n        explicit = requests.pending(ROOT)\n        for identity, request in explicit.items():\n            if identity not in rows or rows[identity]['delivery_status'] == 'hidden':\n                requests.finish(ROOT, request['token'], 'cancelled')\n        rows = dict(sorted(rows.items(), key=lambda item: item[0] not in explicit))\n        # A catalog set mismatch affects the whole publication, not one car.\n        # Persist the cooldown so restarts and repeated UI wakes do not defeat it.\n        source_revision = hashlib.sha256(json.dumps(rows, sort_keys=True).encode()).hexdigest()\n        catalog_retry = state.get('catalog_retry', {})\n        if (catalog_retry.get('source_revision') == source_revision\n                and catalog_retry.get('after', 0) > clock()):\n            return 'catalog_retry_pending'\n        if catalog_retry and catalog_retry.get('source_revision') != source_revision:\n            # Fresh operator data may resolve the mismatch; keep its chance to run.\n            blocked_code = catalog_retry.get('code')\n            retry = {key: value for key, value in retry.items()\n                     if blocked_code not in value.get('error', '')} if blocked_code else retry\n            state['retry'] = retry\n            state.pop('catalog_retry', None)\n        for identity, revision in rows.items():\n            request = explicit.get(identity)\n            if (not request and revision['sha256'] == state['revisions'].get(identity, {}).get('sha256')):\n                continue\n            attempt = retry.get(identity, {})\n            if attempt.get('sha256') == revision['sha256'] and attempt.get('after', 0) > clock():\n                continue\n            try:\n                if revision['delivery_status'] == 'hidden':\n                    from ua_stage_catalog_sync import reconcile\n                    reconcile(apply=True)\n                else:\n                    if publish is None:\n                        from publikaciya import opublikovat\n                        publish = opublikovat\n                    ok, message = publish(revision['code'])\n                    if not ok:\n                        raise RuntimeError(str(message)[:500])\n                    from ua_public_freshness import verify_public\n                    verify_public(revision['code'])\n                if snapshot().get(identity) != revision:\n                    # Keep old ledger revision: a newer operator edit needs another pass.\n                    LOG.warning('CRM sync: changed during publish: %s', revision['code'])\n                    return 'changed_during_publish'\n                state['revisions'][identity] = revision\n                retry.pop(identity, None)\n                state.pop('catalog_retry', None)\n                state['last_success'] = {'code': revision['code'], 'at': clock()}\n                save_state(state)\n                if request and revision['delivery_status'] != 'hidden':\n                    requests.finish(ROOT, request['token'], 'verified', revision['sha256'])\n                LOG.info('CRM sync PASS: %s', revision['code'])\n                return 'hidden' if revision['delivery_status'] == 'hidden' else 'published'\n            except Exception as exc:\n                count = (attempt.get('count', 0) if attempt.get('sha256') == revision['sha256'] else 0) + 1\n                retry[identity] = {'sha256': revision['sha256'], 'count': count,\n                                   'after': clock() + min(900, 15 * 2 ** min(count-1, 6)),\n                                   'error': type(exc).__name__ + ': ' + str(exc)[:500]}\n                catalog_error = next((code for code in (\n                    'CATALOG_ROW_SET_MISMATCH', 'CATALOG_PUBLISHED_SET_MISMATCH'\n                ) if code in str(exc)), None)\n                if catalog_error:\n                    state['catalog_retry'] = {'source_revision': source_revision,\n                                              'after': clock() + 900, 'code': catalog_error}\n                save_state(state)\n                LOG.exception('CRM sync failed; retry pending: %s', revision['code'])\n                if catalog_error:\n                    return 'catalog_retry_pending'\n                # Continue so a failing card does not starve other pending cards.\n        return 'idle'\n\n\ndef _run():\n    LOG.info('CRM public sync worker started')\n    while True:\n        _wake.wait(15)\n        _wake.clear()\n        # Debounce burst saves (media albums and multi-field edits).\n        time.sleep(2)\n        try:\n            if reconcile_once() in ('published', 'hidden', 'changed_during_publish'):\n                _wake.set()\n        except Exception:\n            LOG.exception('CRM sync worker error; retry in 15 seconds')\n\n\ndef start():\n    global _thread\n    with _start_lock:\n        if _thread is not None and _thread.is_alive():\n            return\n        if not STATE.exists():\n            raise RuntimeError('Installation baseline missing; not silently resetting sync state')\n        _thread = threading.Thread(target=_run, name='crm-public-sync', daemon=True)\n        _thread.start()\n        _wake.set()"
+    },
+    "ua_public_freshness.py": {
+      "mtime": "2026-09-26T13:55:07Z",
+      "sha256": "6c750d0ffcfd3959",
+      "source": "\"\"\"Check CRM identity and public bytes before marking a sync revision successful.\"\"\"\nimport hashlib\nimport re\nimport time\nimport urllib.request\nfrom pathlib import Path\n\nROOT = Path('/home/Carix')\nBASE = 'https://www.uaart.com.ua/video/'\n\n\ndef verify_public(code, fetch=None, card=None, root=None):\n    if not re.fullmatch(r'UA-[0-9]{4,}', code):\n        raise ValueError('Invalid public car code')\n    if card is None:\n        import sqlite3\n        with sqlite3.connect('file:/home/Carix/crm.db?mode=ro', uri=True) as conn:\n            conn.row_factory = sqlite3.Row\n            rows = conn.execute('SELECT * FROM cars WHERE auto_number=? AND published=1', (code,)).fetchall()\n        if len(rows) != 1:\n            raise RuntimeError('Published CRM row missing or ambiguous')\n        card = dict(rows[0])\n    vin = str(card.get('vin') or '').strip()\n    year = str(card.get('year') or '').strip()\n    if not vin or not re.fullmatch(r'[0-9]{4}', year):\n        raise RuntimeError('CRM VIN/year missing; freshness unverified')\n    fetch = fetch or urllib.request.urlopen\n    root = root or ROOT / 'video'\n    for name in (code + '.html', 'katalog.html'):\n        expected = (root / name).read_bytes()\n        html = expected.decode('utf-8')\n        from ua_price_html_v2 import verify_prices\n        verify_prices(html)\n        if name == 'katalog.html':\n            fragments = [x for x in re.findall(r'<article\\b.*?</article>', html, re.S | re.I)\n                         if re.search(r'href=[\\\"\\']' + re.escape(code) + r'\\.html(?:[?\\\"\\'])', x)]\n            if len(fragments) != 1:\n                raise RuntimeError('Catalog car fragment missing or ambiguous')\n            fragment = fragments[0]\n            heading = re.search(r'<h2\\b[^>]*>(.*?)</h2>', fragment, re.S | re.I)\n        else:\n            fragment = html\n            heading = re.search(r'<title\\b[^>]*>(.*?)</title>', html, re.S | re.I)\n        if vin not in fragment or not heading or not re.search(r'(?<!\\d)' + year + r'(?!\\d)', heading[1]):\n            raise RuntimeError('Generated HTML does not match CRM VIN/year: ' + name)\n        digest = hashlib.sha256(expected).digest()\n        for fresh in (True, False):\n            url = BASE + name + ('?_crm_verify=' + str(time.time_ns()) if fresh else '')\n            headers = {'Cache-Control': 'no-cache', 'Pragma': 'no-cache'} if fresh else {}\n            with fetch(urllib.request.Request(url, headers=headers), timeout=20) as response:\n                actual = response.read(4 * 1024 * 1024 + 1)\n                if response.status != 200 or hashlib.sha256(actual).digest() != digest:\n                    raise RuntimeError('Public HTML is stale or differs: ' + name + '; fresh=' + str(fresh))\n        if (root / name).read_bytes() != expected:\n            raise RuntimeError('Generated HTML changed during verification: ' + name)"
+    }
+  },
+  "mode": "probe",
+  "now": "2026-11-25T10:00:03Z",
+  "remote_write_count": 0,
+  "run_id": "45590155432",
+  "safe_to_stop": true,
+  "state_files": {
+    ".crm_public_sync_state.json": {
+      "bytes": 3036,
+      "content": [
+        "{\"baseline_at\": [N].593794, \"last_success\": {\"at\": [N].4409287, \"code\": \"UA-0023\"}, \"retry\": {}, \"revisions\": {\"10\": {\"code\": \"UA-0004\", \"delivery_status\": \"korea\", \"sha256\": \"7a9c1be638b129e8bccb4a3a1e07c12a7476c73f4b6110b101765d20e6384dc1\"}, \"11\": {\"code\": \"UA-0005\", \"delivery_status\": \"ferry\", \"s"
+      ],
+      "mtime": "2026-11-24T11:27:52Z"
+    },
+    ".crm_public_sync_worker.lock": {
+      "bytes": 0,
+      "mtime": "2026-09-26T12:02:19Z"
+    },
+    ".samokontrol.json": {
+      "bytes": 15,
+      "content": [
+        "{\"skazano\": {}}"
+      ],
+      "mtime": "2026-11-25T08:58:37Z"
+    },
+    ".task083_publish_install.lock": {
+      "bytes": 0,
+      "mtime": "2026-08-29T08:05:25Z"
+    },
+    ".ua_art_publish_transaction.lock": {
+      "bytes": 0,
+      "mtime": "2026-08-29T09:11:10Z"
+    },
+    "publish_block.txt": {
+      "bytes": 15846,
+      "matching_lines": [],
+      "mtime": "2026-11-03T17:55:32Z"
+    },
+    "publish_log.txt": {
+      "bytes": 4518803,
+      "matching_lines": [
+        "2026-11-13 13:48:16  UA-0012 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-13 13:48:32  UA-0013 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-13 13:48:47  UA-0014 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-13 13:49:03  UA-0015 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-13 13:49:23  UA-0016 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-13 13:49:42  UA-0017 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-13 13:49:58  UA-0018 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-13 13:50:17  UA-0021 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-13 13:50:32  UA-0022 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-13 13:50:51  UA-0023 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-17 05:34:46  UA-0021 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-17 05:41:55  UA-0021 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-17 05:42:11  UA-0023 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-17 06:07:28  UA-0021 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-17 06:11:22  UA-0023 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-17 06:43:40  UA-0021 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-17 06:43:54  UA-0023 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-17 06:48:43  UA-0023 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 02:04:22  UA-0011 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 02:05:01  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:05:01  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:05:19  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:05:19  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:05:52  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:05:52  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:06:37  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:06:37  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:06:42  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:06:42  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:06:55  UA-0011 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 02:07:31  UA-0011 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 02:07:40  TASK083 FAIL UA-0011 PublishError:CRM_ROWS_CHANGED_DURING_PUBLICATION rollback=PASS",
+        "2026-11-19 02:08:02  UA-0011 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 02:15:20  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:15:20  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:15:54  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:15:54  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:16:37  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:16:37  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:17:52  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:17:52  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:19:08  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:19:08  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:19:50  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:19:50  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:20:08  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:20:08  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:20:37  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:20:37  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:21:22  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:21:22  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:22:37  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:22:37  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:24:52  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:24:52  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:29:07  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:29:07  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:33:36  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:33:36  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:34:07  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:34:07  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:34:52  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:34:52  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:36:07  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:36:07  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:38:22  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:38:22  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:42:37  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:42:37  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 02:50:52  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 02:50:52  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 03:06:07  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 03:06:08  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 03:21:22  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 03:21:22  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 03:36:36  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 03:36:36  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 03:51:52  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 03:51:52  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 04:06:58  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 04:06:58  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 04:22:13  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 04:22:13  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 04:37:18  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 04:37:18  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 04:52:34  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 04:52:34  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 05:07:45  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 05:07:45  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 05:08:04  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 05:08:04  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 05:08:30  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 05:08:30  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 05:08:49  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 05:08:49  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 05:09:34  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 05:09:34  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 05:10:51  UA-0011 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:13:08  UA-0001 PASS публикация · мастер stranica.sobrat_kartochku · файлов 6",
+        "2026-11-19 08:13:20  UA-0003 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:13:34  UA-0004 PASS публикация · мастер stranica.sobrat_kartochku · файлов 6",
+        "2026-11-19 08:13:47  UA-0005 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:14:01  UA-0006 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:14:18  UA-0009 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:14:35  UA-0010 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:14:48  UA-0011 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:15:02  UA-0012 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:15:23  UA-0013 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:15:35  UA-0014 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:15:47  UA-0015 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:15:58  UA-0016 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:16:10  UA-0017 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:16:25  UA-0018 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:16:37  UA-0021 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:16:49  UA-0022 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 08:17:00  UA-0023 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 13:31:12  UA-0011 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 13:31:45  UA-0011 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-19 13:33:20  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 13:33:20  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 13:33:51  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 13:33:51  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 13:34:26  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 13:34:26  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 13:34:46  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 13:34:46  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 13:34:50  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 13:34:50  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 13:35:09  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 13:35:09  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 13:35:27  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 13:35:27  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 13:36:12  UA-0011 FAIL валидация: нет фотографий",
+        "2026-11-19 13:36:12  TASK083 FAIL UA-0011 PublishError:BASE_PUBLISH_FAILED:UA-0011:Публикация отменена, страница не прошла проверку:",
+        "2026-11-19 13:37:30  UA-0011 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-23 00:30:37  UA-0005 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-24 11:27:18  UA-0023 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-24 11:27:18      UA-0023.html  1aedd75b22b2 -> a51b5243649b",
+        "2026-11-24 11:27:18      UA-[N]ae.html  1aedd75b22b2 -> a6fc60a37018",
+        "2026-11-24 11:27:18      UA-0023-diag.html  d45a45b60290 -> 30ddc54ca8bf",
+        "2026-11-24 11:27:18      UA-0023.html  1aedd75b22b2 -> 14d6c2d636f7",
+        "2026-11-24 11:27:18      UA-0023-diag.html  d45a45b60290 -> 30ddc54ca8bf",
+        "2026-11-24 11:27:24  TASK083 PASS UA-0023 backup=/home/Carix/rezerv_publikacii/TASK083/20261124T112713Z-400636df87a8",
+        "2026-11-24 11:27:33  UA-0023 PASS публикация · мастер stranica.sobrat_kartochku · файлов 5",
+        "2026-11-24 11:27:33      UA-0023.html  a51b5243649b -> 0d885d01e9f6",
+        "2026-11-24 11:27:33      UA-[N]ae.html  a6fc60a37018 -> 46c3bd97c609",
+        "2026-11-24 11:27:33      UA-0023-diag.html  738838f5858c -> b7cf01878421",
+        "2026-11-24 11:27:33      UA-0023.html  14d6c2d636f7 -> [N]c4",
+        "2026-11-24 11:27:33      UA-0023-diag.html  738838f5858c -> b7cf01878421",
+        "2026-11-24 11:27:40  TASK083 PASS UA-0023 backup=/home/Carix/rezerv_publikacii/TASK083/20261124T112729Z-513e73c94a90"
+      ],
+      "mtime": "2026-11-24T11:27:52Z"
+    },
+    "samokontrol_log.txt": {
+      "bytes": 638210,
+      "matching_lines": [
+        "2026-11-25 03:52:54  сторож запущен (UA-V74)",
+        "2026-11-25 03:52:56  сторож запущен (UA-V74)",
+        "2026-11-25 03:53:16  сторож запущен (UA-V74)",
+        "2026-11-25 03:53:17  сторож запущен (UA-V74)",
+        "2026-11-25 03:53:45  сторож запущен (UA-V74)",
+        "2026-11-25 03:53:46  сторож запущен (UA-V74)",
+        "2026-11-25 03:54:34  сторож запущен (UA-V74)",
+        "2026-11-25 03:54:35  сторож запущен (UA-V74)",
+        "2026-11-25 03:56:17  сторож запущен (UA-V74)",
+        "2026-11-25 03:59:51  сторож запущен (UA-V74)",
+        "2026-11-25 03:59:52  сторож запущен (UA-V74)",
+        "2026-11-25 03:59:56  сторож запущен (UA-V74)",
+        "2026-11-25 03:59:56  сторож запущен (UA-V74)",
+        "2026-11-25 04:00:13  сторож запущен (UA-V74)",
+        "2026-11-25 04:00:14  сторож запущен (UA-V74)",
+        "2026-11-25 04:03:14  сторож запущен (UA-V74)",
+        "2026-11-25 04:23:08  сторож запущен (UA-V74)",
+        "2026-11-25 04:23:08  сторож запущен (UA-V74)",
+        "2026-11-25 04:23:14  сторож запущен (UA-V74)",
+        "2026-11-25 04:23:15  сторож запущен (UA-V74)",
+        "2026-11-25 04:23:31  сторож запущен (UA-V74)",
+        "2026-11-25 04:23:32  сторож запущен (UA-V74)",
+        "2026-11-25 04:29:56  сторож запущен (UA-V74)",
+        "2026-11-25 04:29:57  сторож запущен (UA-V74)",
+        "2026-11-25 04:30:06  сторож запущен (UA-V74)",
+        "2026-11-25 04:30:07  сторож запущен (UA-V74)",
+        "2026-11-25 04:40:44  сторож запущен (UA-V74)",
+        "2026-11-25 04:40:45  сторож запущен (UA-V74)",
+        "2026-11-25 04:40:50  сторож запущен (UA-V74)",
+        "2026-11-25 04:40:51  сторож запущен (UA-V74)",
+        "2026-11-25 04:41:10  сторож запущен (UA-V74)",
+        "2026-11-25 04:41:11  сторож запущен (UA-V74)",
+        "2026-11-25 04:46:57  сторож запущен (UA-V74)",
+        "2026-11-25 04:46:58  сторож запущен (UA-V74)",
+        "2026-11-25 04:47:11  сторож запущен (UA-V74)",
+        "2026-11-25 04:47:12  сторож запущен (UA-V74)",
+        "2026-11-25 04:51:09  сторож запущен (UA-V74)",
+        "2026-11-25 04:51:10  сторож запущен (UA-V74)",
+        "2026-11-25 04:51:15  сторож запущен (UA-V74)",
+        "2026-11-25 04:51:16  сторож запущен (UA-V74)",
+        "2026-11-25 04:51:32  сторож запущен (UA-V74)",
+        "2026-11-25 04:51:33  сторож запущен (UA-V74)",
+        "2026-11-25 04:56:40  сторож запущен (UA-V74)",
+        "2026-11-25 04:56:41  сторож запущен (UA-V74)",
+        "2026-11-25 04:56:45  сторож запущен (UA-V74)",
+        "2026-11-25 04:56:46  сторож запущен (UA-V74)",
+        "2026-11-25 04:57:07  сторож запущен (UA-V74)",
+        "2026-11-25 04:57:08  сторож запущен (UA-V74)",
+        "2026-11-25 04:57:39  сторож запущен (UA-V74)",
+        "2026-11-25 04:57:40  сторож запущен (UA-V74)",
+        "2026-11-25 05:02:31  сторож запущен (UA-V74)",
+        "2026-11-25 05:02:32  сторож запущен (UA-V74)",
+        "2026-11-25 05:02:47  сторож запущен (UA-V74)",
+        "2026-11-25 05:02:48  сторож запущен (UA-V74)",
+        "2026-11-25 05:03:06  сторож запущен (UA-V74)",
+        "2026-11-25 05:03:07  сторож запущен (UA-V74)",
+        "2026-11-25 05:03:15  сторож запущен (UA-V74)",
+        "2026-11-25 05:09:58  сторож запущен (UA-V74)",
+        "2026-11-25 05:09:58  сторож запущен (UA-V74)",
+        "2026-11-25 05:10:12  сторож запущен (UA-V74)",
+        "2026-11-25 05:10:13  сторож запущен (UA-V74)",
+        "2026-11-25 05:17:26  сторож запущен (UA-V74)",
+        "2026-11-25 05:17:27  сторож запущен (UA-V74)",
+        "2026-11-25 05:17:37  сторож запущен (UA-V74)",
+        "2026-11-25 05:17:38  сторож запущен (UA-V74)",
+        "2026-11-25 05:17:56  сторож запущен (UA-V74)",
+        "2026-11-25 05:17:57  сторож запущен (UA-V74)",
+        "2026-11-25 05:18:26  сторож запущен (UA-V74)",
+        "2026-11-25 05:18:27  сторож запущен (UA-V74)",
+        "2026-11-25 05:25:54  сторож запущен (UA-V74)",
+        "2026-11-25 05:25:55  сторож запущен (UA-V74)",
+        "2026-11-25 05:26:07  сторож запущен (UA-V74)",
+        "2026-11-25 05:26:08  сторож запущен (UA-V74)",
+        "2026-11-25 05:26:24  сторож запущен (UA-V74)",
+        "2026-11-25 05:26:25  сторож запущен (UA-V74)",
+        "2026-11-25 05:32:07  сторож запущен (UA-V74)",
+        "2026-11-25 05:32:08  сторож запущен (UA-V74)",
+        "2026-11-25 05:32:21  сторож запущен (UA-V74)",
+        "2026-11-25 05:32:22  сторож запущен (UA-V74)",
+        "2026-11-25 05:32:40  сторож запущен (UA-V74)",
+        "2026-11-25 05:32:41  сторож запущен (UA-V74)",
+        "2026-11-25 05:52:17  сторож запущен (UA-V74)",
+        "2026-11-25 05:52:18  сторож запущен (UA-V74)",
+        "2026-11-25 05:52:22  сторож запущен (UA-V74)",
+        "2026-11-25 05:52:23  сторож запущен (UA-V74)",
+        "2026-11-25 05:52:42  сторож запущен (UA-V74)",
+        "2026-11-25 05:52:43  сторож запущен (UA-V74)",
+        "2026-11-25 06:03:15  сторож запущен (UA-V74)",
+        "2026-11-25 06:03:42  сторож запущен (UA-V74)",
+        "2026-11-25 06:03:44  сторож запущен (UA-V74)",
+        "2026-11-25 06:06:34  сторож запущен (UA-V74)",
+        "2026-11-25 06:06:34  сторож запущен (UA-V74)",
+        "2026-11-25 06:06:53  сторож запущен (UA-V74)",
+        "2026-11-25 06:06:54  сторож запущен (UA-V74)",
+        "2026-11-25 06:15:48  сторож запущен (UA-V74)",
+        "2026-11-25 06:15:49  сторож запущен (UA-V74)",
+        "2026-11-25 06:15:54  сторож запущен (UA-V74)",
+        "2026-11-25 06:15:55  сторож запущен (UA-V74)",
+        "2026-11-25 06:16:13  сторож запущен (UA-V74)",
+        "2026-11-25 06:16:14  сторож запущен (UA-V74)",
+        "2026-11-25 06:16:43  сторож запущен (UA-V74)",
+        "2026-11-25 06:16:44  сторож запущен (UA-V74)",
+        "2026-11-25 06:21:57  сторож запущен (UA-V74)",
+        "2026-11-25 06:21:57  сторож запущен (UA-V74)",
+        "2026-11-25 06:22:11  сторож запущен (UA-V74)",
+        "2026-11-25 06:22:12  сторож запущен (UA-V74)",
+        "2026-11-25 06:22:29  сторож запущен (UA-V74)",
+        "2026-11-25 06:22:30  сторож запущен (UA-V74)",
+        "2026-11-25 06:23:05  сторож запущен (UA-V74)",
+        "2026-11-25 06:23:06  сторож запущен (UA-V74)",
+        "2026-11-25 06:24:08  сторож запущен (UA-V74)",
+        "2026-11-25 06:24:08  сторож запущен (UA-V74)",
+        "2026-11-25 06:26:38  сторож запущен (UA-V74)",
+        "2026-11-25 06:27:13  сторож запущен (UA-V74)",
+        "2026-11-25 06:28:28  сторож запущен (UA-V74)",
+        "2026-11-25 06:28:29  сторож запущен (UA-V74)",
+        "2026-11-25 06:28:35  сторож запущен (UA-V74)",
+        "2026-11-25 06:28:35  сторож запущен (UA-V74)",
+        "2026-11-25 06:41:06  сторож запущен (UA-V74)",
+        "2026-11-25 07:03:12  сторож запущен (UA-V74)",
+        "2026-11-25 07:14:43  сторож запущен (UA-V74)",
+        "2026-11-25 07:14:51  сборка запущена сторожем, код 0",
+        "2026-11-25 07:30:43  сторож запущен (UA-V74)",
+        "2026-11-25 07:30:43  сторож запущен (UA-V74)",
+        "2026-11-25 07:39:54  сторож запущен (UA-V74)",
+        "2026-11-25 07:39:54  сторож запущен (UA-V74)",
+        "2026-11-25 07:50:14  сторож запущен (UA-V74)",
+        "2026-11-25 07:50:15  сторож запущен (UA-V74)",
+        "2026-11-25 07:50:20  сторож запущен (UA-V74)",
+        "2026-11-25 07:50:21  сторож запущен (UA-V74)",
+        "2026-11-25 07:50:35  сторож запущен (UA-V74)",
+        "2026-11-25 07:50:36  сторож запущен (UA-V74)",
+        "2026-11-25 08:00:22  сторож запущен (UA-V74)",
+        "2026-11-25 08:00:23  сторож запущен (UA-V74)",
+        "2026-11-25 08:00:30  сторож запущен (UA-V74)",
+        "2026-11-25 08:00:30  сторож запущен (UA-V74)",
+        "2026-11-25 08:03:14  сторож запущен (UA-V74)",
+        "2026-11-25 08:07:30  сторож запущен (UA-V74)",
+        "2026-11-25 08:07:31  сторож запущен (UA-V74)",
+        "2026-11-25 08:09:00  сторож запущен (UA-V74)",
+        "2026-11-25 08:09:01  сторож запущен (UA-V74)",
+        "2026-11-25 08:09:19  сторож запущен (UA-V74)",
+        "2026-11-25 08:09:20  сторож запущен (UA-V74)",
+        "2026-11-25 08:53:52  сборка запущена сторожем, код 1",
+        "2026-11-25 08:53:52  СООБЩАЮ: CRM: страницы сайта отстали от базы, и пересобрать их не получилось.",
+        "2026-11-25 08:58:16  сторож запущен (UA-V74)",
+        "2026-11-25 08:58:25  сборка запущена сторожем, код 0",
+        "2026-11-25 09:03:17  сторож запущен (UA-V74)",
+        "2026-11-25 10:00:01  сторож запущен (UA-V74)",
+        "2026-11-25 10:00:02  сторож запущен (UA-V74)"
+      ],
+      "mtime": "2026-11-25T10:00:15Z"
+    },
+    "sborka_diag_log.txt": {
+      "bytes": 64,
+      "matching_lines": [],
+      "mtime": "2026-08-24T06:52:05Z"
+    },
+    "ua_crm_public_sync.py.before_freshness_20260926": {
+      "bytes": 5326,
+      "mtime": "2026-09-26T11:59:52Z"
+    }
+  },
+  "status": "PASS",
+  "task_id": "PAGES-LAG-PROBE-20261125"
+}
