@@ -28,6 +28,7 @@ HERE = Path(__file__).resolve().parent
 KEYS_PATH = Path('/home/Carix/google_ads_api.json')
 TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token'
 API = 'https://googleads.googleapis.com/v26/'
+CAMPAIGN = 'Пошук — Київ — Корея (UA ART)'
 QUERIES = {
     'manager': ('login', 'SELECT customer_client.id, customer_client.descriptive_name, customer_client.manager, '
                          'customer_client.status, customer_client.level FROM customer_client'),
@@ -40,7 +41,17 @@ QUERIES = {
                               'conversion_action.type, conversion_action.category, conversion_action.primary_for_goal '
                               'FROM conversion_action'),
     'billing': ('client', 'SELECT billing_setup.id, billing_setup.status FROM billing_setup'),
+    # R3 (after ADS-ENABLE, coordinator 2026-11-25): the campaign, its ads' review and the auto-applied recommendations.
+    'campaign': ('client', "SELECT campaign.name, campaign.status, campaign.serving_status, campaign.primary_status, "
+                           "campaign.primary_status_reasons, campaign_budget.amount_micros FROM campaign "
+                           "WHERE campaign.name = '%s'" % CAMPAIGN),
+    'ads': ('client', "SELECT ad_group.name, ad_group_ad.status, ad_group_ad.policy_summary.approval_status, "
+                      "ad_group_ad.policy_summary.review_status, ad_group_ad.primary_status FROM ad_group_ad "
+                      "WHERE campaign.name = '%s'" % CAMPAIGN),
+    'auto_apply': ('client', 'SELECT recommendation_subscription.type, recommendation_subscription.status '
+                             'FROM recommendation_subscription'),
 }
+PLANNING = False  # R2: the Keyword Planner needs Basic access (DEVELOPER_TOKEN_NOT_APPROVED); R3 skips it
 UKRAINE = 'geoTargetConstants/2804'
 LANGUAGES = {'uk': 'languageConstants/1036', 'ru': 'languageConstants/1031'}
 SEEDS = {
@@ -108,6 +119,8 @@ def check(keys, opener=urllib.request.urlopen):
         status, answer = call(API + 'customers/%s/googleAds:search' % customer, json.dumps({'query': query}).encode(),
                               headers, opener)
         value[name] = answer.get('results', []) if status == 200 else {'http': status, **errors(answer)}
+    if not PLANNING:
+        return value
     geo, value['kyiv_locations'] = kyiv(keys['customer_id'], headers, opener)
     value['geo'] = geo = geo or [UKRAINE]
     value['planner'] = planner(keys['customer_id'], headers, geo, opener)

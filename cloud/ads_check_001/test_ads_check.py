@@ -67,7 +67,7 @@ class RemoteTests(unittest.TestCase):
         value = json.loads(text)
         self.assertEqual(value['status'], 'PASS')
         self.assertEqual(value['google_ads']['accessible'], ['customers/4680747874'])
-        self.assertEqual(set(value['google_ads']) - {'token', 'scope', 'accessible', 'planner', 'forecast', 'geo', 'kyiv_locations'}, set(remote.QUERIES))
+        self.assertEqual(set(value['google_ads']) - {'token', 'scope', 'accessible'}, set(remote.QUERIES))
         for secret in list(KEYS.values())[:4] + [ACCESS]:
             self.assertNotIn(secret, text)
         urls = [url for _, url, _, _ in google.calls]
@@ -77,6 +77,7 @@ class RemoteTests(unittest.TestCase):
         self.assertTrue(all(h['Login-customer-id'] == '9054959760' for h in search))
         self.assertNotIn('mutate', Path(remote.__file__).read_text().lower().replace('no mutate call', ''))
 
+    @patch.object(remote, 'PLANNING', True)
     def test_planner_and_forecast_numbers(self):
         google = Google()
         google.answers = {':generateKeywordIdeas': {'results': [{'text': 'авто з кореї', 'keywordIdeaMetrics': {
