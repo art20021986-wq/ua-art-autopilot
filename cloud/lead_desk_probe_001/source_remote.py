@@ -15,8 +15,7 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FULL = ('lead_bot.py', 'client_ui.py', 'vitrina.py', 'ua_order/bindings.py', 'ua_order/host.py', 'ua_lead_desk.py',
-        'analitika_bot.py', 'analitika_knopka.py', 'karta_klienta.py')  # STAFF-FULL-ACCESS-001 R9: client bot step
+FULL = ()  # STAFF-FULL-ACCESS-001 R10: client bot check after the install
 PARTIAL = {}
 MAX_SOURCE = 900 * 1024
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
@@ -116,7 +115,32 @@ def report(home=None):
                                                      "('lead_state','lead_state_reminders','crm_orders','crm_order_stages')")
         desk = {'tables': tables, 'track_from': track[0] if track else None, 'aggregates': aggregates}
     return {'status': 'PASS', 'files': files, 'python': '%d.%d' % sys.version_info[:2], 'zone_kyiv': zone,
-            'lead_desk': desk, 'owners': owners()}
+            'lead_desk': desk, 'owners': owners(), 'client_screens': client_screens()}
+
+
+def client_screens():
+    """STAFF-FULL-ACCESS-001 (after the client bot install), read-only: for everyone with full rights the live
+    vitrina start screen has «Лиды» and «Аналитика» and the analytics check passes; a stranger has neither.
+    Counts and yes/no only; no id, name or row."""
+    import sys
+    try:
+        sys.path.insert(0, str(HOME))
+        os.chdir(HOME)
+        import ua_full_access
+        import vitrina
+        import analitika_knopka
+        ids = ua_full_access.ids(vitrina.fajl('vladelec.txt'))
+
+        def screen(uid):
+            _, knopki = vitrina.ekran_start(uid)
+            labels = ' '.join(str(b[0]) for row in knopki for b in row)
+            return {'lidy': 'Лиды' in labels, 'analitika': 'Аналитика' in labels,
+                    'analytics_check': analitika_knopka.vladelec_li(uid)}
+        full = [screen(uid) for uid in ids]
+        return {'full_rights_count': len(ids), 'all_full_see_owner_screen': all(all(x.values()) for x in full),
+                'per_person': full, 'stranger': screen(1)}
+    except Exception as error:
+        return {'error': type(error).__name__ + ':' + str(error)[:200]}
 
 
 def menus():
