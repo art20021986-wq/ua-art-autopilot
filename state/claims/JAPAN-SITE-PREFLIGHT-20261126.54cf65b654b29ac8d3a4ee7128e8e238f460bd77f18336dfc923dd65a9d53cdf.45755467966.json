@@ -7,21 +7,23 @@
   "created_at": "2026-11-26T04:30:38Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T04:30:38Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-26T04:36:33Z",
+  "heartbeat_at": "2026-11-26T04:36:33Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45755467966",
     "task_id": "JAPAN-SITE-PREFLIGHT-20261126",
     "task_sha256": "54cf65b654b29ac8d3a4ee7128e8e238f460bd77f18336dfc923dd65a9d53cdf"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-e024d7117f19ca67-f4fb8c76d7c81913",
   "receipt_path": "state/receipts/JAPAN-SITE-PREFLIGHT-20261126.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "9c0f4f901dd47472e92200fc80e9e4642f7588ea9ddd38668e23c514a69db2be",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/JAPAN-SITE-PREFLIGHT-20261126.json",
   "request_sha256": "54cf65b654b29ac8d3a4ee7128e8e238f460bd77f18336dfc923dd65a9d53cdf",
   "resource_locks": [
@@ -29,8 +31,41 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "d4499da6900eeee13a332be3d0b2cf5e7d2a68f3",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91862028288,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 40.721
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-26T04:30:38Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "d6a08937b12326b1b29716891cb5546045f79aa2cee0b4117846145a5424425c",
+    "file_sha256": {
+      "cloud/japan_site_001/candidate_builder.py": "b2daab6cba8a7eb5aac958e61622497daf503070fffe9bc5d4b29b33b467b33b",
+      "cloud/japan_site_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/japan_site_001/deployment_bootstrap.py": "0364361224690da41aff682b18974ebaada81783afaa3b32f9109b4640b8d2ea",
+      "cloud/japan_site_001/deployment_remote.py": "731c62a8c5c5e02968b42fcfed6cf603c3a49f5308e6bfa30cc9a8e6c72d149a",
+      "cloud/japan_site_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/japan_site_001/deployment_transport.py": "95005b19ca172db9edc2dbc7c9826df0fd152b156f6c1467fc6c67ee2c586620",
+      "cloud/japan_site_001/edit_card_stage.py": "b0f699e7f1b0fb6da325b709c5cb045683b1ab91b4a953d9c4f36f363d0361fb",
+      "cloud/japan_site_001/edit_catalog_guard.py": "f3c33b3be9b25a2cb253f144d5149c5de9fb9b4820b74cb1fbe0b14a5fe74ca8",
+      "cloud/japan_site_001/edit_golden.py": "07eff0486bae8d9862d31a171283cd42800ae9fe6aab42c7263c1e4ba1d3743d",
+      "cloud/japan_site_001/edit_home.py": "d627a14134502a1e3b4a03942fe1e856436e844f2704d3641dbb92d3bb682fb3",
+      "cloud/japan_site_001/edit_site_counters.py": "beb5ec9723821bd51c72989b41c457a5ed56c5be7a16c911fa53639e73c1dc9b",
+      "cloud/japan_site_001/edit_stage_sync.py": "4fac20dc3d0b4a68b690997e2bdd824657721af27957bf5e68d60a2c2e98246a",
+      "cloud/japan_site_001/edits.py": "265393a467603c880a9a616f6760dabae7962c2898eabbd6cf794ec91c9490ef",
+      "cloud/japan_site_001/make_release.py": "ba1db74a2b5dc6250eb48b9c5495ac3361f00236df90f23387ed45fbcd66227a",
+      "cloud/japan_site_001/release_constants.py": "b66de2f3009a09169eb23492388026eb2a741086ab9ef1e6efda4a58f586464f",
+      "cloud/japan_site_001/test_deployment.py": "80276ec15504e29283a9fcb43a103e351093dda04edd1911da94dffb5274b6a6",
+      "cloud/japan_site_001/test_japan_site.py": "58ce40986522b27b451349a0aa8577aa4e7f07cc4460f7cc2c9992caad448f7f",
+      "cloud/japan_site_001/test_release.py": "8741640d9da18383d58441b9392525c8a007f012ecbb9397388f62a2ef94f39c",
+      "cloud/japan_site_001/ua_country_site.py": "e6975fbe4a02de17ff600320e1b1feb8a7d9249bdb59b0c0d108be68479fe457"
+    }
+  },
+  "updated_at": "2026-11-26T04:36:33Z"
 }
