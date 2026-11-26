@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/ads_expand_001/20261126.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "2e4fec9e2e243f1af03f6b2671eee72b8e0fd580ce28d88d15768b2f7cbc7bed",
+  "rollback_ready": true,
+  "rollback_ready_scope": "BEFORE_STATE_IN_REPORT_NO_SITE_OR_CRM_WRITES",
+  "run_id": "45746847513",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ADS-EXPAND-20261126",
+  "tests": "PASS",
+  "tests_scope": "GOOGLE_ADS_KEYWORD_EXPANSION",
+  "unexpected_changes": 0
+}
