@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "b4cd047685a94d4e7740ff50cbcdfde4d18d704952f2a0dff61cf5ea1d94a14f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T07:50:19Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-26T07:54:26Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45777943553",
     "task_id": "VISITORS-UA-INSTALL-20261126",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45777943553-b8a28c069f54a433",
   "production_transaction_path": "state/transactions/VISITORS-UA-INSTALL-20261126.b8a28c069f54a433c28280802a3c89e911943d803b5e06214877f00b1620228b.45777943553.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-6e0b9edded205f30-931236141ec01873",
   "receipt_path": "state/receipts/VISITORS-UA-INSTALL-20261126.json",
   "receipt_validation_status": "PENDING",
@@ -87,5 +87,5 @@
       "cloud/visitors_ua_001/ua_visitors_ua.py": "dd576d07ee25329baba5c312873cabc87bf729e4293b3e14227e0c40adf18cef"
     }
   },
-  "updated_at": "2026-11-26T07:50:19Z"
+  "updated_at": "2026-11-26T07:54:26Z"
 }
