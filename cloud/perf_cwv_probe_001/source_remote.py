@@ -7,6 +7,9 @@ Reads only:
 - the sanitized full source of the most relevant files (by marker score, bounded in count and size);
 - whether Pillow on this Python can write WebP, and whether ffmpeg is installed;
 - the size of the existing light-image folder video/opt (count, bytes, a few names).
+R2: also the writers of the blocks appended at the end of the cards (UA-BRAND-HOME, UA-CHAT-GLASS, UA-SOCIAL,
+UA-AUTORIA-BADGE), the photo gallery (um-gallery) and the callers of ua_korea_home / the ticker; archive, sandbox
+and spec_* copies are skipped; files up to 2 MB.
 No CRM read, nothing written outside this run's own receipt.
 """
 import argparse
@@ -22,13 +25,15 @@ import shutil
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
 USERCUSTOMIZE = '.local/lib/python3.10/site-packages/usercustomize.py'
-MAX_SOURCE = 900 * 1024
+MAX_SOURCE = 2 * 1024 * 1024
 MAX_TOTAL = 7 * 1024 * 1024
 MAX_FULL = 40
 # Always read in full: the page writers and the catalog renderer.
 ALWAYS = ('catalog_design_guard.py', 'catalog_stage_guard_core.py', 'master_card.py', 'stranica.py', 'yadro.py',
           'publish_transaction_guard.py', 'publikaciya.py', USERCUSTOMIZE)
-SKIP_DIRS = {'backups', 'backup', 'autopilot_inbox', 'node_modules', 'staroe', '__pycache__', 'opt', 'foto'}
+SKIP_DIRS = {'backups', 'backup', 'autopilot_inbox', 'node_modules', 'staroe', '__pycache__', 'opt', 'foto', 'archive',
+             'sandbox'}
+SKIP_PREFIX = ('spec_',)
 TEMPLATE = re.compile(r'\.(?:html|txt|tpl|js|css|json)$')
 # Marker -> weight.
 MARKERS = {
@@ -37,6 +42,8 @@ MARKERS = {
     'ЕТАП': 2, 'ЗАРАЗ': 2, 'ПОТОЧНИЙ': 2, 'um-gallery': 4, 'um-stage': 3, 'quick-lead.css': 2,
     'telegram-web-app': 2, 'fetchpriority': 2, 'loading="lazy"': 1, 'oblegchit': 2, '/video/opt': 2,
     'srcset': 2, 'ua-v203.css': 2, 'mcf-chat': 2, 'shapka': 1,
+    'UA-BRAND-HOME': 8, 'ua-brand-home': 8, 'UA-CHAT-GLASS': 5, 'UA-SOCIAL-V1': 5, 'UA-AUTORIA-BADGE': 5,
+    'um-thumbs': 5, 'ua_korea_home': 6, 'ticker.html': 3,
 }
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|api_hash|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
@@ -70,7 +77,7 @@ def candidates():
     paths += [p for p in HOME.iterdir() if p.is_file() and TEMPLATE.search(p.name)]
     for path in sorted(set(paths)):
         relative = path.relative_to(HOME)
-        if any(part.startswith('.') or part in SKIP_DIRS for part in relative.parts[:-1]):
+        if any(part.startswith('.') or part in SKIP_DIRS or part.startswith(SKIP_PREFIX) for part in relative.parts[:-1]):
             continue
         yield relative, path
     extra = HOME / USERCUSTOMIZE
