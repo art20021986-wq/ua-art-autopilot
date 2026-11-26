@@ -15,10 +15,10 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FILES = ('ua_seo_landings.py', 'ua_seo_quick_form.py', 'ua_order/quick.py', 'ua_order/contract.py',
-         'video/order/quick-lead.js', 'ua_order/auction.py', 'ua_order/crm.py', 'video/order/quick-lead.css')
-# R2 (owner «да» 2026-11-25 to the form on the «під ключ» pages): the general Korea enquiry (auction schema) and its
-# inbox view, to check it accepts these pages as the source.
+FILES = ('analitika_yadro.py', 'analitika_otchet.py', 'analitika_bot.py', 'ua_own_counter.py', 'ua_page_depth.py',
+         'lead_bot.py')
+# R3 (owner «да» 2026-11-26: «Посетители из Украины» in the client bot «📊 Аналитика»): the counter core, its reports,
+# the bot screens, the page script injector and the client bot start file — to write the change against the live files.
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|api_hash|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
 LONG_NUMBER = re.compile(r'(?<!\d)\+?\d[\d\s()-]{8,}\d(?!\d)')
