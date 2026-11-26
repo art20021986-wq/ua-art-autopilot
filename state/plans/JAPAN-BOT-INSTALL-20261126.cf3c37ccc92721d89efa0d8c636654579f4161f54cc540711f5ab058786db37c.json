@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/JAPAN-BOT-INSTALL-20261126.cf3c37ccc92721d89efa0d8c636654579f4161f54cc540711f5ab058786db37c.json",
+  "autostart_ledger_sha256": "b3af942ecf3f4e0665505d8febc838c673c35b5f3b31a6c0f28c824ef89e69f7",
+  "autostart_source_commit": "a5728f2d09112e349ff43935fcc55e00115019e4",
+  "created_at": "2026-11-26T03:35:44Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45749721491",
+    "task_id": "JAPAN-BOT-INSTALL-20261126",
+    "task_sha256": "cf3c37ccc92721d89efa0d8c636654579f4161f54cc540711f5ab058786db37c"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-5e60a64a83ad1bc9-aa8d41daac0ca9aa",
+  "request_path": "tasks/requests/JAPAN-BOT-INSTALL-20261126.json",
+  "resource_locks": [
+    "PATH_SCOPE:5e60a64a83ad1bc9"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
