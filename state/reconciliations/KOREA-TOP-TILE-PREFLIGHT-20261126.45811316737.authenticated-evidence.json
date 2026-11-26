@@ -1,0 +1,17 @@
+{
+  "cause": "cloud/korea_top_tile_001/korea_auction/test_korea_auction.py wrote to the production path /home/Carix instead of a temporary directory; fails on the GitHub runner",
+  "claim_before_sha256": "f079d9a2ae966c32068d1762221ae73327c1862deb823c97b5c71c283d00125f",
+  "error": "PermissionError: [Errno 13] Permission denied: '/home/Carix' -> TEST_FAILED:cloud/korea_top_tile_001/korea_auction/test_korea_auction.py",
+  "failed_step": "execute / standard / execute: package tests (before any upload or remote call)",
+  "leftover_temporary_task": "none: stopped before the remote task was created",
+  "owner_approval": "«Да» in the coordinator chat 2026-11-26 to closing the stopped home-page auctions preview so the fixed one can run",
+  "precedent": "state/reconciliations/ADS-CHECK-20261126-R10.45795197267.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-26T11:55:00+00:00",
+  "remote_mode": "preview (reads only) — stopped at package tests",
+  "retry": "KOREA-TOP-TILE-PREFLIGHT-20261126-R2",
+  "run_id": "45811316737",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "KOREA-TOP-TILE-PREFLIGHT-20261126"
+}
