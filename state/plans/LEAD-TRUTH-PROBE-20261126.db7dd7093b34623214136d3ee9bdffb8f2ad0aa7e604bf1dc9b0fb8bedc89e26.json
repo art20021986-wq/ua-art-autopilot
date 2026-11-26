@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/LEAD-TRUTH-PROBE-20261126.db7dd7093b34623214136d3ee9bdffb8f2ad0aa7e604bf1dc9b0fb8bedc89e26.json",
+  "autostart_ledger_sha256": "cc6c0f3ce35452bf435e6f5391e02ea017f3ee0463ec459390500c265fd814b9",
+  "autostart_source_commit": "dd692032e5085c29a559af42b7727a747ec59875",
+  "created_at": "2026-11-26T03:19:53Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45747804981",
+    "task_id": "LEAD-TRUTH-PROBE-20261126",
+    "task_sha256": "db7dd7093b34623214136d3ee9bdffb8f2ad0aa7e604bf1dc9b0fb8bedc89e26"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-2f587cd127deedb2-857de6cea38fca5e",
+  "request_path": "tasks/requests/LEAD-TRUTH-PROBE-20261126.json",
+  "resource_locks": [
+    "PATH_SCOPE:2f587cd127deedb2"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
