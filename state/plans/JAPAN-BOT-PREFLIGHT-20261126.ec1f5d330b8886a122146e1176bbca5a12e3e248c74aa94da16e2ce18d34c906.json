@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/JAPAN-BOT-PREFLIGHT-20261126.ec1f5d330b8886a122146e1176bbca5a12e3e248c74aa94da16e2ce18d34c906.json",
+  "autostart_ledger_sha256": "0c8fb9d1ab1db00ca3c60213a5f049513f5dd7180187460b8d387e62ac43ff79",
+  "autostart_source_commit": "c54dea7ed0062d9b416def07beee2b33db1cb3e9",
+  "created_at": "2026-11-26T03:25:47Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45748533216",
+    "task_id": "JAPAN-BOT-PREFLIGHT-20261126",
+    "task_sha256": "ec1f5d330b8886a122146e1176bbca5a12e3e248c74aa94da16e2ce18d34c906"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-01bae18a3bd3ab6b-91eb10e46cd83aee",
+  "request_path": "tasks/requests/JAPAN-BOT-PREFLIGHT-20261126.json",
+  "resource_locks": [
+    "PATH_SCOPE:01bae18a3bd3ab6b"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
