@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "be47406a448998b3e45918b48c7715f49ca0b68f8265596d4108916211a5c87f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T09:03:33Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-26T09:14:39Z",
+  "heartbeat_at": "2026-11-26T09:14:39Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "45787241682",
     "task_id": "PERF-CWV-INSTALL-20261126-R2",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 447.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 84.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-45787241682-e9a157b22f40e0b6",
   "production_transaction_path": "state/transactions/PERF-CWV-INSTALL-20261126-R2.e9a157b22f40e0b6c5e56fd9c42971b554c24ca49a97c8ad0bc333a4c8bc9094.45787241682.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-516734deb9ea5607",
   "receipt_path": "state/receipts/PERF-CWV-INSTALL-20261126-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "5c4f10fe103ab870d8330c72486a0121eb88b7653ff332911fca187c5f19addd",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/PERF-CWV-INSTALL-20261126-R2.json",
   "request_sha256": "e9a157b22f40e0b6c5e56fd9c42971b554c24ca49a97c8ad0bc333a4c8bc9094",
   "resource_locks": [
@@ -70,7 +93,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "0efc79c0229892cd36d3cbe2f97a60ea9660ae0591e6448d6dfd7527ab4899a5",
     "file_sha256": {
@@ -92,5 +115,5 @@
       "cloud/perf_cwv_site_001/ua_mobile_comfort.py": "bc5f48b409f059071eda4e1bb15cfac36c22d72d636417a76f10f6019c972131"
     }
   },
-  "updated_at": "2026-11-26T09:03:33Z"
+  "updated_at": "2026-11-26T09:14:39Z"
 }
