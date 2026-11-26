@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/JAPAN-STOCK-PROBE-20261126-R3.ef1789d520a261c92ec0c2faf90a7aa578989501058b60ef102f5c2b78030a2c.json",
+  "autostart_ledger_sha256": "1b2f16dee19eb186d34d63219b34d30574996b7a224c1603dbd60540525bf20f",
+  "autostart_source_commit": "e581bf686b6988d5309b17434772ca3ac834aa61",
+  "created_at": "2026-11-26T04:05:54Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-26T04:05:54Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "45751927729",
+    "task_id": "JAPAN-STOCK-PROBE-20261126-R3",
+    "task_sha256": "ef1789d520a261c92ec0c2faf90a7aa578989501058b60ef102f5c2b78030a2c"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-784e0cad6d0e1103-a8f0e42d2d12bd0c",
+  "receipt_path": "state/receipts/JAPAN-STOCK-PROBE-20261126-R3.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/JAPAN-STOCK-PROBE-20261126-R3.json",
+  "request_sha256": "ef1789d520a261c92ec0c2faf90a7aa578989501058b60ef102f5c2b78030a2c",
+  "resource_locks": [
+    "PATH_SCOPE:784e0cad6d0e1103"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "2fc3c4250292e7b88c485e3c3ed3f98c8c954768",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-26T04:05:54Z"
+}
