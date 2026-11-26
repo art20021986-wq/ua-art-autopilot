@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/BOUGHT-WORD-PREFLIGHT-20261126.be5de7c180b4d629b7d32af5d991b707ac52774fc7970956dfccf423871be50c.json",
+  "autostart_ledger_sha256": "414ef55cd4f32488b63c6b10051d3f7eddfe8c9fb6a78017fda8d7f76f6aab7e",
+  "autostart_source_commit": "07ea6e4fe2476fb109be7f469c8a50e3b53af7aa",
+  "created_at": "2026-11-26T06:18:45Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45765997922",
+    "task_id": "BOUGHT-WORD-PREFLIGHT-20261126",
+    "task_sha256": "be5de7c180b4d629b7d32af5d991b707ac52774fc7970956dfccf423871be50c"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-681c683894894be5-697a341708a2666a",
+  "request_path": "tasks/requests/BOUGHT-WORD-PREFLIGHT-20261126.json",
+  "resource_locks": [
+    "PATH_SCOPE:681c683894894be5"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
