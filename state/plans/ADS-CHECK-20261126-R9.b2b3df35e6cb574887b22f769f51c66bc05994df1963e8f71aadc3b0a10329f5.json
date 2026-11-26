@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ADS-CHECK-20261126-R9.b2b3df35e6cb574887b22f769f51c66bc05994df1963e8f71aadc3b0a10329f5.json",
+  "autostart_ledger_sha256": "52112eb6180b1c6a17e703af8f990d9edec949a995f1d940290e307c61749af2",
+  "autostart_source_commit": "acd604e42bf4bc3978b72ab410b22b733d254b13",
+  "created_at": "2026-11-26T08:36:17Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45784334153",
+    "task_id": "ADS-CHECK-20261126-R9",
+    "task_sha256": "b2b3df35e6cb574887b22f769f51c66bc05994df1963e8f71aadc3b0a10329f5"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-689f5b8705993385-071a6bdce4383f25",
+  "request_path": "tasks/requests/ADS-CHECK-20261126-R9.json",
+  "resource_locks": [
+    "PATH_SCOPE:689f5b8705993385"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
