@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "be47406a448998b3e45918b48c7715f49ca0b68f8265596d4108916211a5c87f",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T08:58:26Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-26T09:03:33Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45787241682",
     "task_id": "PERF-CWV-INSTALL-20261126-R2",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45787241682-e9a157b22f40e0b6",
   "production_transaction_path": "state/transactions/PERF-CWV-INSTALL-20261126-R2.e9a157b22f40e0b6c5e56fd9c42971b554c24ca49a97c8ad0bc333a4c8bc9094.45787241682.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-516734deb9ea5607",
   "receipt_path": "state/receipts/PERF-CWV-INSTALL-20261126-R2.json",
   "receipt_validation_status": "PENDING",
@@ -92,5 +92,5 @@
       "cloud/perf_cwv_site_001/ua_mobile_comfort.py": "bc5f48b409f059071eda4e1bb15cfac36c22d72d636417a76f10f6019c972131"
     }
   },
-  "updated_at": "2026-11-26T08:58:26Z"
+  "updated_at": "2026-11-26T09:03:33Z"
 }
