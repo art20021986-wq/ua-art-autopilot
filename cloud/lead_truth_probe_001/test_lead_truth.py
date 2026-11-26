@@ -26,6 +26,22 @@ class RemoteTests(unittest.TestCase):
         for word in ('.write(', 'INSERT', 'UPDATE ', 'DELETE', 'set_bot'):
             self.assertNotIn(word, text.split('def main')[0])
 
+    def test_own_counter_sample_hides_ids(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            con = remote.sqlite3.connect(home / 'analytics.db')
+            con.execute('CREATE TABLE events (ts INTEGER, tip TEXT, stranica TEXT, vid TEXT, sid TEXT)')
+            for i in range(5):
+                con.execute('INSERT INTO events VALUES (?, "page", "/video/index.html", "secret-visitor", "secret-session")', (i,))
+            con.commit()
+            con.close()
+            with patch.object(remote, 'HOME', home):
+                value = remote.own_counter()
+        text = json.dumps(value)
+        self.assertEqual(value['tables']['events']['rows'], 5)
+        self.assertNotIn('secret-', text)
+        self.assertIn('visitor-0', text)
+
     def test_links_fail_softly(self):
         with patch.object(remote.urllib.request, 'urlopen', side_effect=OSError('offline')):
             value = remote.links()
