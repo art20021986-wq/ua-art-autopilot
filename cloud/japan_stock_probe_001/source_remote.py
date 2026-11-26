@@ -5,6 +5,7 @@ Reads only:
   catalog filter, home tile and card stage markers: per file size, time, short hash and per-marker line numbers;
 - the sanitized full source of the most relevant files (by marker score, bounded in count and size);
 - the cars table column names and the number of cars per status and published flag (no rows, no personal data).
+R3 (after JAPAN-BOT-INSTALL): bot/log files of the last 2 hours (tail and error lines) and bot process ages.
 R2 (JAPAN-STOCK-001 package): also the full source and exact hash of the modules in ALWAYS.
 Nothing is written outside this run's own receipt.
 """
@@ -128,6 +129,42 @@ def crm_schema():
     return {'cars_columns': names, 'status_published_counts': counts, 'tables': tables}
 
 
+def recent_logs():
+    """R3 (after JAPAN-BOT-INSTALL): bot/log files changed in the last 2 hours — last lines and error lines."""
+    import time as _time
+    found = {}
+    limit = _time.time() - 7200
+    for path in sorted(HOME.iterdir()):
+        if not path.is_file() or path.is_symlink() or path.suffix in ('.py', '.db', '.json', '.html', '.lock', '.zip'):
+            continue
+        if not re.search(r'(?i)log|zhurnal', path.name) or path.stat().st_mtime < limit:
+            continue
+        with path.open('rb') as handle:
+            handle.seek(max(0, path.stat().st_size - 200 * 1024))
+            lines = handle.read().decode('utf-8', 'replace').splitlines()
+        errors = [sanitized_line(x)[:260] for x in lines if re.search(r'Traceback|Error|Exception|JAPAN-STOCK', x)]
+        found[path.name] = {'mtime': stamp(path.stat().st_mtime), 'tail': [sanitized_line(x)[:260] for x in lines[-25:]],
+                            'errors': errors[-40:]}
+    return found
+
+
+def processes():
+    rows = []
+    uptime = float(Path('/proc/uptime').read_text().split()[0])
+    clock = os.sysconf('SC_CLK_TCK')
+    for item in Path('/proc').glob('[0-9]*'):
+        try:
+            if item.stat().st_uid != os.getuid():
+                continue
+            args = [Path(a).name for a in (item / 'cmdline').read_bytes().decode('utf-8', 'replace').split('\0') if a][:3]
+            age = uptime - int((item / 'stat').read_text().rsplit(')', 1)[1].split()[19]) / clock
+            if any(a in ('start_safe.py', 'run_all.py', 'team_bot.py') for a in args):
+                rows.append({'program': args, 'age_seconds': int(age)})
+        except Exception:
+            continue
+    return rows
+
+
 def report():
     value = {'status': 'PASS', 'now': stamp(datetime.datetime.now(datetime.timezone.utc).timestamp())}
     try:
@@ -137,6 +174,11 @@ def report():
         value['files'] = {k: {x: y for x, y in v.items() if x != '_text'} for k, v in found.items()}
     except Exception as error:
         value['files'] = {'error': type(error).__name__ + ':' + LONG_NUMBER.sub('[N]', str(error))[:160]}
+    for key, call in (('recent_logs', recent_logs), ('bot_processes', processes)):
+        try:
+            value[key] = call()
+        except Exception as error:
+            value[key] = {'error': type(error).__name__}
     try:
         value['crm_schema'] = crm_schema()
     except Exception as error:
