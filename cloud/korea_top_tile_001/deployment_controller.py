@@ -9,8 +9,8 @@ from deployment_transport import API, HERE, canonical, sha, upload_package
 
 ROOT = HERE.parents[1]
 from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
-# KOREA-WEEKTILE-FIX-001 changes only the collector; the Korea page keeps KOREA-WEEKTILE-001 («Аукціонів немає»).
-EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': 't("none")',
+# KOREA-TOP-TILE-001: the Korea page says the auctions run Monday to Friday; the tile follows at the job's next run.
+EXPECTED = {'/video/index.html': 'id="ua-korea-ticker"', '/video/korea.html': "з понеділка по п'ятницю",
             '/video/katalog.html': '', '/video/podbor.html': 'order/order.js?v=20261112.71'}
 SITE = 'https://www.uaart.com.ua'
 AGENT = 'UAART-KoreaTicker-Verify/1'
