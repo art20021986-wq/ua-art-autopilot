@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ADS-CEIL-20261126.9c2b5f8efe0750e86b9efeba54a232aa5e067ffad61f6bf1215c524039420ff8.json",
+  "autostart_ledger_sha256": "69d9f5dc82696ebfcda266828447ab85e712256b23f50087a3ecc81ac5129b1f",
+  "autostart_source_commit": "3185d1ae16ea533088c0f7cc5b9fe855ad1321b6",
+  "created_at": "2026-11-26T10:27:42Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-26T10:27:42Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "45801303207",
+    "task_id": "ADS-CEIL-20261126",
+    "task_sha256": "9c2b5f8efe0750e86b9efeba54a232aa5e067ffad61f6bf1215c524039420ff8"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-8921b4439e235a06-92e0f9e6b387a8f1",
+  "receipt_path": "state/receipts/ADS-CEIL-20261126.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/ADS-CEIL-20261126.json",
+  "request_sha256": "9c2b5f8efe0750e86b9efeba54a232aa5e067ffad61f6bf1215c524039420ff8",
+  "resource_locks": [
+    "PATH_SCOPE:8921b4439e235a06"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "46628111d149d7d03d9b0e7224f03109bb3b6a70",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-26T10:27:42Z"
+}
