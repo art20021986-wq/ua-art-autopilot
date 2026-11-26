@@ -37,3 +37,21 @@
   FL-Tampa South 1265, FL-West Palm Beach 1270, GA-Savannah 1090, GA-Atlanta East 1370, TX-Dallas 1460,
   TX-Houston 1260, MD-Baltimore 1470, NJ-Somerville 1130, NY-Albany 1400, NJ-Trenton 1160, NY-Long Island 1265 ($).
 - Открыто: до какого порта эти цены; что дальше до Киева; услуга 600 $ и для США; показывать ли имя партнёра.
+
+## Ответы владельца (26.11, третье сообщение) и калькулятор 2M Cars
+- Цены партнёра — до порта в Грузии: да. Для США: услуга 600 $ + Грузия→Киев 1 100 $: да.
+- Комиссию партнёра на сайте ×2: 1–4 авто 200 $, 5–9 — 100 $, 10+ — 0 $. Названия партнёров не показывать.
+- Переключатель стран в ленте и подпись «аукціони Кореї»: да. Страница США: да, с калькулятором
+  https://newshipping.2mcars.ge (доставка до Поти).
+- Калькулятор 2M Cars (сеть сессии открыта для newshipping.2mcars.ge, vsbrothers.com):
+  POST /conf/getState.php {auc_id} → штаты; /conf/city.php {state_id, auc_id} → площадки;
+  /conf/data{1|2|3}.php {auc_id_N, state_id_N, city_id_N, type_id_N, amount_range_id_N} → «PORT XX : 2.110».
+  Пакеты: 1 Econom, 2 Standard, 3 MAX (MAX — только розничным клиентам). Аукционы: Copart 1, IAAI 3,
+  Manheim 2, Adesa 4, AuctionPipeline 22, Canada 32, Sublot Copart 30, Sublot IAAI 31.
+  Типы: 1 седан, 2 джип, 3 мото, 4 квадроцикл, 7 «+200», 5 «1.5X», 6 «2X».
+  Пример Copart/CA/Martinez: Econom 2110, Standard 2160, MAX 2260; седан 2110, джип 2210, мото 1060,
+  квадро 1410, 1.5X 3315, 2X 4420, +200 2410. Авто дороже 15 000 $ — +1% (Standard/MAX).
+  Площадок: Copart 238, IAAI 217. /conf/title.php {txt} — проверка документа для экспорта.
+  Robots.txt нет. Предложение: снимок тарифов раз в неделю → JSON на нашем сайте, расчёт в браузере
+  (без зависимости от их сайта во время просмотра); ~1,5–2 тыс. запросов в неделю с паузами.
+- Макет: cloud/photos/40-USA-CALC-phone.png, -pc.png.
