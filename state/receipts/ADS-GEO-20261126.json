@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/ads_geo_001/20261126.json",
+  "live_source_environment": "production",
+  "probe_status": "FAIL",
+  "production_required": false,
+  "request_sha256": "762eec636cca2bda0de209e3cc9762eed5cb5ba36ca37741ab8c58c788512dd6",
+  "rollback_ready": true,
+  "rollback_ready_scope": "BEFORE_STATE_IN_REPORT_NO_SITE_OR_CRM_WRITES",
+  "run_id": "45753199842",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ADS-GEO-20261126",
+  "tests": "PASS",
+  "tests_scope": "GOOGLE_ADS_CAMPAIGN_GEO",
+  "unexpected_changes": 0
+}
