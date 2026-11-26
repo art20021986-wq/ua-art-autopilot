@@ -694,7 +694,8 @@ class TileCountsTest(unittest.TestCase):
                 return 4, False
 
             with mock.patch.multiple(job, OUT=out, LOCK=out / 'lock', PENDING=out / 'pending', WAITING=out / 'waiting',
-                                     STATE=out / 'state.json', CHECKED=out / 'check.json', due=lambda *a: True, read_login=lambda: ('a', 'b'),
+                                     STATE=out / 'state.json', CHECKED=out / 'check.json', HISTORY=out / 'history.json',
+                                     due=lambda *a: True, read_login=lambda: ('a', 'b'),
                                      localize_photos=lambda items, folder: items, priced=lambda d, b, until=None: (d, False),
                                      publish_lots=publish), \
                     mock.patch.object(job.session, 'Session', lambda: None), \
