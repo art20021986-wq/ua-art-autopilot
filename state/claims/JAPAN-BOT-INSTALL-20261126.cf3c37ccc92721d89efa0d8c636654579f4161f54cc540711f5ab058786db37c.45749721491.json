@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "b076ff0e8947e73bf079ca7664627e179a2141b816db3d05a42ed31cf7ce002e",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T03:37:17Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-26T03:42:21Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45749721491",
     "task_id": "JAPAN-BOT-INSTALL-20261126",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45749721491-cf3c37ccc92721d8",
   "production_transaction_path": "state/transactions/JAPAN-BOT-INSTALL-20261126.cf3c37ccc92721d89efa0d8c636654579f4161f54cc540711f5ab058786db37c.45749721491.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-5e60a64a83ad1bc9-aa8d41daac0ca9aa",
   "receipt_path": "state/receipts/JAPAN-BOT-INSTALL-20261126.json",
   "receipt_validation_status": "PENDING",
@@ -91,5 +91,5 @@
       "cloud/japan_stock_001/ua_car_country.py": "4658f6ba820d81cdf0f9c486680aa660c39eeafb0cc32f53894631d9d531ec06"
     }
   },
-  "updated_at": "2026-11-26T03:37:17Z"
+  "updated_at": "2026-11-26T03:42:21Z"
 }
