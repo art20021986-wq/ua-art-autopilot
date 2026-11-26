@@ -18,11 +18,11 @@ class RemoteTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             home = Path(temp)
             (home / 'ua_order').mkdir()
-            (home / 'ua_seo_landings.py').write_text('X = 1\nTOKEN = "abc"\nurl = "https://evil.example/x"\n')
+            (home / 'analitika_yadro.py').write_text('X = 1\nTOKEN = "abc"\nurl = "https://evil.example/x"\n')
             value = remote.report(home)
         files = value['files']
-        self.assertEqual(files['ua_order/quick.py'], {'present': False})
-        source = files['ua_seo_landings.py']['source']
+        self.assertEqual(files['analitika_bot.py'], {'present': False})
+        source = files['analitika_yadro.py']['source']
         self.assertIn('X = 1', source)
         self.assertNotIn('abc', source)
         self.assertNotIn('evil.example', source)
