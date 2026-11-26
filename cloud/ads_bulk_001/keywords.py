@@ -53,8 +53,15 @@ MODEL_GROUPS = {'Kia K5': ('k5', 'к5'), 'Hyundai Sonata': ('sonata', 'сона�
                 'Kia Sportage': ('sportage', 'спортейдж'), 'Hyundai Santa Fe': ('santa fe', 'санта фе')}
 NEGATIVE_MORE = ['шрот', 'прокат', 'диски', 'расход', 'витрата', 'масло', 'аккумулятор', 'акумулятор', 'фары', 'фари',
                  'бампер', 'двигатель', 'двигун', 'коробка передач', 'кпп', 'страховка', 'страхування', 'такси', 'таксі',
-                 'машинка', 'мультик', 'раскраска', 'гта', 'gta', 'симулятор', 'обои', 'шпалери', 'чехлы', 'коврики']
+                 'машинка', 'мультик', 'раскраска', 'гта', 'gta', 'симулятор', 'обои', 'шпалери', 'чехлы', 'коврики',
+                 'розборка', 'разборка', 'запчастини', 'запчасти']
 PER_DAY = 2400
+# Owner 2026-11-26 (via the coordinator, «Все да»): as many narrow «model + year from Korea» searches as possible — few
+# searches each, but real buyers. Phrase match also catches «купити … під ключ», «… під замовлення», «… ціна» around it.
+YEARS = range(2012, 2026)
+YEAR_UK = ['{m} {y} з кореї']
+YEAR_RU = ['{m} {y} из кореи', '{m} {y} с кореи']
+AUCTION = {'uk': 'UA — Аукціон — ', 'ru': 'RU — Аукцион — '}
 
 
 def names(brand):
@@ -105,6 +112,16 @@ def plan():
                     continue
                 seen.add(phrase)
                 groups.setdefault(group_of(lang, brand, phrase), []).append(phrase)
+    for brand in BRANDS:
+        for lang, pattern in (('uk', YEAR_UK), ('ru', YEAR_RU)):
+            for name in names(brand):
+                for year in YEARS:
+                    for p in pattern:
+                        phrase = p.format(m=name, y=year)
+                        if phrase in seen or len(phrase) > 80 or len(phrase.split()) > 10:
+                            continue
+                        seen.add(phrase)
+                        groups.setdefault(AUCTION[lang] + brand, []).append(phrase)
     return groups
 
 

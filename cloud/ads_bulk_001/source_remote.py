@@ -6,6 +6,8 @@
 2. Today's part of keywords.plan() (keywords.today: up to PER_DAY, phrase match, skipping any already in the group) in
    chunks of CHUNK operations, partialFailure; refused ones are listed (the Explorer API level allows ~2 880
    operations a day — the rest goes in the next run).
+3. 2026-11-26 (owner «Все да»): «model + year from Korea» groups «UA — Аукціон — <brand>» / «RU — Аукцион — <brand>»
+   to the auction lots page korea.html, headlines about the lots first; ceiling 2 UAH.
 State before and after in the report; budget and other settings unchanged. No site, CRM or bot change.
 """
 import argparse
@@ -25,6 +27,11 @@ CEILING_UAH = 2  # owner 2026-11-26 «сразу на 2 гривни» (was 1)
 # 2026-11-26: the campaign may be renamed «Пошук — Україна — Корея (UA ART)» (owner «Да, переименуй»).
 NAMES = "'%s', 'Пошук — Україна — Корея (UA ART)'" % plan.NAME
 CHUNK = 600
+AUCTION_PAGE = plan.SITE + 'korea.html'  # the lots of the coming Korean auctions (filters by make, model, year)
+AUCTION_HEAD = {'uk': ['Лоти аукціонів Кореї щодня', 'Ціни та фото кожного лоту', 'Фільтр: марка, модель, рік',
+                       'Ставка онлайн разом з нами', 'Курс НБУ щодня'],
+                'ru': ['Лоты аукционов Кореи ежедневно', 'Цены и фото каждого лота', 'Фильтр: марка, модель, год',
+                       'Ставка онлайн вместе с нами', 'Курс НБУ каждый день']}
 HUB = {'uk': plan.SITE + 'seo/ua/avto-z-korei-do-kyieva-pid-kluch.html',
        'ru': plan.SITE + 'seo/ru/avto-iz-korei-v-kiev-pod-kluch.html'}
 CAMPAIGN = ("SELECT campaign.resource_name, campaign.target_spend.cpc_bid_ceiling_micros, campaign_budget.amount_micros "
@@ -63,11 +70,14 @@ def state(customer, headers, opener=urllib.request.urlopen):
 
 def ad_texts(group):
     lang = 'uk' if group.startswith('UA') else 'ru'
-    brand = group.split(' — ', 1)[1]
+    auction = group.startswith(tuple(keywords.AUCTION.values()))
+    brand = group.rsplit(' — ', 1)[1] if auction else group.split(' — ', 1)[1]
     first = {'Інші марки з Кореї': 'Будь-яка марка з Кореї', 'Другие марки из Кореи': 'Любая марка из Кореи'}.get(
         brand, '%s %s' % (brand, 'з Кореї' if lang == 'uk' else 'из Кореи'))
     head = ([first, 'Авто з Кореї під ключ'] + plan.UK_HEAD) if lang == 'uk' else \
         ([first, 'Авто из Кореи под ключ'] + plan.RU_HEAD)
+    if auction:
+        head = [first] + AUCTION_HEAD[lang] + head[1:]
     head = [h for n, h in enumerate(head) if len(h) <= 30 and h not in head[:n]][:15]
     return lang, head, plan.UK_DESC if lang == 'uk' else plan.RU_DESC
 
@@ -88,7 +98,8 @@ def first_operations(customer, current):
         ops.append({'adGroupOperation': {'create': {'resourceName': temp, 'name': group, 'status': 'ENABLED',
                                                     'campaign': campaign['resourceName'], 'type': 'SEARCH_STANDARD'}}})
         ops.append({'adGroupAdOperation': {'create': {'adGroup': temp, 'status': 'ENABLED', 'ad': {
-            'finalUrls': [HUB[lang]], 'responsiveSearchAd': {'headlines': [{'text': h} for h in head],
+            'finalUrls': [AUCTION_PAGE if group.startswith(tuple(keywords.AUCTION.values())) else HUB[lang]],
+            'responsiveSearchAd': {'headlines': [{'text': h} for h in head],
                                                              'descriptions': [{'text': d} for d in desc],
                                                              'path1': 'korea', 'path2': 'kyiv' if lang == 'uk' else 'kiev'}}}}})
     return ops
