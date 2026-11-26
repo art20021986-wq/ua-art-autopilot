@@ -7,21 +7,23 @@
   "created_at": "2026-11-26T06:12:34Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T06:12:34Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-26T06:17:55Z",
+  "heartbeat_at": "2026-11-26T06:17:55Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45765787660",
     "task_id": "PERF-CWV-PROBE-20261126",
     "task_sha256": "5179414e7b9072058ac6de44f5bbe5d3e1947b1515a290b96b61d15c581c9432"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-3d07c6aff2ae35f6-cdcce04036345e3a",
   "receipt_path": "state/receipts/PERF-CWV-PROBE-20261126.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "0d98a681211f909a7557e694c5f5baadb07c81aabf6ac3c13b7fadcf933ae98f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/PERF-CWV-PROBE-20261126.json",
   "request_sha256": "5179414e7b9072058ac6de44f5bbe5d3e1947b1515a290b96b61d15c581c9432",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "bd3ccd1ef68a5d948aa20b1747fe6089f2d68df1",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91845636096,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.732
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-26T06:12:34Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "9a78ed8c2a535bf93197dab88dfd85540efed0bf5c453f28325da3ad939806b7",
+    "file_sha256": {
+      "cloud/perf_cwv_probe_001/bootstrap.py": "7ddc57a5285a244ea966bfd511ad4b5ee94b0f94795e126375a5b7aa2d989195",
+      "cloud/perf_cwv_probe_001/make_request.py": "376b952c60844046f5ade9db272bebae772f54b5fdd8a9fe15d3175ad18f2b79",
+      "cloud/perf_cwv_probe_001/source_remote.py": "299b0a490f11a9b9c031e35fd3e746ff16ffc2cd33a4f11ef4511193de521e34",
+      "cloud/perf_cwv_probe_001/test_perf_cwv_probe.py": "8aac8038745469267ce5ae4c65ef18b9bcfaa39721b1937f6ba452f1db4ee114",
+      "cloud/perf_cwv_probe_001/transport.py": "1c6e09d1007810598244dc3a428bc255175b92bffc2ad648d391ea812e38eeae"
+    }
+  },
+  "updated_at": "2026-11-26T06:17:55Z"
 }
