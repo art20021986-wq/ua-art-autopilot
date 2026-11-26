@@ -17,9 +17,13 @@ import transport  # noqa: E402
 KEYS = {'developer_token': 'DEVTOKEN' + 'x' * 14, 'client_id': '1' * 12 + '-abc.apps.' + 'googleusercontent.com',
         'client_secret': 'GOC' + 'SPX-' + 'q' * 28, 'refresh_token': '1//' + 'r' * 40,
         'login_customer_id': '9054959760', 'customer_id': '4680747874'}
-REGIONS = [('1', 'Autonomous Republic of Crimea', 'Region'), ('2', 'Sevastopol', 'City'), ('3', 'Luhansk Oblast', 'Region'),
-           ('4', 'Donetsk Oblast', 'Region'), ('5', 'Zaporizhzhia Oblast', 'Region'), ('6', 'Kherson Oblast', 'Region'),
-           ('7', 'Kherson', 'City'), ('8', 'Kharkiv Oblast', 'Region'), ('21118', 'Kyiv city', 'Region')]
+NAMES = ['Kyiv Oblast', 'Zhytomyr Oblast', 'Vinnytsia Oblast', 'Cherkasy Oblast', 'Kirovohrad Oblast', 'Poltava Oblast',
+         "Chernihiv Oblast", 'Mykolaiv Oblast', 'Odesa Oblast', "Khmel'nyts'kyi Oblast", 'Rivne Oblast', 'Volyn Oblast',
+         'Lviv Oblast', 'Ternopil Oblast', 'Ivano-Frankivsk Oblast', 'Zakarpattia Oblast', 'Chernivtsi Oblast',
+         'Zaporizhia Oblast', 'Kherson Oblast', 'Kharkiv Oblast', 'Sumy Oblast', 'Dnipropetrovsk Oblast']
+REGIONS = ([(str(100 + n), name, 'Region') for n, name in enumerate(NAMES)] + [('21118', 'Kyiv city', 'Region')]
+           + [('900', 'Zaporizhzhia', 'City'), ('901', 'Kherson', 'City'), ('902', 'Dnipro', 'City'),
+              ('903', 'Kharkiv', 'City'), ('904', 'Sumy', 'City'), ('905', 'Kyiv', 'City')])
 
 
 class Response(io.BytesIO):
@@ -35,7 +39,8 @@ class Response(io.BytesIO):
 class Google:
     def __init__(self, regions=REGIONS):
         self.regions = regions
-        self.criteria = {'c/1': ('geoTargetConstants/21118', False), 'c/2': ('geoTargetConstants/21580', False)}
+        self.criteria = {'c/1': ('geoTargetConstants/21118', False), 'c/2': ('geoTargetConstants/2804', False),
+                         'c/3': ('geoTargetConstants/121', True)}
         self.calls = []
 
     def __call__(self, request, timeout=None):
@@ -70,24 +75,27 @@ class RemoteTests(unittest.TestCase):
         path.write_text(json.dumps(KEYS))
         return path
 
-    def test_ukraine_minus_six_regions(self):
+    def test_exact_places(self):
         google = Google()
         with tempfile.TemporaryDirectory() as temp:
             value = json.loads(remote.report(self.keys_file(temp), google))
             again = json.loads(remote.report(self.keys_file(temp), google))
-        self.assertEqual(value['status'], 'PASS')
-        self.assertEqual(sorted(value['exclude'].values()), sorted(['Autonomous Republic of Crimea', 'Sevastopol',
-                         'Luhansk Oblast', 'Donetsk Oblast', 'Zaporizhzhia Oblast', 'Kherson Oblast']))
-        self.assertEqual(list(value['after']['positive']), [remote.UKRAINE])
-        self.assertNotIn('geoTargetConstants/8', value['after']['negative'])  # Kharkiv stays
+        self.assertEqual((value['status'], again['status']), ('PASS', 'PASS'))
+        names = set(value['target'].values())
+        self.assertEqual(len(names), 23)
+        for out in ('Zaporizhia Oblast', 'Kherson Oblast', 'Kharkiv Oblast', 'Sumy Oblast', 'Dnipropetrovsk Oblast'):
+            self.assertNotIn(out, names)
+        self.assertTrue({n.split(' (')[0] for n in names} >= {'Zaporizhzhia', 'Kherson', 'Dnipro', 'Kharkiv', 'Sumy',
+                                                               "Khmel'nyts'kyi Oblast", 'Kyiv city'})
+        self.assertEqual(value['after']['negative'], {})
+        self.assertNotIn('geoTargetConstants/2804', value['after']['positive'])
         self.assertEqual(len([u for u, _ in google.calls if u.endswith(':mutate')]), 1)
-        self.assertEqual(again['status'], 'PASS')
 
-    def test_missing_region_changes_nothing(self):
-        google = Google([r for r in REGIONS if 'Crimea' not in r[1]])
+    def test_missing_place_changes_nothing(self):
+        google = Google([r for r in REGIONS if r[1] != 'Sumy'])
         with tempfile.TemporaryDirectory() as temp:
             value = json.loads(remote.report(self.keys_file(temp), google))
-        self.assertEqual((value['status'], value['error']), ('FAIL', 'REGIONS_NOT_FOUND'))
+        self.assertEqual((value['status'], value['error']), ('FAIL', 'LOCATIONS_NOT_FOUND'))
         self.assertFalse([u for u, _ in google.calls if u.endswith(':mutate')])
 
 

@@ -22,17 +22,17 @@ def request(day):
     task = 'ADS-GEO-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Owner 2026-11-26 «на всю Украину теперь рекламу, кроме Крыма, Луганской, Донецкой и прифронтовых зон». '
-                       'Bounded run in the existing private inbox: upload this package, run source_remote.py once in a '
-                       'temporary always-on task (removed after its receipt; never the CRM bot) which targets Ukraine instead '
-                       'of Kyiv and excludes Crimea, Sevastopol, Luhansk, Donetsk, Zaporizhzhia and Kherson (found by name; '
-                       'nothing changes if one is missing), state before and after in the report. No site, CRM or bot change.',
+        'description': 'Owner 2026-11-26 via the coordinator (final): 18 central and western regions in full and only the cities '
+                       'Zaporizhzhia, Kherson, Dnipro, Kharkiv, Sumy; nothing toward Donetsk. Bounded run in the existing '
+                       'private inbox: upload this package, run source_remote.py once in a temporary always-on task (removed '
+                       'after its receipt; never the CRM bot) which sets exactly these locations (each found once by name, or '
+                       'nothing changes), state before and after in the report. No site, CRM or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
                       'receipt_path': 'state/receipts/%s.json' % task, 'test_paths': TESTS, 'timeout_seconds': 900},
         'production_required': False, 'read_only': False, 'requested_min_class': 'STANDARD',
-        'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Google Ads geography: Ukraine'}
+        'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Google Ads geography: regions and cities'}
     path = 'tasks/requests/%s.json' % task
     with open(path, 'x') as handle:
         handle.write(json.dumps(value, sort_keys=True, separators=(',', ':')))

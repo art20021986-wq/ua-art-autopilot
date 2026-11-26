@@ -1,10 +1,11 @@
-"""Campaign geography (owner 2026-11-26: «на всю Украину теперь рекламу, кроме Крыма, Луганской, Донецкой и прифронтовых
-зон»).
+"""Campaign geography (owner 2026-11-26 via the coordinator, final: «Запорожье город, Херсон, Днепропетровский город
+показывать. И все, что ближе ко Львову … В сторону Донецка … не показывать»; «Да» — Харьков и Сумы, только города).
 
-Targets Ukraine (geoTargetConstants/2804) instead of Kyiv city + Kyiv Oblast and excludes, as negative locations, the
-regions found by name in Google's location list: Crimea, Sevastopol, Luhansk, Donetsk, Zaporizhzhia and Kherson oblasts
-(EXCLUDE; Kharkiv and Sumy only if the owner says so). One all-or-nothing googleAds:mutate; people located there only
-(the campaign's PRESENCE setting stays). State before and after in the report. No site, CRM or bot change.
+R2: R1 stopped safely (Crimea, Sevastopol, Donetsk and Luhansk were not found under those names), so nothing is
+excluded: only the wanted places are targeted. The campaign now targets exactly: 18 central and western regions in full, and only the cities of
+Zaporizhzhia, Kherson, Dnipro, Kharkiv and Sumy; every other location criterion is removed. Each name must be found
+exactly once in Google's list, or nothing changes. One all-or-nothing googleAds:mutate; people located there only.
+State before and after in the report. No site, CRM or bot change.
 """
 import argparse
 import json
@@ -18,14 +19,27 @@ import source_check as check
 
 HERE = Path(__file__).resolve().parent
 NAME = 'Пошук — Київ — Корея (UA ART)'
-UKRAINE = 'geoTargetConstants/2804'
-EXCLUDE = ('Crimea', 'Sevastopol', 'Luhansk', 'Donetsk', 'Zaporiz', 'Kherson')
+# Region stems (Google's English names; spelling variants) — whole regions.
+REGIONS_IN = {'Kyiv city': ('Kyiv city',), 'Kyiv Oblast': ('Kyiv Oblast',), 'Zhytomyr': ('Zhytomyr',),
+              'Vinnytsia': ('Vinnyts',), 'Cherkasy': ('Cherkas',), 'Kirovohrad': ('Kirovohrad', 'Kirovograd', 'Kropyvnyts'),
+              'Poltava': ('Poltav',), 'Chernihiv': ('Chernih',), 'Mykolaiv': ('Mykolai', 'Nikolaev'),
+              'Odesa': ('Odes',), 'Khmelnytskyi': ('Khmelnyts',), 'Rivne': ('Rivne', 'Rovno'), 'Volyn': ('Volyn',),
+              'Lviv': ('Lviv',), 'Ternopil': ('Ternopil',), 'Ivano-Frankivsk': ('Ivano-Frankivsk',),
+              'Zakarpattia': ('Zakarpat', 'Transcarpath'), 'Chernivtsi': ('Chernivts',)}
+# Only the city (its region stays out).
+CITIES_IN = {'Zaporizhzhia': ('Zaporizhzhia', 'Zaporizhia', 'Zaporozhye'), 'Kherson': ('Kherson',),
+             'Dnipro': ('Dnipro', 'Dnipropetrovsk'), 'Kharkiv': ('Kharkiv',), 'Sumy': ('Sumy',)}
+
+
+def plain(name):
+    return name.replace("'", '').replace('’', '')
 CAMPAIGN = "SELECT campaign.resource_name FROM campaign WHERE campaign.name = '%s'" % NAME
 LOCATIONS = ("SELECT campaign_criterion.resource_name, campaign_criterion.location.geo_target_constant, "
              "campaign_criterion.negative FROM campaign_criterion WHERE campaign.name = '%s' "
              "AND campaign_criterion.type = 'LOCATION'" % NAME)
 REGIONS = ("SELECT geo_target_constant.resource_name, geo_target_constant.name, geo_target_constant.target_type, "
-           "geo_target_constant.status FROM geo_target_constant WHERE geo_target_constant.country_code = 'UA'")
+           "geo_target_constant.canonical_name, geo_target_constant.status FROM geo_target_constant "
+           "WHERE geo_target_constant.country_code = 'UA'")
 WIDE = ('Region', 'Autonomous Republic', 'Province', 'State', 'Territory')
 
 
@@ -37,16 +51,27 @@ def read(customer, headers, query, opener=urllib.request.urlopen):
     return answer.get('results', [])
 
 
-def excluded(rows):
-    """Regions to exclude: every enabled region whose name has one of EXCLUDE (Sevastopol is a city-level region)."""
-    found = {}
-    for r in rows:
-        g = r['geoTargetConstant']
-        if g.get('status', 'ENABLED') != 'ENABLED':
-            continue
-        if any(word in g['name'] for word in EXCLUDE) and (g.get('targetType') in WIDE or 'Sevastopol' in g['name']):
-            found[g['resourceName']] = g['name']
-    return found
+def wanted(rows):
+    """({resource: name} to target, [missing]): each region stem must match one whole region, each city one city."""
+    live = [r['geoTargetConstant'] for r in rows if r['geoTargetConstant'].get('status', 'ENABLED') == 'ENABLED']
+    found, missing = {}, []
+    for label, stems in REGIONS_IN.items():
+        hits = [g for g in live if g.get('targetType') in WIDE and any(plain(g['name']).startswith(s) for s in stems)]
+        if label == 'Kyiv city':
+            hits = [g for g in live if g['name'] == 'Kyiv city']
+        if label == 'Kyiv Oblast':
+            hits = [g for g in live if g['name'] == 'Kyiv Oblast']
+        if len(hits) == 1:
+            found[hits[0]['resourceName']] = hits[0]['name']
+        else:
+            missing.append('%s:%d' % (label, len(hits)))
+    for label, stems in CITIES_IN.items():
+        hits = [g for g in live if g.get('targetType') == 'City' and plain(g['name']) in stems]
+        if len(hits) == 1:
+            found[hits[0]['resourceName']] = '%s (%s)' % (hits[0]['name'], hits[0].get('canonicalName', ''))
+        else:
+            missing.append('%s:%s' % (label, [h['name'] for h in hits][:4]))
+    return found, missing
 
 
 def state(customer, headers, opener=urllib.request.urlopen):
@@ -59,14 +84,11 @@ def state(customer, headers, opener=urllib.request.urlopen):
             'negative': {c['location']['geoTargetConstant']: c['resourceName'] for c in locations if c.get('negative')}}
 
 
-def operations(current, exclude):
-    ops = [{'campaignCriterionOperation': {'remove': name}} for geo, name in current['positive'].items() if geo != UKRAINE]
-    if UKRAINE not in current['positive']:
-        ops.append({'campaignCriterionOperation': {'create': {'campaign': current['campaign'],
-                                                              'location': {'geoTargetConstant': UKRAINE}}}})
-    ops += [{'campaignCriterionOperation': {'create': {'campaign': current['campaign'], 'negative': True,
-                                                       'location': {'geoTargetConstant': geo}}}}
-            for geo in sorted(exclude) if geo not in current['negative']]
+def operations(current, target):
+    ops = [{'campaignCriterionOperation': {'remove': name}} for geo, name in current['positive'].items() if geo not in target]
+    ops += [{'campaignCriterionOperation': {'remove': name}} for name in current['negative'].values()]
+    ops += [{'campaignCriterionOperation': {'create': {'campaign': current['campaign'], 'location': {'geoTargetConstant': geo}}}}
+            for geo in sorted(target) if geo not in current['positive']]
     return ops
 
 
@@ -75,15 +97,14 @@ def run(keys, opener=urllib.request.urlopen):
     headers = {'Authorization': 'Bearer ' + token, 'developer-token': keys['developer_token'],
                'login-customer-id': keys['login_customer_id'], 'Content-Type': 'application/json'}
     customer = keys['customer_id']
-    exclude = excluded(read(customer, headers, REGIONS, opener))
-    value = {'exclude': exclude}
-    names = ' '.join(exclude.values())
-    if not all(word in names for word in EXCLUDE):
-        value.update(status='FAIL', error='REGIONS_NOT_FOUND')
+    target, missing = wanted(read(customer, headers, REGIONS, opener))
+    value = {'target': target}
+    if missing:
+        value.update(status='FAIL', error='LOCATIONS_NOT_FOUND', missing=missing)
         return value
     before = state(customer, headers, opener)
     value['before'] = before
-    ops = operations(before, exclude)
+    ops = operations(before, target)
     if ops:
         status, answer = check.call(check.API + 'customers/%s/googleAds:mutate' % customer,
                                     json.dumps({'mutateOperations': ops}).encode(), headers, opener)
@@ -92,8 +113,7 @@ def run(keys, opener=urllib.request.urlopen):
             return value
     after = state(customer, headers, opener)
     value['after'] = after
-    value['status'] = 'PASS' if list(after['positive']) == [UKRAINE] and set(exclude) <= set(after['negative']) \
-        else 'NOT_APPLIED'
+    value['status'] = 'PASS' if set(after['positive']) == set(target) and not after['negative'] else 'NOT_APPLIED'
     return value
 
 
