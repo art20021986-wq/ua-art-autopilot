@@ -24,7 +24,7 @@ import usa_costs
 
 BASE = 'https://newshipping.2mcars.ge/conf/'
 PACKAGE = 2                                   # Standard
-AUCTIONS = (1, 3, 2, 4, 22, 30, 31)           # Copart, IAAI, Manheim, Adesa, AuctionPipeline, sublots (no Canada)
+AUCTIONS = (1, 3, 2, 4)                      # Copart, IAAI, Manheim, Adesa (sublots/pipeline are street addresses)
 TYPES = (1, 2)                                # car, SUV
 PAUSE = 0.5                                   # seconds between requests
 MIN_YARDS = 300                               # fewer means the source changed: keep the old file
@@ -58,9 +58,11 @@ def price(text):
 
 
 def yard(label, state):
-    """'Martinez / MARTINEZ / 94553' -> ('Martinez', 'martinez 94553')."""
+    """'Martinez / MARTINEZ / 94553' -> ('Martinez', 'martinez 94553 ca'); a street address -> None."""
     parts = [p.strip().strip('"') for p in label.split('/')]
     name = parts[0].title()
+    if not name or name[0].isdigit() or ',' in name:
+        return None
     words = ' '.join(dict.fromkeys(p.lower() for p in parts if p))
     return name, '%s %s' % (words, state.lower())
 
@@ -77,14 +79,18 @@ def collect(ask=post):
                                                               'city_id_%d' % n: city_id, 'type_id_%d' % n: kind})))
                 if None in prices:
                     continue
-                name, words = yard(label, state)
+                found = yard(label, state)
+                if found is None:
+                    continue
+                name, words = found
                 old = yards.setdefault((name, state), [name, state, 0, 0, ''])
                 old[2], old[3] = max(old[2], prices[0]), max(old[3], prices[1])
                 old[4] = ' '.join(dict.fromkeys((old[4] + ' ' + words).split()))
     return sorted(yards.values(), key=lambda y: (y[0], y[1]))
 
 
-def write(yards, today=None, path=PATH):
+def write(yards, today=None, path=None):
+    path = path or PATH
     if len(yards) < MIN_YARDS:
         raise SyncError('too few yards: %d' % len(yards))
     data = {'version': 1, 'updated': (today or datetime.date.today()).isoformat(), 'costs': usa_costs.public(),
