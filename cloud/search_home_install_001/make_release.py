@@ -26,8 +26,9 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
                                 'make_release.py', 'release_constants.py', 'offer_text.py', 'logistics_port.py',
-                                'ua_usa_page.py', 'usa_costs.py', 'usa_tariffs_sync.py', 'usa-calc.js',
-                                'usa_tariffs.json')] + [
+                                'ua_usa_page.py', 'usa_costs.py', 'usa_tariffs_sync.py')] + [
+    # usa-calc.js and usa_tariffs.json travel in the bundle; the contract pins only .py files, the preview plan pins
+    # their exact written bytes (after sha256), which the install then requires
     P + 'korea_auction/%s.py' % n for n in ('__init__', 'alert', 'catalog', 'check', 'collect', 'color', 'country_tabs',
                                             'drive', 'fuel', 'holidays', 'house_days',
                                             'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public',
