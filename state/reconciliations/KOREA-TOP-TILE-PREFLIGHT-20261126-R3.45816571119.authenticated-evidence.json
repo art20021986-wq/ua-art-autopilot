@@ -1,0 +1,17 @@
+{
+  "cause": "Network timeout from the GitHub runner to the PythonAnywhere API on POST always_on/ (transport), not a package error",
+  "claim_before_sha256": "1e915cd8e7fa5adeb3c9c6b7c52ae646335935301483e287fed4e58e42a899dd",
+  "error": "deployment_transport.TransportError: NETWORK_TimeoutError -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: remote preview, creating the temporary always-on task",
+  "leftover_temporary_task": "unknown: the timed-out POST may have created the preview task; the retry first removes only its own preview tasks (transport.drop_stale_previews, #2178)",
+  "owner_approval": "«Да» in the coordinator chat 2026-11-26 to closing the stopped home-page auctions preview after the network timeout",
+  "precedent": "state/reconciliations/KOREA-TOP-TILE-PREFLIGHT-20261126.45811316737.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-26T13:10:00+00:00",
+  "remote_mode": "preview (reads only)",
+  "retry": "KOREA-TOP-TILE-PREFLIGHT-20261126-R4",
+  "run_id": "45816571119",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "KOREA-TOP-TILE-PREFLIGHT-20261126-R3"
+}
