@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "a08bf6577f67d4db"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-26T07:40:00+00:00",
+      "class": "PREVIEW_SMOKE_COUNT",
+      "evidence_path": "state/reconciliations/VISITORS-UA-PREFLIGHT-20261126.45767032620.authenticated-evidence.json",
+      "message": "The read-only preview stopped at its own smoke check (expected one \"v_an_ua\" in analitika_knopka.py, found two: button and routing); nothing written to the site or CRM. Owner «Да» to closing the claim; retried as VISITORS-UA-PREFLIGHT-20261126-R3.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-26T06:24:13Z",
@@ -42,6 +51,6 @@
   "source_commit": "81f3246c7a557f05ffeba61098f302f1f4fb4512",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-26T06:28:23Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-26T07:40:00+00:00"
 }
