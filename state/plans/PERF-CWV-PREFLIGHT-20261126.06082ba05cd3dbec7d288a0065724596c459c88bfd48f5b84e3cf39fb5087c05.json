@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PERF-CWV-PREFLIGHT-20261126.06082ba05cd3dbec7d288a0065724596c459c88bfd48f5b84e3cf39fb5087c05.json",
+  "autostart_ledger_sha256": "6a106542cabb69d9368e229cc6eec5b37a97d67b40453c8c34d5337eae97c72b",
+  "autostart_source_commit": "522440c69772bd38c6233b60e35bc8fd216be227",
+  "created_at": "2026-11-26T07:29:56Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45775564927",
+    "task_id": "PERF-CWV-PREFLIGHT-20261126",
+    "task_sha256": "06082ba05cd3dbec7d288a0065724596c459c88bfd48f5b84e3cf39fb5087c05"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-30908df3c39f7c42-5f7c9b18185fbe15",
+  "request_path": "tasks/requests/PERF-CWV-PREFLIGHT-20261126.json",
+  "resource_locks": [
+    "PATH_SCOPE:30908df3c39f7c42"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
