@@ -33,6 +33,7 @@ class Sync(unittest.TestCase):
 
     def test_yard(self):
         self.assertEqual(sync.yard('Martinez / MARTINEZ / 94553', 'CA'), ('Martinez', 'martinez 94553 ca'))
+        self.assertIsNone(sync.yard('1107 Broadway Pasadena, Tx, 77506 / X / 1', 'TX'))
 
     def test_collect_merges_auctions_by_max(self):
         def ask(name, data):

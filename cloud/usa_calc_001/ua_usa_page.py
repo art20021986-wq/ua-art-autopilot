@@ -84,7 +84,7 @@ STYLE = (
     '.ua-us .tot b{font-size:34px;color:#ffd000;line-height:1.2}'
     '.ua-us details{margin-top:10px}.ua-us summary{font-weight:700;font-size:14px;color:#5a6678;cursor:pointer}'
     '.ua-us .res div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #eef1f5;font-size:14px}'
-    '.ua-us .res b{white-space:nowrap}'
+    '.ua-us .res b{white-space:nowrap}.ua-us .calc p{font-size:13px;color:#5a6678;margin:8px 0 0}'
     '.ua-us a.go{display:block;text-align:center;margin-top:18px;padding:15px;border-radius:12px;font-weight:800;'
     'color:#111;text-decoration:none;background:linear-gradient(90deg,#ffd000,#ff8a00)}'
     '.ua-us-offer{margin:14px 16px 0;padding:14px 16px;border:1px solid rgba(212,175,55,.55);border-radius:14px;'

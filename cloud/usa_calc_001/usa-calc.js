@@ -44,7 +44,7 @@
     out.innerHTML = '<div class="tot"><span>' + w.total + '</span><b>' + money(sum) + '</b><small>' + w.plus + '</small></div>' +
       '<details><summary>' + w.inc + ' ' + money(sum) + '</summary><div class="res">' +
       rows.map(function (r) { return '<div><span>' + r[0] + '</span><b>' + money(r[1]) + '</b></div>'; }).join('') +
-      '</div><p>' + w.exp + '</p><p>' + w.date + ': ' + esc(data.updated) + '</p></details>';
+      '</div><p>' + w.exp + '</p><p>' + w.date + ': ' + esc(String(data.updated).split('-').reverse().join('.')) + '</p></details>';
   }
 
   function close() { list.hidden = true; input.setAttribute('aria-expanded', 'false'); input.removeAttribute('aria-activedescendant'); active = -1; }
