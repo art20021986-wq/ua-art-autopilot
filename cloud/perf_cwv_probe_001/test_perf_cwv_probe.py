@@ -25,6 +25,9 @@ class RemoteTests(unittest.TestCase):
         (self.home / 'korea_auction/tick.py').write_text('X = "ua-korea-ticker"\n', encoding='utf-8')
         (self.home / 'backups').mkdir()
         (self.home / 'backups/old.py').write_text('X = "ua-korea-ticker"\n', encoding='utf-8')
+        (self.home / 'spec_x').mkdir()
+        (self.home / 'spec_x/old.py').write_text('X = "ua-korea-ticker"\n', encoding='utf-8')
+        (self.home / 'brand.py').write_text('M = "<!--UA-BRAND-HOME-V1-->"\n', encoding='utf-8')
         site = self.home / remote.USERCUSTOMIZE
         site.parent.mkdir(parents=True)
         site.write_text('import vitrina  # mcf-chat\n', encoding='utf-8')
@@ -44,6 +47,8 @@ class RemoteTests(unittest.TestCase):
         self.assertIn(remote.USERCUSTOMIZE, value['full_sources'])
         self.assertNotIn('other.py', value['files'])
         self.assertNotIn('backups/old.py', value['files'])
+        self.assertNotIn('spec_x/old.py', value['files'])
+        self.assertEqual(value['files']['brand.py']['hits']['UA-BRAND-HOME'], [1])
         for secret in ('AAAAAAAA', '222 2002'):
             self.assertNotIn(secret, text)
         self.assertNotIn('_text', text)

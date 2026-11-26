@@ -28,7 +28,8 @@ def request(day):
                        'server .py and template files (and usercustomize.py) contain the home Korea ticker, card header style, '
                        'language switcher, card stage labels and catalog photo markers (line numbers), the sanitized full '
                        'source of the most relevant ones, whether Pillow can write WebP, whether ffmpeg exists, and the size '
-                       'of video/opt. No CRM read. No source, CRM, HTML, media or bot change.',
+                       'of video/opt. R2: also the writers of the blocks appended at the end of the cards (UA-BRAND-HOME and others), '
+                       'the photo gallery and the callers of ua_korea_home; archive, sandbox and spec_* copies skipped. No CRM read. No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
