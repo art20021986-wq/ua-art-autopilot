@@ -21,6 +21,7 @@ class RemoteTests(unittest.TestCase):
         (self.home / 'ua_delivery_status.py').write_text(
             'TOKEN = "123456789:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"\nCHOICES = (("korea", "kr_bought", 1, "В Корее"),)\n'
             'PHONE = "+380 99 222 2002"\n', encoding='utf-8')
+        (self.home / 'db.py').write_text('def get_card():\n    pass\n', encoding='utf-8')
         (self.home / 'other.py').write_text('print(1)\n', encoding='utf-8')
         (self.home / 'video').mkdir()
         (self.home / 'video/gen.py').write_text('kr_bought\n', encoding='utf-8')
@@ -39,11 +40,13 @@ class RemoteTests(unittest.TestCase):
         self.assertIn('CHOICES', value['full_sources']['ua_delivery_status.py'])
         self.assertEqual(value['files']['ua_delivery_status.py']['hits']['kr_bought'], [2])
         self.assertIn('shablon.html', value['files'])
+        self.assertIn('def get_card', value['full_sources']['db.py'])
         self.assertNotIn('other.py', value['files'])
         self.assertNotIn('video/gen.py', value['files'])
         for secret in ('AAAAAAAA', '222 2002', '380992222002', 'VINX'):
             self.assertNotIn(secret, text)
         self.assertNotIn('_text', text)
+        self.assertEqual(len(value['files']['ua_delivery_status.py']['sha256_full']), 64)
         self.assertEqual(value['crm_schema']['status_published_counts'], [['kr_bought', 1, 1]])
         self.assertIn('vin', value['crm_schema']['cars_columns'])
 
