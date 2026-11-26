@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/japan_stock_probe_001/20261126.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "91c0cdbe3fba9a91793d3b1f20f6aef3ce8ad9235c0dcbdbea9d584ceec103f6",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "45746280207",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "JAPAN-STOCK-PROBE-20261126",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}
