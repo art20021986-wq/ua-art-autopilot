@@ -7,21 +7,23 @@
   "created_at": "2026-11-26T14:28:43Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T14:28:43Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-26T14:30:51Z",
+  "heartbeat_at": "2026-11-26T14:30:51Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45839097213",
     "task_id": "ADS-CEIL-20261126-R2",
     "task_sha256": "b42fcef07cb6be66309df0e731a60ce39091fd6e7802e0c6cc3f5779e48a9e93"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-8921b4439e235a06-92e0f9e6b387a8f1",
   "receipt_path": "state/receipts/ADS-CEIL-20261126-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "f68ec759dfe3379d4239d718a433042658570e5cca0131d7c242940de0bfc395",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ADS-CEIL-20261126-R2.json",
   "request_sha256": "b42fcef07cb6be66309df0e731a60ce39091fd6e7802e0c6cc3f5779e48a9e93",
   "resource_locks": [
@@ -29,8 +31,28 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "6837e0fb954d2bbbc4cd183e95c2b0d3b23867f8",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 95013294080,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.688
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-26T14:28:43Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "8eb7b0dcd27b981f9e5405e36c6efd5a3eb3b6eee0255fd990be322c625a4140",
+    "file_sha256": {
+      "cloud/ads_ceiling_001/bootstrap.py": "b25c3f8d5772a5b4ac0a77de93bc1f297479cffd79f22ccb184414e8727f5a78",
+      "cloud/ads_ceiling_001/make_request.py": "74acb26f4259c7d959b9d69cf3ec6f2c175398f5bfae29b0e13c8fe0c128a358",
+      "cloud/ads_ceiling_001/source_check.py": "094f82cfebc1f43666b9cd58b92948efa84ee6669b18a29d2e8343046025c7d0",
+      "cloud/ads_ceiling_001/source_remote.py": "3e74e2c2a5de86d09967f0ef02671c32ff3466078a02808630ac64620131504f",
+      "cloud/ads_ceiling_001/test_ads_ceiling.py": "d542ab4c353651e508ca15d325de6e3f37db9cd0fa56664462bcece688218f36",
+      "cloud/ads_ceiling_001/transport.py": "840af5e470761a5792926c93ebecd7610d9236a7c7a71b736a3fe24885f1d66c"
+    }
+  },
+  "updated_at": "2026-11-26T14:30:51Z"
 }
