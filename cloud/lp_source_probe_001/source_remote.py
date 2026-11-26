@@ -15,10 +15,9 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FILES = ('analitika_yadro.py', 'analitika_otchet.py', 'analitika_bot.py', 'ua_own_counter.py', 'ua_page_depth.py',
-         'lead_bot.py')
-# R3 (owner «да» 2026-11-26: «Посетители из Украины» in the client bot «📊 Аналитика»): the counter core, its reports,
-# the bot screens, the page script injector and the client bot start file — to write the change against the live files.
+FILES = ('analitika_knopka.py', 'vitrina.py', 'ua_full_access.py', 'analitika_wsgi.py')
+# R4: the client bot's «📊 Аналитика» button and screens (vitrina, analitika_knopka), the full-rights list, and the
+# counter's web endpoint — for «🇺🇦 Посетители из Украины» (owner «да» 2026-11-26).
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|api_hash|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
                     r'|\b\d{6,12}:[A-Za-z0-9_-]{25,}\b|-----BEGIN')
 LONG_NUMBER = re.compile(r'(?<!\d)\+?\d[\d\s()-]{8,}\d(?!\d)')
