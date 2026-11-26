@@ -28,7 +28,7 @@ HERE = Path(__file__).resolve().parent
 KEYS_PATH = Path('/home/Carix/google_ads_api.json')
 TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token'
 API = 'https://googleads.googleapis.com/v26/'
-CAMPAIGN = 'Пошук — Київ — Корея (UA ART)'
+CAMPAIGN = "'Пошук — Київ — Корея (UA ART)', 'Пошук — Україна — Корея (UA ART)'"  # R9: old and new name
 QUERIES = {
     'manager': ('login', 'SELECT customer_client.id, customer_client.descriptive_name, customer_client.manager, '
                          'customer_client.status, customer_client.level FROM customer_client'),
@@ -44,10 +44,10 @@ QUERIES = {
     # R3 (after ADS-ENABLE, coordinator 2026-11-25): the campaign, its ads' review and the auto-applied recommendations.
     'campaign': ('client', "SELECT campaign.name, campaign.status, campaign.serving_status, campaign.primary_status, "
                            "campaign.primary_status_reasons, campaign_budget.amount_micros FROM campaign "
-                           "WHERE campaign.name = '%s'" % CAMPAIGN),
+                           "WHERE campaign.name IN (%s)" % CAMPAIGN),
     'ads': ('client', "SELECT ad_group.name, ad_group_ad.status, ad_group_ad.policy_summary.approval_status, "
                       "ad_group_ad.policy_summary.review_status, ad_group_ad.primary_status FROM ad_group_ad "
-                      "WHERE campaign.name = '%s'" % CAMPAIGN),
+                      "WHERE campaign.name IN (%s)" % CAMPAIGN),
     'auto_apply': ('client', 'SELECT recommendation_subscription.type, recommendation_subscription.status '
                              'FROM recommendation_subscription'),
 }
@@ -55,12 +55,12 @@ QUERIES = {
 QUERIES.update({
     'today': ('client', "SELECT campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, "
                         "metrics.average_cpc, metrics.average_cpm, metrics.conversions, metrics.search_impression_share FROM campaign "
-                        "WHERE campaign.name = '%s' AND segments.date DURING TODAY" % CAMPAIGN),
+                        "WHERE campaign.name IN (%s) AND segments.date DURING TODAY" % CAMPAIGN),
     'today_groups': ('client', "SELECT ad_group.name, metrics.impressions, metrics.clicks, metrics.cost_micros, "
-                               "metrics.conversions FROM ad_group WHERE campaign.name = '%s' AND segments.date DURING TODAY "
+                               "metrics.conversions FROM ad_group WHERE campaign.name IN (%s) AND segments.date DURING TODAY "
                                "AND metrics.impressions > 0" % CAMPAIGN),
     'today_terms': ('client', "SELECT search_term_view.search_term, metrics.impressions, metrics.clicks, "
-                              "metrics.cost_micros FROM search_term_view WHERE campaign.name = '%s' "
+                              "metrics.cost_micros FROM search_term_view WHERE campaign.name IN (%s) "
                               "AND segments.date DURING TODAY" % CAMPAIGN),
 })
 # R5 (owner 2026-11-25 «18 гривен это очень много… сэкономить цену за переход»): what sets the click price.
@@ -73,40 +73,49 @@ QUERIES.update({
                                  "ad_group_criterion.position_estimates.first_page_cpc_micros, "
                                  "ad_group_criterion.position_estimates.top_of_page_cpc_micros, "
                                  "metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.average_cpc "
-                                 "FROM keyword_view WHERE campaign.name = '%s' AND segments.date DURING TODAY "
+                                 "FROM keyword_view WHERE campaign.name IN (%s) AND segments.date DURING TODAY "
                                  "AND metrics.impressions > 0" % CAMPAIGN),
     'today_devices': ('client', "SELECT segments.device, metrics.impressions, metrics.clicks, metrics.cost_micros "
-                                "FROM campaign WHERE campaign.name = '%s' AND segments.date DURING TODAY" % CAMPAIGN),
+                                "FROM campaign WHERE campaign.name IN (%s) AND segments.date DURING TODAY" % CAMPAIGN),
     'today_hours': ('client', "SELECT segments.hour, metrics.impressions, metrics.clicks, metrics.cost_micros "
-                              "FROM campaign WHERE campaign.name = '%s' AND segments.date DURING TODAY" % CAMPAIGN),
+                              "FROM campaign WHERE campaign.name IN (%s) AND segments.date DURING TODAY" % CAMPAIGN),
     'today_share': ('client', "SELECT metrics.search_impression_share, metrics.search_rank_lost_impression_share, "
                               "metrics.search_budget_lost_impression_share, metrics.search_top_impression_share, "
                               "metrics.search_absolute_top_impression_share, metrics.ctr, metrics.conversions, "
-                              "metrics.interactions FROM campaign WHERE campaign.name = '%s' "
+                              "metrics.interactions FROM campaign WHERE campaign.name IN (%s) "
                               "AND segments.date DURING TODAY" % CAMPAIGN),
     'today_locations': ('client', "SELECT campaign.name, segments.geo_target_region, metrics.impressions, metrics.clicks, "
-                                  "metrics.cost_micros FROM geographic_view WHERE campaign.name = '%s' "
+                                  "metrics.cost_micros FROM geographic_view WHERE campaign.name IN (%s) "
                                   "AND segments.date DURING TODAY" % CAMPAIGN),  # R8: campaign.name in SELECT
 })
 # R7 (owner via the coordinator 2026-11-26: full feedback on the ads, from the live account): totals since the launch,
 # the campaign settings, keywords, negatives, locations, languages, schedule, ads.
 QUERIES.update({
     'since_launch': ('client', "SELECT metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.average_cpc, "
-                               "metrics.conversions FROM campaign WHERE campaign.name = '%s' "
+                               "metrics.conversions FROM campaign WHERE campaign.name IN (%s) "
                                "AND segments.date BETWEEN '2026-11-25' AND '2026-12-31'" % CAMPAIGN),
     'settings': ('client', "SELECT campaign.status, campaign.serving_status, campaign.primary_status, "
                            "campaign.target_spend.cpc_bid_ceiling_micros, campaign.network_settings.target_search_network, "
                            "campaign.network_settings.target_content_network, "
                            "campaign.geo_target_type_setting.positive_geo_target_type, campaign_budget.amount_micros "
-                           "FROM campaign WHERE campaign.name = '%s'" % CAMPAIGN),
+                           "FROM campaign WHERE campaign.name IN (%s)" % CAMPAIGN),
     'criteria': ('client', "SELECT campaign_criterion.type, campaign_criterion.negative, "
                            "campaign_criterion.location.geo_target_constant, campaign_criterion.language.language_constant, "
                            "campaign_criterion.ad_schedule.day_of_week, campaign_criterion.ad_schedule.start_hour, "
                            "campaign_criterion.ad_schedule.end_hour FROM campaign_criterion "
-                           "WHERE campaign.name = '%s'" % CAMPAIGN),
+                           "WHERE campaign.name IN (%s)" % CAMPAIGN),
     'keywords': ('client', "SELECT ad_group.name, ad_group_criterion.keyword.text, ad_group_criterion.status "
-                           "FROM ad_group_criterion WHERE campaign.name = '%s' AND ad_group_criterion.type = 'KEYWORD' "
+                           "FROM ad_group_criterion WHERE campaign.name IN (%s) AND ad_group_criterion.type = 'KEYWORD' "
                            "AND ad_group_criterion.negative = FALSE" % CAMPAIGN),
+})
+# R9 (owner 2026-11-26 «Три проверь»): are site leads counted in Google Ads — conversions by action for 30 days, the
+# account's tracking status, the GA4 link.
+QUERIES.update({
+    'conv_30d': ('client', "SELECT campaign.name, segments.conversion_action_name, metrics.all_conversions, metrics.conversions "
+                           "FROM campaign WHERE campaign.name IN (%s) AND segments.date DURING LAST_30_DAYS" % CAMPAIGN),
+    'conv_account_30d': ('client', "SELECT segments.conversion_action_name, metrics.all_conversions FROM customer "
+                                   "WHERE segments.date DURING LAST_30_DAYS"),
+    'links': ('client', 'SELECT product_link.resource_name, product_link.type FROM product_link'),
 })
 PLANNING = False  # R2: the Keyword Planner needs Basic access (DEVELOPER_TOKEN_NOT_APPROVED); R3 skips it
 UKRAINE = 'geoTargetConstants/2804'
