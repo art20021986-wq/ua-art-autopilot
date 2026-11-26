@@ -7,21 +7,23 @@
   "created_at": "2026-11-26T04:20:42Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T04:20:42Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-26T04:26:00Z",
+  "heartbeat_at": "2026-11-26T04:26:00Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45754438882",
     "task_id": "ADS-GEO-20261126-R2",
     "task_sha256": "8b86170246693746ab58bc7490ad74c702ea79ebce09e3742586c57fdacbc55d"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-6d94000298023445-fd1c2503ca68e9b3",
   "receipt_path": "state/receipts/ADS-GEO-20261126-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "f087bd46bbc1786a84df588875b7237144f1704cbb48166b13b0d6d47b4d31dc",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ADS-GEO-20261126-R2.json",
   "request_sha256": "8b86170246693746ab58bc7490ad74c702ea79ebce09e3742586c57fdacbc55d",
   "resource_locks": [
@@ -29,8 +31,28 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "3bc5aceaae9402b8dc6fc5b2ad4932a7b2696b54",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 95515734016,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.364
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-26T04:20:42Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "ac699ec2d30bc6f8164065b11945df149f0ac03efcdf9228c2740f6b78f8f6a6",
+    "file_sha256": {
+      "cloud/ads_geo_001/bootstrap.py": "5dfa397ea0fbafebbc3b11ec6a6467c17c99c815bbac89ae7a3d53597e00235a",
+      "cloud/ads_geo_001/make_request.py": "338aa8f45d6d78585a4443ff13368ba6353d553a6b737c96b8addbbf49d206a7",
+      "cloud/ads_geo_001/source_check.py": "e7f3abd481699da7ab5edda3c7039993679f8d3c96075f0297ad5a1f9d2caedc",
+      "cloud/ads_geo_001/source_remote.py": "9cfe8efe67f95c7ef055f1b4e55040880ba2b51dfd5a77c12d22217f414655cd",
+      "cloud/ads_geo_001/test_ads_geo.py": "ad5b9ee2757d6ecf74ad99f1dae4dc91dae2f129ef273d58d000f832bef2b308",
+      "cloud/ads_geo_001/transport.py": "582c3cfb95fcb291a057958590a872eb4fd86b0c2e7f6444dd3f23ccefe2e89f"
+    }
+  },
+  "updated_at": "2026-11-26T04:26:00Z"
 }
