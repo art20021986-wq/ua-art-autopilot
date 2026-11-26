@@ -22,12 +22,12 @@ def request(day):
     task = 'ADS-BULK-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Owner 2026-11-26 via the coordinator («гривню одну мне сделай … поисковых запросов 5000 … все, что связано '
-                       'непосредственно с автомобилями … на украинском и русском»). Bounded run in the existing private inbox: '
-                       'upload this package, run source_remote.py once in a temporary always-on task (removed after its '
-                       'receipt; never the CRM bot) which sets the Kyiv campaign click ceiling to 1 UAH, adds negative phrases '
-                       'and brand groups (approved texts) and today\'s part of the generated buyer keywords uk + ru (phrase, '
-                       'partialFailure, nothing twice); budget unchanged. No site, CRM or bot change.',
+        'description': 'Owner 2026-11-26 via the coordinator («поисковых запросов 5000 …»; «Все да» to «model + year from Korea», '
+                       '«да» in this chat). Bounded run in the existing private inbox: upload this package, run source_remote.py '
+                       'once in a temporary always-on task (removed after its receipt; never the CRM bot) which keeps the click '
+                       'ceiling at 2 UAH, adds negative phrases, the missing brand and auction groups (one ad each, to the '
+                       '«під ключ» or auction lots page) and tonight\'s part (up to 2 400) of the generated buyer keywords uk + '
+                       'ru (phrase, partialFailure, nothing twice); budget unchanged. No site, CRM or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,

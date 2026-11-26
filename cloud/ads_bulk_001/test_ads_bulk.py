@@ -92,6 +92,25 @@ class PlanTests(unittest.TestCase):
             self.assertFalse(any('Отримайте пропозицію' in h for h in head))
 
 
+class AuctionTests(unittest.TestCase):
+    def test_model_year_groups(self):
+        groups = keywords.plan()
+        auction = {g: v for g, v in groups.items() if g.startswith(tuple(keywords.AUCTION.values()))}
+        self.assertEqual(len(auction), 2 * len(keywords.BRANDS))
+        words = [k for v in auction.values() for k in v]
+        self.assertGreater(len(words), 12000)
+        self.assertIn('bmw 5 series 2017 з кореї', auction['UA — Аукціон — BMW'])
+        self.assertIn('kia k5 2019 с кореи', auction['RU — Аукцион — Kia'])
+        lang, head, _ = remote.ad_texts('UA — Аукціон — BMW')
+        self.assertEqual(head[:2], ['BMW з Кореї', 'Лоти аукціонів Кореї щодня'])
+        ops = remote.first_operations('1', {'campaign': {'resourceName': 'c/1', 'targetSpend': {
+            'cpcBidCeilingMicros': '2000000'}}, 'negatives': set(keywords.NEGATIVE_MORE),
+            'groups': {g: 'g' for g in groups if g not in auction}})
+        urls = {o['adGroupAdOperation']['create']['ad']['finalUrls'][0] for o in ops if 'adGroupAdOperation' in o}
+        self.assertEqual(urls, {remote.AUCTION_PAGE})
+        self.assertEqual(len(ops), 2 * len(auction))
+
+
 class RemoteTests(unittest.TestCase):
     def keys_file(self, temp):
         path = Path(temp) / 'keys.json'

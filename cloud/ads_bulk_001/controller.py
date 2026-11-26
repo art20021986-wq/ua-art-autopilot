@@ -13,7 +13,7 @@ import re
 
 from transport import API, upload_package
 
-TASK = re.compile(r'ADS-BULK-(20[0-9]{6}(?:-R[0-9])?)')
+TASK = re.compile(r'ADS-BULK-(20[0-9]{6}(?:-R[0-9]{1,2})?)')
 PACKAGE = 'cloud/ads_bulk_001'
 ROOT = Path(__file__).resolve().parents[2]
 SECRET = re.compile(r'-----BEGIN|private_key"')
