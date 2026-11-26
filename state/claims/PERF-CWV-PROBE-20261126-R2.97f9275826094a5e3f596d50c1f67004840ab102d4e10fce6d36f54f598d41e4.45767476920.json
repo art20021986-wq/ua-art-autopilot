@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/PERF-CWV-PROBE-20261126-R2.97f9275826094a5e3f596d50c1f67004840ab102d4e10fce6d36f54f598d41e4.json",
+  "autostart_ledger_sha256": "388348feb7db132d60e2947a60d7e333627432d1131d6f420e9cc6b4d3d63a42",
+  "autostart_source_commit": "1551b5e988d91248f4ceb8105b6c30fde990d433",
+  "created_at": "2026-11-26T06:29:07Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-26T06:29:07Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "45767476920",
+    "task_id": "PERF-CWV-PROBE-20261126-R2",
+    "task_sha256": "97f9275826094a5e3f596d50c1f67004840ab102d4e10fce6d36f54f598d41e4"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-3d07c6aff2ae35f6-cdcce04036345e3a",
+  "receipt_path": "state/receipts/PERF-CWV-PROBE-20261126-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/PERF-CWV-PROBE-20261126-R2.json",
+  "request_sha256": "97f9275826094a5e3f596d50c1f67004840ab102d4e10fce6d36f54f598d41e4",
+  "resource_locks": [
+    "PATH_SCOPE:3d07c6aff2ae35f6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "d317b995080cfe1c8e4b8ab165f53088677fa450",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-26T06:29:07Z"
+}
