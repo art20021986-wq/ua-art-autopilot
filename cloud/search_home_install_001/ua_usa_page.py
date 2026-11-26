@@ -39,6 +39,7 @@ T = {
     'car': ('🚗 Легкове', '🚗 Легковое', '🚗 მსუბუქი'),
     'suv': ('🚙 Позашляховик', '🚙 Внедорожник', '🚙 ჯიპი'),
     'other': ('Інше', 'Другое', 'სხვა'),
+    'lead_btn': ('Залишити заявку', 'Оставить заявку', 'განაცხადის დატოვება'),
     'go': ('Залишити заявку на авто зі США', 'Оставить заявку на авто из США', 'განაცხადი ავტომობილზე აშშ-დან'),
 }
 INCLUDED = (
@@ -89,7 +90,9 @@ STYLE = (
     'color:#111;text-decoration:none;background:linear-gradient(90deg,#ffd000,#ff8a00)}'
     '.ua-us-offer{margin:14px 16px 0;padding:14px 16px;border:1px solid rgba(212,175,55,.55);border-radius:14px;'
     'background:linear-gradient(180deg,rgba(212,175,55,.18),rgba(212,175,55,.06));color:#f4e3ae;font-weight:700;'
-    'font-size:16px;line-height:1.35}'
+    'font-size:16px;line-height:1.35;display:flex;flex-direction:column;gap:10px;max-width:1148px;box-sizing:border-box}'
+    '.ua-us-offer-go{display:block;text-align:center;padding:13px;border-radius:12px;background:#e8a33d;color:#111;'
+    'font-weight:800;text-decoration:none}'
     '@media(min-width:900px){.ua-us{padding:34px 60px}.ua-us ul.inc{grid-template-columns:1fr 1fr}}'
 )
 
@@ -118,11 +121,13 @@ def content():
             % (_attrs(T['where']), T['where'][0], _attrs(T['ph'], 'data-ph'), T['ph'][0],
                _attrs(T['type']), T['type'][0], _attrs(T['car']), T['car'][0], _attrs(T['suv']), T['suv'][0],
                _attrs(T['other']), T['other'][0]))
-    return ('<style>%s</style><div class="ua-us-offer" %s>%s</div><section class="ua-us">'
+    lead = T['lead_btn']
+    return ('<style>%s</style><div class="ua-us-offer"><div %s>%s</div>'
+            '<a class="ua-us-offer-go" href="podbor.html?strana=usa&amp;lang=uk" %s>%s</a></div><section class="ua-us">'
             '%s%s%s%s<ul class="inc">%s</ul>%s%s'
             '<a class="go" href="podbor.html?strana=usa&amp;lang=uk" %s>%s</a></section>'
             '<script src="%s" defer></script>'
-            % (STYLE, _attrs(offer), html.escape(offer[0]),
+            % (STYLE, _attrs(offer), html.escape(offer[0]), _attrs(lead), lead[0],
                _t('div', T['eyebrow'], ' class="ey"'), _t('h1', T['h1']), _t('p', T['lead'], ' class="lead"'),
                _t('h2', T['inc']), items, _t('h2', T['calc']), calc, _attrs(T['go']), T['go'][0], SCRIPT))
 

@@ -28,6 +28,7 @@ AUCTIONS = (1, 3, 2, 4)                      # Copart, IAAI, Manheim, Adesa (sub
 TYPES = (1, 2)                                # car, SUV
 PAUSE = 0.5                                   # seconds between requests
 MIN_YARDS = 300                               # fewer means the source changed: keep the old file
+MAX_AGE_DAYS = 6                              # the server runs this daily; it collects when the copy is older
 PATH = Path(__file__).resolve().parent / 'video' / 'usa' / 'tariffs.json'
 OPTION = re.compile(r'<option value="(\d+)"[^>]*>([^<]*)')
 PRICE = re.compile(r'PORT\s+\w+\s*:\s*([\d.,]+)')
@@ -103,7 +104,18 @@ def write(yards, today=None, path=None):
     os.replace(temp, path)
 
 
+def fresh(path=None, now=None):
+    """True while the copy is younger than MAX_AGE_DAYS (the daily run then does nothing)."""
+    path = path or PATH
+    if not path.exists():
+        return False
+    return (now or time.time()) - path.stat().st_mtime < MAX_AGE_DAYS * 86400
+
+
 def main():
+    if fresh():
+        print('usa tariffs: fresh, nothing to do')
+        return 0
     try:
         yards = collect()
         write(yards)

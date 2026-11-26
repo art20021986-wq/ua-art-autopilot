@@ -64,6 +64,17 @@ class Sync(unittest.TestCase):
             self.assertEqual(len(data['yards']), sync.MIN_YARDS)
 
 
+class Fresh(unittest.TestCase):
+    def test_fresh(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = pathlib.Path(d) / 'tariffs.json'
+            self.assertFalse(sync.fresh(path))
+            path.write_text('x')
+            mtime = path.stat().st_mtime
+            self.assertTrue(sync.fresh(path, mtime + 5 * 86400))
+            self.assertFalse(sync.fresh(path, mtime + 7 * 86400))
+
+
 class Page(unittest.TestCase):
     def test_build(self):
         out = page.build(SHELL)
