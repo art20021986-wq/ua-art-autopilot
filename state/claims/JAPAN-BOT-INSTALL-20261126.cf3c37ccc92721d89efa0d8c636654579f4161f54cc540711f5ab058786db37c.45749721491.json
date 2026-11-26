@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "b3af942ecf3f4e0665505d8febc838c673c35b5f3b31a6c0f28c824ef89e69f7",
   "autostart_source_commit": "a5728f2d09112e349ff43935fcc55e00115019e4",
   "created_at": "2026-11-26T03:35:44Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "b076ff0e8947e73bf079ca7664627e179a2141b816db3d05a42ed31cf7ce002e",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T03:35:44Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-26T03:37:17Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "45749721491",
     "task_id": "JAPAN-BOT-INSTALL-20261126",
     "task_sha256": "cf3c37ccc92721d89efa0d8c636654579f4161f54cc540711f5ab058786db37c"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 226.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 175.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-45749721491-cf3c37ccc92721d8",
+  "production_transaction_path": "state/transactions/JAPAN-BOT-INSTALL-20261126.cf3c37ccc92721d89efa0d8c636654579f4161f54cc540711f5ab058786db37c.45749721491.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-5e60a64a83ad1bc9-aa8d41daac0ca9aa",
   "receipt_path": "state/receipts/JAPAN-BOT-INSTALL-20261126.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,42 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "093dc7f04c023cbdd6905a382359c80b0c45adb9",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 467.482,
+    "allowed": true,
+    "evidence_path": "state/storage/JAPAN-BOT-INSTALL-20261126.json",
+    "evidence_sha256": "2d64bf1aba0842b98120b3ce7912bc4796533760b897ecb677a33c564fd2e466",
+    "free_bytes": 17081134592,
+    "heavy": true,
+    "measured_at": "2026-11-26T03:29:27.395013+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 134217728,
+    "status": "PASS",
+    "usage_percent": 51.196758308571425
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-26T03:35:44Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "3ccfbc88e8caf7f5d767e1b6d5865a8a08364dce628ba8719779894428f185ae",
+    "file_sha256": {
+      "cloud/japan_stock_001/candidate_builder.py": "5094d26241e4ecd30ab592b249018a856a2cf50547473c2ebd62d221230fff9f",
+      "cloud/japan_stock_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/japan_stock_001/deployment_bootstrap.py": "b75952007ada98af67fa30d8a1a8b2e400b12b43f66e329b7f96a2b90333b247",
+      "cloud/japan_stock_001/deployment_remote.py": "50b244480de483b9e0568a318e015449f904122394f7d46ad12b38fd66a20fc0",
+      "cloud/japan_stock_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/japan_stock_001/deployment_transport.py": "3ba8817676c39874ada82c66e1b69af8add1e6f538a6d49ff8d72d2a8b347f84",
+      "cloud/japan_stock_001/edit_cars_ui.py": "2eb04157fa8863c96666fb63aba5ad543b6db3a9eca241ad30beb07e31990cf8",
+      "cloud/japan_stock_001/edit_delivery_status.py": "0a94de70bb355b149bc896ccf5200900a6f4be21740b26a77d13b165e9ecbbd5",
+      "cloud/japan_stock_001/edit_konteyner.py": "00854bfaa93c0f35c6fdebe8b9af736b71d0e4f9753b3115990c7e706d6e2986",
+      "cloud/japan_stock_001/edits.py": "265393a467603c880a9a616f6760dabae7962c2898eabbd6cf794ec91c9490ef",
+      "cloud/japan_stock_001/make_release.py": "449459dec1e8a9439ffbe6087bc24c4745732298b23bff3686008a6c88082ef2",
+      "cloud/japan_stock_001/release_constants.py": "f060d00f93e875ced439b794ed87bedf1c32d8fda101fcebdbf70f570223a8f5",
+      "cloud/japan_stock_001/test_deployment.py": "05a9d1052873d4c58f87d338868f4bee14e49fe2c902884710e0e475d67ff58d",
+      "cloud/japan_stock_001/test_japan_bot.py": "1bc9e8afddc2699d74f08a16f1d4c158ae5e7bc44e6414c7a4ec0a0ce79f43b2",
+      "cloud/japan_stock_001/test_release.py": "484a8e2be2a4a7b5d4e79afc49b3bfb7c90036e7cce97ecf29fec28c4b94e138",
+      "cloud/japan_stock_001/ua_car_country.py": "4658f6ba820d81cdf0f9c486680aa660c39eeafb0cc32f53894631d9d531ec06"
+    }
+  },
+  "updated_at": "2026-11-26T03:37:17Z"
 }
