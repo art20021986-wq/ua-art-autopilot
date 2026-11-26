@@ -148,6 +148,15 @@ class API:
         if self.file(path) != payload:
             raise TransportError('UPLOAD_READBACK')
 
+    def drop_stale_previews(self):
+        """A preview whose start timed out may have left its always-on task on the server (19.11/26.11: POST
+        always_on/ timed out). Before a new preview, remove only this package's own preview tasks: its bootstrap in
+        the command and 'quick lead preview' in the description; never the bot or any other task."""
+        for task in self.json('GET', 'always_on/'):
+            if (task.get('id') != BOT_ID and INBOX+'/kttop1_bootstrap.py' in str(task.get('command', ''))
+                    and str(task.get('description', '')).startswith('quick lead preview ')):
+                self.request('DELETE', 'always_on/%d/' % task['id'], allowed=(200, 202, 204, 404))
+
     def run(self, mode, run_id, bundle_sha, plan_sha='', backup_sha=''):
         if mode not in {'preview', 'backup', 'install', 'verify', 'rollback'} or not re.fullmatch(r'[0-9]+', run_id):
             raise TransportError('RUN_IDENTITY')
@@ -158,6 +167,8 @@ class API:
         prior = self.file(receipt, missing=True)
         if prior:
             return json.loads(prior)
+        if mode == 'preview':
+            self.drop_stale_previews()
         args = ['python3.10', INBOX+'/kttop1_bootstrap.py', '--bundle', bundle_sha,
                 '--run', run_id, '--mode', mode, '--plan', plan_sha, '--backup', backup_sha]
         trigger = self.json('POST', 'always_on/', {'command': shlex.join(args),

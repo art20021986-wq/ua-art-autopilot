@@ -328,5 +328,21 @@ class RunSoonTests(unittest.TestCase):
         self.assertEqual(calls, [('PATCH', 'schedule/1576351/', {'minute': 1})])
 
 
+class StalePreviewTests(unittest.TestCase):
+    def test_only_own_preview_tasks_are_removed(self):
+        import deployment_transport as transport
+        api = transport.API.__new__(transport.API)
+        boot = transport.INBOX + '/kttop1_bootstrap.py'
+        tasks = [{'id': transport.BOT_ID, 'command': 'python3.10 run_all.py', 'description': 'bot'},
+                 {'id': 7, 'command': 'python3.10 %s --mode preview' % boot, 'description': 'quick lead preview 1'},
+                 {'id': 8, 'command': 'python3.10 %s --mode install' % boot, 'description': 'quick lead install 1'},
+                 {'id': 9, 'command': 'python3.10 other_bootstrap.py', 'description': 'quick lead preview 2'}]
+        deleted = []
+        api.json = lambda method, endpoint, fields=None, allowed=(200,): tasks
+        api.request = lambda method, endpoint, data=None, content_type=None, allowed=(200,): deleted.append(endpoint)
+        api.drop_stale_previews()
+        self.assertEqual(deleted, ['always_on/7/'])
+
+
 if __name__ == '__main__':
     unittest.main()
