@@ -54,7 +54,7 @@ QUERIES = {
 # R4 (owner 2026-11-25 «сколько показов, сколько зашло»): today's numbers of the campaign, its groups and searches.
 QUERIES.update({
     'today': ('client', "SELECT campaign.name, metrics.impressions, metrics.clicks, metrics.cost_micros, "
-                        "metrics.average_cpc, metrics.conversions, metrics.search_impression_share FROM campaign "
+                        "metrics.average_cpc, metrics.average_cpm, metrics.conversions, metrics.search_impression_share FROM campaign "
                         "WHERE campaign.name = '%s' AND segments.date DURING TODAY" % CAMPAIGN),
     'today_groups': ('client', "SELECT ad_group.name, metrics.impressions, metrics.clicks, metrics.cost_micros, "
                                "metrics.conversions FROM ad_group WHERE campaign.name = '%s' AND segments.date DURING TODAY "
@@ -84,9 +84,9 @@ QUERIES.update({
                               "metrics.search_absolute_top_impression_share, metrics.ctr, metrics.conversions, "
                               "metrics.interactions FROM campaign WHERE campaign.name = '%s' "
                               "AND segments.date DURING TODAY" % CAMPAIGN),
-    'today_locations': ('client', "SELECT user_location_view.country_criterion_id, metrics.impressions, metrics.clicks "
-                                  "FROM user_location_view WHERE campaign.name = '%s' AND segments.date DURING TODAY"
-                                  % CAMPAIGN),
+    'today_locations': ('client', "SELECT campaign.name, segments.geo_target_region, metrics.impressions, metrics.clicks, "
+                                  "metrics.cost_micros FROM geographic_view WHERE campaign.name = '%s' "
+                                  "AND segments.date DURING TODAY" % CAMPAIGN),  # R8: campaign.name in SELECT
 })
 # R7 (owner via the coordinator 2026-11-26: full feedback on the ads, from the live account): totals since the launch,
 # the campaign settings, keywords, negatives, locations, languages, schedule, ads.
