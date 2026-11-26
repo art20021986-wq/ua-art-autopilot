@@ -1,5 +1,6 @@
-"""The ticker after the day's auction closed (KOREA-WEEKTILE-FIX-001, 2026-11-19), on the collector KOREA-WEEKTILE installed."""
+"""The week tile on top, no Japan clock, coming days with their auctions, evening runs, Monday-Friday on the Korea page
+(KOREA-TOP-TILE-001, owner 2026-11-26), on the collector KOREA-WEEKTILE-FIX installed."""
 
-PREVIEW_TASK = 'KOREA-WEEKTILE-FIX-PREFLIGHT-20261119-R2'  # R1 PASS (run 44472073946); fresh storage probe for the install
-INSTALL_TASK = 'KOREA-WEEKTILE-FIX-INSTALL-20261119'
-PACKAGE = 'cloud/korea_weektile_fix_001'
+PREVIEW_TASK = 'KOREA-TOP-TILE-PREFLIGHT-20261126'
+INSTALL_TASK = 'KOREA-TOP-TILE-INSTALL-20261126'
+PACKAGE = 'cloud/korea_top_tile_001'

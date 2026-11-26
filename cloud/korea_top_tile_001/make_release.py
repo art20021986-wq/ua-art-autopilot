@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Write the KOREA-WEEKTILE-FIX preview request, then (after the preview) the install request set (run from the repo root).
+"""Write the KOREA-TOP-TILE preview request, then (after the preview) the install request set (run from the repo root).
 
-Usage: python3 cloud/korea_weektile_fix_001/make_release.py preview   # PR, merge, then: launch preview
-       python3 cloud/korea_weektile_fix_001/make_release.py launch TASK_ID
-       python3 cloud/korea_weektile_fix_001/make_release.py install   # right after the preview: writes gate, manifest,
+Usage: python3 cloud/korea_top_tile_001/make_release.py preview   # PR, merge, then: launch preview
+       python3 cloud/korea_top_tile_001/make_release.py launch TASK_ID
+       python3 cloud/korea_top_tile_001/make_release.py install   # right after the preview: writes gate, manifest,
                                                                 # owner approval, storage probe, request and launch
-KOREA-WEEKTILE-FIX-001 (tasks/KOREA-WEEKTILE-001.md): the ticker after the day's auction closed (2026-11-19).
+KOREA-TOP-TILE-001 (tasks/KOREA-TOP-TILE-001.md): the week tile on top, coming days with their auctions (owner 2026-11-26).
 The install request is written only after the owner's «Да».
 """
 import datetime
@@ -15,20 +15,21 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, 'automation')
-sys.path.insert(0, 'cloud/korea_weektile_fix_001')
+sys.path.insert(0, 'cloud/korea_top_tile_001')
 import autostart_intake  # noqa: E402
 import control_plane as cp  # noqa: E402
 
-P = 'cloud/korea_weektile_fix_001/'
+P = 'cloud/korea_top_tile_001/'
 from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py')] + [
-    P + 'korea_auction/%s.py' % n for n in ('__init__', 'alert', 'catalog', 'check', 'collect', 'color', 'drive', 'fuel', 'holidays',
+                                'make_release.py', 'release_constants.py', 'weekdays_page.py')] + [
+    P + 'korea_auction/%s.py' % n for n in ('__init__', 'alert', 'catalog', 'check', 'collect', 'color', 'drive', 'fuel', 'holidays', 'house_days',
                                             'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public',
                                             'rollover', 'schedule', 'selection', 'session', 'ticker', 'week_tile')]
-TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'korea_auction/test_korea_auction.py')]
+TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_weekdays_page.py',
+                         'korea_auction/test_korea_auction.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'lead_bot.py',
              'publication_fence.py', 'run_all.py', 'site_ge_inject.py',
@@ -76,10 +77,10 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of KOREA-WEEKTILE-FIX-001 (2026-11-19): the collector job.py — after the day auction closed no ticker car photo can be copied (the auction shows a closed placeholder) and the job wrote no ticker, so the tile with the week never showed; now it writes the tile with the week and the owner cars. Smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of KOREA-TOP-TILE-001 (owner 2026-11-26, one install): the collector update (house_days.py new; week_tile.py, collect.py, job.py, ticker.py: the week tile above the home ticker slider, Korea and Kyiv clocks without Japan, a coming day shows its auctions and start in Kyiv time, the job also reads the auction at 16, 18 and 20 Korea time) and two text edits of video/korea.html (auctions Monday to Friday), smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
-             'title': 'Preview Korea ticker after the auction closed'}
+             'title': 'Preview Korea week tile on top, coming auctions'}
     return write('tasks/requests/%s.json' % task, json.dumps(value, sort_keys=True, separators=(',', ':')))
 
 
@@ -107,7 +108,7 @@ def install():
     storage_path = write('state/storage/%s.json' % task, json.dumps(storage, sort_keys=True, separators=(',', ':')))
     operations = [{'action': 'replace' if item['before'] else 'create', 'expected_after_sha256': item['after'],
                    **({'expected_before_sha256': item['before']} if item['before'] else {}),
-                   'path': 'production/ktwfix1/' + name} for name, item in sorted(plan['files'].items())]
+                   'path': 'production/kttop1/' + name} for name, item in sorted(plan['files'].items())]
     manifest = {'backup_required': True, 'contract_id': 'UA-ART-CRITICAL-ADAPTER-V1.0', 'crm_write': False,
                 'live_verify_required': True, 'operations': operations, 'pending_requests_preserved': True,
                 'protected_paths': PROTECTED, 'rollback_required': True, 'site_write': True, 'task_class': 'CRITICAL',
@@ -132,13 +133,13 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Fix after KOREA-WEEKTILE-001 (owner yes 2026-11-19 to the week tile): when the day auction has closed and no later day is listed, no ticker car photo can be copied; the job raised and wrote no ticker, so the yellow tile with clocks and the week stayed old. Now it writes the tile with the week and the owner cars. Collector job.py only; pages, CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
+               'description': 'Owner requests (2026-11-26), one install: the yellow week tile stands above the home ticker slider (seen first on a phone), the clocks show Korea and Kyiv only, a coming day shows its auctions with their start in Kyiv time (from the auction schedule and the houses seen on that weekday in the last 15 days), the collector also reads the auction at 16, 18 and 20 Korea time so the next lots reach the ticker the same evening, and the Korea page says the auctions run Monday to Friday. Collector house_days.py (new), week_tile.py, collect.py, job.py, ticker.py; video/korea.html; CRM and the hourly task stay. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
-               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install Korea ticker after the auction closed'}
+               'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install Korea week tile on top, coming auctions'}
     _, marker = launch_values(task, now)
     approval = {'approved_at': stamp(now), 'authorization_id': 'prod-auth-' + marker['nonce'],
                 'authorized_environment': 'production', 'expires_at': marker['expires_at'], 'gate_a_sha256': sha(gate_path),

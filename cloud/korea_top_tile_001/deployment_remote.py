@@ -1,4 +1,4 @@
-"""Bounded KOREA-WEEKTILE-FIX-001 release (the ticker after the day auction closed); preserve live data and pending requests."""
+"""Bounded KOREA-TOP-TILE-001 release (the week tile on top, coming auctions); preserve live data and pending requests."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -30,7 +30,6 @@ PAGES = ('video/katalog.html', 'site/katalog.html', 'video/index.html', 'site/in
 # This release changes no job output (only the ticker card links); a rollback removes nothing.
 OUTPUTS = ()
 JOB = {'command': JOB_COMMAND, 'interval': 'hourly', 'minute': JOB_MINUTE}
-KOREA_PAGE = ROOT/'video/korea.html'  # not changed by this release; the smoke checks the installed page
 PROTECTED = ('start_safe.py', 'run_all.py', 'ua_site_counters.py',
              'publication_fence.py', 'catalog_design_golden.html')
 
@@ -50,7 +49,7 @@ def read(path):
 
 def atomic(path, value, mode=0o600):
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    descriptor, name = tempfile.mkstemp(dir=path.parent, prefix='.ktwfix1-')
+    descriptor, name = tempfile.mkstemp(dir=path.parent, prefix='.kttop1-')
     temporary = Path(name)
     try:
         with os.fdopen(descriptor, 'wb') as handle:
@@ -123,7 +122,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'TICKER-FIX4-INSTALL-1','files':files,'job':JOB,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'korea_auction/job.py (the ticker is written with the tile and the owner cars when no car photo can be copied); no page or CRM module changes',
+            'site_scope':'korea_auction house_days.py (new) + week_tile.py, collect.py, job.py, ticker.py (the week tile above the slider, Korea and Kyiv clocks, coming days with their auctions, runs at 16/18/20 KST) + video/korea.html (auctions Monday to Friday); no other page or CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -184,19 +183,19 @@ def smoke(directory):
                                                        engine_cc=2151, transmission='AT', house='H', lot_no='1',
                                                        start_price_krw=0, auction_start='2026/11/18 13:00'),
                                                   {'USD': 41.0, 'KRW': 0.03, 'date': 'd'}, ['1-1.jpg'])['drive'] == 'full',
-                 'page_drive': 'function drive(l){' in read(KOREA_PAGE).decode('utf-8')
-                               and 'row("gear",l.transmission)+drive(l)+color(l)' in read(KOREA_PAGE).decode('utf-8'),
+                 'page_drive': 'function drive(l){' in read(after/'video/korea.html').decode('utf-8')
+                               and 'row("gear",l.transmission)+drive(l)+color(l)' in read(after/'video/korea.html').decode('utf-8'),
                  'color_in_list': public.lot_view(dict(sample['items'][0], maker='KIA', model='K5', trim='', engine_cc=1999,
                                                        transmission='AT', house='H', lot_no='1', start_price_krw=0,
                                                        auction_start='2026/11/18 13:00', color='Pearl White'),
                                                   {'USD': 41.0, 'KRW': 0.03, 'date': 'd'}, ['1-1.jpg'])['color'] == 'white'
                                   and __import__('korea_auction.lots', fromlist=['x']).parse_detail(
                                       '<p>2022 Color Black Mileage 1 km</p>')['color'] == 'Black',
-                 'page_filters': all(piece in read(KOREA_PAGE).decode('utf-8') for piece in (
+                 'page_filters': all(piece in read(after/'video/korea.html').decode('utf-8') for piece in (
                      '<select id="kl-year-to"></select>', '<select id="kl-fuel"></select>', '<select id="kl-color"></select>',
                      '<select id="kl-km"></select>')),
                  # KOREA-ENGINE-001 stays installed (engine type, models by make, every photo)
-                 'page_engine_models': all(piece in read(KOREA_PAGE).decode('utf-8')
+                 'page_engine_models': all(piece in read(after/'video/korea.html').decode('utf-8')
                                            for piece in ('function engine(l){', 'createElement("optgroup")')),
                  # KOREA-ENGINE-001: every lot photo — copying for a time per run; the list keeps 3, the gallery has all
                  'photos_for_time': job.RUN_SECONDS < 3600 and not hasattr(job, 'PHOTOS_PER_RUN'),
@@ -223,17 +222,22 @@ def smoke(directory):
                               == ['cars', 'none', 'dayoff', 'dayoff', 'cars', 'none', 'soon']
                               and schedule.parse('') == [[]] * 7,
                  'tile_clocks': all(piece in ticker.render(dict(sample, week=week_tile.week([], None, '2026/11/19')))
-                                    for piece in ('data-kt-tz="Asia/Seoul"', 'data-kt-tz="Asia/Tokyo"',
-                                                  'data-kt-tz="Europe/Kyiv"', 'Сьогодні, Чт, 19.11')),
+                                    for piece in ('data-kt-tz="Asia/Seoul"', 'data-kt-tz="Europe/Kyiv"',
+                                                  'Сьогодні, Чт, 19.11')),
+                 # KOREA-TOP-TILE-001: the week tile above the slider, no Japan clock, coming days with their auctions,
+                 # the evening runs, Monday to Friday on the Korea page
+                 'top_tile': top_tile(ticker, week_tile, job),
                  'ticker_check': check.problems({'items': [], 'lots_today': 0,
                                                  'week': week_tile.week([], None, '2026/11/19')}, [], '2026/11/19') == []
                                  and check.problems({'items': [], 'lots_today': 0}, [], '2026/11/19') != []
                                  and callable(job.checked)
                                  and str(alert.TOKEN) == str(ROOT/'team_token.txt') and 'Причина: X' in alert.text(['X']),
-                 'page_none': 't("none")' in read(KOREA_PAGE).decode('utf-8')
-                              and 'SCH=d.schedule||null;days();' in read(KOREA_PAGE).decode('utf-8'),
+                 'page_none': 't("none")' in read(after/'video/korea.html').decode('utf-8')
+                              and 'SCH=d.schedule||null;days();' in read(after/'video/korea.html').decode('utf-8'),
                  # KOREA-WEEKTILE-FIX-001: no copied car photo still gives the tile and the owner cars
                  'closed_auction': closed_auction(job, week_tile),
+                 'page_weekdays': "з понеділка по п'ятницю" in read(after/'video/korea.html').decode('utf-8')
+                                  and 'по суботу' not in read(after/'video/korea.html').decode('utf-8'),
                  # KOREA-PHOTOS-ALL-001 stays installed (never rolled back to 40 photos)
                  'all_photos': __import__('korea_auction.prices', fromlist=['x']).MAX_PHOTOS is None}
     finally:
@@ -243,6 +247,17 @@ def smoke(directory):
     if not all(value.values()):
         raise DeploymentError('SMOKE_RESULT:'+json.dumps(value))
     return value
+
+
+def top_tile(ticker, week_tile, job):
+    from korea_auction import house_days
+    page = ticker.render({'items': [], 'own': [{'stage': 'sea', 'title': 'Kia K5', 'url': '/video/ua/UA-0001.html',
+                                                'photo': '/video/foto/UA-0001/001.jpg', 'price_usd': 15000}],
+                          'week': week_tile.week([], [['AutoPlus'], [], [], [], [], [], []], '2026/11/26',
+                                                 history=house_days.SEED)})
+    return (page.index('class="kt-lead kt-week"') < page.index('class="kt-track"') and 'Asia/Tokyo' not in page
+            and 'AutoPlus · <span data-uk="старт 05:00 Київ"' in page and job.RUN_HOURS == (10, 12, 14, 16, 18, 20)
+            and house_days.expected(house_days.SEED, 4, '2026/11/26') == {'AutoPlus': '12:00'})
 
 
 def closed_auction(job, week_tile):

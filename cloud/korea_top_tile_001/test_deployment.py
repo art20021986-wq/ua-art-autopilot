@@ -295,14 +295,13 @@ class SmokeTests(unittest.TestCase):
             source = Path(__file__).resolve().parent/'korea_auction'
             for module in candidate_builder.MODULES:
                 shutil.copy(source/(module+'.py'), here/('kauc_%s.py' % module))
-            page = Path(__file__).resolve().parent/'fixtures'/'korea_live.html'
-            files = candidate_builder.build({}, {}, here=here)
+            page = {candidate_builder.KOREA: (Path(__file__).resolve().parent/'fixtures'/'korea_live.html').read_bytes()}
+            files = candidate_builder.build(page, {}, here=here)
             plan = {'files': {name: {} for name in files}}
             for name, value in files.items():
                 remote.atomic(work/'after'/name, value)
             remote.atomic(work/'plan.json', canonical(plan))
-            with patch.object(remote, 'KOREA_PAGE', page):
-                result = remote.smoke(work)
+            result = remote.smoke(work)
             self.assertEqual(result, {'imports': True, 'renders': True, 'schedule_rule': True,
                                       'login_path': True, 'public_list': True, 'today_fallback': True,
                                       'today_wording': True, 'stale_rerun': True, 'waiting_tile': True,
@@ -313,7 +312,7 @@ class SmokeTests(unittest.TestCase):
                                       'color_in_list': True, 'page_filters': True,
                                       'sync_listed': True, 'sync_rollover': True, 'sync_page_time': True,
                                       'week_tile': True, 'tile_clocks': True, 'ticker_check': True, 'page_none': True,
-                                      'closed_auction': True})
+                                      'closed_auction': True, 'top_tile': True, 'page_weekdays': True})
 
 
 class RunSoonTests(unittest.TestCase):
