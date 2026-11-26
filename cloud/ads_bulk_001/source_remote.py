@@ -22,16 +22,18 @@ import source_check as check
 
 HERE = Path(__file__).resolve().parent
 CEILING_UAH = 1
+# 2026-11-26: the campaign may be renamed «Пошук — Україна — Корея (UA ART)» (owner «Да, переименуй»).
+NAMES = "'%s', 'Пошук — Україна — Корея (UA ART)'" % plan.NAME
 CHUNK = 600
 HUB = {'uk': plan.SITE + 'seo/ua/avto-z-korei-do-kyieva-pid-kluch.html',
        'ru': plan.SITE + 'seo/ru/avto-iz-korei-v-kiev-pod-kluch.html'}
 CAMPAIGN = ("SELECT campaign.resource_name, campaign.target_spend.cpc_bid_ceiling_micros, campaign_budget.amount_micros "
-            "FROM campaign WHERE campaign.name = '%s'" % plan.NAME)
-GROUPS = "SELECT ad_group.resource_name, ad_group.name FROM ad_group WHERE campaign.name = '%s'" % plan.NAME
-KEYWORDS = ("SELECT ad_group.name, ad_group_criterion.keyword.text FROM ad_group_criterion WHERE campaign.name = '%s' "
-            "AND ad_group_criterion.type = 'KEYWORD' AND ad_group_criterion.negative = FALSE" % plan.NAME)
-NEGATIVES = ("SELECT campaign_criterion.keyword.text FROM campaign_criterion WHERE campaign.name = '%s' "
-             "AND campaign_criterion.negative = TRUE AND campaign_criterion.type = 'KEYWORD'" % plan.NAME)
+            "FROM campaign WHERE campaign.name IN (%s)" % NAMES)
+GROUPS = "SELECT ad_group.resource_name, ad_group.name FROM ad_group WHERE campaign.name IN (%s)" % NAMES
+KEYWORDS = ("SELECT ad_group.name, ad_group_criterion.keyword.text FROM ad_group_criterion WHERE campaign.name IN (%s) "
+            "AND ad_group_criterion.type = 'KEYWORD' AND ad_group_criterion.negative = FALSE" % NAMES)
+NEGATIVES = ("SELECT campaign_criterion.keyword.text FROM campaign_criterion WHERE campaign.name IN (%s) "
+             "AND campaign_criterion.negative = TRUE AND campaign_criterion.type = 'KEYWORD'" % NAMES)
 
 
 def read(customer, headers, query, opener=urllib.request.urlopen):
