@@ -104,7 +104,7 @@ class AuctionTests(unittest.TestCase):
         lang, head, _ = remote.ad_texts('UA — Аукціон — BMW')
         self.assertEqual(head[:2], ['BMW з Кореї', 'Лоти аукціонів Кореї щодня'])
         ops = remote.first_operations('1', {'campaign': {'resourceName': 'c/1', 'targetSpend': {
-            'cpcBidCeilingMicros': '2000000'}}, 'negatives': set(keywords.NEGATIVE_MORE),
+            'cpcBidCeilingMicros': '3500000'}}, 'negatives': set(keywords.NEGATIVE_MORE),
             'groups': {g: 'g' for g in groups if g not in auction}})
         urls = {o['adGroupAdOperation']['create']['ad']['finalUrls'][0] for o in ops if 'adGroupAdOperation' in o}
         self.assertEqual(urls, {remote.AUCTION_PAGE})
@@ -122,7 +122,7 @@ class RemoteTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp, patch.object(keywords, 'PER_DAY', 1000):
             first = json.loads(remote.report(self.keys_file(temp), google))
             second = json.loads(remote.report(self.keys_file(temp), google))
-        self.assertEqual(first['after']['ceiling'], {'cpcBidCeilingMicros': '2000000'})
+        self.assertEqual(first['after']['ceiling'], {'cpcBidCeilingMicros': '3500000'})
         self.assertEqual(first['added_now'], 1000)
         self.assertEqual(first['after']['budget'], '300000000')
         self.assertEqual(second['added_now'], 1000)

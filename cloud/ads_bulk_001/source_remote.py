@@ -23,7 +23,7 @@ import plan
 import source_check as check
 
 HERE = Path(__file__).resolve().parent
-CEILING_UAH = 2  # owner 2026-11-26 «сразу на 2 гривни» (was 1)
+CEILING_MICROS = 3500000  # 3,50 UAH (owner 2026-11-26 «Давай 3,50»; was 2)
 # 2026-11-26: the campaign may be renamed «Пошук — Україна — Корея (UA ART)» (owner «Да, переименуй»).
 NAMES = "'%s', 'Пошук — Україна — Корея (UA ART)'" % plan.NAME
 CHUNK = 600
@@ -85,9 +85,9 @@ def ad_texts(group):
 def first_operations(customer, current):
     campaign = current['campaign']
     ops = []
-    if int(campaign.get('targetSpend', {}).get('cpcBidCeilingMicros', 0)) != CEILING_UAH * 1000000:
+    if int(campaign.get('targetSpend', {}).get('cpcBidCeilingMicros', 0)) != CEILING_MICROS:
         ops.append({'campaignOperation': {'update': {'resourceName': campaign['resourceName'],
-                                                     'targetSpend': {'cpcBidCeilingMicros': str(CEILING_UAH * 1000000)}},
+                                                     'targetSpend': {'cpcBidCeilingMicros': str(CEILING_MICROS)}},
                                           'updateMask': 'target_spend.cpc_bid_ceiling_micros'}})
     ops += [{'campaignCriterionOperation': {'create': {'campaign': campaign['resourceName'], 'negative': True,
                                                        'keyword': {'text': w, 'matchType': 'PHRASE'}}}}
@@ -160,7 +160,7 @@ def run(keys, opener=urllib.request.urlopen):
     value['added_now'] = value['after']['keywords'] - value['before']['keywords']
     value['plan_total'] = sum(map(len, keywords.plan().values()))
     value['left_for_next_run'] = len(keyword_operations(after, limit=10 ** 6))
-    value['status'] = 'PASS' if value['after']['ceiling'] == {'cpcBidCeilingMicros': str(CEILING_UAH * 1000000)} \
+    value['status'] = 'PASS' if value['after']['ceiling'] == {'cpcBidCeilingMicros': str(CEILING_MICROS)} \
         and value['added_now'] > 0 else 'PARTIAL'
     return value
 

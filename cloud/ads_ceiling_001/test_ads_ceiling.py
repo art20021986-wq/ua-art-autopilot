@@ -31,7 +31,7 @@ class Response(io.BytesIO):
 
 class Google:
     def __init__(self):
-        self.ceiling = 1000000
+        self.ceiling = 2000000
         self.calls = []
 
     def __call__(self, request, timeout=None):
@@ -61,7 +61,7 @@ class RemoteTests(unittest.TestCase):
             first = json.loads(remote.report(self.keys_file(temp), google))
             second = json.loads(remote.report(self.keys_file(temp), google))
         self.assertEqual((first['status'], second['status'], second['operations']), ('PASS', 'PASS', 0))
-        self.assertEqual((first['before']['ceiling'], first['after']['ceiling']), (1000000, 2000000))
+        self.assertEqual((first['before']['ceiling'], first['after']['ceiling']), (2000000, 3500000))
         self.assertEqual(first['after']['budget'], '300000000')
         mutates = [b for u, b in google.calls if u.endswith(':mutate')]
         self.assertEqual(len(mutates), 1)
