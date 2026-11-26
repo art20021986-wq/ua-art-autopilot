@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "a7a8ba3d2363f795"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-26T09:55:00+00:00",
+      "class": "PACKAGE_IDENTITY_PATTERN",
+      "evidence_path": "state/reconciliations/ADS-CHECK-20261126-R10.45795197267.authenticated-evidence.json",
+      "message": "The read-only Google Ads check stopped at its first identity check (task id pattern allowed one digit after R; R10 did not match); no upload, no remote task, no Google Ads request. Owner «Да» to closing the claim; retried as ADS-CHECK-20261126-R11.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-26T09:49:09Z",
@@ -42,6 +51,6 @@
   "source_commit": "7d57b51f720a05a8552046f54cc125af671253c0",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-26T09:50:03Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-26T09:55:00+00:00"
 }
