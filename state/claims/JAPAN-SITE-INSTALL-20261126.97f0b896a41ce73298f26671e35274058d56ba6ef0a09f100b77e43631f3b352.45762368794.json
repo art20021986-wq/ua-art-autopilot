@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "07f28e557f498ac1c2661a67ef5cfcd232e1acff3a210da06987e326f3e7bafb",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T05:40:06Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-26T05:45:03Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45762368794",
     "task_id": "JAPAN-SITE-INSTALL-20261126",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45762368794-97f0b896a41ce732",
   "production_transaction_path": "state/transactions/JAPAN-SITE-INSTALL-20261126.97f0b896a41ce73298f26671e35274058d56ba6ef0a09f100b77e43631f3b352.45762368794.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/JAPAN-SITE-INSTALL-20261126.json",
   "receipt_validation_status": "PENDING",
@@ -102,5 +102,5 @@
       "cloud/japan_site_001/ua_country_site.py": "e6975fbe4a02de17ff600320e1b1feb8a7d9249bdb59b0c0d108be68479fe457"
     }
   },
-  "updated_at": "2026-11-26T05:40:06Z"
+  "updated_at": "2026-11-26T05:45:03Z"
 }
