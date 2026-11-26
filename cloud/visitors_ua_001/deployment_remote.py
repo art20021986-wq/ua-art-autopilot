@@ -130,7 +130,8 @@ def smoke(directory):
     knopka = read(after/'analitika_knopka.py').decode('utf-8')
     value = {'files': sorted(plan['files']), 'report_title': text.split('\n')[0][:80], 'report_pages': pages,
              'script': [int("'ua_staff'" in yadro), yadro.count('tz:TZ,lg:LG,dv:DV'), yadro.count("'Реклама Google'")],
-             'button': knopka.count('"v_an_ua"'), 'routing': knopka.count('ua_visitors_bot.vetka')}
+             'button': knopka.count('("🇺🇦 Посетители из Украины", "v_an_ua")'),
+             'routing': knopka.count('ua_visitors_bot.vetka')}
     if value['script'] != [1, 1, 1] or value['button'] != 1 or value['routing'] != 1 or 'Посетители из Украины' not in text:
         raise DeploymentError('SMOKE_RESULT:' + json.dumps(value, ensure_ascii=False)[:1500])
     return value
