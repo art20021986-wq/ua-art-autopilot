@@ -30,7 +30,8 @@ def request(day):
                        'ones, the cars table column names and counts by status/published (no rows, no personal data). '
                        'R2: also the full source and exact hash of db.py, publikaciya.py, publish_transaction_guard.py, '
                        'ua_crm_public_sync.py, card_render.py, publication_fence.py and the stage/catalog modules. '
-                       'No source, CRM, HTML, media or bot change.',
+                       'R3 (after JAPAN-BOT-INSTALL-20261126): log files changed in the last 2 hours (last lines, error lines) and the '
+                       'bot process ages. No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
