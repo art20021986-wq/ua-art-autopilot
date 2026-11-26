@@ -21,7 +21,7 @@ import plan
 import source_check as check
 
 HERE = Path(__file__).resolve().parent
-CEILING_UAH = 1
+CEILING_UAH = 2  # owner 2026-11-26 «сразу на 2 гривни» (was 1)
 # 2026-11-26: the campaign may be renamed «Пошук — Україна — Корея (UA ART)» (owner «Да, переименуй»).
 NAMES = "'%s', 'Пошук — Україна — Корея (UA ART)'" % plan.NAME
 CHUNK = 600

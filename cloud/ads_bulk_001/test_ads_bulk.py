@@ -103,7 +103,7 @@ class RemoteTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp, patch.object(keywords, 'PER_DAY', 1000):
             first = json.loads(remote.report(self.keys_file(temp), google))
             second = json.loads(remote.report(self.keys_file(temp), google))
-        self.assertEqual(first['after']['ceiling'], {'cpcBidCeilingMicros': '1000000'})
+        self.assertEqual(first['after']['ceiling'], {'cpcBidCeilingMicros': '2000000'})
         self.assertEqual(first['added_now'], 1000)
         self.assertEqual(first['after']['budget'], '300000000')
         self.assertEqual(second['added_now'], 1000)
