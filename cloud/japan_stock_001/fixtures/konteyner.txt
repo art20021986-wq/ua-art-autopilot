@@ -1,0 +1,627 @@
+# -*- coding: utf-8 -*-
+"""UA-V172 · Данные контейнера, дни до прибытия и экран «Где машина?».
+
+Пишет только sea_container, sea_date_out и eta_manual — каждое поле
+отдельно, чужие значения не затрагиваются.
+"""
+
+import re
+import time
+import logging
+import importlib
+import subprocess
+
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import (ContextTypes, CallbackQueryHandler, MessageHandler,
+                          filters, ApplicationHandlerStop)
+
+import db
+
+try:
+    import cars_schema as S
+except Exception:
+    S = None
+
+log = logging.getLogger(__name__)
+
+MESYACY = ("января", "февраля", "марта", "апреля", "мая", "июня",
+           "июля", "августа", "сентября", "октября", "ноября", "декабря")
+
+# номер контейнера: 4-20 латинских букв и цифр
+OBRAZEC_NOMERA = re.compile(r"^[A-Z0-9]{4,20}$")
+DNEY_PUTI = 75
+
+
+def _karta(cid):
+    try:
+        return db.get_card("cars", int(cid))
+    except Exception as e:
+        log.warning("konteyner: карточка %s не прочитана: %s", cid, e)
+        return None
+
+
+def _pisat(cid, pole, znachenie, kto):
+    db.update_card_field("cars", int(cid), pole, znachenie, kto)
+
+
+def _podpis_statusa(status):
+    try:
+        return S.status_label(status)
+    except Exception:
+        return status or "—"
+
+
+def _razobrat(znachenie):
+    znachenie = (znachenie or "").strip()
+    if not znachenie:
+        return None
+    for obr in ("%Y-%m-%d", "%d.%m.%Y", "%Y-%m-%dT%H:%M:%S"):
+        try:
+            return time.mktime(time.strptime(znachenie[:19], obr))
+        except Exception:
+            continue
+    return None
+
+
+def _krasivo(znachenie):
+    metka = _razobrat(znachenie)
+    if metka is None:
+        return (znachenie or "").strip()
+    t = time.localtime(metka)
+    return "%d %s %d" % (t.tm_mday, MESYACY[t.tm_mon - 1], t.tm_year)
+
+
+def _v_iso(text):
+    t = (text or "").strip().replace("/", ".").replace(" ", "")
+    for obr in ("%d.%m.%Y", "%d.%m.%y", "%Y-%m-%d"):
+        try:
+            razobrano = time.strptime(t, obr)
+            if razobrano.tm_year < 2000 or razobrano.tm_year > 2100:
+                return ""
+            return time.strftime("%Y-%m-%d", razobrano)
+        except Exception:
+            continue
+    return ""
+
+
+def _dney_do(card):
+    """Дни до выдачи: ручная дата важнее, иначе отправление + 75."""
+    ruchnaya = _razobrat(card.get("eta_manual"))
+    otpravka = _razobrat(card.get("sea_date_out"))
+    if ruchnaya is not None:
+        cel = ruchnaya
+    elif otpravka is not None:
+        cel = otpravka + DNEY_PUTI * 86400
+    else:
+        return None, None
+    seychas = time.strftime("%Y-%m-%d", time.localtime(time.time() + 7 * 3600))
+    try:
+        a = time.mktime(time.strptime(seychas, "%Y-%m-%d"))
+        b = time.mktime(time.strptime(time.strftime("%Y-%m-%d",
+                                                    time.localtime(cel)),
+                                      "%Y-%m-%d"))
+        dney = max(int(round((b - a) / 86400.0)), 0)
+    except Exception:
+        dney = 0
+    return dney, cel
+
+
+def _peresobrat():
+    """Пересборка отдельным процессом — всегда свежим кодом."""
+    try:
+        subprocess.Popen(
+            ["python3.10", "-c",
+             "import sys; sys.path.insert(0, '/home/Carix'); "
+             "import stranica; stranica.main()"],
+            cwd="/home/Carix",
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception as e:
+        log.warning("konteyner: пересборка не запущена: %s", e)
+
+
+# ─────────────────────────── экран «Где машина?»
+
+async def gde_mashina(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    from ua_delivery_status import CHOICES, public_status
+    q = update.callback_query
+    await q.answer()
+    context.user_data.pop("cont_wait", None)
+    cid = int(q.data.split(":")[-1])
+    card = _karta(cid)
+    if not card:
+        await q.message.reply_text("Карточка не найдена.")
+        raise ApplicationHandlerStop
+    rows = []
+    try:
+        for nomer_etapa, _nazv in S.STAGES:
+            pary = [InlineKeyboardButton(
+                ("• " if public_status(card.get("status")) == code else "") + label,
+                callback_data="car_setstage:%d:%s" % (cid, code))
+                for code, _stored, stage_no, label in CHOICES
+                if stage_no == nomer_etapa]
+            for i in range(0, len(pary), 2):
+                rows.append(pary[i:i + 2])
+    except Exception as e:
+        log.warning("konteyner: статусы не построены: %s", e)
+    rows.append([InlineKeyboardButton("📦 Номер и дата контейнера",
+                                      callback_data="cont_menu:%d" % cid)])
+    rows.append([InlineKeyboardButton("← К карточке",
+                                      callback_data="car_open:%d" % cid)])
+    await q.message.reply_text(
+        "Где машина?\nСейчас: %s" % _podpis_statusa(card.get("status")),
+        reply_markup=InlineKeyboardMarkup(rows))
+    raise ApplicationHandlerStop
+
+
+# ─────────────────────────── экран контейнера
+
+def _ekran(card):
+    cid = card["id"]
+    nomer = (card.get("sea_container") or "").strip()
+    data = (card.get("sea_date_out") or "").strip()
+    dney, cel = _dney_do(card)
+    if dney is None:
+        srok = "дата прибытия уточняется"
+    else:
+        srok = "%d дн. · выдача около %s" % (
+            dney, _krasivo(time.strftime("%Y-%m-%d", time.localtime(cel))))
+    text = ["<b>Данные контейнера</b>",
+            card.get("auto_number") or "",
+            "",
+            "Номер контейнера: <b>%s</b>" % (nomer or "не указан"),
+            "Дата отправления: <b>%s</b>" % (_krasivo(data) or "не указана"),
+            "Дни до прибытия: <b>%s</b>" % srok]
+    rows = [
+        [InlineKeyboardButton(
+            "Изменить номер" if nomer else "Указать номер контейнера",
+            callback_data="cont_num:%d" % cid)],
+        [InlineKeyboardButton(
+            "Изменить дату" if data else "Указать дату отправления",
+            callback_data="cont_date:%d" % cid)],
+        [InlineKeyboardButton("Дни до прибытия",
+                              callback_data="cont_days:%d" % cid)],
+    ]
+    if nomer or data:
+        rows.append([InlineKeyboardButton("Очистить данные контейнера",
+                                          callback_data="cont_clr:%d" % cid)])
+    rows.append([InlineKeyboardButton("← Где машина?",
+                                      callback_data="car_stage:%d" % cid)])
+    rows.append([InlineKeyboardButton("← К карточке",
+                                      callback_data="car_open:%d" % cid)])
+    return "\n".join(text), InlineKeyboardMarkup(rows)
+
+
+async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await q.answer()
+    context.user_data.pop("cont_wait", None)
+    cid = int(q.data.split(":")[-1])
+    card = _karta(cid)
+    if not card:
+        await q.message.reply_text("Карточка не найдена.")
+        raise ApplicationHandlerStop
+    text, kb = _ekran(card)
+    await q.message.reply_text(text, parse_mode="HTML", reply_markup=kb)
+    raise ApplicationHandlerStop
+
+
+def _sprosit(context, cid, pole):
+    context.user_data.pop("car_wait", None)
+    context.user_data.pop("car_media_wait", None)
+    context.user_data["cont_wait"] = {"card_id": cid, "field": pole}
+
+
+async def sprosit_nomer(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await q.answer()
+    cid = int(q.data.split(":")[-1])
+    _sprosit(context, cid, "sea_container")
+    await q.message.reply_text(
+        "Пришлите номер контейнера.\n"
+        "Принимаю от 4 до 20 латинских букв и цифр, например ONEYSELGF1046602.",
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+            "Пропустить", callback_data="cont_menu:%d" % cid)]]))
+    raise ApplicationHandlerStop
+
+
+async def sprosit_datu(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await q.answer()
+    cid = int(q.data.split(":")[-1])
+    _sprosit(context, cid, "sea_date_out")
+    await q.message.reply_text(
+        "Пришлите дату отправления контейнера в виде ДД.ММ.ГГГГ, "
+        "например 15.08.2026.",
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+            "Пропустить", callback_data="cont_menu:%d" % cid)]]))
+    raise ApplicationHandlerStop
+
+
+async def sprosit_dni(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await q.answer()
+    cid = int(q.data.split(":")[-1])
+    _sprosit(context, cid, "eta_manual")
+    await q.message.reply_text(
+        "Пришлите или число дней до прибытия (например 60), "
+        "или саму дату выдачи в виде ДД.ММ.ГГГГ.\n"
+        "Номер контейнера и дата отправления при этом не меняются.",
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+            "Пропустить", callback_data="cont_menu:%d" % cid)]]))
+    raise ApplicationHandlerStop
+
+
+async def ochistit_vopros(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await q.answer()
+    cid = int(q.data.split(":")[-1])
+    await q.message.reply_text(
+        "Очистить номер контейнера и дату отправления?",
+        reply_markup=InlineKeyboardMarkup([
+            [InlineKeyboardButton("Да, очистить",
+                                  callback_data="cont_clrok:%d" % cid)],
+            [InlineKeyboardButton("Отмена", callback_data="cont_menu:%d" % cid)]]))
+    raise ApplicationHandlerStop
+
+
+async def ochistit(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await q.answer()
+    cid = int(q.data.split(":")[-1])
+    kto = update.effective_user.id
+    for pole in ("sea_container", "sea_date_out"):
+        try:
+            _pisat(cid, pole, "", kto)
+        except Exception as e:
+            log.warning("konteyner: не очищено %s: %s", pole, e)
+    _peresobrat()
+    card = _karta(cid)
+    text, kb = _ekran(card)
+    await q.message.reply_text("Данные контейнера очищены.\n\n" + text,
+                               parse_mode="HTML", reply_markup=kb)
+    raise ApplicationHandlerStop
+
+
+async def prinyat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    wait = context.user_data.get("cont_wait")
+    if not wait:
+        return
+    msg = update.effective_message
+    if not msg or not msg.text:
+        return
+    cid = wait["card_id"]
+    pole = wait["field"]
+    kto = update.effective_user.id
+    syroe = msg.text.strip()
+
+    if pole == "sea_container":
+        znachenie = re.sub(r"[^A-Za-z0-9]", "", syroe).upper()
+        if not OBRAZEC_NOMERA.match(znachenie):
+            await msg.reply_text(
+                "Это не похоже на номер контейнера.\n"
+                "Нужно от 4 до 20 латинских букв и цифр.\n"
+                "Пришлите ещё раз.",
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+                    "Отмена", callback_data="cont_menu:%d" % cid)]]))
+            raise ApplicationHandlerStop
+    elif pole == "sea_date_out":
+        znachenie = _v_iso(syroe)
+        if not znachenie:
+            await msg.reply_text(
+                "Не понял дату.\nНужен вид ДД.ММ.ГГГГ, например 15.08.2026.\n"
+                "Пришлите ещё раз.",
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+                    "Отмена", callback_data="cont_menu:%d" % cid)]]))
+            raise ApplicationHandlerStop
+    else:  # eta_manual — дни или дата
+        znachenie = ""
+        chistoe = syroe.replace(" ", "")
+        if re.match(r"^\d{1,4}$", chistoe):
+            dney = int(chistoe)
+            if dney > 900:
+                await msg.reply_text("Слишком много дней. Пришлите число до 900.")
+                raise ApplicationHandlerStop
+            znachenie = time.strftime(
+                "%Y-%m-%d", time.localtime(time.time() + 7 * 3600 + dney * 86400))
+        else:
+            znachenie = _v_iso(syroe)
+        if not znachenie:
+            await msg.reply_text(
+                "Не понял значение.\nПришлите число дней (например 60) "
+                "или дату в виде ДД.ММ.ГГГГ.",
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(
+                    "Отмена", callback_data="cont_menu:%d" % cid)]]))
+            raise ApplicationHandlerStop
+
+    context.user_data.pop("cont_wait", None)
+    do = _karta(cid) or {}
+    try:
+        _pisat(cid, pole, znachenie, kto)
+    except Exception as e:
+        log.warning("konteyner: не записано %s: %s", pole, e)
+        await msg.reply_text("Не удалось записать значение. Попробуйте ещё раз.")
+        raise ApplicationHandlerStop
+
+    posle = _karta(cid) or {}          # повторное чтение из базы
+    stalo = (posle.get(pole) or "").strip()
+    if pole == "sea_container":
+        podpis = "Номер контейнера сохранён: %s" % (stalo or "—")
+    elif pole == "sea_date_out":
+        podpis = "Дата отправления сохранена: %s" % (_krasivo(stalo) or "—")
+    else:
+        podpis = "Срок прибытия сохранён: %s" % (_krasivo(stalo) or "—")
+
+    poteri = []
+    for drugoe in ("sea_container", "sea_date_out", "eta_manual"):
+        if drugoe == pole:
+            continue
+        if (do.get(drugoe) or "").strip() and not (posle.get(drugoe) or "").strip():
+            poteri.append(drugoe)
+    if poteri:
+        podpis += "\nВНИМАНИЕ: пропали поля %s" % ", ".join(poteri)
+        log.warning("konteyner: после записи %s пропали %s", pole, poteri)
+
+    _peresobrat()
+    text, kb = _ekran(posle)
+    await msg.reply_text(podpis + "\n\n" + text +
+                         "\n\nСтраница на сайте обновляется.",
+                         parse_mode="HTML", reply_markup=kb)
+    raise ApplicationHandlerStop
+
+
+async def posle_statusa(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Save sea status before any optional prompt; never leave the button spinning."""
+    import asyncio as _v189_asyncio
+    q = update.callback_query
+    try:
+        chasti = q.data.split(":")
+        cid = int(chasti[1])
+        status = chasti[2]
+    except Exception:
+        return
+    if status not in ("sea_loaded", "sea_transit"):
+        return
+    card = _karta(cid)
+    if not card:
+        return
+    try:
+        # CRM-VOICE-PHOTO-STAGE-REPAIR-089-V1: write before any Telegram request.
+        _pisat(cid, "status", status, q.from_user.id)
+        saved = _karta(cid)
+        if not saved or saved.get("status") != status:
+            raise RuntimeError("STATUS_READBACK_MISMATCH")
+    except Exception as exc:
+        log.error("konteyner: status save failed card=%s status=%s error=%s",
+                  cid, status, exc)
+        try:
+            await _v189_asyncio.wait_for(
+                q.message.reply_text("Не удалось сохранить этап. Повторите ещё раз."),
+                timeout=3.0)
+        except Exception:
+            pass
+        from telegram.ext import ApplicationHandlerStop as _V189Stop
+        raise _V189Stop
+
+    try:
+        await _v189_asyncio.wait_for(q.answer("Этап сохранён"), timeout=1.2)
+    except Exception:
+        pass
+    rows = []
+    text = ("Этап сохранён: Загружено в контейнер" if status == "sea_loaded"
+            else "Этап сохранён: В пути")
+    if not (saved.get("sea_container") or "").strip():
+        rows.append([InlineKeyboardButton("Ввести номер контейнера",
+                                          callback_data="cont_num:%d" % cid)])
+    if not (saved.get("sea_date_out") or "").strip():
+        rows.append([InlineKeyboardButton("Ввести дату отправления",
+                                          callback_data="cont_date:%d" % cid)])
+    rows.append([InlineKeyboardButton("← Вернуться к карточке",
+                                      callback_data="car_open:%d" % cid)])
+    try:
+        await _v189_asyncio.wait_for(
+            q.message.reply_text(text, reply_markup=InlineKeyboardMarkup(rows)),
+            timeout=4.0)
+    except Exception as exc:
+        log.warning("konteyner: status confirmation skipped: %s", exc)
+    from telegram.ext import ApplicationHandlerStop as _V189Stop
+    raise _V189Stop
+
+
+
+def _svezhiy_sborshchik():
+    """Пересборка из бота обязана брать свежий stranica.py, а не копию
+    из памяти процесса — иначе старый код затирает новые страницы."""
+    try:
+        import cars_ui
+    except Exception as e:
+        log.warning("konteyner: cars_ui не импортирован: %s", e)
+        return
+    imya = "_peresobrat_stranicy"
+    ishodnaya = getattr(cars_ui, imya, None)
+    if ishodnaya is None or getattr(ishodnaya, "_v172", False):
+        return
+
+    def obertka(*a, **k):
+        try:
+            import stranica
+            importlib.reload(stranica)
+        except Exception as e:
+            log.warning("konteyner: stranica не перезагружена: %s", e)
+        return ishodnaya(*a, **k)
+
+    obertka._v172 = True
+    setattr(cars_ui, imya, obertka)
+    log.info("konteyner: пересборка из бота переведена на свежий stranica.py")
+
+
+def register(app, g=-3):
+    _svezhiy_sborshchik()
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, prinyat), group=g)
+    app.add_handler(CallbackQueryHandler(gde_mashina, pattern=r"^car_stage:"), group=g)
+    app.add_handler(CallbackQueryHandler(menu, pattern=r"^cont_menu:"), group=g)
+    app.add_handler(CallbackQueryHandler(sprosit_nomer, pattern=r"^cont_num:"), group=g)
+    app.add_handler(CallbackQueryHandler(sprosit_datu, pattern=r"^cont_date:"), group=g)
+    app.add_handler(CallbackQueryHandler(sprosit_dni, pattern=r"^cont_days:"), group=g)
+    app.add_handler(CallbackQueryHandler(ochistit_vopros, pattern=r"^cont_clr:"), group=g)
+    app.add_handler(CallbackQueryHandler(ochistit, pattern=r"^cont_clrok:"), group=g)
+    app.add_handler(CallbackQueryHandler(posle_statusa, pattern=r"^car_setstage:"),
+                    group=g - 1)
+    log.info("konteyner подключён (UA-V172)")
+
+
+# --- UA-V173 --- фиксация даты выезда из Грузии ---
+import json as _j173
+import os as _o173
+
+V173_PAMYAT = "/home/Carix/.srok_gruzia.json"
+V173_SROK = 15
+V173_SDVIG = 7 * 3600
+
+
+def _v173_segodnya():
+    return time.strftime("%Y-%m-%d", time.localtime(time.time() + V173_SDVIG))
+
+
+def _v173_chitat():
+    try:
+        with open(V173_PAMYAT, "r", encoding="utf-8") as f:
+            d = _j173.loads(f.read() or "{}")
+        return d if isinstance(d, dict) else {}
+    except Exception:
+        return {}
+
+
+def _v173_pisat(d):
+    try:
+        vremenno = V173_PAMYAT + ".tmp"
+        with open(vremenno, "w", encoding="utf-8") as f:
+            f.write(_j173.dumps(d, ensure_ascii=False))
+        _o173.replace(vremenno, V173_PAMYAT)
+        return True
+    except Exception as e:
+        log.warning("konteyner: срок не записан: %s", e)
+        return False
+
+
+def _v173_zafiksirovat(nomer_mashiny, kto="бот"):
+    """Пишет дату выезда ОДИН раз. Возвращает (дата, впервые_ли)."""
+    if not nomer_mashiny:
+        return "", False
+    pamyat = _v173_chitat()
+    zapis = pamyat.get(nomer_mashiny) or {}
+    bylo = (zapis.get("vyehal") or "").strip()
+    if bylo:
+        return bylo, False
+    segodnya = _v173_segodnya()
+    pamyat[nomer_mashiny] = {"vyehal": segodnya, "postavil": kto,
+                             "kogda": time.strftime("%Y-%m-%d %H:%M:%S")}
+    _v173_pisat(pamyat)
+    return segodnya, True
+
+
+async def vyezd_iz_gruzii(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Ловит смену статуса на «Выехало в Киев». Разбор не останавливает."""
+    q = update.callback_query
+    try:
+        chasti = q.data.split(":")
+        cid = int(chasti[1])
+        status = chasti[2]
+    except Exception:
+        return
+    if status != "ge_to_kyiv":
+        return
+    card = _karta(cid)
+    if not card:
+        return
+    nom = card.get("auto_number") or ""
+    data, vpervye = _v173_zafiksirovat(nom)
+    if not data:
+        return
+    _peresobrat()
+    try:
+        if vpervye:
+            await q.message.reply_text(
+                "Дата выезда из Грузии зафиксирована: %s.\n"
+                "До выдачи в Киеве — %d дней, счётчик уменьшается каждый день."
+                % (_krasivo(data), V173_SROK))
+        else:
+            await q.message.reply_text(
+                "Дата выезда уже зафиксирована ранее: %s — срок не сброшен."
+                % _krasivo(data))
+    except Exception as e:
+        log.warning("konteyner: сообщение о сроке не отправлено: %s", e)
+
+
+async def srok_komanda(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """/srok — показать зафиксированные даты. /srok UA-0001 15.08.2026 — заменить."""
+    msg = update.effective_message
+    chasti = (msg.text or "").split()
+    pamyat = _v173_chitat()
+    if len(chasti) == 1:
+        if not pamyat:
+            await msg.reply_text("Зафиксированных дат выезда пока нет.")
+            raise ApplicationHandlerStop
+        stroki = ["Зафиксированные даты выезда из Грузии:"]
+        for nom in sorted(pamyat):
+            z = pamyat[nom] or {}
+            stroki.append("%s — %s (поставил: %s)"
+                          % (nom, _krasivo(z.get("vyehal")), z.get("postavil")))
+        stroki.append("")
+        stroki.append("Заменить: /srok UA-0001 15.08.2026")
+        await msg.reply_text("\n".join(stroki))
+        raise ApplicationHandlerStop
+    if len(chasti) < 3:
+        await msg.reply_text("Нужно так: /srok UA-0001 15.08.2026")
+        raise ApplicationHandlerStop
+    nom = chasti[1].upper()
+    data = _v_iso(chasti[2])
+    if not data:
+        await msg.reply_text("Не понял дату. Нужен вид ДД.ММ.ГГГГ.")
+        raise ApplicationHandlerStop
+    context.user_data["srok_zamena"] = {"nomer": nom, "data": data}
+    await msg.reply_text(
+        "Заменить зафиксированную дату выезда %s на %s?"
+        % (nom, _krasivo(data)),
+        reply_markup=InlineKeyboardMarkup([
+            [InlineKeyboardButton("Да, заменить", callback_data="srok_ok")],
+            [InlineKeyboardButton("Отмена", callback_data="srok_net")]]))
+    raise ApplicationHandlerStop
+
+
+async def srok_podtverdit(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    await q.answer()
+    zadanie = context.user_data.pop("srok_zamena", None)
+    if q.data == "srok_net" or not zadanie:
+        await q.message.reply_text("Отменено, дата не менялась.")
+        raise ApplicationHandlerStop
+    pamyat = _v173_chitat()
+    pamyat[zadanie["nomer"]] = {
+        "vyehal": zadanie["data"], "postavil": "владелец вручную",
+        "kogda": time.strftime("%Y-%m-%d %H:%M:%S")}
+    _v173_pisat(pamyat)
+    _peresobrat()
+    await q.message.reply_text(
+        "Дата выезда %s заменена на %s. Страница пересобирается."
+        % (zadanie["nomer"], _krasivo(zadanie["data"])))
+    raise ApplicationHandlerStop
+
+
+_register_v172 = register
+
+
+def register(app, g=-3):
+    _register_v172(app, g)
+    try:
+        from telegram.ext import CommandHandler
+        app.add_handler(CallbackQueryHandler(vyezd_iz_gruzii,
+                                             pattern=r"^car_setstage:"), group=g - 2)
+        app.add_handler(CommandHandler("srok", srok_komanda), group=g)
+        app.add_handler(CallbackQueryHandler(srok_podtverdit,
+                                             pattern=r"^srok_(ok|net)$"), group=g)
+        log.info("konteyner: срок Грузия → Киев подключён (UA-V173)")
+    except Exception as e:
+        log.warning("konteyner: срок не подключён: %s", e)
+
+# UA-ART-CRM-STAGE-BUTTONS-REMOVE-001-V1.0: konteyner
+_UA117_HIDDEN_STATUS_CODES = frozenset({'sea_loaded', 'sea_transit', 'ua_handed'})
