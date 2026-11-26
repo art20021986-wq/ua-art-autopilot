@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ADS-GEO-20261126-R2.8b86170246693746ab58bc7490ad74c702ea79ebce09e3742586c57fdacbc55d.json",
+  "autostart_ledger_sha256": "5f3250fd99afe61d2ddcfb28c6b89256924d3f2465181c9d87fa63bf0ebe1dec",
+  "autostart_source_commit": "6ef91268edd8284e33c9171ec53933539daa2434",
+  "created_at": "2026-11-26T04:20:42Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45754438882",
+    "task_id": "ADS-GEO-20261126-R2",
+    "task_sha256": "8b86170246693746ab58bc7490ad74c702ea79ebce09e3742586c57fdacbc55d"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-6d94000298023445-fd1c2503ca68e9b3",
+  "request_path": "tasks/requests/ADS-GEO-20261126-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:6d94000298023445"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
