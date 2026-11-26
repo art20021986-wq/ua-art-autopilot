@@ -28,6 +28,8 @@ def request(day):
                        'reads, read-only: which server .py and template files contain the delivery stage, catalog filter, home '
                        'tile and card stage markers (counts and line numbers), the sanitized full source of the most relevant '
                        'ones, the cars table column names and counts by status/published (no rows, no personal data). '
+                       'R2: also the full source and exact hash of db.py, publikaciya.py, publish_transaction_guard.py, '
+                       'ua_crm_public_sync.py, card_render.py, publication_fence.py and the stage/catalog modules. '
                        'No source, CRM, HTML, media or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],

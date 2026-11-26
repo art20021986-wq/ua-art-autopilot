@@ -5,6 +5,7 @@ Reads only:
   catalog filter, home tile and card stage markers: per file size, time, short hash and per-marker line numbers;
 - the sanitized full source of the most relevant files (by marker score, bounded in count and size);
 - the cars table column names and the number of cars per status and published flag (no rows, no personal data).
+R2 (JAPAN-STOCK-001 package): also the full source and exact hash of the modules in ALWAYS.
 Nothing is written outside this run's own receipt.
 """
 import argparse
@@ -22,6 +23,11 @@ HOME = Path('/home/Carix')
 MAX_SOURCE = 900 * 1024
 MAX_TOTAL = 7 * 1024 * 1024
 MAX_FULL = 40
+# R2: always read these in full (they import ua_delivery_status or write the public pages).
+ALWAYS = ('ua_delivery_status.py', 'db.py', 'publikaciya.py', 'publish_transaction_guard.py', 'ua_crm_public_sync.py',
+          'card_render.py', 'publication_fence.py', 'ua_crm_catalog_folders.py', 'cars_ui.py', 'konteyner.py',
+          'cars_schema.py', 'stranica.py', 'master_card.py', 'ua_stage_catalog_sync.py', 'ua_site_counters.py',
+          'catalog_design_guard.py')
 SKIP_DIRS = {'backups', 'backup', 'autopilot_inbox', 'node_modules', 'video', 'site', '__pycache__'}
 TEMPLATE = re.compile(r'\.(?:html|txt|tpl|js|css|json)$')
 # Marker -> weight. Strong markers name the stage policy, the CRM menu and the generated page parts.
@@ -92,6 +98,14 @@ def scan():
 
 def full_sources(found):
     chosen, total = {}, 0
+    for name in ALWAYS:
+        text = text_of(HOME / name)
+        if text is not None:
+            found.setdefault(name, {'bytes': len(text.encode()), 'mtime': stamp((HOME / name).stat().st_mtime),
+                                    'sha256': hashlib.sha256(text.encode()).hexdigest()[:16], 'score': 0, 'hits': {},
+                                    '_text': text})
+            found[name]['score'] += 10000
+            found[name]['sha256_full'] = hashlib.sha256(text.encode()).hexdigest()
     ranked = sorted(found.items(), key=lambda item: (-item[1]['score'], item[0]))
     for name, item in ranked:
         if len(chosen) >= MAX_FULL:
@@ -119,6 +133,7 @@ def report():
     try:
         found = scan()
         value['full_sources'] = full_sources(found)
+        found = {k: v for k, v in found.items() if v['hits'] or k in ALWAYS}
         value['files'] = {k: {x: y for x, y in v.items() if x != '_text'} for k, v in found.items()}
     except Exception as error:
         value['files'] = {'error': type(error).__name__ + ':' + LONG_NUMBER.sub('[N]', str(error))[:160]}
