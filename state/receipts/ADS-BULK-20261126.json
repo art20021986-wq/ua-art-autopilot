@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/ads_bulk_001/20261126.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "bbe5534a719f901e6ca4c77b29d9e976cd3c2658455d5831847b87086e3fef79",
+  "rollback_ready": true,
+  "rollback_ready_scope": "BEFORE_STATE_IN_REPORT_NO_SITE_OR_CRM_WRITES",
+  "run_id": "45751179628",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ADS-BULK-20261126",
+  "tests": "PASS",
+  "tests_scope": "GOOGLE_ADS_BULK_KEYWORDS",
+  "unexpected_changes": 0
+}
