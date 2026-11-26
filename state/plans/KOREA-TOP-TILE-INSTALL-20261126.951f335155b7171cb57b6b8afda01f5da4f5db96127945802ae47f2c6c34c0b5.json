@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-TOP-TILE-INSTALL-20261126.951f335155b7171cb57b6b8afda01f5da4f5db96127945802ae47f2c6c34c0b5.json",
+  "autostart_ledger_sha256": "7adba195abdf63bdc37c987805ce94d8b02e6a97fade113944c109691a84919d",
+  "autostart_source_commit": "998938ac37123113f56cbf216a8e781e03e9964b",
+  "created_at": "2026-11-26T13:57:43Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45833944729",
+    "task_id": "KOREA-TOP-TILE-INSTALL-20261126",
+    "task_sha256": "951f335155b7171cb57b6b8afda01f5da4f5db96127945802ae47f2c6c34c0b5"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "request_path": "tasks/requests/KOREA-TOP-TILE-INSTALL-20261126.json",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
