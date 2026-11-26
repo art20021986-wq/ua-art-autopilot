@@ -7,21 +7,23 @@
   "created_at": "2026-11-26T07:29:56Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T07:29:56Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-26T07:36:49Z",
+  "heartbeat_at": "2026-11-26T07:36:49Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45775564927",
     "task_id": "PERF-CWV-PREFLIGHT-20261126",
     "task_sha256": "06082ba05cd3dbec7d288a0065724596c459c88bfd48f5b84e3cf39fb5087c05"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-30908df3c39f7c42-5f7c9b18185fbe15",
   "receipt_path": "state/receipts/PERF-CWV-PREFLIGHT-20261126.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "09e4b2a903eeb92ae0484f2a1dce9724a85217095e0d699fc67a31bea03f67ab",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/PERF-CWV-PREFLIGHT-20261126.json",
   "request_sha256": "06082ba05cd3dbec7d288a0065724596c459c88bfd48f5b84e3cf39fb5087c05",
   "resource_locks": [
@@ -29,8 +31,38 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "939324e7c14384f4a9dd3f5c8dd3937a6c2c1475",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 95492829184,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.378
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-26T07:29:56Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "0efc79c0229892cd36d3cbe2f97a60ea9660ae0591e6448d6dfd7527ab4899a5",
+    "file_sha256": {
+      "cloud/perf_cwv_site_001/candidate_builder.py": "7f59468f0ad4447ae2b387e1c5b6a4a6530687368e416ab147da2a4c69fa0bbf",
+      "cloud/perf_cwv_site_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/perf_cwv_site_001/deployment_bootstrap.py": "291dde4f2fb3af8af8eeffc67d3274ba9218f58652c8a60773fafe13c66dfe3a",
+      "cloud/perf_cwv_site_001/deployment_remote.py": "a360f586b726f9a223c048b778eb012ca445bb3cc0928cf4701c66939093ffd5",
+      "cloud/perf_cwv_site_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/perf_cwv_site_001/deployment_transport.py": "61e846589e1d88e06150954f4b3badc806f79bd45d8d8f3553d9592cce796104",
+      "cloud/perf_cwv_site_001/make_release.py": "7e1877e55b60da8f360af739f5fbe29cbd0f34391458733947881191e922651f",
+      "cloud/perf_cwv_site_001/release_constants.py": "4bb780df2002033afa304edb44f2a9a80d1b7a1467131b785313a3d07ddca56b",
+      "cloud/perf_cwv_site_001/test_deployment.py": "436935a4e1fc878cc67f805f76520582afb46dbec7fc9b180808ed37ae99f9b5",
+      "cloud/perf_cwv_site_001/test_release.py": "20af5c35cabbaf619ed0bc8afa8e98761347baf597b09fde1b02989c85fd1cbf",
+      "cloud/perf_cwv_site_001/ua_brand_home.py": "7525c90bb29307f00c5e7005c81496ba1e2957f105560b8c64b8681099a40cfb",
+      "cloud/perf_cwv_site_001/ua_head_block.py": "d2f5dbead3de3678ef4f74d27b602ae69a239cf6a1014595894c29767aa29c75",
+      "cloud/perf_cwv_site_001/ua_lang_bar.py": "34a623dcd79439b34cbee2607349930d9da23e7e9263fbd81c06698754d7574a",
+      "cloud/perf_cwv_site_001/ua_layout_reserve.py": "1782d0ee3d654d62aae5d10ef525952931f0fae7ea2c264e483ca78067f609bc",
+      "cloud/perf_cwv_site_001/ua_lcp_photo.py": "7bc79d5878ac78e12cda98a33b35a0a978fd46123b0a208e7660892b521765bc",
+      "cloud/perf_cwv_site_001/ua_mobile_comfort.py": "bc5f48b409f059071eda4e1bb15cfac36c22d72d636417a76f10f6019c972131"
+    }
+  },
+  "updated_at": "2026-11-26T07:36:49Z"
 }
