@@ -68,6 +68,12 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(len(mutates), 1)
         self.assertFalse([o for o in mutates[0]['mutateOperations'] if 'campaignOperation' in o or 'remove' in json.dumps(o)])
 
+    def test_where_fields_selected(self):
+        for query in (remote.CAMPAIGN, remote.LINKS):
+            select, where = query.split(' FROM ')[0], query.split(' WHERE ')[1]
+            for field in re.findall(r'([a-z_]+\.[a-z_.]+) (?:IN|=|!=)', where):
+                self.assertIn(field, select, field)
+
     def test_limits(self):
         for text, d1, d2, url in remote.SITELINKS:
             self.assertTrue(len(text) <= 25 and len(d1) <= 35 and len(d2) <= 35, text)

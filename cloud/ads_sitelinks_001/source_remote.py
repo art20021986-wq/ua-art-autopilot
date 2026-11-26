@@ -22,8 +22,9 @@ SITELINKS = [('Лоти аукціону', 'Сотні авто на торга�
               SITE + 'seo/ua/avto-z-korei-do-kyieva-pid-kluch.html'),
              ('Підбір авто', 'Підберемо під ваш бюджет', 'Відповідь у Viber чи Telegram', SITE + 'podbor.html')]
 NAMES = "'Пошук — Україна — Корея (UA ART)', 'Пошук — Київ — Корея (UA ART)'"
-CAMPAIGN = "SELECT campaign.resource_name, campaign_budget.amount_micros FROM campaign WHERE campaign.name IN (%s)" % NAMES
-LINKS = ("SELECT campaign_asset.resource_name, campaign_asset.status, asset.sitelink_asset.link_text FROM campaign_asset "
+CAMPAIGN = "SELECT campaign.resource_name, campaign.name, campaign_budget.amount_micros FROM campaign WHERE campaign.name IN (%s)" % NAMES
+LINKS = ("SELECT campaign.name, campaign_asset.resource_name, campaign_asset.status, campaign_asset.field_type, "
+         "asset.sitelink_asset.link_text FROM campaign_asset "
          "WHERE campaign.name IN (%s) AND campaign_asset.field_type = 'SITELINK' AND campaign_asset.status != 'REMOVED'" % NAMES)
 
 
