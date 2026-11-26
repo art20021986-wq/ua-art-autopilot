@@ -1,0 +1,18 @@
+{
+  "cause": "cloud/ads_check_001/controller.py task id pattern ADS-CHECK-(20[0-9]{6}(?:-R[0-9])?) accepted one digit after R; R10 failed the identity check; fixed to -R[0-9]{1,2} in #2157",
+  "claim_before_sha256": "904a616bc557d87a38abd797939a72994a5a8463c1caab16f3a97bd337d9a6ce",
+  "error": "ADS_CHECK_STOP:IDENTITY -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: controller identity check (before any upload or remote call)",
+  "google_ads_requests": 0,
+  "leftover_temporary_task": "none: stopped before the remote task was created",
+  "owner_approval": "«Да» in the coordinator chat 2026-11-26 to closing the stopped Google Ads check so the fixed one and the 2 UAH ceiling can run",
+  "precedent": "state/reconciliations/VISITORS-UA-PREFLIGHT-20261126.45767032620.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-26T09:55:00+00:00",
+  "remote_mode": "read-only check — stopped before any remote access",
+  "retry": "ADS-CHECK-20261126-R11",
+  "run_id": "45795197267",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "ADS-CHECK-20261126-R10"
+}
