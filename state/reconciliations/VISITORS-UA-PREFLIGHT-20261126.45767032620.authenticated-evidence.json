@@ -1,0 +1,17 @@
+{
+  "cause": "The package smoke check counted one \"v_an_ua\" in analitika_knopka.py while the file correctly has two (the button and its routing); fixed in #2124 (smoke counts the button row)",
+  "claim_before_sha256": "971f7584267c3f5bca11aadbfd38fbf9992aebe3599d3910cc0457e006785e0c",
+  "error": "REMOTE_PREVIEW:DeploymentError:SMOKE_RESULT:{\"button\": 2, \"routing\": 1, \"report_pages\": 1, \"script\": [1, 1, 1]} -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: remote preview candidate build (reads only)",
+  "leftover_temporary_task": "none: the remote preview wrote its receipt, the controller then removes its always-on task",
+  "owner_approval": "«Да» in the coordinator chat 2026-11-26 to closing the stopped visitors report check so the fixed one can run",
+  "precedent": "state/reconciliations/CLIENT-FULL-ACCESS-PREFLIGHT-20261124-R2.45510850258.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-26T07:40:00+00:00",
+  "remote_mode": "preview (reads only) — stopped at the smoke check",
+  "retry": "VISITORS-UA-PREFLIGHT-20261126-R3",
+  "run_id": "45767032620",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "VISITORS-UA-PREFLIGHT-20261126"
+}
