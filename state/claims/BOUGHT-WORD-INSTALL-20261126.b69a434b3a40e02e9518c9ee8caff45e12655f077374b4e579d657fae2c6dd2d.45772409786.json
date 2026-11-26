@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "158372ae04444b9e2d4d6fb25170f9ef58fe4295c6c43a51ca37d19e7e6de2e6",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-26T07:06:06Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-26T07:12:17Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45772409786",
     "task_id": "BOUGHT-WORD-INSTALL-20261126",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45772409786-b69a434b3a40e02e",
   "production_transaction_path": "state/transactions/BOUGHT-WORD-INSTALL-20261126.b69a434b3a40e02e9518c9ee8caff45e12655f077374b4e579d657fae2c6dd2d.45772409786.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/BOUGHT-WORD-INSTALL-20261126.json",
   "receipt_validation_status": "PENDING",
@@ -97,5 +97,5 @@
       "cloud/bought_word_001/test_release.py": "7bbf1cc705e4eedc36c986391c5d47b37e92527c165744300ca89280ee5b2bf8"
     }
   },
-  "updated_at": "2026-11-26T07:06:06Z"
+  "updated_at": "2026-11-26T07:12:17Z"
 }
