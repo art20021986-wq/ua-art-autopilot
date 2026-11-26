@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/ads_ceiling_001/20261126.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "9c2b5f8efe0750e86b9efeba54a232aa5e067ffad61f6bf1215c524039420ff8",
+  "rollback_ready": true,
+  "rollback_ready_scope": "BEFORE_STATE_IN_REPORT_NO_SITE_OR_CRM_WRITES",
+  "run_id": "45801303207",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ADS-CEIL-20261126",
+  "tests": "PASS",
+  "tests_scope": "GOOGLE_ADS_CLICK_CEILING",
+  "unexpected_changes": 0
+}
