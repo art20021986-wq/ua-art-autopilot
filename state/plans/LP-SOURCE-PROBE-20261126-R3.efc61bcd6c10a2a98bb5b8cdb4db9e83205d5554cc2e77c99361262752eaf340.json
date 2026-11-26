@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/LP-SOURCE-PROBE-20261126-R3.efc61bcd6c10a2a98bb5b8cdb4db9e83205d5554cc2e77c99361262752eaf340.json",
+  "autostart_ledger_sha256": "5df9a8fb67319a3787b6d50fd5dde409b9d63c7b3425a779af93a9750d59a2b7",
+  "autostart_source_commit": "7c67b44d9062f037e2a5ba040902f8c75e54bc2d",
+  "created_at": "2026-11-26T05:33:29Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45761611417",
+    "task_id": "LP-SOURCE-PROBE-20261126-R3",
+    "task_sha256": "efc61bcd6c10a2a98bb5b8cdb4db9e83205d5554cc2e77c99361262752eaf340"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-de4c270e82d11f78-b31e41a1c3172fc9",
+  "request_path": "tasks/requests/LP-SOURCE-PROBE-20261126-R3.json",
+  "resource_locks": [
+    "PATH_SCOPE:de4c270e82d11f78"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
