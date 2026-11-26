@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/ads_schedule_001/20261126.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "737c9380443a0657684b593321a1147ac6f200e4d15383dd4a56c582ef12547d",
+  "rollback_ready": true,
+  "rollback_ready_scope": "BEFORE_STATE_IN_REPORT_NO_SITE_OR_CRM_WRITES",
+  "run_id": "45785299597",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ADS-SCHED-20261126",
+  "tests": "PASS",
+  "tests_scope": "GOOGLE_ADS_SCHEDULE_NAME",
+  "unexpected_changes": 0
+}
