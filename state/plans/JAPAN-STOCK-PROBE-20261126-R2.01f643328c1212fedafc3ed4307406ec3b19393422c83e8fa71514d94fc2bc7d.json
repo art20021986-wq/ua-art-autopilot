@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/JAPAN-STOCK-PROBE-20261126-R2.01f643328c1212fedafc3ed4307406ec3b19393422c83e8fa71514d94fc2bc7d.json",
+  "autostart_ledger_sha256": "77873c528efe5f1e9869c5b7afe06e0e6a33c36d26bf7a06b2900fe630ba3e97",
+  "autostart_source_commit": "cb0794f59a4df6f936460e227cdb80949251536c",
+  "created_at": "2026-11-26T03:14:34Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45747488941",
+    "task_id": "JAPAN-STOCK-PROBE-20261126-R2",
+    "task_sha256": "01f643328c1212fedafc3ed4307406ec3b19393422c83e8fa71514d94fc2bc7d"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-784e0cad6d0e1103-a8f0e42d2d12bd0c",
+  "request_path": "tasks/requests/JAPAN-STOCK-PROBE-20261126-R2.json",
+  "resource_locks": [
+    "PATH_SCOPE:784e0cad6d0e1103"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
