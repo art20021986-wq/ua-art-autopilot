@@ -88,6 +88,26 @@ QUERIES.update({
                                   "FROM user_location_view WHERE campaign.name = '%s' AND segments.date DURING TODAY"
                                   % CAMPAIGN),
 })
+# R7 (owner via the coordinator 2026-11-26: full feedback on the ads, from the live account): totals since the launch,
+# the campaign settings, keywords, negatives, locations, languages, schedule, ads.
+QUERIES.update({
+    'since_launch': ('client', "SELECT metrics.impressions, metrics.clicks, metrics.cost_micros, metrics.average_cpc, "
+                               "metrics.conversions FROM campaign WHERE campaign.name = '%s' "
+                               "AND segments.date BETWEEN '2026-11-25' AND '2026-12-31'" % CAMPAIGN),
+    'settings': ('client', "SELECT campaign.status, campaign.serving_status, campaign.primary_status, "
+                           "campaign.target_spend.cpc_bid_ceiling_micros, campaign.network_settings.target_search_network, "
+                           "campaign.network_settings.target_content_network, "
+                           "campaign.geo_target_type_setting.positive_geo_target_type, campaign_budget.amount_micros "
+                           "FROM campaign WHERE campaign.name = '%s'" % CAMPAIGN),
+    'criteria': ('client', "SELECT campaign_criterion.type, campaign_criterion.negative, "
+                           "campaign_criterion.location.geo_target_constant, campaign_criterion.language.language_constant, "
+                           "campaign_criterion.ad_schedule.day_of_week, campaign_criterion.ad_schedule.start_hour, "
+                           "campaign_criterion.ad_schedule.end_hour FROM campaign_criterion "
+                           "WHERE campaign.name = '%s'" % CAMPAIGN),
+    'keywords': ('client', "SELECT ad_group.name, ad_group_criterion.keyword.text, ad_group_criterion.status "
+                           "FROM ad_group_criterion WHERE campaign.name = '%s' AND ad_group_criterion.type = 'KEYWORD' "
+                           "AND ad_group_criterion.negative = FALSE" % CAMPAIGN),
+})
 PLANNING = False  # R2: the Keyword Planner needs Basic access (DEVELOPER_TOKEN_NOT_APPROVED); R3 skips it
 UKRAINE = 'geoTargetConstants/2804'
 LANGUAGES = {'uk': 'languageConstants/1036', 'ru': 'languageConstants/1031'}
