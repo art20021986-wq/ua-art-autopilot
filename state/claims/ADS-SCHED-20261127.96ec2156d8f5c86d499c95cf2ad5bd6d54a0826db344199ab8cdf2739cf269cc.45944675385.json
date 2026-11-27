@@ -7,21 +7,23 @@
   "created_at": "2026-11-27T05:26:29Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T05:26:29Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-27T05:32:56Z",
+  "heartbeat_at": "2026-11-27T05:32:56Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45944675385",
     "task_id": "ADS-SCHED-20261127",
     "task_sha256": "96ec2156d8f5c86d499c95cf2ad5bd6d54a0826db344199ab8cdf2739cf269cc"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-a4b6bd91ca7d8e7c-2c6b9a0c6d2218a7",
   "receipt_path": "state/receipts/ADS-SCHED-20261127.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "6d51d986d2380b44a2c12974ae02555b0b4cafcb891bce7aa0e45d7034313708",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ADS-SCHED-20261127.json",
   "request_sha256": "96ec2156d8f5c86d499c95cf2ad5bd6d54a0826db344199ab8cdf2739cf269cc",
   "resource_locks": [
@@ -29,8 +31,28 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "0fe3371e3f7a82f0d664d4285906679c5389935c",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 95379488768,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.452
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-27T05:26:29Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "ee6e7267b8d18d285ee5e40d9708f4547cf529263994adaf6173fec751ab3bba",
+    "file_sha256": {
+      "cloud/ads_schedule_001/bootstrap.py": "467d346b9f0cc167847a777ff8b293637fcb2664ea08f7f6a405c295df94e20a",
+      "cloud/ads_schedule_001/make_request.py": "3e0437710467a2d4a73d81c3bc773865c2e56aa4d9bab1c5251d65fef3d32296",
+      "cloud/ads_schedule_001/source_check.py": "094f82cfebc1f43666b9cd58b92948efa84ee6669b18a29d2e8343046025c7d0",
+      "cloud/ads_schedule_001/source_remote.py": "57ac3106d978785a8295044820ce1c312a853a83198d683250329f63f92e4740",
+      "cloud/ads_schedule_001/test_ads_schedule.py": "fea5b496eff7656dba7b13efd5c64d3f0d8ef99e3cb7de89aa447082a14192eb",
+      "cloud/ads_schedule_001/transport.py": "7581266007bfe2a1c545ae87be224bb730422d85f389c5d16c3f8f1392069a90"
+    }
+  },
+  "updated_at": "2026-11-27T05:32:56Z"
 }
