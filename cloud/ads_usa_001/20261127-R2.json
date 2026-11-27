@@ -1,0 +1,62 @@
+{
+  "after": [
+    {
+      "campaign": {
+        "name": "Пошук — Україна — Корея (UA ART)",
+        "resourceName": "customers/4680747874/campaigns/24540607407",
+        "status": "ENABLED",
+        "targetSpend": {
+          "cpcBidCeilingMicros": "4550000"
+        }
+      },
+      "campaignBudget": {
+        "amountMicros": "300000000",
+        "resourceName": "customers/4680747874/campaignBudgets/16104358943"
+      }
+    },
+    {
+      "campaign": {
+        "name": "Пошук — США (UA ART)",
+        "resourceName": "customers/4680747874/campaigns/24551477166",
+        "status": "ENABLED",
+        "targetSpend": {
+          "cpcBidCeilingMicros": "2000000"
+        }
+      },
+      "campaignBudget": {
+        "amountMicros": "50000000",
+        "resourceName": "customers/4680747874/campaignBudgets/16124031796"
+      }
+    }
+  ],
+  "before": [
+    {
+      "campaign": {
+        "name": "Пошук — Україна — Корея (UA ART)",
+        "resourceName": "customers/4680747874/campaigns/24540607407",
+        "status": "ENABLED",
+        "targetSpend": {
+          "cpcBidCeilingMicros": "4550000"
+        }
+      },
+      "campaignBudget": {
+        "amountMicros": "300000000",
+        "resourceName": "customers/4680747874/campaignBudgets/16104358943"
+      }
+    }
+  ],
+  "copied": {
+    "adSchedule": 0,
+    "keyword": 79,
+    "language": 2,
+    "location": 23
+  },
+  "mode": "probe",
+  "operations": 156,
+  "remote_write_count": 1,
+  "run_id": "45962524127",
+  "safe_to_stop": true,
+  "sitelinks": 6,
+  "status": "PASS",
+  "task_id": "ADS-USA-20261127-R2"
+}
