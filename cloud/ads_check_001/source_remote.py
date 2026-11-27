@@ -117,6 +117,24 @@ QUERIES.update({
                                    "WHERE segments.date DURING LAST_30_DAYS"),
     'links': ('client', 'SELECT product_link.resource_name, product_link.type FROM product_link'),
 })
+# 2026-11-27 (owner's Google Ads recommendations screenshot via the coordinator): which recommendations Google shows,
+# the sitelinks of every campaign and how the conversion actions stand (tag, last conversion, import).
+QUERIES.update({
+    'recommendations': ('client', 'SELECT recommendation.type, recommendation.campaign, recommendation.dismissed '
+                                  'FROM recommendation'),
+    'campaigns_all': ('client', 'SELECT campaign.name, campaign.status FROM campaign'),
+    'sitelinks_all': ('client', "SELECT campaign.name, campaign_asset.field_type, campaign_asset.status, "
+                                "campaign_asset.primary_status FROM campaign_asset WHERE campaign_asset.field_type = 'SITELINK'"),
+    'customer_sitelinks': ('client', "SELECT customer_asset.field_type, customer_asset.status FROM customer_asset "
+                                     "WHERE customer_asset.field_type = 'SITELINK'"),
+    'conv_actions': ('client', 'SELECT conversion_action.name, conversion_action.status, conversion_action.type, '
+                               'conversion_action.origin, conversion_action.primary_for_goal, '
+                               'conversion_action.include_in_conversions_metric FROM conversion_action'),
+    'conv_tracking': ('client', 'SELECT customer.conversion_tracking_setting.conversion_tracking_status, '
+                                'customer.conversion_tracking_setting.google_ads_conversion_customer FROM customer'),
+    'conv_all_7d': ('client', 'SELECT segments.conversion_action_name, metrics.all_conversions FROM customer '
+                              'WHERE segments.date DURING LAST_7_DAYS'),
+})
 PLANNING = False  # R2: the Keyword Planner needs Basic access (DEVELOPER_TOKEN_NOT_APPROVED); R3 skips it
 UKRAINE = 'geoTargetConstants/2804'
 LANGUAGES = {'uk': 'languageConstants/1036', 'ru': 'languageConstants/1031'}
