@@ -657,7 +657,41 @@ def full_server():
     return {'daily': dict(sorted(saved.items())[-31:])}
 
 
+def lead_events(days=30):
+    """2026-11-27 (Google Ads «Завершите настройку отслеживания конверсий»): do generate_lead / contact reach GA4,
+    marked as key events, and from which source — by day, for the conversion import into Google Ads."""
+    key = next((k for k in KEYS if k.is_file()), None)
+    if not key:
+        return {'error': 'KEY_MISSING'}
+    from google.oauth2 import service_account
+    from google.auth.transport.requests import Request
+    credentials = service_account.Credentials.from_service_account_file(
+        str(key), scopes=['https://www.googleapis.com/auth/analytics.readonly'])
+    credentials.refresh(Request())
+    leads = {'filter': {'fieldName': 'eventName', 'inListFilter': {'values': ['generate_lead', 'contact']}}}
+
+    def run(dimensions, metrics, limit=60):
+        body = {'dateRanges': [{'startDate': '%ddaysAgo' % (days - 1), 'endDate': 'today'}],
+                'dimensions': [{'name': n} for n in dimensions], 'metrics': [{'name': n} for n in metrics],
+                'dimensionFilter': leads, 'limit': limit}
+        request = urllib.request.Request(DATA, data=json.dumps(body).encode(), method='POST', headers={
+            'Authorization': 'Bearer ' + credentials.token, 'Content-Type': 'application/json'})
+        try:
+            with urllib.request.urlopen(request, timeout=90) as response:
+                rows = json.loads(response.read()).get('rows', [])
+            return [[c.get('value') for c in r.get('dimensionValues', []) + r.get('metricValues', [])] for r in rows]
+        except urllib.error.HTTPError as error:
+            return {'http': error.code, 'error': error.read(500).decode('utf-8', 'replace')}
+    return {'by_day': run(['date', 'eventName'], ['eventCount', 'keyEvents']),
+            'by_source': run(['sessionSourceMedium', 'eventName'], ['eventCount', 'keyEvents']),
+            'by_page': run(['pagePath', 'eventName'], ['eventCount'], 40)}
+
+
 def report():
+    return {'status': 'PASS', 'leads': guarded(lead_events)}
+
+
+def report_r7():
     return {'status': 'PASS', 'google_analytics': guarded(full_ga4), 'own': guarded(full_own),
             'server_log': guarded(full_server), 'cars': guarded(car_names)}
 
