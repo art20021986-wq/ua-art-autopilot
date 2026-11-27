@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "a8896621536a02d1ab638d0458b933e9e2ead0ef6c345ecefb9ca35356018df2",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T06:30:11Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-27T06:44:18Z",
+  "heartbeat_at": "2026-11-27T06:44:18Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "45951514015",
     "task_id": "BOT-GUARD-INSTALL-20261127",
@@ -17,7 +18,28 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 653.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 268.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -43,10 +65,11 @@
   "production_required": true,
   "production_transaction_id": "tx-45951514015-d9bb56c8bcef1eea",
   "production_transaction_path": "state/transactions/BOT-GUARD-INSTALL-20261127.d9bb56c8bcef1eea8ca0e8164f84fd60e3e0ea7c7f5a8938f4bdcb3d31310406.45951514015.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-ecadb51da7baddfd-e1d9b35ef644d012",
   "receipt_path": "state/receipts/BOT-GUARD-INSTALL-20261127.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b1ac78b78d28bd20af8b3b139127fbb2bac9070b17057e601478b21f8a890777",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/BOT-GUARD-INSTALL-20261127.json",
   "request_sha256": "d9bb56c8bcef1eea8ca0e8164f84fd60e3e0ea7c7f5a8938f4bdcb3d31310406",
   "resource_locks": [
@@ -69,7 +92,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "5590912e31f4c39cbd9e23470a325ead7c0da464e7ec452da786f2ab2c68d894",
     "file_sha256": {
@@ -86,5 +109,5 @@
       "cloud/bot_guard_001/ua_bot_guard.py": "e1243d11268f48de8b23b950b7b57078eed47379a058a8c61654c99cd126fa57"
     }
   },
-  "updated_at": "2026-11-27T06:30:11Z"
+  "updated_at": "2026-11-27T06:44:18Z"
 }
