@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+"""Write tasks/requests/BOT-WATCH-<suffix>.json and its launch marker (run from the repository root).
+
+Usage: python3 cloud/bot_watch_001/make_request.py request 20261025[-R2]   # after merge to main:
+       python3 cloud/bot_watch_001/make_request.py launch 20261025[-R2]
+"""
+import datetime
+import hashlib
+import json
+import sys
+
+P = 'cloud/bot_watch_001/'
+DEPENDENCIES = [P + 'source_remote.py', P + 'bootstrap.py', P + 'make_request.py', P + 'transport.py', P + 'render.py']
+TESTS = [P + 'test_bot_watch.py']
+
+
+def sha(path):
+    return hashlib.sha256(open(path, 'rb').read()).hexdigest()
+
+
+def request(day):
+    task = 'BOT-WATCH-' + day
+    value = {
+        'ai_requested': False, 'changed_paths': [P + day + '.json', P + 'reports/' + day + '.md'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
+        'description': 'Read-only bot watch (owner 2026-11-27: report on attacks every 3 days, tell at once on signs). On '
+                       'the server: reads the web app access logs and reduces them to per-day requests, addresses, honest '
+                       'robots, the busiest address (masked /24), server errors, 429s, counter beacons and order submissions '
+                       '(addresses counted in memory, never saved); reads analytics.db read-only (events per day). Writes the '
+                       'report to the repository. Temporary always-on task (never the CRM bot). No source, CRM, HTML, media, '
+                       'bot or Google setting change.',
+        'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
+                      'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', P + 'reports/' + day + '.md', 'state/receipts/%s.json' % task],
+                      'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
+                      'receipt_path': 'state/receipts/%s.json' % task, 'test_paths': TESTS, 'timeout_seconds': 900},
+        'production_required': False, 'read_only': False, 'requested_min_class': 'STANDARD',
+        'storage_required_bytes': 16777216, 'task_id': task, 'title': 'Bot watch'}
+    path = 'tasks/requests/%s.json' % task
+    with open(path, 'x') as handle:
+        handle.write(json.dumps(value, sort_keys=True, separators=(',', ':')))
+    return path
+
+
+def launch(day):
+    task = 'BOT-WATCH-' + day
+    path = 'tasks/requests/%s.json' % task
+    now = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
+    stamp = now.strftime('%Y%m%dT%H%M%SZ')
+    value = {'action': 'RUN_EXACT_TASK', 'created_at': now.strftime('%Y-%m-%dT%H:%M:%SZ'),
+             'expires_at': (now + datetime.timedelta(minutes=115)).strftime('%Y-%m-%dT%H:%M:%SZ'),
+             'mode_epoch': json.load(open('state/EXECUTION_MODE.json'))['mode_epoch'],
+             'nonce': (task + '-' + stamp).lower(), 'owner_authorized': True, 'production_allowed': False,
+             'request_path': path, 'request_sha256': sha(path), 'schema_version': 'UA-ART-AUTOSTART-LAUNCH-1', 'task_id': task}
+    marker = 'tasks/launch/AUTO-%s-%s.json' % (task, stamp)
+    with open(marker, 'x') as handle:
+        handle.write(json.dumps(value, indent=2, sort_keys=True) + '\n')
+    return marker
+
+
+if __name__ == '__main__':
+    action = sys.argv[1]
+    day = sys.argv[2]
+    print(request(day) if action == 'request' else launch(day))
