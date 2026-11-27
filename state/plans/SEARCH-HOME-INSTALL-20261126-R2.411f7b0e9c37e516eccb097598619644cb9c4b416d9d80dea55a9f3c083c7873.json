@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEARCH-HOME-INSTALL-20261126-R2.411f7b0e9c37e516eccb097598619644cb9c4b416d9d80dea55a9f3c083c7873.json",
+  "autostart_ledger_sha256": "532b06c771353e35d496dc66ad7be486d260adae379f4140be6a5eed0afe1484",
+  "autostart_source_commit": "aeb091421e8d268a856dcd392aa4bc1a31001886",
+  "created_at": "2026-11-27T00:34:19Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45917325185",
+    "task_id": "SEARCH-HOME-INSTALL-20261126-R2",
+    "task_sha256": "411f7b0e9c37e516eccb097598619644cb9c4b416d9d80dea55a9f3c083c7873"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "request_path": "tasks/requests/SEARCH-HOME-INSTALL-20261126-R2.json",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
