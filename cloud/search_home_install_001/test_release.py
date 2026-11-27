@@ -79,6 +79,16 @@ class CandidateTests(unittest.TestCase):
             self.assertEqual((HERE / name).read_bytes() != live[name], module == 'ticker',
                              name)
 
+    def test_health_checks_name_only_pages_that_exist_before_the_install(self):
+        """R1 halted: the pre-install health check asked for the new usa.html (404). New files are checked after."""
+        import release_constants
+        import deployment_controller
+        new = {'video/usa.html'} | set(candidate_builder.NEW_FILES)
+        for url in release_constants.HEALTH_CHECKS:
+            self.assertTrue(url.startswith('https://www.uaart.com.ua/'))
+            self.assertNotIn(url.split('www.uaart.com.ua/', 1)[1], new)
+        self.assertIn('/video/usa.html', deployment_controller.EXPECTED)  # checked after the install
+
     def test_other_installed_collector_is_refused(self):
         source = installed()
         source['korea_auction/job.py'] += b'# edited'
