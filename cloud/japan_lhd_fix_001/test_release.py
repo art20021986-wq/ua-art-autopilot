@@ -83,6 +83,17 @@ class CandidateTests(unittest.TestCase):
         self.assertIn('Щотижня — авто з лівим кермом з аукціонів Японії.', page)
         self.assertNotIn('десятки', page)
 
+    def test_every_candidate_file_is_an_installed_source(self):
+        """JAPAN-LHD-FIX-PREFLIGHT halted on NEW_FILE_EXISTS:video/japan.html — nothing in this fix is a new file."""
+        archive = self.bundle()
+        unpacked = Path(self._tmp())
+        for name in archive.namelist():
+            (unpacked / name).write_bytes(archive.read(name))
+        source = installed()
+        source[candidate_builder.JAPAN] = b'installed japan page'
+        files = candidate_builder.build(source, {}, here=unpacked, sha=deployment_transport.sha)
+        self.assertEqual(set(files) - set(candidate_builder.SOURCE_FILES), set())
+
     def test_other_installed_collector_is_refused(self):
         source = installed()
         source['japan_auction/job.py'] += b'# edited'

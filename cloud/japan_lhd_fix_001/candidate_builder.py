@@ -53,7 +53,8 @@ INSTALLED_SHA256 = {
 }
 KOREA = 'video/korea.html'
 JAPAN = 'video/japan.html'
-SOURCE_FILES = tuple(sorted(INSTALLED_SHA256)) + (KOREA,)
+# JAPAN-LHD-FIX-PREFLIGHT halted on NEW_FILE_EXISTS: the Japan page is installed, so it is read (and backed up) as a source
+SOURCE_FILES = tuple(sorted(INSTALLED_SHA256)) + (KOREA, JAPAN)
 DEPENDENCY_SHA256 = {}
 
 
