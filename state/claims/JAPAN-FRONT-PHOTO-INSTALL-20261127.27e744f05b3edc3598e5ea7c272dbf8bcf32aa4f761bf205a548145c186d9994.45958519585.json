@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "cd56297f894b8bacd1f4435a42e049e97d12df3d96a25fa139f083444af83a65",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T07:35:09Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-27T07:51:04Z",
+  "heartbeat_at": "2026-11-27T07:51:04Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "45958519585",
     "task_id": "JAPAN-FRONT-PHOTO-INSTALL-20261127",
@@ -17,7 +18,44 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 393.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 69.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/japan.html",
+        "http_status": 200,
+        "latency_ms": 57.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/japan.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 83.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -59,10 +97,11 @@
   "production_required": true,
   "production_transaction_id": "tx-45958519585-27e744f05b3edc35",
   "production_transaction_path": "state/transactions/JAPAN-FRONT-PHOTO-INSTALL-20261127.27e744f05b3edc3598e5ea7c272dbf8bcf32aa4f761bf205a548145c186d9994.45958519585.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/JAPAN-FRONT-PHOTO-INSTALL-20261127.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "d922b40e6fc6847d40bb37a248c30f23cd764078c42e39c08fc03368db5043b8",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/JAPAN-FRONT-PHOTO-INSTALL-20261127.json",
   "request_sha256": "27e744f05b3edc3598e5ea7c272dbf8bcf32aa4f761bf205a548145c186d9994",
   "resource_locks": [
@@ -85,7 +124,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "8669077479204f75de3c0d42d3f70c1c0166b9c34197893f78a277b89df0e481",
     "file_sha256": {
@@ -136,5 +175,5 @@
       "cloud/japan_front_photo_001/test_release.py": "c789d7a07c0384ce18b01267434d6841562146c26cdad6c2a047b207374437fd"
     }
   },
-  "updated_at": "2026-11-27T07:35:09Z"
+  "updated_at": "2026-11-27T07:51:04Z"
 }
