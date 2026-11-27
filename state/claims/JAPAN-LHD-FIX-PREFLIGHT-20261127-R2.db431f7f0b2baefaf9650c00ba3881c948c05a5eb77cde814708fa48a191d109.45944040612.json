@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/JAPAN-LHD-FIX-PREFLIGHT-20261127-R2.db431f7f0b2baefaf9650c00ba3881c948c05a5eb77cde814708fa48a191d109.json",
+  "autostart_ledger_sha256": "8470bc1e2c13c01518bd01691fff4315a6d014dd2ff90adf2561b78f217c000f",
+  "autostart_source_commit": "5bdd5d1dcec291041920f977b6efd11a1c5de436",
+  "created_at": "2026-11-27T05:15:26Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-27T05:15:26Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "45944040612",
+    "task_id": "JAPAN-LHD-FIX-PREFLIGHT-20261127-R2",
+    "task_sha256": "db431f7f0b2baefaf9650c00ba3881c948c05a5eb77cde814708fa48a191d109"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-a149aca8d20afbc3-a35acc5253adef17",
+  "receipt_path": "state/receipts/JAPAN-LHD-FIX-PREFLIGHT-20261127-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/JAPAN-LHD-FIX-PREFLIGHT-20261127-R2.json",
+  "request_sha256": "db431f7f0b2baefaf9650c00ba3881c948c05a5eb77cde814708fa48a191d109",
+  "resource_locks": [
+    "PATH_SCOPE:a149aca8d20afbc3"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "93326c0d65d31341832e7990c1ace7621da8a5de",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-27T05:15:26Z"
+}
