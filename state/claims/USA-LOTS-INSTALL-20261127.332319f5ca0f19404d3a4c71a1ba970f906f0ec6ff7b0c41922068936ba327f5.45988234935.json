@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "1e4d215f1fa9b222895816d6b79dafd8ec9b618f2e0117c3f1a8d2ee001adfdb",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T11:13:20Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-27T11:17:18Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45988234935",
     "task_id": "USA-LOTS-INSTALL-20261127",
@@ -67,7 +67,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45988234935-332319f5ca0f1940",
   "production_transaction_path": "state/transactions/USA-LOTS-INSTALL-20261127.332319f5ca0f19404d3a4c71a1ba970f906f0ec6ff7b0c41922068936ba327f5.45988234935.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/USA-LOTS-INSTALL-20261127.json",
   "receipt_validation_status": "PENDING",
@@ -141,5 +141,5 @@
       "cloud/usa_lots_001/usa_auction/views.py": "bf5aa1183fec0d1858f273740cbe5fb5e5e174912ad850244ef936ce60ef844c"
     }
   },
-  "updated_at": "2026-11-27T11:13:20Z"
+  "updated_at": "2026-11-27T11:17:18Z"
 }
