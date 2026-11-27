@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/USA-LOTS-PROBE-20261127-R5.84c4105c4da62115af664da347bb871373bb4333ff4ea6481ea7f1b8a16ffedb.json",
+  "autostart_ledger_sha256": "efcd20b5c49db0520a2492d4f64506ff382cef38cdf282d6528f50c1aded5936",
+  "autostart_source_commit": "a376dd66073dcb2718444c8c0b48e42dae12bfee",
+  "created_at": "2026-11-27T11:33:53Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45991140635",
+    "task_id": "USA-LOTS-PROBE-20261127-R5",
+    "task_sha256": "84c4105c4da62115af664da347bb871373bb4333ff4ea6481ea7f1b8a16ffedb"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-4291c54874c534c6-a037c250b6d6407a",
+  "request_path": "tasks/requests/USA-LOTS-PROBE-20261127-R5.json",
+  "resource_locks": [
+    "PATH_SCOPE:4291c54874c534c6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
