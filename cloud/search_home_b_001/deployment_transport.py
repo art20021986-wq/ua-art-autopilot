@@ -15,6 +15,8 @@ import zipfile
 BASE = 'https://www.pythonanywhere.com/api/v0/user/Carix/'
 INBOX = '/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin'
 BOT_ID = 266084
+# SEARCH-HOME-001 B: the hourly summary for the home page search (ua_auction_summary.py).
+SUMMARY_COMMAND = 'python3.10 /home/Carix/ua_auction_summary.py'
 BOT_COMMAND = 'python3.10 /home/Carix/start_safe.py'
 HERE = Path(__file__).resolve().parent
 
@@ -108,6 +110,30 @@ class API:
                      'multipart/form-data; boundary='+boundary, (200, 201))
         if self.file(path) != payload:
             raise TransportError('UPLOAD_READBACK')
+
+    def summary_jobs(self):
+        """Scheduled tasks running the home page summary (only these are created or removed by this release)."""
+        return [task for task in self.json('GET', 'schedule/') if task.get('command') == SUMMARY_COMMAND]
+
+    def ensure_summary_job(self, now=None, delay=5):
+        """The hourly summary task, first run a few minutes from now."""
+        import datetime
+        found = self.summary_jobs()
+        if not found:
+            now = now or datetime.datetime.now(datetime.timezone.utc)
+            self.json('POST', 'schedule/', {'command': SUMMARY_COMMAND, 'enabled': 'true', 'interval': 'hourly',
+                                            'minute': (now.minute + delay) % 60,
+                                            'description': 'UA ART home search summary (hourly)'}, (200, 201))
+            found = self.summary_jobs()
+        if len(found) != 1 or found[0].get('interval') != 'hourly' or found[0].get('enabled') is not True:
+            raise TransportError('SUMMARY_JOB_STATE')
+        return {'id': found[0]['id'], 'interval': 'hourly', 'minute': found[0].get('minute'), 'enabled': True}
+
+    def remove_summary_job(self):
+        for task in self.summary_jobs():
+            self.request('DELETE', 'schedule/%d/' % task['id'], allowed=(200, 202, 204, 404))
+        if self.summary_jobs():
+            raise TransportError('SUMMARY_JOB_LEFT')
 
     def run(self, mode, run_id, bundle_sha, plan_sha='', backup_sha=''):
         if mode not in {'preview', 'backup', 'install', 'verify', 'rollback'} or not re.fullmatch(r'[0-9]+', run_id):

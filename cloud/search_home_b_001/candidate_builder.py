@@ -9,7 +9,7 @@ import hashlib
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-NEW_MODULES = ('ua_search_home.py',)
+NEW_MODULES = ('ua_search_home.py', 'ua_auction_summary.py')
 PAGES = ('video/index.html',)
 TAG = 'SEARCH-HOME-001 B'
 INJECT_TAIL = ("\n\n# SEARCH-HOME-001 B: the home page top block «Пошук авто на аукціонах світу» (owner «Да» 2026-11-27).\n"

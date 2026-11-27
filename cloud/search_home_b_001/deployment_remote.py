@@ -141,11 +141,12 @@ def smoke(directory):
                                   and home.index('class="ua-kr-auc"') < home.index(ROW) < home.index('id="ua-korea-ticker"'),
              'home_blocks_kept': '<!--UA-HOME-BLOCKS-V1-->' in home,
              'wrapper': 'SEARCH-HOME-001 B' in text('site_ge_inject.py'),
+             'summary': summary_ok(after),
              'card_unchanged': bool(cards) and current_page(read(cards[0]).decode('utf-8')) == read(cards[0]).decode('utf-8')}
     total = len(pages)
     if (pages != ['video/index.html'] or value['pages_current'] != total or value['pages_with_row_once'] != total
             or value['pages_revert_exact'] != total or not value['search_in_section'] or not value['home_blocks_kept']
-            or not value['wrapper'] or not value['card_unchanged']):
+            or not value['wrapper'] or not value['card_unchanged'] or not value['summary']):
         raise DeploymentError('SMOKE_RESULT:' + json.dumps(value)[:300])
     return value
 
@@ -163,6 +164,19 @@ def verify_files(plan, after):
     for relative,digest in plan['protected'].items():
         if sha(read(ROOT/relative)) != digest:
             raise DeploymentError('PROTECTED_CHANGED:'+relative)
+
+
+def summary_ok(after):
+    """The candidate's summary module reads the live lot lists (read only, nothing written): Korea is there."""
+    sys.path.insert(0, str(after))
+    try:
+        sys.modules.pop('ua_auction_summary', None)
+        module = importlib.import_module('ua_auction_summary')
+        value = module.build(ROOT)
+        return value['countries'].get('korea', {}).get('total', 0) > 0 and len(json.dumps(value)) < 200000
+    finally:
+        sys.path.remove(str(after))
+        sys.modules.pop('ua_auction_summary', None)
 
 
 def rows_once(text):
@@ -275,6 +289,31 @@ def no_bot_processes():
         time.sleep(1)
 
 
+SUMMARY = 'video/auctions/summary.json'  # written by the hourly summary task, not part of the plan
+
+
+def write_summary():
+    """The first summary right after the install (the hourly task keeps it fresh)."""
+    sys.path.insert(0, str(ROOT))
+    try:
+        sys.modules.pop('ua_auction_summary', None)
+        module = importlib.import_module('ua_auction_summary')
+        value = module.build(ROOT)
+        module.write(value, ROOT)
+        return {'total': value['total'], 'countries': sorted(value['countries'])}
+    finally:
+        sys.path.remove(str(ROOT))
+
+
+def drop_summary(api=None):
+    """Rollback: the summary task and its file go with the release."""
+    if api is not None:
+        api.remove_summary_job()
+    path = ROOT/SUMMARY
+    if path.is_file() and not path.is_symlink():
+        path.unlink()
+
+
 def restore(directory, plan):
     for relative,digest in plan['protected'].items():
         if sha(read(ROOT/relative)) != digest:
@@ -329,7 +368,7 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
             with writer_exclusion():
                 before=protected_data(plan)
                 if mode=='rollback' or applied:
-                    restore_all(directory,plan)
+                    restore_all(directory,plan); drop_summary(api)
                     result={'status':'PASS' if mode=='rollback' else 'FAIL',
                             'restored':True,'interrupted_install':applied}
                 else:
@@ -341,10 +380,12 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
                             atomic(ROOT/relative,read(directory/'after'/relative),plan['files'][relative]['mode'])
                         verify_files(plan,True)
                         refreshed=seo_refresh()
+                        summary=write_summary()  # SEARCH-HOME-001 B: the counter has its numbers at once
+                        summary['job']=api.ensure_summary_job()
                         if protected_data(plan)!=before: raise DeploymentError('PROTECTED_DATA_CHANGED_DURING_INSTALL')
-                        result={'status':'PASS','installed':True,'seo_refresh':refreshed}
+                        result={'status':'PASS','installed':True,'seo_refresh':refreshed,'summary':summary}
                     except BaseException:
-                        restore_all(directory,plan);applied=False
+                        restore_all(directory,plan);drop_summary(api);applied=False
                         raise
                 if protected_data(plan)!=before:
                     raise DeploymentError('PROTECTED_DATA_CHANGED_DURING_OPERATION')
@@ -355,7 +396,7 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
             result={'status':'FAIL','error':type(error).__name__+':'+str(error)[:180]}
             if applied:
                 try:
-                    with writer_exclusion(): restore_all(directory,plan)
+                    with writer_exclusion(): restore_all(directory,plan); drop_summary(api)
                     result['restored']=True
                 except Exception as restore_error:
                     result['rollback_error']=type(restore_error).__name__+':'+str(restore_error)[:160]
