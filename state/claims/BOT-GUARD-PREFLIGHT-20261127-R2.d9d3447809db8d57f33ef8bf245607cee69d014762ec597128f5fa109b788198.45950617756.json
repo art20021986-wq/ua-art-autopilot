@@ -7,21 +7,23 @@
   "created_at": "2026-11-27T06:16:11Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T06:16:11Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-27T06:22:05Z",
+  "heartbeat_at": "2026-11-27T06:22:05Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45950617756",
     "task_id": "BOT-GUARD-PREFLIGHT-20261127-R2",
     "task_sha256": "d9d3447809db8d57f33ef8bf245607cee69d014762ec597128f5fa109b788198"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-a64369addad4df5b-16e85f12a0c5b799",
   "receipt_path": "state/receipts/BOT-GUARD-PREFLIGHT-20261127-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "9451793b55fa98678f9dd32fa4eadae0da836adcaf95ce3f276c5278fa57c2ae",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/BOT-GUARD-PREFLIGHT-20261127-R2.json",
   "request_sha256": "d9d3447809db8d57f33ef8bf245607cee69d014762ec597128f5fa109b788198",
   "resource_locks": [
@@ -29,8 +31,33 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "90321a2656a0fa3237bd73e27e5a58d32c0756a4",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91266265088,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.105
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-27T06:16:11Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "5590912e31f4c39cbd9e23470a325ead7c0da464e7ec452da786f2ab2c68d894",
+    "file_sha256": {
+      "cloud/bot_guard_001/candidate_builder.py": "473c2fffc704d5b8dbe2db13b5640dfe28b49f747901d0daf8e53f1542fb0a33",
+      "cloud/bot_guard_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/bot_guard_001/deployment_bootstrap.py": "645e490c09eabf41d710582dc8e9aec341949843b8576908fd6828e13128d8b0",
+      "cloud/bot_guard_001/deployment_remote.py": "75dfa2c14c30ecbab542a1042457dd48d35590bda61ebc232d48a0857ba7d157",
+      "cloud/bot_guard_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/bot_guard_001/deployment_transport.py": "6f650df0e1e9d4331a93a4e2e81b187538ae5c481a8adf8ee4e5703a1b5c0926",
+      "cloud/bot_guard_001/make_release.py": "3a62116c1b62da603144156cc22549caf4562d1d3d7ba7498f24f122637d72b7",
+      "cloud/bot_guard_001/release_constants.py": "5ace59f1708c4cc908832993c26ca11e53e7b76feb953a7738da9fdf7d4476b4",
+      "cloud/bot_guard_001/test_bot_guard.py": "e1f7ca894523c5b57d2751baff5482dd4f7e53afe8a6dc2782818fe60003b47f",
+      "cloud/bot_guard_001/test_deployment.py": "dbe3dc9ac4755400b17f913e70d520eb9397312bb17129eef50db062d3bdd198",
+      "cloud/bot_guard_001/ua_bot_guard.py": "e1243d11268f48de8b23b950b7b57078eed47379a058a8c61654c99cd126fa57"
+    }
+  },
+  "updated_at": "2026-11-27T06:22:05Z"
 }
