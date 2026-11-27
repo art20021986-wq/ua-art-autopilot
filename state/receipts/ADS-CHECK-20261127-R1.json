@@ -1,0 +1,17 @@
+{
+  "evidence_path": "cloud/ads_check_001/20261127-R1.json",
+  "live_source_environment": "production",
+  "probe_status": "PASS",
+  "production_required": false,
+  "request_sha256": "b821371344e02e316cccf91c961548161af175e4da0a15e85c5ffbc848cf724f",
+  "rollback_ready": true,
+  "rollback_ready_scope": "NO_SITE_OR_CRM_WRITES",
+  "run_id": "45915625352",
+  "status": "FINISHED",
+  "target_environment": "shadow",
+  "task_class": "STANDARD",
+  "task_id": "ADS-CHECK-20261127-R1",
+  "tests": "PASS",
+  "tests_scope": "READ_ONLY_PROBE",
+  "unexpected_changes": 0
+}
