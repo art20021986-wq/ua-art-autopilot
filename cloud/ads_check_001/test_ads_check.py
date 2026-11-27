@@ -67,7 +67,7 @@ class RemoteTests(unittest.TestCase):
         value = json.loads(text)
         self.assertEqual(value['status'], 'PASS')
         self.assertEqual(value['google_ads']['accessible'], ['customers/4680747874'])
-        self.assertEqual(set(value['google_ads']) - {'token', 'scope', 'accessible'}, set(remote.QUERIES))
+        self.assertEqual(set(value['google_ads']) - {'token', 'scope', 'accessible'}, set(remote.ONLY or remote.QUERIES))
         for secret in list(KEYS.values())[:4] + [ACCESS]:
             self.assertNotIn(secret, text)
         urls = [url for _, url, _, _ in google.calls]
