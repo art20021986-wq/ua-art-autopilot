@@ -121,10 +121,7 @@ QUERIES.update({
 # the sitelinks of every campaign and how the conversion actions stand (tag, last conversion, import).
 QUERIES.update({
     'recommendations': ('client', 'SELECT recommendation.resource_name, recommendation.type, recommendation.campaign, '
-                                  'recommendation.dismissed, recommendation.impact.base_metrics.clicks, '
-                                  'recommendation.impact.potential_metrics.clicks, '
-                                  'recommendation.impact.base_metrics.conversions, '
-                                  'recommendation.impact.potential_metrics.conversions FROM recommendation'),
+                                  'recommendation.dismissed FROM recommendation'),
     'optimization': ('client', 'SELECT customer.optimization_score, customer.optimization_score_weight FROM customer'),
     'campaigns_all': ('client', 'SELECT campaign.name, campaign.status FROM campaign'),
     'sitelinks_all': ('client', "SELECT campaign.name, campaign_asset.field_type, campaign_asset.status, "
