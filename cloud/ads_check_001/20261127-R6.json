@@ -1,0 +1,358 @@
+{
+  "google_ads": {
+    "accessible": [
+      "customers/4680747874",
+      "customers/9054959760"
+    ],
+    "campaign_status_all": [
+      {
+        "campaign": {
+          "name": "Пошук — Україна — Корея (UA ART)",
+          "primaryStatus": "LEARNING",
+          "primaryStatusReasons": [
+            "BIDDING_STRATEGY_LEARNING"
+          ],
+          "resourceName": "customers/4680747874/campaigns/24540607407",
+          "servingStatus": "SERVING",
+          "status": "ENABLED"
+        }
+      },
+      {
+        "campaign": {
+          "name": "Пошук — США (UA ART)",
+          "primaryStatus": "LEARNING",
+          "primaryStatusReasons": [
+            "BIDDING_STRATEGY_LEARNING"
+          ],
+          "resourceName": "customers/4680747874/campaigns/24551477166",
+          "servingStatus": "SERVING",
+          "status": "ENABLED"
+        }
+      }
+    ],
+    "metrics_2d": [
+      {
+        "campaign": {
+          "name": "Пошук — Україна — Корея (UA ART)",
+          "resourceName": "customers/4680747874/campaigns/24540607407"
+        },
+        "metrics": {
+          "clicks": "2",
+          "conversions": 0,
+          "costMicros": "8980000",
+          "impressions": "10"
+        },
+        "segments": {
+          "date": "2026-11-27"
+        }
+      }
+    ],
+    "scope": "https://www.googleapis.com/auth/adwords",
+    "today_keywords": [
+      {
+        "adGroup": {
+          "name": "RU — Корея под ключ",
+          "resourceName": "customers/4680747874/adGroups/203382299698"
+        },
+        "adGroupCriterion": {
+          "keyword": {
+            "matchType": "PHRASE",
+            "text": "авто из кореи"
+          },
+          "qualityInfo": {
+            "creativeQualityScore": "ABOVE_AVERAGE",
+            "postClickQualityScore": "BELOW_AVERAGE",
+            "qualityScore": 5,
+            "searchPredictedCtr": "AVERAGE"
+          },
+          "resourceName": "customers/4680747874/adGroupCriteria/203382299698~322996306734"
+        },
+        "keywordView": {
+          "resourceName": "customers/4680747874/keywordViews/203382299698~322996306734"
+        },
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "1"
+        }
+      },
+      {
+        "adGroup": {
+          "name": "RU — Корея под ключ",
+          "resourceName": "customers/4680747874/adGroups/203382299698"
+        },
+        "adGroupCriterion": {
+          "keyword": {
+            "matchType": "PHRASE",
+            "text": "машины из кореи"
+          },
+          "resourceName": "customers/4680747874/adGroupCriteria/203382299698~370778645474"
+        },
+        "keywordView": {
+          "resourceName": "customers/4680747874/keywordViews/203382299698~370778645474"
+        },
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "1"
+        }
+      },
+      {
+        "adGroup": {
+          "name": "RU — Корея под ключ",
+          "resourceName": "customers/4680747874/adGroups/203382299698"
+        },
+        "adGroupCriterion": {
+          "keyword": {
+            "matchType": "EXACT",
+            "text": "купить авто из кореи"
+          },
+          "resourceName": "customers/4680747874/adGroupCriteria/203382299698~389598009271"
+        },
+        "keywordView": {
+          "resourceName": "customers/4680747874/keywordViews/203382299698~389598009271"
+        },
+        "metrics": {
+          "averageCpc": 4530000,
+          "clicks": "1",
+          "costMicros": "4530000",
+          "impressions": "1"
+        }
+      },
+      {
+        "adGroup": {
+          "name": "RU — Корея под ключ",
+          "resourceName": "customers/4680747874/adGroups/203382299698"
+        },
+        "adGroupCriterion": {
+          "keyword": {
+            "matchType": "EXACT",
+            "text": "авто с кореи"
+          },
+          "resourceName": "customers/4680747874/adGroupCriteria/203382299698~468577036954"
+        },
+        "keywordView": {
+          "resourceName": "customers/4680747874/keywordViews/203382299698~468577036954"
+        },
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "1"
+        }
+      },
+      {
+        "adGroup": {
+          "name": "RU — Корея под ключ",
+          "resourceName": "customers/4680747874/adGroups/203382299698"
+        },
+        "adGroupCriterion": {
+          "keyword": {
+            "matchType": "PHRASE",
+            "text": "привезти авто из кореи"
+          },
+          "resourceName": "customers/4680747874/adGroupCriteria/203382299698~578382003831"
+        },
+        "keywordView": {
+          "resourceName": "customers/4680747874/keywordViews/203382299698~578382003831"
+        },
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "1"
+        }
+      },
+      {
+        "adGroup": {
+          "name": "RU — Корея под ключ",
+          "resourceName": "customers/4680747874/adGroups/203382299698"
+        },
+        "adGroupCriterion": {
+          "keyword": {
+            "matchType": "PHRASE",
+            "text": "авто из кореи цена"
+          },
+          "resourceName": "customers/4680747874/adGroupCriteria/203382299698~1016034399009"
+        },
+        "keywordView": {
+          "resourceName": "customers/4680747874/keywordViews/203382299698~1016034399009"
+        },
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "1"
+        }
+      },
+      {
+        "adGroup": {
+          "name": "RU — Любая модель из Кореи",
+          "resourceName": "customers/4680747874/adGroups/206240546630"
+        },
+        "adGroupCriterion": {
+          "keyword": {
+            "matchType": "PHRASE",
+            "text": "kia из кореи"
+          },
+          "resourceName": "customers/4680747874/adGroupCriteria/206240546630~391468594037"
+        },
+        "keywordView": {
+          "resourceName": "customers/4680747874/keywordViews/206240546630~391468594037"
+        },
+        "metrics": {
+          "averageCpc": 4450000,
+          "clicks": "1",
+          "costMicros": "4450000",
+          "impressions": "1"
+        }
+      },
+      {
+        "adGroup": {
+          "name": "RU — Kia K5",
+          "resourceName": "customers/4680747874/adGroups/208015663648"
+        },
+        "adGroupCriterion": {
+          "keyword": {
+            "matchType": "PHRASE",
+            "text": "kia k5 из кореи"
+          },
+          "resourceName": "customers/4680747874/adGroupCriteria/208015663648~907558337932"
+        },
+        "keywordView": {
+          "resourceName": "customers/4680747874/keywordViews/208015663648~907558337932"
+        },
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "1"
+        }
+      },
+      {
+        "adGroup": {
+          "name": "UA — Корея під ключ",
+          "resourceName": "customers/4680747874/adGroups/209160838744"
+        },
+        "adGroupCriterion": {
+          "keyword": {
+            "matchType": "EXACT",
+            "text": "авто з кореї"
+          },
+          "qualityInfo": {
+            "creativeQualityScore": "ABOVE_AVERAGE",
+            "postClickQualityScore": "BELOW_AVERAGE",
+            "qualityScore": 7,
+            "searchPredictedCtr": "ABOVE_AVERAGE"
+          },
+          "resourceName": "customers/4680747874/adGroupCriteria/209160838744~817880671828"
+        },
+        "keywordView": {
+          "resourceName": "customers/4680747874/keywordViews/209160838744~817880671828"
+        },
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "1"
+        }
+      },
+      {
+        "adGroup": {
+          "name": "UA — Корея під ключ",
+          "resourceName": "customers/4680747874/adGroups/209160838744"
+        },
+        "adGroupCriterion": {
+          "keyword": {
+            "matchType": "PHRASE",
+            "text": "авто з кореї"
+          },
+          "qualityInfo": {
+            "creativeQualityScore": "ABOVE_AVERAGE",
+            "postClickQualityScore": "BELOW_AVERAGE",
+            "qualityScore": 7,
+            "searchPredictedCtr": "ABOVE_AVERAGE"
+          },
+          "resourceName": "customers/4680747874/adGroupCriteria/209160838744~818737515091"
+        },
+        "keywordView": {
+          "resourceName": "customers/4680747874/keywordViews/209160838744~818737515091"
+        },
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "1"
+        }
+      }
+    ],
+    "today_share": [
+      {
+        "campaign": {
+          "resourceName": "customers/4680747874/campaigns/24540607407"
+        },
+        "metrics": {
+          "conversions": 0,
+          "ctr": 0.2,
+          "interactions": "2"
+        }
+      }
+    ],
+    "today_terms": [
+      {
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "1"
+        },
+        "searchTermView": {
+          "resourceName": "customers/4680747874/searchTermViews/24540607407~203382299698~0LDQstCw0YLRgCAxMg",
+          "searchTerm": "аватр 12"
+        }
+      },
+      {
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "1"
+        },
+        "searchTermView": {
+          "resourceName": "customers/4680747874/searchTermViews/24540607407~203382299698~0LDQstGC0L4g0YEg0LrQvtGA0LXQuA",
+          "searchTerm": "авто с кореи"
+        }
+      },
+      {
+        "metrics": {
+          "clicks": "1",
+          "costMicros": "4530000",
+          "impressions": "1"
+        },
+        "searchTermView": {
+          "resourceName": "customers/4680747874/searchTermViews/24540607407~203382299698~0LrQsNC6INC60YPQv9C40YLRjCDQsNCy0YLQviDQuNC3INC60L7RgNC10Lg",
+          "searchTerm": "как купить авто из кореи"
+        }
+      },
+      {
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "1"
+        },
+        "searchTermView": {
+          "resourceName": "customers/4680747874/searchTermViews/24540607407~209160838744~0LDQstGC0L4g0Lcg0LrQvtGA0LXRlw",
+          "searchTerm": "авто з кореї"
+        }
+      }
+    ],
+    "token": "PASS"
+  },
+  "keys_mode": "0o600",
+  "keys_present": {
+    "client_id": true,
+    "client_secret": true,
+    "customer_id": true,
+    "developer_token": true,
+    "login_customer_id": true,
+    "refresh_token": true
+  },
+  "mode": "probe",
+  "remote_write_count": 0,
+  "run_id": "45995256576",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "ADS-CHECK-20261127-R6"
+}
