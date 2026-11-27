@@ -7,21 +7,23 @@
   "created_at": "2026-11-27T02:54:55Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T02:54:55Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-27T03:01:50Z",
+  "heartbeat_at": "2026-11-27T03:01:50Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45930961122",
     "task_id": "JAPAN-LHD-PROBE-20261127-R3",
     "task_sha256": "dfb5159f3ede0972925231b99db657e40ac4661d17f96bd9077e871193a5aad2"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-d27972b3398a1805-29b4230d2e3f7a83",
   "receipt_path": "state/receipts/JAPAN-LHD-PROBE-20261127-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "61008b52b7c9110fad547bc385ae853dfe8f8abbd244939b0ee78b72d4f2b331",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/JAPAN-LHD-PROBE-20261127-R3.json",
   "request_sha256": "dfb5159f3ede0972925231b99db657e40ac4661d17f96bd9077e871193a5aad2",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "d4379db984cea790072dbb2931f4298828350753",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91761369088,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.786
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-27T02:54:55Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "2c46c1360beb7fce6402bc3b4b3f21e45e834ed7d7712a4af846ec8ab441740e",
+    "file_sha256": {
+      "cloud/japan_lhd_probe_001/bootstrap.py": "ff831e50b75bf61be2329ad55e7dec594837767058a85adec601cc901b82211a",
+      "cloud/japan_lhd_probe_001/make_request.py": "cf9714eb42cf98492aa95e99b1fe1b20ec890d273343952aa5135f381f94f036",
+      "cloud/japan_lhd_probe_001/source_remote.py": "6dff9736ff30484f6d051a825f96ecd46fd6477d900b013c17bf1c506633a045",
+      "cloud/japan_lhd_probe_001/test_japan_lhd_probe.py": "bf3a074887fa38933a4b4bbd1428f5a4955824268ec80f15c4f048cc763d007f",
+      "cloud/japan_lhd_probe_001/transport.py": "0bd973fa8aeebf6b88925dee22d7bdaff193bbcf142d1c9e096fbb4443ae59c1"
+    }
+  },
+  "updated_at": "2026-11-27T03:01:50Z"
 }
