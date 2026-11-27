@@ -1,0 +1,20 @@
+{
+  "backup_started": false,
+  "cause": "health_checks in tasks/requests/JAPAN-LHD-INSTALL-20261127.json included video/japan.html, which does not exist before this install; pre-install GET returned 404",
+  "claim_before_sha256": "66c5b7186da65355ef7f9e0c5cd05851d74fee4f4a56f74f10acce8ab7b9c5d0",
+  "crm_unchanged": true,
+  "error": "ControlPlaneError: PRODUCTION_PRE_HEALTH_FAILED",
+  "failed_step": "execute / critical / prepare: control_plane health --phase pre (before any production transaction)",
+  "halt_archive": "state/halt_history/JAPAN-LHD-INSTALL-20261127.45936163206/halt.json",
+  "live_verify": "2026-11-27 ~03:55Z coordinator curl: / 200, video/korea.html 200, video/podbor.html 200, video/japan.html not present — pre-install state",
+  "owner_statement": "«Да» (2026-11-27, coordinator chat: lift the emergency halt)",
+  "precedent": "state/reconciliations/SEARCH-HOME-INSTALL-20261126.45915021173.authenticated-evidence.json",
+  "production_transaction_status": "NOT_OPENED",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-27T04:00:00+00:00",
+  "retry": "JAPAN-LHD-INSTALL-20261127-R2",
+  "run_id": "45936163206",
+  "site_state_after": "pre-install state; nothing was written",
+  "task_id": "JAPAN-LHD-INSTALL-20261127",
+  "workflow_conclusion": "failure"
+}
