@@ -47,15 +47,16 @@ T = {
     'usd': ('Ціна до, $', 'Цена до, $', 'ფასი მდე, $'),
     'go': ('🔍 Знайти авто', '🔍 Найти авто', '🔍 ავტომობილის ძიება'),
 }
-# What the «where is it» line says (the script reads them by <html lang>).
-FOUND = {'uk': {'h': 'Є на торгах:', 'cars': 'авто', 'none': 'немає', 'order': 'під замовлення',
+# The counter's words (the script reads them by <html lang>); the summary is ua_auction_summary.py's hourly file.
+TODAY = {'uk': {'h': 'Зараз на торгах:', 'cars': 'авто', 'soon': 'скоро',
                 'korea': 'Корея', 'japan': 'Японія', 'usa': 'Америка'},
-         'ru': {'h': 'Есть на торгах:', 'cars': 'авто', 'none': 'нет', 'order': 'под заказ',
+         'ru': {'h': 'Сейчас на торгах:', 'cars': 'авто', 'soon': 'скоро',
                 'korea': 'Корея', 'japan': 'Япония', 'usa': 'Америка'},
-         'ka': {'h': 'ვაჭრობაზეა:', 'cars': 'ავტო', 'none': 'არ არის', 'order': 'შეკვეთით',
+         'ka': {'h': 'ახლა ვაჭრობაზეა:', 'cars': 'ავტო', 'soon': 'მალე',
                 'korea': 'კორეა', 'japan': 'იაპონია', 'usa': 'ამერიკა'}}
-# The lot lists the countries' pages already publish (read only when a visitor starts choosing).
-LOTS = (('korea', '/video/korea/lots.json', 'korea.html', '🇰🇷'), ('japan', '/video/japan/lots.json', 'japan.html', '🇯🇵'))
+SUMMARY = '/video/auctions/summary.json'
+# country, flag, its page (the USA page until its lot list exists)
+CHIPS = (('korea', '🇰🇷', 'korea.html#lots'), ('japan', '🇯🇵', 'japan.html#lots'), ('usa', '🇺🇸', 'usa.html'))
 
 
 def _attrs(texts, prefix='data'):
@@ -81,6 +82,7 @@ def block():
     return (
         '<!--%s--><style>%s</style>' % (MARK, CSS)
         + _t('div', T['ey'], ' class="ey"') + _t('h2', T['h2']) + _t('p', T['sub'], ' class="sh-sub"')
+        + '<div class="sh-today" aria-live="polite"></div>'
         + '<form class="sh-form" action="korea.html" method="get" role="search">'
         + '<fieldset class="sh-cty"><legend class="sh-sr" %s>%s</legend>%s</fieldset>'
           % (_attrs(T['country']), T['country'][0], countries)
@@ -94,7 +96,7 @@ def block():
         + '<label>%s<input name="usd" type="number" inputmode="numeric" min="1000" step="500" placeholder="20000"></label>'
           % _t('span', T['usd'])
         + '<button type="submit" class="sh-go" %s>%s</button></div></form>' % (_attrs(T['go']), T['go'][0])
-        + '<div class="sh-found" aria-live="polite" hidden></div>'
+
         + '<script>%s</script><!--/%s-->' % (JS, MARK))
 
 
@@ -142,44 +144,40 @@ CSS = (
     '.sh-box label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:#5a6678}'
     '.sh-box select,.sh-box input{height:44px;border:1px solid #d5dbe4;border-radius:10px;padding:0 10px;font-size:15px;'
     'color:#111;background:#f7f9fc;min-width:0;width:100%;box-sizing:border-box}'
-    '.sh-found{margin:12px 2px 0;color:#e6ecf5;font-size:15px;line-height:1.6}.sh-found b{color:#ffd000}'
-    '.sh-found a{display:inline-block;margin:2px 10px 2px 0;color:#fff;text-decoration:none;padding:4px 10px;'
-    'border-radius:999px;background:#13233a;border:1px solid #3a4a62}.sh-found a.sh-0{opacity:.55}'
+    '.sh-today{min-height:76px;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;gap:8px;'
+    'margin:2px 0 14px;padding:10px 12px;border-radius:12px;background:rgba(61,220,132,.10);'
+    'border:1px solid rgba(61,220,132,.45);color:#e6ecf5;font-size:15px}'
+    '.sh-today:empty{visibility:hidden}.sh-today b{color:#3ddc84}'
+    '.sh-today a{color:#fff;text-decoration:none;padding:3px 10px;border-radius:999px;background:#13233a;'
+    'border:1px solid #3a4a62}'
     '.sh-go{grid-column:1/-1;height:52px;border:0;border-radius:12px;font-weight:800;font-size:17px;color:#111;'
     'background:linear-gradient(90deg,#ffd000,#ff8a00);cursor:pointer}'
     '@media(min-width:900px){.ua-kr-auc{padding:34px 40px 28px}.sh-cty{flex-wrap:wrap}.sh-c>span{min-width:100px}'
     '.sh-box{grid-template-columns:repeat(4,1fr) 1.2fr;align-items:end}.sh-go{grid-column:auto;height:44px}}'
 )
 import json as _json
-# The link of the chosen country on submit; on the first touch of the form the published lot lists are read once:
-# the model list follows the make, and the line under the form says in which countries the choice is and how many.
+# On load the small hourly summary fills the counter and, per make, the model list; on submit the chosen country's
+# page opens with the criteria in the link.
 JS = ("(function(){var f=document.querySelector('.ua-kr-auc .sh-form');if(!f)return;"
-      "var W=" + _json.dumps(FOUND, ensure_ascii=False) + ",L=" + _json.dumps(LOTS, ensure_ascii=False) + ","
-      "out=document.querySelector('.ua-kr-auc .sh-found'),data=null,loading=null;"
+      "var W=" + _json.dumps(TODAY, ensure_ascii=False) + ",C=" + _json.dumps(CHIPS, ensure_ascii=False) + ","
+      "out=document.querySelector('.ua-kr-auc .sh-today'),S=null;"
       "function w(){return W[document.documentElement.lang]||W.uk;}"
       "function key(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');}"
-      "function model(l){var t=String(l.title||''),m=String(l.maker||'');return t.toLowerCase().indexOf(m.toLowerCase())===0?t.slice(m.length).trim():t;}"
-      "function load(){if(!loading)loading=Promise.all(L.map(function(c){return fetch(c[1],{cache:'no-cache'})"
-      ".then(function(r){return r.ok?r.json():{lots:[]};}).then(function(d){return (d&&d.lots)||[];})"
-      ".catch(function(){return [];});})).then(function(all){data=all;models();show();});return loading;}"
-      "function crit(){return {mk:key(f.elements.maker.value),md:f.elements.model.value,y:+f.elements.year.value||0,"
-      "usd:+f.elements.usd.value||0};}"
-      "function hit(l,c){return (!c.mk||key(l.maker).indexOf(c.mk)===0)&&(!c.md||model(l)===c.md)&&(!c.y||+l.year>=c.y)"
-      "&&(!c.usd||+l.start_usd<=c.usd);}"
-      "function models(){if(!data)return;var s=f.elements.model,keep=s.value,mk=key(f.elements.maker.value),seen={};"
-      "data.forEach(function(lots){lots.forEach(function(l){if(mk&&key(l.maker).indexOf(mk)===0){var m=model(l);if(m)seen[m]=1;}});});"
+      "function num(n){return String(n).replace(/\\B(?=(\\d{3})+(?!\\d))/g,'\\u00a0');}"
+      "function today(){if(!S)return;var t=w(),cs=S.countries||{},h='<b>\\u25cf '+t.h+' '+num(S.total||0)+' '+t.cars+'</b>';"
+      "C.forEach(function(c){var x=cs[c[0]];h+='<a href=\"'+c[2]+'\">'+c[1]+' '+t[c[0]]+' \\u2014 '+(x&&x.total?num(x.total):t.soon)+'</a>';});"
+      "out.innerHTML=h;}"
+      "function models(){if(!S)return;var s=f.elements.model,keep=s.value,mk=key(f.elements.maker.value),seen={};"
+      "Object.keys(S.countries||{}).forEach(function(c){var ms=S.countries[c].makers||{};Object.keys(ms).forEach(function(k){"
+      "if(mk&&k.indexOf(mk)===0)Object.keys(ms[k].models||{}).forEach(function(m){seen[m]=1;});});});"
       "while(s.options.length>1)s.remove(1);Object.keys(seen).sort().forEach(function(m){s.add(new Option(m,m));});"
       "s.value=seen[keep]?keep:'';}"
       "function q(){var p=[];['maker','model','year','usd'].forEach(function(n){var v=(f.elements[n].value||'').trim();"
       "if(v)p.push(n+'='+encodeURIComponent(v));});return p.length?'?'+p.join('&'):'';}"
-      "function show(){var c=crit();if(!data||!(c.mk||c.md||c.y||c.usd)){out.hidden=true;return;}var t=w(),h='<b>'+t.h+'</b> ';"
-      "L.forEach(function(x,i){var n=data[i].filter(function(l){return hit(l,c);}).length;"
-      "h+='<a class=\"sh-'+(n?'n':'0')+'\" href=\"'+x[2]+q()+'#lots\">'+x[3]+' '+t[x[0]]+' — '+(n?n+' '+t.cars:t.none)+'</a>';});"
-      "h+='<a href=\"usa.html\">🇺🇸 '+t.usa+' — '+t.order+'</a>';out.innerHTML=h;out.hidden=false;}"
-      "f.addEventListener('focusin',load,{once:true});f.addEventListener('pointerdown',load,{once:true});"
-      "f.addEventListener('change',function(e){if(e.target.name==='maker')models();if(data)show();else load();});"
-      "f.elements.usd.addEventListener('input',function(){if(data)show();});"
-      "new MutationObserver(function(){if(data)show();}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});"
+      "fetch('" + SUMMARY + "',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null;})"
+      ".then(function(d){if(d&&d.countries){S=d;today();models();}}).catch(function(){});"
+      "f.elements.maker.addEventListener('change',models);"
+      "new MutationObserver(today).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});"
       "f.addEventListener('submit',function(e){e.preventDefault();var c=f.querySelector('[name=sh-country]:checked'),"
       "key2=c?c.value:'all',href=c?c.getAttribute('data-href'):'korea.html',lang=document.documentElement.lang||'uk';"
       "if(href==='korea.html'||href==='japan.html'){location.href=href+q()+'#lots';}"

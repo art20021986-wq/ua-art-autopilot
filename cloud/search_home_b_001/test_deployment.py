@@ -54,14 +54,21 @@ class RecoveryTests(unittest.TestCase):
                 self.enabled = enabled
                 outer.events.append(enabled)
                 return self.bot()
+            def ensure_summary_job(self):
+                outer.summary_jobs = 1
+                return {'id': 9, 'interval': 'hourly', 'minute': 5, 'enabled': True}
+            def remove_summary_job(self):
+                outer.summary_jobs = 0
         self.api = FakeAPI
+        self.summary_jobs = 0
 
     def lifecycle(self, mode):
         with patch.object(remote, 'API', self.api), \
              patch.object(remote, 'load_backup', return_value=(self.saved, self.manifest)), \
              patch.object(remote, 'writer_exclusion', side_effect=nullcontext), \
              patch.object(remote, 'no_bot_processes'), \
-             patch.object(remote, 'seo_refresh', side_effect=self.refresh):
+             patch.object(remote, 'seo_refresh', side_effect=self.refresh), \
+             patch.object(remote, 'write_summary', return_value={'total': 1, 'countries': ['korea']}):
             return remote.lifecycle(mode, '123', self.plan_sha, 'a'*64)
 
     def refresh(self):
@@ -121,6 +128,16 @@ class RecoveryTests(unittest.TestCase):
         self.assertTrue(result['crm_unchanged'])
         self.assertEqual(remote.crm_rows()[0]['price'], 99999)
         self.assertEqual((self.root/'db.py').read_bytes(), b'original')
+
+    def test_summary_task_comes_with_the_install_and_goes_with_the_rollback(self):
+        result = self.lifecycle('install')
+        self.assertEqual(result['summary']['job']['interval'], 'hourly')
+        self.assertEqual(self.summary_jobs, 1)
+        (self.root/'video/auctions').mkdir(parents=True)
+        (self.root/'video/auctions/summary.json').write_text('{}')
+        self.lifecycle('rollback')
+        self.assertEqual(self.summary_jobs, 0)
+        self.assertFalse((self.root/'video/auctions/summary.json').exists())
 
     def test_rollback_preserves_protected_files(self):
         self.lifecycle('install')
@@ -256,6 +273,8 @@ class PublicVerificationTests(unittest.TestCase):
         main=('<section class="ua-kr-auc"><!--UA-SEARCH-HOME-V1--><input name="sh-country"><!--/UA-SEARCH-HOME-V1-->'
               '</section><div id="ua-korea-ticker"></div>') if home else ''
         body='<html><head>'+head+'</head><body>'+main+'x'*300+'</body></html>'
+        if request.full_url.endswith('summary.json'):
+            body='{"countries":{"korea":{"total":1}},"total":1}'+' '*100
         response=BytesIO(body.encode())
         response.url=request.full_url;response.status=200
         return response

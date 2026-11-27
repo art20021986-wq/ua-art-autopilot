@@ -22,7 +22,8 @@ def home(body):
 
 EXPECTED = {'/video/index.html': home,
             '/video/katalog.html': lambda body: ROW not in body,
-            '/video/korea.html': lambda body: ROW not in body}
+            '/video/korea.html': lambda body: ROW not in body,
+            '/video/auctions/summary.json': lambda body: '"countries"' in body and '"korea"' in body}
 
 
 def context():

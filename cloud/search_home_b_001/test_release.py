@@ -50,13 +50,33 @@ class ModuleTests(unittest.TestCase):
         self.assertIn('value="japan" data-href="japan.html"', block)  # JAPAN-LHD-001 installed its page
         self.assertIn("'#lots'", block)
         self.assertIn("['maker','model','year','usd']", block)
-        # where the choice is: the countries' own published lot lists, read once on the first touch of the form
-        self.assertIn('class="sh-found"', block)
-        self.assertIn('/video/korea/lots.json', block)
-        self.assertIn('/video/japan/lots.json', block)
-        self.assertIn("addEventListener('focusin',load,{once:true})", block)
+        # the counter and the models come from the small hourly summary, not the full lot lists
+        self.assertIn('class="sh-today"', block)
+        self.assertIn('/video/auctions/summary.json', block)
+        self.assertNotIn('lots.json', block)
+        self.assertNotIn('sh-found', block)
         for word in ('2mcars', 'vsbrothers', 'vs brothers'):
             self.assertNotIn(word, block.lower())
+
+
+class SummaryTests(unittest.TestCase):
+    def test_summary_counts_by_country_make_and_model(self):
+        import json
+        import ua_auction_summary as summary
+        with tempfile.TemporaryDirectory() as root:
+            root = Path(root)
+            (root/'video/korea').mkdir(parents=True)
+            (root/'video/korea/lots.json').write_text(json.dumps({'lots': [
+                {'maker': 'Kia', 'title': 'Kia K5'}, {'maker': 'Kia', 'title': 'Kia K5'},
+                {'maker': 'Bmw', 'title': 'Bmw 520d'}]}), encoding='utf-8')
+            (root/'video/japan').mkdir(parents=True)
+            (root/'video/japan/lots.json').write_text('not json', encoding='utf-8')
+            value = summary.build(root)
+            summary.write(value, root)
+            saved = json.loads((root/summary.TARGET).read_text(encoding='utf-8'))
+        self.assertEqual(saved['total'], 3)
+        self.assertEqual(sorted(saved['countries']), ['korea'])  # unreadable and missing lists are left out
+        self.assertEqual(saved['countries']['korea']['makers']['kia'], {'name': 'Kia', 'total': 2, 'models': {'K5': 2}})
 
 
 class CandidateTests(unittest.TestCase):
@@ -67,7 +87,8 @@ class CandidateTests(unittest.TestCase):
             names = candidate_builder.targets(root)
         self.assertEqual(names, ('site_ge_inject.py', 'video/index.html'))
         files = candidate_builder.build({'site_ge_inject.py': INJECT, 'video/index.html': home().encode('utf-8')}, {})
-        self.assertEqual(set(files), {'ua_search_home.py', 'site_ge_inject.py', 'video/index.html'})
+        self.assertEqual(set(files), {'ua_search_home.py', 'ua_auction_summary.py', 'site_ge_inject.py',
+                                      'video/index.html'})
         inject = files['site_ge_inject.py'].decode('utf-8')
         self.assertTrue(inject.startswith(INJECT.decode('utf-8').rstrip('\n')))
         self.assertTrue(inject.rstrip().endswith('return ua_search_home.apply(_ua_search_home_base_inject(source))'))
