@@ -21,7 +21,7 @@ class RemoteTests(unittest.TestCase):
             (home / 'ua_seo_landings.py').write_text('X = 1\nTOKEN = "abc"\nurl = "https://evil.example/x"\n')
             value = remote.report(home)
         files = value['files']
-        self.assertEqual(files['vitrina.py'], {'present': False})
+        self.assertEqual(files['ua_seo_sitemap.py'], {'present': False})
         source = files['ua_seo_landings.py']['source']
         self.assertIn('X = 1', source)
         self.assertNotIn('abc', source)
