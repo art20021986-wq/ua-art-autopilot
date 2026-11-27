@@ -2,8 +2,8 @@
 информацию, делай мне отчет по атакам каждые 3 дня»).
 
 Per UTC day from the web app access logs (current, .1, rotated .gz; the server keeps about 10 days):
-requests, distinct addresses, honest robots, the busiest non-robot address (masked to /24), addresses over
-HEAVY requests, server errors (5xx), rate-limited answers (429), counter beacons (POST /ua/a/e) and order
+requests, distinct addresses, honest robots, page views by people (no pictures or scripts), the busiest non-robot
+address by page views (masked to /24, with its browser line), addresses over HEAVY page views, server errors (5xx), rate-limited answers (429), counter beacons (POST /ua/a/e) and order
 submissions (POST /api/orders/submit). From analytics.db opened read-only: counter events recorded per day,
 so beacons minus recorded shows what the counter guard left out. Addresses are counted in memory and never
 saved; only a masked /24 of the busiest one is returned. Nothing is written outside this run's own receipt.
@@ -23,7 +23,8 @@ import sqlite3
 HERE = Path(__file__).resolve().parent
 LOG = Path('/var/log/www.uaart.com.ua.access.log')
 DB = Path('/home/Carix/analytics.db')
-HEAVY = 1500  # requests a day from one non-robot address
+HEAVY = 300  # page views a day from one non-robot address (pictures and scripts are not counted)
+ASSET = re.compile(r'\.(?:jpe?g|png|webp|gif|svg|ico|css|js|woff2?|ttf|mp4|webm|json|txt|xml|map)$', re.I)
 ROBOT = re.compile(r'(?<!cu)bot|crawl|spider|slurp|python|curl|wget|headless|externalhit|okhttp|scrapy|lighthouse|'
                    r'go-http|axios|node-fetch|libwww|uaart|^-?$', re.I)
 LINE = re.compile(r'^(\S+) .*?\[(\d{2}/\w{3}/\d{4}):[^\]]*\] "(\S+) (\S+)[^"]*" (\d{3}) \S+ "[^"]*" "([^"]*)"')
@@ -71,19 +72,21 @@ def access(texts):
             except ValueError:
                 continue
             d = days.setdefault(day, {'requests': 0, 'robot_requests': 0, 'errors_5xx': 0, 'limited_429': 0,
-                                      'beacons': 0, 'order_submits': 0, 'by_address': Counter(), 'addresses': set()})
+                                      'beacons': 0, 'order_submits': 0, 'people_pages': 0, 'by_address': Counter(),
+                                      'agents': {}, 'addresses': set()})
             d['requests'] += 1
             d['addresses'].add(address)
-            robot = bool(ROBOT.search(agent))
-            if robot:
+            clean = path.split('?', 1)[0]
+            if ROBOT.search(agent):
                 d['robot_requests'] += 1
-            else:
+            elif method == 'POST' or not ASSET.search(clean):
+                d['people_pages'] += 1
                 d['by_address'][address] += 1
+                d['agents'].setdefault(address, agent[:90])
             if status.startswith('5'):
                 d['errors_5xx'] += 1
             if status == '429':
                 d['limited_429'] += 1
-            clean = path.split('?', 1)[0]
             if method == 'POST' and clean == '/ua/a/e':
                 d['beacons'] += 1
             if method == 'POST' and clean == '/api/orders/submit':
@@ -92,10 +95,11 @@ def access(texts):
     for day, d in sorted(days.items()):
         busiest = d['by_address'].most_common(1)
         result[day] = {key: d[key] for key in ('requests', 'robot_requests', 'errors_5xx', 'limited_429',
-                                               'beacons', 'order_submits')}
+                                               'beacons', 'order_submits', 'people_pages')}
         result[day].update(addresses=len(d['addresses']),
                            heavy_addresses=sum(1 for n in d['by_address'].values() if n > HEAVY),
-                           busiest={'network': masked(busiest[0][0]), 'requests': busiest[0][1]} if busiest else None)
+                           busiest={'network': masked(busiest[0][0]), 'requests': busiest[0][1],
+                                    'agent': d['agents'][busiest[0][0]]} if busiest else None)
     return result
 
 
