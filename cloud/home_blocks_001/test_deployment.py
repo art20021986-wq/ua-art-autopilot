@@ -248,7 +248,9 @@ class TransportTests(unittest.TestCase):
 class PublicVerificationTests(unittest.TestCase):
     def response(self,request,timeout):
         home=request.full_url.endswith('/video/index.html')
-        head='<!--UA-MOBILE-COMFORT-V1--><style></style><!--/UA-MOBILE-COMFORT-V1-->'
+        head=('<!--UA-MOBILE-COMFORT-V1--><style></style><!--/UA-MOBILE-COMFORT-V1-->'
+              '<!--UA-LAYOUT-RESERVE-V1--><style>.header-main:not(:has(.nav-toggle))::after{}'
+              'min-height:max(calc(30vw + 770px),calc(60vw + 620px))</style><!--/UA-LAYOUT-RESERVE-V1-->')
         if home:
             head+='<!--UA-HOME-BLOCKS-V1--><style></style><!--/UA-HOME-BLOCKS-V1-->'
         body='<html><head>'+head+'</head><body>'+'x'*300+'</body></html>'
@@ -305,6 +307,16 @@ if __name__ == '__main__':
     unittest.main()
 
 
+class RewrittenCatalogRollbackTests(unittest.TestCase):
+    def test_catalog_without_an_earlier_room_block_gets_none_back(self):
+        import candidate_builder
+        before = (Path(__file__).resolve().parent/'fixtures/katalog.html').read_bytes()
+        self.assertNotIn(b'UA-LAYOUT-RESERVE-V1', before)
+        rewritten = candidate_builder.page(before.decode('utf-8')).encode('utf-8')
+        self.assertTrue(remote.rows_once(rewritten.decode('utf-8')))
+        self.assertEqual(remote.rewind_row(rewritten, before), before)
+
+
 class RewrittenPageRollbackTests(unittest.TestCase):
     """A home page the CRM rewrote after the install (with the new block) gets this release taken out on rollback."""
 
@@ -315,3 +327,4 @@ class RewrittenPageRollbackTests(unittest.TestCase):
         rewritten = candidate_builder.page(newer).encode('utf-8')
         self.assertTrue(remote.rows_once(rewritten.decode('utf-8')))
         self.assertEqual(remote.rewind_row(rewritten, before), newer.encode('utf-8'))
+        self.assertIn('min-height:494px', remote.rewind_row(rewritten, before).decode('utf-8'))
