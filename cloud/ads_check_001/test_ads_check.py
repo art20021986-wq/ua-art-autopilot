@@ -67,7 +67,7 @@ class RemoteTests(unittest.TestCase):
         value = json.loads(text)
         self.assertEqual(value['status'], 'PASS')
         self.assertEqual(value['google_ads']['accessible'], ['customers/4680747874'])
-        self.assertEqual(set(value['google_ads']) - {'token', 'scope', 'accessible', 'identity_verification'}, set(remote.ONLY or remote.QUERIES))
+        self.assertEqual(set(value['google_ads']) - {'token', 'scope', 'accessible'}, set(remote.ONLY or remote.QUERIES))
         for secret in list(KEYS.values())[:4] + [ACCESS]:
             self.assertNotIn(secret, text)
         urls = [url for _, url, _, _ in google.calls]
@@ -105,7 +105,7 @@ class RemoteTests(unittest.TestCase):
     def test_google_error_code_reported(self):
         with tempfile.TemporaryDirectory() as temp:
             value = json.loads(remote.report(self.keys_file(temp), Google(fail='googleAds:search')))
-        self.assertEqual(value['google_ads']['account']['http'], 403)
+        self.assertEqual(value['google_ads'][(remote.ONLY or tuple(remote.QUERIES))[0]]['http'], 403)
         self.assertIn('DEVELOPER_TOKEN_NOT_APPROVED', json.dumps(value))
 
     def test_missing_refresh_token(self):

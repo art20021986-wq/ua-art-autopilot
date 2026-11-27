@@ -154,11 +154,12 @@ QUERIES.update({
                                  'account_budget.approved_end_date_time FROM account_budget'),
     'campaign_status_all': ('client', 'SELECT campaign.name, campaign.status, campaign.serving_status, '
                                       'campaign.primary_status, campaign.primary_status_reasons FROM campaign'),
-    'metrics_2d': ('client', "SELECT campaign.name, segments.date, metrics.impressions, metrics.clicks, metrics.cost_micros "
+    'metrics_2d': ('client', "SELECT campaign.name, segments.date, metrics.impressions, metrics.clicks, metrics.cost_micros, "
+                             "metrics.conversions, metrics.search_impression_share, metrics.search_rank_lost_impression_share "
                              "FROM campaign WHERE segments.date BETWEEN '2026-11-27' AND '2026-11-28'"),
 })
-ONLY = ('account', 'billing_full', 'account_budget', 'campaign_status_all', 'metrics_2d')
-IDENTITY = True  # 2026-11-27: advertiser identity verification state (IdentityVerificationService), read-only
+ONLY = ('campaign_status_all', 'metrics_2d', 'today_share', 'today_terms', 'today_keywords')  # R6: day result, light
+IDENTITY = False  # 2026-11-27: advertiser identity verification state (IdentityVerificationService), read-only
 PLANNING = False  # R2: the Keyword Planner needs Basic access (DEVELOPER_TOKEN_NOT_APPROVED); R3 skips it
 UKRAINE = 'geoTargetConstants/2804'
 LANGUAGES = {'uk': 'languageConstants/1036', 'ru': 'languageConstants/1031'}
