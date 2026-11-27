@@ -26,7 +26,7 @@ DB = Path('/home/Carix/analytics.db')
 HEAVY = 300  # page views a day from one non-robot address (pictures and scripts are not counted)
 ASSET = re.compile(r'\.(?:jpe?g|png|webp|gif|svg|ico|css|js|woff2?|ttf|mp4|webm|json|txt|xml|map)$', re.I)
 ROBOT = re.compile(r'(?<!cu)bot|crawl|spider|slurp|python|curl|wget|headless|externalhit|okhttp|scrapy|lighthouse|'
-                   r'go-http|axios|node-fetch|libwww|uaart|^-?$', re.I)
+                   r'go-http|axios|node-fetch|libwww|ua-?art|^-?$', re.I)  # ua-art: our own checks
 LINE = re.compile(r'^(\S+) .*?\[(\d{2}/\w{3}/\d{4}):[^\]]*\] "(\S+) (\S+)[^"]*" (\d{3}) \S+ "[^"]*" "([^"]*)"')
 
 

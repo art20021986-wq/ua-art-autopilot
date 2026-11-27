@@ -93,6 +93,10 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(first['busiest'], {'network': '1.1.1.0/24', 'requests': 2, 'agent': PHONE})
         self.assertNotIn('1.1.1.1', json.dumps(days))
 
+    def test_our_own_monitor_is_not_a_person(self):
+        self.assertTrue(remote.ROBOT.search('UA-ART-Connection-Monitor/1.0'))
+        self.assertFalse(remote.ROBOT.search(PHONE))
+
     def test_recorded_read_only(self):
         with tempfile.TemporaryDirectory() as temp:
             db = Path(temp) / 'analytics.db'
