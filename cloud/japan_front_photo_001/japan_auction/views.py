@@ -52,8 +52,18 @@ def ticker_items(views, today):
             for v in views if v['start_usd'] and v['photos'] and auction_date(v) >= today][:TICKER_SIZE]
 
 
-def feed(views, today, generated_at):
-    """feed.json for the home ticker: the «Японія» tab week (as the Korea tab: today and the next 6 days, each with its
-    car count and auction houses; no Korea holidays) and the ticker cards."""
-    return {'generated_at': generated_at, 'week': week_tile.week(views, None, today, holidays={}),
-            'items': ticker_items(views, today)}
+def week(views, today, history=None):
+    """The «Японія» tab week (as the Korea tab: today and the next 6 days, each with its car count and auction houses;
+    no Korea holidays). JAPAN-DAYS-001: a coming day without lots shows the houses seen on that weekday (history)."""
+    return week_tile.week(views, None, today, holidays={}, history=history)
+
+
+def planned(days):
+    """{'YYYY/MM/DD': [{'name', 'start'?}]}: the week's coming days without lots yet and their expected auctions (the
+    Japan page day buttons show them, as the Korea page does with lots.json `planned`)."""
+    return {day['date']: day['houses'] for day in days if day['state'] == 'soon' and day['houses']}
+
+
+def feed(views, today, generated_at, history=None):
+    """feed.json for the home ticker: the «Японія» tab week and the ticker cards."""
+    return {'generated_at': generated_at, 'week': week(views, today, history), 'items': ticker_items(views, today)}

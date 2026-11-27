@@ -319,7 +319,7 @@ class SmokeTests(unittest.TestCase):
                                       'country_tabs': True, 'plan_days': True,
                                       'japan_page': True, 'japan_left_hand_only': True, 'japan_list': True,
                                       'japan_job': True, 'japan_ticker': True, 'japan_launcher': True,
-                                      'japan_left_hand_rule': True, 'japan_front_first': True})
+                                      'japan_left_hand_rule': True, 'japan_front_first': True, 'japan_days': True})
 
 
 class RunSoonTests(unittest.TestCase):

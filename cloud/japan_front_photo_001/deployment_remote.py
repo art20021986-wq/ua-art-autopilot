@@ -124,7 +124,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'TICKER-FIX4-INSTALL-1','files':files,'job':JOB,'japan_job':JAPAN_JOB,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'japan_auction/lot_page.py (front_first: the photos the auction names EXTERIOR_RIGHT_FRONT, EXTERIOR_LEFT_FRONT, EXTERIOR_FRONT, MAIN lead, the body diagram goes last) and job.py (applies it; the Japan task re-runs at once); no page, ticker or CRM module changes',
+            'site_scope':'japan_auction/lot_page.py (front_first: the photos the auction names EXTERIOR_RIGHT_FRONT, EXTERIOR_LEFT_FRONT, EXTERIOR_FRONT, MAIN lead, the body diagram goes last), views.py (week with the houses seen per weekday; lots.json planned) and job.py (applies both, learns the houses: japan_auction_data/house_days.json; the Japan task re-runs at once); no page, ticker or CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -305,7 +305,10 @@ def japan_checks(after, ticker, week_tile, korea_job):
             # JAPAN-FRONT-PHOTO-001: the front first, the body diagram last
             'japan_front_first': __import__('japan_auction.lot_page', fromlist=['x']).front_first(
                 ['https://c/sellca-public/beforward_export/tenkaizu/a.jpg', 'https://c/sellca-public/images/EXTERIOR_BACK/b.png',
-                 'https://c/sellca-public/images/EXTERIOR_RIGHT_FRONT/c.png'])[0].endswith('/EXTERIOR_RIGHT_FRONT/c.png')}
+                 'https://c/sellca-public/images/EXTERIOR_RIGHT_FRONT/c.png'])[0].endswith('/EXTERIOR_RIGHT_FRONT/c.png'),
+            # JAPAN-DAYS-001: a coming day without lots shows the houses seen on that weekday, in lots.json planned too
+            'japan_days': views.planned(views.week([], '2026/11/27', job.SEED))
+                          == {'2026/11/30': [{'name': 'JU Kyouyuu', 'start': '2026/11/30 16:00'}]}}
 
 
 def top_tile(ticker, week_tile, job):
