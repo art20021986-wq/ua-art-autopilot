@@ -1,0 +1,22 @@
+/* three home blocks as framed panels: auctions (head + ticker), individual order (hero + photo), cars in stock */
+main#main-content{padding-bottom:1px}
+.ua-kr-auc,.hero.ua-order-first,#stages{position:relative;margin:34px 12px 0;border:1px solid rgba(232,200,125,.34);border-radius:22px;
+  background:linear-gradient(180deg,rgba(232,200,125,.06),rgba(11,21,36,0) 140px),#0a1626;box-shadow:0 18px 44px rgba(0,0,0,.34)}
+.ua-kr-auc{margin-top:16px;border-bottom:0;border-radius:22px 22px 0 0;background:linear-gradient(135deg,#1a0f00,#0B1524 60%)}
+#ua-korea-ticker{margin:0 12px;border:1px solid rgba(232,200,125,.34);border-top:0;border-radius:0 0 22px 22px;overflow:hidden;box-shadow:0 18px 44px rgba(0,0,0,.34)}
+.hero.ua-order-first{overflow:visible;border-bottom:0;border-radius:22px 22px 0 0;box-shadow:none}
+.ua-home-photo{margin:0 12px;border:1px solid rgba(232,200,125,.34);border-top:0;border-radius:0 0 22px 22px;overflow:hidden;box-shadow:0 18px 44px rgba(0,0,0,.34)}
+#stages{padding:22px 12px 26px}
+/* gold hairline with a diamond between the blocks */
+.hero.ua-order-first::before,#stages::before{content:"";position:absolute;left:12%;right:12%;top:-19px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(232,200,125,.7),transparent)}
+.hero.ua-order-first::after,#stages::after{content:"";position:absolute;left:50%;top:-23px;width:8px;height:8px;margin-left:-4px;
+  transform:rotate(45deg);background:#e8c87d;box-shadow:0 0 10px rgba(232,200,125,.6)}
+@media (min-width:900px){
+  .ua-kr-auc,.hero.ua-order-first,#stages{margin:44px 40px 0}
+  .ua-kr-auc{margin-top:22px}
+  #ua-korea-ticker,.ua-home-photo{margin:0 40px}
+  #stages{padding:30px 34px 40px}
+  .hero.ua-order-first::before,#stages::before{top:-23px}
+  .hero.ua-order-first::after,#stages::after{top:-27px}
+}
