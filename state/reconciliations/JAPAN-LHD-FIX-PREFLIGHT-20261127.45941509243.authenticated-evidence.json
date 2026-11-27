@@ -1,0 +1,17 @@
+{
+  "cause": "cloud/japan_lhd_fix_001 treated video/japan.html as a new file; it already exists on production after JAPAN-LHD-INSTALL-20261127-R2",
+  "claim_before_sha256": "f449360655df07105c974179c248cb20097cc45a4b4cceb84d5f02b1f8ea853f",
+  "error": "REMOTE_PREVIEW:DeploymentError:NEW_FILE_EXISTS:video/japan.html -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: remote preview candidate build (reads only)",
+  "leftover_temporary_task": "none: the remote preview wrote its receipt, the controller then removes its always-on task",
+  "owner_approval": "«Да, запускай» (2026-11-27T05:06:39Z, ios, session 41 chat, event e76c7071-1305-4bdc-89ba-0d239db7f334) to retrying the Japan left-hand-drive fix",
+  "precedent": "state/reconciliations/KOREA-TOP-TILE-PREFLIGHT-20261126-R3.45816571119.authenticated-evidence.json",
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-27T05:08:00+00:00",
+  "remote_mode": "preview (reads only)",
+  "retry": "JAPAN-LHD-FIX-PREFLIGHT-20261127-R2",
+  "run_id": "45941509243",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "JAPAN-LHD-FIX-PREFLIGHT-20261127"
+}
