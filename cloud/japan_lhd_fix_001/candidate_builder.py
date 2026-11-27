@@ -1,7 +1,8 @@
 """Build the JAPAN-LHD-FIX-001 candidate: the collectors and the Japan page exactly as JAPAN-LHD-INSTALL-20261127-R2
 installed them, with only japan_auction/job.py changed (left-hand drive only on proof: the lot text says so, or the lot
-page says «Steering Wheel Left» and the text has no other «LEFT»). Zipped flat as kauc_/jauc_<module>.py; video/japan.html
-is rebuilt from the live video/korea.html (the same bytes while the Korea page is unchanged).
+page says «Steering Wheel Left» and the text has no other «LEFT») and one line of video/japan.html (owner 27.11 «да»:
+«Щотижня — авто з лівим кермом з аукціонів Японії» instead of «десятки авто»), rebuilt from the live video/korea.html.
+Zipped flat as kauc_/jauc_<module>.py.
 """
 from pathlib import Path
 
