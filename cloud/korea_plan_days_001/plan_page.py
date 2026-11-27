@@ -2,8 +2,9 @@
 owner 2026-11-26 «Да»: as on the home tile, not «Лоти з'являться за 1–2 дні»).
 
 The collector publishes lots.json `planned` ({'YYYY/MM/DD': [{'name', 'start'?}]}, the tile's coming days without
-lots: houses from the auction schedule and the houses seen on that weekday). A day the rule marks «soon» shows them,
-one per line («AutoPlus · старт 05:00 Київ»); without `planned` (an older list) the button keeps «Лоти з'являться».
+lots: houses from the auction schedule and the houses seen on that weekday). A coming day with `planned` houses and
+no later day listed shows them, one per line («AutoPlus · старт 05:00 Київ»); without `planned` (an older list) the
+button keeps «Лоти з'являться».
 Every other byte of video/korea.html stays; each edit must match exactly once.
 """
 SOON_RETURN = 'return plan&&!later?t("soon"):t("none");}'
@@ -14,10 +15,9 @@ CSS = '.kl-day small{opacity:.8;font-size:12px}'
 
 def edits():
     return (
-        (SOON_RETURN, 'if(!plan||later)return t("none");var p=PLAN&&PLAN[d];if(!p||!p.length)return t("soon");'
-                      'return p.map(function(h){return \'<span class="kl-plan">\'+tri(function(i){'
-                      'var k=h.start?kyiv(h.start):"";return h.name+(k?" · "+ST[i]+" "+k+" "+ZN[i][1]:"");})'
-                      '+"</span>";}).join("");}'),
+        (SOON_RETURN, 'var p=PLAN&&PLAN[d];if(p&&p.length&&!later)return p.map(function(h){'
+                      'return \'<span class="kl-plan">\'+tri(function(i){var k=h.start?kyiv(h.start):"";'
+                      'return h.name+(k?" · "+ST[i]+" "+k+" "+ZN[i][1]:"");})+"</span>";}).join("");' + SOON_RETURN),
         (LOAD, 'SCH=d.schedule||null;PLAN=d.planned||null;days();'),
         (DECL, 'var SCH=null,PLAN=null,ST=["старт","старт","დაწყება"];'),
         (CSS, CSS + '.kl-plan{display:block;white-space:nowrap}'),
