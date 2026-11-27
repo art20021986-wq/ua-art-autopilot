@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "99d79d9da3f297ed38cf906aed31d8241fa92934b1280633718d7e9049dd95ae",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T04:10:33Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-27T04:15:42Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45938044594",
     "task_id": "JAPAN-LHD-INSTALL-20261127-R2",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45938044594-318bc772f4966a13",
   "production_transaction_path": "state/transactions/JAPAN-LHD-INSTALL-20261127-R2.318bc772f4966a137ffed94d2b69d9acb5f9e09a7f12ff41ee4b73ba93883066.45938044594.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/JAPAN-LHD-INSTALL-20261127-R2.json",
   "receipt_validation_status": "PENDING",
@@ -128,5 +128,5 @@
       "cloud/japan_lhd_001/test_release.py": "817fe2e70f6129895eb115e287c012c84e46dada5cff318320e09bfafb0586a1"
     }
   },
-  "updated_at": "2026-11-27T04:10:33Z"
+  "updated_at": "2026-11-27T04:15:42Z"
 }
