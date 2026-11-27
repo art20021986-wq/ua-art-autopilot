@@ -137,8 +137,9 @@ def install():
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner request (2026-11-27 «Да» to cloud/photos/41-JAPAN-LHD-mockup-v2.png), one install: the Japan auctions\' left-hand-drive lots on the site as Korea\'s — a new Japan collector with its own hourly server task (japan_ticker_job.py; writes video/japan/), the new page video/japan.html (from video/korea.html: Japan texts, the Japan lot list in yen, lead button, no client login or bids), Japan cards in the common home ticker with a country label on every card and the «Японія» tab with its week. Korea collector ticker.py, country_tabs.py, job.py, catalog.py; video/korea.html and the CRM stay. A rollback removes the Japan task and its files. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
+               # only pages that exist before the install (run 45936163206 halted on japan.html 404 at the pre-check);
+               # the new video/japan.html is checked after the install (deployment_controller.public_verify)
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
-                                 'https://www.uaart.com.ua/video/japan.html',
                                  'https://www.uaart.com.ua/video/podbor.html'],
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
