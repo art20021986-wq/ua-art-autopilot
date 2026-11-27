@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "cd56297f894b8bacd1f4435a42e049e97d12df3d96a25fa139f083444af83a65",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T07:30:09Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-27T07:35:09Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45958519585",
     "task_id": "JAPAN-FRONT-PHOTO-INSTALL-20261127",
@@ -59,7 +59,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45958519585-27e744f05b3edc35",
   "production_transaction_path": "state/transactions/JAPAN-FRONT-PHOTO-INSTALL-20261127.27e744f05b3edc3598e5ea7c272dbf8bcf32aa4f761bf205a548145c186d9994.45958519585.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/JAPAN-FRONT-PHOTO-INSTALL-20261127.json",
   "receipt_validation_status": "PENDING",
@@ -136,5 +136,5 @@
       "cloud/japan_front_photo_001/test_release.py": "c789d7a07c0384ce18b01267434d6841562146c26cdad6c2a047b207374437fd"
     }
   },
-  "updated_at": "2026-11-27T07:30:09Z"
+  "updated_at": "2026-11-27T07:35:09Z"
 }
