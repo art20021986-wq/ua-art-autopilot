@@ -16,6 +16,15 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "c41faed756c2b899"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-27T04:00:00+00:00",
+      "class": "PRE_HEALTH_URL_NOT_YET_PUBLISHED",
+      "evidence_path": "state/reconciliations/JAPAN-LHD-INSTALL-20261127.45936163206.authenticated-evidence.json",
+      "message": "Pre-install health check failed because the request listed https://www.uaart.com.ua/video/japan.html, a page this install creates (404 before install). No production transaction was opened; site and CRM unchanged (index/korea/podbor 200, japan.html 404). Owner-authorized halt recovery («Да»); reinstall as JAPAN-LHD-INSTALL-20261127-R2 with japan.html checked only after install.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-27T03:48:43Z",
@@ -42,6 +51,6 @@
   "source_commit": "57acf9262fc712631ab11fcc1d1b3e823671f539",
   "storage_preflight_status": "PENDING",
   "task_class": "CRITICAL",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-27T03:50:27Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-27T04:00:00+00:00"
 }
