@@ -130,6 +130,19 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(value['vehicle_sitemap']['lots'], 1)
         self.assertEqual(value['lot_page']['labels'], ['Primary Damage', 'Odometer'])
         self.assertEqual(value['photo']['host'], 'vis.iaai.com')
+        self.assertEqual(value['lot_page']['values']['Primary Damage'], 'Front End Odometer 10,000')
+
+    def test_model_page_and_photo_answer_shape(self):
+        children = ['https://www.iaai.com/sm/ms-sitemapMakeModel1.xml']
+        index = b'<urlset><url><loc>https://www.iaai.com/x/toyota/rav4</loc></url></urlset>'
+        page = b'<a href="/VehicleDetail/43123456~US">a</a><div>Primary Damage Front End</div>'
+        browser = FakeBrowser([('MakeModel1', (200, 'text/xml', 'www.iaai.com', index)),
+                               ('toyota/rav4', (200, 'text/html', 'www.iaai.com', page))])
+        value = remote.model_page(browser, children)
+        self.assertEqual((value['urls'], value['page']['lot_links']), (1, 1))
+        shape = remote.json_shape(b'{"keys":[{"K":"43123456~SID~B1~I1","W":640}],"count":1}')
+        self.assertEqual(shape['entry_keys'], ['K', 'W'])
+        self.assertNotIn('43123456', json.dumps(shape))
 
     def test_one_source_failing_keeps_the_other(self):
         class Broken(FakeBrowser):

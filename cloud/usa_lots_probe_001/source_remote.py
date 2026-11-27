@@ -170,6 +170,56 @@ def lot_page(html):
                 re.findall(r'(?is)<title>(.*?)</title>', html)[:1])))[:120]}, photos
 
 
+def label_values(html):
+    """R4: each known label's value as the page shows it («Primary Damage: Front End») — the parser's samples."""
+    page = text(html)
+    out = {}
+    for label in LABELS:
+        m = re.search(re.escape(label) + r'\s*:?\s*(.{0,60})', page, re.I)
+        if m:
+            out[label] = clean(m.group(1))
+    return out
+
+
+def json_shape(body):
+    """R4: the photo service answer's shape: its keys and the first entry's keys (no values)."""
+    try:
+        value = json.loads(body)
+    except ValueError:
+        return {'json': False}
+    first = None
+    if isinstance(value, dict):
+        lists = [v for v in value.values() if isinstance(v, list) and v]
+        first = lists[0][0] if lists else None
+        shape = {'keys': sorted(value.keys())[:20]}
+    else:
+        shape = {'type': type(value).__name__, 'length': len(value) if isinstance(value, list) else 0}
+        first = value[0] if isinstance(value, list) and value else None
+    if isinstance(first, dict):
+        shape['entry_keys'] = sorted(first.keys())[:20]
+        shape['entry_sample'] = {k: clean(v)[:60] for k, v in first.items() if isinstance(v, (str, int))}
+    return shape
+
+
+def model_page(browser, children):
+    """R4: one make-and-model page from the IAAI sitemap (a popular model when listed): does it list lots?"""
+    part = next((c for c in children if 'MakeModel1' in c), '')
+    if not part:
+        return {}
+    status, kind, host, body = browser.fetch(part)
+    pages = sitemap_links(body)
+    pick = next((u for u in pages if re.search(r'(?i)toyota.*rav-?4', u)), pages[0] if pages else '')
+    value = dict(head(status, kind, host, body), urls=len(pages), samples=sorted(set(clean(u) for u in pages))[:8])
+    if pick:
+        status, kind, host, body = browser.fetch(pick)
+        html = body.decode('utf-8', 'replace')
+        value['page'] = dict(head(status, kind, host, body), shape=clean(pick),
+                             lot_links=len(set(re.findall(r'(?i)/vehicledetail/\d+', html))),
+                             labels=[l for l in LABELS if l.lower() in text(html).lower()],
+                             text=clean(text(html))[:700])
+    return value
+
+
 def probe_iaai(browser):
     status, kind, host, body = browser.fetch(IAAI_SITEMAP)
     value = {'sitemap': head(status, kind, host, body)}
@@ -183,6 +233,7 @@ def probe_iaai(browser):
     vehicle = next((c for c in children if re.search(r'sitemap\d+\.xml$', c)), '')
     if not vehicle:
         return value
+    value['model_page'] = model_page(browser, children)  # R4
     status, kind, host, body = browser.fetch(vehicle)
     lots = [u for u in sitemap_links(body) if re.search(r'(?i)VehicleDetail', u)]
     value['vehicle_sitemap'] = dict(head(status, kind, host, body), urls=len(sitemap_links(body)), lots=len(lots),
@@ -191,10 +242,13 @@ def probe_iaai(browser):
         status, kind, host, body = browser.fetch(lots[0])
         value['lot_page'] = head(status, kind, host, body)
         if status == 200 and not value['lot_page']['challenge']:
-            summary, photos = lot_page(body.decode('utf-8', 'replace'))
-            value['lot_page'].update(summary)
+            html = body.decode('utf-8', 'replace')
+            summary, photos = lot_page(html)
+            value['lot_page'].update(summary, values=label_values(html),
+                                     photo_shapes=sorted(set(clean(p) for p in photos))[:6])
             if photos:
-                value['photo'] = head(*browser.fetch(photos[0].replace('&amp;', '&'), 8 * 1024 * 1024))
+                status, kind, host, body = browser.fetch(photos[0].replace('&amp;', '&'), 8 * 1024 * 1024)
+                value['photo'] = dict(head(status, kind, host, body), answer=json_shape(body))
         else:
             value['lot_page']['text'] = clean(text(body.decode('utf-8', 'replace')))[:400]
     return value
