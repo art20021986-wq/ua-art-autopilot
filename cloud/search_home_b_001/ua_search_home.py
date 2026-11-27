@@ -91,9 +91,23 @@ def apply(html):
     """Home page HTML -> the same with the search inside the auctions section (idempotent)."""
     if not isinstance(html, str) or '<!--%s-->' % MARK in html or html.count(OPEN) != 1:
         return html
-    start = html.index(OPEN) + len(OPEN)
-    end = html.index(CLOSE, start)
+    start, end = _inside(html)
     return html[:start] + block() + html[end:]
+
+
+def _inside(html):
+    start = html.index(OPEN) + len(OPEN)
+    return start, html.index(CLOSE, start)
+
+
+def remove(html, before):
+    """The page with the search taken out: the auctions section gets back the inside it has in `before` (rollback of
+    a page another writer rewrote since the install)."""
+    if not isinstance(html, str) or '<!--%s-->' % MARK not in html or html.count(OPEN) != 1 or before.count(OPEN) != 1:
+        return html
+    start, end = _inside(html)
+    old_start, old_end = _inside(before)
+    return html[:start] + before[old_start:old_end] + html[end:]
 
 
 CSS = (
