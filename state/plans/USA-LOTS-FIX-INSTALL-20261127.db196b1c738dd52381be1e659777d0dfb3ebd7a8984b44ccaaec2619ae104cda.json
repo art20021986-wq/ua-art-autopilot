@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/USA-LOTS-FIX-INSTALL-20261127.db196b1c738dd52381be1e659777d0dfb3ebd7a8984b44ccaaec2619ae104cda.json",
+  "autostart_ledger_sha256": "9f948b60caa8fed23067a767f91b8eababeecb2054cfe5bfa9c16c5e7d151808",
+  "autostart_source_commit": "d76c3f83155fe944ce110744722d889d4b3890fb",
+  "created_at": "2026-11-27T14:03:57Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "46012283144",
+    "task_id": "USA-LOTS-FIX-INSTALL-20261127",
+    "task_sha256": "db196b1c738dd52381be1e659777d0dfb3ebd7a8984b44ccaaec2619ae104cda"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-74fa23487fd6122c-ece186a183bbe7b7",
+  "request_path": "tasks/requests/USA-LOTS-FIX-INSTALL-20261127.json",
+  "resource_locks": [
+    "PATH_SCOPE:74fa23487fd6122c"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}

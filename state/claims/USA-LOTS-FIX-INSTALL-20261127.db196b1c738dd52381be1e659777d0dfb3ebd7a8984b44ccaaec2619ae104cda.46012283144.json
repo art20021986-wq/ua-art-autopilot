@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/USA-LOTS-FIX-INSTALL-20261127.db196b1c738dd52381be1e659777d0dfb3ebd7a8984b44ccaaec2619ae104cda.json",
+  "autostart_ledger_sha256": "9f948b60caa8fed23067a767f91b8eababeecb2054cfe5bfa9c16c5e7d151808",
+  "autostart_source_commit": "d76c3f83155fe944ce110744722d889d4b3890fb",
+  "created_at": "2026-11-27T14:03:57Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-27T14:03:57Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "46012283144",
+    "task_id": "USA-LOTS-FIX-INSTALL-20261127",
+    "task_sha256": "db196b1c738dd52381be1e659777d0dfb3ebd7a8984b44ccaaec2619ae104cda"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "path_scope-74fa23487fd6122c-ece186a183bbe7b7",
+  "receipt_path": "state/receipts/USA-LOTS-FIX-INSTALL-20261127.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/USA-LOTS-FIX-INSTALL-20261127.json",
+  "request_sha256": "db196b1c738dd52381be1e659777d0dfb3ebd7a8984b44ccaaec2619ae104cda",
+  "resource_locks": [
+    "PATH_SCOPE:74fa23487fd6122c"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "82db93b6437148af9fee6388cc7d7fc068f66cbf",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-27T14:03:57Z"
+}
