@@ -5,20 +5,45 @@
   "autostart_ledger_sha256": "1be29d0481b4560cd063eafac0a4cc6aeb8ad78450e671c323ffd34e5a1bbbd5",
   "autostart_source_commit": "e8a75550514d8b3b0b32a9f65b124a6c9409579b",
   "created_at": "2026-11-27T06:24:47Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "a8896621536a02d1ab638d0458b933e9e2ead0ef6c345ecefb9ca35356018df2",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T06:24:47Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-27T06:26:10Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "45951514015",
     "task_id": "BOT-GUARD-INSTALL-20261127",
     "task_sha256": "d9bb56c8bcef1eea8ca0e8164f84fd60e3e0ea7c7f5a8938f4bdcb3d31310406"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 278.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 264.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-45951514015-d9bb56c8bcef1eea",
+  "production_transaction_path": "state/transactions/BOT-GUARD-INSTALL-20261127.d9bb56c8bcef1eea8ca0e8164f84fd60e3e0ea7c7f5a8938f4bdcb3d31310406.45951514015.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-ecadb51da7baddfd-e1d9b35ef644d012",
   "receipt_path": "state/receipts/BOT-GUARD-INSTALL-20261127.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +54,37 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "f9dc298c7430c2c924639f4546b04df90b4b674a",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 354.659,
+    "allowed": true,
+    "evidence_path": "state/storage/BOT-GUARD-INSTALL-20261127.json",
+    "evidence_sha256": "c2b8e116a93024e0ece69895e87e5b8b23ffeb5ca52f3147ecbbfbc3eebc4519",
+    "free_bytes": 19188731392,
+    "heavy": true,
+    "measured_at": "2026-11-27T06:20:12.837306+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 45.17505316571429
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-27T06:24:47Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "5590912e31f4c39cbd9e23470a325ead7c0da464e7ec452da786f2ab2c68d894",
+    "file_sha256": {
+      "cloud/bot_guard_001/candidate_builder.py": "473c2fffc704d5b8dbe2db13b5640dfe28b49f747901d0daf8e53f1542fb0a33",
+      "cloud/bot_guard_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/bot_guard_001/deployment_bootstrap.py": "645e490c09eabf41d710582dc8e9aec341949843b8576908fd6828e13128d8b0",
+      "cloud/bot_guard_001/deployment_remote.py": "75dfa2c14c30ecbab542a1042457dd48d35590bda61ebc232d48a0857ba7d157",
+      "cloud/bot_guard_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/bot_guard_001/deployment_transport.py": "6f650df0e1e9d4331a93a4e2e81b187538ae5c481a8adf8ee4e5703a1b5c0926",
+      "cloud/bot_guard_001/make_release.py": "3a62116c1b62da603144156cc22549caf4562d1d3d7ba7498f24f122637d72b7",
+      "cloud/bot_guard_001/release_constants.py": "5ace59f1708c4cc908832993c26ca11e53e7b76feb953a7738da9fdf7d4476b4",
+      "cloud/bot_guard_001/test_bot_guard.py": "e1f7ca894523c5b57d2751baff5482dd4f7e53afe8a6dc2782818fe60003b47f",
+      "cloud/bot_guard_001/test_deployment.py": "dbe3dc9ac4755400b17f913e70d520eb9397312bb17129eef50db062d3bdd198",
+      "cloud/bot_guard_001/ua_bot_guard.py": "e1243d11268f48de8b23b950b7b57078eed47379a058a8c61654c99cd126fa57"
+    }
+  },
+  "updated_at": "2026-11-27T06:26:10Z"
 }
