@@ -1,0 +1,661 @@
+
+<!DOCTYPE html>
+<html>
+<body>
+<div class="navbar navbar-fixed-top nav-adjust">
+	<div class="navbar-inner">
+		<div class="container-fluid">
+						<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="brand" href="/customers_dashboard/">
+				<img src="/img/icon.png">
+				<span>JP Auto Auction</span>
+			</a>
+			<div id="nav-tariff-brand-slot">
+				<div id="nav-tariff-links">
+														</div>
+			</div>
+			<div id="nav-tariff-mobile-slot"></div>
+			<div class="ja-time for-mobile jatime_for_mobile">
+				<div class="mobile-summary-line">
+																		<span class="rate_for_mobile">
+								USD/JPY
+								$1 = <span class="text_red">&yen;156.58</span>
+							</span>
+																<span class="separate"></span>
+					<span><i class="fa fa-clock-o"></i> Japan Time: <span class="time-disp">12:01</span></span>
+					<span class="separate"></span>
+					<span class="mobile-bid-limit"><i class="fa fa-tags"></i> Today Bid : <span class="label today-bid-count">0</span> / Day Limit : <span class="label">0</span></span>
+				</div>
+				<div class="mobile-summary-line">
+					<span><i class="fa fa-diamond"></i> Credit : <span class="credit">0</span> / <span>0</span></span>
+									</div>
+			</div>
+			<div class="nav-collapse collapse">
+				<ul class="nav pull-left nav-top">
+					<li class="divider-vertical"></li>
+					<li >
+						<a href="/vehicle-search/" class="nav-vehicle-search"><i class="fa fa-search fa-small"></i> Vehicle Search</a>
+					</li>
+					<li >
+						<a href="/vehicle-search/kr/" class="nav-vehicle-search"><i class="fa fa-search fa-small"></i> Vehicle Search<br>(Korea)</a>
+					</li>
+					<li class="divider-vertical"></li>
+					<li class="mycart-none-active">
+						<div id="nav-switch">
+							<div id="nav-switch-current">
+								<i class="fa fa-shopping-cart fa-small"></i> My Cart
+							</div>
+							<div id="nav-switch-area">
+								<ul id="nav-switch-menu">
+									<li><a href="/carts">Japan</a></li>
+																			<li><a href="/carts/kr/">Korea</a></li>
+																	</ul>
+							</div>
+						</div>
+					</li>
+					<li class="divider-vertical"></li>
+					<li class="myorder-none-active">
+						<div id="nav-switch">
+							<div id="nav-switch-current">
+								<i class="fa fa-tag fa-small"></i> My Orders
+							</div>
+							<div id="nav-switch-area">
+								<ul id="nav-switch-menu">
+									<li><a href="/bids">Japan</a></li>
+																			<li><a href="/bids/kr/">Korea</a></li>
+																	</ul>
+							</div>
+						</div>
+					</li>
+					<li class="divider-vertical"></li>
+											<li class="auction-purchased-vehicles-none-active">
+							<a href="/purchased-vehicles"><i class="fa fa-car fa-small"></i> Purchased Vehicles</a>
+						</li>
+																<li >
+							<a href="/payment"><i class="fa fa-yen fa-small"></i> Payment</a>
+						</li>
+						<li class="divider-vertical"></li>
+										<li >
+						<a href="/customers_dashboard/"><i class="fa fa-dashboard fa-small"></i> Dashboard</a>
+					</li>
+					<li class="divider-vertical"></li>
+					<li  id="nav-recommended">
+						<a href="/recommended-auction"><i class="fa fa-share fa-small"></i>&nbsp;Recommended Auction</a>
+					</li>
+					<li class="divider-vertical"></li>
+					<li >
+						<a href="/stock-offer"><i class="fa fa-list fa-small"></i> Stock Offer</a>
+					</li>
+					<li class="divider-vertical"></li>
+					<li id="nav-notifications" class="news-area "
+						data-bidder-id="0"
+						data-is-customer=1>
+						<div class="icon" href="javascript:void(0);" name="notifications-popover"
+							data-toggle="popover" data-title="<i class='fa fa-flag'></i> Notifications <span class='close'>&times;</span>">
+							<i class="fa fa-flag fa-small"></i>
+														&nbsp;Notifications
+						</div>
+					</li>
+					<li class="divider-vertical"></li>
+					<li id="nav-settings" >
+						<a href="/settings"><i class="fa fa-gear fa-small"></i> Settings</a>
+					</li>
+					<li class="divider-vertical"></li>
+					<li id="nav-logout">
+						<a href="/login/logout"><i class="fa fa-sign-out fa-small"></i> Log out</a>
+					</li>
+					<li class="divider-vertical"></li>
+					<li id="nav-help">
+						<div id="help-switch">
+							<div id="help-switch-current">
+							<i class="fa fa-question-circle"></i> Help
+							</div>
+							<div id="help-switch-area">
+								<ul id="help-switch-menu">
+									<li><a href="/beforward_live_auction" target="_blank" rel="noreferrer"><i class="fa fa-external-link-square"></i> About Auction Service</a></li>
+									<li><a href="/assets/resource/pdf/beforward_live_auction/About Auction Service(Korea).pdf?_=[N]" target="_blank" rel="noreferrer"><i class="fa fa-external-link-square"></i> About Auction Service (Korea)</a></li>
+									<li><a href="/assets/resource/pdf/beforward_live_auction/auction-sheet-guide.pdf" target="_blank" rel="noreferrer"><i class="fa fa-external-link-square"></i> Auction Sheet Guide</a></li>
+									<li><a href="/assets/resource/pdf/beforward_live_auction/Korea Used Car Auction Sheet Guide.pdf?_=[N]" target="_blank" rel="noreferrer"><i class="fa fa-external-link-square"></i> Auction Sheet Guide (Korea)</a></li>
+									<li><a href="/assets/resource/pdf/beforward_live_auction/auction-houses.pdf" target="_blank" rel="noreferrer"><i class="fa fa-external-link-square"></i> Auction Houses and Location</a></li>
+									<li><a href="/assets/resource/pdf/beforward_live_auction/Korea Auction Houses and Locations.pdf?_=[N]" target="_blank" rel="noreferrer"><i class="fa fa-external-link-square"></i> Auction Houses and Location (Korea)</a></li>
+								</ul>
+							</div>
+						</div>
+					</li>
+					<li id="nav-tariff-help-slot"></li>
+					<li class="divider-vertical"></li>
+					<li class="nav-summary for-desktop" id="nav-summary">
+						<input type="hidden" name="japan_time">
+						<div class="summary-line summary-rate">
+																								USD/JPY  $1 = <span class="text_red">&yen;156.58</span>
+																					</div>
+						<div class="summary-line">
+							<i class="fa fa-clock-o"></i> Japan Time: <span class="time-disp">12:01</span>
+						</div>
+						<div class="summary-line">
+							<i class="fa fa-tags"></i> Today Bid : <span class="label today-bid-count">0</span> / Day Limit : <span class="label">0</span>
+						</div>
+						<div class="summary-line">
+							<i class="fa fa-diamond"></i> Credit : <span class="credit">0</span> / <span>0</span>
+						</div>
+					</li>
+					<li class="divider-vertical"></li>
+					<li id="nav-lang-switch">
+						<div id="lang-switch">
+	<div id="lang-switch-current">
+		<i class="lang-icon-eng"></i>English
+	</div>
+	<div id="lang-switch-area">
+		<ul id="lang-switch-menu">
+																			<li><a href="/lang/?abbr=rus"><i class="lang-icon-rus"></i>Русский</a></li>
+									</ul>
+	</div>
+</div>
+                    </li>
+				</ul><!-- .nav -->
+			</div><!--.nav-collapse -->
+		</div><!--.container -->
+	</div><!--.navbar-inner -->
+</div><!--.navbar-->
+<div class="container-fluid">
+			<div class="page-breadcrumb">
+							<a href="/bids">My Orders (Japan)</a>
+				<span class="separator"> &gt;&gt; </span>
+						<span class="current">vehicle-detail</span>
+		</div>
+	</div>
+<link rel="stylesheet" type="text/css" href="/css/jquery.toast.error.css?_=MTYxODgxNjQ4NQ==" />
+<link rel="stylesheet" type="text/css" href="/css/validationEngine.jquery.css?_=MTUzMDE0OTcyMA==" />
+<div class="vehicle-detail-page">
+	<div class="container container-relative">
+					<div class="row">
+				<div class="span12">
+					<div class="page-controller clearfix">
+																			<a
+								class="badge page-next"
+								href="/vehicle-detail/search-1?search_id=[N]"
+							>
+								Next
+							</a>
+											</div><!-- .page-controller -->
+				</div>
+			</div>
+		<div class="row">
+			<div class="span5">
+				<div class="status-area">
+									</div>
+									<div>
+									<span class="vehicle-name">
+						2012 PORSCHE CAYENNE -92AM48-
+					</span>
+					<div class="vehicle-equipment">
+    </div><div class="vehicle-additional">
+                        <strong>Import Category:</strong>
+            Parallel Import&nbsp;
+                                <strong>Body Type:</strong>
+            SUV / Crossover&nbsp;
+                                <strong>Width (cm):</strong>
+            195&nbsp;
+                                <strong>Height (cm):</strong>
+            175&nbsp;
+                                <strong>Fuel Type:</strong>
+            Gasoline&nbsp;
+                                <strong>Seating Capacity:</strong>
+            5&nbsp;
+                                <strong>Number of Doors:</strong>
+            5&nbsp;
+                                <strong>Air Conditioning:</strong>
+            Auto Air Conditioning&nbsp;
+                                <strong>Usage History:</strong>
+            Private Use&nbsp;
+                                <strong>Equipment:</strong>
+            Sunroof ,Rear View Camera ,Power Windows ,Power Seat ,Navigation System ,Leather Seats ,Alloy Wheels&nbsp;
+											<span style='float:right;'>
+                                <span class="image-get-btn-area detail photo-lot-id   eng" data-lot-id="[N]">
+                                                                    </span>
+                                                                                            <button type="button" class="btn btn-success tgl-cart btn-cart-small" data-lot_id="[N]" data-cur_val='0' >
+                                    <i class="fa fa-shopping-cart fa-inverse" aria-hidden="true"></i>
+                                </button>
+                                                            						</span>
+					</div>
+				</div>
+			</div><!-- .span5 -->
+		</div><!-- .row -->
+		<div class="row">
+			<div class="span6 detail-img-area">
+				<div class="vehicle-photo-area">
+																										<div class="vehicle-photo">
+						<img src="/sellca-public/beforward_export/tenkaizu/0d74998f-3424-49e9-92b5-60ab7eeded37.jpg">
+					</div>
+					<div class="vehicle-photo-list-area">
+						<ul class="vehicle-photo-list">
+															<li class="zoom-img">
+									<img src="/sellca-public/beforward_export/tenkaizu/0d74998f-3424-49e9-92b5-60ab7eeded37.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/MAIN/0e861fca-0c1d-4c18-869e-be9e60bcbf92.png">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/INTERIOR_INPANE_WHOLE/5162a9f2-0038-4cb9-831e-7e6aade15a12.png">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/EXTERIOR_BACK/693d0f64-19ec-45e9-b66a-a20108f9be8c.png">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/EXTERIOR_RIGHT/c2c83def-f0df-4301-884c-a98d534fc70d.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/INTERIOR_NAVI_TV/ff1ea642-9e11-46eb-b1aa-e36b1cc17ba5.png">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/INTERIOR_FRONT_SEAT/d3081dde-848a-4917-8165-c6078bf68639.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/INTERIOR_BACK_SEAT/[N]a-9fcd-42e7-b72b-0acd419bc8b2.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/ENGINE_SPACE/[N]eb-19c0-424d-8fab-8b71b5e2e16d.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/TIRE_WHEEL_FRONT/a[N]b-ef96-4d70-9e64-7ad0f56a9e42.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/EXTERIOR_FRONT/2be761a0-7195-465c-a7c0-0e46d8e86758.png">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/EXTERIOR_RIGHT_FRONT/96327ea5-28a6-4280-a7cf-a0e0c97fc32f.png">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/EXTERIOR_RIGHT_BACK/8250ed35-09cc-4c8f-80c3-e7e4605d262f.png">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/EXTERIOR_LEFT_BACK/[N]e3-e4a3-44ed-83b8-9fe1f4c46156.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/EXTERIOR_LEFT/09581d41-07ce-4245-93e2-c5a577f32a56.png">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/ROOF/[N]bc-e31c-4b3e-a253-27ef22691a0f.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/RIGHT_SIDE_STEP/[N]b5-4758-4a9f-8d2c-[N]fb79e9.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/LEFT_SIDE_STEP/58c98f88-1f31-4d98-afbe-35cb8c71ce30.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/TIRE_WHEEL_FRONT/a[N]b-ef96-4d70-9e64-7ad0f56a9e42.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/UNDERCARRIAGE/9468c8cf-d80a-489f-acb3-4d3ce2cf2d1e.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/INTERIOR_INPANE_ZOOM/3d7e5476-19b8-438e-851d-9ad7f1dd7153.png">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/INTERIOR_CAMERA_BACK/ca2c0b75-2f43-419b-adb2-8d853afe463e.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/INTERIOR_METER/52ff92df-0620-4cc1-8b4a-e5d[N]b9a.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/INTERIOR_SHIFT/88aae900-5c97-4108-b467-2caffce1ab1a.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/INTERIOR_EQUIPMENT_SWITCH/98d39642-57e7-4097-bfcd-5893aabf5ef0.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/INTERIOR_ROOF/7e4bc3ba-0326-4d3a-9d9d-3bae093ca235.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/INTERIOR_TRUNK/d89f9149-e339-4fc1-a974-5f[N]c20c.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/ADDITIONAL1/41c7584a-7e78-4285-a4be-89c3d1087cfd.jpg">
+								</li>
+															<li class="zoom-img">
+									<img src="/sellca-public/images/ADDITIONAL2/c3e199f8-a56c-43f6-9727-b4db1aa69693.jpg">
+								</li>
+													</ul>
+					</div>
+				</div>
+									<div class="sellca-auction-sheet-area-front">
+						<table class="sellca-auctionsheet-table" border="1">
+    <tr>
+        <td class="auctionsheet-title" colspan="2"><strong>Auction Sheet Detail</strong></td>
+    </tr>
+    <tr>
+        <td class="auctionsheet-item"><strong>FW</strong></td>
+        <td class="auctionsheet-value">
+                    Stone Chip ,Scratch (A)
+                </td>
+    </tr>
+    <tr>
+        <td class="auctionsheet-item"><strong>Exterior</strong></td>
+        <td class="auctionsheet-value">
+                    Small Scratch (A) ,Small Dent (U) ,Wheel Scratch
+                </td>
+    </tr>
+    <tr>
+        <td class="auctionsheet-item"><strong>Interior</strong></td>
+        <td class="auctionsheet-value">
+                    Dirty ,Wear ,Scratch
+                </td>
+    </tr>
+    <tr>
+        <td  class="auctionsheet-item"><strong>Staff Comments</strong></td>
+        <td class="auctionsheet-value">
+                    ハンドルスレ<br>シートスレ、シワ<br>内装トリムＡ、汚れ<br>天張りスレ<br>荷室Ａ<br><br>外装薄Ａ<br>ヘッドライト水入り
+                </td>
+    </tr>
+    <tr>
+        <td class="auctionsheet-item"><strong>Sales Points</strong></td>
+        <td class="auctionsheet-value">
+                    ◾︎スポーツクロノパッケージ<br>◾︎PSM（ポルシェ・スタビリティ・マネージメントシステム）<br>◾︎サンルーフ<br>◾︎レザーシート<br><br>◾︎クルーズコントロール<br>◾︎20インチ<br>アルミホイール<br>
+                </td>
+    </tr>
+</table>
+					</div>
+								<div class="production-date-check-area">
+					<div class="headline"><i class="fa fa-calendar"></i> Date of Production</div>
+					<div class="maker">
+						<select name="maker" value="" id="" class="select-maker">
+							<option value="">Manufacturer</option>
+							<option value="TOYOTA">TOYOTA</option>
+<option value="NISSAN">NISSAN</option>
+<option value="MITSUBISHI">MITSUBISHI</option>
+<option value="ISUZU">ISUZU</option>
+<option value="SUZUKI">SUZUKI</option>
+<option value="SUBARU">SUBARU</option>
+<option value="DAIHATSU">DAIHATSU</option>
+<option value="MAZDA">MAZDA</option>
+<option value="HONDA">HONDA</option>
+						</select>
+					</div>
+					<div class="chassisno">		
+						<input type="text" name="chassis_no" id="chassis_no_input" class="input-chassisno" placeholder="Chassis No.">
+					</div>
+					<div class="error-message-area alert alert-danger none">
+					</div>
+					<div class="find">
+						<button
+							type="button"
+							name="production-date-check-popover"
+							class="btn btn-small btn-production-date-check"
+							data-toggle="popover"
+							data-title="Car additional data <span class='close'>&times;</span>">
+							<i class="fa fa-search"></i> Find
+						</button>
+					</div>
+					<div class="muted note">
+						<small>[Example] Manufacturer:TOYOTA, Chassis No.:KZN185-[N]</small>
+					</div>
+					<div class="note">
+						<span>* [Manufacture Year/month] is provided by database provider.<br>BE FORWARD shall not be responsible for any loss,<br>damages and troubles caused by this information.</span>
+					</div>
+				</div><!-- .production-date-check-area  -->
+			</div><!-- .span6 -->
+			<div class="span6 detail-order-area">
+				<input type="hidden" name="serverTime" />
+				<input type="hidden" class="detail-close-date" />
+				<table class="table-usability">
+					 <tr>
+						<th>Your<br>Bidder Rank</th>
+						<td> <i class="fa fa-minus" aria-hidden="true"></i> <br><a href="#ranking">ranking</a></td>
+						<th>Total<br>Bid</th>
+						<td>0</td>
+						<th>Time<br>Left</th>
+						<td>
+														<div class=""><div class="timeLeft"></div><div class="timeLeftClosed">closed</div></div>
+						</td>
+					</tr>
+				</table>
+				<div class="alert alert-error text-center order-close-time-area">
+										<div class="bid-end-message">
+						This Auction has ended.
+					</div>
+					Bidding Close Time:<br>
+					<strong>2026/11/27 09:00</strong>
+				</div>
+								<div class="order-headline">Your Bid</div>
+				<div class="alert alert-info text-center order-area">
+											<div class="dont-bid-message">
+							Bidding Not Allowed
+						</div>
+										<div id="ranking"></div>
+				</div><!-- .order-area -->
+	<div id="add-ranking" class="ranking-area">
+		<table class="add-ranking">
+	<thead>
+			<tr>
+				<th>Bidder Rank</th>
+			<th></th>
+				<th>Bid Status</th>
+				<th>Bid Date & Time</th>
+			</tr>
+		</thead>
+		<tbody>
+						<tr><td>There Is No Bidder Ranking Data.</td></tr>
+					</tbody>
+		</table>
+	</div>
+					 <div class="hidden-phone">
+							<table class="table table-bordered table-condensed table-auction-info">
+								<tbody>
+									<tr>
+										<th>Auction House / Port</th>
+										<td class="">SellCa</td>
+									</tr>
+									<tr>
+										<th>Lot No.</th>
+										<td>[N]</td>
+									</tr>
+									<tr>
+										<th>Starting Price</th>
+										<td>50,000 JPY</td>
+									</tr>
+									<tr>
+										<th>Final Price</th>
+										<td>0 JPY</td>
+									</tr>
+									<tr>
+										<th>Auction Start Time</th>
+										<td>2026/11/27 10:00</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					<div class="visible-phone">
+						<table class="table table-bordered table-condensed table-auction-info">
+							<tbody>
+								<tr>
+									<th>Auction House / Port</th>
+									<td class="">SellCa</td>
+								</tr>
+								<tr>
+									<th>Lot No.</th>
+									<td>[N]</td>
+								</tr>
+								<tr>
+									<th>Starting Price</th>
+									<td>50,000 JPY</td>
+								</tr>
+								<tr>
+									<th>Final Price</th>
+									<td>0 JPY</td>
+								</tr>
+								<tr>
+									<th>Auction Start Time</th>
+									<td>2026/11/27 10:00</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				<div class="vehicle-info-headline">Specs</div>
+				<table class="table table-bordered table-condensed table-vehicle-info">
+					<tbody>
+						<tr>
+							<th>Manufacturer</th>
+							<td>PORSCHE</td>
+							<th>Engine Size</th>
+														<td>4800cc</td>
+													</tr>
+						<tr>
+							<th>Model</th>
+							<td>CAYENNE</td>
+							<th>Transmission</th>
+							<td>AT</td>
+						</tr>
+						<tr>
+							<th>Trim Level</th>
+							<td>Ｓ</td>
+							<th>Model Code</th>
+							<td>-92AM48-</td>
+						</tr>
+						<tr>
+							<th>Year</th>
+							<td>2012</td>
+							<th>Color</th>
+							<td>black</td>
+						</tr>
+						<tr>
+							<th>Mileage</th>
+							<td>62,000 km</td>
+							<th>Auction Grade</th>
+							<td>3.5</td>
+						</tr>
+						<tr>
+							<th>Steering Wheel</th>
+							<td>
+																	<span>Left</span>
+															</td>
+							<th>Chassis No.</th>
+															<td><div id="chassis_no_value">WP1AB2A22CLA45131</div></td>
+													</tr>
+					</tbody>
+				</table>
+									<div class="translation-headline">
+						Auction Sheet Translation
+						<div class="pull-right">
+							<form id="translation_lang_form" name="translation_lang_form" method="get" action="/vehicles/selectLang">
+								<select name="abbr" id="select-language" class="select-language">
+									<option value="1" selected="selected">Japanese</option>
+<option value="2">English</option>
+<option value="3">Mongolian</option>
+<option value="4">Russian</option>
+<option value="5">Spanish</option>
+								</select>
+							</form>
+						</div>
+					</div>
+					<table class="table table-bordered table-condensed vehicle-translation-table">
+													<tr>
+								<td>No translation</td>
+							</tr>
+											</table>
+					<div class="translation-headline translation-headline-request">
+						Translation Request
+					</div>
+					<form name="translation_request_form" method="post" action="/vehicles/requestTranslation">
+						<input type="hidden" name="lot_id">
+						<input type="hidden" name="lot_date">
+						<input type="hidden" name="auct_ref">
+						<input type="hidden" name="bid">
+						<div class="translation-area">
+							<textarea
+								name="request_content"
+								placeholder="Please click the &quot;Request&quot; button to proceed with the translation.
+Alternatively, enter any specific instructions if you have and then click the &quot;Request&quot; button."
+								class="translation-input validate[maxSize[2000]]"
+							></textarea>
+							<button type="submit" class="btn btn-primary translation-button">Request</button>
+													</div>
+					</form>
+							</div><!-- .span6 -->
+		</div><!-- .row -->
+		<div class="table-wrap">
+			<div class="vehicle-info-headline auction-market-price-headline-warp">Auction Market Price</div>
+			<table class="table table-bordered table-condensed table-striped auction-market-price auction-market-price-warp">
+				<colgroup width="15%"></colgroup>
+				<colgroup width="30%"></colgroup>
+				<colgroup width="10%"></colgroup>
+				<colgroup width="15%"></colgroup>
+				<colgroup width="10%"></colgroup>
+				<colgroup width="20%"></colgroup>
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Auction House</th>
+						<th>Auction Grade</th>
+						<th>Mileage<br>(km)</th>
+						<th>Auction<br>Result</th>
+						<th>Sold Price<br>(JPY)</th>
+					</tr>
+				</thead>
+				<tbody>
+									<tr>
+						<td class="no-result-td alert alert-error" colspan="111">
+							There Is No recent lot data.
+						</td>
+					</tr>
+									</tbody>
+			</table>
+		</div>
+</div><!-- .vehicle-detail-page -->
+<link rel="stylesheet" type="text/css" href="/css/jquery.multiselect.css?_=MTUzMDE0OTcyMA==" />
+<link rel="stylesheet" type="text/css" href="/css/jquery.multiselect.filter.css?_=MTUzMDE0OTcyMA==" />
+<link rel="stylesheet" type="text/css" href="/css/zoom-img.css?_=MTUzMDE0OTcyMA==" />
+<link rel="stylesheet" type="text/css" href="/css/magnific-popup.css?_=MTUzMDE0OTcyMA==" />
+<input type="hidden" id="photoUploadingLabel" disabled="disabled" />
+<input type="hidden" id="photoDayLimitMessage" disabled="disabled" />
+<input type="hidden" id="photoErrorMessage" disabled="disabled" />
+<div class="container">
+	<div class="row">
+		<div class="span12">
+			<footer class="text-center">
+	<ul class="nav nav-pills">
+	<li >
+		<a href="/vehicle-search/"><i class="fa fa-search"></i> Vehicle Search</a>
+	</li>
+	<li >
+		<a href="/vehicle-search/kr/"><i class="fa fa-search"></i> Vehicle Search (Korea)</a>
+	</li>
+	<li >
+		<a href="/carts"><i class="fa fa-shopping-cart"></i> My Cart</a>
+	</li>
+			<li >
+			<a href="/carts/kr/"><i class="fa fa-shopping-cart"></i> My Cart (Korea)</a>
+		</li>
+		<li >
+		<a href="/bids"><i class="fa fa-tag"></i> My Orders</a>
+	</li>
+			<li >
+			<a href="/bids/kr/"><i class="fa fa-tag"></i> My Orders (Korea)</a>
+		</li>
+				<li >
+			<a href="/purchased-vehicles"><i class="fa fa-car"></i> Purchased Vehicles</a>
+		</li>
+				<li >
+			<a href="/payment"><i class="fa fa-jpy"></i> Payment</a>
+		</li>
+	<li >
+		<a href="/customers_dashboard/"><i class="fa fa-dashboard"></i> Dashboard</a>
+	</li>
+	<li >
+		<a href="/settings"><i class="fa fa-gear"></i> Settings</a>
+	</li>
+	<li>
+		<a href="/login/logout"><i class="fa fa-sign-out"></i> Log out</a>
+	</li>
+</ul><!-- .nav .nav-pills -->
+	<p>© 2026 JP Auto Auction</p>
+</footer>
+		</div><!-- .span12 -->
+	</div><!-- .row -->
+</div><!-- .container -->
+</body>
+</html>
