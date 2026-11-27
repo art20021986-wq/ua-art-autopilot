@@ -85,6 +85,10 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(remote.countries('<a href="/vehicle-search/kr/">K</a><a href="/vehicle-search/jp/">J</a>'),
                          ['jp', 'kr'])
 
+    def test_sections(self):
+        html = '<a href="/vehicle-search/kr/">K</a><a href="/bids/kr/x">B</a><a href="https://x.jp/a">X</a>'
+        self.assertEqual(remote.sections_of(html), ['/bids/kr', '/vehicle-search/kr'])
+
     def test_form_default_data_and_lhd_box(self):
         form = remote.search_form(FORM)
         self.assertEqual(form['action'], '/vehicle-search/jp/index')

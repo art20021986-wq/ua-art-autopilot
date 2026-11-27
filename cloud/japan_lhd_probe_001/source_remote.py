@@ -15,6 +15,7 @@ from pathlib import Path
 import re
 import resource
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -69,6 +70,12 @@ class Browser:
 def countries(html):
     """Country codes of the account's vehicle searches ('/vehicle-search/jp/' -> 'jp')."""
     return sorted(set(re.findall(r'/vehicle-search/([a-z]{2})/', html)))
+
+
+def sections_of(html):
+    """The account's site sections: distinct first two path parts of its own links ('/vehicle-search/kr')."""
+    paths = re.findall(r'href="(/[\w\-]+(?:/[\w\-]+)?)', html)
+    return sorted(set(clean(p) for p in paths))[:80]
 
 
 def search_form(html):
@@ -205,16 +212,21 @@ def report():
         return {'status': 'FAIL', 'error': 'LOGIN_FAILED'}
     _, dashboard = browser.fetch('/customers_dashboard')
     found = countries(page + dashboard)
-    if 'jp' not in found:
-        return {'status': 'NO_JAPAN_SEARCH', 'countries': found, 'requests': browser.requests}
-    _, search = browser.fetch('/vehicle-search/jp/')
+    sections = sections_of(page + dashboard)
+    # R2 (run 45921685717: the menu links only 'kr'): open the Japan search directly, whatever the menu shows
+    try:
+        address, search = browser.fetch('/vehicle-search/jp/')
+    except urllib.error.HTTPError as error:
+        return {'status': 'NO_JAPAN_SEARCH', 'countries': found, 'sections': sections, 'japan_http': error.code,
+                'requests': browser.requests}
     form = search_form(search)
     if not form:
-        return {'status': 'NO_SEARCH_FORM', 'countries': found, 'page_text': clean(text(search))[:600],
+        return {'status': 'NO_SEARCH_FORM', 'countries': found, 'sections': sections,
+                'japan_address': clean(urllib.parse.urlsplit(address).path), 'page_text': clean(text(search))[:600],
                 'requests': browser.requests}
     _, everything = browser.fetch(form['action'] or '/vehicle-search/jp/index', form['data'])
     summary, lhd_total, header, lots = lhd_lots(browser, form)
-    value = {'status': 'PASS', 'countries': found, 'form': summary, 'total_all': total(everything),
+    value = {'status': 'PASS', 'countries': found, 'sections': sections, 'form': summary, 'total_all': total(everything),
              'total_lhd': lhd_total, 'lhd_rows_read': len(lots), 'result_columns': header[:30], 'no_bid_placed': True}
     if lots:
         value['lhd'] = counts(header, lots)
