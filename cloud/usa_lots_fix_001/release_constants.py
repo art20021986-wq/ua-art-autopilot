@@ -2,6 +2,6 @@
 title="Label: value" attribute, so the installed reader got no damage, odometer or start code and showed 0 lots), on
 the collector USA-LOTS-INSTALL-20261127 installed."""
 
-PREVIEW_TASK = 'USA-LOTS-FIX-PREVIEW-20261127'
+PREVIEW_TASK = 'USA-LOTS-FIX-PREVIEW-20261127-R2'  # R1 PASS 11:51Z; R2: fresh storage probe for the install
 INSTALL_TASK = 'USA-LOTS-FIX-INSTALL-20261127'
 PACKAGE = 'cloud/usa_lots_fix_001'
