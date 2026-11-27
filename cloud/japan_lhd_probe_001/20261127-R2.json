@@ -1,0 +1,145 @@
+{
+  "countries": [
+    "kr"
+  ],
+  "form": {
+    "auction_boxes": 8,
+    "auction_labels": [
+      "Mon. Show Detail",
+      "Tue. Show Detail",
+      "Wed. Show Detail",
+      "Thu. Show Detail",
+      "Fri. Show Detail",
+      "Sat. Show Detail",
+      "ZIP Tokyo (352) / YOKOHAMA",
+      "Oneprice Show Detail"
+    ],
+    "fields": {
+      "auction[]|checkbox": 39,
+      "auction_country_id|hidden": 1,
+      "auction_group[]|checkbox": 7,
+      "bid|text": 1,
+      "color[]|select": 1,
+      "cost[]|select": 1,
+      "dir|hidden": 1,
+      "displacement_num_from|select": 1,
+      "displacement_num_to|select": 1,
+      "favoriteurl|hidden": 1,
+      "grade_en|text": 1,
+      "history_idx_url|hidden": 12,
+      "historyurl|hidden": 1,
+      "left_hd[]|checkbox": 1,
+      "maker[]|select": 1,
+      "mileage_num_from|select": 1,
+      "mileage_num_to|select": 1,
+      "model[]|select": 1,
+      "model_code[]|select": 1,
+      "model_type_en|text": 1,
+      "model_year_en_from|select": 1,
+      "model_year_en_to|select": 1,
+      "mode|hidden": 1,
+      "order_closed[]|checkbox": 1,
+      "port[]|select": 1,
+      "save_search_history|hidden": 1,
+      "scores[]|select": 1,
+      "sortkey|hidden": 1,
+      "start_price_jpy_from|select": 1,
+      "start_price_jpy_to|select": 1,
+      "translation_request|checkbox": 1
+    },
+    "lhd_boxes": [
+      {
+        "checked": false,
+        "label": "Left-Hand Drive",
+        "name": "left_hd[]",
+        "value": "L"
+      }
+    ],
+    "uss_auction_boxes": 0
+  },
+  "lhd": {
+    "by_day": {
+      "2026/11/27": 7,
+      "2026/11/29": 4,
+      "2026/11/30": 9
+    },
+    "by_house": {
+      "Auct Kyouyuu": 10,
+      "JU Kyouyuu": 1,
+      "Kyouyuu Stock": 2,
+      "LAA Okayama / OSAKA": 1,
+      "SellCa": 6
+    },
+    "by_maker": {
+      "DAIHATSU": 1,
+      "HINO": 3,
+      "HUMMER": 1,
+      "ISUZU": 4,
+      "MAZDA": 2,
+      "MERCEDES BENZ": 3,
+      "MITSUBISHI": 2,
+      "NISSAN": 1,
+      "PORSCHE": 1,
+      "TOYOTA": 1,
+      "VOLVO": 1
+    },
+    "columns": {
+      "day": "Auction Start Time",
+      "house": "Auction House / Port / Cost / Lot No.",
+      "maker": "Manufacturer"
+    },
+    "uss": 0
+  },
+  "lhd_rows_read": 20,
+  "mode": "probe",
+  "no_bid_placed": true,
+  "remote_write_count": 0,
+  "requests": 6,
+  "result_columns": [
+    "Auction Start Time",
+    "Bidding Close Time",
+    "Auction House / Port / Cost / Lot No.",
+    "Score",
+    "Mileage (km)",
+    "Year",
+    "Starting Price (JPY)",
+    "Photo",
+    "Manufacturer",
+    "Model",
+    "Model Code",
+    "Trim Level",
+    "Engine Size (cc)",
+    "Trans&#8203;mission",
+    "My Cart"
+  ],
+  "run_id": "45925316016",
+  "safe_to_stop": true,
+  "sections": [
+    "/bids",
+    "/bids/kr",
+    "/carts",
+    "/carts/kr",
+    "/css/bootstrap",
+    "/css/bootstrap-responsive",
+    "/css/customers_dashboard",
+    "/css/jpauto",
+    "/css/jpauto-responsive",
+    "/css/jquery",
+    "/css/page-breadcrumb",
+    "/customers_dashboard",
+    "/favicon",
+    "/lang",
+    "/login/logout",
+    "/payment",
+    "/purchased-vehicles",
+    "/recommended-auction",
+    "/settings",
+    "/stock-offer",
+    "/vehicle-search",
+    "/vehicle-search/kr"
+  ],
+  "status": "PASS",
+  "task_id": "JAPAN-LHD-PROBE-20261127-R2",
+  "total_all": 101036,
+  "total_lhd": 43
+}
