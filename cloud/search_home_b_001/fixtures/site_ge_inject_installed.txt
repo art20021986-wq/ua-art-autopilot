@@ -1,0 +1,12 @@
+# Test stand-in for the installed site_ge_inject.py (HOME-BLOCKS-001 wrapper last); the preview reads the real file.
+def inject_html(source):
+    return source
+
+
+_ua_perf_base_inject = inject_html
+
+
+# HOME-BLOCKS-001: the home page's auctions, individual order and cars in stock set apart as panels.
+_ua_home_blocks_base_inject = inject_html
+def inject_html(source):
+    return _ua_home_blocks_base_inject(source)
