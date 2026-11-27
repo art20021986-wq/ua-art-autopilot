@@ -117,7 +117,7 @@ class CandidateTests(unittest.TestCase):
     def test_release_constants(self):
         import release_constants
         self.assertEqual((release_constants.PREVIEW_TASK, release_constants.INSTALL_TASK, release_constants.PACKAGE),
-                         ('USA-LOTS-FIX-PREVIEW-20261127', 'USA-LOTS-FIX-INSTALL-20261127', 'cloud/usa_lots_fix_001'))
+                         ('USA-LOTS-FIX-PREVIEW-20261127-R2', 'USA-LOTS-FIX-INSTALL-20261127', 'cloud/usa_lots_fix_001'))
 
     def _tmp(self):
         import tempfile
