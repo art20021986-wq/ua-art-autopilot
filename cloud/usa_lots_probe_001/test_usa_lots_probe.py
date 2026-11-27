@@ -169,7 +169,8 @@ class DiagnoseTests(unittest.TestCase):
             with patch.object(remote, 'STATE', state):
                 value = remote.diagnose(browser)
         self.assertEqual((value['models'], value['lots'], value['filled']['damage']), (1, 1, 0))
-        self.assertIn('Primary Damage', value['page']['around_damage'])
+        self.assertNotIn('page', value)  # R6: no IAAI request
+        self.assertEqual((browser.requests, value['lot_pages']['count']), (0, 0))
         self.assertNotIn('41000001', json.dumps(value))
 
 

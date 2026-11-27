@@ -278,7 +278,30 @@ def diagnose(browser):
                                                                       'title_type', 'secondary_damage')},
              'damage': top(Counter(l.get('damage', '') for l in lots), 15),
              'samples': [{k: clean(v) for k, v in l.items() if k != 'id'} for l in lots[:3]]}
-    url = next(iter(state.get('models', {}).values()), '')
+    # R6 (after USA-LOTS-FIX: still 0 lots): the chosen lots' pages and photo copies; no IAAI request
+    import sys as _sys
+    _sys.path.insert(0, '/home/Carix')
+    try:
+        from usa_auction import selection as _sel
+        value['kept'] = sum(1 for l in lots if _sel.keep(l))
+        value['why_not'] = {'popular': sum(1 for l in lots if _sel.popular(l.get('make'), l.get('model'))),
+                            'year': sum(1 for l in lots if l.get('year', 0) >= _sel.MIN_YEAR),
+                            'runs': sum(1 for l in lots if l.get('runs')),
+                            'minimal': sum(1 for l in lots if any(w in l.get('damage', '').lower()
+                                                                for w in _sel.MINIMAL_DAMAGE))}
+    except Exception as error:
+        value['kept'] = 'IMPORT:' + type(error).__name__
+    lot_pages = list(state.get('pages', {}).values())
+    value['lot_pages'] = {'count': len(lot_pages),
+                          'filled': {f: sum(1 for p in lot_pages if p.get(f)) for f in
+                                     ('auction_start', 'photos', 'actual_cash_value_usd', 'buy_now_usd', 'damage')},
+                          'photos_per_lot': [len(p.get('photos') or []) for p in lot_pages][:30],
+                          'auction_starts': sorted(str(p.get('auction_start', '')) for p in lot_pages)[:10],
+                          'samples': [{k: clean(v)[:60] for k, v in p.items() if k != 'photos'} for p in lot_pages[:2]],
+                          'photo_shape': clean(next((p['photos'][0] for p in lot_pages if p.get('photos')), ''))}
+    copies = Path('/home/Carix/video/usa/lots')
+    value['photo_copies'] = len(list(copies.iterdir())) if copies.is_dir() else -1
+    url = ''  # R6: no IAAI request
     if url:
         status, kind, host, body = browser.fetch(url)
         html = body.decode('utf-8', 'replace')
