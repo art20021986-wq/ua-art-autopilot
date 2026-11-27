@@ -254,7 +254,44 @@ def probe_iaai(browser):
     return value
 
 
-STEPS = (('iaai', 'probe_iaai'),)  # R3: Copart answered R2 with HTTP 418 (closed without login) — not asked again
+STATE = Path('/home/Carix/usa_auction_data/state.json')
+
+
+def masked(raw):
+    """Raw HTML with numbers, addresses and long words masked: only the tag structure and labels stay."""
+    raw = re.sub(r'(?is)<(script|style)\b.*?</\1>', '', raw)
+    return clean(re.sub(r'\s+', ' ', raw))
+
+
+def diagnose(browser):
+    """USA-LOTS-DIAG (after USA-LOTS-INSTALL: 0 lots): what the collector saved, and one listing page's structure."""
+    try:
+        state = json.loads(STATE.read_bytes())
+    except (OSError, ValueError) as error:
+        return {'state': 'UNREADABLE:' + type(error).__name__}
+    listings = state.get('listings', {})
+    lots = [lot for entry in listings.values() for lot in entry.get('lots', [])]
+    value = {'models': len(state.get('models', {})), 'model_keys': sorted(state.get('models', {}))[:80],
+             'listings': {k: len(v.get('lots', [])) for k, v in listings.items()}, 'pages': len(state.get('pages', {})),
+             'lots': len(lots),
+             'filled': {f: sum(1 for l in lots if l.get(f)) for f in ('year', 'damage', 'odometer_mi', 'runs',
+                                                                      'title_type', 'secondary_damage')},
+             'damage': top(Counter(l.get('damage', '') for l in lots), 15),
+             'samples': [{k: clean(v) for k, v in l.items() if k != 'id'} for l in lots[:3]]}
+    url = next(iter(state.get('models', {}).values()), '')
+    if url:
+        status, kind, host, body = browser.fetch(url)
+        html = body.decode('utf-8', 'replace')
+        value['page'] = head(status, kind, host, body)
+        at = html.find('Primary Damage')
+        value['page']['around_damage'] = masked(html[max(0, at - 1500):at + 1500]) if at >= 0 else ''
+        first = re.search(r'(?i)/VehicleDetail/', html)
+        value['page']['around_first_lot'] = masked(html[first.start() - 300:first.start() + 2500]) if first else ''
+        value['page']['lot_link_forms'] = sorted(set(clean(m) for m in re.findall(r'(?i)href="([^"]*vehicledetail[^"]*)"', html)))[:5]
+    return value
+
+
+STEPS = (('diagnose', 'diagnose'),)  # R5: after the install, the collector's own state
 
 
 def report(browser=None, steps=None):

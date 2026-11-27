@@ -155,5 +155,23 @@ class RemoteTests(unittest.TestCase):
         self.assertIn('sitemap', value['iaai'])
 
 
+
+
+class DiagnoseTests(unittest.TestCase):
+    def test_state_and_page(self):
+        with tempfile.TemporaryDirectory() as temp:
+            state = Path(temp) / 'state.json'
+            state.write_text(json.dumps({'models': {'toyota|rav4': 'https://www.iaai.com/Vehiclelisting/TOYOTA/RAV4/'},
+                                         'listings': {'toyota|rav4': {'at': 'x', 'lots': [
+                                             {'id': '41000001', 'year': 0, 'damage': '', 'runs': False}]}}, 'pages': {}}))
+            page = b'<div><a href="/VehicleDetail/41000001~US">x</a><span>Primary Damage</span><b>Front End</b></div>'
+            browser = FakeBrowser([('Vehiclelisting', (200, 'text/html', 'www.iaai.com', page))])
+            with patch.object(remote, 'STATE', state):
+                value = remote.diagnose(browser)
+        self.assertEqual((value['models'], value['lots'], value['filled']['damage']), (1, 1, 0))
+        self.assertIn('Primary Damage', value['page']['around_damage'])
+        self.assertNotIn('41000001', json.dumps(value))
+
+
 if __name__ == '__main__':
     unittest.main()
