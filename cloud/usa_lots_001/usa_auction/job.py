@@ -25,7 +25,7 @@ DATA = ROOT / 'usa_auction_data'
 LOCK = ROOT / '.usa_auction_job.lock'
 SITEMAP = 'https://www.iaai.com/Xj9rDOVMEi0hc38S/sitemap_index.xml'  # named in iaai.com/robots.txt
 REQUESTS = 60
-LISTINGS_PER_RUN = 6
+LISTINGS_PER_RUN = 10
 LISTING_HOURS = 12
 MODELS_DAYS = 7
 PHOTOS_PER_LOT = 8
@@ -98,7 +98,11 @@ def refresh(client, data, now):
                  if older(data['listings'].get(k, {}).get('at'), now, LISTING_HOURS))
     for _, key in due[:LISTINGS_PER_RUN]:
         url = data['models'][key]
-        data['listings'][key] = {'at': stamp(now), 'lots': pages.listing(client.page(url), *names(url))}
+        lots = pages.listing(client.page(url), *names(url))
+        if lots and not any(lot['damage'] for lot in lots):
+            # USA-LOTS-FIX: the page no longer reads (IAAI changed it): stop asking IAAI until the reader is fixed
+            raise fetch.Closed('LISTING_UNREADABLE')
+        data['listings'][key] = {'at': stamp(now), 'lots': lots}
     for key in list(data['listings']):
         if key not in data['models']:
             del data['listings'][key]
@@ -162,6 +166,8 @@ def publish(lots, copies, now, folder):
 def run(client, data, now, folder):
     """One run: listings due, the choice, the chosen lots' pages and photos, the published files."""
     stop = ''
+    # USA-LOTS-FIX: listings read before the fix (no damage read) are read again
+    data['listings'] = {k: v for k, v in data['listings'].items() if any(l.get('damage') for l in v.get('lots', []))}
     try:
         refresh(client, data, now)
     except fetch.Closed as closed:
