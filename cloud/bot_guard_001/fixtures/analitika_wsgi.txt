@@ -1,0 +1,75 @@
+# -*- coding: utf-8 -*-
+# UA-ANALIT-V1  обёртка WSGI: /ua/a.js и /ua/a/e. Всё прочее уходит дальше без изменений.
+import os, io, json, time, sys
+
+DOM = "/home/Carix"
+if DOM not in sys.path:
+    sys.path.insert(0, DOM)
+
+VIDEO = os.path.join(DOM, "video")
+SITE  = os.path.join(DOM, "site")
+STROKA = "<script src='/ua/a.js?v=1' defer></script><!--UA-ANALIT-V1-->"
+_FON = [0]
+
+def _storozh():
+    # раз в 2 минуты дописывает строку скрипта в страницы, где её нет.
+    # Выключается созданием файла /home/Carix/analitika_stop.txt
+    if time.time() - _FON[0] < 120:
+        return
+    _FON[0] = time.time()
+    if os.path.exists(os.path.join(DOM, "analitika_stop.txt")):
+        return
+    for papka in (VIDEO, SITE):
+        try:
+            imena = os.listdir(papka)
+        except Exception:
+            continue
+        for imya in imena:
+            if not imya.lower().endswith(".html"):
+                continue
+            put = os.path.join(papka, imya)
+            try:
+                with io.open(put, "r", encoding="utf-8", errors="replace") as f:
+                    t = f.read()
+                if "UA-ANALIT-V1" in t:
+                    continue
+                if "</body>" not in t:
+                    continue
+                t = t.replace("</body>", STROKA + "</body>", 1)
+                vrem = put + ".ana_tmp"
+                with io.open(vrem, "w", encoding="utf-8") as f:
+                    f.write(t)
+                os.replace(vrem, put)
+            except Exception:
+                pass
+
+def obolochka(prilozhenie):
+    def novoe(environ, start_response):
+        put = environ.get("PATH_INFO", "") or ""
+        try:
+            if put == "/ua/a.js":
+                import analitika_yadro as ya
+                telo = ya.SKRIPT.encode("utf-8")
+                start_response("200 OK", [("Content-Type", "application/javascript; charset=utf-8"),
+                                          ("Cache-Control", "max-age=600"),
+                                          ("Content-Length", str(len(telo)))])
+                return [telo]
+            if put == "/ua/a/e":
+                try:
+                    dlina = int(environ.get("CONTENT_LENGTH") or 0)
+                    syroe = environ["wsgi.input"].read(min(dlina, 8000)) if dlina else b""
+                    dannye = json.loads(syroe.decode("utf-8", "replace"))
+                    import analitika_yadro as ya
+                    ya.zapisat(dannye)
+                except Exception:
+                    pass
+                start_response("204 No Content", [("Content-Length", "0")])
+                return [b""]
+        except Exception:
+            pass
+        try:
+            _storozh()
+        except Exception:
+            pass
+        return prilozhenie(environ, start_response)
+    return novoe
