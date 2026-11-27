@@ -183,6 +183,23 @@ class JobTests(unittest.TestCase):
         self.assertEqual(applied[0]['start_price_jpy'], 2000000)
         self.assertEqual(applied[0]['photos'][0], 'https://c/images/MAIN/m.png')  # the front first
 
+    def test_coming_days_show_their_auctions_and_start(self):
+        """JAPAN-DAYS-001 (owner 27.11: as Korea): a coming day without lots shows the houses seen on that weekday."""
+        now = datetime(2026, 11, 27, 12, tzinfo=JST)  # Friday; Monday 30.11 has no lots listed yet
+        with tempfile.TemporaryDirectory() as temp:
+            folder, path = Path(temp), Path(temp) / 'house_days.json'
+            history = job.learn([lot('1', '2026/11/27 10:00')], path)
+            self.assertEqual(history['4']['SellCa'], {'start': '10:00', 'seen': '2026/11/27'})
+            self.assertEqual(history['0'], job.SEED['0'])  # the seed is kept
+            job.publish([lot('1', '2026/11/27 10:00')], RATES, now, folder, fetch=lambda url: b'img', history=history)
+            value = json.loads((folder / 'lots.json').read_bytes())
+            self.assertEqual(value['planned'], {'2026/11/30': [{'name': 'JU Kyouyuu', 'start': '2026/11/30 16:00'}]})
+            feed = json.loads((folder / 'feed.json').read_bytes())
+            monday = [d for d in feed['week'] if d['date'] == '2026/11/30'][0]
+            self.assertEqual((monday['state'], monday['houses'][0]['name']), ('soon', 'JU Kyouyuu'))
+            job.roll(datetime(2026, 11, 28, 0, 5, tzinfo=JST), folder, path)
+            self.assertIn('2026/11/30', json.loads((folder / 'lots.json').read_bytes())['planned'])
+
     def test_publish_and_roll(self):
         now = datetime(2026, 11, 27, 12, tzinfo=JST)
         with tempfile.TemporaryDirectory() as temp:

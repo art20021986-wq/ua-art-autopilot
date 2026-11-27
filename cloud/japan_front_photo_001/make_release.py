@@ -5,7 +5,8 @@ Usage: python3 cloud/japan_front_photo_001/make_release.py preview   # PR, merge
        python3 cloud/japan_front_photo_001/make_release.py launch TASK_ID
        python3 cloud/japan_front_photo_001/make_release.py install   # right after the preview: writes gate, manifest,
                                                                 # owner approval, storage probe, request and launch
-JAPAN-FRONT-PHOTO-001 (tasks/JAPAN-FRONT-PHOTO-001.md): the front of the car is the first photo of every Japan lot.
+JAPAN-FRONT-PHOTO-001 (tasks/JAPAN-FRONT-PHOTO-001.md): the front of the car is the first photo of every Japan lot;
+JAPAN-DAYS-001: the coming days show their auctions and start, as Korea's.
 The install request is written right after the preview.
 """
 import datetime
@@ -79,7 +80,7 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of JAPAN-FRONT-PHOTO-001 (owner 2026-11-27: the front of the car first, in the ticker and on every card): japan_auction/lot_page.py front_first (the photos the auction names EXTERIOR_RIGHT_FRONT, EXTERIOR_LEFT_FRONT, EXTERIOR_FRONT, MAIN lead; the body diagram last) and job.py (applies it), smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of JAPAN-FRONT-PHOTO-001 (owner 2026-11-27: the front of the car first, in the ticker and on every card): japan_auction/lot_page.py front_first (the photos the auction names EXTERIOR_RIGHT_FRONT, EXTERIOR_LEFT_FRONT, EXTERIOR_FRONT, MAIN lead; the body diagram last), and JAPAN-DAYS-001 (owner 2026-11-27: the coming days show their auctions and start, as Korea): views.py week/planned and job.py (applies both, learns the houses per weekday), smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
              'title': 'Preview Japan front photo first'}
@@ -135,7 +136,7 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Owner request (2026-11-27, «Да» to cloud/photos/41-JAPAN-FRONT-PHOTO.png): the front of the car is the first photo of every Japan lot — on video/japan.html, in its lot card and in the home ticker. japan_auction/lot_page.py front_first (the auction names each photo by its view: EXTERIOR_RIGHT_FRONT, EXTERIOR_LEFT_FRONT, EXTERIOR_FRONT, MAIN lead; the auction sheet body diagram goes last; other photos keep the page order) and job.py (applies it); the Japan task runs at once and republishes. No page, ticker or CRM module change; a rollback restores both modules. Existing backup, rollback and public health checks are kept.',
+               'description': 'Owner request (2026-11-27, «Да» to cloud/photos/41-JAPAN-FRONT-PHOTO.png): the front of the car is the first photo of every Japan lot — on video/japan.html, in its lot card and in the home ticker. japan_auction/lot_page.py front_first (the auction names each photo by its view: EXTERIOR_RIGHT_FRONT, EXTERIOR_LEFT_FRONT, EXTERIOR_FRONT, MAIN lead; the auction sheet body diagram goes last; other photos keep the page order) and job.py (applies it); and JAPAN-DAYS-001 (owner «Да-да… как у Кореи»): a coming Japan day without lots shows the auctions seen on that weekday with their start in Kyiv time — on the «Японія» tab and the Japan page day buttons (lots.json planned; views.py, job.py learns japan_auction_data/house_days.json). The Japan task runs at once and republishes. No page, ticker or CRM module change; a rollback restores the three modules. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
                # only pages that exist before the install (run 45936163206 halted on japan.html 404 at the pre-check);
                # the new video/japan.html is checked after the install (deployment_controller.public_verify)

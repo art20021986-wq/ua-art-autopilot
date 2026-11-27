@@ -75,7 +75,7 @@ class CandidateTests(unittest.TestCase):
             for module in modules:
                 name = '%s/%s.py' % (folder, module)
                 self.assertEqual((HERE / name).read_bytes() != live[name],
-                                 name in ('japan_auction/job.py', 'japan_auction/lot_page.py'), name)
+                                 name in ('japan_auction/job.py', 'japan_auction/lot_page.py', 'japan_auction/views.py'), name)
 
     def test_the_japan_page_changes_only_the_count_line(self):
         """Owner 27.11 «да»: no «десятки авто» (about 10 left-hand-drive cars a week)."""

@@ -15,6 +15,7 @@ import re
 import sys
 import time
 
+from korea_auction import house_days
 from korea_auction import job as korea_job
 from korea_auction import rollover, session
 from korea_auction.selection import JST, auction_date
@@ -26,6 +27,11 @@ OUT = ROOT / 'video/japan'
 DATA = ROOT / 'japan_auction_data'
 PAGES = DATA / 'pages.json'  # each lot page read once: {lot id: lot_page.entry}
 PENDING = DATA / 'pending'  # set while lot pages or photos are left
+HISTORY = DATA / 'house_days.json'  # JAPAN-DAYS-001: houses and starts seen per weekday (korea_auction.house_days)
+# JAPAN-DAYS-001 (owner 2026-11-27: the coming days show their auctions and start, as Korea): the left-hand-drive lots'
+# houses seen 27-30.11.2026 (video/japan/lots.json); every run learns the others.
+SEED = {'0': {'JU Kyouyuu': {'start': '16:00', 'seen': '2026/11/30'}},
+        '4': {'LAA Okayama': {'start': '16:11', 'seen': '2026/11/27'}, 'SellCa': {'start': '10:00', 'seen': '2026/11/27'}}}
 LOCK = ROOT / '.japan_auction_job.lock'
 RUN_HOURS = (9, 12, 15, 18, 21)  # Japan time; the list is small (~50 lots), a few reads a day
 ROLLOVER_HOUR = 0
@@ -89,15 +95,33 @@ def with_pages(lots, known):
     return out
 
 
+def load_history(path=None):
+    try:
+        value = json.loads((path or HISTORY).read_bytes())
+    except (OSError, ValueError):
+        return SEED
+    return value if isinstance(value, dict) else SEED
+
+
+def learn(lots, path=None):
+    """The houses and starts seen per weekday, with these (shown) lots recorded and saved for the next run."""
+    history = house_days.update(load_history(path), lots)
+    korea_job.write(path or HISTORY, _json(history), mode=0o600)
+    return history
+
+
 def _json(value):
     return json.dumps(value, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
 
 
-def publish(lots, rates, now, folder, deadline=None, fetch=photos.fetch):
+def publish(lots, rates, now, folder, deadline=None, fetch=photos.fetch, history=None):
     """lots.json, the galleries and feed.json of the lots whose photos were copied. -> (lots shown, photos left)"""
     copies, left = photos.copy(lots, folder / 'lots', fetch=fetch, deadline=deadline)
     stamp = now.isoformat(timespec='minutes')
+    today = now.strftime('%Y/%m/%d')
     value = views.build(lots, rates, copies, stamp)
+    week = views.week(value['lots'], today, history)
+    value['planned'] = views.planned(week)  # JAPAN-DAYS-001: the Japan page day buttons (as Korea's)
     korea_job.write(folder / 'lots.json', _json(value))
     shown = {view['id']: copies[view['id']] for view in value['lots']}
     gallery = folder / 'gallery'
@@ -109,11 +133,12 @@ def publish(lots, rates, now, folder, deadline=None, fetch=photos.fetch):
     for old in gallery.glob('*.json'):
         if old.stem not in shown:
             old.unlink()
-    korea_job.write(folder / 'feed.json', _json(views.feed(value['lots'], now.strftime('%Y/%m/%d'), stamp)))
+    korea_job.write(folder / 'feed.json', _json({'generated_at': stamp, 'week': week,
+                                                  'items': views.ticker_items(value['lots'], today)}))
     return len(value['lots']), left
 
 
-def roll(now, folder=None):
+def roll(now, folder=None, history_path=None):
     """After the Japan midnight: lots.json and feed.json without the past days (the feed's week again from today)."""
     folder = folder or OUT
     today = now.strftime('%Y/%m/%d')
@@ -122,8 +147,11 @@ def roll(now, folder=None):
     except (OSError, ValueError):
         return
     value = rollover.current_lots(value, today)
+    history = load_history(history_path)
+    value['planned'] = views.planned(views.week(value['lots'], today, history))
     korea_job.write(folder / 'lots.json', _json(value))
-    korea_job.write(folder / 'feed.json', _json(views.feed(value['lots'], today, now.isoformat(timespec='minutes'))))
+    korea_job.write(folder / 'feed.json', _json(views.feed(value['lots'], today, now.isoformat(timespec='minutes'),
+                                                           history)))
 
 
 def main(now=None):
@@ -149,7 +177,9 @@ def main(now=None):
         known, pages_left = read_pages(browser, lots, load_pages(), started + PAGE_SECONDS)
         DATA.mkdir(mode=0o700, parents=True, exist_ok=True)
         korea_job.write(PAGES, _json(known), mode=0o600)
-        shown, photos_left = publish(with_pages(lots, known), money.fetch_rates(), now, OUT, started + RUN_SECONDS)
+        shown_lots = with_pages(lots, known)
+        shown, photos_left = publish(shown_lots, money.fetch_rates(), now, OUT, started + RUN_SECONDS,
+                                     history=learn(shown_lots))
         korea_job.mark_pending(pages_left or photos_left, PENDING)
     print(json.dumps({'at': now.isoformat(timespec='minutes'), 'listed': count, 'read': len(lots), 'shown': shown,
                       'pages_left': pages_left, 'photos_left': photos_left, 'requests': browser.requests}))

@@ -1,6 +1,7 @@
 """Build the JAPAN-FRONT-PHOTO-001 candidate (owner 2026-11-27: the front of the car is the first photo of every Japan
-lot, in the ticker and on every card): everything as JAPAN-LHD-FIX-INSTALL-20261127-R3 installed it, with only
-japan_auction/lot_page.py (front_first) and japan_auction/job.py (applies it) changed. Zipped flat as kauc_/jauc_<module>.py;
+lot, in the ticker and on every card) and JAPAN-DAYS-001 (owner 2026-11-27: the coming days show their auctions and
+start, as Korea): everything as JAPAN-LHD-FIX-INSTALL-20261127-R3 installed it, with only japan_auction/lot_page.py
+(front_first), views.py (week, planned) and job.py (applies both, learns the houses per weekday) changed. Zipped flat as kauc_/jauc_<module>.py;
 video/japan.html is rebuilt from the live video/korea.html (the same bytes while the Korea page is unchanged).
 """
 from pathlib import Path
