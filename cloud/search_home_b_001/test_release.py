@@ -47,6 +47,7 @@ class ModuleTests(unittest.TestCase):
         for key in ('all', 'korea', 'usa', 'japan', 'europe', 'china', 'canada', 'uae', 'georgia'):
             self.assertIn('value="%s"' % key, block)
         self.assertIn('data-href="usa.html"', block)
+        self.assertIn('value="japan" data-href="japan.html"', block)  # JAPAN-LHD-001 installed its page
         self.assertIn("'#lots'", block)
         self.assertIn("['maker','model','year','usd']", block)
         for word in ('2mcars', 'vsbrothers', 'vs brothers'):

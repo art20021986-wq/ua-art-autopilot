@@ -4,7 +4,8 @@ Only this: the inside of the auctions section (<section class="ua-kr-auc">, writ
 — a country choice (all countries, Korea, America, Japan, Europe, China, Canada, UAE, Georgia, as the country row
 below) and make, model, year from, price to, then «Знайти авто». The section and its class stay, so the home blocks
 frame (ua_home_blocks) and the ticker under it stay as they are. The search opens the country's own page: Korea —
-its lot list with the criteria in the link (korea.html?maker=&model=&year=&usd=#lots), America — the USA page,
+and Japan (installed by JAPAN-LHD-001) — the lot list with the criteria in the link
+(korea.html / japan.html?maker=&model=&year=&usd=#lots), America — the USA page,
 the others — the order form for that country. Countries are radio buttons (native, keyboard and screen-reader ready);
 a small script only builds the link. Texts carry the site's data-uk/ru/ka twins.
 """
@@ -19,7 +20,7 @@ COUNTRIES = (
     ('all', ('Усі країни', 'Все страны', 'ყველა ქვეყანა'), '', 'korea.html'),
     ('korea', ('Корея', 'Корея', 'კორეა'), 'online', 'korea.html'),
     ('usa', ('Америка', 'Америка', 'ამერიკა'), 'online', 'usa.html'),
-    ('japan', ('Японія', 'Япония', 'იაპონია'), 'soon', 'podbor.html'),
+    ('japan', ('Японія', 'Япония', 'იაპონია'), 'online', 'japan.html'),
     ('europe', ('Європа', 'Европа', 'ევროპა'), 'order', 'podbor.html'),
     ('china', ('Китай', 'Китай', 'ჩინეთი'), 'order', 'podbor.html'),
     ('canada', ('Канада', 'Канада', 'კანადა'), 'order', 'podbor.html'),
@@ -33,8 +34,8 @@ MAKES = ('Hyundai', 'Kia', 'Genesis', 'Toyota', 'Lexus', 'Honda', 'Nissan', 'Maz
          'Renault', 'KG Mobility')
 YEARS = tuple(range(2026, 2009, -1))
 T = {
-    'ey': ('● Аукціони онлайн · Корея · Америка', '● Аукционы онлайн · Корея · Америка',
-           '● აუქციონები ონლაინ · კორეა · ამერიკა'),
+    'ey': ('● Аукціони онлайн · Корея · Японія · Америка', '● Аукционы онлайн · Корея · Япония · Америка',
+           '● აუქციონები ონლაინ · კორეა · იაპონია · ამერიკა'),
     'h2': ('Пошук авто на аукціонах світу', 'Поиск авто на аукционах мира', 'ავტომობილის ძიება მსოფლიოს აუქციონებზე'),
     'sub': ('Оберіть країну або шукайте одразу всюди — тисячі лотів на торгах щодня.',
             'Выберите страну или ищите сразу везде — тысячи лотов на торгах каждый день.',
@@ -143,7 +144,7 @@ JS = ("(function(){var f=document.querySelector('.ua-kr-auc .sh-form');if(!f)ret
       "{attributes:true,attributeFilter:['lang']});"
       "f.addEventListener('submit',function(e){e.preventDefault();var c=f.querySelector('[name=sh-country]:checked'),"
       "key=c?c.value:'all',href=c?c.getAttribute('data-href'):'korea.html',lang=document.documentElement.lang||'uk',q=[];"
-      "if(href==='korea.html'){['maker','model','year','usd'].forEach(function(n){var v=(f.elements[n].value||'').trim();"
+      "if(href==='korea.html'||href==='japan.html'){['maker','model','year','usd'].forEach(function(n){var v=(f.elements[n].value||'').trim();"
       "if(v)q.push(n+'='+encodeURIComponent(v));});location.href=href+(q.length?'?'+q.join('&'):'')+'#lots';}"
       "else if(href==='podbor.html'){location.href='podbor.html?strana='+key+'&lang='+lang;}"
       "else{location.href=href;}});})();")
