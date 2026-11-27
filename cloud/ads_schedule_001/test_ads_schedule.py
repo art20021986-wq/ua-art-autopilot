@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ADS-SCHED: every day 09:00–24:00 + 00:00–02:00, the new name, nothing else; never twice."""
+"""ADS-SCHED: round the clock (the schedule removed), nothing else; never twice."""
 import io
 import json
 from pathlib import Path
@@ -31,8 +31,9 @@ class Response(io.BytesIO):
 
 class Google:
     def __init__(self):
-        self.name = remote.OLD_NAME
-        self.slots = {'s/%d' % n: (d, 9, 20) for n, d in enumerate(remote.DAYS)}
+        self.name = remote.NEW_NAME
+        self.slots = {'s/%d' % n: (d, a, b) for n, (d, (a, b)) in enumerate((d, s) for d in remote.DAYS
+                                                                             for s in ((9, 24), (0, 2)))}
         self.calls = []
 
     def __call__(self, request, timeout=None):
@@ -74,9 +75,9 @@ class RemoteTests(unittest.TestCase):
             second = json.loads(remote.report(self.keys_file(temp), google))
         self.assertEqual((first['status'], second['status'], second['operations']), ('PASS', 'PASS', 0))
         self.assertEqual(first['after']['name'], remote.NEW_NAME)
-        self.assertEqual(len(first['after']['slots']), 14)
-        self.assertIn(['MONDAY', 9, 24], first['after']['slots'])
-        self.assertIn(['SUNDAY', 0, 2], first['after']['slots'])
+        self.assertEqual((len(first['before']['slots']), first['after']['slots']), (14, []))
+        body = [b for u, b in google.calls if u.endswith(':mutate')][0]
+        self.assertTrue(all('remove' in o['campaignCriterionOperation'] for o in body['mutateOperations']))
         self.assertEqual(len([u for u, _ in google.calls if u.endswith(':mutate')]), 1)
         body = [b for u, b in google.calls if u.endswith(':mutate')][0]
         self.assertFalse([o for o in body['mutateOperations'] if 'campaignBudgetOperation' in o])

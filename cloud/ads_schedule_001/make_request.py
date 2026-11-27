@@ -22,17 +22,18 @@ def request(day):
     task = 'ADS-SCHED-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Owner 2026-11-26 («по Украине с 9 утра до 2 часов ночи … Да, переименуй» via the coordinator; «да» in this '
-                       'chat). Bounded run in the existing private inbox: upload this package, run source_remote.py once in a '
-                       'temporary always-on task (removed after its receipt; never the CRM bot) which sets the ad schedule to '
-                       'every day 09:00-24:00 and 00:00-02:00 and renames the campaign «Пошук — Україна — Корея (UA ART)» (one '
-                       'all-or-nothing mutate, never twice), state before and after. No site, CRM or bot change.',
+        'description': 'Owner 2026-11-27 («Да давай включим, включая 24/7 … кому как удобно, пусть смотрит» in this chat). Bounded '
+                       'run in the existing private inbox: upload this package, run source_remote.py once in a temporary '
+                       'always-on task (removed after its receipt; never the CRM bot) which removes every ad-schedule '
+                       'criterion of «Пошук — Україна — Корея (UA ART)» so the ads run round the clock (one all-or-nothing '
+                       'mutate, never twice), state before and after. Name, budget, ceiling, keywords and places stay. No '
+                       'site, CRM or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
                       'receipt_path': 'state/receipts/%s.json' % task, 'test_paths': TESTS, 'timeout_seconds': 900},
         'production_required': False, 'read_only': False, 'requested_min_class': 'STANDARD',
-        'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Google Ads schedule and name'}
+        'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Google Ads schedule 24/7'}
     path = 'tasks/requests/%s.json' % task
     with open(path, 'x') as handle:
         handle.write(json.dumps(value, sort_keys=True, separators=(',', ':')))
