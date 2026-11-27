@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "fcf39f5d90dc6c9e829d9821511cfa090d845c3eefacd54cef4fed3ff6c6e280",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T03:19:40Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-27T03:24:42Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45933220435",
     "task_id": "HOME-BLOCKS-INSTALL-20261127",
@@ -43,7 +43,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45933220435-86e654c24efdd334",
   "production_transaction_path": "state/transactions/HOME-BLOCKS-INSTALL-20261127.86e654c24efdd334c9b50bb7250dca3d9a5876c2233093e0cd43d387b4d1d0ab.45933220435.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-516734deb9ea5607",
   "receipt_path": "state/receipts/HOME-BLOCKS-INSTALL-20261127.json",
   "receipt_validation_status": "PENDING",
@@ -89,5 +89,5 @@
       "cloud/home_blocks_001/ua_layout_reserve.py": "566a431552dd6deea97314c6a8f5c12507e534d2f4953b6bd64333465979eba3"
     }
   },
-  "updated_at": "2026-11-27T03:19:40Z"
+  "updated_at": "2026-11-27T03:24:42Z"
 }
