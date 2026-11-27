@@ -46,7 +46,10 @@ class Google:
                     self.campaigns[c['name']] = c['status']
             return Response(b'{}')
         q = body['query']
-        if 'FROM campaign_criterion' in q:
+        if 'FROM campaign_asset' in q:
+            rows = [{'asset': {'resourceName': 'customers/1/assets/%d' % n, 'sitelinkAsset': {'linkText': t}}}
+                    for n, t in enumerate(['Авто в наявності', 'Підбір авто', 'Аукціони Кореї', 'Лоти аукціону'])]
+        elif 'FROM campaign_criterion' in q:
             rows = [{'campaignCriterion': {'type': 'LOCATION', 'negative': False,
                                            'location': {'geoTargetConstant': 'geoTargetConstants/21118'}}},
                     {'campaignCriterion': {'type': 'LANGUAGE', 'language': {'languageConstant': 'languageConstants/1036'}}},
@@ -77,6 +80,7 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(first['copied'], {'location': 1, 'language': 1, 'adSchedule': 1, 'keyword': 1})
         mutates = [b for u, b in google.calls if u.endswith(':mutate')]
         self.assertEqual(len(mutates), 1)
+        self.assertEqual(first['sitelinks'], 6)
         self.assertNotIn('partialFailure', mutates[0])
         ops = mutates[0]['mutateOperations']
         camp = [o['campaignOperation']['create'] for o in ops if 'campaignOperation' in o][0]
