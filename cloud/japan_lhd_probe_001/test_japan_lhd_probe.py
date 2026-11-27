@@ -115,6 +115,22 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual((page['photo_count'], page['photo_hosts'], page['auction_sheet']),
                          (1, {'image-cdn-hub.beforward.jp': 1}, True))
 
+    def test_sanitized_drops_scripts_values_and_names(self):
+        html = ('<head><title>x</title></head><script>var t=1</script><p>Welcome, Ivan Petrov</p>'
+                '<input type="hidden" name="_csrf" value="abc123"><a href="/vehicle-detail/jp/20261201000001">L</a>')
+        out = remote.sanitized(html)
+        self.assertNotIn('abc123', out)
+        self.assertNotIn('var t', out)
+        self.assertNotIn('Petrov', out)
+        self.assertIn('/vehicle-detail/jp/[N]', out)
+
+    def test_results_sample(self):
+        sample = remote.results_sample(RESULTS + '<a href="/vehicle-search/jp/index/page=2?x=1">2</a>')
+        self.assertEqual(sample['count_text'], '3')
+        self.assertEqual(len(sample['detail_links']), 3)
+        self.assertEqual(sample['pager_links'], ['/vehicle-search/jp/index/page=2?x=1'])
+        self.assertIn('USS Tokyo', sample['table'])
+
     def test_clean(self):
         self.assertEqual(remote.clean('a@b.co lot 20261201000001 https://x.jp/p?q=1'), '[EMAIL] lot [N] /p')
 
