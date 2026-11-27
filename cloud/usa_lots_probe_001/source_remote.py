@@ -21,7 +21,7 @@ import urllib.parse
 import urllib.request
 
 HERE = Path(__file__).resolve().parent
-UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36'
+UA = 'UAArtAutopilot/1.0 (+https://uaart.com.ua)'  # honest name, no browser imitation (coordinator 27.11)
 COPART_CSV = 'https://inventory.copart.io/FTPLSTDM/salesdata.cgi'
 IAAI_SITEMAP = 'https://www.iaai.com/Xj9rDOVMEi0hc38S/sitemap_index.xml'  # named in iaai.com/robots.txt
 CSV_BYTES = 2 * 1024 * 1024
