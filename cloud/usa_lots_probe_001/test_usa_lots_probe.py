@@ -118,12 +118,12 @@ class RemoteTests(unittest.TestCase):
         self.assertEqual(browser.requests, 1)
 
     def test_iaai_sitemap_lot_and_photo(self):
-        index = b'<sitemapindex><sitemap><loc>https://www.iaai.com/sm/vehicledetail-1.xml</loc></sitemap></sitemapindex>'
+        index = b'<sitemapindex><sitemap><loc>https://www.iaai.com/sm/ms-sitemapMake1.xml</loc></sitemap><sitemap><loc>https://www.iaai.com/sm/ms-sitemap1.xml</loc></sitemap></sitemapindex>'
         lots = b'<urlset><url><loc>https://www.iaai.com/VehicleDetail/43123456~US</loc></url></urlset>'
         lot = (b'<title>2020 TOYOTA CAMRY</title><div>Primary Damage: Front End</div><div>Odometer 10,000</div>'
                b'<img src="https://vis.iaai.com/resizer?imageKeys=43123456~SID~B1~I1">')
         browser = FakeBrowser([('sitemap_index', (200, 'text/xml', 'www.iaai.com', index)),
-                               ('vehicledetail-1', (200, 'text/xml', 'www.iaai.com', lots)),
+                               ('ms-sitemap1.xml', (200, 'text/xml', 'www.iaai.com', lots)),
                                ('VehicleDetail/', (200, 'text/html', 'www.iaai.com', lot)),
                                ('vis.iaai.com', (200, 'image/jpeg', 'vis.iaai.com', b'\xff\xd8'))])
         value = remote.probe_iaai(browser)
@@ -137,7 +137,7 @@ class RemoteTests(unittest.TestCase):
                 if 'copart' in url:
                     raise OSError('down')
                 return super().fetch(url, limit)
-        value = remote.report(Broken([]))
+        value = remote.report(Broken([]), [('copart', remote.probe_copart), ('iaai', remote.probe_iaai)])
         self.assertIn('error', value['copart'])
         self.assertIn('sitemap', value['iaai'])
 
