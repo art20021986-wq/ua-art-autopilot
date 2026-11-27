@@ -35,6 +35,7 @@ class Google:
         self.campaign = {'resourceName': 'customers/1/campaigns/9', 'targetSpend': {'cpcBidCeilingMicros': '7000000'}}
         self.groups = {'UA — Корея під ключ': 'customers/1/adGroups/1', 'RU — Корея под ключ': 'customers/1/adGroups/2'}
         self.keywords, self.negatives, self.mutates = {('UA — Корея під ключ', 'авто з кореї')}, {'olx'}, []
+        self.ads = {'UA — Корея під ключ', 'RU — Корея под ключ'}
 
     def name(self, resource):
         return next(n for n, r in self.groups.items() if r == resource)
@@ -55,6 +56,9 @@ class Google:
                     new = op['adGroupOperation']['create']
                     temp[new['resourceName']] = 'customers/1/adGroups/%d' % (10 + len(self.groups))
                     self.groups[new['name']] = temp[new['resourceName']]
+                elif 'adGroupAdOperation' in op:
+                    target = op['adGroupAdOperation']['create']['adGroup']
+                    self.ads.add(self.name(temp.get(target, target)))
                 elif 'adGroupCriterionOperation' in op:
                     k = op['adGroupCriterionOperation']['create']
                     self.keywords.add((self.name(k['adGroup']), k['keyword']['text']))
@@ -64,6 +68,8 @@ class Google:
             rows = [{'campaignCriterion': {'keyword': {'text': t}}} for t in self.negatives]
         elif 'FROM ad_group_criterion' in query:
             rows = [{'adGroup': {'name': g}, 'adGroupCriterion': {'keyword': {'text': t}}} for g, t in self.keywords]
+        elif 'FROM ad_group_ad' in query:
+            rows = [{'adGroup': {'name': g}, 'adGroupAd': {'status': 'ENABLED'}} for g in self.ads]
         elif 'FROM ad_group ' in query:
             rows = [{'adGroup': {'name': n, 'resourceName': r}} for n, r in self.groups.items()]
         else:
@@ -109,6 +115,20 @@ class AuctionTests(unittest.TestCase):
         urls = {o['adGroupAdOperation']['create']['ad']['finalUrls'][0] for o in ops if 'adGroupAdOperation' in o}
         self.assertEqual(urls, {remote.AUCTION_PAGE})
         self.assertEqual(len(ops), 2 * len(auction))
+
+
+class MissingAdTests(unittest.TestCase):
+    def test_ad_only_for_groups_without_one(self):
+        groups = {g: 'customers/1/adGroups/%d' % n for n, g in enumerate(keywords.plan())}
+        current = {'campaign': {'resourceName': 'c/1', 'targetSpend': {'cpcBidCeilingMicros': str(remote.CEILING_MICROS)}},
+                   'negatives': set(keywords.NEGATIVE_MORE), 'groups': groups,
+                   'with_ads': set(groups) - {'UA — Аукціон — BMW', 'RU — Аукцион — Kia'}}
+        ops = remote.first_operations('1', current)
+        self.assertEqual(len(ops), 2)
+        self.assertEqual({o['adGroupAdOperation']['create']['adGroup'] for o in ops},
+                         {groups['UA — Аукціон — BMW'], groups['RU — Аукцион — Kia']})
+        heads = [h['text'] for o in ops for h in o['adGroupAdOperation']['create']['ad']['responsiveSearchAd']['headlines']]
+        self.assertFalse([h for h in heads if 'Ставка' in h])
 
 
 class RemoteTests(unittest.TestCase):
