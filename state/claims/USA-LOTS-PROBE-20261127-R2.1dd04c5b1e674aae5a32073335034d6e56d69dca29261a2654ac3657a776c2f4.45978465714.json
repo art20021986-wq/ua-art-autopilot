@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/USA-LOTS-PROBE-20261127-R2.1dd04c5b1e674aae5a32073335034d6e56d69dca29261a2654ac3657a776c2f4.json",
+  "autostart_ledger_sha256": "2848b74f55092152b84581a390411c3e598bf2ab1998d4dbfe00c506b324570c",
+  "autostart_source_commit": "fbc12786314beca9c8efe0057cd4db01377c0465",
+  "created_at": "2026-11-27T10:02:23Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-27T10:02:23Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "45978465714",
+    "task_id": "USA-LOTS-PROBE-20261127-R2",
+    "task_sha256": "1dd04c5b1e674aae5a32073335034d6e56d69dca29261a2654ac3657a776c2f4"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-4291c54874c534c6-a037c250b6d6407a",
+  "receipt_path": "state/receipts/USA-LOTS-PROBE-20261127-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/USA-LOTS-PROBE-20261127-R2.json",
+  "request_sha256": "1dd04c5b1e674aae5a32073335034d6e56d69dca29261a2654ac3657a776c2f4",
+  "resource_locks": [
+    "PATH_SCOPE:4291c54874c534c6"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "43207c780add59e356791004f4b11d9b6e0dbde0",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-27T10:02:23Z"
+}
