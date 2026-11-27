@@ -4,7 +4,7 @@
 One all-or-nothing googleAds:mutate: budget 50 UAH/day, the campaign (Search only, Maximize clicks with a 2 UAH ceiling,
 ENABLED), the same places, languages and schedule as the Korea campaign (read from it), the Korea campaign's negative
 phrases, four groups (uk/ru «з США під ключ», «аукціони США») with one responsive ad each to usa.html and phrase
-keywords. Never twice: a campaign with this name stops the run. The Korea campaign is not changed. No site, CRM or bot
+keywords, six sitelinks (three of the Korea campaign's, three new). Never twice: a campaign with this name stops the run. The Korea campaign is not changed. No site, CRM or bot
 change.
 """
 import argparse
@@ -51,6 +51,15 @@ GROUPS = [
      ['авто с аукциона copart', 'авто с copart под ключ', 'авто с iaai под ключ', 'аукцион copart украина',
       'купить авто на copart', 'авто с аукционов сша']),
 ]
+# Six sitelinks (Google's recommendation applied by the owner, coordinator 04:45Z): three of the Korea campaign's own assets
+# (reused as they are) and three new ones. Link text -> page.
+SITE = 'https://www.uaart.com.ua/video/'
+SITELINKS_REUSED = ('Авто в наявності', 'Підбір авто', 'Аукціони Кореї')
+SITELINKS_NEW = [('Аукціони США', PAGE), ('Авто з Японії', SITE + 'japan.html'),
+                 ('Кредит і лізинг', SITE + 'seo/ua/kredyt-lizynh-avto.html')]
+KOREA_SITELINKS = ("SELECT campaign.name, campaign_asset.field_type, campaign_asset.status, asset.resource_name, "
+                   "asset.sitelink_asset.link_text FROM campaign_asset WHERE campaign.name = %s "
+                   "AND campaign_asset.field_type = 'SITELINK' AND campaign_asset.status = 'ENABLED'" % KOREA)
 EXISTING = "SELECT campaign.resource_name, campaign.status FROM campaign WHERE campaign.name = '%s'" % NAME
 KOREA_CRITERIA = ("SELECT campaign.name, campaign_criterion.type, campaign_criterion.negative, "
                   "campaign_criterion.location.geo_target_constant, campaign_criterion.language.language_constant, "
@@ -92,7 +101,20 @@ def copied(criteria, campaign):
     return ops
 
 
-def operations(customer, criteria):
+def sitelinks(customer, korea_assets, campaign):
+    by_text = {r['asset']['sitelinkAsset']['linkText']: r['asset']['resourceName'] for r in korea_assets}
+    ops, assets = [], [by_text[t] for t in SITELINKS_REUSED if t in by_text]
+    for n, (text, url) in enumerate(SITELINKS_NEW):
+        temp = 'customers/%s/assets/-%d' % (customer, 300 + n)
+        ops.append({'assetOperation': {'create': {'resourceName': temp, 'finalUrls': [url],
+                                                  'sitelinkAsset': {'linkText': text}}}})
+        assets.append(temp)
+    ops += [{'campaignAssetOperation': {'create': {'campaign': campaign, 'asset': a, 'fieldType': 'SITELINK'}}}
+            for a in assets]
+    return ops
+
+
+def operations(customer, criteria, korea_assets=()):
     base = 'customers/%s/' % customer
     budget, campaign = base + 'campaignBudgets/-1', base + 'campaigns/-2'
     ops = [{'campaignBudgetOperation': {'create': {'resourceName': budget, 'name': NAME + ' — бюджет',
@@ -106,6 +128,7 @@ def operations(customer, criteria):
                'geoTargetTypeSetting': {'positiveGeoTargetType': 'PRESENCE', 'negativeGeoTargetType': 'PRESENCE'},
                'containsEuPoliticalAdvertising': 'DOES_NOT_CONTAIN_EU_POLITICAL_ADVERTISING'}}}]
     ops += copied(criteria, campaign)
+    ops += sitelinks(customer, korea_assets, campaign)
     for n, (name, head, desc, words) in enumerate(GROUPS):
         group = base + 'adGroups/-%d' % (10 + n)
         lang = 'uk' if name.startswith('UA') else 'ru'
@@ -131,10 +154,11 @@ def run(keys, opener=urllib.request.urlopen):
         value['status'] = 'ALREADY_THERE'
         return value
     criteria = read(customer, headers, KOREA_CRITERIA, opener)
-    ops = operations(customer, criteria)
+    ops = operations(customer, criteria, read(customer, headers, KOREA_SITELINKS, opener))
     value['operations'] = len(ops)
     value['copied'] = {k: sum(1 for o in ops if k in o.get('campaignCriterionOperation', {}).get('create', {}))
                        for k in ('location', 'language', 'adSchedule', 'keyword')}
+    value['sitelinks'] = sum(1 for o in ops if 'campaignAssetOperation' in o)
     status, answer = check.call(check.API + 'customers/%s/googleAds:mutate' % customer,
                                 json.dumps({'mutateOperations': ops}).encode(), headers, opener)
     if status != 200:

@@ -26,7 +26,7 @@ def request(day):
                        'the texts in this chat). Bounded run in the existing private inbox: upload this package, run '
                        'source_remote.py once in a temporary always-on task (removed after its receipt; never the CRM bot) '
                        'which creates the Search campaign «Пошук — США (UA ART)» (ENABLED, 50 UAH/day, Maximize clicks 2 UAH '
-                       'ceiling, the Korea campaign\'s places, languages, schedule and negatives, 4 groups with one ad each '
+                       'ceiling, the Korea campaign\'s places, languages, schedule and negatives, 4 groups with one ad each, six sitelinks '
                        'to usa.html) in one all-or-nothing mutate, never twice; the Korea campaign is not changed. No site, '
                        'CRM or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
