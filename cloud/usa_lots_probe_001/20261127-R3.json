@@ -1,0 +1,93 @@
+{
+  "iaai": {
+    "lot_page": {
+      "bytes": 365795,
+      "challenge": false,
+      "host": "www.iaai.com",
+      "http": 200,
+      "json_blocks": [
+        "params"
+      ],
+      "labels": [
+        "Primary Damage",
+        "Odometer",
+        "Start Code",
+        "Run & Drive",
+        "Key",
+        "Title",
+        "Auction Date",
+        "Actual Cash Value",
+        "Buy Now",
+        "Engine",
+        "Fuel Type",
+        "Drive Line Type",
+        "Transmission",
+        "Vehicle Location"
+      ],
+      "ld_json": 0,
+      "photo_hosts": [
+        [
+          "vis.iaai.com",
+          5
+        ]
+      ],
+      "photo_links": 2,
+      "photo_shape": "vis.iaai.com/dimensions",
+      "title": "Close",
+      "type": "text/html"
+    },
+    "photo": {
+      "bytes": 1677,
+      "challenge": false,
+      "host": "vis.iaai.com",
+      "http": 200,
+      "type": "application/json"
+    },
+    "sitemap": {
+      "bytes": 2752,
+      "challenge": false,
+      "child_shapes": [
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemap1.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemap10.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemap2.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemap3.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemap4.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemap5.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemap6.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemap7.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemap8.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemap9.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemapMake1.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemapMakeModel1.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemapMakeModelYear1.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemapVehicleType1.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemapVehicleTypeMake1.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemapauctions1.xml",
+        "www.iaai.com/Xj9rDOVMEi0hc38S/ms-sitemapbranches1.xml"
+      ],
+      "children": 17,
+      "host": "www.iaai.com",
+      "http": 200,
+      "type": "text/xml"
+    },
+    "vehicle_sitemap": {
+      "bytes": 1109005,
+      "challenge": false,
+      "host": "www.iaai.com",
+      "http": 200,
+      "lot_shape": "www.iaai.com/vehicledetail/[N]~US/",
+      "lots": 6229,
+      "type": "text/xml",
+      "urls": 6229
+    }
+  },
+  "mode": "probe",
+  "no_bid_placed": true,
+  "no_login": true,
+  "remote_write_count": 0,
+  "requests": 4,
+  "run_id": "45979930965",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "USA-LOTS-PROBE-20261127-R3"
+}
