@@ -29,7 +29,7 @@ DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 
                                             'drive', 'fuel', 'holidays', 'house_days',
                                             'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public',
                                             'rollover', 'schedule', 'selection', 'session', 'ticker', 'week_tile')] + [
-    P + 'japan_auction/%s.py' % n for n in ('__init__', 'job', 'lot_page', 'money', 'search', 'views')]
+    P + 'japan_auction/%s.py' % n for n in ('__init__', 'job', 'lot_page', 'money', 'photos', 'search', 'views')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py', 'test_japan_page.py',
                          'korea_auction/test_korea_auction.py', 'japan_auction/test_japan_auction.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'

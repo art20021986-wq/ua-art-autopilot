@@ -15,7 +15,7 @@ HERE = Path(__file__).resolve().parent
 MODULES = ('alert', 'catalog', 'check', 'collect', 'color', 'country_tabs', 'drive', 'fuel', 'holidays', 'house_days',
            'html_tools', 'job', 'lots', 'model_lots', 'nbu', 'prices', 'public', 'rollover', 'schedule', 'selection',
            'session', 'ticker', 'week_tile')
-JAPAN_MODULES = ('job', 'lot_page', 'money', 'search', 'views')
+JAPAN_MODULES = ('job', 'lot_page', 'money', 'photos', 'search', 'views')
 LAUNCHER = 'japan_ticker_job.py'
 LAUNCHER_SOURCE = (b'"""Hourly PythonAnywhere task: the Japan auctions\' left-hand-drive lots (japan_auction.job)."""\n'
                    b'import sys\n\nfrom japan_auction import job\n\nsys.exit(job.main())\n')

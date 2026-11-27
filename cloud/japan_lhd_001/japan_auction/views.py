@@ -2,7 +2,7 @@
 feed for the home ticker (video/japan/feed.json: the week for the «Японія» tab and the ticker cards).
 
 Pure functions of the collected lots: no network, no account data. Photos are referred to by their copies on the site
-(korea_auction.public.photo_name), never by the auction's own addresses. Same fields as the Korea list, with the
+(photos.name), never by the auction's own addresses. Same fields as the Korea list, with the
 start price in yen (start_jpy) instead of won.
 """
 from korea_auction import color, drive, fuel, week_tile

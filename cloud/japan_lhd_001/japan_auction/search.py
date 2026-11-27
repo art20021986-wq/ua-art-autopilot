@@ -3,11 +3,15 @@
 left_hd[]=L, 43 of 101 036 lots on 27.11).
 
 The results table has the Korea table's columns (korea_auction.lots.parse_results reads it); the price column is in
-yen, and the house cell is «House / Port (lot)». One responsibility: the search and its rows.
+yen, the house cell is «House / Port (lot)», the lot links are /vehicle-detail/<id> and the pager /vehicle-search/page=N
+(probe JAPAN-LHD-PROBE-R3); trims come in full-width letters («Ｓ５００Ｌ»). One responsibility: the search and its rows.
 """
 import re
+import unicodedata
+from urllib.parse import urljoin
 
 from korea_auction import lots
+from korea_auction.session import BASE
 
 SEARCH_PAGE = '/vehicle-search/jp/'
 DEFAULT_ACTION = '/vehicle-search/jp/index'
@@ -42,12 +46,15 @@ def form_data(html):
 
 
 def rows(html):
-    """Results page -> lots, as korea_auction.lots.parse_results, with the yen price and the house without the port."""
+    """Results page -> lots, as korea_auction.lots.parse_results, with the yen price, the house without the port, full
+    photo addresses and plain (NFKC) letters."""
     found = []
     for lot in lots.parse_results(html):
         house, _, port = lot['house'].partition(' / ')
         jpy = lot.pop('start_price_krw')
-        found.append(dict(lot, house=house.strip(), port=port.strip(), start_price_jpy=jpy))
+        plain = {key: unicodedata.normalize('NFKC', lot[key]).strip() for key in ('maker', 'model', 'trim')}
+        found.append(dict(lot, **plain, house=house.strip(), port=port.strip(), start_price_jpy=jpy,
+                          photos=[urljoin(BASE, src) for src in lot['photos']]))
     return found
 
 
@@ -57,7 +64,7 @@ def total(html):
 
 def pages(html):
     """The results pager link (any page), or None."""
-    found = re.search(r'href="([^"]*/vehicle-search/jp/[^"]*page=\d+[^"]*)"', html)
+    found = re.search(r'href="([^"]*/vehicle-search/[^"]*page=\d+[^"]*)"', html)
     return found.group(1).replace('&amp;', '&') if found else None
 
 

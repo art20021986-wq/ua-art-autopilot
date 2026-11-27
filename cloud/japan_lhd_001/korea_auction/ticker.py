@@ -330,7 +330,7 @@ def render(data, tomorrow=True, now=None):
     # JAPAN-LHD-001: the Japan feed (japan_auction, video/japan/feed.json) — its cars and its tab
     japan = data.get('japan') or {}
     japan_cards = [_japan_item(i) for i in japan.get('items', []) if i.get('start_price_usd')]
-    if not items and not own:
+    if not items and not own and not japan_cards:
         return ''
     tile = _tile(data)
     week = data.get('week')

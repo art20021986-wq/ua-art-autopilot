@@ -8,11 +8,12 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from japan_auction import job, lot_page, money, search, views  # noqa: E402
+from japan_auction import job, lot_page, money, photos, search, views  # noqa: E402
 from korea_auction.selection import JST  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
-RESULTS = (HERE / 'fixtures/results_synthetic.html').read_text(encoding='utf-8')
+RESULTS = '<p>43 Results</p>' + (HERE / 'fixtures/results_r3.html').read_text(encoding='utf-8')  # probe R3; ids made up
+LOT = (HERE / 'fixtures/lot_r3.html').read_text(encoding='utf-8')  # probe R3: a SellCa Porsche Cayenne, cleaned
 RATES = {'USD': 41.5, 'JPY': 0.27, 'date': '27.11.2026'}
 FORM = ('<form action="/vehicle-search/jp/index" method="post" id="purchase_search_form">'
         '<input type="hidden" name="auction_country_id" value="2"><input type="hidden" name="favoriteurl" value="/x">'
@@ -62,24 +63,43 @@ class SearchTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'LEFT_HAND_BOX_MISSING'):
             search.form_data(FORM.replace('left_hd[]', 'other[]'))
 
-    def test_rows_yen_house_and_port(self):
+    def test_rows_of_the_real_table(self):
         found = search.rows(RESULTS)
         self.assertEqual(search.total(RESULTS), 43)
-        self.assertEqual([(l['house'], l['port'], l['start_price_jpy']) for l in found],
-                         [('LAA Okayama', 'OSAKA', 1250000), ('SellCa', '', 0)])
-        self.assertNotIn('start_price_krw', found[0])
-        self.assertEqual(found[0]['detail_url'], '/vehicle-detail/jp/20261106043479')
+        self.assertEqual(len(found), 5)
+        first = found[0]
+        self.assertEqual((first['id'], first['house'], first['port'], first['lot_no'], first['start_price_jpy']),
+                         ('20261127000001', 'SellCa', '', '1001', 50000))
+        self.assertEqual((first['maker'], first['model'], first['trim'], first['score'], first['year']),
+                         ('PORSCHE', 'CAYENNE', 'S', '3.5', 2012))
+        self.assertEqual(found[3]['trim'], 'S500L')  # full-width «Ｓ５００Ｌ» made plain
+        self.assertEqual(first['detail_url'], '/vehicle-detail/20261127000001')
+        self.assertTrue(first['photos'][0].startswith('https://jpauto.auction/sellca-public/images/MAIN/'))
+        self.assertNotIn('start_price_krw', first)
+        real = ('<a href="/vehicle-search/page=2?order_closed%5B0%5D=1&amp;mode=list&amp;auction_country_id=47'
+                '&amp;left_hd%5B0%5D=L&amp;auction%5B0%5D=69">2</a>')  # the pager link probe R3 saw
+        self.assertEqual(search.pages(real), '/vehicle-search/page=2?order_closed%5B0%5D=1&mode=list'
+                                             '&auction_country_id=47&left_hd%5B0%5D=L&auction%5B0%5D=69')
 
     def test_all_pages_read(self):
-        pager = '<a href="/vehicle-search/jp/index/page=2?search_id=7">2</a>'
-        browser = Browser({search.SEARCH_PAGE: FORM, '/vehicle-search/jp/index': lambda data: RESULTS + pager,
-                           '/vehicle-search/jp/index/page=1?search_id=7&limit=2000': RESULTS,
-                           '/vehicle-search/jp/index/page=2?search_id=7&limit=2000': '<p>43 Results</p>'})
+        pager = '<p>43 Results</p><a href="/vehicle-search/page=2?left_hd%5B0%5D=L&amp;mode=list">2</a>'
+        browser = Browser({search.SEARCH_PAGE: FORM, '/vehicle-search/jp/index': lambda data: pager + RESULTS[17:],
+                           '/vehicle-search/page=1?left_hd%5B0%5D=L&mode=list&limit=2000': RESULTS,
+                           '/vehicle-search/page=2?left_hd%5B0%5D=L&mode=list&limit=2000': '<p>43 Results</p>'})
         count, found = search.left_hand_lots(browser)  # pages until one is empty (or every lot is read)
-        self.assertEqual((count, len(found), browser.requests), (43, 2, 4))
+        self.assertEqual((count, len(found), browser.requests), (43, 5, 4))
 
 
 class LotPageTests(unittest.TestCase):
+    def test_real_lot_page(self):
+        page = lot_page.entry(LOT)
+        self.assertEqual((page['jpy'], page['vin'], page['fuel'], page['color'], page['steering']),
+                         (50000, 'WP1AB2A22CLA45131', 'Gasoline', 'black', 'Left'))
+        self.assertGreaterEqual(len(page['photos']), 10)
+        self.assertEqual(len(page['photos']), len(set(page['photos'])))
+        self.assertTrue(all('/sellca-public/' in url and not url.endswith('icon.png') for url in page['photos']))
+        self.assertTrue(any(url.endswith('.png') for url in page['photos']))
+
     def test_start_price_in_yen(self):
         html = '<div>Starting Price 1,250,000 JPY</div><table><tr><th>Chassis No.</th><td>X</td></tr></table>'
         self.assertEqual(lot_page.start_jpy(html), 1250000)
@@ -111,6 +131,23 @@ class JobTests(unittest.TestCase):
         self.assertFalse(job.due(friday.replace(hour=13), True))
         self.assertTrue(job.due(friday.replace(hour=13), True, pending=True))
         self.assertFalse(job.due(datetime(2026, 11, 29, 12, tzinfo=JST), False))  # Sunday
+
+    def test_right_hand_page_is_left_out(self):
+        applied = job.with_pages([lot('1'), lot('2')], {'1': {'steering': 'Right'}, '2': {'steering': 'Left'}})
+        self.assertEqual([l['id'] for l in applied], ['2'])
+
+    def test_photo_copies_keep_their_type(self):
+        urls = ['https://cdn/a/MAIN/x.png', 'https://cdn/a/t.jpg', 'https://cdn/a/MAIN/x.png']
+        with tempfile.TemporaryDirectory() as temp:
+            folder = Path(temp)
+            (folder / 'old-1.jpg').write_bytes(b'x')
+            copies, left = photos.copy([lot('1', photos=urls)], folder, fetch=lambda url: b'img')
+            self.assertEqual([name[-4:] for name in copies['1']], ['.png', '.jpg'])
+            self.assertFalse((folder / 'old-1.jpg').exists())
+            self.assertFalse(left)
+            _, left = photos.copy([lot('2', photos=urls)], folder, fetch=lambda url: b'img', deadline=0,
+                                  clock=lambda: 1)
+            self.assertTrue(left)
 
     def test_pages_read_once_and_applied(self):
         page = '<div>Starting Price 2,000,000 JPY</div>'

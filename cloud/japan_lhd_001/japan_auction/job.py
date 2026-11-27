@@ -18,7 +18,7 @@ from korea_auction import job as korea_job
 from korea_auction import rollover, session
 from korea_auction.selection import JST, auction_date
 
-from . import lot_page, money, search, views
+from . import lot_page, money, photos, search, views
 
 ROOT = Path('/home/Carix')
 OUT = ROOT / 'video/japan'
@@ -63,10 +63,13 @@ def read_pages(browser, lots, known, until=None, clock=time.monotonic):
 
 
 def with_pages(lots, known):
-    """The lots with their lot page's price, VIN, photos, fuel and colour (the table's own while unread)."""
+    """The lots with their lot page's price, VIN, photos, fuel and colour (the table's own while unread). A lot whose
+    page says «Steering Wheel Right» is left out (owner 2026-11-26: only left-hand drive)."""
     out = []
     for lot in lots:
         page = known.get(lot['id'], {})
+        if page.get('steering') == 'Right':
+            continue
         out.append(dict(lot, start_price_jpy=page.get('jpy') or lot['start_price_jpy'], vin=page.get('vin', ''),
                         photos=page.get('photos') or lot['photos'], fuel=page.get('fuel', ''),
                         color=page.get('color', '')))
@@ -77,13 +80,13 @@ def _json(value):
     return json.dumps(value, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
 
 
-def publish(lots, rates, now, folder, deadline=None, fetch=korea_job.fetch_photo):
+def publish(lots, rates, now, folder, deadline=None, fetch=photos.fetch):
     """lots.json, the galleries and feed.json of the lots whose photos were copied. -> (lots shown, photos left)"""
-    photos, left = korea_job.copy_lot_photos(lots, folder / 'lots', fetch=fetch, deadline=deadline)
+    copies, left = photos.copy(lots, folder / 'lots', fetch=fetch, deadline=deadline)
     stamp = now.isoformat(timespec='minutes')
-    value = views.build(lots, rates, photos, stamp)
+    value = views.build(lots, rates, copies, stamp)
     korea_job.write(folder / 'lots.json', _json(value))
-    shown = {view['id']: photos[view['id']] for view in value['lots']}
+    shown = {view['id']: copies[view['id']] for view in value['lots']}
     gallery = folder / 'gallery'
     gallery.mkdir(parents=True, exist_ok=True)
     for lot_id, names in shown.items():
