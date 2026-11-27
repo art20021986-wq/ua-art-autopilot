@@ -22,13 +22,15 @@ LOG = '\n'.join([
     '2.2.2.2 - - [06/Nov/2026:11:00:01 +0000] "POST /api/orders/submit HTTP/1.1" 429 5 "-" "%s"' % PHONE,
     '3.3.3.3 - - [06/Nov/2026:11:00:00 +0000] "GET /video/UA-0014.html HTTP/1.1" 200 5 "-" "Googlebot/2.1"',
     '4.4.4.4 - - [07/Nov/2026:11:00:00 +0000] "GET /x HTTP/1.1" 502 5 "-" "%s"' % PHONE,
+    '2.2.2.2 - - [06/Nov/2026:11:00:02 +0000] "GET /video/a.jpg HTTP/1.1" 200 5 "-" "%s"' % PHONE,
+    '2.2.2.2 - - [06/Nov/2026:11:00:03 +0000] "GET /video/b.webp?v=2 HTTP/1.1" 200 5 "-" "%s"' % PHONE,
 ])
 
 
 def day(requests=100, heavy=0, errors=0, orders=0, beacons=0, recorded=0):
-    return {'requests': requests, 'robot_requests': 10, 'errors_5xx': errors, 'limited_429': 0, 'beacons': beacons,
+    return {'requests': requests, 'people_pages': requests, 'robot_requests': 10, 'errors_5xx': errors, 'limited_429': 0, 'beacons': beacons,
             'order_submits': orders, 'addresses': 20, 'heavy_addresses': heavy, 'recorded': recorded,
-            'busiest': {'network': '5.6.7.0/24', 'requests': 2000 if heavy else 30}}
+            'busiest': {'network': '5.6.7.0/24', 'requests': 400 if heavy else 30, 'agent': 'Mozilla'}}
 
 
 class FakeAPI:
@@ -86,9 +88,9 @@ class RemoteTests(unittest.TestCase):
         days = remote.access([LOG])
         first = days['2026-11-06']
         self.assertEqual((first['requests'], first['robot_requests'], first['beacons'], first['order_submits'],
-                          first['limited_429'], first['addresses']), (5, 1, 1, 2, 1, 3))
+                          first['limited_429'], first['addresses'], first['people_pages']), (7, 1, 1, 2, 1, 3, 4))
         self.assertEqual(days['2026-11-07']['errors_5xx'], 1)
-        self.assertEqual(first['busiest'], {'network': '1.1.1.0/24', 'requests': 2})
+        self.assertEqual(first['busiest'], {'network': '1.1.1.0/24', 'requests': 2, 'agent': PHONE})
         self.assertNotIn('1.1.1.1', json.dumps(days))
 
     def test_recorded_read_only(self):
@@ -107,7 +109,7 @@ class SignTests(unittest.TestCase):
 
     def test_each_sign(self):
         base = {'2026-11-2%d' % n: day() for n in range(1, 6)}
-        cases = {'spike': day(requests=5000), 'heavy': day(heavy=1), 'errors': day(errors=60),
+        cases = {'spike': day(requests=2000), 'heavy': day(heavy=1), 'errors': day(errors=60),
                  'orders': day(orders=25), 'left': day(beacons=900, recorded=100)}
         for name, value in cases.items():
             found = render.signs({**base, '2026-11-26': value})
