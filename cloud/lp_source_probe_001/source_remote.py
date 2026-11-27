@@ -15,7 +15,9 @@ import resource
 
 HERE = Path(__file__).resolve().parent
 HOME = Path('/home/Carix')
-FILES = ('analitika_knopka.py', 'vitrina.py', 'ua_full_access.py', 'analitika_wsgi.py')
+FILES = ('ua_seo_landings.py', 'ua_seo_sitemap.py', 'ua_seo_index.py', 'ua_google_sitemap.py', 'ua_seo_metadata.py')
+# 2026-11-27 (SEO-SITEMAP-JPUS-001 / SEO-USA-PAGES-001, owner «Да, сделай отдельные задачи … чтобы мы индексировались»):
+# the landing pages and the sitemap builders, to write the USA pages and usa.html in the sitemap against the live files.
 # R4: the client bot's «📊 Аналитика» button and screens (vitrina, analitika_knopka), the full-rights list, and the
 # counter's web endpoint — for «🇺🇦 Посетители из Украины» (owner «да» 2026-11-26).
 SECRET = re.compile(r'(?i)(token|password|passwd|secret|api_key|api_hash|authorization|private_key)\w*\s*[\'"]?\s*[:=]'
