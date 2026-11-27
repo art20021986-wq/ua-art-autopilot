@@ -1,0 +1,90 @@
+{
+  "added_now": 2400,
+  "after": {
+    "budget": "300000000",
+    "ceiling": {
+      "cpcBidCeilingMicros": "4550000"
+    },
+    "groups": 68,
+    "keywords": 4962,
+    "keywords_ru": 2542,
+    "keywords_uk": 2420,
+    "negatives": 79
+  },
+  "before": {
+    "budget": "300000000",
+    "ceiling": {
+      "cpcBidCeilingMicros": "4550000"
+    },
+    "groups": 36,
+    "keywords": 2562,
+    "keywords_ru": 1329,
+    "keywords_uk": 1233,
+    "negatives": 79
+  },
+  "left_for_next_run": 11376,
+  "mode": "probe",
+  "plan_total": 16263,
+  "remote_write_count": 1,
+  "run_id": "45919725936",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "steps": [
+    {
+      "first": {
+        "codes": [
+          "{\"policyFindingError\": \"POLICY_FINDING\"}"
+        ],
+        "examples": [
+          {
+            "code": "{\"policyFindingError\": \"POLICY_FINDING\"}",
+            "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED."
+          },
+          {
+            "code": "{\"policyFindingError\": \"POLICY_FINDING\"}",
+            "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED."
+          },
+          {
+            "code": "{\"policyFindingError\": \"POLICY_FINDING\"}",
+            "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED."
+          }
+        ],
+        "refused": 7,
+        "sent": 64
+      }
+    },
+    {
+      "keywords_0": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_600": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_1200": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_1800": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    }
+  ],
+  "task_id": "ADS-BULK-20261127"
+}
