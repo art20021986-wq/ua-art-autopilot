@@ -1,4 +1,5 @@
-"""Campaign schedule and name (owner 2026-11-26 via the coordinator: «по Украине с 9 утра до 2 часов ночи … Да,
+"""Campaign schedule and name (27.11: round the clock — every ad-schedule criterion removed, owner «Да давай включим,
+включая 24/7») (owner 2026-11-26 via the coordinator: «по Украине с 9 утра до 2 часов ночи … Да,
 переименуй»; «да» in this chat before the write).
 
 Every day 09:00–24:00 and 00:00–02:00 (account time zone Kyiv) instead of 09:00–20:00; the campaign is renamed
@@ -20,7 +21,7 @@ HERE = Path(__file__).resolve().parent
 OLD_NAME = 'Пошук — Київ — Корея (UA ART)'
 NEW_NAME = 'Пошук — Україна — Корея (UA ART)'
 DAYS = ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY')
-SLOTS = ((9, 24), (0, 2))
+SLOTS = ()  # 2026-11-27: owner «включим, включая 24/7» — no ad schedule = all hours (was 09:00–24:00 + 00:00–02:00)
 
 
 def query(name):
