@@ -179,7 +179,8 @@ def probe_iaai(browser):
     children = sitemap_links(body)
     value['sitemap']['children'] = len(children)
     value['sitemap']['child_shapes'] = sorted(set(clean(c) for c in children))[:30]
-    vehicle = next((c for c in children if re.search(r'(?i)vehicle|detail|inventory|lot', c)), '')
+    # R3 (R2 read ms-sitemapVehicleType1: no lots): the numbered parts (ms-sitemap1..N) hold the lot pages
+    vehicle = next((c for c in children if re.search(r'sitemap\d+\.xml$', c)), '')
     if not vehicle:
         return value
     status, kind, host, body = browser.fetch(vehicle)
@@ -199,10 +200,13 @@ def probe_iaai(browser):
     return value
 
 
-def report(browser=None):
+STEPS = (('iaai', 'probe_iaai'),)  # R3: Copart answered R2 with HTTP 418 (closed without login) — not asked again
+
+
+def report(browser=None, steps=None):
     browser = browser or Browser()
     value = {'status': 'PASS', 'no_login': True, 'no_bid_placed': True}
-    for name, step in (('copart', probe_copart), ('iaai', probe_iaai)):
+    for name, step in steps or [(n, globals()[f]) for n, f in STEPS]:
         try:
             value[name] = step(browser)
         except Exception as error:  # one source failing must not hide the other
