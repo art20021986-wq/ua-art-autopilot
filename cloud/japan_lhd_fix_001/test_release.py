@@ -76,12 +76,12 @@ class CandidateTests(unittest.TestCase):
                 name = '%s/%s.py' % (folder, module)
                 self.assertEqual((HERE / name).read_bytes() != live[name], name == 'japan_auction/job.py', name)
 
-    def test_the_japan_page_is_rebuilt_unchanged(self):
-        installed_page = HERE.parent / 'japan_lhd_001' / 'fixtures' / 'korea_live.html'
-        import hashlib
+    def test_the_japan_page_changes_only_the_count_line(self):
+        """Owner 27.11 «да»: no «десятки авто» (about 10 left-hand-drive cars a week)."""
         import japan_page
-        self.assertEqual(hashlib.sha256(japan_page.build(installed_page.read_bytes())).hexdigest(),
-                         'c10f48a25ee562db0ac25354709b738249ae7229871d3c41da98fbf7613af6ba')  # live japan.html
+        page = japan_page.build((HERE / 'fixtures' / 'korea_live.html').read_bytes()).decode('utf-8')
+        self.assertIn('Щотижня — авто з лівим кермом з аукціонів Японії.', page)
+        self.assertNotIn('десятки', page)
 
     def test_other_installed_collector_is_refused(self):
         source = installed()

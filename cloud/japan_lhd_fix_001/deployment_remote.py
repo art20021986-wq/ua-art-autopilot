@@ -124,7 +124,7 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'TICKER-FIX4-INSTALL-1','files':files,'job':JOB,'japan_job':JAPAN_JOB,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'japan_auction/job.py only (left-hand drive only on proof: the lot text says LEFT HAND/LEFT STEERING/LHD, or the lot page says Steering Wheel Left and the text has no other LEFT); the Japan task re-runs at once; no page, ticker or CRM module changes',
+            'site_scope':'japan_auction/job.py (left-hand drive only on proof: the lot text says LEFT HAND/LEFT STEERING/LHD, or the lot page says Steering Wheel Left and the text has no other LEFT; the Japan task re-runs at once) and one line of video/japan.html (no «десятки авто»); no ticker or CRM module changes',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
@@ -284,6 +284,7 @@ def japan_checks(after, ticker, week_tile, korea_job):
                                                           'data-quick-lead-auction="japan"', 'start_jpy',
                                                           'Обирайте авто на аукціонах Японії — тільки з лівим кермом',
                                                           'href="https://www.uaart.com.ua/video/japan.html"'))
+                          and 'десятки' not in page
                           and not any(piece in page for piece in ('/api/auction/bid', 'kc-dialog', 'start_krw', '₩',
                                                                   '/video/korea/', 'video/ru/korea.html')),
             'japan_left_hand_only': ('left_hd[]', 'L') in search.form_data(form)[1],

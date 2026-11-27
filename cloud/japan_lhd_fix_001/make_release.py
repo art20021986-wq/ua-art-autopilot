@@ -79,7 +79,7 @@ def preview():
     task = PREVIEW_TASK
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
-             'description': 'Preview of JAPAN-LHD-FIX-001 (owner 2026-11-26: only left-hand drive; live 27.11 the auction box matched «LEFT SIDE DOOR»): japan_auction/job.py only — a lot is shown when its text says LEFT HAND / LEFT STEERING / LHD, or its lot page says Steering Wheel Left and its text has no other LEFT; smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
+             'description': 'Preview of JAPAN-LHD-FIX-001 (owner 2026-11-26: only left-hand drive; live 27.11 the auction box matched «LEFT SIDE DOOR»): japan_auction/job.py — a lot is shown when its text says LEFT HAND / LEFT STEERING / LHD, or its lot page says Steering Wheel Left and its text has no other LEFT — and one line of video/japan.html (owner «да»: no «десятки авто»); smoke-tested on the server; measures storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
              'requested_min_class': 'STANDARD', 'storage_required_bytes': 33554432, 'task_id': task,
              'title': 'Preview Japan left-hand drive on proof'}
@@ -135,7 +135,7 @@ def install():
                             'gate_b_authorized': True, 'manifest_path': manifest_path, 'manifest_sha256': manifest_sha,
                             'owner_approval_path': approval_path, 'owner_approval_sha256': '0' * 64},
                'deployment_plan_sha256': preview_value['plan_sha256'],
-               'description': 'Fix of JAPAN-LHD-001 (owner 2026-11-26: only left-hand drive): live 27.11 the auction\'s Left-Hand Drive box also matched «LEFT SIDE DOOR» in Auct Kyouyuu / JU Kyouyuu lot texts, so right-hand-drive Japanese cars were shown. japan_auction/job.py only: a lot is shown when its text says LEFT HAND / LEFT STEERING / LHD, or its lot page says Steering Wheel Left and its text has no other LEFT; the Japan task runs at once and republishes. No page, ticker or CRM module change; a rollback restores the previous job.py. Existing backup, rollback and public health checks are kept.',
+               'description': 'Fix of JAPAN-LHD-001 (owner 2026-11-26: only left-hand drive): live 27.11 the auction\'s Left-Hand Drive box also matched «LEFT SIDE DOOR» in Auct Kyouyuu / JU Kyouyuu lot texts, so right-hand-drive Japanese cars were shown. japan_auction/job.py: a lot is shown when its text says LEFT HAND / LEFT STEERING / LHD, or its lot page says Steering Wheel Left and its text has no other LEFT; the Japan task runs at once and republishes. video/japan.html: «Щотижня — авто з лівим кермом з аукціонів Японії» instead of «десятки авто» (owner 27.11 «да»). No ticker or CRM module change; a rollback restores the previous job.py and page. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
                # only pages that exist before the install (run 45936163206 halted on japan.html 404 at the pre-check);
                # the new video/japan.html is checked after the install (deployment_controller.public_verify)
