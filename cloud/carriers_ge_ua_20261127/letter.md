@@ -42,15 +42,4 @@ Best regards,
 Phone/WhatsApp: {…}
 Email: {…}
 
-## Получатели (адреса ещё не проверены — сайты закрыты для этой сессии)
-1. Georgian Cargo Group — gc-group.ge
-2. Колумб Трейд — columbauto.com.ua
-3. Automama — automama.pro
-4. Avtolit — avtolit.com
-5. Motiva Group — motivagroup.pl
-6. M9 Logistics — m9logistics.de
-7. Caucasus Auto — caucasusauto.com
-8. CarLoad.ge — carload.ge
-9. AutoCargo.ge — autocargo.ge
-10. America Auto — america-auto.com
-Биржи для поиска обратных рейсов: lardi-trans.com, trans.eu (нужна регистрация компании).
+Список получателей: list.md
