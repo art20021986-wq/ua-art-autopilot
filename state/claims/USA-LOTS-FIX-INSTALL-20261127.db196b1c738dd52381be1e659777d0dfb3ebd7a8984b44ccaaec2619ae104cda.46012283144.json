@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "7db8e95bfa6aa6472cc77a92f7ed39d1f0c7f1ef433353e631ab9e11c0137c21",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T14:05:27Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-27T14:11:31Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "46012283144",
     "task_id": "USA-LOTS-FIX-INSTALL-20261127",
@@ -67,7 +67,7 @@
   "production_required": true,
   "production_transaction_id": "tx-46012283144-db196b1c738dd523",
   "production_transaction_path": "state/transactions/USA-LOTS-FIX-INSTALL-20261127.db196b1c738dd52381be1e659777d0dfb3ebd7a8984b44ccaaec2619ae104cda.46012283144.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-74fa23487fd6122c-ece186a183bbe7b7",
   "receipt_path": "state/receipts/USA-LOTS-FIX-INSTALL-20261127.json",
   "receipt_validation_status": "PENDING",
@@ -116,5 +116,5 @@
       "cloud/usa_lots_fix_001/usa_auction/views.py": "bf5aa1183fec0d1858f273740cbe5fb5e5e174912ad850244ef936ce60ef844c"
     }
   },
-  "updated_at": "2026-11-27T14:05:27Z"
+  "updated_at": "2026-11-27T14:11:31Z"
 }
