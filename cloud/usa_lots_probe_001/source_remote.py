@@ -1,0 +1,239 @@
+"""Read-only probe on the server for USA-LOTS-001 (owner 2026-11-27: the USA cars of Copart and IAAI on the site).
+
+Which open addresses give the lots, their data and photos, without any login: the Copart Sales Data file (its first
+2 MB: the columns and what the first rows hold), one Copart lot's photo list and one photo, the IAAI sitemap, one IAAI
+lot page and one photo. About ten GET requests, 3 seconds apart. The report holds statuses, column names and counts
+only — no VIN, no lot numbers, no full foreign addresses. Standard library only.
+"""
+import argparse
+from collections import Counter
+import csv
+import http.cookiejar
+import io
+import json
+import os
+from pathlib import Path
+import re
+import resource
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+
+HERE = Path(__file__).resolve().parent
+UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36'
+COPART_CSV = 'https://inventory.copart.io/FTPLSTDM/salesdata.cgi'
+IAAI_SITEMAP = 'https://www.iaai.com/Xj9rDOVMEi0hc38S/sitemap_index.xml'  # named in iaai.com/robots.txt
+CSV_BYTES = 2 * 1024 * 1024
+PAGE_BYTES = 4 * 1024 * 1024
+LONG_NUMBER = re.compile(r'\d{6,}')
+VIN = re.compile(r'\b[A-HJ-NPR-Z0-9]{11,17}\b')
+EMAIL = re.compile(r'[\w.+-]+@[\w-]+\.[\w.]+')
+URL = re.compile(r'https?://[^\s\'"<>)]+')
+CHALLENGE = re.compile(r'(?i)_Incapsula_Resource|captcha|cf-chl|access denied|request unsuccessful')
+LABELS = ('Primary Damage', 'Secondary Damage', 'Odometer', 'Start Code', 'Run & Drive', 'Key', 'Title', 'Auction Date',
+          'Sale Date', 'Actual Cash Value', 'Buy Now', 'Engine', 'Fuel Type', 'Drive Line Type', 'Transmission',
+          'Vehicle Location', 'Current Bid', 'Loss Type')
+
+
+def clean(text):
+    """No e-mail, no VIN, no long numbers (lot ids, tokens), no full foreign URLs (host and path are kept)."""
+    text = EMAIL.sub('[EMAIL]', str(text))
+    text = URL.sub(lambda m: '%s%s' % (urllib.parse.urlsplit(m.group(0)).netloc,
+                                       LONG_NUMBER.sub('[N]', urllib.parse.urlsplit(m.group(0)).path)), text)
+    return LONG_NUMBER.sub('[N]', VIN.sub('[VIN]', text))
+
+
+def text(html):
+    return re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', re.sub(r'(?is)<(script|style)\b.*?</\1>', ' ', html))).strip()
+
+
+class Browser:
+    def __init__(self):
+        self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+        self.requests = 0
+
+    def fetch(self, url, limit=PAGE_BYTES):
+        """-> (status, content type, final host, body bytes up to limit); an HTTP error is a status, not a raise."""
+        if self.requests:
+            time.sleep(3)
+        self.requests += 1
+        request = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept-Language': 'en-US,en'})
+        try:
+            with self.opener.open(request, timeout=90) as response:
+                return (response.status, response.headers.get('Content-Type', ''),
+                        urllib.parse.urlsplit(response.geturl()).netloc, response.read(limit))
+        except urllib.error.HTTPError as error:
+            return error.code, error.headers.get('Content-Type', ''), urllib.parse.urlsplit(url).netloc, error.read(65536)
+
+
+def head(status, kind, host, body):
+    page = body.decode('utf-8', 'replace')
+    return {'http': status, 'type': kind.split(';')[0], 'host': host, 'bytes': len(body),
+            'challenge': bool(CHALLENGE.search(page[:200000]))}
+
+
+def top(counter, n=20):
+    return [[clean(k), v] for k, v in counter.most_common(n)]
+
+
+def csv_rows(body):
+    """The complete rows of the file's first part (the last, cut row is dropped)."""
+    data = body.decode('utf-8', 'replace')
+    data = data[:data.rfind('\n')] if '\n' in data else data
+    return list(csv.DictReader(io.StringIO(data)))
+
+
+def column(row, *names):
+    """A column's value by any of its known names (case and spaces ignored)."""
+    wanted = {re.sub(r'\W', '', n).lower() for n in names}
+    for key, value in row.items():
+        if key and re.sub(r'\W', '', key).lower() in wanted:
+            return (value or '').strip()
+    return ''
+
+
+def csv_summary(rows):
+    """What the Copart file holds, counted: makes, damage, runs and drives, years, titles, sale dates, photo links."""
+    years = [int(y) for y in (column(r, 'Year') for r in rows) if y.isdigit()]
+    images = [column(r, 'Image URL') for r in rows]
+    thumbs = [column(r, 'Image Thumbnail') for r in rows]
+    return {
+        'columns': [clean(c) for c in (rows[0].keys() if rows else [])],
+        'rows_read': len(rows),
+        'makes': top(Counter(column(r, 'Make') for r in rows)),
+        'damage': top(Counter(column(r, 'Damage Description') for r in rows)),
+        'secondary_damage': top(Counter(column(r, 'Secondary Damage') for r in rows), 10),
+        'runs_drives': top(Counter(column(r, 'Runs/Drives') for r in rows), 5),
+        'vehicle_type': top(Counter(column(r, 'Vehicle Type') for r in rows), 8),
+        'title_type': top(Counter(column(r, 'Sale Title Type') for r in rows), 8),
+        'country': top(Counter(column(r, 'Location country') for r in rows), 5),
+        'years': [min(years), max(years)] if years else [],
+        'sale_dates': top(Counter(column(r, 'Sale Date M/D/CY') for r in rows), 8),
+        'sale_time_samples': top(Counter('%s %s' % (column(r, 'Sale time (HHMM)'), column(r, 'Time Zone'))
+                                         for r in rows), 5),
+        'odometer_filled': sum(1 for r in rows if column(r, 'Odometer')),
+        'retail_value_filled': sum(1 for r in rows if column(r, 'Est. Retail Value') not in ('', '0', '0.0')),
+        'buy_now_filled': sum(1 for r in rows if column(r, 'Buy-It-Now Price') not in ('', '0', '0.0')),
+        'high_bid_filled': sum(1 for r in rows if column(r, 'High Bid =non-vix,Sealed=Vix') not in ('', '0', '0.0')),
+        'image_url_filled': sum(1 for i in images if i),
+        'image_hosts': top(Counter(urllib.parse.urlsplit(i).netloc for i in images + thumbs if i), 5),
+        'image_url_shape': clean(next((i for i in images if i), '')),
+        'thumb_shape': clean(next((t for t in thumbs if t), '')),
+    }
+
+
+def image_list(body):
+    """A Copart photo list (JSON): its keys and the photo addresses in it (full size first)."""
+    try:
+        value = json.loads(body)
+    except ValueError:
+        return {'json': False}, []
+    found = re.findall(r'https?://[^"\s]+\.(?:jpe?g|png|webp)', json.dumps(value))
+    full = [u for u in found if re.search(r'(?i)_ful|full|hrs|high', u)] or found
+    shape = sorted(value.keys())[:20] if isinstance(value, dict) else type(value).__name__
+    return {'json': True, 'keys': shape, 'photos': len(set(found)), 'photo_shape': clean(full[0]) if full else ''}, full
+
+
+def probe_copart(browser):
+    status, kind, host, body = browser.fetch(COPART_CSV, CSV_BYTES)
+    value = {'file': head(status, kind, host, body)}
+    if status != 200 or value['file']['challenge']:
+        value['file']['text'] = clean(text(body.decode('utf-8', 'replace')))[:400]
+        return value
+    rows = csv_rows(body)
+    value['file'].update(csv_summary(rows))
+    link = next((column(r, 'Image URL') for r in rows if column(r, 'Image URL')), '')
+    if link:
+        status, kind, host, body = browser.fetch(link)
+        value['photo_list'] = head(status, kind, host, body)
+        summary, photos = image_list(body) if status == 200 else ({}, [])
+        value['photo_list'].update(summary)
+        if photos:
+            value['photo'] = head(*browser.fetch(photos[0], 8 * 1024 * 1024))
+    return value
+
+
+def sitemap_links(body):
+    return re.findall(r'<loc>\s*([^<\s]+)\s*</loc>', body.decode('utf-8', 'replace'))
+
+
+def lot_page(html):
+    """An IAAI lot page, counted: which labels it shows, data blocks, photo hosts and addresses (shapes only)."""
+    page = text(html)
+    photos = re.findall(r'https?://[^"\'\s]*(?:vis\.iaai\.com|anvis\.iaai\.com)[^"\'\s]*', html)
+    return {'labels': [label for label in LABELS if label.lower() in page.lower()],
+            'json_blocks': sorted(set(re.findall(r'(?:var|window\.)\s*([A-Za-z_]\w*)\s*=\s*\{', html)))[:20],
+            'ld_json': html.count('application/ld+json'), 'photo_links': len(set(photos)),
+            'photo_hosts': top(Counter(urllib.parse.urlsplit(p).netloc for p in photos), 5),
+            'photo_shape': clean(photos[0]) if photos else '', 'title': clean(re.sub(r'\s+', ' ', ''.join(
+                re.findall(r'(?is)<title>(.*?)</title>', html)[:1])))[:120]}, photos
+
+
+def probe_iaai(browser):
+    status, kind, host, body = browser.fetch(IAAI_SITEMAP)
+    value = {'sitemap': head(status, kind, host, body)}
+    if status != 200 or value['sitemap']['challenge']:
+        value['sitemap']['text'] = clean(text(body.decode('utf-8', 'replace')))[:400]
+        return value
+    children = sitemap_links(body)
+    value['sitemap']['children'] = len(children)
+    value['sitemap']['child_shapes'] = sorted(set(clean(c) for c in children))[:30]
+    vehicle = next((c for c in children if re.search(r'(?i)vehicle|detail|inventory|lot', c)), '')
+    if not vehicle:
+        return value
+    status, kind, host, body = browser.fetch(vehicle)
+    lots = [u for u in sitemap_links(body) if re.search(r'(?i)VehicleDetail', u)]
+    value['vehicle_sitemap'] = dict(head(status, kind, host, body), urls=len(sitemap_links(body)), lots=len(lots),
+                                    lot_shape=clean(lots[0]) if lots else '')
+    if lots:
+        status, kind, host, body = browser.fetch(lots[0])
+        value['lot_page'] = head(status, kind, host, body)
+        if status == 200 and not value['lot_page']['challenge']:
+            summary, photos = lot_page(body.decode('utf-8', 'replace'))
+            value['lot_page'].update(summary)
+            if photos:
+                value['photo'] = head(*browser.fetch(photos[0].replace('&amp;', '&'), 8 * 1024 * 1024))
+        else:
+            value['lot_page']['text'] = clean(text(body.decode('utf-8', 'replace')))[:400]
+    return value
+
+
+def report(browser=None):
+    browser = browser or Browser()
+    value = {'status': 'PASS', 'no_login': True, 'no_bid_placed': True}
+    for name, step in (('copart', probe_copart), ('iaai', probe_iaai)):
+        try:
+            value[name] = step(browser)
+        except Exception as error:  # one source failing must not hide the other
+            value[name] = {'error': type(error).__name__ + ':' + clean(str(error))[:160]}
+    value['requests'] = browser.requests
+    return value
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--run', required=True)
+    args = parser.parse_args()
+    if not re.fullmatch(r'[0-9]+', args.run):
+        raise SystemExit('RUN_ID')
+    resource.setrlimit(resource.RLIMIT_CPU, (150, 160))
+    work = HERE / 'runs' / args.run
+    work.mkdir(parents=True, exist_ok=True, mode=0o700)
+    receipt = work / 'receipt-probe.json'
+    if receipt.exists():
+        return 0
+    try:
+        value = report()
+    except Exception as error:
+        value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + clean(str(error))[:160]}
+    value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=0)
+    temporary = work / '.receipt-probe.tmp'
+    temporary.write_text(json.dumps(value, ensure_ascii=False, sort_keys=True), encoding='utf-8')
+    os.chmod(temporary, 0o600)
+    os.replace(temporary, receipt)
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
