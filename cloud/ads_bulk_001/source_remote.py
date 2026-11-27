@@ -28,10 +28,11 @@ CEILING_MICROS = 4550000  # 4,55 UAH (owner 2026-11-27 «став тогда 4 �
 NAMES = "'%s', 'Пошук — Україна — Корея (UA ART)'" % plan.NAME
 CHUNK = 600
 AUCTION_PAGE = plan.SITE + 'korea.html'  # the lots of the coming Korean auctions (filters by make, model, year)
+# 2026-11-27: «Ставка онлайн …» removed (owner «Да»): 7 of 32 auction ads were refused as PROHIBITED (read as gambling).
 AUCTION_HEAD = {'uk': ['Лоти аукціонів Кореї щодня', 'Ціни та фото кожного лоту', 'Фільтр: марка, модель, рік',
-                       'Ставка онлайн разом з нами', 'Курс НБУ щодня'],
+                       'Курс НБУ щодня'],
                 'ru': ['Лоты аукционов Кореи ежедневно', 'Цены и фото каждого лота', 'Фильтр: марка, модель, год',
-                       'Ставка онлайн вместе с нами', 'Курс НБУ каждый день']}
+                       'Курс НБУ каждый день']}
 HUB = {'uk': plan.SITE + 'seo/ua/avto-z-korei-do-kyieva-pid-kluch.html',
        'ru': plan.SITE + 'seo/ru/avto-iz-korei-v-kiev-pod-kluch.html'}
 CAMPAIGN = ("SELECT campaign.resource_name, campaign.target_spend.cpc_bid_ceiling_micros, campaign_budget.amount_micros "
@@ -39,6 +40,8 @@ CAMPAIGN = ("SELECT campaign.resource_name, campaign.target_spend.cpc_bid_ceilin
 GROUPS = "SELECT ad_group.resource_name, ad_group.name FROM ad_group WHERE campaign.name IN (%s)" % NAMES
 KEYWORDS = ("SELECT ad_group.name, ad_group_criterion.keyword.text FROM ad_group_criterion WHERE campaign.name IN (%s) "
             "AND ad_group_criterion.type = 'KEYWORD' AND ad_group_criterion.negative = FALSE" % NAMES)
+ADS = ("SELECT ad_group.name, ad_group_ad.status FROM ad_group_ad WHERE campaign.name IN (%s) "
+       "AND ad_group_ad.status != 'REMOVED'" % NAMES)
 NEGATIVES = ("SELECT campaign_criterion.keyword.text FROM campaign_criterion WHERE campaign.name IN (%s) "
              "AND campaign_criterion.negative = TRUE AND campaign_criterion.type = 'KEYWORD'" % NAMES)
 
@@ -65,7 +68,8 @@ def state(customer, headers, opener=urllib.request.urlopen):
             'groups': {r['adGroup']['name']: r['adGroup']['resourceName'] for r in read(customer, headers, GROUPS, opener)},
             'keywords': {(r['adGroup']['name'], r['adGroupCriterion']['keyword']['text'])
                          for r in read(customer, headers, KEYWORDS, opener)},
-            'negatives': {r['campaignCriterion']['keyword']['text'] for r in read(customer, headers, NEGATIVES, opener)}}
+            'negatives': {r['campaignCriterion']['keyword']['text'] for r in read(customer, headers, NEGATIVES, opener)},
+            'with_ads': {r['adGroup']['name'] for r in read(customer, headers, ADS, opener)}}
 
 
 def ad_texts(group):
@@ -92,16 +96,22 @@ def first_operations(customer, current):
     ops += [{'campaignCriterionOperation': {'create': {'campaign': campaign['resourceName'], 'negative': True,
                                                        'keyword': {'text': w, 'matchType': 'PHRASE'}}}}
             for w in keywords.NEGATIVE_MORE if w not in current['negatives']]
-    for n, group in enumerate(g for g in keywords.plan() if g not in current['groups']):
+    def ad(group, ad_group):
         lang, head, desc = ad_texts(group)
+        auction = group.startswith(tuple(keywords.AUCTION.values()))
+        return {'adGroupAdOperation': {'create': {'adGroup': ad_group, 'status': 'ENABLED', 'ad': {
+            'finalUrls': [AUCTION_PAGE if auction else HUB[lang]],
+            'responsiveSearchAd': {'headlines': [{'text': h} for h in head],
+                                   'descriptions': [{'text': d} for d in desc],
+                                   'path1': 'korea', 'path2': 'kyiv' if lang == 'uk' else 'kiev'}}}}}
+    for n, group in enumerate(g for g in keywords.plan() if g not in current['groups']):
         temp = 'customers/%s/adGroups/-%d' % (customer, 700 + n)
         ops.append({'adGroupOperation': {'create': {'resourceName': temp, 'name': group, 'status': 'ENABLED',
                                                     'campaign': campaign['resourceName'], 'type': 'SEARCH_STANDARD'}}})
-        ops.append({'adGroupAdOperation': {'create': {'adGroup': temp, 'status': 'ENABLED', 'ad': {
-            'finalUrls': [AUCTION_PAGE if group.startswith(tuple(keywords.AUCTION.values())) else HUB[lang]],
-            'responsiveSearchAd': {'headlines': [{'text': h} for h in head],
-                                                             'descriptions': [{'text': d} for d in desc],
-                                                             'path1': 'korea', 'path2': 'kyiv' if lang == 'uk' else 'kiev'}}}}})
+        ops.append(ad(group, temp))
+    # 2026-11-27: groups that exist without an ad (the refused ones) get one.
+    ops += [ad(g, current['groups'][g]) for g in keywords.plan()
+            if g in current['groups'] and g not in current.get('with_ads', set(current['groups']))]
     return ops
 
 
@@ -135,7 +145,7 @@ def summary(current):
     return {'ceiling': current['campaign'].get('targetSpend'), 'budget': current['budget'].get('amountMicros'),
             'groups': len(groups), 'keywords': len(kws),
             'keywords_uk': sum(1 for g, _ in kws if g.startswith('UA')), 'keywords_ru': sum(1 for g, _ in kws if g.startswith('RU')),
-            'negatives': len(current['negatives'])}
+            'negatives': len(current['negatives']), 'groups_without_ad': sorted(set(groups) - current.get('with_ads', set(groups)))}
 
 
 def run(keys, opener=urllib.request.urlopen):
