@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "2eef5000a45df5aae4c21e7e0b3636f0d30ee90d95bda7fcbdc659cbfc237842",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T01:37:21Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-27T01:40:28Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45923326192",
     "task_id": "KOREA-PLAN-DAYS-INSTALL-20261127",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45923326192-0861c2224d13e12b",
   "production_transaction_path": "state/transactions/KOREA-PLAN-DAYS-INSTALL-20261127.0861c2224d13e12bca882b5a58cc671629bfcaa8aace7c2f2ff2193c2b3058c7.45923326192.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/KOREA-PLAN-DAYS-INSTALL-20261127.json",
   "receipt_validation_status": "PENDING",
@@ -120,5 +120,5 @@
       "cloud/korea_plan_days_001/test_release.py": "67899c82c6524c05b412c0df0f265c4af17d8fd24a38e33935b67bf379236d27"
     }
   },
-  "updated_at": "2026-11-27T01:37:21Z"
+  "updated_at": "2026-11-27T01:40:28Z"
 }
