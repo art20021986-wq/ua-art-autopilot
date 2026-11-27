@@ -1,0 +1,26 @@
+{
+  "backup_started": false,
+  "cause": "health_checks in tasks/requests/SEARCH-HOME-INSTALL-20261126.json included video/usa.html, which does not exist before this install; pre-install GET returned 404",
+  "claim_before_sha256": "2b13fbe0e567f3c1fc643acc9a0bad7754653a303973e1937588f9de42da35f2",
+  "claim_status_before": {
+    "critical_gate_status": "PASS_PRODUCTION",
+    "package_compile_status": "PASS",
+    "pre_health_status": "REQUIRED",
+    "task_execution_status": "BLOCKED_ROOT_CAUSE"
+  },
+  "crm_unchanged": true,
+  "error": "ControlPlaneError: PRODUCTION_PRE_HEALTH_FAILED",
+  "failed_step": "execute / critical / prepare: control_plane health --phase pre (before any production transaction)",
+  "halt_archive": "state/halt_history/SEARCH-HOME-INSTALL-20261126.45915021173/halt.json",
+  "live_verify": "2026-11-27 ~00:15Z coordinator curl: video/index.html 200, video/korea.html 200 (no new offer text), video/podbor.html 200, video/usa.html 404 — pre-install state",
+  "owner_statement": "«Да» (2026-11-27, coordinator chat: lift the emergency halt)",
+  "precedent": "state/reconciliations/CARD-FACTS-INSTALL-20261117.44023739157.authenticated-evidence.json",
+  "production_transaction_status": "NOT_OPENED",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-27T00:20:00+00:00",
+  "retry": "SEARCH-HOME-INSTALL-20261126-R2",
+  "run_id": "45915021173",
+  "site_state_after": "pre-install state; nothing was written",
+  "task_id": "SEARCH-HOME-INSTALL-20261126",
+  "workflow_conclusion": "failure"
+}

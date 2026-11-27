@@ -16,6 +16,15 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "fc030d6167096369"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-27T00:20:00+00:00",
+      "class": "PRE_HEALTH_URL_NOT_YET_PUBLISHED",
+      "evidence_path": "state/reconciliations/SEARCH-HOME-INSTALL-20261126.45915021173.authenticated-evidence.json",
+      "message": "Pre-install health check failed because the request listed https://www.uaart.com.ua/video/usa.html, a page this install creates (404 before install). No production transaction was opened; site and CRM unchanged (korea.html as before, usa.html 404, index/korea/podbor 200). Owner-authorized halt recovery («Да»); reinstall as SEARCH-HOME-INSTALL-20261126-R2 with usa.html checked only after install.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-27T00:10:33Z",
@@ -42,6 +51,6 @@
   "source_commit": "533bae3d77494722e2fb43fa9fdfffece1b5def3",
   "storage_preflight_status": "PENDING",
   "task_class": "CRITICAL",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-27T00:12:10Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-27T00:20:00+00:00"
 }
