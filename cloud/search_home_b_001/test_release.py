@@ -50,6 +50,11 @@ class ModuleTests(unittest.TestCase):
         self.assertIn('value="japan" data-href="japan.html"', block)  # JAPAN-LHD-001 installed its page
         self.assertIn("'#lots'", block)
         self.assertIn("['maker','model','year','usd']", block)
+        # where the choice is: the countries' own published lot lists, read once on the first touch of the form
+        self.assertIn('class="sh-found"', block)
+        self.assertIn('/video/korea/lots.json', block)
+        self.assertIn('/video/japan/lots.json', block)
+        self.assertIn("addEventListener('focusin',load,{once:true})", block)
         for word in ('2mcars', 'vsbrothers', 'vs brothers'):
             self.assertNotIn(word, block.lower())
 
