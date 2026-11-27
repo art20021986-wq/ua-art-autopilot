@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/JAPAN-LHD-PROBE-20261127.522969576689ec467f6495c0a20487fdcfbc57fd788ceb31f166feb86b7f06d4.json",
+  "autostart_ledger_sha256": "a92c1048dd478d90419cb84a8655c10626e033c5bf41f3743b5353ed6c12da45",
+  "autostart_source_commit": "8123b3431d165ce3d63b49fa7357501acd81e207",
+  "created_at": "2026-11-27T01:18:36Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45921685717",
+    "task_id": "JAPAN-LHD-PROBE-20261127",
+    "task_sha256": "522969576689ec467f6495c0a20487fdcfbc57fd788ceb31f166feb86b7f06d4"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-d27972b3398a1805-29b4230d2e3f7a83",
+  "request_path": "tasks/requests/JAPAN-LHD-PROBE-20261127.json",
+  "resource_locks": [
+    "PATH_SCOPE:d27972b3398a1805"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
