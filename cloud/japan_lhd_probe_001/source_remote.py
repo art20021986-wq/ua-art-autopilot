@@ -178,9 +178,10 @@ def lhd_lots(browser, form):
     """Search again with the left-hand-drive boxes checked; all pages with the largest page size."""
     summary = form_summary(form['block'])
     if not summary['lhd_boxes']:
-        return summary, None, [], []
+        return summary, None, [], [], ''
     data = list(form['data']) + [(b['name'], b['value']) for b in summary['lhd_boxes'] if not b['checked']]
     _, html = browser.fetch(form['action'], data)
+    first = html
     count = total(html)
     header, found = rows(html)
     pager = re.search(r'href="(/vehicle-search/[a-z]{2}/index/page=\d+\?[^"]+)"', html)
@@ -193,7 +194,26 @@ def lhd_lots(browser, form):
             found += batch
             if not batch or len(found) >= count:
                 break
-    return summary, count, header, found
+    return summary, count, header, found, first
+
+
+def sanitized(html, limit=300000):
+    """R3 sample for the parser tests: no scripts, styles, head, input values or greetings; cleaned; at most `limit`."""
+    html = re.sub(r'(?is)<(script|style|head|noscript)\b.*?</\1>', '', html)
+    html = re.sub(r'(?is)(<input\b[^>]*?)\svalue\s*=\s*("[^"]*"|\'[^\']*\')', r'\1', html)
+    html = re.sub(r'(?i)(welcome|hello|ようこそ)[^<]{0,80}', r'\1', html)
+    return clean(re.sub(r'\n\s*\n+', '\n', html))[:limit]
+
+
+def results_sample(html, rows_kept=5):
+    """The result count, the results table head and its first lot rows, and the pager and lot links."""
+    tables = [t for t in re.findall(r'(?is)<table\b.*?</table>', html) if 'vehicle-detail' in t]
+    table = max(tables, key=len) if tables else ''
+    head = table[:table.find('<tbody')] if '<tbody' in table else table[:2000]
+    lot_rows = [r for r in re.findall(r'(?is)<tr\b.*?</tr>', table) if 'vehicle-detail' in r][:rows_kept]
+    return {'count_text': clean((COUNT.findall(html) or [''])[0]), 'table': sanitized(head + ''.join(lot_rows) + '</table>'),
+            'pager_links': sorted(set(clean(h) for h in re.findall(r'href="([^"]*page=[^"]*)"', html)))[:10],
+            'detail_links': [clean(h) for h in re.findall(r'href="([^"]*vehicle-detail[^"]*)"', html)][:5]}
 
 
 def login_pair():
@@ -225,15 +245,18 @@ def report():
                 'japan_address': clean(urllib.parse.urlsplit(address).path), 'page_text': clean(text(search))[:600],
                 'requests': browser.requests}
     _, everything = browser.fetch(form['action'] or '/vehicle-search/jp/index', form['data'])
-    summary, lhd_total, header, lots = lhd_lots(browser, form)
+    summary, lhd_total, header, lots, first = lhd_lots(browser, form)
     value = {'status': 'PASS', 'countries': found, 'sections': sections, 'form': summary, 'total_all': total(everything),
              'total_lhd': lhd_total, 'lhd_rows_read': len(lots), 'result_columns': header[:30], 'no_bid_placed': True}
     if lots:
         value['lhd'] = counts(header, lots)
-        detail = next((lot['detail'] for lot in lots if lot['detail']), '')
-        if detail:
-            _, html = browser.fetch(detail)
+        # R3 (run 45925316016 read no lot page: the Japan lot link has another form): the samples for the parser
+        value['samples'] = results_sample(first)
+        link = re.search(r'href="([^"]*vehicle-detail[^"]*)"', first)
+        if link:
+            _, html = browser.fetch(link.group(1).replace('&amp;', '&'))
             value['lot_page'] = lot_page(html)
+            value['samples']['lot_html'] = sanitized(html)
     value['requests'] = browser.requests
     return value
 
