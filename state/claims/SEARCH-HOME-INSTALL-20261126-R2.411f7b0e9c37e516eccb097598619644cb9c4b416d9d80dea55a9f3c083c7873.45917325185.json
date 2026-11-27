@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "2899aa8a4b85c48ce4ab5b329c7f9c1b56695ab8c02f966a9e9be13a7d8c14d3",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T00:40:53Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-27T00:51:49Z",
+  "heartbeat_at": "2026-11-27T00:51:49Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "45917325185",
     "task_id": "SEARCH-HOME-INSTALL-20261126-R2",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 760.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 287.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 254.3,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-45917325185-411f7b0e9c37e516",
   "production_transaction_path": "state/transactions/SEARCH-HOME-INSTALL-20261126-R2.411f7b0e9c37e516eccb097598619644cb9c4b416d9d80dea55a9f3c083c7873.45917325185.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/SEARCH-HOME-INSTALL-20261126-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "aa84629ab43b1b7f45d5c2373f3f894187ce1e50ded360581f8cbb5cf54ef92e",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SEARCH-HOME-INSTALL-20261126-R2.json",
   "request_sha256": "411f7b0e9c37e516eccb097598619644cb9c4b416d9d80dea55a9f3c083c7873",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "5c94777332b0dbae5908372dd4425a59408daf18129b349b251e617612f2f645",
     "file_sha256": {
@@ -124,5 +155,5 @@
       "cloud/search_home_install_001/usa_tariffs_sync.py": "05eb1124c883cbda1340266cbc2072bd2913136a63f37f0eeebd65ec67e9b42b"
     }
   },
-  "updated_at": "2026-11-27T00:40:53Z"
+  "updated_at": "2026-11-27T00:51:49Z"
 }
