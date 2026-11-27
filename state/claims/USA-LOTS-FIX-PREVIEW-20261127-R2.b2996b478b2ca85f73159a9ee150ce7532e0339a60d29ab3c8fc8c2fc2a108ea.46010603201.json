@@ -7,21 +7,23 @@
   "created_at": "2026-11-27T13:52:30Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T13:52:30Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-27T14:01:29Z",
+  "heartbeat_at": "2026-11-27T14:01:29Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "46010603201",
     "task_id": "USA-LOTS-FIX-PREVIEW-20261127-R2",
     "task_sha256": "b2996b478b2ca85f73159a9ee150ce7532e0339a60d29ab3c8fc8c2fc2a108ea"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-e3a26bd6367e63c0-4eb48f02251a51c7",
   "receipt_path": "state/receipts/USA-LOTS-FIX-PREVIEW-20261127-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "9db6fb1084fedb120a92ccacc077c6e759fd8d3a301a4480c5b3dcc752b0ca69",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/USA-LOTS-FIX-PREVIEW-20261127-R2.json",
   "request_sha256": "b2996b478b2ca85f73159a9ee150ce7532e0339a60d29ab3c8fc8c2fc2a108ea",
   "resource_locks": [
@@ -29,8 +31,39 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "4bf13788c4c789f8dcb0729af41f08a91550136a",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91696492544,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.828
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-27T13:52:30Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "d706407abe852b1b85c35a0577a07796c3366cd2968cc45b0f2b54a2358dbad9",
+    "file_sha256": {
+      "cloud/usa_lots_fix_001/candidate_builder.py": "f86cc4fa45d6ae8f45396bac72923b9f15f35d0385e1136209fe2c4a51c250bd",
+      "cloud/usa_lots_fix_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/usa_lots_fix_001/deployment_bootstrap.py": "7b6edfac15975fa5844587c1d0d947be510e63aa0ec02aa4104a97033109ebe0",
+      "cloud/usa_lots_fix_001/deployment_remote.py": "d3bae8c0f2f18f55fb25ded5b6ef3ad05558ac7913627d4ac66bdcaf10593a5c",
+      "cloud/usa_lots_fix_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/usa_lots_fix_001/deployment_transport.py": "aed39cd135f7b43f03b2a61096eed510b162462cacb604b770bc0946f5da0089",
+      "cloud/usa_lots_fix_001/make_release.py": "43bc284029a3b91a49a27e302868bac4c5c8684b07d432258a6a1ae3e166216b",
+      "cloud/usa_lots_fix_001/release_constants.py": "062fe14b03d48b52e0ff3fe75b5ec875e8c7a3c2d9af53ab80054fcd2261425d",
+      "cloud/usa_lots_fix_001/test_deployment.py": "70ea4775a0fff0adf8fc37eee57e9b18df4b6dc3ea3402630043ab9c77aa4397",
+      "cloud/usa_lots_fix_001/test_release.py": "943259542b340672012fc13f93acca8795873345f7c768e78de49c3c0714936b",
+      "cloud/usa_lots_fix_001/usa_auction/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cloud/usa_lots_fix_001/usa_auction/fetch.py": "bc172cd46dde788345a7a67d0dbd89b4d8def0b8afbb17d7c99d024a133370e0",
+      "cloud/usa_lots_fix_001/usa_auction/job.py": "eba7bf57d94827ee6317efbd31699bf5b4f3614e25b40490b0d263019f7a5dbb",
+      "cloud/usa_lots_fix_001/usa_auction/pages.py": "2ace666dc330b39167355f37c6bb389a57657846eb1e5efd38f033facbae86ef",
+      "cloud/usa_lots_fix_001/usa_auction/selection.py": "5c8aa78400fb42c0530fcf0c565f15c0986d2f383e9f54beb4e6fdf8565628f4",
+      "cloud/usa_lots_fix_001/usa_auction/test_usa_auction.py": "681d68cda47f49a25fe7fb76dd393b7461ef1bf80adff1243d3903a22cfb7c1d",
+      "cloud/usa_lots_fix_001/usa_auction/views.py": "bf5aa1183fec0d1858f273740cbe5fb5e5e174912ad850244ef936ce60ef844c"
+    }
+  },
+  "updated_at": "2026-11-27T14:01:29Z"
 }
