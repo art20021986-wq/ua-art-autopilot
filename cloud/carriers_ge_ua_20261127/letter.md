@@ -1,45 +1,38 @@
-# Рассылка перевозчикам автовозов: Грузия → Киев (сессия 42, 27.11)
+# Письмо перевозчикам автовозов: Грузия → Киев (сессия 42)
 
-Статус: черновик, ждёт «да» владельца. Ничего не отправлено.
+Статус: текст на утверждении у сотрудников владельца. Ничего не отправлено.
+Отправитель: «АИ Транспорт Компани» (Грузия), подпись — Зинаида (управляющая), второй контакт — Ольга.
+Телефоны — в чате с владельцем (в репозиторий не кладём). Email — владелец даст позже.
+Одно письмо каждой компании отдельно. Список получателей: list.md.
 
-## Письмо (одно на компанию, отдельно каждой)
+## RU
+Тема: Регулярная перевозка автомобилей Грузия → Украина (Киев) — запрос цены
 
-**Тема:** Регулярная перевозка автомобилей Грузия → Украина (Киев) — запрос цены / Car transport Georgia → Ukraine (Kyiv) — rate request
-
-Здравствуйте, {Компания}!
-
-Компания «АИ Транспорт Компани» (Грузия) ищет перевозчика для регулярной доставки легковых автомобилей автовозом из Грузии в Украину (Киев). Плановый объём — от __ автомобилей в месяц. Особенно интересны обратные рейсы автовозов, которые возвращаются из Грузии/Азербайджана в Европу.
-
+Здравствуйте!
+Меня зовут Зинаида, я управляющая компании «АИ Транспорт Компани» (Грузия). Мы ищем перевозчика для регулярной доставки легковых автомобилей автовозом из Грузии в Украину (Киев).
+Объём: 2–3 автовоза в неделю по 9 машин. Маршрут: Грузия → паром → Констанца → Одесса (растаможка) → Киев. Все документы на автомобили предоставляем мы.
+Особенно интересны обратные рейсы: автовозы, которые привозят машины из Европы в Грузию или Азербайджан и возвращаются пустыми.
 Просим сообщить:
-1. Цену за 1 автомобиль (легковой / внедорожник): Поти → Киев и Тбилиси → Киев.
-2. Сроки доставки и частоту рейсов.
-3. Маршрут и пункты пересечения границ.
-4. Страховку CMR и нужные документы.
-5. Есть ли у вас обратные рейсы из Грузии/Азербайджана и как часто.
+1. Цену за 1 автомобиль (легковой / внедорожник) и за полный автовоз (9 машин): Поти → Киев и Тбилиси → Киев.
+2. Сроки доставки и как часто вы можете забирать машины.
+3. Работаете ли вы по маршруту через паром в Констанцу и Одессу, или предлагаете другой.
+4. Страхование груза (CMR).
+5. Есть ли у вас обратные рейсы из Грузии или Азербайджана и как часто.
+Будем рады долгосрочному сотрудничеству.
+С уважением, Зинаида, управляющая; Ольга. «АИ Транспорт Компани» (Грузия). Тел./WhatsApp, Email.
 
-С уважением,
-{Имя}, {Должность}
-АИ Транспорт Компани / {AI Transport Company}
-Тел./WhatsApp: {…}
-Email: {…}
+## EN
+Subject: Regular car transport Georgia → Ukraine (Kyiv) — rate request
 
----
-
-Hello {Company},
-
-{AI Transport Company} (Georgia) is looking for a carrier for regular car-carrier transport of passenger cars from Georgia to Ukraine (Kyiv). Planned volume: from __ cars per month. We are especially interested in return trips of car carriers heading back from Georgia/Azerbaijan to Europe.
-
-Please let us know:
-1. Price per car (sedan / SUV): Poti → Kyiv and Tbilisi → Kyiv.
-2. Transit time and trip frequency.
-3. Route and border crossings.
-4. CMR insurance and required documents.
-5. Whether you have return trips from Georgia/Azerbaijan, and how often.
-
-Best regards,
-{Name}, {Title}
-{AI Transport Company}
-Phone/WhatsApp: {…}
-Email: {…}
-
-Список получателей: list.md
+Dear Sir or Madam,
+My name is Zinaida, Managing Director of AI Transport Company (Georgia). We are looking for a carrier for regular transport of passenger cars by car carrier from Georgia to Ukraine (Kyiv).
+Volume: 2–3 car carriers per week, 9 cars each. Route: Georgia → ferry → Constanța → Odesa (customs clearance) → Kyiv. We provide all vehicle documents.
+We are especially interested in return trips: car carriers that deliver vehicles from Europe to Georgia or Azerbaijan and go back empty.
+Could you please let us know:
+1. Your price per car (sedan / SUV) and per full load (9 cars): Poti → Kyiv and Tbilisi → Kyiv.
+2. Transit time and how often you can collect cars.
+3. Whether you work via the ferry to Constanța and Odesa, or suggest another route.
+4. Cargo insurance (CMR).
+5. Whether you have return trips from Georgia or Azerbaijan, and how often.
+We look forward to long-term cooperation.
+Best regards, Zinaida, Managing Director; Olga. AI Transport Company (Georgia). Phone/WhatsApp, Email.
