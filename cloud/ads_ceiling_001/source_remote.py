@@ -1,7 +1,7 @@
-"""Campaign click ceiling → 3,50 UAH (owner 2026-11-26 via the coordinator: «Давай 3,50. По 2 гривни никто не заходит»; earlier «сразу на 2 гривни …
+"""Campaign click ceiling → 4,55 UAH (owner 2026-11-27 via the coordinator: «став тогда 4 гривни 55 копеек»; 26.11 «Давай 3,50»; earlier «сразу на 2 гривни …
 Будем постепенно добавлять»; «да» in this chat before the write).
 
-One googleAds:mutate that updates only campaign.target_spend.cpc_bid_ceiling_micros (Maximize clicks) to 3,50 UAH; state
+One googleAds:mutate that updates only campaign.target_spend.cpc_bid_ceiling_micros (Maximize clicks) to 4,55 UAH; state
 before and after in the report. Budget, keywords, places, schedule and name stay. No site, CRM or bot change.
 """
 import argparse
@@ -15,7 +15,7 @@ import urllib.request
 import source_check as check
 
 HERE = Path(__file__).resolve().parent
-CEILING_MICROS = 3500000  # 3,50 UAH (owner 2026-11-26 «Давай 3,50»; was 2)
+CEILING_MICROS = 4550000  # 4,55 UAH (owner 2026-11-27 «став тогда 4 гривни 55 копеек»; was 3,50)
 NAMES = "'Пошук — Україна — Корея (UA ART)', 'Пошук — Київ — Корея (UA ART)'"
 QUERY = ("SELECT campaign.resource_name, campaign.name, campaign.status, campaign.target_spend.cpc_bid_ceiling_micros, "
          "campaign_budget.amount_micros FROM campaign WHERE campaign.name IN (%s)" % NAMES)

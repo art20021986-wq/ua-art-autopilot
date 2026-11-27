@@ -25,7 +25,7 @@ def request(day):
         'description': 'Owner 2026-11-26 via the coordinator («поисковых запросов 5000 …»; «Все да» to «model + year from Korea», '
                        '«да» in this chat). Bounded run in the existing private inbox: upload this package, run source_remote.py '
                        'once in a temporary always-on task (removed after its receipt; never the CRM bot) which keeps the click '
-                       'ceiling at 3,50 UAH, adds negative phrases, the missing brand and auction groups (one ad each, to the '
+                       'ceiling at 4,55 UAH, adds negative phrases, the missing brand and auction groups (one ad each, to the '
                        '«під ключ» or auction lots page) and tonight\'s part (up to 2 400) of the generated buyer keywords uk + '
                        'ru (phrase, partialFailure, nothing twice); budget unchanged. No site, CRM or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
@@ -33,7 +33,7 @@ def request(day):
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
                       'receipt_path': 'state/receipts/%s.json' % task, 'test_paths': TESTS, 'timeout_seconds': 900},
         'production_required': False, 'read_only': False, 'requested_min_class': 'STANDARD',
-        'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Google Ads bulk keywords, 3,50 UAH'}
+        'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Google Ads bulk keywords, 4,55 UAH'}
     path = 'tasks/requests/%s.json' % task
     with open(path, 'x') as handle:
         handle.write(json.dumps(value, sort_keys=True, separators=(',', ':')))
