@@ -38,11 +38,11 @@ def popular(make, model):
 
 
 def keep(lot):
-    """Popular model, from MIN_YEAR, runs and drives, a minimal primary damage, nothing ruinous anywhere, photos."""
+    """Popular model, from MIN_YEAR, runs and drives, a minimal primary damage, nothing ruinous anywhere."""
     damage = ' '.join((lot.get('damage', ''), lot.get('secondary_damage', ''), lot.get('title_type', '')))
     return (popular(lot.get('make'), lot.get('model')) and lot.get('year', 0) >= MIN_YEAR and lot.get('runs')
             and any(w in lot.get('damage', '').lower() for w in MINIMAL_DAMAGE) and not NEVER.search(damage)
-            and bool(lot.get('photos')))
+            )
 
 
 def choose(lots, size=SIZE):
