@@ -120,13 +120,24 @@ QUERIES.update({
 # 2026-11-27 (owner's Google Ads recommendations screenshot via the coordinator): which recommendations Google shows,
 # the sitelinks of every campaign and how the conversion actions stand (tag, last conversion, import).
 QUERIES.update({
-    'recommendations': ('client', 'SELECT recommendation.type, recommendation.campaign, recommendation.dismissed '
-                                  'FROM recommendation'),
+    'recommendations': ('client', 'SELECT recommendation.resource_name, recommendation.type, recommendation.campaign, '
+                                  'recommendation.dismissed, recommendation.impact.base_metrics.clicks, '
+                                  'recommendation.impact.potential_metrics.clicks, '
+                                  'recommendation.impact.base_metrics.conversions, '
+                                  'recommendation.impact.potential_metrics.conversions FROM recommendation'),
+    'optimization': ('client', 'SELECT customer.optimization_score, customer.optimization_score_weight FROM customer'),
     'campaigns_all': ('client', 'SELECT campaign.name, campaign.status FROM campaign'),
     'sitelinks_all': ('client', "SELECT campaign.name, campaign_asset.field_type, campaign_asset.status, "
-                                "campaign_asset.primary_status FROM campaign_asset WHERE campaign_asset.field_type = 'SITELINK'"),
-    'customer_sitelinks': ('client', "SELECT customer_asset.field_type, customer_asset.status FROM customer_asset "
+                                "campaign_asset.primary_status, campaign_asset.source, asset.sitelink_asset.link_text, "
+                                "asset.final_urls FROM campaign_asset WHERE campaign_asset.field_type = 'SITELINK'"),
+    'customer_sitelinks': ('client', "SELECT customer_asset.field_type, customer_asset.status, "
+                                     "asset.sitelink_asset.link_text, asset.final_urls FROM customer_asset "
                                      "WHERE customer_asset.field_type = 'SITELINK'"),
+    'group_sitelinks': ('client', "SELECT ad_group.name, ad_group_asset.field_type, ad_group_asset.status, "
+                                  "asset.sitelink_asset.link_text, asset.final_urls FROM ad_group_asset "
+                                  "WHERE ad_group_asset.field_type = 'SITELINK'"),
+    'all_assets_campaign': ('client', "SELECT campaign.name, campaign_asset.field_type, campaign_asset.status, "
+                                      "campaign_asset.source FROM campaign_asset WHERE campaign_asset.status != 'REMOVED'"),
     'conv_actions': ('client', 'SELECT conversion_action.name, conversion_action.status, conversion_action.type, '
                                'conversion_action.origin, conversion_action.primary_for_goal, '
                                'conversion_action.include_in_conversions_metric FROM conversion_action'),
