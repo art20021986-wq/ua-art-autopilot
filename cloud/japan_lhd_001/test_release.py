@@ -88,6 +88,13 @@ class CandidateTests(unittest.TestCase):
             self.assertNotIn('kplan1', text)
         self.assertIn("/jplhd1-", (HERE / 'deployment_transport.py').read_text(encoding='utf-8'))
 
+    def test_pre_install_health_checks_only_existing_pages(self):
+        """Run 45936163206 halted: the pre-install check listed japan.html, which this install creates."""
+        source = (HERE / 'make_release.py').read_text(encoding='utf-8')
+        checks = source[source.index("'health_checks':"):source.index("'production_required': True")]
+        self.assertNotIn('japan.html', checks)
+        self.assertIn('/video/japan.html', __import__('deployment_controller').EXPECTED)  # checked after the install
+
     def _tmp(self):
         import tempfile
         directory = tempfile.TemporaryDirectory()
