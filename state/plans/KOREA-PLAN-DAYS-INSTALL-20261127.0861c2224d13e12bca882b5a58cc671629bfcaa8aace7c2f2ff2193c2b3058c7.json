@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-PLAN-DAYS-INSTALL-20261127.0861c2224d13e12bca882b5a58cc671629bfcaa8aace7c2f2ff2193c2b3058c7.json",
+  "autostart_ledger_sha256": "614614ee9b4ac7d5c859cf2a520c3a1eb0a8dac1f113d1d7b1f02cf7430addc9",
+  "autostart_source_commit": "88602e7bb007ad1ac23e021b6fffe389c77a4417",
+  "created_at": "2026-11-27T01:35:55Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "45923326192",
+    "task_id": "KOREA-PLAN-DAYS-INSTALL-20261127",
+    "task_sha256": "0861c2224d13e12bca882b5a58cc671629bfcaa8aace7c2f2ff2193c2b3058c7"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "catalog_renderer-575f1c34b9ed81f8",
+  "request_path": "tasks/requests/KOREA-PLAN-DAYS-INSTALL-20261127.json",
+  "resource_locks": [
+    "CATALOG_RENDERER"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
