@@ -31,20 +31,6 @@ def text(page):
     return re.sub(r'\s+', ' ', html_lib.unescape(re.sub(r'<[^>]+>', ' ', page))).strip()
 
 
-TITLE = re.compile(r'title="([^"]*)"')
-
-
-def titled(piece):
-    """USA-LOTS-FIX (live 27.11: the listing writes each value in its item's title attribute,
-    title="Primary Damage: Front End"): each known label's value from those attributes."""
-    out = {}
-    for m in TITLE.finditer(piece):
-        label, _, value = html_lib.unescape(m.group(1)).partition(':')
-        if _ and label.strip() in LABELS and value.strip():
-            out.setdefault(label.strip(), value.strip())
-    return out
-
-
 def fields(plain):
     """Each label's value: the text from its «Label:» to the next known label (first occurrence wins)."""
     marks = list(LABEL.finditer(plain))
@@ -97,17 +83,15 @@ def listing(page, make, model):
                 firsts.append((m.group(1), m.start()))
     lots = []
     for n, (lot_id, start) in enumerate(firsts):
-        raw = page[start:firsts[n + 1][1] if n + 1 < len(firsts) else len(page)]
-        piece = text(raw)
+        piece = text(page[start:firsts[n + 1][1] if n + 1 < len(firsts) else len(page)])
         year = YEAR.search(piece)
-        values = dict(fields(piece), **titled(raw))  # the title attributes win
-        lots.append(dict(common(values), id=lot_id, make=make, model=model, year=int(year.group(1)) if year else 0))
+        lots.append(dict(common(fields(piece)), id=lot_id, make=make, model=model, year=int(year.group(1)) if year else 0))
     return lots
 
 
 def lot(page, now):
     """A lot page -> its auction start, values and photo list address."""
-    values = dict(fields(text(page)), **titled(page))
+    values = fields(text(page))
     photos = PHOTO_LIST.search(page)
     return dict(common(values), auction_start=auction_start(values.get('Auction Date and Time', ''), now),
                 actual_cash_value_usd=number(MONEY, values.get('Actual Cash Value')),

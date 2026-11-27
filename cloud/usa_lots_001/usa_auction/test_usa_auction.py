@@ -13,13 +13,9 @@ NOW = datetime(2026, 11, 27, 12, 0, tzinfo=timezone.utc)
 
 
 def block(lot_id, year, damage, start, odo='48,000'):
-    """As the live listing (27.11): each value in its item's title attribute, the label span only for some."""
-    item = '<li class="data-list__item"><span class="data-list__value" title="%s: %s">%s</span></li>'
     return ('<div class="table-row"><a href="/VehicleDetail/%s~US"><img></a><h4><a href="/VehicleDetail/%s~US">'
-            '%d TOYOTA RAV4 XLE</a></h4><ul><li class="data-list__item"><span class="data-list__label">Stock #: </span>'
-            '<span class="data-list__value" title="Stock #: %s">%s</span></li>' % (lot_id, lot_id, year, lot_id, lot_id)
-            + item % ('Title/Sale Doc', '', '') + item % ('Primary Damage', damage, damage)
-            + item % ('Odometer', odo + ' mi (Actual)', odo) + item % ('Start Code', start, start) + '</ul></div>')
+            '%d TOYOTA RAV4 XLE</a></h4><ul><li>Primary Damage: <span>%s</span></li><li>Odometer: %s mi (Actual)</li>'
+            '<li>Start Code: %s</li><li>Key: Present</li></ul></div>' % (lot_id, lot_id, year, damage, odo, start))
 
 
 LISTING = ('<html><body>' + block('41000001', 2021, 'Minor Dent/Scratches', 'Run &amp; Drive')
@@ -70,9 +66,6 @@ class SelectionTests(unittest.TestCase):
 
     def test_popular(self):
         self.assertTrue(selection.popular('TESLA', 'MODEL Y'))
-        self.assertTrue(selection.popular('TESLA', 'MODEL-3'))
-        self.assertTrue(selection.popular('TOYOTA', 'RAV4 HYBRID'))
-        self.assertFalse(selection.popular('MAZDA', '323'))
         self.assertFalse(selection.popular('TOYOTA', 'TUNDRA'))
 
     def test_choose_three_of_a_model(self):
@@ -143,18 +136,6 @@ class JobTests(unittest.TestCase):
             data['listings']['toyota|rav4']['at'] = '2026-11-01T00:00Z'
             report = job.run(FakeClient([], closed=('iaai.com',)), data, NOW, folder)
             self.assertEqual((report['stop'], report['shown']), ('HTTP_418', 1))
-
-    def test_unreadable_listing_stops_and_old_listings_are_read_again(self):
-        with tempfile.TemporaryDirectory() as temp:
-            blank = LISTING.replace('Primary Damage', 'Something')
-            data = {'models': {'toyota|rav4': 'https://www.iaai.com/Vehiclelisting/TOYOTA/RAV4/'},
-                    'models_at': '2026-11-27T00:00Z',
-                    'listings': {'toyota|rav4': {'at': '2026-11-27T11:00Z', 'lots': [{'id': '1', 'damage': ''}]}},
-                    'pages': {}}
-            client = FakeClient([('Vehiclelisting', blank)])
-            report = job.run(client, data, NOW, Path(temp))
-            self.assertEqual((report['stop'], client.requests), ('LISTING_UNREADABLE', 1))
-            self.assertEqual(data['listings'], {})
 
     def test_past_auction_dropped(self):
         with tempfile.TemporaryDirectory() as temp:

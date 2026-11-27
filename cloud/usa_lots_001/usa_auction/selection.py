@@ -31,17 +31,10 @@ MIN_YEAR = 2015
 SIZE = 30  # as the Japan ticker cards: the countries in equal numbers (owner 2026-11-27)
 
 
-def _key(value):
-    return re.sub(r'[^a-z0-9]', '', (value or '').lower())
-
-
 def popular(make, model):
-    """The make's model word, spelled any way IAAI writes it («MODEL 3», «MODEL-3», «Model3»); a word of up to 2
-    characters («3», «es») matches only exactly, a longer one also a longer name («RAV4 HYBRID», «X5 M»)."""
     words = POPULAR.get((make or '').strip().lower())
-    name, raw = _key(model), (model or '').strip().lower()
-    return bool(words) and any(name == _key(w) or (len(_key(w)) > 2 and name.startswith(_key(w)))
-                               or raw.startswith(w + ' ') for w in words)
+    name = (model or '').strip().lower()
+    return bool(words) and any(name == w or name.startswith(w + ' ') for w in words)
 
 
 def keep(lot):
