@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "1e4d215f1fa9b222895816d6b79dafd8ec9b618f2e0117c3f1a8d2ee001adfdb",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T11:17:18Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-27T11:29:24Z",
+  "heartbeat_at": "2026-11-27T11:29:24Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "45988234935",
     "task_id": "USA-LOTS-INSTALL-20261127",
@@ -17,7 +18,52 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 449.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 125.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/japan.html",
+        "http_status": 200,
+        "latency_ms": 165.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/japan.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/usa.html",
+        "http_status": 200,
+        "latency_ms": 127.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/usa.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 126.6,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -67,10 +113,11 @@
   "production_required": true,
   "production_transaction_id": "tx-45988234935-332319f5ca0f1940",
   "production_transaction_path": "state/transactions/USA-LOTS-INSTALL-20261127.332319f5ca0f19404d3a4c71a1ba970f906f0ec6ff7b0c41922068936ba327f5.45988234935.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/USA-LOTS-INSTALL-20261127.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "da6ec9ab1b4ee380866ed24035bc1bc28515281811fe478dce6e47e8dd5a8d59",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/USA-LOTS-INSTALL-20261127.json",
   "request_sha256": "332319f5ca0f19404d3a4c71a1ba970f906f0ec6ff7b0c41922068936ba327f5",
   "resource_locks": [
@@ -93,7 +140,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "d154bca629735b4102d24d00a0d77982e132cba1ad72fb50a02bbf25f936e501",
     "file_sha256": {
@@ -141,5 +188,5 @@
       "cloud/usa_lots_001/usa_auction/views.py": "bf5aa1183fec0d1858f273740cbe5fb5e5e174912ad850244ef936ce60ef844c"
     }
   },
-  "updated_at": "2026-11-27T11:17:18Z"
+  "updated_at": "2026-11-27T11:29:24Z"
 }
