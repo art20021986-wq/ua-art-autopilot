@@ -155,7 +155,7 @@ QUERIES.update({
     'campaign_status_all': ('client', 'SELECT campaign.name, campaign.status, campaign.serving_status, '
                                       'campaign.primary_status, campaign.primary_status_reasons FROM campaign'),
     'metrics_2d': ('client', "SELECT campaign.name, segments.date, metrics.impressions, metrics.clicks, metrics.cost_micros "
-                             "FROM campaign WHERE segments.date BETWEEN '2026-11-26' AND '2026-11-27'"),
+                             "FROM campaign WHERE segments.date BETWEEN '2026-11-27' AND '2026-11-28'"),
 })
 ONLY = ('account', 'billing_full', 'account_budget', 'campaign_status_all', 'metrics_2d')
 PLANNING = False  # R2: the Keyword Planner needs Basic access (DEVELOPER_TOKEN_NOT_APPROVED); R3 skips it
