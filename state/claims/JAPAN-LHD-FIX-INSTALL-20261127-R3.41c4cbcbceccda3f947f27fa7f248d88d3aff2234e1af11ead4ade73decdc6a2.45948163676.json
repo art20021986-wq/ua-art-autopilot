@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "b277d903c3bce7dbf03379447555020a1b8af2c51592b95a17b4e0615770cbd4",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T05:57:22Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-27T06:12:27Z",
+  "heartbeat_at": "2026-11-27T06:12:27Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "45948163676",
     "task_id": "JAPAN-LHD-FIX-INSTALL-20261127-R3",
@@ -17,7 +18,44 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 308.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 24.9,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/japan.html",
+        "http_status": 200,
+        "latency_ms": 22.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/japan.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 26.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -59,10 +97,11 @@
   "production_required": true,
   "production_transaction_id": "tx-45948163676-41c4cbcbceccda3f",
   "production_transaction_path": "state/transactions/JAPAN-LHD-FIX-INSTALL-20261127-R3.41c4cbcbceccda3f947f27fa7f248d88d3aff2234e1af11ead4ade73decdc6a2.45948163676.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/JAPAN-LHD-FIX-INSTALL-20261127-R3.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "ad6e4e08f8a746b1a25982faf3b6b664985ee5cfce75e45f8528a54610ea2974",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/JAPAN-LHD-FIX-INSTALL-20261127-R3.json",
   "request_sha256": "41c4cbcbceccda3f947f27fa7f248d88d3aff2234e1af11ead4ade73decdc6a2",
   "resource_locks": [
@@ -85,7 +124,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "8669077479204f75de3c0d42d3f70c1c0166b9c34197893f78a277b89df0e481",
     "file_sha256": {
@@ -136,5 +175,5 @@
       "cloud/japan_lhd_fix_001/test_release.py": "e422eb3145c7f9a84f1bdd770c6309df046b19df96a6fdeada1cc716ff938062"
     }
   },
-  "updated_at": "2026-11-27T05:57:22Z"
+  "updated_at": "2026-11-27T06:12:27Z"
 }
