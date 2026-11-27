@@ -143,6 +143,21 @@ QUERIES.update({
     'conv_all_7d': ('client', 'SELECT segments.conversion_action_name, metrics.all_conversions FROM customer '
                               'WHERE segments.date DURING LAST_7_DAYS'),
 })
+# 2026-11-27 (owner «он что-то говорит не оплачено. Хотя карта привязана, деньги есть»): payment state, account budget,
+# serving status of every campaign and the last two days. ONLY limits the run to these few reads (API quota).
+QUERIES.update({
+    'billing_full': ('client', 'SELECT billing_setup.id, billing_setup.status, billing_setup.payments_account, '
+                               'billing_setup.start_date_time, billing_setup.end_date_time FROM billing_setup'),
+    'account_budget': ('client', 'SELECT account_budget.status, account_budget.approved_spending_limit_micros, '
+                                 'account_budget.proposed_spending_limit_micros, account_budget.adjusted_spending_limit_micros, '
+                                 'account_budget.amount_served_micros, account_budget.approved_start_date_time, '
+                                 'account_budget.approved_end_date_time FROM account_budget'),
+    'campaign_status_all': ('client', 'SELECT campaign.name, campaign.status, campaign.serving_status, '
+                                      'campaign.primary_status, campaign.primary_status_reasons FROM campaign'),
+    'metrics_2d': ('client', "SELECT campaign.name, segments.date, metrics.impressions, metrics.clicks, metrics.cost_micros "
+                             "FROM campaign WHERE segments.date BETWEEN '2026-11-26' AND '2026-11-27'"),
+})
+ONLY = ('account', 'billing_full', 'account_budget', 'campaign_status_all', 'metrics_2d')
 PLANNING = False  # R2: the Keyword Planner needs Basic access (DEVELOPER_TOKEN_NOT_APPROVED); R3 skips it
 UKRAINE = 'geoTargetConstants/2804'
 LANGUAGES = {'uk': 'languageConstants/1036', 'ru': 'languageConstants/1031'}
@@ -207,6 +222,8 @@ def check(keys, opener=urllib.request.urlopen):
                           headers={k: v for k, v in headers.items() if k != 'login-customer-id'}, opener=opener)
     value['accessible'] = answer.get('resourceNames', []) if status == 200 else {'http': status, **errors(answer)}
     for name, (who, query) in QUERIES.items():
+        if ONLY and name not in ONLY:
+            continue
         customer = keys['login_customer_id'] if who == 'login' else keys['customer_id']
         status, answer = call(API + 'customers/%s/googleAds:search' % customer, json.dumps({'query': query}).encode(),
                               headers, opener)
