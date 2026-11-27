@@ -158,6 +158,7 @@ QUERIES.update({
                              "FROM campaign WHERE segments.date BETWEEN '2026-11-27' AND '2026-11-28'"),
 })
 ONLY = ('account', 'billing_full', 'account_budget', 'campaign_status_all', 'metrics_2d')
+IDENTITY = True  # 2026-11-27: advertiser identity verification state (IdentityVerificationService), read-only
 PLANNING = False  # R2: the Keyword Planner needs Basic access (DEVELOPER_TOKEN_NOT_APPROVED); R3 skips it
 UKRAINE = 'geoTargetConstants/2804'
 LANGUAGES = {'uk': 'languageConstants/1036', 'ru': 'languageConstants/1031'}
@@ -228,6 +229,10 @@ def check(keys, opener=urllib.request.urlopen):
         status, answer = call(API + 'customers/%s/googleAds:search' % customer, json.dumps({'query': query}).encode(),
                               headers, opener)
         value[name] = answer.get('results', []) if status == 200 else {'http': status, **errors(answer)}
+    if IDENTITY:
+        status, answer = call(API + 'customers/%s:getIdentityVerification' % keys['customer_id'], headers=headers,
+                              opener=opener)
+        value['identity_verification'] = answer if status == 200 else {'http': status, **errors(answer)}
     if not PLANNING:
         return value
     geo, value['kyiv_locations'] = kyiv(keys['customer_id'], headers, opener)
