@@ -7,21 +7,23 @@
   "created_at": "2026-11-27T03:09:07Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T03:09:07Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-27T03:15:58Z",
+  "heartbeat_at": "2026-11-27T03:15:58Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "45932327232",
     "task_id": "HOME-BLOCKS-PREFLIGHT-20261127",
     "task_sha256": "4ab7cf1b7f0df64c3b9e2562320865182b23876df4193f5c4f6d060a1786d823"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-65db7e567e9cf54c-d4d996c99b0825e1",
   "receipt_path": "state/receipts/HOME-BLOCKS-PREFLIGHT-20261127.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "618627c34f685bdd35644b116a3b0e508d50b786b822c07cdbd630ba2d1b56de",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/HOME-BLOCKS-PREFLIGHT-20261127.json",
   "request_sha256": "4ab7cf1b7f0df64c3b9e2562320865182b23876df4193f5c4f6d060a1786d823",
   "resource_locks": [
@@ -29,8 +31,35 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "36c51a757da849d086352111c591fa6b3564647b",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 95405510656,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.435
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-27T03:09:07Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "16a2fdb336175534a25891f27f2cbb4faf4231bfcbd70cd0c9108003d3df9a46",
+    "file_sha256": {
+      "cloud/home_blocks_001/candidate_builder.py": "39105bda58696d1354bc6ba138a2abb314c75865101b535078825f3a302bf39c",
+      "cloud/home_blocks_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/home_blocks_001/deployment_bootstrap.py": "1bf19853c72a7f4956b005f1e64feb7132d40d195c9ca054d976aa6feec114fb",
+      "cloud/home_blocks_001/deployment_remote.py": "f1d75f72c6964ebf5e2519d2fdadeb309f9292e642aeee59b377435b6407c230",
+      "cloud/home_blocks_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/home_blocks_001/deployment_transport.py": "4026deff554b2f43196d8147b3798e5621426395b902aae13f4927817b211f9d",
+      "cloud/home_blocks_001/make_release.py": "9679f62a33551aad5e97a81ae90fda6f856944beb277c0839df2bf312a653703",
+      "cloud/home_blocks_001/release_constants.py": "fccc95275fc530b23ef2af83014d05428bb10e6dc99d56bf7bdb69b44a18ebc2",
+      "cloud/home_blocks_001/test_deployment.py": "c8cf1ae89405cb1afb22a5cc68651a7d493f9bd24e8b5359eac52eb6af5c91d0",
+      "cloud/home_blocks_001/test_release.py": "6216b67879099b0aa401fb8fab6d7b613b909fd4406f5737e99c0558e4241ec7",
+      "cloud/home_blocks_001/ua_head_block.py": "d2f5dbead3de3678ef4f74d27b602ae69a239cf6a1014595894c29767aa29c75",
+      "cloud/home_blocks_001/ua_home_blocks.py": "18401380e3a92e574dfe0774efd7f30ae7765a35a8e94cd06c91f222181ef85c",
+      "cloud/home_blocks_001/ua_layout_reserve.py": "566a431552dd6deea97314c6a8f5c12507e534d2f4953b6bd64333465979eba3"
+    }
+  },
+  "updated_at": "2026-11-27T03:15:58Z"
 }
