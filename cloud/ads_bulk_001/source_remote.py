@@ -23,7 +23,7 @@ import plan
 import source_check as check
 
 HERE = Path(__file__).resolve().parent
-CEILING_MICROS = 3500000  # 3,50 UAH (owner 2026-11-26 «Давай 3,50»; was 2)
+CEILING_MICROS = 4550000  # 4,55 UAH (owner 2026-11-27 «став тогда 4 гривни 55 копеек»; was 3,50)
 # 2026-11-26: the campaign may be renamed «Пошук — Україна — Корея (UA ART)» (owner «Да, переименуй»).
 NAMES = "'%s', 'Пошук — Україна — Корея (UA ART)'" % plan.NAME
 CHUNK = 600

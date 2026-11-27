@@ -22,17 +22,17 @@ def request(day):
     task = 'ADS-CEIL-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
-        'description': 'Owner 2026-11-26 («Давай 3,50. По 2 гривни никто не заходит» via the coordinator; «да» in this chat). '
+        'description': 'Owner 2026-11-26 («Ну, став тогда 4 гривни 55 копеек на сегодня» via the coordinator; «да» in this chat). '
                        'Bounded run in the existing private inbox: upload this package, run source_remote.py once in a '
                        'temporary always-on task (removed after its receipt; never the CRM bot) which sets the campaign '
-                       'Maximize clicks ceiling to 3,50 UAH (one mutate, only target_spend.cpc_bid_ceiling_micros, never twice), '
+                       'Maximize clicks ceiling to 4,55 UAH (one mutate, only target_spend.cpc_bid_ceiling_micros, never twice), '
                        'state before and after. Budget, keywords, places and schedule stay. No site, CRM or bot change.',
         'execution': {'controller_path': P + 'controller.py', 'controller_sha256': sha(P + 'controller.py'),
                       'dependency_paths': DEPENDENCIES, 'evidence_paths': [P + day + '.json', 'state/receipts/%s.json' % task],
                       'file_sha256': {f: sha(f) for f in DEPENDENCIES + TESTS}, 'production_required': False,
                       'receipt_path': 'state/receipts/%s.json' % task, 'test_paths': TESTS, 'timeout_seconds': 900},
         'production_required': False, 'read_only': False, 'requested_min_class': 'STANDARD',
-        'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Google Ads click ceiling 3,50 UAH'}
+        'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Google Ads click ceiling 4,55 UAH'}
     path = 'tasks/requests/%s.json' % task
     with open(path, 'x') as handle:
         handle.write(json.dumps(value, sort_keys=True, separators=(',', ':')))
