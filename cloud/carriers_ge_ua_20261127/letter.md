@@ -18,8 +18,7 @@
 1. Наше предложение — $6000 за полный автовоз (8–9 машин) из Грузии (Поти / Тбилиси) в Киев. В эту сумму входят все расходы на перевозку, включая паром, — их оплачивает перевозчик. Готовы ли вы работать по этой цене?
 2. Сроки доставки и как часто вы можете забирать машины.
 3. Работаете ли вы по маршруту через паром в Констанцу и Одессу, или предлагаете другой.
-4. Страхование груза (CMR).
-5. Есть ли у вас обратные рейсы из Грузии или Азербайджана и как часто.
+4. Есть ли у вас обратные рейсы из Грузии или Азербайджана и как часто.
 Будем рады долгосрочному сотрудничеству.
 С уважением, Зинаида, директор; Ольга, директор. ООО «АИ Транспорт Компани» (Грузия). Тел./WhatsApp, Email.
 
@@ -34,7 +33,6 @@ Could you please let us know:
 1. Our offer is USD 6,000 per full car carrier (8–9 cars) from Georgia (Poti / Tbilisi) to Kyiv. This rate covers all transport costs, including the ferry, which are paid by the carrier. Would you work at this rate?
 2. Transit time and how often you can collect cars.
 3. Whether you work via the ferry to Constanța and Odesa, or suggest another route.
-4. Cargo insurance (CMR).
-5. Whether you have return trips from Georgia or Azerbaijan, and how often.
+4. Whether you have return trips from Georgia or Azerbaijan, and how often.
 We look forward to long-term cooperation.
 Best regards, Zinaida, Director; Olga, Director. AI Transport Company LLC (Georgia). Phone/WhatsApp, Email.
