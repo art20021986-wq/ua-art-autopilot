@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "2899aa8a4b85c48ce4ab5b329c7f9c1b56695ab8c02f966a9e9be13a7d8c14d3",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-27T00:35:45Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-27T00:40:53Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "45917325185",
     "task_id": "SEARCH-HOME-INSTALL-20261126-R2",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-45917325185-411f7b0e9c37e516",
   "production_transaction_path": "state/transactions/SEARCH-HOME-INSTALL-20261126-R2.411f7b0e9c37e516eccb097598619644cb9c4b416d9d80dea55a9f3c083c7873.45917325185.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-575f1c34b9ed81f8",
   "receipt_path": "state/receipts/SEARCH-HOME-INSTALL-20261126-R2.json",
   "receipt_validation_status": "PENDING",
@@ -124,5 +124,5 @@
       "cloud/search_home_install_001/usa_tariffs_sync.py": "05eb1124c883cbda1340266cbc2072bd2913136a63f37f0eeebd65ec67e9b42b"
     }
   },
-  "updated_at": "2026-11-27T00:35:45Z"
+  "updated_at": "2026-11-27T00:40:53Z"
 }
