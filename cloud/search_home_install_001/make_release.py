@@ -21,7 +21,7 @@ import autostart_intake  # noqa: E402
 import control_plane as cp  # noqa: E402
 
 P = 'cloud/search_home_install_001/'
-from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
+from release_constants import HEALTH_CHECKS, INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
@@ -140,8 +140,7 @@ def install():
                'deployment_plan_sha256': preview_value['plan_sha256'],
                'description': 'Owner «Да» (2026-11-26, SEARCH-HOME-001 install A): Korea/America/Japan tabs on the home ticker week tile and the score legend titled «аукціони Кореї» (collector country_tabs.py new, ticker.py); the Korea page offer line «Авто з усіх країн під ключ · послуга 600 $ за договором · інші витрати — за рахунками аукціонів і перевізників» (video/korea.html, ru follows by ua_korea_ru); Korea port costs in Georgia 400 $ (video/korea/logistics.json); the new USA page with the turnkey calculator (video/usa.html, video/usa/usa-calc.js, video/usa/tariffs.json) and its weekly tariff copy (usa_costs.py, usa_tariffs_sync.py, a daily server task). CRM and the hourly ticker task stay. Existing backup, rollback and public health checks are kept.',
                'execution': execution(task, True),
-               'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/korea.html',
-                                 'https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/usa.html'],
+               'health_checks': list(HEALTH_CHECKS),
                'production_required': True, 'read_only': False, 'requested_min_class': 'CRITICAL',
                'storage_probe': {'evidence_path': storage_path, 'evidence_sha256': sha(storage_path)},
                'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Install country tabs, Korea offer line, USA page'}
