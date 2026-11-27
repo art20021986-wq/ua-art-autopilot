@@ -1,0 +1,43 @@
+{
+  "before": [
+    {
+      "campaign": {
+        "name": "Пошук — Україна — Корея (UA ART)",
+        "resourceName": "customers/4680747874/campaigns/24540607407",
+        "status": "ENABLED",
+        "targetSpend": {
+          "cpcBidCeilingMicros": "4550000"
+        }
+      },
+      "campaignBudget": {
+        "amountMicros": "300000000",
+        "resourceName": "customers/4680747874/campaignBudgets/16104358943"
+      }
+    }
+  ],
+  "copied": {
+    "adSchedule": 0,
+    "keyword": 79,
+    "language": 2,
+    "location": 23
+  },
+  "mode": "probe",
+  "mutate": {
+    "errors": [
+      {
+        "code": "quotaError=RESOURCE_EXHAUSTED",
+        "message": "Too many requests. Retry in 8467 seconds."
+      }
+    ],
+    "http": 429,
+    "message": "Resource has been exhausted (e.g. check quota).",
+    "status": "RESOURCE_EXHAUSTED"
+  },
+  "operations": 156,
+  "remote_write_count": 1,
+  "run_id": "45946539330",
+  "safe_to_stop": true,
+  "sitelinks": 6,
+  "status": "FAIL",
+  "task_id": "ADS-USA-20261127"
+}
