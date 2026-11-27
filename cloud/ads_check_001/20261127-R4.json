@@ -1,0 +1,120 @@
+{
+  "google_ads": {
+    "accessible": [
+      "customers/4680747874",
+      "customers/9054959760"
+    ],
+    "account": [
+      {
+        "customer": {
+          "autoTaggingEnabled": true,
+          "conversionTrackingSetting": {
+            "conversionTrackingStatus": "CONVERSION_TRACKING_MANAGED_BY_SELF"
+          },
+          "currencyCode": "UAH",
+          "descriptiveName": "UA ART сomapny LLC",
+          "id": "4680747874",
+          "resourceName": "customers/4680747874",
+          "status": "ENABLED",
+          "testAccount": false,
+          "timeZone": "Europe/Kiev"
+        }
+      }
+    ],
+    "account_budget": [
+      {
+        "accountBudget": {
+          "amountServedMicros": "311800000",
+          "approvedStartDateTime": "2026-11-25 02:39:07",
+          "resourceName": "customers/4680747874/accountBudgets/8716362677",
+          "status": "APPROVED"
+        }
+      }
+    ],
+    "billing_full": [
+      {
+        "billingSetup": {
+          "id": "8661262148",
+          "paymentsAccount": "customers/4680747874/paymentsAccounts/9995-3004-1677-3514",
+          "resourceName": "customers/4680747874/billingSetups/8661262148",
+          "startDateTime": "2026-11-25 02:39:07",
+          "status": "APPROVED"
+        }
+      }
+    ],
+    "campaign_status_all": [
+      {
+        "campaign": {
+          "name": "Пошук — Україна — Корея (UA ART)",
+          "primaryStatus": "LEARNING",
+          "primaryStatusReasons": [
+            "BIDDING_STRATEGY_LEARNING"
+          ],
+          "resourceName": "customers/4680747874/campaigns/24540607407",
+          "servingStatus": "SERVING",
+          "status": "ENABLED"
+        }
+      },
+      {
+        "campaign": {
+          "name": "Пошук — США (UA ART)",
+          "primaryStatus": "PENDING",
+          "primaryStatusReasons": [
+            "BIDDING_STRATEGY_LEARNING",
+            "MOST_ADS_UNDER_REVIEW"
+          ],
+          "resourceName": "customers/4680747874/campaigns/24551477166",
+          "servingStatus": "SERVING",
+          "status": "ENABLED"
+        }
+      }
+    ],
+    "metrics_2d": [
+      {
+        "campaign": {
+          "name": "Пошук — Україна — Корея (UA ART)",
+          "resourceName": "customers/4680747874/campaigns/24540607407"
+        },
+        "metrics": {
+          "clicks": "0",
+          "costMicros": "0",
+          "impressions": "2"
+        },
+        "segments": {
+          "date": "2026-11-26"
+        }
+      },
+      {
+        "campaign": {
+          "name": "Пошук — Україна — Корея (UA ART)",
+          "resourceName": "customers/4680747874/campaigns/24540607407"
+        },
+        "metrics": {
+          "clicks": "1",
+          "costMicros": "4450000",
+          "impressions": "5"
+        },
+        "segments": {
+          "date": "2026-11-27"
+        }
+      }
+    ],
+    "scope": "https://www.googleapis.com/auth/adwords",
+    "token": "PASS"
+  },
+  "keys_mode": "0o600",
+  "keys_present": {
+    "client_id": true,
+    "client_secret": true,
+    "customer_id": true,
+    "developer_token": true,
+    "login_customer_id": true,
+    "refresh_token": true
+  },
+  "mode": "probe",
+  "remote_write_count": 0,
+  "run_id": "45964688667",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "ADS-CHECK-20261127-R4"
+}
