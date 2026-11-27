@@ -19,7 +19,7 @@ import tempfile
 import time
 
 from deployment_transport import API, canonical, sha
-from candidate_builder import DEPENDENCY_SHA256, build, is_page, page as current_page, targets
+from candidate_builder import DEPENDENCY_SHA256, GOLDEN, build, is_page, page as current_page, targets
 
 ROOT = Path('/home/Carix')
 HERE = Path(__file__).resolve().parent
@@ -28,6 +28,8 @@ HERE = Path(__file__).resolve().parent
 QUOTA_BYTES = 35 * 10**9
 # The home page the writers produce now carries the blocks style once (in <head>).
 ROW = '<!--UA-HOME-BLOCKS-V1-->'
+ROOM = 'min-height:max(calc(30vw + 770px),calc(60vw + 620px))'
+MENU = '.header-main:not(:has(.nav-toggle))::after'
 
 
 class DeploymentError(RuntimeError):
@@ -115,30 +117,37 @@ def prepare(directory):
     # CRM/page snapshots are captured again under locks at the write boundary.
     plan = {'schema_version':'HOME-BLOCKS-INSTALL-1','files':files,
             'protected':protected,'crm_write':False,'site_write':True,
-            'site_scope':'home page blocks style in <head>: ua_home_blocks.py (new) used by every page writer (site_ge_inject); the static home page now',
+            'site_scope':'home page blocks style in <head>: ua_home_blocks.py (new) used by every page writer (site_ge_inject), ua_layout_reserve.py with the new ticker room and the menu button room; the golden catalogue and the static home, catalogue and Korea pages now',
             'pending_requests_preserved':True}
     atomic(directory/'plan.json',canonical(plan))
     return plan
 
 
 def smoke(directory):
-    """The home page as the writers will produce it, back byte for byte when the release is taken out; a card and the
-    catalogue are not changed by the module."""
+    """Every page as the writers will produce it, each one back byte for byte when the release is taken out; the
+    catalogue design guard still accepts the catalogue against the golden one; a card is not changed."""
     plan = json.loads(read(directory/'plan.json'))
     names = sorted(plan['files'])
     after = directory/'after'
+    guard = load(ROOT/'catalog_design_guard.py', 'home_blocks_preview_guard')
+    text = lambda name: read(after/name).decode('utf-8')
+    golden = text(GOLDEN)
+    catalog = text('video/katalog.html') if 'video/katalog.html' in plan['files'] else read(ROOT/'video/katalog.html').decode('utf-8')
     pages = [n for n in names if plan['files'][n]['page']]
     cards = sorted(ROOT.glob('video/UA-[0-9][0-9][0-9][0-9].html'))
-    others = [p for p in cards[:1] + [ROOT/'video/katalog.html'] if p.is_file()]
     value = {'modules': [n for n in names if n.endswith('.py')], 'pages': pages,
-             'pages_current': sum(current_page(read(after/n).decode('utf-8')) == read(after/n).decode('utf-8') for n in pages),
-             'pages_with_row_once': sum(rows_once(read(after/n).decode('utf-8')) for n in pages),
+             'pages_current': sum(current_page(text(n)) == text(n) for n in pages + [GOLDEN]),
+             'pages_with_row_once': sum(rows_once(text(n)) for n in pages + [GOLDEN]),
              'pages_revert_exact': sum(rewind_row(read(after/n), read(directory/'before'/n)) == read(directory/'before'/n)
-                                       for n in pages),
-             'others_unchanged': sum(current_page(read(p).decode('utf-8')) == read(p).decode('utf-8') for p in others),
-             'others': [p.name for p in others]}
-    if (pages != ['video/index.html'] or value['pages_current'] != 1 or value['pages_with_row_once'] != 1
-            or value['pages_revert_exact'] != 1 or value['others_unchanged'] != len(others)):
+                                       for n in pages + [GOLDEN]),
+             'home_blocks': rows_once(text('video/index.html')) and ROW in text('video/index.html'),
+             'catalog_guard_after': guard.shell_fingerprint(catalog) == guard.shell_fingerprint(golden),
+             'catalog_audit_after': guard.shell_audit(catalog)['status'],
+             'card_unchanged': bool(cards) and current_page(read(cards[0]).decode('utf-8')) == read(cards[0]).decode('utf-8')}
+    total = len(pages) + 1
+    if ('video/index.html' not in pages or value['pages_current'] != total or value['pages_with_row_once'] != total
+            or value['pages_revert_exact'] != total or not value['home_blocks'] or not value['catalog_guard_after']
+            or value['catalog_audit_after'] != 'PASS' or not value['card_unchanged']):
         raise DeploymentError('SMOKE_RESULT:' + json.dumps(value)[:300])
     return value
 
@@ -159,19 +168,32 @@ def verify_files(plan, after):
 
 
 def rows_once(text):
-    """The blocks style once, in <head> (the home page as the installed writers produce it)."""
+    """The page as the installed writers produce it: the room block once in <head> with the menu rule (and the ticker
+    room on the home page), the blocks style once in <head> on the home page."""
     head = text.find('</head>')
-    return text.count(ROW) == 1 and 0 <= text.find(ROW) < head
+    reserve = '<!--UA-LAYOUT-RESERVE-V1-->'
+    if text.count(reserve) != 1 or not 0 <= text.find(reserve) < head or MENU not in text:
+        return False
+    if 'class="ua-kr-auc"' in text:
+        return text.count(ROW) == 1 and 0 <= text.find(ROW) < head and ROOM in text
+    return ROW not in text
 
 
 def has_row(path):
     return path.is_file() and not path.is_symlink() and rows_once(read(path).decode('utf-8', 'replace'))
 
 
+RESERVE = re.compile(r'<!--UA-LAYOUT-RESERVE-V1-->.*?<!--/UA-LAYOUT-RESERVE-V1-->', re.S)
+
+
 def rewind_row(value, before):
-    """A page with this release taken out (rollback of a page another writer rewrote since the install)."""
+    """A page with this release taken out (rollback of a page another writer rewrote since the install): no blocks
+    style, and the room block as the page had it (none, or the PERF-CWV-001 one)."""
     import ua_home_blocks  # this release's copy
-    return ua_home_blocks.remove(value.decode('utf-8')).encode('utf-8')
+    text = ua_home_blocks.remove(value.decode('utf-8'))
+    old = RESERVE.search(before.decode('utf-8'))
+    text = RESERVE.sub(lambda match: old.group(0) if old else '', text, count=1)
+    return text.encode('utf-8')
 
 
 def load_backup(digest):
@@ -287,7 +309,7 @@ def restore(directory, plan):
         path=ROOT/relative
         if relative in rewritten:
             text=read(path).decode('utf-8','replace')
-            if ROW in text:
+            if ROW in text or ROOM in text or MENU in text:
                 raise DeploymentError('ROLLBACK_ROW_LEFT:'+relative)
         elif item['before'] is None:
             if path.exists() or path.is_symlink(): raise DeploymentError('UNEXPECTED_FILE:'+relative)

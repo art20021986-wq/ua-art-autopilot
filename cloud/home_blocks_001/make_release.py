@@ -22,7 +22,8 @@ from release_constants import INSTALL_TASK, PREVIEW_TASK  # noqa: E402
 
 DEPENDENCIES = [P + n for n in ('candidate_builder.py', 'deployment_backup.py', 'deployment_bootstrap.py',
                                 'deployment_remote.py', 'deployment_rollback.py', 'deployment_transport.py',
-                                'make_release.py', 'release_constants.py', 'ua_head_block.py', 'ua_home_blocks.py')]
+                                'make_release.py', 'release_constants.py', 'ua_head_block.py', 'ua_home_blocks.py',
+                                'ua_layout_reserve.py')]
 TESTS = [P + n for n in ('test_deployment.py', 'test_release.py')]
 OWNER = 'Артём Бровинский / UA ART COMPANY LLC'
 PROTECTED = ['.crm_publish_requests', 'cars_schema.py', 'catalog_design_guard.py', 'crm.db', 'db.py', 'lead_bot.py',
@@ -72,7 +73,7 @@ def preview():
     value = {'ai_requested': False, 'changed_paths': [P + 'deployment_plan.json', P + 'deployment_preview.json'],
              'complexity': 2, 'control_plane_version': 'TASK107-R2',
              'description': 'Preview of HOME-BLOCKS-001: builds the candidate (ua_home_blocks.py new, hooked into '
-                            'site_ge_inject; the static home page with its style in <head>), checks the home page can be '
+                            'site_ge_inject; ua_layout_reserve.py with the new ticker room; the static home page with its style in <head>), checks the home page can be '
                             'taken back byte for byte and that a card and the catalogue are not changed, and measures '
                             'storage. No application source, CRM, HTML, media or bot state changes.',
              'execution': execution(task, False), 'production_required': False, 'read_only': False,
@@ -133,7 +134,8 @@ def install():
                'description': 'Owner approved HOME-BLOCKS-001 («Да» 2026-11-27 to the mockup and to the install): the '
                               'home page\'s auctions, individual order and cars in stock set apart as panels with a thin '
                               'gold frame and a gold line between them (ua_home_blocks.py, new, used by every page writer '
-                              'through site_ge_inject; the static home page now). CSS only: texts, links, photos, cards, '
+                              'through site_ge_inject; the static home page now); the ticker room on the home page (ua_layout_reserve.py) set to the '
+                              'ticker height measured after it grew, so the page does not shift again. CSS only: texts, links, photos, cards, '
                               'the catalogue and CRM data are unchanged. Rollback puts the home page back byte for byte. '
                               'Existing backup, bot pause, writer locks, data-preservation, rollback and public health '
                               'checks are kept.',

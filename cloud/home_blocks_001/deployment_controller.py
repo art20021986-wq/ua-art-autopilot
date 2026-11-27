@@ -19,8 +19,17 @@ def in_head(body, mark):
     return body.count(mark) == 1 and 0 <= body.find(mark) < body.find('</head>')
 
 
-EXPECTED = {'/video/index.html': lambda body: in_head(body, ROW) and in_head(body, COMFORT),
-            '/video/katalog.html': lambda body: ROW not in body and in_head(body, COMFORT)}
+ROOM = 'min-height:max(calc(30vw + 770px),calc(60vw + 620px))'
+MENU = '.header-main:not(:has(.nav-toggle))::after'
+
+
+def menu(body):
+    return MENU in body and in_head(body, '<!--UA-LAYOUT-RESERVE-V1-->') and in_head(body, COMFORT)
+
+
+EXPECTED = {'/video/index.html': lambda body: menu(body) and in_head(body, ROW) and ROOM in body,
+            '/video/katalog.html': lambda body: menu(body) and ROW not in body,
+            '/video/korea.html': lambda body: menu(body) and ROW not in body}
 
 
 def context():
