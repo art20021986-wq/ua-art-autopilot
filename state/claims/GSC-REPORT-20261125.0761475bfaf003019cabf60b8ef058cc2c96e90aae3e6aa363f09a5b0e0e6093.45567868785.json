@@ -16,6 +16,15 @@
       "retries_remaining": 3,
       "retry_allowed": false,
       "signature": "16bba5d7dda09bfd"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-28T06:40:00+00:00",
+      "class": "REMOTE_TRANSPORT_ERROR",
+      "evidence_path": "state/reconciliations/GSC-REPORT-20261125.45567868785.authenticated-evidence.json",
+      "message": "Read-only GSC report stopped on a transport error to PythonAnywhere (GSC_REPORT_STOP:TransportError). No production transaction; nothing written to the site or CRM. Owner «да» to clearing it so the Google reports queue runs again (RESOURCE_BUSY on GSC-REPORT-20261127).",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-25T07:25:54Z",
@@ -42,6 +51,6 @@
   "source_commit": "4e653ecbcda5ae2b3e579b1e3c9dda7e5988af9d",
   "storage_preflight_status": "PENDING",
   "task_class": "STANDARD",
-  "task_execution_status": "BLOCKED_ROOT_CAUSE",
-  "updated_at": "2026-11-25T07:40:27Z"
+  "task_execution_status": "FAILED",
+  "updated_at": "2026-11-28T06:40:00+00:00"
 }

@@ -1,0 +1,17 @@
+{
+  "cause": "remote transport to PythonAnywhere failed during the read-only Search Console report (GSC_REPORT_STOP:TransportError after ~13 min)",
+  "claim_before_sha256": "f37ff2dd49dd74840cc5c16ff4eb4f087a28652f154a5e0dbe1c55af76866b3a",
+  "error": "GSC_REPORT_STOP:TransportError -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / standard / execute: GSC report controller (reads only)",
+  "follow_up": "session 44 checks that no temporary always-on task from run 45567868785 remains on PythonAnywhere",
+  "owner_approval": "«1. Да 2.да» (2026-11-28T06:33:44Z, ios, coordinator chat, event be4a0b34-71ff-44fe-9991-e8774b050663), item 2 = clear the stuck 25.11 Google report run so reports run again",
+  "precedent": "state/reconciliations/JAPAN-LHD-FIX-PREFLIGHT-20261127.45941509243.authenticated-evidence.json",
+  "production_required": false,
+  "production_transaction_opened": false,
+  "recorded_at": "2026-11-28T06:40:00+00:00",
+  "remote_mode": "report (reads only)",
+  "run_id": "45567868785",
+  "site_or_crm_written": false,
+  "task_class": "STANDARD",
+  "task_id": "GSC-REPORT-20261125"
+}
