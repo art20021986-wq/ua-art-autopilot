@@ -1,0 +1,289 @@
+{
+  "diagnose": {
+    "damage": [
+      [
+        "Front End",
+        1708
+      ],
+      [
+        "Normal Wear & Tear",
+        1379
+      ],
+      [
+        "Rear",
+        420
+      ],
+      [
+        "Left Side",
+        336
+      ],
+      [
+        "Right Side",
+        282
+      ],
+      [
+        "Left Front",
+        260
+      ],
+      [
+        "Right Front",
+        232
+      ],
+      [
+        "Front & Rear",
+        191
+      ],
+      [
+        "Left Rear",
+        109
+      ],
+      [
+        "Flood",
+        106
+      ],
+      [
+        "Right Rear",
+        66
+      ],
+      [
+        "All Over",
+        66
+      ],
+      [
+        "Unknown",
+        65
+      ],
+      [
+        "Hail",
+        45
+      ],
+      [
+        "Left & Right Side",
+        41
+      ]
+    ],
+    "feed.json_age_min": 68.9,
+    "filled": {
+      "damage": 5565,
+      "odometer_mi": 5497,
+      "runs": 0,
+      "secondary_damage": 2393,
+      "title_type": 5126,
+      "year": 5564
+    },
+    "kept": 0,
+    "last_run": "MISSING:FileNotFoundError",
+    "listings": {
+      "audi|a4": 100,
+      "audi|a6": 100,
+      "audi|e-tron": 42,
+      "audi|q3": 100,
+      "audi|q5": 100,
+      "audi|q7": 100,
+      "bmw|330": 1,
+      "bmw|530": 21,
+      "bmw|i3": 33,
+      "bmw|x1": 100,
+      "bmw|x3": 100,
+      "bmw|x5": 100,
+      "chevrolet|bolt": 4,
+      "chevrolet|equinox": 100,
+      "chevrolet|malibu": 100,
+      "chevrolet|volt": 100,
+      "ford|edge": 100,
+      "ford|escape": 100,
+      "ford|explorer": 100,
+      "ford|fusion": 100,
+      "honda|accord": 100,
+      "honda|civic": 100,
+      "honda|cr-v": 100,
+      "honda|hr-v": 100,
+      "hyundai|elantra": 100,
+      "hyundai|ioniq": 0,
+      "hyundai|sonata": 100,
+      "hyundai|tucson": 100,
+      "jeep|cherokee": 100,
+      "jeep|compass": 100,
+      "jeep|renegade": 100,
+      "jeep|wrangler": 100,
+      "kia|k5": 100,
+      "kia|optima": 100,
+      "kia|sorento": 100,
+      "kia|soul": 100,
+      "kia|sportage": 100,
+      "lexus|es": 24,
+      "lexus|rx": 23,
+      "mazda|3": 17,
+      "mazda|cx-30": 100,
+      "mazda|cx-5": 100,
+      "mazda|mazda3": 100,
+      "nissan|altima": 100,
+      "nissan|leaf": 100,
+      "nissan|murano": 100,
+      "nissan|rogue": 100,
+      "nissan|sentra": 100,
+      "porsche|macan": 100,
+      "subaru|crosstrek": 100,
+      "subaru|forester": 100,
+      "subaru|outback": 100,
+      "toyota|camry": 100,
+      "toyota|corolla": 100,
+      "toyota|highlander": 100,
+      "toyota|prius": 100,
+      "toyota|rav4": 100,
+      "volkswagen|atlas": 100,
+      "volkswagen|golf": 100,
+      "volkswagen|jetta": 100,
+      "volkswagen|passat": 100,
+      "volkswagen|tiguan": 100,
+      "volvo|xc90": 100
+    },
+    "lock_age_min": 1572.2,
+    "lock_held": false,
+    "lot_pages": {
+      "auction_starts": [],
+      "count": 0,
+      "filled": {
+        "actual_cash_value_usd": 0,
+        "auction_start": 0,
+        "buy_now_usd": 0,
+        "damage": 0,
+        "photos": 0
+      },
+      "photo_shape": "",
+      "photos_per_lot": [],
+      "samples": []
+    },
+    "lots": 5565,
+    "lots.json_age_min": 68.9,
+    "model_keys": [
+      "audi|a4",
+      "audi|a6",
+      "audi|e-tron",
+      "audi|q3",
+      "audi|q5",
+      "audi|q7",
+      "bmw|330",
+      "bmw|530",
+      "bmw|i3",
+      "bmw|x1",
+      "bmw|x3",
+      "bmw|x5",
+      "chevrolet|bolt",
+      "chevrolet|equinox",
+      "chevrolet|malibu",
+      "chevrolet|volt",
+      "ford|edge",
+      "ford|escape",
+      "ford|explorer",
+      "ford|fusion",
+      "honda|accord",
+      "honda|civic",
+      "honda|cr-v",
+      "honda|hr-v",
+      "hyundai|elantra",
+      "hyundai|ioniq",
+      "hyundai|sonata",
+      "hyundai|tucson",
+      "jeep|cherokee",
+      "jeep|compass",
+      "jeep|renegade",
+      "jeep|wrangler",
+      "kia|k5",
+      "kia|optima",
+      "kia|sorento",
+      "kia|soul",
+      "kia|sportage",
+      "lexus|es",
+      "lexus|rx",
+      "mazda|3",
+      "mazda|cx-30",
+      "mazda|cx-5",
+      "mazda|mazda3",
+      "nissan|altima",
+      "nissan|leaf",
+      "nissan|murano",
+      "nissan|rogue",
+      "nissan|sentra",
+      "porsche|macan",
+      "subaru|crosstrek",
+      "subaru|forester",
+      "subaru|outback",
+      "toyota|camry",
+      "toyota|corolla",
+      "toyota|highlander",
+      "toyota|prius",
+      "toyota|rav4",
+      "volkswagen|atlas",
+      "volkswagen|golf",
+      "volkswagen|jetta",
+      "volkswagen|passat",
+      "volkswagen|tiguan",
+      "volvo|xc90"
+    ],
+    "models": 63,
+    "pages": 0,
+    "photo_copies": 0,
+    "running_pages": 0,
+    "samples": [
+      {
+        "damage": "Normal Wear & Tear",
+        "drive": "",
+        "engine": "2.0L I-4 DI, DOHC, VVT, turbo, premium ,",
+        "fuel": "Gasoline",
+        "make": "AUDI",
+        "model": "A4",
+        "odometer_mi": "[N]",
+        "runs": "False",
+        "secondary_damage": "Front End",
+        "title_type": "Clear",
+        "transmission": "Automatic",
+        "year": "2012"
+      },
+      {
+        "damage": "Normal Wear & Tear",
+        "drive": "",
+        "engine": "1.8L I-4 DOHC, turbo, premium , 170HP",
+        "fuel": "Gasoline",
+        "make": "AUDI",
+        "model": "A4",
+        "odometer_mi": "[N]",
+        "runs": "False",
+        "secondary_damage": "",
+        "title_type": "Clear",
+        "transmission": "Automatic",
+        "year": "2005"
+      },
+      {
+        "damage": "Normal Wear & Tear",
+        "drive": "",
+        "engine": "2.0L I-4 DI, DOHC, VVT, turbo, premium ,",
+        "fuel": "Gasoline",
+        "make": "AUDI",
+        "model": "A4",
+        "odometer_mi": "[N]",
+        "runs": "False",
+        "secondary_damage": "Front End",
+        "title_type": "Clear",
+        "transmission": "Automatic",
+        "year": "2007"
+      }
+    ],
+    "state.json_age_min": 68.9,
+    "why_not": {
+      "minimal": 1424,
+      "popular": 5565,
+      "runs": 0,
+      "year": 3838
+    }
+  },
+  "mode": "probe",
+  "no_bid_placed": true,
+  "no_login": true,
+  "remote_write_count": 0,
+  "requests": 0,
+  "run_id": "46149724933",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "USA-LOTS-PROBE-20261127-R8"
+}

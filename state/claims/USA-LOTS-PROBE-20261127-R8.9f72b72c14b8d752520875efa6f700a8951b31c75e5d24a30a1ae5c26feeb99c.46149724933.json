@@ -7,21 +7,23 @@
   "created_at": "2026-11-28T13:29:29Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T13:29:29Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-28T13:35:03Z",
+  "heartbeat_at": "2026-11-28T13:35:03Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "46149724933",
     "task_id": "USA-LOTS-PROBE-20261127-R8",
     "task_sha256": "9f72b72c14b8d752520875efa6f700a8951b31c75e5d24a30a1ae5c26feeb99c"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-4291c54874c534c6-a037c250b6d6407a",
   "receipt_path": "state/receipts/USA-LOTS-PROBE-20261127-R8.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b3cc9957771782423b65509957921fa75041979d99533f1443b16f96071dcdc6",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/USA-LOTS-PROBE-20261127-R8.json",
   "request_sha256": "9f72b72c14b8d752520875efa6f700a8951b31c75e5d24a30a1ae5c26feeb99c",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "ea8bb69995d4d294d2604bb8e251fcd68b7a9094",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 94885109760,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 38.77
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-28T13:29:29Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "eae098936098fbcd4396bdec7534e9673a2acee3539c84e25b00b36e40c5b63d",
+    "file_sha256": {
+      "cloud/usa_lots_probe_001/bootstrap.py": "a30b8691937226cf074432710536061ca26222cdddcc52f7ac88430a37938bc2",
+      "cloud/usa_lots_probe_001/make_request.py": "fe45c532b1d15d905b9c4f8733acb9bbc6fca3c839cbf33d89b5f83497ce74f9",
+      "cloud/usa_lots_probe_001/source_remote.py": "ef47b2b9008f8c798a463168009d621c27b88de375f638604ababb9327b5e43b",
+      "cloud/usa_lots_probe_001/test_usa_lots_probe.py": "a4e47d7652708ae687d943e4935c51ed5c938cd089972f42d37329a6cef5339c",
+      "cloud/usa_lots_probe_001/transport.py": "5ccae792ff98935b3a5f1d3c0049e2037770341a65afc81be24da74c42b55789"
+    }
+  },
+  "updated_at": "2026-11-28T13:35:03Z"
 }
