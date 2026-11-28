@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "f11210e6e34245799a05ffd2b5280b3eee392bbf1107070693ce276c08a0a3c0",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T07:10:11Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-28T07:13:39Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "46119714916",
     "task_id": "LOGO-INSTALL-20261128-R2",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-46119714916-9fb7549eca6e0bfb",
   "production_transaction_path": "state/transactions/LOGO-INSTALL-20261128-R2.9fb7549eca6e0bfbdd59af59a82579559c9e72c7de3727c8b879853c56c0e700.46119714916.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "catalog_renderer-516734deb9ea5607",
   "receipt_path": "state/receipts/LOGO-INSTALL-20261128-R2.json",
   "receipt_validation_status": "PENDING",
@@ -97,5 +97,5 @@
       "cloud/logo_site_001/ua_logo_c.py": "c1e35eecd094427695f20b0c15f6b3e2594826e606d8930f1ef32f5991b9d17b"
     }
   },
-  "updated_at": "2026-11-28T07:10:11Z"
+  "updated_at": "2026-11-28T07:13:39Z"
 }
