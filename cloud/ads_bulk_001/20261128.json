@@ -1,0 +1,105 @@
+{
+  "added_now": 2400,
+  "after": {
+    "budget": "300000000",
+    "ceiling": {
+      "cpcBidCeilingMicros": "4550000"
+    },
+    "groups": 68,
+    "groups_without_ad": [
+      "UA — Аукціон — BMW",
+      "UA — Аукціон — Renault Samsung",
+      "UA — Аукціон — Toyota",
+      "UA — Аукціон — Volkswagen"
+    ],
+    "keywords": 7362,
+    "keywords_ru": 3946,
+    "keywords_uk": 3416,
+    "negatives": 81
+  },
+  "before": {
+    "budget": "300000000",
+    "ceiling": {
+      "cpcBidCeilingMicros": "4550000"
+    },
+    "groups": 68,
+    "groups_without_ad": [
+      "UA — Аукціон — BMW",
+      "UA — Аукціон — Genesis",
+      "UA — Аукціон — Mercedes",
+      "UA — Аукціон — Renault Samsung",
+      "UA — Аукціон — Tesla",
+      "UA — Аукціон — Toyota",
+      "UA — Аукціон — Volkswagen"
+    ],
+    "keywords": 4962,
+    "keywords_ru": 2542,
+    "keywords_uk": 2420,
+    "negatives": 79
+  },
+  "left_for_next_run": 8976,
+  "mode": "probe",
+  "plan_total": 16263,
+  "remote_write_count": 1,
+  "run_id": "46103302066",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "steps": [
+    {
+      "first": {
+        "codes": [
+          "{\"policyFindingError\": \"POLICY_FINDING\"}"
+        ],
+        "examples": [
+          {
+            "code": "{\"policyFindingError\": \"POLICY_FINDING\"}",
+            "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED."
+          },
+          {
+            "code": "{\"policyFindingError\": \"POLICY_FINDING\"}",
+            "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED."
+          },
+          {
+            "code": "{\"policyFindingError\": \"POLICY_FINDING\"}",
+            "message": "The resource has been disapproved since the policy summary includes policy topics of type PROHIBITED."
+          }
+        ],
+        "refused": 4,
+        "sent": 9
+      }
+    },
+    {
+      "keywords_0": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_600": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_1200": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_1800": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    }
+  ],
+  "task_id": "ADS-BULK-20261128"
+}
