@@ -7,21 +7,23 @@
   "created_at": "2026-11-28T04:56:38Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T04:56:38Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-28T05:03:49Z",
+  "heartbeat_at": "2026-11-28T05:03:49Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "46109707734",
     "task_id": "SEO-PRICE-PREFLIGHT-20261128-R2",
     "task_sha256": "b7e8bec60d4115d3fed49973115bf4aa944fc1f2593b22e5530a4aff77d61672"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-5fdefc80ed5f5640-48859021032a6a77",
   "receipt_path": "state/receipts/SEO-PRICE-PREFLIGHT-20261128-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "a7f269e7f7c8e0a738fce560c0bf723772840897ed1638d363aba763f7081fca",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SEO-PRICE-PREFLIGHT-20261128-R2.json",
   "request_sha256": "b7e8bec60d4115d3fed49973115bf4aa944fc1f2593b22e5530a4aff77d61672",
   "resource_locks": [
@@ -29,8 +31,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "bb99a0787f21b69b5a2f7a127648b89934dca2cc",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91238215680,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 67108864,
+    "status": "PASS",
+    "usage_percent": 41.123
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-28T04:56:38Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "b7eaf972e9a8a32596455778d6ae5284dbec09afda87d44e24f0558261fa36de",
+    "file_sha256": {
+      "cloud/seo_price_install_001/candidate_builder.py": "f5c92cc14e98fb581511ad95768d701e122630b34fe898e897e0dabb9d9ac934",
+      "cloud/seo_price_install_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/seo_price_install_001/deployment_bootstrap.py": "81ab69fee040febdb3854e3673f30de99e024b9f05059f05a2f4fea40cef739e",
+      "cloud/seo_price_install_001/deployment_remote.py": "b738de54fab93560f2a45455a0e503082efb93c74a11f57c66f3603bcbfc47c1",
+      "cloud/seo_price_install_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/seo_price_install_001/deployment_transport.py": "8fd3eb846ad2be9a87b8bc358a91a856410a91fa72000f9b9eed8b7ca178c271",
+      "cloud/seo_price_install_001/make_release.py": "e6aea4b19444b66092b14d4f1841066429dd1b20b1e3a19195990390be3ef3c8",
+      "cloud/seo_price_install_001/metadata_tail.py": "58be635e01bd1ed26be95f780eedfc8bb1797709a027a791b1112190c3ec5ab4",
+      "cloud/seo_price_install_001/page_compare.py": "a175e8b3eebd71582d947e207d581a7aa67fc4f1b9dd685f6a51317921386119",
+      "cloud/seo_price_install_001/release_constants.py": "4aa846fa0463147d102b34841cc312e9b3de30d6eb762799521e564f61f424b6",
+      "cloud/seo_price_install_001/test_deployment.py": "7bce31eb12442d9523e7b89c886526beee6e1689d96fbc68355fda5b2c9772b6",
+      "cloud/seo_price_install_001/test_release.py": "71d45f973fe38c85210ddf0b3a17060d32b0eb4688769701d0e027420817b8a9",
+      "cloud/seo_price_install_001/test_seo_price.py": "66842ff7e62bc266fd013e88c42d07ce2466d576ae0c2b5a52e3822c0349f885",
+      "cloud/seo_price_install_001/ua_seo_price.py": "526184086924e1512aaecf275eb821fd641a9c17b15820c5826a57d91490bfd1"
+    }
+  },
+  "updated_at": "2026-11-28T05:03:49Z"
 }
