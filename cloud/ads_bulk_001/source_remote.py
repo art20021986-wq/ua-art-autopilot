@@ -8,6 +8,9 @@
    operations a day — the rest goes in the next run).
 3. 2026-11-26 (owner «Все да»): «model + year from Korea» groups «UA — Аукціон — <brand>» / «RU — Аукцион — <brand>»
    to the auction lots page korea.html, headlines about the lots first; ceiling 2 UAH.
+4. 2026-11-28 (owner «да»): the same every night for the existing campaign «Пошук — США (UA ART)» (usa.py): up to
+   usa.MAX_NEW_GROUPS missing groups with one ad each, then its keywords; keywords.split shares PER_DAY between Korea and
+   USA (half each, all to one when the other has nothing left). Its budget, ceiling and negatives are not touched.
 State before and after in the report; budget and other settings unchanged. No site, CRM or bot change.
 """
 import argparse
@@ -21,6 +24,7 @@ import urllib.request
 import keywords
 import plan
 import source_check as check
+import usa
 
 HERE = Path(__file__).resolve().parent
 CEILING_MICROS = 4550000  # 4,55 UAH (owner 2026-11-27 «став тогда 4 гривни 55 копеек»; was 3,50)
@@ -36,14 +40,14 @@ AUCTION_HEAD = {'uk': ['Лоти аукціонів Кореї щодня', 'Ц�
 HUB = {'uk': plan.SITE + 'seo/ua/avto-z-korei-do-kyieva-pid-kluch.html',
        'ru': plan.SITE + 'seo/ru/avto-iz-korei-v-kiev-pod-kluch.html'}
 CAMPAIGN = ("SELECT campaign.resource_name, campaign.target_spend.cpc_bid_ceiling_micros, campaign_budget.amount_micros "
-            "FROM campaign WHERE campaign.name IN (%s)" % NAMES)
-GROUPS = "SELECT ad_group.resource_name, ad_group.name FROM ad_group WHERE campaign.name IN (%s)" % NAMES
+            "FROM campaign WHERE campaign.name IN (%s)")
+GROUPS = "SELECT ad_group.resource_name, ad_group.name FROM ad_group WHERE campaign.name IN (%s)"
 KEYWORDS = ("SELECT ad_group.name, ad_group_criterion.keyword.text FROM ad_group_criterion WHERE campaign.name IN (%s) "
-            "AND ad_group_criterion.type = 'KEYWORD' AND ad_group_criterion.negative = FALSE" % NAMES)
+            "AND ad_group_criterion.type = 'KEYWORD' AND ad_group_criterion.negative = FALSE")
 ADS = ("SELECT ad_group.name, ad_group_ad.status FROM ad_group_ad WHERE campaign.name IN (%s) "
-       "AND ad_group_ad.status != 'REMOVED'" % NAMES)
+       "AND ad_group_ad.status != 'REMOVED'")
 NEGATIVES = ("SELECT campaign_criterion.keyword.text FROM campaign_criterion WHERE campaign.name IN (%s) "
-             "AND campaign_criterion.negative = TRUE AND campaign_criterion.type = 'KEYWORD'" % NAMES)
+             "AND campaign_criterion.negative = TRUE AND campaign_criterion.type = 'KEYWORD'")
 
 
 def read(customer, headers, query, opener=urllib.request.urlopen):
@@ -60,16 +64,18 @@ def read(customer, headers, query, opener=urllib.request.urlopen):
             return rows
 
 
-def state(customer, headers, opener=urllib.request.urlopen):
-    rows = read(customer, headers, CAMPAIGN, opener)
+def state(customer, headers, opener=urllib.request.urlopen, names=NAMES):
+    rows = read(customer, headers, CAMPAIGN % names, opener)
     if len(rows) != 1:
         raise check.CheckError('CAMPAIGNS_%d' % len(rows))
     return {'campaign': rows[0]['campaign'], 'budget': rows[0].get('campaignBudget', {}),
-            'groups': {r['adGroup']['name']: r['adGroup']['resourceName'] for r in read(customer, headers, GROUPS, opener)},
+            'groups': {r['adGroup']['name']: r['adGroup']['resourceName']
+                       for r in read(customer, headers, GROUPS % names, opener)},
             'keywords': {(r['adGroup']['name'], r['adGroupCriterion']['keyword']['text'])
-                         for r in read(customer, headers, KEYWORDS, opener)},
-            'negatives': {r['campaignCriterion']['keyword']['text'] for r in read(customer, headers, NEGATIVES, opener)},
-            'with_ads': {r['adGroup']['name'] for r in read(customer, headers, ADS, opener)}}
+                         for r in read(customer, headers, KEYWORDS % names, opener)},
+            'negatives': {r['campaignCriterion']['keyword']['text']
+                          for r in read(customer, headers, NEGATIVES % names, opener)},
+            'with_ads': {r['adGroup']['name'] for r in read(customer, headers, ADS % names, opener)}}
 
 
 def ad_texts(group):
@@ -115,10 +121,15 @@ def first_operations(customer, current):
     return ops
 
 
-def keyword_operations(current, limit=None):
+def keyword_operations(current, limit=None, groups=None):
+    """Korea by default; for USA groups=usa.waiting(current) limited to the groups that exist (nothing twice by text)."""
+    have = current['keywords'] if groups is None else frozenset()
+    if groups is not None:
+        groups = {g: ks for g, ks in groups.items() if g in current['groups']}
     return [{'adGroupCriterionOperation': {'create': {'adGroup': current['groups'][g], 'status': 'ENABLED',
                                                       'keyword': {'text': k, 'matchType': 'PHRASE'}}}}
-            for g, k in keywords.today(current['keywords'], limit or keywords.PER_DAY) if g in current['groups']]
+            for g, k in keywords.today(have, keywords.PER_DAY if limit is None else limit, groups)
+            if g in current['groups']]
 
 
 def findings(failure):
@@ -142,7 +153,7 @@ def findings(failure):
 KEYWORD_ROWS = ("SELECT ad_group.name, ad_group_criterion.resource_name, ad_group_criterion.keyword.text, "
                 "ad_group_criterion.keyword.match_type FROM ad_group_criterion WHERE campaign.name IN (%s) "
                 "AND ad_group_criterion.type = 'KEYWORD' AND ad_group_criterion.negative = FALSE "
-                "AND ad_group_criterion.status != 'REMOVED'" % NAMES)
+                "AND ad_group_criterion.status != 'REMOVED'")
 GENERIC = ('UA — Будь-яка модель з Кореї', 'RU — Любая модель из Кореи', 'UA — Корея під ключ', 'RU — Корея под ключ')
 
 
@@ -197,7 +208,7 @@ def run(keys, opener=urllib.request.urlopen):
     first = first_operations(customer, before)
     if first:
         value['steps'].append({'first': mutate(customer, headers, first, opener)})
-    remove = redundant(read(customer, headers, KEYWORD_ROWS, opener))
+    remove = redundant(read(customer, headers, KEYWORD_ROWS % NAMES, opener))
     value['duplicates_removed'] = 0
     for start in range(0, len(remove), CHUNK):
         result = mutate(customer, headers, [{'adGroupCriterionOperation': {'remove': r}}
@@ -206,21 +217,47 @@ def run(keys, opener=urllib.request.urlopen):
         if 'http' in result:
             break
         value['duplicates_removed'] += result['sent'] - result['refused']
-    middle = state(customer, headers, opener)
-    ops = keyword_operations(middle)
-    for start in range(0, len(ops), CHUNK):
-        result = mutate(customer, headers, ops[start:start + CHUNK], opener)
-        value['steps'].append({'keywords_%d' % start: result})
-        if 'http' in result:
-            break
-    after = state(customer, headers, opener)
-    value['after'] = summary(after)
+    usa_before = state(customer, headers, opener, usa.NAMES)
+    value['usa'] = {'before': summary(usa_before), 'steps': []}
+    new_groups = usa.group_operations(customer, usa_before)
+    if new_groups:
+        value['usa']['steps'].append({'groups': mutate(customer, headers, new_groups, opener)})
+    middle, usa_middle = state(customer, headers, opener), state(customer, headers, opener, usa.NAMES)
+    korea_part, usa_part = keywords.split(len(keyword_operations(middle, 10 ** 6)),
+                                          len(keyword_operations(usa_middle, 10 ** 6, usa.waiting(usa_middle))))
+    refused = {'korea': send(customer, headers, keyword_operations(middle, korea_part), value['steps'], opener),
+               'usa': send(customer, headers, keyword_operations(usa_middle, usa_part, usa.waiting(usa_middle)),
+                           value['usa']['steps'], opener)}
+    after, usa_after = state(customer, headers, opener), state(customer, headers, opener, usa.NAMES)
+    value['after'], value['usa']['after'] = summary(after), summary(usa_after)
     value['added_now'] = value['after']['keywords'] - value['before']['keywords'] + value['duplicates_removed']
     value['plan_total'] = sum(map(len, keywords.plan().values()))
     value['left_for_next_run'] = len(keyword_operations(after, limit=10 ** 6))
+    usa_added = value['usa']['after']['keywords'] - value['usa']['before']['keywords']
+    value['countries'] = {
+        'korea': {'added_tonight': value['added_now'], 'refused_by_google': refused['korea'],
+                  'total_in_campaign': value['after']['keywords'], 'left_in_plan': value['left_for_next_run']},
+        'usa': {'added_tonight': usa_added, 'refused_by_google': refused['usa'],
+                'total_in_campaign': value['usa']['after']['keywords'],
+                'left_in_plan': sum(map(len, usa.waiting(usa_after).values())),
+                'groups_left_to_create': sum(1 for g in usa.plan() if g not in usa_after['groups'])}}
+    usa_same = all(value['usa']['before'][k] == value['usa']['after'][k] for k in ('ceiling', 'budget', 'negatives'))
+    done = not value['left_for_next_run'] and not value['countries']['usa']['left_in_plan']
     value['status'] = 'PASS' if value['after']['ceiling'] == {'cpcBidCeilingMicros': str(CEILING_MICROS)} \
-        and value['added_now'] > 0 else 'PARTIAL'
+        and usa_same and (value['added_now'] + usa_added > 0 or done) else 'PARTIAL'
     return value
+
+
+def send(customer, headers, ops, steps, opener):
+    """Keyword operations in chunks of CHUNK (partialFailure); returns how many Google refused."""
+    refused = 0
+    for start in range(0, len(ops), CHUNK):
+        result = mutate(customer, headers, ops[start:start + CHUNK], opener)
+        steps.append({'keywords_%d' % start: result})
+        if 'http' in result:
+            break
+        refused += result['refused']
+    return refused
 
 
 def report(path=check.KEYS_PATH, opener=urllib.request.urlopen):
