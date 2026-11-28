@@ -295,6 +295,17 @@ class TransportTests(unittest.TestCase):
             self.assertTrue(api.set_bot(True)['enabled'])
             mutate.assert_not_called()
 
+    def test_pause_waits_for_explicit_stopped(self):
+        api = API('test-token')
+        with patch.object(api, 'bot', side_effect=[
+            {'enabled': False, 'state': 'Stopping'},
+            {'enabled': False, 'state': 'Stopping'},
+            {'enabled': False, 'state': 'Stopped'},
+        ]), patch.object(api, 'json') as mutate, patch('time.sleep') as pause:
+            self.assertEqual(api.set_bot(False)['state'], 'stopped')
+            mutate.assert_not_called()
+            self.assertEqual(pause.call_count, 1)
+
     def test_wrong_bot_identity_is_rejected_before_pause(self):
         api = API('test-token')
         with patch.object(api, 'json', return_value={
