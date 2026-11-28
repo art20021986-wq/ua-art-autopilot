@@ -410,9 +410,19 @@ class TransportTests(unittest.TestCase):
         stopping = {'id': BOT_ID, 'command': BOT_COMMAND, 'enabled': False, 'state': 'Stopping'}
         with patch.object(api, 'bot', return_value=stopping), patch.object(api, 'json'), \
              patch('deployment_transport.time.sleep'), \
-             patch('deployment_transport.time.monotonic', side_effect=[0, 0, 200]):
+             patch('deployment_transport.time.monotonic', side_effect=[0, 0, 200, 479, 481]):
             with self.assertRaisesRegex(TransportError, 'BOT_STATE_TIMEOUT'):
                 api.set_bot(False)
+
+    def test_pause_waits_up_to_480_seconds(self):
+        api = API('test-token')
+        states = [{'id': BOT_ID, 'command': BOT_COMMAND, 'enabled': True, 'state': 'Running'},
+                  {'id': BOT_ID, 'command': BOT_COMMAND, 'enabled': False, 'state': 'Stopping'},
+                  {'id': BOT_ID, 'command': BOT_COMMAND, 'enabled': False, 'state': 'Stopped'}]
+        with patch.object(api, 'bot', side_effect=states), patch.object(api, 'json'), \
+             patch('deployment_transport.time.sleep'), \
+             patch('deployment_transport.time.monotonic', side_effect=[0, 300, 470]):
+            self.assertEqual(api.set_bot(False)['state'], 'stopped')
 
     def test_wrong_bot_identity_is_rejected_before_pause(self):
         api = API('test-token')

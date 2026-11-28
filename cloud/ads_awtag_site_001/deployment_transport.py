@@ -76,7 +76,8 @@ class API:
         observed = self.bot()
         if observed.get('enabled') is not enabled:
             self.json('PATCH', 'always_on/%d/' % BOT_ID, {'enabled': str(enabled).lower()})
-        deadline = time.monotonic()+(480 if enabled else 120)
+        # 480 s both ways: a PythonAnywhere always-on task can take minutes to reach «stopped» (USA-PAGE fell on 120 s).
+        deadline = time.monotonic()+480
         while time.monotonic() < deadline:
             value = self.bot()
             state = str(value.get('state', '')).lower()
