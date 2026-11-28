@@ -132,20 +132,80 @@ def keyword_operations(current, limit=None, groups=None):
             if g in current['groups']]
 
 
+def _list(value):
+    return value if isinstance(value, list) else []
+
+
+def _dict(value):
+    return value if isinstance(value, dict) else {}
+
+
+def _path(item):
+    return [e for e in _list(_dict(item.get('location')).get('fieldPathElements')) if isinstance(e, dict)]
+
+
 def findings(failure):
     found = []
-    for detail in (failure or {}).get('details', []) or []:
-        for item in detail.get('errors', []) or []:
+    for detail in _list(_dict(failure).get('details')):
+        for item in _list(_dict(detail).get('errors')):
             entry = {'code': json.dumps(item.get('errorCode', {})), 'message': str(item.get('message', ''))[:120]}
-            # 2026-11-28: which policy and which text Google refused (4 «Аукціон» ads, PROHIBITED).
-            policy = item.get('details', {}).get('policyFindingDetails', {}).get('policyTopicEntries', [])
-            if policy:
-                entry['policy'] = [{'topic': t.get('topic'), 'type': t.get('type'),
-                                    'evidence': json.dumps(t.get('evidences', []), ensure_ascii=False)[:300]} for t in policy]
-            path = item.get('location', {}).get('fieldPathElements', [])
+            path = _path(item)
             if path:
                 entry['field'] = '.'.join('%s%s' % (e.get('fieldName'), '[%s]' % e['index'] if 'index' in e else '')
                                          for e in path)
+            found.append(entry)
+    return found
+
+
+def _camel(name):
+    return re.sub(r'_([a-z])', lambda m: m.group(1).upper(), str(name))
+
+
+def _text_at(op, path):
+    """The text the field path points to inside the sent operation (e.g. a headline), or None."""
+    node = op
+    for e in path:
+        if not isinstance(node, dict):
+            return None
+        node = node.get(_camel(e.get('fieldName')), node.get(e.get('fieldName')))
+        if 'index' in e:
+            node = node[e['index']] if isinstance(node, list) and isinstance(e['index'], int) \
+                and 0 <= e['index'] < len(node) else None
+    return node if isinstance(node, str) else None
+
+
+def policy_refusals(failure, ops, names=None):
+    """2026-11-28: per refused operation with policy findings (GoogleAdsFailure.errors[].details.policyFindingDetails.
+    policyTopicEntries): the group, the refused field and its text, each topic with its type and evidence texts."""
+    names = dict(names or {})
+    names.update({_dict(o.get('adGroupOperation')).get('create', {}).get('resourceName'):
+                  _dict(o.get('adGroupOperation')).get('create', {}).get('name')
+                  for o in ops if 'create' in _dict(o.get('adGroupOperation'))})
+    found = []
+    for detail in _list(_dict(failure).get('details')):
+        for item in _list(_dict(detail).get('errors')):
+            topics = _list(_dict(_dict(item.get('details')).get('policyFindingDetails')).get('policyTopicEntries'))
+            if not topics:
+                continue
+            path = _path(item)
+            index = path[0].get('index') if path else None
+            op = ops[index] if isinstance(index, int) and 0 <= index < len(ops) else {}
+            target = next((_dict(v).get('create', {}) for v in op.values() if 'create' in _dict(v)), {})
+            group = target.get('name') or names.get(target.get('adGroup'), target.get('adGroup'))
+            entry = {'operation': index, 'group': group,
+                     'field': '.'.join('%s%s' % (e.get('fieldName'), '[%s]' % e['index'] if 'index' in e else '')
+                                       for e in path[1:]) or None,
+                     'text': _text_at(op, path[1:]), 'topics': []}
+            for t in topics:
+                t = _dict(t)
+                evidence = []
+                for ev in _list(t.get('evidences')):
+                    ev = _dict(ev)
+                    evidence += _list(_dict(ev.get('textList')).get('texts'))
+                    evidence += _list(_dict(ev.get('destinationTextList')).get('destinationTexts'))
+                    evidence += _list(_dict(ev.get('websiteList')).get('websites'))
+                entry['topics'].append({'topic': t.get('topic'), 'type': t.get('type'),
+                                        'evidence': [str(x)[:120] for x in evidence][:10]})
             found.append(entry)
     return found
 
@@ -179,14 +239,18 @@ def redundant(rows):
     return sorted(gone)
 
 
-def mutate(customer, headers, ops, opener):
+def mutate(customer, headers, ops, opener, names=None):
     status, answer = check.call(check.API + 'customers/%s/googleAds:mutate' % customer,
                                 json.dumps({'mutateOperations': ops, 'partialFailure': True}).encode(), headers, opener)
     if status != 200:
         return {'http': status, **check.errors(answer)}
     refused = findings(answer.get('partialFailureError'))
-    return {'sent': len(ops), 'refused': len(refused), 'codes': sorted({r['code'] for r in refused})[:8],
-            'examples': refused[:8]}
+    result = {'sent': len(ops), 'refused': len(refused), 'codes': sorted({r['code'] for r in refused})[:8],
+              'examples': refused[:8]}
+    policy = policy_refusals(answer.get('partialFailureError'), ops, names)
+    if policy:
+        result['policy_refusals'] = policy
+    return result
 
 
 def summary(current):
@@ -207,7 +271,8 @@ def run(keys, opener=urllib.request.urlopen):
     value = {'before': summary(before), 'steps': []}
     first = first_operations(customer, before)
     if first:
-        value['steps'].append({'first': mutate(customer, headers, first, opener)})
+        value['steps'].append({'first': mutate(customer, headers, first, opener,
+                                               {r: n for n, r in before['groups'].items()})})
     remove = redundant(read(customer, headers, KEYWORD_ROWS % NAMES, opener))
     value['duplicates_removed'] = 0
     for start in range(0, len(remove), CHUNK):
@@ -221,7 +286,8 @@ def run(keys, opener=urllib.request.urlopen):
     value['usa'] = {'before': summary(usa_before), 'steps': []}
     new_groups = usa.group_operations(customer, usa_before)
     if new_groups:
-        value['usa']['steps'].append({'groups': mutate(customer, headers, new_groups, opener)})
+        value['usa']['steps'].append({'groups': mutate(customer, headers, new_groups, opener,
+                                                       {r: n for n, r in usa_before['groups'].items()})})
     middle, usa_middle = state(customer, headers, opener), state(customer, headers, opener, usa.NAMES)
     korea_part, usa_part = keywords.split(len(keyword_operations(middle, 10 ** 6)),
                                           len(keyword_operations(usa_middle, 10 ** 6, usa.waiting(usa_middle))))
@@ -241,6 +307,8 @@ def run(keys, opener=urllib.request.urlopen):
                 'total_in_campaign': value['usa']['after']['keywords'],
                 'left_in_plan': sum(map(len, usa.waiting(usa_after).values())),
                 'groups_left_to_create': sum(1 for g in usa.plan() if g not in usa_after['groups'])}}
+    value['policy_refusals'] = [r for step in value['steps'] + value['usa']['steps'] for result in step.values()
+                                for r in result.pop('policy_refusals', [])]
     usa_same = all(value['usa']['before'][k] == value['usa']['after'][k] for k in ('ceiling', 'budget', 'negatives'))
     done = not value['left_for_next_run'] and not value['countries']['usa']['left_in_plan']
     value['status'] = 'PASS' if value['after']['ceiling'] == {'cpcBidCeilingMicros': str(CEILING_MICROS)} \

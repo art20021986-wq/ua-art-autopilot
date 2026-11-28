@@ -180,6 +180,66 @@ class MissingAdTests(unittest.TestCase):
         self.assertFalse([h for h in heads if 'Ставка' in h])
 
 
+class PolicyRefusalTests(unittest.TestCase):
+    """A partial failure as the REST API answers it: google.rpc.Status with GoogleAdsFailure in details."""
+    def failure(self, index, headline):
+        return {'code': 3, 'message': 'The resource has been disapproved ...', 'details': [{
+            '@type': 'type.googleapis.com/google.ads.googleads.v19.errors.GoogleAdsFailure',
+            'requestId': 'abc', 'errors': [{
+                'errorCode': {'policyFindingError': 'POLICY_FINDING'},
+                'message': 'The resource has been disapproved since the policy summary includes policy topics of '
+                           'type PROHIBITED.',
+                'trigger': {'stringValue': ''},
+                'location': {'fieldPathElements': [
+                    {'fieldName': 'mutate_operations', 'index': index}, {'fieldName': 'ad_group_ad_operation'},
+                    {'fieldName': 'create'}, {'fieldName': 'ad'}, {'fieldName': 'responsive_search_ad'},
+                    {'fieldName': 'headlines', 'index': headline}, {'fieldName': 'text'}]},
+                'details': {'policyFindingDetails': {'policyTopicEntries': [{
+                    'topic': 'GAMBLING', 'type': 'PROHIBITED',
+                    'evidences': [{'textList': {'texts': ['Лоти аукціонів Кореї щодня']}}],
+                    'constraints': [{'countryConstraintList': {'totalTargetedCountries': 1}}]}]}}}]}]}
+
+    def test_group_topic_and_text_in_report(self):
+        google = Google()
+        google.ads -= {'UA — Корея під ключ'}
+        group = google.groups['UA — Корея під ключ']
+        answer = google.__call__
+
+        def call(request, timeout=None):
+            response = answer(request, timeout)
+            if request.full_url.endswith('googleAds:mutate'):
+                ops = json.loads(request.data)['mutateOperations']
+                index = next((n for n, o in enumerate(ops)
+                              if o.get('adGroupAdOperation', {}).get('create', {}).get('adGroup') == group), None)
+                if index is not None:
+                    return Response(json.dumps({'partialFailureError': self.failure(index, 1), 'results': []}).encode())
+            return response
+        with tempfile.TemporaryDirectory() as temp, patch.object(keywords, 'PER_DAY', 10), \
+                patch.object(usa, 'MAX_NEW_GROUPS', 1):
+            path = Path(temp) / 'keys.json'
+            path.write_text(json.dumps(KEYS))
+            night = json.loads(remote.report(path, call))
+        self.assertEqual(night['policy_refusals'], [{
+            'operation': night['policy_refusals'][0]['operation'], 'group': 'UA — Корея під ключ',
+            'field': 'ad_group_ad_operation.create.ad.responsive_search_ad.headlines[1].text',
+            'text': remote.ad_texts('UA — Корея під ключ')[1][1],
+            'topics': [{'topic': 'GAMBLING', 'type': 'PROHIBITED', 'evidence': ['Лоти аукціонів Кореї щодня']}]}])
+        self.assertNotIn('policy_refusals', night['steps'][0]['first'])
+        self.assertEqual(night['steps'][0]['first']['refused'], 1)
+
+    def test_new_group_named_and_odd_shapes_ignored(self):
+        ops = [{'adGroupOperation': {'create': {'resourceName': 'customers/1/adGroups/-700',
+                                                'name': 'UA — Аукціон — BMW'}}},
+               {'adGroupAdOperation': {'create': {'adGroup': 'customers/1/adGroups/-700', 'ad': {}}}}]
+        found = remote.policy_refusals(self.failure(1, 0), ops)
+        self.assertEqual(found[0]['group'], 'UA — Аукціон — BMW')
+        self.assertIsNone(found[0]['text'])
+        self.assertEqual(remote.policy_refusals(self.failure(9, 0), ops)[0]['group'], None)
+        for odd in (None, {}, {'details': None}, {'details': [{'errors': [{'details': {'policyFindingDetails': None}}]}]},
+                    {'details': ['x', {'errors': 'x'}]}):
+            self.assertEqual(remote.policy_refusals(odd, ops), [])
+
+
 class RemoteTests(unittest.TestCase):
     def keys_file(self, temp):
         path = Path(temp) / 'keys.json'
