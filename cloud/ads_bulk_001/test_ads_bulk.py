@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ADS-BULK: 1 UAH ceiling, buyer keywords uk+ru only, in parts, nothing twice, ads within Google limits."""
+"""ADS-BULK: 1 UAH ceiling, buyer keywords uk+ru only, in parts, nothing twice, ads within Google limits; Korea + USA."""
 import io
 import json
 from pathlib import Path
@@ -14,6 +14,7 @@ import controller as c  # noqa: E402
 import keywords  # noqa: E402
 import source_remote as remote  # noqa: E402
 import transport  # noqa: E402
+import usa  # noqa: E402
 
 KEYS = {'developer_token': 'DEVTOKEN' + 'x' * 14, 'client_id': '1' * 12 + '-abc.apps.' + 'googleusercontent.com',
         'client_secret': 'GOC' + 'SPX-' + 'q' * 28, 'refresh_token': '1//' + 'r' * 40,
@@ -31,11 +32,23 @@ class Response(io.BytesIO):
 
 
 class Google:
+    """Both campaigns: a query naming «США» reads the USA one, any other the Korea one."""
     def __init__(self):
-        self.campaign = {'resourceName': 'customers/1/campaigns/9', 'targetSpend': {'cpcBidCeilingMicros': '7000000'}}
-        self.groups = {'UA — Корея під ключ': 'customers/1/adGroups/1', 'RU — Корея под ключ': 'customers/1/adGroups/2'}
-        self.keywords, self.negatives, self.mutates = {('UA — Корея під ключ', 'авто з кореї')}, {'olx'}, []
-        self.ads = {'UA — Корея під ключ', 'RU — Корея под ключ'}
+        self.campaigns = {'korea': {'resourceName': 'customers/1/campaigns/9',
+                                    'targetSpend': {'cpcBidCeilingMicros': '7000000'}},
+                          'usa': {'resourceName': 'customers/1/campaigns/8',
+                                  'targetSpend': {'cpcBidCeilingMicros': '2000000'}}}
+        self.campaign = self.campaigns['korea']
+        self.budgets = {'korea': '300000000', 'usa': '50000000'}
+        self.groups = {'UA — Корея під ключ': 'customers/1/adGroups/1', 'RU — Корея под ключ': 'customers/1/adGroups/2',
+                       'UA — США під ключ': 'customers/1/adGroups/3', 'RU — США под ключ': 'customers/1/adGroups/4',
+                       'UA — Аукціони США': 'customers/1/adGroups/5', 'RU — Аукционы США': 'customers/1/adGroups/6'}
+        self.country = {g: 'usa' if 'США' in g else 'korea' for g in self.groups}
+        # «авто з сша» is in the USA plan's hub group but already sits in another group: never added again.
+        self.keywords = {('UA — Корея під ключ', 'авто з кореї'), ('UA — США під ключ', 'авто з сша під ключ'),
+                         ('UA — Аукціони США', 'авто з сша')}
+        self.negatives, self.mutates = {'korea': {'olx'}, 'usa': {'olx', 'copart parts'}}, []
+        self.ads = set(self.groups)
 
     def name(self, resource):
         return next(n for n, r in self.groups.items() if r == resource)
@@ -49,13 +62,16 @@ class Google:
             temp = {}
             for op in body['mutateOperations']:
                 if 'campaignOperation' in op:
-                    self.campaign['targetSpend'] = op['campaignOperation']['update']['targetSpend']
+                    update = op['campaignOperation']['update']
+                    self.of(update['resourceName'])['targetSpend'] = update['targetSpend']
                 elif 'campaignCriterionOperation' in op:
-                    self.negatives.add(op['campaignCriterionOperation']['create']['keyword']['text'])
+                    create = op['campaignCriterionOperation']['create']
+                    self.negatives[self.country_of(create['campaign'])].add(create['keyword']['text'])
                 elif 'adGroupOperation' in op:
                     new = op['adGroupOperation']['create']
                     temp[new['resourceName']] = 'customers/1/adGroups/%d' % (10 + len(self.groups))
                     self.groups[new['name']] = temp[new['resourceName']]
+                    self.country[new['name']] = self.country_of(new['campaign'])
                 elif 'adGroupAdOperation' in op:
                     target = op['adGroupAdOperation']['create']['adGroup']
                     self.ads.add(self.name(temp.get(target, target)))
@@ -67,19 +83,31 @@ class Google:
                     self.keywords.add((self.name(k['adGroup']), k['keyword']['text']))
             return Response(b'{}')
         query = body['query']
+        country = 'usa' if 'США' in query else 'korea'
         if 'FROM campaign_criterion' in query:
-            rows = [{'campaignCriterion': {'keyword': {'text': t}}} for t in self.negatives]
+            rows = [{'campaignCriterion': {'keyword': {'text': t}}} for t in self.negatives[country]]
         elif 'FROM ad_group_criterion' in query:
             rows = [{'adGroup': {'name': g}, 'adGroupCriterion': {'resourceName': 'kw|%s|%s' % (g, t),
                                                                   'keyword': {'text': t, 'matchType': 'PHRASE'}}}
-                    for g, t in self.keywords]
+                    for g, t in self.keywords if self.country[g] == country]
         elif 'FROM ad_group_ad' in query:
-            rows = [{'adGroup': {'name': g}, 'adGroupAd': {'status': 'ENABLED'}} for g in self.ads]
+            rows = [{'adGroup': {'name': g}, 'adGroupAd': {'status': 'ENABLED'}} for g in self.ads
+                    if self.country[g] == country]
         elif 'FROM ad_group ' in query:
-            rows = [{'adGroup': {'name': n, 'resourceName': r}} for n, r in self.groups.items()]
+            rows = [{'adGroup': {'name': n, 'resourceName': r}} for n, r in self.groups.items()
+                    if self.country[n] == country]
         else:
-            rows = [{'campaign': self.campaign, 'campaignBudget': {'amountMicros': '300000000'}}]
+            rows = [{'campaign': self.campaigns[country], 'campaignBudget': {'amountMicros': self.budgets[country]}}]
         return Response(json.dumps({'results': rows}).encode())
+
+    def of(self, resource):
+        return self.campaigns[self.country_of(resource)]
+
+    def country_of(self, resource):
+        return next(c for c, v in self.campaigns.items() if v['resourceName'] == resource)
+
+    def texts(self, country):
+        return [t for g, t in self.keywords if self.country[g] == country]
 
 
 class PlanTests(unittest.TestCase):
@@ -163,14 +191,89 @@ class RemoteTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp, patch.object(keywords, 'PER_DAY', 1000):
             first = json.loads(remote.report(self.keys_file(temp), google))
             second = json.loads(remote.report(self.keys_file(temp), google))
+        self.assertEqual(first['status'], 'PASS')
         self.assertEqual(first['after']['ceiling'], {'cpcBidCeilingMicros': '4550000'})
-        self.assertEqual(first['added_now'], 1000)
+        self.assertEqual(first['added_now'], 500)
         self.assertEqual(first['after']['budget'], '300000000')
-        self.assertEqual(second['added_now'], 1000)
-        self.assertEqual(len(google.keywords), 2001)
+        self.assertEqual(second['added_now'], 500)
+        self.assertEqual(len(google.texts('korea')), 1001)
+        self.assertEqual(first['countries']['usa']['added_tonight'], 500)
+        self.assertEqual(second['countries']['usa']['added_tonight'], 500)
+        self.assertEqual(len(google.texts('usa')), 1002)
+        self.assertEqual(second['countries']['usa']['total_in_campaign'], 1002)
+        self.assertEqual(second['countries']['korea']['total_in_campaign'], 1001)
+        self.assertEqual(second['countries']['korea']['refused_by_google'], 0)
+        self.assertEqual(second['countries']['usa']['left_in_plan'],
+                         sum(map(len, usa.plan().values())) - 1000 - 2)  # the two already there count as done
         self.assertTrue(all(m['partialFailure'] for m in google.mutates))
         self.assertTrue(all(len(m['mutateOperations']) <= remote.CHUNK for m in google.mutates[1:]))
         self.assertEqual(first['after']['groups'], len(keywords.plan()))
+        # USA: nothing twice (by text, across groups), at most MAX_NEW_GROUPS new groups a night, each with its ad.
+        texts = google.texts('usa')
+        self.assertEqual(len(texts), len(set(texts)))
+        self.assertEqual(first['usa']['after']['groups'], 4 + usa.MAX_NEW_GROUPS)
+        self.assertEqual(second['usa']['after']['groups'], 4 + 2 * usa.MAX_NEW_GROUPS)
+        self.assertEqual(second['usa']['after']['groups_without_ad'], [])
+        self.assertEqual(first['usa']['before']['ceiling'], first['usa']['after']['ceiling'])
+        self.assertEqual(google.budgets['usa'], '50000000')
+        self.assertEqual(google.campaigns['usa']['targetSpend'], {'cpcBidCeilingMicros': '2000000'})
+        self.assertEqual(google.negatives['usa'], {'olx', 'copart parts'})
+        place = {k: g for g, ks in usa.plan().items() for k in ks}
+        self.assertFalse([(g, t) for g, t in google.keywords - Google().keywords
+                          if google.country[g] == 'usa' and place.get(t) != g])
+
+    def test_all_to_usa_when_korea_is_done(self):
+        google = Google()
+        done = {'UA — Корея під ключ': ['авто з кореї']}  # the whole Korea plan already in the campaign
+        with tempfile.TemporaryDirectory() as temp, patch.object(keywords, 'PER_DAY', 1000), \
+                patch.object(keywords, 'plan', lambda: done):
+            night = json.loads(remote.report(self.keys_file(temp), google))
+        self.assertEqual(night['countries']['korea']['added_tonight'], 0)
+        self.assertEqual(night['countries']['korea']['left_in_plan'], 0)
+        self.assertEqual(night['countries']['usa']['added_tonight'], 1000)
+        self.assertEqual(night['status'], 'PASS')
+
+
+class UsaTests(unittest.TestCase):
+    def test_split(self):
+        self.assertEqual(keywords.split(9000, 17000), (1200, 1200))
+        self.assertEqual(keywords.split(0, 17000), (0, 2400))
+        self.assertEqual(keywords.split(9000, 0), (2400, 0))
+        self.assertEqual(keywords.split(300, 17000), (300, 2100))
+        self.assertEqual(keywords.split(9000, 500), (1900, 500))
+        self.assertEqual(keywords.split(10, 20), (10, 20))
+
+    def test_plan(self):
+        groups = usa.plan()
+        words = [k for v in groups.values() for k in v]
+        self.assertEqual((len(words), len(groups)), (17653, 114))
+        self.assertEqual(len(words), len(set(words)))
+        self.assertTrue(all(len(k) <= 80 and len(k.split()) <= 10 and k == k.lower() for k in words))
+        self.assertEqual(list(groups)[:2], ['UA — США під ключ', 'RU — США под ключ'])
+
+    def test_ads_within_limits(self):
+        for group in usa.plan():
+            ad = usa.ad(group, 'g')['adGroupAdOperation']['create']['ad']
+            head = [h['text'] for h in ad['responsiveSearchAd']['headlines']]
+            desc = [d['text'] for d in ad['responsiveSearchAd']['descriptions']]
+            self.assertTrue(3 <= len(head) <= 15 and all(len(h) <= 30 for h in head), group)
+            self.assertEqual(len(head), len(set(head)))
+            self.assertTrue(2 <= len(desc) <= 4 and all(len(d) <= 90 for d in desc))
+            self.assertFalse([h for h in head if 'Ставка' in h or 'Отримайте пропозицію' in h])
+            self.assertEqual(ad['finalUrls'], [usa.PAGE])
+            lang_uk = group.startswith('UA')
+            self.assertTrue(head[0] in usa.UK_HEAD + usa.RU_HEAD or head[0].endswith('з США' if lang_uk else 'из США'))
+            self.assertEqual(ad['responsiveSearchAd']['path2'], 'kyiv' if lang_uk else 'kiev')
+        self.assertEqual(usa.ad('RU — США — Ford — годы', 'g')['adGroupAdOperation']['create']['ad'][
+            'responsiveSearchAd']['headlines'][0]['text'], 'Ford из США')
+
+    def test_new_groups_capped(self):
+        current = {'campaign': {'resourceName': 'c/8'}, 'groups': {'UA — США під ключ': 'g/1', 'RU — США под ключ': 'g/2'},
+                   'with_ads': {'UA — США під ключ'}}
+        ops = usa.group_operations('1', current)
+        self.assertEqual(sum(1 for o in ops if 'adGroupOperation' in o), usa.MAX_NEW_GROUPS)
+        self.assertEqual(len(ops), 2 * usa.MAX_NEW_GROUPS + 1)  # + the ad of the existing group without one
+        self.assertEqual(ops[-1]['adGroupAdOperation']['create']['adGroup'], 'g/2')
 
 
 class FakeAPI:
