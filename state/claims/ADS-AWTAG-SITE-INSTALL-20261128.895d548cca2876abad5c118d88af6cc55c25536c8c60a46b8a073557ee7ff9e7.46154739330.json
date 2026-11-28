@@ -8,6 +8,17 @@
   "critical_gate_evidence_sha256": "a9864f857813e881f7167cbcd281cb28ea92007aef1268fea96d5d86eef35e7d",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
+  "failure_history": [
+    {
+      "action": "STOP_AFTER_VERIFIED_ROLLBACK",
+      "at": "2026-11-28T14:59:49Z",
+      "class": "UNKNOWN",
+      "message": "CRITICAL Production failed; inspect GitHub Actions run 46154739330",
+      "retries_remaining": 1,
+      "retry_allowed": false,
+      "signature": "4829e81b3d534b9b"
+    }
+  ],
   "heartbeat_at": "2026-11-28T14:34:26Z",
   "heartbeat_sequence": 7,
   "identity": {
@@ -59,7 +70,7 @@
   "production_required": true,
   "production_transaction_id": "tx-46154739330-895d548cca2876ab",
   "production_transaction_path": "state/transactions/ADS-AWTAG-SITE-INSTALL-20261128.895d548cca2876abad5c118d88af6cc55c25536c8c60a46b8a073557ee7ff9e7.46154739330.json",
-  "production_transaction_status": "ROLLING_BACK",
+  "production_transaction_status": "ROLLED_BACK",
   "queue_key": "card-ua-0001-bd5af11a345f8c18",
   "receipt_path": "state/receipts/ADS-AWTAG-SITE-INSTALL-20261128.json",
   "receipt_validation_status": "PENDING",
@@ -107,7 +118,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "ROLLED_BACK",
   "trusted_package": {
     "controller_sha256": "02b116d44c161f39ac07603d4e2617d4da6573db3cd95e1782ba0ad505e875c2",
     "file_sha256": {
@@ -126,5 +137,5 @@
       "cloud/ads_awtag_site_001/ua_google_tag_old.py": "f5f0a30489d20d7f7d973c27bd31e583e9827fb5a6d1e24a97fb35d1e6a3b6d4"
     }
   },
-  "updated_at": "2026-11-28T14:47:15Z"
+  "updated_at": "2026-11-28T14:59:49Z"
 }
