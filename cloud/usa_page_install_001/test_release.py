@@ -184,7 +184,7 @@ class CandidateTests(unittest.TestCase):
     def test_release_constants(self):
         import release_constants
         self.assertEqual((release_constants.PREVIEW_TASK, release_constants.INSTALL_TASK, release_constants.PACKAGE),
-                         ('USA-PAGE-PREVIEW-20261128-R2', 'USA-PAGE-INSTALL-20261128', 'cloud/usa_page_install_001'))
+                         ('USA-PAGE-PREVIEW-20261128-R3', 'USA-PAGE-INSTALL-20261128-R2', 'cloud/usa_page_install_001'))
 
     def _bundle_dir(self):
         archive = self.bundle()

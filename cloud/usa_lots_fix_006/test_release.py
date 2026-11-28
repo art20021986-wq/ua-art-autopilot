@@ -65,7 +65,7 @@ class CandidateTests(unittest.TestCase):
 
     def test_installed_hashes_are_the_usa_fix_install(self):
         """The USA fix install's receipt code_sha256 (state/receipts/USA-LOTS-FIX-INSTALL-20261127.json)."""
-        receipt = HERE.parents[1] / 'state' / 'receipts' / 'USA-PAGE-INSTALL-20261128.json'
+        receipt = HERE.parents[1] / 'state' / 'receipts' / 'USA-PAGE-INSTALL-20261128-R2.json'
         if receipt.exists():
             fixed = json.loads(receipt.read_bytes())['code_sha256']
             self.assertEqual({n: candidate_builder.INSTALLED_SHA256[n] for n in fixed}, fixed)
@@ -119,7 +119,7 @@ class CandidateTests(unittest.TestCase):
     def test_release_constants(self):
         import release_constants
         self.assertEqual((release_constants.PREVIEW_TASK, release_constants.INSTALL_TASK, release_constants.PACKAGE),
-                         ('USA-LOTS-FIX6-PREVIEW-20261128', 'USA-LOTS-FIX6-INSTALL-20261128', 'cloud/usa_lots_fix_006'))
+                         ('USA-LOTS-FIX6-PREVIEW-20261128-R2', 'USA-LOTS-FIX6-INSTALL-20261128', 'cloud/usa_lots_fix_006'))
 
     def _tmp(self):
         import tempfile

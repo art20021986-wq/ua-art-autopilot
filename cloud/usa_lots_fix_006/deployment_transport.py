@@ -84,7 +84,9 @@ class API:
         observed = self.bot()
         if observed.get('enabled') is not enabled:
             self.json('PATCH', 'always_on/%d/' % BOT_ID, {'enabled': str(enabled).lower()})
-        deadline = time.monotonic()+(480 if enabled else 120)
+        # USA-PAGE-INSTALL-20261128 (run 46161221342): BOT_STATE_TIMEOUT — the bot needs longer than 120 s to reach
+        # «stopped»; 480 s each way, as the installs that passed (MEDIA-GALLERY-FINAL, CRM-PHOTO-VISIBILITY)
+        deadline = time.monotonic()+480
         while time.monotonic() < deadline:
             value = self.bot()
             state = str(value.get('state', '')).lower()
