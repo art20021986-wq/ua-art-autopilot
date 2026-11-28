@@ -1,4 +1,6 @@
+import importlib.util
 import sys
+import tempfile
 import types
 import unittest
 from pathlib import Path
@@ -32,8 +34,13 @@ class PriceTest(unittest.TestCase):
 
 class TailTest(unittest.TestCase):
     def module(self, code):
-        module = types.ModuleType('ua_seo_metadata_test')
-        exec(compile(code, 'ua_seo_metadata.py', 'exec'), module.__dict__)
+        folder = tempfile.TemporaryDirectory()
+        self.addCleanup(folder.cleanup)
+        path = Path(folder.name) / 'ua_seo_metadata_test.py'
+        path.write_text(code, encoding='utf-8')
+        spec = importlib.util.spec_from_file_location('ua_seo_metadata_test', path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
         return module
 
     def test_normalize_gets_price_before_block(self):
