@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ADS-RSA-TUNE-20261128.ba4edad85ad798cf0926a331a62817877789c11d6abb03509accac1e4fc535ff.json",
+  "autostart_ledger_sha256": "7db10cfcdd9db0a9cd29279a1f6f6a8c566bb014bfaabe93150ca2b560773d8a",
+  "autostart_source_commit": "e36d84454757a7e69db104c0827bcccbe91cbd5f",
+  "created_at": "2026-11-28T14:15:20Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "46151794951",
+    "task_id": "ADS-RSA-TUNE-20261128",
+    "task_sha256": "ba4edad85ad798cf0926a331a62817877789c11d6abb03509accac1e4fc535ff"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-d7f7db750e9a673c-28ba551cd9844381",
+  "request_path": "tasks/requests/ADS-RSA-TUNE-20261128.json",
+  "resource_locks": [
+    "PATH_SCOPE:d7f7db750e9a673c"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
