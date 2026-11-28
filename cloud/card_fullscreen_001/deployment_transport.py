@@ -76,7 +76,7 @@ class API:
         observed = self.bot()
         if observed.get('enabled') is not enabled:
             self.json('PATCH', 'always_on/%d/' % BOT_ID, {'enabled': str(enabled).lower()})
-        deadline = time.monotonic()+(480 if enabled else 120)
+        deadline = time.monotonic()+480  # USA-PAGE (28.11): the bot may need more than 120 s to reach «stopped»
         while time.monotonic() < deadline:
             value = self.bot()
             state = str(value.get('state', '')).lower()
