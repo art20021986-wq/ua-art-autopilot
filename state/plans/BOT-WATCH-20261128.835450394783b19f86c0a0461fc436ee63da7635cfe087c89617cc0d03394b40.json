@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/BOT-WATCH-20261128.835450394783b19f86c0a0461fc436ee63da7635cfe087c89617cc0d03394b40.json",
+  "autostart_ledger_sha256": "ed2f12d2c67d63c69dd0e10e48541ada52a44447301a15b5418532e71f307b0c",
+  "autostart_source_commit": "7f11f565e141067a9658b21f8f6c7ee6159dc696",
+  "created_at": "2026-11-28T03:16:19Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "46101888657",
+    "task_id": "BOT-WATCH-20261128",
+    "task_sha256": "835450394783b19f86c0a0461fc436ee63da7635cfe087c89617cc0d03394b40"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-066561f4b075c574-ee1acb66762d0e9b",
+  "request_path": "tasks/requests/BOT-WATCH-20261128.json",
+  "resource_locks": [
+    "PATH_SCOPE:066561f4b075c574"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
