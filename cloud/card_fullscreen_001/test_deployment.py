@@ -229,6 +229,18 @@ class TransportTests(unittest.TestCase):
             self.assertEqual(api.set_bot(False)['state'], 'stopped')
             self.assertEqual(wait.call_count, 1)
 
+    def test_pause_waits_up_to_eight_minutes_for_stopped(self):
+        api = API('test-token')
+        clock = iter([0, 200, 400, 470])
+        with patch.object(api, 'bot', side_effect=[
+            {'enabled': True, 'state': 'Running'},
+            {'enabled': False, 'state': 'Stopping'},
+            {'enabled': False, 'state': 'Stopping'},
+            {'enabled': False, 'state': 'Stopped'},
+        ]), patch.object(api, 'json'), patch('deployment_transport.time.sleep'), \
+             patch('deployment_transport.time.monotonic', side_effect=lambda: next(clock)):
+            self.assertEqual(api.set_bot(False)['state'], 'stopped')
+
     def test_jobs_stopped_holds_every_auction_job_lock(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(remote, 'ROOT', Path(folder)):
             with remote.jobs_stopped():
