@@ -13,3 +13,8 @@ Google Cloud брендинг: загрузить UA-ART-logo-C-120.png.
 cloud/header_nav_001/header_nav_final.png, mockup_final.js.
 После 10 000+ запросов: один раз показать владельцу финальную картинку → его «Да» на пакет → «можно» координатора →
 превью → установка.
+
+28.11 владелец «Да» (через координатора): логотип C + кнопки «Головна»/«Назад» под ним вместо «← На головну», одним
+пакетом. Пакет cloud/logo_site_001 (ua_logo_c, ua_header_nav, ua_brand_home; SEO_REVISION LOGO-001), заявка превью
+LOGO-PREFLIGHT-20261128, установка LOGO-INSTALL-20261128. Снимки до/после cloud/logo_001/site_before_*/site_after_*.
+НЕ запущено. favicon не трогаем.
