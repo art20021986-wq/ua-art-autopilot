@@ -1,0 +1,468 @@
+{
+  "access_level_hint": "BASIC_OR_HIGHER",
+  "added_now": 6161,
+  "after": {
+    "budget": "300000000",
+    "ceiling": {
+      "cpcBidCeilingMicros": "4550000"
+    },
+    "groups": 68,
+    "groups_without_ad": [],
+    "keywords": 13322,
+    "keywords_ru": 7790,
+    "keywords_uk": 5532,
+    "negatives": 81
+  },
+  "before": {
+    "budget": "300000000",
+    "ceiling": {
+      "cpcBidCeilingMicros": "4550000"
+    },
+    "groups": 68,
+    "groups_without_ad": [
+      "UA — Аукціон — BMW",
+      "UA — Аукціон — Renault Samsung",
+      "UA — Аукціон — Toyota",
+      "UA — Аукціон — Volkswagen"
+    ],
+    "keywords": 7362,
+    "keywords_ru": 3946,
+    "keywords_uk": 3416,
+    "negatives": 81
+  },
+  "countries": {
+    "korea": {
+      "added_tonight": 6161,
+      "left_in_plan": 2978,
+      "refused_by_google": 2,
+      "total_in_campaign": 13322
+    },
+    "usa": {
+      "added_tonight": 5970,
+      "groups_left_to_create": 0,
+      "left_in_plan": 11673,
+      "refused_by_google": 30,
+      "total_in_campaign": 6003
+    }
+  },
+  "duplicates_removed": 201,
+  "left_for_next_run": 2978,
+  "limit": 12000,
+  "mode": "probe",
+  "operations_accepted": 12429,
+  "plan_total": 16263,
+  "policy_refusals": [],
+  "remote_write_count": 1,
+  "run_id": "46160387157",
+  "safe_to_stop": true,
+  "split": {
+    "korea": 6000,
+    "usa": 6000
+  },
+  "status": "PASS",
+  "steps": [
+    {
+      "first": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 4
+      }
+    },
+    {
+      "duplicates_0": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 201
+      }
+    },
+    {
+      "keywords_0": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_600": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_1200": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_1800": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_2400": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_3000": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_3600": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_4200": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_4800": {
+        "codes": [
+          "{\"policyViolationError\": \"POLICY_ERROR\"}"
+        ],
+        "examples": [
+          {
+            "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+            "field": "mutate_operations[331].ad_group_criterion_operation.create.keyword.text",
+            "message": "A policy was violated. See PolicyViolationDetails for more detail."
+          },
+          {
+            "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+            "field": "mutate_operations[338].ad_group_criterion_operation.create.keyword.text",
+            "message": "A policy was violated. See PolicyViolationDetails for more detail."
+          }
+        ],
+        "refused": 2,
+        "sent": 600
+      }
+    },
+    {
+      "keywords_5400": {
+        "codes": [],
+        "examples": [],
+        "refused": 0,
+        "sent": 600
+      }
+    }
+  ],
+  "task_id": "ADS-BULK-20261128-BIG",
+  "usa": {
+    "after": {
+      "budget": "50000000",
+      "ceiling": {
+        "cpcBidCeilingMicros": "2000000"
+      },
+      "groups": 116,
+      "groups_without_ad": [],
+      "keywords": 6003,
+      "keywords_ru": 3021,
+      "keywords_uk": 2982,
+      "negatives": 79
+    },
+    "before": {
+      "budget": "50000000",
+      "ceiling": {
+        "cpcBidCeilingMicros": "2000000"
+      },
+      "groups": 4,
+      "groups_without_ad": [],
+      "keywords": 33,
+      "keywords_ru": 17,
+      "keywords_uk": 16,
+      "negatives": 79
+    },
+    "steps": [
+      {
+        "groups": {
+          "codes": [],
+          "examples": [],
+          "refused": 0,
+          "sent": 224
+        }
+      },
+      {
+        "keywords_0": {
+          "codes": [
+            "{\"policyViolationError\": \"POLICY_ERROR\"}"
+          ],
+          "examples": [
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[402].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[516].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            }
+          ],
+          "refused": 2,
+          "sent": 600
+        }
+      },
+      {
+        "keywords_600": {
+          "codes": [
+            "{\"policyViolationError\": \"POLICY_ERROR\"}"
+          ],
+          "examples": [
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[145].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[259].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[373].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            }
+          ],
+          "refused": 3,
+          "sent": 600
+        }
+      },
+      {
+        "keywords_1200": {
+          "codes": [
+            "{\"policyViolationError\": \"POLICY_ERROR\"}"
+          ],
+          "examples": [
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[450].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[562].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            }
+          ],
+          "refused": 2,
+          "sent": 600
+        }
+      },
+      {
+        "keywords_1800": {
+          "codes": [
+            "{\"policyViolationError\": \"POLICY_ERROR\"}"
+          ],
+          "examples": [
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[74].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[186].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[522].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            }
+          ],
+          "refused": 3,
+          "sent": 600
+        }
+      },
+      {
+        "keywords_2400": {
+          "codes": [
+            "{\"policyViolationError\": \"POLICY_ERROR\"}"
+          ],
+          "examples": [
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[34].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[146].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[258].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            }
+          ],
+          "refused": 3,
+          "sent": 600
+        }
+      },
+      {
+        "keywords_3000": {
+          "codes": [
+            "{\"policyViolationError\": \"POLICY_ERROR\"}"
+          ],
+          "examples": [
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[219].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[331].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[443].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[555].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            }
+          ],
+          "refused": 4,
+          "sent": 600
+        }
+      },
+      {
+        "keywords_3600": {
+          "codes": [
+            "{\"policyViolationError\": \"POLICY_ERROR\"}"
+          ],
+          "examples": [
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[67].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[179].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[291].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[401].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[511].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            }
+          ],
+          "refused": 5,
+          "sent": 600
+        }
+      },
+      {
+        "keywords_4200": {
+          "codes": [
+            "{\"policyViolationError\": \"POLICY_ERROR\"}"
+          ],
+          "examples": [
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[21].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[241].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[349].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[457].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[564].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            }
+          ],
+          "refused": 5,
+          "sent": 600
+        }
+      },
+      {
+        "keywords_4800": {
+          "codes": [
+            "{\"policyViolationError\": \"POLICY_ERROR\"}"
+          ],
+          "examples": [
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[70].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[282].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            },
+            {
+              "code": "{\"policyViolationError\": \"POLICY_ERROR\"}",
+              "field": "mutate_operations[494].ad_group_criterion_operation.create.keyword.text",
+              "message": "A policy was violated. See PolicyViolationDetails for more detail."
+            }
+          ],
+          "refused": 3,
+          "sent": 600
+        }
+      },
+      {
+        "keywords_5400": {
+          "codes": [],
+          "examples": [],
+          "refused": 0,
+          "sent": 600
+        }
+      }
+    ]
+  }
+}

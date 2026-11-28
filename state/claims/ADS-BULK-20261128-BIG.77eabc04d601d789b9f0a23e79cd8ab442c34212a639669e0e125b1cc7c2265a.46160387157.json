@@ -7,21 +7,23 @@
   "created_at": "2026-11-28T15:41:22Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T15:41:22Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-28T15:47:12Z",
+  "heartbeat_at": "2026-11-28T15:47:12Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "46160387157",
     "task_id": "ADS-BULK-20261128-BIG",
     "task_sha256": "77eabc04d601d789b9f0a23e79cd8ab442c34212a639669e0e125b1cc7c2265a"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-a714955a2c13b5be-4d92c820c6af21eb",
   "receipt_path": "state/receipts/ADS-BULK-20261128-BIG.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b7a5762cb2ae056536752b0cb13c1ff2cdeb4e11dd90dc8f2ed8d1645f15c18e",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ADS-BULK-20261128-BIG.json",
   "request_sha256": "77eabc04d601d789b9f0a23e79cd8ab442c34212a639669e0e125b1cc7c2265a",
   "resource_locks": [
@@ -29,8 +31,32 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "8a6696ca66c6ded313facd2783e71e432fe06392",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91191873536,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.153
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-28T15:41:22Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "f322bf54b866a297b781d093aab04fd3856453d8ad0607ac095d8bb83fc5dd50",
+    "file_sha256": {
+      "cloud/ads_bulk_001/bootstrap.py": "65f35a4385fe6d3078f1d8af5491d2a7dd60474ff5d22abce90a5724f5d1599e",
+      "cloud/ads_bulk_001/keywords.py": "344170f30e2024cb9940c728e76bbba8bc095cb85408c7b48a0cad98f5b77b8b",
+      "cloud/ads_bulk_001/keywords_jpus.py": "f472be3b1c1a82f92b2d6cfd56566e82fcc87c33d612294febcdcf586544fa52",
+      "cloud/ads_bulk_001/make_request.py": "55e029aefe104fd13d9cf5db96fc71d11888003381c6ec126ce889e07e7497ef",
+      "cloud/ads_bulk_001/plan.py": "49fa14b5456b4ed229209b1acfbe4eef28beb0e9f32ee0d1ca4ce97e96cb899e",
+      "cloud/ads_bulk_001/source_check.py": "e7f3abd481699da7ab5edda3c7039993679f8d3c96075f0297ad5a1f9d2caedc",
+      "cloud/ads_bulk_001/source_remote.py": "e69c0c4dfea36dd07a993db77787117b76843099574a4dca5fe9b0f5239490b2",
+      "cloud/ads_bulk_001/test_ads_bulk.py": "5eead4880051967d37fc86fe5b55e446d219d87b219bdcbe44fe4d2fe074ef27",
+      "cloud/ads_bulk_001/transport.py": "9de15fe6b6ca667fb4e0f6dea82d25d054e6dcfd07d995c14cd72d4093bd2343",
+      "cloud/ads_bulk_001/usa.py": "de90ac934444f60045a270ae1d18750fe1a27a3995f2b453c3394b5059adc756"
+    }
+  },
+  "updated_at": "2026-11-28T15:47:12Z"
 }
