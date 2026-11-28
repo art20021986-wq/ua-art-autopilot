@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "cb022c87bed2d62610385a9d353d5c657bf105bd7b30999ba259a82db5c86802",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T07:42:54Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-28T07:46:59Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "46122223849",
     "task_id": "SHARE-LOTS-INSTALL-20261128",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-46122223849-125288732153ab74",
   "production_transaction_path": "state/transactions/SHARE-LOTS-INSTALL-20261128.125288732153ab74bf413f9dea06c2b787af6e62960fe6843a4e0ca70cbee783.46122223849.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-758d3b3819f3a1a8-ec71d7aea81335ce",
   "receipt_path": "state/receipts/SHARE-LOTS-INSTALL-20261128.json",
   "receipt_validation_status": "PENDING",
@@ -93,5 +93,5 @@
       "cloud/share_lots_001/test_release.py": "0653fd48fb807b0fafecd2e77f5c5bc8bc268036b6cdc7a1e40810beb04a2402"
     }
   },
-  "updated_at": "2026-11-28T07:42:54Z"
+  "updated_at": "2026-11-28T07:46:59Z"
 }
