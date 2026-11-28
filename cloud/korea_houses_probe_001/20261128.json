@@ -1,0 +1,207 @@
+{
+  "added_one_house_total": {
+    "Fri. Show Detail": 2839,
+    "Kolon Auto Auction (1,831)": 1831,
+    "Mon. Show Detail": 2839,
+    "Oneprice Show Detail": 2839,
+    "SK Rent Car Auction (482)": 482,
+    "Thu. Show Detail": 2839,
+    "Tue. Show Detail": 2839,
+    "Wed. Show Detail": 2839
+  },
+  "checkboxes": [
+    {
+      "checked": false,
+      "label": "Left-Hand Drive",
+      "name": "left_hd[]",
+      "value": "L"
+    },
+    {
+      "checked": true,
+      "label": "Display order closed auction.",
+      "name": "order_closed[]",
+      "value": "1"
+    },
+    {
+      "checked": false,
+      "label": "Check All Auction House",
+      "name": "",
+      "value": "on"
+    },
+    {
+      "checked": false,
+      "label": "Mon. Show Detail",
+      "name": "auction_group[]",
+      "value": "1"
+    },
+    {
+      "checked": false,
+      "label": "Tue. Show Detail",
+      "name": "auction_group[]",
+      "value": "2"
+    },
+    {
+      "checked": false,
+      "label": "SK Rent Car Auction (482)",
+      "name": "auction[]",
+      "value": "50008|2"
+    },
+    {
+      "checked": false,
+      "label": "Wed. Show Detail",
+      "name": "auction_group[]",
+      "value": "3"
+    },
+    {
+      "checked": false,
+      "label": "Kolon Auto Auction (1,831)",
+      "name": "auction[]",
+      "value": "50007|3"
+    },
+    {
+      "checked": false,
+      "label": "Thu. Show Detail",
+      "name": "auction_group[]",
+      "value": "4"
+    },
+    {
+      "checked": false,
+      "label": "Fri. Show Detail",
+      "name": "auction_group[]",
+      "value": "5"
+    },
+    {
+      "checked": true,
+      "label": "Sat. Show Detail",
+      "name": "auction_group[]",
+      "value": "6"
+    },
+    {
+      "checked": false,
+      "label": "Oneprice Show Detail",
+      "name": "auction_group[]",
+      "value": "8"
+    }
+  ],
+  "default": {
+    "by_day": {
+      "2026/11/30": 42,
+      "2026/12/01": 966,
+      "2026/12/02": 1831
+    },
+    "by_house": {
+      "AutoPlus": 42,
+      "K-Car O-San": 107,
+      "K-Car Se-Jong": 377,
+      "Kolon Auto Auction": 1831,
+      "SK Rent Car Auction": 482
+    },
+    "columns": {
+      "day": "Auction Start Time",
+      "house": "Auction House / Lot No."
+    }
+  },
+  "default_rows_read": 2839,
+  "default_total": 2839,
+  "glovis_lotte_in_form": [],
+  "house_boxes": [
+    {
+      "checked": false,
+      "label": "Mon. Show Detail",
+      "name": "auction_group[]",
+      "value": "1"
+    },
+    {
+      "checked": false,
+      "label": "Tue. Show Detail",
+      "name": "auction_group[]",
+      "value": "2"
+    },
+    {
+      "checked": false,
+      "label": "SK Rent Car Auction (482)",
+      "name": "auction[]",
+      "value": "50008|2"
+    },
+    {
+      "checked": false,
+      "label": "Wed. Show Detail",
+      "name": "auction_group[]",
+      "value": "3"
+    },
+    {
+      "checked": false,
+      "label": "Kolon Auto Auction (1,831)",
+      "name": "auction[]",
+      "value": "50007|3"
+    },
+    {
+      "checked": false,
+      "label": "Thu. Show Detail",
+      "name": "auction_group[]",
+      "value": "4"
+    },
+    {
+      "checked": false,
+      "label": "Fri. Show Detail",
+      "name": "auction_group[]",
+      "value": "5"
+    },
+    {
+      "checked": true,
+      "label": "Sat. Show Detail",
+      "name": "auction_group[]",
+      "value": "6"
+    },
+    {
+      "checked": false,
+      "label": "Oneprice Show Detail",
+      "name": "auction_group[]",
+      "value": "8"
+    }
+  ],
+  "mode": "probe",
+  "no_bid_placed": true,
+  "remote_write_count": 0,
+  "requests": 14,
+  "result_columns": [
+    "Auction Start Time",
+    "Bidding Close Time",
+    "Auction House / Lot No.",
+    "Score",
+    "Mileage (km)",
+    "Year",
+    "Starting Price (KRW)",
+    "Photo",
+    "Manufacturer",
+    "Model",
+    "Model Code",
+    "Trim Level",
+    "Engine Size (cc)",
+    "Trans&#8203;mission",
+    "My Cart"
+  ],
+  "run_id": "46126022529",
+  "safe_to_stop": true,
+  "samples": {
+    "count_text": "2,839",
+    "detail_links": [
+      "/vehicle-detail/kr/[N]?search_id=[N]&index=0&list=first",
+      "/vehicle-detail/kr/[N]?search_id=[N]&index=1",
+      "/vehicle-detail/kr/[N]?search_id=[N]&index=2",
+      "/vehicle-detail/kr/[N]?search_id=[N]&index=3",
+      "/vehicle-detail/kr/[N]?search_id=[N]&index=4"
+    ],
+    "pager_links": [
+      "/vehicle-search/kr/index/page=142?order_closed%5B0%5D=1&amp;mode=list&amp;sortkey=&amp;dir=&amp;auction_country_id=28&amp;save_search_history=on&amp;auction_group%5B0%5D=6&amp;auction%5B0%5D=50004%7C1&amp;auction%5B1%5D=50003%7C2&amp;auction%5B2%5D=50002%7C2&amp;auction%5B3%5D=50007%7C3&amp;auction%5B4%5D=50008%7C2",
+      "/vehicle-search/kr/index/page=2?order_closed%5B0%5D=1&amp;mode=list&amp;sortkey=&amp;dir=&amp;auction_country_id=28&amp;save_search_history=on&amp;auction_group%5B0%5D=6&amp;auction%5B0%5D=50004%7C1&amp;auction%5B1%5D=50003%7C2&amp;auction%5B2%5D=50002%7C2&amp;auction%5B3%5D=50007%7C3&amp;auction%5B4%5D=50008%7C2",
+      "/vehicle-search/kr/index/page=3?order_closed%5B0%5D=1&amp;mode=list&amp;sortkey=&amp;dir=&amp;auction_country_id=28&amp;save_search_history=on&amp;auction_group%5B0%5D=6&amp;auction%5B0%5D=50004%7C1&amp;auction%5B1%5D=50003%7C2&amp;auction%5B2%5D=50002%7C2&amp;auction%5B3%5D=50007%7C3&amp;auction%5B4%5D=50008%7C2",
+      "/vehicle-search/kr/index/page=4?order_closed%5B0%5D=1&amp;mode=list&amp;sortkey=&amp;dir=&amp;auction_country_id=28&amp;save_search_history=on&amp;auction_group%5B0%5D=6&amp;auction%5B0%5D=50004%7C1&amp;auction%5B1%5D=50003%7C2&amp;auction%5B2%5D=50002%7C2&amp;auction%5B3%5D=50007%7C3&amp;auction%5B4%5D=50008%7C2",
+      "/vehicle-search/kr/index/page=5?order_closed%5B0%5D=1&amp;mode=list&amp;sortkey=&amp;dir=&amp;auction_country_id=28&amp;save_search_history=on&amp;auction_group%5B0%5D=6&amp;auction%5B0%5D=50004%7C1&amp;auction%5B1%5D=50003%7C2&amp;auction%5B2%5D=50002%7C2&amp;auction%5B3%5D=50007%7C3&amp;auction%5B4%5D=50008%7C2",
+      "/vehicle-search/kr/index/page=6?order_closed%5B0%5D=1&amp;mode=list&amp;sortkey=&amp;dir=&amp;auction_country_id=28&amp;save_search_history=on&amp;auction_group%5B0%5D=6&amp;auction%5B0%5D=50004%7C1&amp;auction%5B1%5D=50003%7C2&amp;auction%5B2%5D=50002%7C2&amp;auction%5B3%5D=50007%7C3&amp;auction%5B4%5D=50008%7C2"
+    ],
+    "table": "<table class=\"table-condensed table-striped table table-bordered table-hover\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<thead>\n\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"auction_start\" data-dir=\"asc\">Auction<br>Start Time</a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th class=\"hidden-phone\">\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"bid_end_time\" data-dir=\"asc\">Bidding<br>Close Time</a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"auction_name\" data-dir=\"asc\">Auction House</a><br>/\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"bid\" data-dir=\"asc\">Lot No.</a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"scores_en\" data-dir=\"asc\">Score</a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"mileage_num\" data-dir=\"asc\">Mileage<br><small>(km)</small></a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"model_year_en\" data-dir=\"asc\">Year</a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"start_price_en\" data-dir=\"asc\">Starting Price<br><small>(KRW)</small></a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\tPhoto\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"company\" data-dir=\"asc\">Manufacturer</a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"model_name_en\" data-dir=\"asc\">Model</a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"model_type_en\" data-dir=\"asc\">Model Code</a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"grade_en\" data-dir=\"asc\">Trim Level</a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"displacement_num\" data-dir=\"asc\">Engine Size<br><small>(cc)</small></a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th>\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" class=\"sort_link_post\" data-sortkey=\"transmission_en\" data-dir=\"asc\">Trans&#8203;mission</a>\n\t\t\t\t\t\t\t\t\t\t</th>\n\t\t\t\t\t\t\t\t\t\t<th style='width:34px;'>My Cart</th>\n\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t</thead>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-date-area\">2026/11/30</div>\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-time-area\">12:00</div>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"hidden-phone text-center red\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-date-area\">2026/11/30</div>\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-time-area\">10:00</div>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"nobid-td\">\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"/vehicle-detail/kr/[N]?search_id=[N]&index=0&list=first\" target=\"_blank\" class=\"vehicle-search-link\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t\t\t\t\t\tAutoPlus\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t(1)\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t189,000 <small>km</small>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t2012\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t0\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"photo-td photo-lot-id\" data-lot-id=\"[N]\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<ul class=\"supplement-file-ul clearfix\">\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1126/[N]/a[N]_1.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1126/[N]/a[N]_1.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1126/[N]/a[N]_2.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1126/[N]/a[N]_2.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1126/[N]/a[N]_3.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1126/[N]/a[N]_3.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t</ul>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>HYUNDAI</td>\n\t\t\t\t\t\t\t\t\t\t<td>GRANDEUR</td>\n\t\t\t\t\t\t\t\t\t\t<td></td>\n\t\t\t\t\t\t\t\t\t\t<td>HG 300 LPI  PRIME</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t2,999\n\t\t\t\t\t\t\t\t\t\t\t<small>cc</small>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>AT</td>\n\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-success tgl-cart btn-cart-small\" data-lot_id=\"[N]\" data-cur_val='0' >\n\t\t\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa fa-shopping-cart fa-inverse\" aria-hidden=\"true\"></i>\n\t\t\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t</tr><tr>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-date-area\">2026/11/30</div>\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-time-area\">12:00</div>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"hidden-phone text-center red\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-date-area\">2026/11/30</div>\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-time-area\">10:00</div>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"nobid-td\">\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"/vehicle-detail/kr/[N]?search_id=[N]&index=1\" target=\"_blank\" class=\"vehicle-search-link\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t\t\t\t\t\tAutoPlus\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t(2)\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t64,000 <small>km</small>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t2024\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t0\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"photo-td photo-lot-id\" data-lot-id=\"[N]\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<ul class=\"supplement-file-ul clearfix\">\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1124/C[N]/[N]_1.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1124/C[N]/[N]_1.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1124/C[N]/[N]_1.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1124/C[N]/[N]_1.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1126/C[N]/[N]_1.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1126/C[N]/[N]_1.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t</ul>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>KIA</td>\n\t\t\t\t\t\t\t\t\t\t<td>EV6</td>\n\t\t\t\t\t\t\t\t\t\t<td></td>\n\t\t\t\t\t\t\t\t\t\t<td>2WD</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t0\n\t\t\t\t\t\t\t\t\t\t\t<small>cc</small>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>AT</td>\n\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-success tgl-cart btn-cart-small\" data-lot_id=\"[N]\" data-cur_val='0' >\n\t\t\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa fa-shopping-cart fa-inverse\" aria-hidden=\"true\"></i>\n\t\t\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t</tr><tr>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-date-area\">2026/11/30</div>\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-time-area\">12:00</div>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"hidden-phone text-center red\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-date-area\">2026/11/30</div>\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-time-area\">10:00</div>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"nobid-td\">\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"/vehicle-detail/kr/[N]?search_id=[N]&index=2\" target=\"_blank\" class=\"vehicle-search-link\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t\t\t\t\t\tAutoPlus\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t(3)\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t70,000 <small>km</small>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t2024\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t0\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"photo-td photo-lot-id\" data-lot-id=\"[N]\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<ul class=\"supplement-file-ul clearfix\">\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1124/C[N]/[N]_1.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1124/C[N]/[N]_1.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1124/C[N]/[N]_1.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1124/C[N]/[N]_1.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1124/C[N]/[N]_2.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1124/C[N]/[N]_2.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t</ul>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>KIA</td>\n\t\t\t\t\t\t\t\t\t\t<td>EV6</td>\n\t\t\t\t\t\t\t\t\t\t<td></td>\n\t\t\t\t\t\t\t\t\t\t<td>2WD</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t0\n\t\t\t\t\t\t\t\t\t\t\t<small>cc</small>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>AT</td>\n\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-success tgl-cart btn-cart-small\" data-lot_id=\"[N]\" data-cur_val='0' >\n\t\t\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa fa-shopping-cart fa-inverse\" aria-hidden=\"true\"></i>\n\t\t\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t</tr><tr>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-date-area\">2026/11/30</div>\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-time-area\">12:00</div>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"hidden-phone text-center red\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-date-area\">2026/11/30</div>\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-time-area\">10:00</div>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"nobid-td\">\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"/vehicle-detail/kr/[N]?search_id=[N]&index=3\" target=\"_blank\" class=\"nobid-link\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t\t\t\t\t\tAutoPlus\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t(4)\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t21,000 <small>km</small>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t2025\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t0\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"photo-td photo-lot-id\" data-lot-id=\"[N]\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<ul class=\"supplement-file-ul clearfix\">\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1126/C[N]/[N]_1.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1126/C[N]/[N]_1.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1126/C[N]/[N]_2.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1126/C[N]/[N]_2.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1126/C[N]/[N]_3.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1126/C[N]/[N]_3.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t</ul>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>KIA</td>\n\t\t\t\t\t\t\t\t\t\t<td>K9</td>\n\t\t\t\t\t\t\t\t\t\t<td></td>\n\t\t\t\t\t\t\t\t\t\t<td>3.8  AWD</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t3,778\n\t\t\t\t\t\t\t\t\t\t\t<small>cc</small>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>AT</td>\n\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-success tgl-cart btn-cart-small\" data-lot_id=\"[N]\" data-cur_val='0' >\n\t\t\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa fa-shopping-cart fa-inverse\" aria-hidden=\"true\"></i>\n\t\t\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t</tr><tr>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-date-area\">2026/11/30</div>\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-time-area\">12:00</div>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"hidden-phone text-center red\">\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-date-area\">2026/11/30</div>\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"auction-time-area\">10:00</div>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"nobid-td\">\n\t\t\t\t\t\t\t\t\t\t\t<a href=\"/vehicle-detail/kr/[N]?search_id=[N]&index=4\" target=\"_blank\" class=\"vehicle-search-link\">\n\t\t\t\t\t\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t\t\t\t\t\tAutoPlus\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t\t<div class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t(5)\n\t\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-center\">\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t126,000 <small>km</small>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t2019\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t0\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"photo-td photo-lot-id\" data-lot-id=\"[N]\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<ul class=\"supplement-file-ul clearfix\">\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1126/C[N]/[N]_1.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1126/C[N]/[N]_1.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1126/C[N]/[N]_2.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1126/C[N]/[N]_2.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t\t<li class=\"supplement-file-li\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"/cha_auction/2026/1126/C[N]/[N]_3.jpg\" class=\"highslide\" onclick=\"return hs.expand(this)\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img src=\"/cha_auction/2026/1126/C[N]/[N]_3.jpg\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t\t\t\t</ul>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>KIA</td>\n\t\t\t\t\t\t\t\t\t\t<td>CARNIVAL</td>\n\t\t\t\t\t\t\t\t\t\t<td></td>\n\t\t\t\t\t\t\t\t\t\t<td>9</td>\n\t\t\t\t\t\t\t\t\t\t<td class=\"text-right\">\n\t\t\t\t\t\t\t\t\t\t\t2,199\n\t\t\t\t\t\t\t\t\t\t\t<small>cc</small>\n\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t<td>AT</td>\n\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<button type=\"button\" class=\"btn btn-success tgl-cart btn-cart-small\" data-lot_id=\"[N]\" data-cur_val='0' >\n\t\t\t\t\t\t\t\t\t\t\t\t\t<i class=\"fa fa-shopping-cart fa-inverse\" aria-hidden=\"true\"></i>\n\t\t\t\t\t\t\t\t\t\t\t\t</button>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t</tr></table>"
+  },
+  "status": "PASS",
+  "task_id": "KOREA-HOUSES-PROBE-20261128"
+}

@@ -7,21 +7,23 @@
   "created_at": "2026-11-28T08:30:48Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T08:30:48Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-28T08:37:43Z",
+  "heartbeat_at": "2026-11-28T08:37:43Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "46126022529",
     "task_id": "KOREA-HOUSES-PROBE-20261128",
     "task_sha256": "64fa3df8b2ca5075eeed01012f2406e79810658c1d21acd0dda3bd16eaed66d1"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-2ebfd12c6f45d00c-d084f222e0d94dee",
   "receipt_path": "state/receipts/KOREA-HOUSES-PROBE-20261128.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "c04db85d06653f2093fe8d521de290709d462db2736cd6165daa825afc657b6f",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/KOREA-HOUSES-PROBE-20261128.json",
   "request_sha256": "64fa3df8b2ca5075eeed01012f2406e79810658c1d21acd0dda3bd16eaed66d1",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "ea22fe58c8367e010730e7d8e1796ab606dc9db4",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91221618688,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.134
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-28T08:30:48Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "56b5d54ca77467771714b71917f20c63713af1c94520cf33ee3d6da5e53faa95",
+    "file_sha256": {
+      "cloud/korea_houses_probe_001/bootstrap.py": "8d7ff2d99d7c8ae84b8281c722ec2fda644258db9e9c088746fcfc96657f7fd3",
+      "cloud/korea_houses_probe_001/make_request.py": "624ed074112790bdd8a80d2cd5c52f191d08487d475ff4dc3a9cf811b1a99cbf",
+      "cloud/korea_houses_probe_001/source_remote.py": "29e5a2167291431b619e8290e94611ff12b62f6cd62a18296ed48a68e6977b8e",
+      "cloud/korea_houses_probe_001/test_korea_houses_probe.py": "707932936bdfc296972e0a45f1636b7a6953400f79fb58b1074985ada5bc7e54",
+      "cloud/korea_houses_probe_001/transport.py": "9408f741604c21637d7ebb4ab839934d7d0fd1be83021c230c8733029097850f"
+    }
+  },
+  "updated_at": "2026-11-28T08:37:43Z"
 }
