@@ -15,6 +15,12 @@ class UsaPageTests(unittest.TestCase):
     def setUp(self):
         self.page = usa_page.build(USA, JAPAN).decode('utf-8')
 
+    def test_no_zero_mileage(self):
+        page = usa_page.build(USA, JAPAN).decode('utf-8')
+        self.assertIn('function kmtext(l){return l.mileage_km?', page)
+        self.assertIn('"km_tbd": ["пробіг уточнюється"', page)
+        self.assertIn('(l.mileage_km?row("mileage",', page)
+
     def test_usa_list_texts_and_card(self):
         for piece in ('Зараз на торгах у США', 'Ціни — на аукціоні IAAI. Ваша ціна під ключ — у менеджера.',
                       'Сейчас на торгах в США', 'fetch("/video/usa/lots.json"', "fetch('/video/usa/gallery/'",

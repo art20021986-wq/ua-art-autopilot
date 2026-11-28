@@ -1231,6 +1231,7 @@ class UsaTickerTest(unittest.TestCase):
         no_price = ticker._usa_item(dict(self.ITEM, value_usd=0))
         self.assertIn('ціна — за запитом', no_price)  # USA-LOTS-FIX-005: never «$0»
         self.assertNotIn('$0', no_price)
+        self.assertIn('пробіг уточнюється', ticker._usa_item(dict(self.ITEM, mileage_km=0)))
 
     def test_in_common_ticker_without_korea_lots(self):
         html = ticker.render({'items': [], 'own': [], 'usa': {'items': [self.ITEM]}})
