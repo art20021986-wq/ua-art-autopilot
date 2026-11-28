@@ -89,7 +89,7 @@ def targets(root):
 
 
 def build(source, dependencies):
-    """{name: new bytes}; the live module must be V1 and each page must carry exactly the V1 block."""
+    """{name: new bytes}; the live module must be V1 and each page must carry exactly one V1 or one V2 block."""
     if MODULE not in source or sha(source[MODULE]) != MODULE_SHA256:
         raise ValueError('AWTAG_LIVE_MODULE_UNEXPECTED')
     result = {MODULE: (HERE/MODULE).read_bytes()}
@@ -98,7 +98,9 @@ def build(source, dependencies):
             if not is_page(name):
                 raise ValueError('AWTAG_SOURCE_UNEXPECTED:' + name)
             try:
-                result[name] = swap(value.decode('utf-8')).encode('utf-8')
+                text = value.decode('utf-8')
+                # Already V2 (the landings the stale bot rewrote on 28.11 during the R1 rollback): kept as they are.
+                result[name] = value if is_new(text) else swap(text).encode('utf-8')
             except ValueError:
                 raise ValueError('AWTAG_PAGE_UNEXPECTED:' + name) from None
     if len(result) < 2:

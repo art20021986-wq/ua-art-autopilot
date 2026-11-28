@@ -80,7 +80,10 @@ class API:
         while time.monotonic() < deadline:
             value = self.bot()
             state = str(value.get('state', '')).lower()
-            if value.get('enabled') is enabled and (state == 'running' if enabled else state != 'running'):
+            # A pause ends only at the explicit «stopped» state: a «stopping» bot is still alive with the modules it
+            # imported and writes pages after the locks are released (ADS-AWTAG-SITE-INSTALL-20261128, as in
+            # PUBLISH-VIDEO-LATENCY-002).
+            if value.get('enabled') is enabled and state == ('running' if enabled else 'stopped'):
                 return {'id': BOT_ID, 'enabled': enabled, 'state': state}
             time.sleep(3)
         raise TransportError('BOT_STATE_TIMEOUT')

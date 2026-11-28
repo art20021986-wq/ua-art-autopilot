@@ -1,6 +1,12 @@
 """Bounded ADS-AWTAG-SITE release (the site Google tag block V1 -> V2: Google Ads config and one conversion per lead)
 in ua_google_tag.py and every public page with the block; preserve live data and pending requests.
-Installer from LOGO-CARD-001 (installed 2026-11-28) with the page handling of CONTACT-NOTE (installed 2026-11-11)."""
+Installer from LOGO-CARD-001 (installed 2026-11-28) with the page handling of CONTACT-NOTE (installed 2026-11-11).
+
+R2 (after ADS-AWTAG-SITE-INSTALL-20261128): the bot pause waits for the explicit «stopped» state (transport), so no
+bot process with the old or the new module in memory outlives a pause; the landing writer (ua_seo_index.refresh) runs
+once under the locks with the installed modules (as LOGO-SITE-001) and the pages are checked byte for byte before the
+locks are released; the verify after the resume reads the pages under the page writers' locks; a rollback puts the
+modules back first, then every page with the V1 block (also the landings already V2), and only then resumes the bot."""
 import argparse
 import datetime
 from contextlib import closing, contextmanager
@@ -144,15 +150,17 @@ def smoke(directory):
         raise DeploymentError('SMOKE_MODULE')
     guard = load(ROOT/'catalog_design_guard.py', 'awtag_preview_guard')
     names = [name for name in plan['files'] if plan['files'][name]['page']]
-    value = {'pages': len(names), 'folders': {}, 'pages_block_only': 0, 'pages_writer_same': 0,
+    value = {'pages': len(names), 'folders': {}, 'pages_block_only': 0, 'pages_writer_same': 0, 'pages_already_v2': 0,
              'fresh_pages_same': 0, 'catalog_shell_same': [],
              'hosts_same': hosts(NEW.SNIPPET) == hosts(OLD.SNIPPET)}
     for name in names:
         old, new = read(ROOT/name).decode('utf-8'), read(after/name).decode('utf-8')
         folder = name.rsplit('/', 1)[0]
         value['folders'][folder] = value['folders'].get(folder, 0) + 1
-        value['pages_block_only'] += (is_old(old) and is_new(new) and undo(new) == old
-                                      and new.replace(NEW.SNIPPET, '') == old.replace(OLD.SNIPPET, ''))
+        already = is_new(old) and old == new  # a landing already V2 (28.11): unchanged by the install
+        value['pages_already_v2'] += already
+        value['pages_block_only'] += already or (is_old(old) and is_new(new) and undo(new) == old
+                                                 and new.replace(NEW.SNIPPET, '') == old.replace(OLD.SNIPPET, ''))
         value['pages_writer_same'] += module.apply(old) == new and module.apply(new) == new
         bare = old.replace(OLD.SNIPPET, '')
         value['fresh_pages_same'] += module.apply(bare) == OLD.apply(bare).replace(OLD.SNIPPET, NEW.SNIPPET)
@@ -165,15 +173,22 @@ def smoke(directory):
     return value
 
 
-def verify_files(plan, after):
+def verify_files(plan, after, refreshed=None, strict=False):
+    """Every file as planned; after the install a landing may carry the bytes the controlled refresh wrote
+    (refreshed: {name: sha}). strict (under the locks, bot stopped): nothing else; otherwise a page a writer rewrote
+    after the resume must carry the V2 block once and no V1 block (the new module)."""
+    refreshed = refreshed or {}
     for relative,item in plan['files'].items():
         expected = item['after' if after else 'before']
         path = ROOT/relative
         if expected is None:
             if path.exists() or path.is_symlink():
                 raise DeploymentError('UNEXPECTED_FILE:'+relative)
-        elif sha(read(path)) != expected and not (after and item.get('page') and has_new(path)):
-            # A page a writer rewrote after the install carries the V2 block (the new module).
+            continue
+        current = sha(read(path))
+        if current == expected or (after and refreshed.get(relative) == current):
+            continue
+        if not (after and not strict and item.get('page') and has_new(path)):
             raise DeploymentError('FILE_CHANGED:'+relative)
     for relative,digest in plan['protected'].items():
         if sha(read(ROOT/relative)) != digest:
@@ -290,6 +305,28 @@ def no_bot_processes():
 
 
 @contextmanager
+def page_writers_held():
+    """The page writers' locks without the CRM database lock (the verify after the resume): the CRM sync worker, the
+    publication fence (ua_card_lang_job and _install_catalog, the landing writers) and the auction jobs."""
+    lock = open(ROOT/'.crm_public_sync_worker.lock', 'a+')
+    deadline = time.monotonic()+30
+    try:
+        while True:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    raise DeploymentError('WORKER_BUSY')
+                time.sleep(.1)
+        fence = load(ROOT/'publication_fence.py', 'verify_publication_fence')
+        with fence.publication_fence(timeout=30), jobs_stopped():
+            yield
+    finally:
+        lock.close()
+
+
+@contextmanager
 def jobs_stopped():
     """Hold the auction jobs' locks (waiting for a run still working), so none writes a page meanwhile."""
     deadline = time.monotonic()+420
@@ -312,9 +349,16 @@ def jobs_stopped():
             lock.close()
 
 
+def restored_page(value):
+    """A page as the rollback leaves it: the V1 block (a landing that was already V2 before the install gets V1)."""
+    text = value.decode('utf-8')
+    return undo(text).encode('utf-8') if is_new(text) else value
+
+
 def restore(directory, plan):
-    """Every file back byte for byte; a page a writer rewrote after the install gets the V1 block back and keeps the
-    rest as the writer wrote it."""
+    """Every file back byte for byte, the modules first and then the pages, so a writer starting afterwards loads V1;
+    every page leaves with the V1 block: a page a writer rewrote after the install gets the V1 block back and keeps the
+    rest as the writer wrote it, a page already V2 before the install gets the V1 block."""
     for relative,digest in plan['protected'].items():
         if sha(read(ROOT/relative)) != digest:
             raise DeploymentError('PROTECTED_CHANGED:'+relative)
@@ -326,23 +370,29 @@ def restore(directory, plan):
             rewritten.append(relative)
         elif path.is_symlink() or current not in (item['before'],item['after']):
             raise DeploymentError('ROLLBACK_CONCURRENT_CHANGE:'+relative)
-    for relative,item in reversed(list(plan['files'].items())):
-        path=ROOT/relative
+    order=sorted(plan['files'],key=lambda name:bool(plan['files'][name].get('page')))
+    for relative in order:
+        item=plan['files'][relative]; path=ROOT/relative
         if relative in rewritten:
             text=read(path).decode('utf-8')
             if not is_old(text):
                 atomic(path,undo(text).encode('utf-8'),item['mode'])
         elif item['before'] is None: path.unlink(missing_ok=True)
-        else: atomic(path,read(directory/'before'/relative),item['mode'])
+        else:
+            value=read(directory/'before'/relative)
+            atomic(path,restored_page(value) if item.get('page') else value,item['mode'])
     for relative,item in plan['files'].items():
         path=ROOT/relative
-        if relative in rewritten:
+        if item.get('page') and item['before'] is not None:
             text=page_text(path)
             if text is None or not is_old(text) or NEW.SNIPPET in text:
                 raise DeploymentError('ROLLBACK_TAG_MISSING:'+relative)
-        elif item['before'] is None:
+        if relative in rewritten:
+            continue
+        if item['before'] is None:
             if path.exists() or path.is_symlink(): raise DeploymentError('UNEXPECTED_FILE:'+relative)
-        elif sha(read(path)) != item['before']:
+        elif sha(read(path)) != item['before'] and not (
+                item.get('page') and read(path) == restored_page(read(directory/'before'/relative))):
             raise DeploymentError('FILE_CHANGED:'+relative)
     for relative,digest in plan['protected'].items():
         if sha(read(ROOT/relative)) != digest:
@@ -383,9 +433,10 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
                     try:
                         for relative in plan['files']:
                             atomic(ROOT/relative,read(directory/'after'/relative),plan['files'][relative]['mode'])
-                        verify_files(plan,True)
+                        refreshed,refresh=seo_refresh(plan)
+                        verify_files(plan,True,refreshed,strict=True)
                         if protected_data(plan)!=before: raise DeploymentError('PROTECTED_DATA_CHANGED_DURING_INSTALL')
-                        result={'status':'PASS','installed':True}
+                        result={'status':'PASS','installed':True,'refreshed':refreshed,'seo_refresh':refresh}
                     except BaseException:
                         restore(directory,plan);applied=False
                         raise
@@ -410,6 +461,43 @@ def lifecycle(mode, run_id, expected_plan, backup_sha):
     state.update(stage='FINISHED',result=result);atomic(journal,canonical(state))
     return {**result,'backup_manifest_sha256':backup_sha,'plan_sha256':expected_plan}
 
+
+
+def installed_modules():
+    """Fresh imports of the installed landing writer and the modules it uses, from the server root."""
+    for name in [n for n in sys.modules if n.startswith(('ua_seo_', 'ua_card_lang')) or n in ('ua_indexnow', 'ua_google_sitemap', 'ua_photo_copies', 'ua_tg_script', 'ua_card_urls', 'ua_stage_images', 'ua_social_links', 'ua_chat_button', 'ua_autoria_badge', 'ua_autoria_text', 'ua_brand_home', 'ua_own_counter', 'ua_google_tag', 'ua_head_block', 'ua_layout_reserve', 'ua_lang_bar', 'ua_lcp_photo', 'ua_mobile_comfort', 'ua_logo_c', 'ua_header_nav')]:
+        del sys.modules[name]
+    sys.path.insert(0, str(ROOT))
+    try:
+        return importlib.import_module('ua_seo_index')
+    finally:
+        sys.path.remove(str(ROOT))
+
+
+def seo_refresh(plan):
+    """One controlled landing refresh under the locks with the installed modules (the writer the bot runs after the
+    resume): each landing it rewrites carries the V2 block once and no V1 block, and a second pass changes nothing
+    (the pages are exactly what the writer produces). Returns ({page: sha written}, refresh summary)."""
+    index = installed_modules()
+    first = index.refresh(ROOT/'video')
+    second = index.refresh(ROOT/'video')
+    if first.get('status') != 'PASS' or second.get('status') != 'PASS':
+        raise DeploymentError('SEO_REFRESH')
+    if second.get('landings_changed'):
+        raise DeploymentError('SEO_REFRESH_NOT_STABLE:'+str(second['landings_changed'][0]))
+    changed = {'video/'+str(name).lstrip('/') for name in first.get('landings_changed') or ()}
+    refreshed = {}
+    for relative in sorted(changed):
+        item = plan['files'].get(relative)
+        if item is None or not item.get('page'):
+            raise DeploymentError('SEO_REFRESH_OUTSIDE_PLAN:'+relative)
+        if not has_new(ROOT/relative):
+            raise DeploymentError('SEO_REFRESH_TAG:'+relative)
+        current = sha(read(ROOT/relative))
+        if current != item['after']:
+            refreshed[relative] = current
+    return refreshed, {'status': 'PASS', 'landings_changed': sorted(changed),
+                       'sitemap_changed': bool(first.get('sitemap_changed'))}
 
 
 def protected_data(plan):
@@ -460,13 +548,15 @@ def storage_probe():
 def installed(run_id, expected_plan, backup_sha):
     """Return the backup manifest and install result only for a finished install."""
     _, manifest = load_backup(backup_sha)
-    verify_files(manifest['plan'], True)
     if manifest['run_id'] != run_id or manifest['plan_sha256'] != expected_plan:
         raise DeploymentError('VERIFY_BINDING')
     journal=json.loads(read(HERE/'backups'/backup_sha/'journal-install.json'))
     result=journal.get('result',{})
     if journal.get('stage')!='FINISHED' or result.get('status')!='PASS' or result.get('installed') is not True:
         raise DeploymentError('INSTALL_JOURNAL_NOT_FINISHED')
+    # One consistent read: no page writer runs while the pages are compared.
+    with page_writers_held():
+        verify_files(manifest['plan'], True, result.get('refreshed'))
     if result.get('crm_unchanged') is not True or result.get('protected_files_unchanged') is not True:
         raise DeploymentError('INSTALL_DATA_PRESERVATION')
     return manifest, result

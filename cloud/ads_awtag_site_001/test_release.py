@@ -146,6 +146,14 @@ class BuildTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'AWTAG_PAGE_UNEXPECTED:video/index.html'):
             cb.build(source, {})
 
+    def test_landing_already_v2_is_kept_and_the_rest_swapped(self):
+        source = self.source()
+        name = 'video/seo/ua/landing.html'
+        source[name] = source[name].replace(OLD.SNIPPET.encode(), NEW.SNIPPET.encode())
+        result = cb.build(source, {})
+        self.assertEqual(result[name], source[name])
+        self.assertTrue(cb.is_new(result['video/index.html'].decode('utf-8')))
+
 
 if __name__ == '__main__':
     unittest.main()
