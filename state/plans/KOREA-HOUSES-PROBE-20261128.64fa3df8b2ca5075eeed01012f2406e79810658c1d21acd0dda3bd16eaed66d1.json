@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/KOREA-HOUSES-PROBE-20261128.64fa3df8b2ca5075eeed01012f2406e79810658c1d21acd0dda3bd16eaed66d1.json",
+  "autostart_ledger_sha256": "d1a1895bfff41a6ee49d352f0484032d962b061769f101b804345a7afeb71608",
+  "autostart_source_commit": "fac14f22c23b1b66610eb783c09ffe3e386b8079",
+  "created_at": "2026-11-28T08:30:48Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "46126022529",
+    "task_id": "KOREA-HOUSES-PROBE-20261128",
+    "task_sha256": "64fa3df8b2ca5075eeed01012f2406e79810658c1d21acd0dda3bd16eaed66d1"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-2ebfd12c6f45d00c-d084f222e0d94dee",
+  "request_path": "tasks/requests/KOREA-HOUSES-PROBE-20261128.json",
+  "resource_locks": [
+    "PATH_SCOPE:2ebfd12c6f45d00c"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
