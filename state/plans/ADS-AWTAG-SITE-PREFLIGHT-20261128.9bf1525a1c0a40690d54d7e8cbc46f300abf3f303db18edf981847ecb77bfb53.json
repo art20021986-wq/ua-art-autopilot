@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/ADS-AWTAG-SITE-PREFLIGHT-20261128.9bf1525a1c0a40690d54d7e8cbc46f300abf3f303db18edf981847ecb77bfb53.json",
+  "autostart_ledger_sha256": "e1dc4d8e9798357ee274bb7897254f180fda4543459777b8c99adfdfbc46f64a",
+  "autostart_source_commit": "12670d9d01f5f058edb68c824ae37f2602448217",
+  "created_at": "2026-11-28T14:19:23Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "46153799091",
+    "task_id": "ADS-AWTAG-SITE-PREFLIGHT-20261128",
+    "task_sha256": "9bf1525a1c0a40690d54d7e8cbc46f300abf3f303db18edf981847ecb77bfb53"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": false,
+  "queue_key": "path_scope-e8ec4d3fea7eba3e-2e4768c3c80770d1",
+  "request_path": "tasks/requests/ADS-AWTAG-SITE-PREFLIGHT-20261128.json",
+  "resource_locks": [
+    "PATH_SCOPE:e8ec4d3fea7eba3e"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED"
+}
