@@ -174,5 +174,36 @@ class DiagnoseTests(unittest.TestCase):
         self.assertNotIn('41000001', json.dumps(value))
 
 
+
+class ReproduceTests(unittest.TestCase):
+    def test_error_is_reported_and_state_untouched(self):
+        import types
+        fetch_mod = types.ModuleType('usa_auction.fetch')
+
+        class Client:
+            def __init__(self, limit):
+                self.requests = 0
+        fetch_mod.Client = Client
+        job_mod = types.ModuleType('usa_auction.job')
+        job_mod.stamp = lambda now: '2026-11-28T13:00Z'
+
+        def run(client, data, now, folder):
+            data['pages']['41000001'] = {'runs': True, 'auction_start': '', 'photos': []}
+            raise TypeError('boom')
+        job_mod.run = run
+        package = types.ModuleType('usa_auction')
+        package.fetch, package.job = fetch_mod, job_mod
+        with tempfile.TemporaryDirectory() as temp:
+            state = Path(temp) / 'state.json'
+            state.write_text(json.dumps({'models': {}, 'listings': {'k': {'at': 'old', 'lots': []}}, 'pages': {}}))
+            before = state.read_bytes()
+            with patch.dict(sys.modules, {'usa_auction': package, 'usa_auction.fetch': fetch_mod,
+                                          'usa_auction.job': job_mod}), patch.object(remote, 'STATE', state):
+                value = remote.reproduce()
+            self.assertEqual(state.read_bytes(), before)
+        self.assertIn('TypeError: boom', value['error'])
+        self.assertEqual((value['pages_read'], value['page_samples'][0]['photos']), (1, 0))
+
+
 if __name__ == '__main__':
     unittest.main()

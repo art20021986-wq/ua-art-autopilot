@@ -343,7 +343,38 @@ def diagnose(browser):
     return value
 
 
-STEPS = (('diagnose', 'diagnose'),)  # R5: after the install, the collector's own state
+def reproduce(browser=None):
+    """R9 (after USA-LOTS-FIX-003: no run finishes, no last_run.json): the installed collector's own run on a COPY of
+    its state, in a temporary folder, with at most 8 requests to IAAI (our client name, 4 s pause); listings marked
+    fresh so the requests go to lot pages. Reports the run's result or the exact error. Nothing on the site or in the
+    collector's own data changes."""
+    import datetime as _dt
+    import sys as _sys
+    import tempfile as _tempfile
+    import traceback as _traceback
+    _sys.path.insert(0, '/home/Carix')
+    from usa_auction import fetch as _fetch, job as _job
+    state = json.loads(STATE.read_bytes())
+    now = _dt.datetime.now(_dt.timezone.utc)
+    stamp = _job.stamp(now)
+    data = {'models': state.get('models', {}), 'models_at': stamp,
+            'listings': {k: dict(v, at=stamp) for k, v in state.get('listings', {}).items()},
+            'pages': dict(state.get('pages', {}))}
+    client = _fetch.Client(8)
+    value = {'requests_limit': 8}
+    with _tempfile.TemporaryDirectory() as temp:
+        try:
+            value['report'] = _job.run(client, data, now, Path(temp) / 'usa')
+        except Exception:
+            value['error'] = clean(_traceback.format_exc())[-2500:]
+    value['requests'] = client.requests
+    value['pages_read'] = len(data['pages'])
+    value['page_samples'] = [{k: clean(v)[:60] for k, v in p.items() if k != 'photos'} | {'photos': len(p.get('photos') or [])}
+                             for p in list(data['pages'].values())[:4]]
+    return value
+
+
+STEPS = (('reproduce', 'reproduce'),)  # R9: the installed collector's run on a copy, ≤8 IAAI requests
 
 
 def report(browser=None, steps=None):
