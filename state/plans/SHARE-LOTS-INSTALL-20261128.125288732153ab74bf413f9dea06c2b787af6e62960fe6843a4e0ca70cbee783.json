@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SHARE-LOTS-INSTALL-20261128.125288732153ab74bf413f9dea06c2b787af6e62960fe6843a4e0ca70cbee783.json",
+  "autostart_ledger_sha256": "d78ad06ee219357914c0d9410f06c353a10158e98c0e27e4a33a437edd4c02d3",
+  "autostart_source_commit": "8e31f7aebc6735ff1c3e1a576550b2eaa662c6e4",
+  "created_at": "2026-11-28T07:41:25Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "46122223849",
+    "task_id": "SHARE-LOTS-INSTALL-20261128",
+    "task_sha256": "125288732153ab74bf413f9dea06c2b787af6e62960fe6843a4e0ca70cbee783"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-758d3b3819f3a1a8-ec71d7aea81335ce",
+  "request_path": "tasks/requests/SHARE-LOTS-INSTALL-20261128.json",
+  "resource_locks": [
+    "PATH_SCOPE:758d3b3819f3a1a8"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
