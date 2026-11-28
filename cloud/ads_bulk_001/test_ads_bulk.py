@@ -59,6 +59,9 @@ class Google:
                 elif 'adGroupAdOperation' in op:
                     target = op['adGroupAdOperation']['create']['adGroup']
                     self.ads.add(self.name(temp.get(target, target)))
+                elif 'remove' in op.get('adGroupCriterionOperation', {}):
+                    _, g, t = op['adGroupCriterionOperation']['remove'].split('|')
+                    self.keywords.discard((g, t))
                 elif 'adGroupCriterionOperation' in op:
                     k = op['adGroupCriterionOperation']['create']
                     self.keywords.add((self.name(k['adGroup']), k['keyword']['text']))
@@ -67,7 +70,9 @@ class Google:
         if 'FROM campaign_criterion' in query:
             rows = [{'campaignCriterion': {'keyword': {'text': t}}} for t in self.negatives]
         elif 'FROM ad_group_criterion' in query:
-            rows = [{'adGroup': {'name': g}, 'adGroupCriterion': {'keyword': {'text': t}}} for g, t in self.keywords]
+            rows = [{'adGroup': {'name': g}, 'adGroupCriterion': {'resourceName': 'kw|%s|%s' % (g, t),
+                                                                  'keyword': {'text': t, 'matchType': 'PHRASE'}}}
+                    for g, t in self.keywords]
         elif 'FROM ad_group_ad' in query:
             rows = [{'adGroup': {'name': g}, 'adGroupAd': {'status': 'ENABLED'}} for g in self.ads]
         elif 'FROM ad_group ' in query:
@@ -96,6 +101,22 @@ class PlanTests(unittest.TestCase):
             self.assertTrue(3 <= len(head) <= 15 and all(len(h) <= 30 for h in head), group)
             self.assertEqual(len(head), len(set(head)))
             self.assertFalse(any('Отримайте пропозицію' in h for h in head))
+
+
+class DuplicateTests(unittest.TestCase):
+    def test_redundant(self):
+        def row(g, t, m):
+            return {'adGroup': {'name': g}, 'adGroupCriterion': {'resourceName': '%s/%s/%s' % (g, t, m),
+                                                                 'keyword': {'text': t, 'matchType': m}}}
+        plan_group = next((g, k[0]) for g, k in keywords.plan().items() if g.startswith('UA — Аукціон'))
+        rows = [row('UA — Корея під ключ', 'авто з кореї', 'PHRASE'), row('UA — Корея під ключ', 'авто з кореї', 'EXACT'),
+                row('UA — Kia', 'kia з кореї', 'PHRASE'), row('UA — Будь-яка модель з Кореї', 'kia з кореї', 'PHRASE'),
+                row('UA — Будь-яка модель з Кореї', plan_group[1], 'PHRASE'), row(plan_group[0], plan_group[1], 'PHRASE'),
+                row('UA — Kia', 'kia k5 з кореї', 'EXACT')]
+        gone = remote.redundant(rows)
+        self.assertEqual(gone, sorted(['UA — Корея під ключ/авто з кореї/EXACT',
+                                       'UA — Будь-яка модель з Кореї/kia з кореї/PHRASE',
+                                       'UA — Будь-яка модель з Кореї/%s/PHRASE' % plan_group[1]]))
 
 
 class AuctionTests(unittest.TestCase):

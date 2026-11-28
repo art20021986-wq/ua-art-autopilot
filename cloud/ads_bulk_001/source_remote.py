@@ -125,8 +125,47 @@ def findings(failure):
     found = []
     for detail in (failure or {}).get('details', []) or []:
         for item in detail.get('errors', []) or []:
-            found.append({'code': json.dumps(item.get('errorCode', {})), 'message': str(item.get('message', ''))[:120]})
+            entry = {'code': json.dumps(item.get('errorCode', {})), 'message': str(item.get('message', ''))[:120]}
+            # 2026-11-28: which policy and which text Google refused (4 «Аукціон» ads, PROHIBITED).
+            policy = item.get('details', {}).get('policyFindingDetails', {}).get('policyTopicEntries', [])
+            if policy:
+                entry['policy'] = [{'topic': t.get('topic'), 'type': t.get('type'),
+                                    'evidence': json.dumps(t.get('evidences', []), ensure_ascii=False)[:300]} for t in policy]
+            path = item.get('location', {}).get('fieldPathElements', [])
+            if path:
+                entry['field'] = '.'.join('%s%s' % (e.get('fieldName'), '[%s]' % e['index'] if 'index' in e else '')
+                                         for e in path)
+            found.append(entry)
     return found
+
+
+KEYWORD_ROWS = ("SELECT ad_group.name, ad_group_criterion.resource_name, ad_group_criterion.keyword.text, "
+                "ad_group_criterion.keyword.match_type FROM ad_group_criterion WHERE campaign.name IN (%s) "
+                "AND ad_group_criterion.type = 'KEYWORD' AND ad_group_criterion.negative = FALSE "
+                "AND ad_group_criterion.status != 'REMOVED'" % NAMES)
+GENERIC = ('UA — Будь-яка модель з Кореї', 'RU — Любая модель из Кореи', 'UA — Корея під ключ', 'RU — Корея под ключ')
+
+
+def redundant(rows):
+    """Resource names of duplicate keywords (Google's «remove redundant keywords», owner «сделай все, как хочет Google»):
+    an exact keyword whose text is also a phrase keyword in the same group, and the same text and match type in more than
+    one group (the copy kept: the group the plan puts it in, else a specific group over a generic one)."""
+    plan_group = {k: g for g, ks in keywords.plan().items() for k in ks}
+    by_group, by_text = {}, {}
+    for r in rows:
+        g, c = r['adGroup']['name'], r['adGroupCriterion']
+        text, match = c['keyword']['text'], c['keyword']['matchType']
+        by_group.setdefault((g, text), {})[match] = c['resourceName']
+        by_text.setdefault((text, match), []).append((g, c['resourceName']))
+    gone = {kinds['EXACT'] for kinds in by_group.values() if 'EXACT' in kinds and 'PHRASE' in kinds}
+    for (text, match), places in by_text.items():
+        places = [p for p in places if p[1] not in gone]
+        if len(places) < 2:
+            continue
+        keep = next((p for p in places if p[0] == plan_group.get(text)), None) or \
+            sorted(places, key=lambda p: (p[0] in GENERIC, p[0]))[0]
+        gone.update(r for _, r in places if r != keep[1])
+    return sorted(gone)
 
 
 def mutate(customer, headers, ops, opener):
@@ -136,7 +175,7 @@ def mutate(customer, headers, ops, opener):
         return {'http': status, **check.errors(answer)}
     refused = findings(answer.get('partialFailureError'))
     return {'sent': len(ops), 'refused': len(refused), 'codes': sorted({r['code'] for r in refused})[:8],
-            'examples': refused[:3]}
+            'examples': refused[:8]}
 
 
 def summary(current):
@@ -158,6 +197,15 @@ def run(keys, opener=urllib.request.urlopen):
     first = first_operations(customer, before)
     if first:
         value['steps'].append({'first': mutate(customer, headers, first, opener)})
+    remove = redundant(read(customer, headers, KEYWORD_ROWS, opener))
+    value['duplicates_removed'] = 0
+    for start in range(0, len(remove), CHUNK):
+        result = mutate(customer, headers, [{'adGroupCriterionOperation': {'remove': r}}
+                                            for r in remove[start:start + CHUNK]], opener)
+        value['steps'].append({'duplicates_%d' % start: result})
+        if 'http' in result:
+            break
+        value['duplicates_removed'] += result['sent'] - result['refused']
     middle = state(customer, headers, opener)
     ops = keyword_operations(middle)
     for start in range(0, len(ops), CHUNK):
@@ -167,7 +215,7 @@ def run(keys, opener=urllib.request.urlopen):
             break
     after = state(customer, headers, opener)
     value['after'] = summary(after)
-    value['added_now'] = value['after']['keywords'] - value['before']['keywords']
+    value['added_now'] = value['after']['keywords'] - value['before']['keywords'] + value['duplicates_removed']
     value['plan_total'] = sum(map(len, keywords.plan().values()))
     value['left_for_next_run'] = len(keyword_operations(after, limit=10 ** 6))
     value['status'] = 'PASS' if value['after']['ceiling'] == {'cpcBidCeilingMicros': str(CEILING_MICROS)} \
