@@ -1,0 +1,37 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/LOGO-INSTALL-20261128-R2.9fb7549eca6e0bfbdd59af59a82579559c9e72c7de3727c8b879853c56c0e700.json",
+  "autostart_ledger_sha256": "fc4b0e2081ba45c815698ff69b03ab9fc89609218bccfad130a3ff3af9228616",
+  "autostart_source_commit": "7e7f8fc5e0226e4022d4db8691317b01cf3c5d1f",
+  "created_at": "2026-11-28T07:08:42Z",
+  "critical_gate_status": "PENDING",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-28T07:08:42Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "46119714916",
+    "task_id": "LOGO-INSTALL-20261128-R2",
+    "task_sha256": "9fb7549eca6e0bfbdd59af59a82579559c9e72c7de3727c8b879853c56c0e700"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "REQUIRED",
+  "pre_health_status": "REQUIRED",
+  "production_required": true,
+  "queue_key": "catalog_renderer-516734deb9ea5607",
+  "receipt_path": "state/receipts/LOGO-INSTALL-20261128-R2.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/LOGO-INSTALL-20261128-R2.json",
+  "request_sha256": "9fb7549eca6e0bfbdd59af59a82579559c9e72c7de3727c8b879853c56c0e700",
+  "resource_locks": [
+    "CATALOG_RENDERER",
+    "HOMEPAGE"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "d70b987fe72b66bfa33b7e5ca87e72e9bf03bcde",
+  "storage_preflight_status": "PENDING",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-28T07:08:42Z"
+}
