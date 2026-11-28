@@ -1,62 +1,44 @@
-# Письмо перевозчикам — ООО «АИ Транспорт Компани» (текст владельца, 28.11.2026, отредактирован)
-Отправка — только после «Да» владельца в чате сессии 42. Только общие адреса компаний, малыми партиями, с возможностью отказаться от писем.
+# Письмо перевозчикам — ООО «АИ Транспорт Компани» (утверждено владельцем 28.11.2026, простой вариант)
+Отправка — только после «Да» владельца в чате сессии 42. Только общие адреса компаний, малыми партиями. RU — компаниям из UA/GE/AZ/MD, EN — остальным.
 
 ---
 
 ## RU
 
-**Тема:** Регулярная перевозка легковых автомобилей Грузия → Украина (Одесса / Киев) — запрос коммерческого предложения
+Тема: Перевозка машин из Грузии в Украину
 
-Уважаемые господа!
+Здравствуйте!
 
-Компания ООО «АИ Транспорт Компани» (Грузия) ищет надёжных партнёров для долгосрочного сотрудничества — регулярной доставки легковых автомобилей автовозами из Грузии в Украину.
+Меня зовут Зинаида, мы компания ООО «АИ Транспорт Компани» из Грузии. Ищем перевозчика с автовозами, чтобы возить легковые машины в Украину на постоянной основе.
 
-Предлагаемые условия:
+У нас выходит 2-3 автовоза в неделю, в каждом 8-9 машин. Грузим в Рустави, дальше паромом в Болгарию или Румынию и потом в Одессу или Киев. За полный автовоз платим 6000 долларов. Документы на машины делаем сами, с T1 и TIR тоже можем помочь, но это уже за отдельную плату. И машины ведём от погрузки до выгрузки.
 
-1. **Стоимость рейса** — 6 000 USD за полностью загруженный автовоз (8–9 автомобилей), Грузия (Рустави) → Украина.
-2. **Объём** — 2–3 автовоза в неделю, по 8–9 автомобилей в каждом.
-3. **Маршрут** — Грузия (Рустави) → паром → Болгария / Румыния → Украина (Одесса, Киев).
-4. **Документы** — все документы на автомобили для перевозки оформляет и предоставляет наша компания.
-5. **Транзит** — при необходимости поможем с оформлением транзитной декларации T1 и книжки МДП (TIR) — за дополнительную плату.
-6. **Сопровождение** — от погрузки до выгрузки на всём пути следования автовоза.
+Если вам это интересно, напишите, когда сможете взять первую машину, сколько примерно идёт доставка, какие документы от нас нужны и как удобнее рассчитываться.
 
-Будем признательны, если вы сообщите, интересно ли вам такое сотрудничество, а также ваши условия: ближайшие свободные даты, срок доставки, требования к документам и порядок оплаты.
+Звоните или пишите в WhatsApp, Viber, Telegram, как удобно: Зинаида +995 551 54 46 58, Ольга +995 599 00 86 07.
 
-Рассчитываем на долгосрочное и взаимовыгодное партнёрство.
+Если не подходит, ответьте просто «нет», чтобы мы больше не писали.
 
-С уважением,
-Зинаида — +995 551 54 46 58 (тел. / WhatsApp / Viber / Telegram)
-Ольга — +995 599 00 86 07 (тел. / WhatsApp / Viber / Telegram)
-ООО «АИ Транспорт Компани» (Грузия)
-
-Если вы не хотите получать от нас письма, просто ответьте «Отписаться» — мы больше не будем писать.
+Спасибо!
+Зинаида, ООО «АИ Транспорт Компани»
 
 ---
 
 ## EN
 
-**Subject:** Regular car transport Georgia → Ukraine (Odesa / Kyiv) — request for quotation
+Subject: Car transport from Georgia to Ukraine
 
-Dear Sir or Madam,
+Hello,
 
-AI Transport Company LLC (Georgia) is looking for reliable partners for long-term cooperation on the regular transport of passenger cars by car carrier from Georgia to Ukraine.
+My name is Zinaida, we are AI Transport Company LLC from Georgia. We're looking for a carrier with car carriers to move passenger cars to Ukraine on a regular basis.
 
-Our proposed terms:
+We have 2-3 trucks a week, 8-9 cars in each. Loading is in Rustavi, then by ferry to Bulgaria or Romania and on to Odesa or Kyiv. We pay 6,000 USD for a full truck. We do all the car documents ourselves, and we can also help with T1 and TIR, but that is paid separately. We also follow the cars from loading to unloading.
 
-1. **Rate per trip** — USD 6,000 per fully loaded car carrier (8–9 cars), Georgia (Rustavi) → Ukraine.
-2. **Volume** — 2–3 car carriers per week, 8–9 cars each.
-3. **Route** — Georgia (Rustavi) → ferry → Bulgaria / Romania → Ukraine (Odesa, Kyiv).
-4. **Documents** — all vehicle documents required for transport are prepared and provided by our company.
-5. **Transit** — if needed, we can assist with the T1 transit declaration and the TIR carnet (for an additional fee).
-6. **Cargo supervision** — from loading to unloading along the entire route.
+If you're interested, please write back when you could take the first truck, roughly how long delivery takes, what documents you need from us and how you'd like to be paid.
 
-We would be grateful if you could let us know whether this cooperation is of interest to you, together with your terms: nearest available dates, transit time, document requirements and payment terms.
+You can call or text us on WhatsApp, Viber or Telegram, whatever is easier: Zinaida +995 551 54 46 58, Olga +995 599 00 86 07.
 
-We look forward to a long-term and mutually beneficial partnership.
+If it's not for you, just reply "no" and we won't write again.
 
-Kind regards,
-Zinaida — +995 551 54 46 58 (phone / WhatsApp / Viber / Telegram)
-Olga — +995 599 00 86 07 (phone / WhatsApp / Viber / Telegram)
-AI Transport Company LLC (Georgia)
-
-If you prefer not to receive our emails, simply reply "Unsubscribe" and we will not contact you again.
+Thank you!
+Zinaida, AI Transport Company LLC
