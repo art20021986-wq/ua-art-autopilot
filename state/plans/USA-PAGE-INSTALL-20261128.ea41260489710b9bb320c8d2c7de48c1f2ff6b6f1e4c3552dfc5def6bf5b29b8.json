@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/USA-PAGE-INSTALL-20261128.ea41260489710b9bb320c8d2c7de48c1f2ff6b6f1e4c3552dfc5def6bf5b29b8.json",
+  "autostart_ledger_sha256": "2168870d8aa5e98b2e29c67f5f8221a0c98eae7027d9b482de62ca261f8d08be",
+  "autostart_source_commit": "7eee0328b00a02edd819bfa3617930c451c97994",
+  "created_at": "2026-11-28T15:48:07Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "46161221342",
+    "task_id": "USA-PAGE-INSTALL-20261128",
+    "task_sha256": "ea41260489710b9bb320c8d2c7de48c1f2ff6b6f1e4c3552dfc5def6bf5b29b8"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-eaca507d96038acd-ab9fdafffdb765c4",
+  "request_path": "tasks/requests/USA-PAGE-INSTALL-20261128.json",
+  "resource_locks": [
+    "PATH_SCOPE:eaca507d96038acd"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
