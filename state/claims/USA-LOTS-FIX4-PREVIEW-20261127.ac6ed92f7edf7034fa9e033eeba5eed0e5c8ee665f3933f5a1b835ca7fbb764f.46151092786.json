@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/USA-LOTS-FIX4-PREVIEW-20261127.ac6ed92f7edf7034fa9e033eeba5eed0e5c8ee665f3933f5a1b835ca7fbb764f.json",
+  "autostart_ledger_sha256": "3c3b2e2915250b763b06da9e5b7cf3b20b490ab272644424d8230e68cf6a453e",
+  "autostart_source_commit": "e34b9a6a5977213740ddeaa8b777a2b9492a52dd",
+  "created_at": "2026-11-28T13:45:57Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-28T13:45:57Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "46151092786",
+    "task_id": "USA-LOTS-FIX4-PREVIEW-20261127",
+    "task_sha256": "ac6ed92f7edf7034fa9e033eeba5eed0e5c8ee665f3933f5a1b835ca7fbb764f"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-2c915e1f9acf57b1-aa733f15f62cd1e2",
+  "receipt_path": "state/receipts/USA-LOTS-FIX4-PREVIEW-20261127.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/USA-LOTS-FIX4-PREVIEW-20261127.json",
+  "request_sha256": "ac6ed92f7edf7034fa9e033eeba5eed0e5c8ee665f3933f5a1b835ca7fbb764f",
+  "resource_locks": [
+    "PATH_SCOPE:2c915e1f9acf57b1"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "1eee8d8ed888bdf62d51f001a80f0a079df3a6ea",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-28T13:45:57Z"
+}
