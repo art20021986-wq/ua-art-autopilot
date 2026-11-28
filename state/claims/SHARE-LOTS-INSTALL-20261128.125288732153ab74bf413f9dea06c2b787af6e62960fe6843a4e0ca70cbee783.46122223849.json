@@ -5,20 +5,53 @@
   "autostart_ledger_sha256": "d78ad06ee219357914c0d9410f06c353a10158e98c0e27e4a33a437edd4c02d3",
   "autostart_source_commit": "8e31f7aebc6735ff1c3e1a576550b2eaa662c6e4",
   "created_at": "2026-11-28T07:41:25Z",
-  "critical_gate_status": "PENDING",
+  "critical_gate_evidence_sha256": "cb022c87bed2d62610385a9d353d5c657bf105bd7b30999ba259a82db5c86802",
+  "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T07:41:25Z",
-  "heartbeat_sequence": 0,
+  "heartbeat_at": "2026-11-28T07:42:54Z",
+  "heartbeat_sequence": 6,
   "identity": {
     "run_id": "46122223849",
     "task_id": "SHARE-LOTS-INSTALL-20261128",
     "task_sha256": "125288732153ab74bf413f9dea06c2b787af6e62960fe6843a4e0ca70cbee783"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "REQUIRED",
-  "pre_health_status": "REQUIRED",
+  "pre_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 264.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 255.8,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/japan.html",
+        "http_status": 200,
+        "latency_ms": 234.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/japan.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "pre_health_status": "PASS",
   "production_required": true,
+  "production_transaction_id": "tx-46122223849-125288732153ab74",
+  "production_transaction_path": "state/transactions/SHARE-LOTS-INSTALL-20261128.125288732153ab74bf413f9dea06c2b787af6e62960fe6843a4e0ca70cbee783.46122223849.json",
+  "production_transaction_status": "PREPARING",
   "queue_key": "path_scope-758d3b3819f3a1a8-ec71d7aea81335ce",
   "receipt_path": "state/receipts/SHARE-LOTS-INSTALL-20261128.json",
   "receipt_validation_status": "PENDING",
@@ -29,8 +62,36 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "51d7ba8fcb5628eb3c2be65d9c3a17323d8ff564",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "age_seconds": 332.633,
+    "allowed": true,
+    "evidence_path": "state/storage/SHARE-LOTS-INSTALL-20261128.json",
+    "evidence_sha256": "f3264eef723b08db7c8962845c9ded24fdc7d87f8114f0cd9135df1449ab9f67",
+    "free_bytes": 16909544960,
+    "heavy": true,
+    "measured_at": "2026-11-28T07:37:19.199849+00:00",
+    "measurement_scope": "production_target_read_only_probe",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 51.6870144
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-28T07:41:25Z"
+  "task_execution_status": "RUNNING",
+  "trusted_package": {
+    "controller_sha256": "2f9d9298fbca881f761f3f041f05ce8a319ab21c95d27f225f1c829359f24b35",
+    "file_sha256": {
+      "cloud/share_lots_001/candidate_builder.py": "937f8a77d04d08abcb8bb7526b73e0f3a1dc9b43a6325a4b8d6264e2aa203ed1",
+      "cloud/share_lots_001/deployment_backup.py": "3de892378aca22ceda1900be3914323bf4a9f306aa4c27396c7df5c674884228",
+      "cloud/share_lots_001/deployment_bootstrap.py": "11c525b6821718fd916d535a4a93f8bafa6cfca057a2f57db5ac4068061f5ca4",
+      "cloud/share_lots_001/deployment_remote.py": "58b835978350d82acfb57443146f12c68b454ee1ff030f29f763d195631b3a41",
+      "cloud/share_lots_001/deployment_rollback.py": "911983892567fbb0a0ffb01009f67c3ba390b5aa8940500c5044b68f83674b7f",
+      "cloud/share_lots_001/deployment_transport.py": "3efdfbfaedb8d5edcaf4c9cfd1cff2d5a79f6a2d0f7a6f2f38f04270bec69c7d",
+      "cloud/share_lots_001/make_release.py": "1d89913f3ddccb910864dc2d0f9822d42a8cc55de50571127c54dd051672ef27",
+      "cloud/share_lots_001/release_constants.py": "a74cce226a948136151291410932455788477ffde689de7b4b2fe7d561d69291",
+      "cloud/share_lots_001/test_deployment.py": "fd6c9d89f14b399dcce5b7eb723e61ad386c9b17ac61f026c91c70cfd23b23be",
+      "cloud/share_lots_001/test_release.py": "0653fd48fb807b0fafecd2e77f5c5bc8bc268036b6cdc7a1e40810beb04a2402"
+    }
+  },
+  "updated_at": "2026-11-28T07:42:54Z"
 }
