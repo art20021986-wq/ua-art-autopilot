@@ -176,6 +176,6 @@ if __name__ == '__main__':
     if action == 'preview':
         print(preview())
     elif action == 'launch':
-        print(launch(sys.argv[2])[0])
+        print(launch(sys.argv[2], production=sys.argv[2] == INSTALL_TASK)[0])
     else:
         print(install())
