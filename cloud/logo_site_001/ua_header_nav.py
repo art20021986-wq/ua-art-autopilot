@@ -47,6 +47,9 @@ CSS = (
 )
 _HEADER = re.compile(r'<a [^>]*class="brand"|<div class=[\'"]logo[\'"]>')
 _SWITCH = re.compile(r'<(?:div|nav) class="lang-toggle[^"]*"')
+# Cards and the order page get their switch later in the same writer chain (ua_lang_bar, just before .svyaz): there the
+# buttons go before .svyaz, so the switch lands right after them (LOGO-CARD-001).
+_SVYAZ = re.compile(r'<div class=[\'"]svyaz[\'"]>')
 
 
 def apply(html):
@@ -59,6 +62,8 @@ def apply(html):
         return html if end < 0 else html[:start] + NAV + html[end + len(END):]
     header = _HEADER.search(html, max(html.find('<body'), 0))
     switch = _SWITCH.search(html, header.end()) if header else None
+    if switch is None:
+        switch = _SVYAZ.search(html, header.end()) if header else None
     if switch is None:
         return html
     return html[:switch.start()] + NAV + html[switch.start():]
