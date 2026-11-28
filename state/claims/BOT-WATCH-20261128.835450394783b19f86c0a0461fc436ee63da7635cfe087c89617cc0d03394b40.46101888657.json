@@ -7,21 +7,23 @@
   "created_at": "2026-11-28T03:16:19Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T03:16:19Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-28T03:21:16Z",
+  "heartbeat_at": "2026-11-28T03:21:16Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "46101888657",
     "task_id": "BOT-WATCH-20261128",
     "task_sha256": "835450394783b19f86c0a0461fc436ee63da7635cfe087c89617cc0d03394b40"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-066561f4b075c574-ee1acb66762d0e9b",
   "receipt_path": "state/receipts/BOT-WATCH-20261128.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "da5886cd1207e8d7aae09a6fb687fab1f2d3cb88106d439cae365bed1eb42544",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/BOT-WATCH-20261128.json",
   "request_sha256": "835450394783b19f86c0a0461fc436ee63da7635cfe087c89617cc0d03394b40",
   "resource_locks": [
@@ -29,8 +31,28 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "554d9173def41ef4b21ae176f1ceefc2066c785a",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91250556928,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 16777216,
+    "status": "PASS",
+    "usage_percent": 41.115
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-28T03:16:19Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "b9c8ff22cb8bf0c8dcdf4eebdc908c321d69f2338736f63c3dc08500728be309",
+    "file_sha256": {
+      "cloud/bot_watch_001/bootstrap.py": "bb06d330f342470ace526445390ee4e8b0c9ea54b9610c179c8d63e6bcd4c909",
+      "cloud/bot_watch_001/make_request.py": "d35f68530f20b872baeb7731a0c530010f16643b214695f4b7aa5a95cac70e0b",
+      "cloud/bot_watch_001/render.py": "487338d4261e25fb89a2a47d551842673a0a9d104c5200f6f147cdaa03363661",
+      "cloud/bot_watch_001/source_remote.py": "c638a5ef50d9a9a77b856f420ac0019ea0b2eaebbf57dc3321607252f72ae029",
+      "cloud/bot_watch_001/test_bot_watch.py": "085366417f14271bf251da2b9aa99fd1fac7ef6aa6add2bd86f63c18763ea894",
+      "cloud/bot_watch_001/transport.py": "2ee05fbb96fd5380f2aab4276b0b49a581ce435797b2990fe087aa87bf2d85db"
+    }
+  },
+  "updated_at": "2026-11-28T03:21:16Z"
 }
