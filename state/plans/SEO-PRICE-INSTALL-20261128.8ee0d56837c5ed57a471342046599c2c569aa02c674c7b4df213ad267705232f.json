@@ -1,0 +1,25 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-PRICE-INSTALL-20261128.8ee0d56837c5ed57a471342046599c2c569aa02c674c7b4df213ad267705232f.json",
+  "autostart_ledger_sha256": "10281f15a1acbf9df8983818f436b1d7dbdb9761f0663644ea518059152b0853",
+  "autostart_source_commit": "501dad3ba541ce539f5c23a912c3a7ad9a6614f4",
+  "created_at": "2026-11-28T05:06:41Z",
+  "execution_mode": "AUTOMATIC",
+  "identity": {
+    "run_id": "46110472874",
+    "task_id": "SEO-PRICE-INSTALL-20261128",
+    "task_sha256": "8ee0d56837c5ed57a471342046599c2c569aa02c674c7b4df213ad267705232f"
+  },
+  "manual_mode": false,
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "production_required": true,
+  "queue_key": "path_scope-1fc2a94e314bb62c-5a5defac79213531",
+  "request_path": "tasks/requests/SEO-PRICE-INSTALL-20261128.json",
+  "resource_locks": [
+    "PATH_SCOPE:1fc2a94e314bb62c"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "task_class": "CRITICAL",
+  "task_execution_status": "CLAIMED"
+}
