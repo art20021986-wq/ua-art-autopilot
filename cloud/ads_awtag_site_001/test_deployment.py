@@ -59,13 +59,23 @@ class RecoveryTests(unittest.TestCase):
                 outer.events.append(enabled)
                 return self.bot()
         self.api = FakeAPI
+        class FakeIndex:
+            """The installed landing writer: rewrite(root) is what a refresh writes; returns the changed landings."""
+            rewrite = None
+            def refresh(self, video):
+                outer.events.append('refresh')
+                changed = self.rewrite(video.parent) if self.rewrite else []
+                self.rewrite = None
+                return {'status': 'PASS', 'landings_changed': changed, 'sitemap_changed': bool(changed)}
+        self.index = FakeIndex()
 
     def lifecycle(self, mode):
         with patch.object(remote, 'API', self.api), \
              patch.object(remote, 'load_backup', return_value=(self.saved, self.manifest)), \
              patch.object(remote, 'writer_exclusion', side_effect=nullcontext), \
              patch.object(remote, 'jobs_stopped', side_effect=nullcontext), \
-             patch.object(remote, 'no_bot_processes'):
+             patch.object(remote, 'no_bot_processes'), \
+             patch.object(remote, 'installed_modules', return_value=self.index):
             return remote.lifecycle(mode, '123', self.plan_sha, 'a'*64)
 
     def test_install_and_real_file_rollback(self):
@@ -76,7 +86,7 @@ class RecoveryTests(unittest.TestCase):
         self.assertTrue(result['restored'])
         self.assertTrue(result['crm_unchanged'])
         remote.verify_files(self.plan, False)
-        self.assertEqual(self.events, [False, True, False, True])
+        self.assertEqual(self.events, [False, 'refresh', 'refresh', True, False, True])
         self.assertEqual((self.root/'db.py').read_bytes(), b'original')
         self.assertFalse((self.root/'new_module.py').exists())
 
@@ -247,6 +257,108 @@ class RecoveryTests(unittest.TestCase):
                     with remote.jobs_stopped():
                         pass
 
+    # R2: the landing writer during the install (ADS-AWTAG-SITE-INSTALL-20261128: a bot still «stopping» kept the
+    # module it had imported and rewrote every landing after the locks were released).
+
+    def add_landing(self, before):
+        name = 'video/seo/ru/audi-a6-koreya-kiev.html'
+        after = before.replace(OLD.SNIPPET.encode(), NEW.SNIPPET.encode())
+        self.plan['files'][name] = {'before': sha(before), 'after': sha(after), 'mode': 0o644, 'page': True}
+        for folder, value in ((self.root, before), (self.saved/'before', before), (self.saved/'after', after)):
+            remote.atomic(folder/name, value)
+        self.plan_sha = sha(canonical(self.plan))
+        self.manifest.update(plan=self.plan, plan_sha256=self.plan_sha)
+        return name
+
+    def writer(self, name, value):
+        def rewrite(root):
+            remote.atomic(root/name, value)
+            return [name[len('video/'):]]
+        return rewrite
+
+    def test_controlled_refresh_is_checked_byte_for_byte_under_the_locks(self):
+        name = self.add_landing(self.old_page.replace(b'card', b'landing'))
+        written = self.new_page.replace(b'card', b'landing with a new tile')
+        self.index.rewrite = self.writer(name, written)
+        result = self.lifecycle('install')
+        self.assertTrue(result['installed'])
+        self.assertEqual(result['refreshed'], {name: sha(written)})
+        self.assertEqual(self.events, [False, 'refresh', 'refresh', True])  # the bot resumes after the refresh
+        remote.verify_files(self.plan, True, result['refreshed'], strict=True)
+        with self.assertRaisesRegex(remote.DeploymentError, 'FILE_CHANGED:'+name):
+            remote.verify_files(self.plan, True, strict=True)
+
+    def test_writer_with_the_old_module_fails_the_install_and_restores(self):
+        name = self.add_landing(self.old_page.replace(b'card', b'landing'))
+        self.index.rewrite = self.writer(name, self.old_page.replace(b'card', b'landing, old module'))
+        result = self.lifecycle('install')
+        self.assertEqual(result['status'], 'FAIL')
+        self.assertIn('SEO_REFRESH_TAG:'+name, result['error'])
+        self.assertTrue(result['crm_resume']['enabled'])
+        self.assertEqual((self.root/'db.py').read_bytes(), b'original')
+        self.assertEqual((self.root/name).read_bytes(), self.old_page.replace(b'card', b'landing, old module'))
+
+    def test_unstable_refresh_fails_the_install(self):
+        name = self.add_landing(self.old_page.replace(b'card', b'landing'))
+        calls = []
+        def rewrite(root):
+            calls.append(1)
+            remote.atomic(root/name, self.new_page.replace(b'card', b'landing %d' % len(calls)))
+            return [name[len('video/'):]]
+        self.index.refresh = lambda video: {'status': 'PASS', 'landings_changed': rewrite(video.parent)}
+        result = self.lifecycle('install')
+        self.assertIn('SEO_REFRESH_NOT_STABLE', result['error'])
+        self.assertTrue(result['crm_resume']['enabled'])
+        self.assertEqual((self.root/'db.py').read_bytes(), b'original')
+        self.assertTrue(remote.is_old((self.root/name).read_text()))
+
+    def test_rewrite_after_resume_verify(self):
+        """The verify after the resume: a page a V2 writer rewrote passes, a page written with V1 fails, and the
+        pages are read under the page writers' locks."""
+        name = self.add_landing(self.old_page.replace(b'card', b'landing'))
+        result = self.lifecycle('install')
+        remote.atomic(self.root/'backups'/('a'*64)/'journal-install.json',
+                      canonical({'stage': 'FINISHED', 'result': result}))
+        held = []
+        @remote.contextmanager
+        def locks():
+            held.append('in'); yield; held.append('out')
+        def verify():
+            with patch.object(remote, 'HERE', self.root), \
+                 patch.object(remote, 'load_backup', return_value=(self.saved, self.manifest)), \
+                 patch.object(remote, 'page_writers_held', side_effect=locks):
+                return remote.installed('123', self.plan_sha, 'a'*64)
+        verify()
+        self.assertEqual(held, ['in', 'out'])
+        remote.atomic(self.root/name, self.new_page.replace(b'card', b'landing with a new tile'))
+        verify()
+        remote.atomic(self.root/name, self.old_page.replace(b'card', b'landing with a new tile'))
+        with self.assertRaisesRegex(remote.DeploymentError, 'FILE_CHANGED:'+name):
+            verify()
+
+    def test_rollback_puts_modules_back_before_pages_and_every_page_gets_v1(self):
+        already = self.new_page.replace(b'card', b'landing already V2')  # rewritten by the stale bot on 28.11
+        name = 'video/seo/ua/landing.html'
+        self.plan['files'][name] = {'before': sha(already), 'after': sha(already), 'mode': 0o644, 'page': True}
+        for folder in (self.root, self.saved/'before', self.saved/'after'):
+            remote.atomic(folder/name, already)
+        self.plan_sha = sha(canonical(self.plan))
+        self.manifest.update(plan=self.plan, plan_sha256=self.plan_sha)
+        self.lifecycle('install')
+        original = remote.atomic
+        order = []
+        def record(path, value, mode=0o600):
+            if path.parent != self.saved and path.suffix in ('.py', '.html'):
+                order.append(path.suffix)
+            return original(path, value, mode)
+        with patch.object(remote, 'atomic', side_effect=record):
+            result = self.lifecycle('rollback')
+        self.assertTrue(result['restored'])
+        self.assertEqual(order, sorted(order, key=lambda suffix: suffix == '.html'))
+        self.assertEqual((self.root/name).read_bytes(), already.replace(NEW.SNIPPET.encode(), OLD.SNIPPET.encode()))
+        self.assertEqual((self.root/'video/UA-0001.html').read_bytes(), self.old_page)
+
+
 class StorageProbeTests(unittest.TestCase):
     def du(self, stdout, returncode=0):
         return SimpleNamespace(stdout=stdout, stderr='du: denied', returncode=returncode)
@@ -283,6 +395,25 @@ class TransportTests(unittest.TestCase):
             self.assertTrue(api.set_bot(True)['enabled'])
             mutate.assert_not_called()
 
+    def test_pause_waits_for_the_explicit_stopped_state(self):
+        api = API('test-token')
+        states = [{'id': BOT_ID, 'command': BOT_COMMAND, 'enabled': True, 'state': 'Running'}] + [
+            {'id': BOT_ID, 'command': BOT_COMMAND, 'enabled': False, 'state': state}
+            for state in ('Running', 'Stopping', 'Stopping', 'Stopped')]
+        with patch.object(api, 'bot', side_effect=states), patch.object(api, 'json') as mutate, \
+             patch('deployment_transport.time.sleep'):
+            self.assertEqual(api.set_bot(False)['state'], 'stopped')
+        mutate.assert_called_once()
+
+    def test_a_stopping_bot_is_not_paused(self):
+        api = API('test-token')
+        stopping = {'id': BOT_ID, 'command': BOT_COMMAND, 'enabled': False, 'state': 'Stopping'}
+        with patch.object(api, 'bot', return_value=stopping), patch.object(api, 'json'), \
+             patch('deployment_transport.time.sleep'), \
+             patch('deployment_transport.time.monotonic', side_effect=[0, 0, 200]):
+            with self.assertRaisesRegex(TransportError, 'BOT_STATE_TIMEOUT'):
+                api.set_bot(False)
+
     def test_wrong_bot_identity_is_rejected_before_pause(self):
         api = API('test-token')
         with patch.object(api, 'json', return_value={
@@ -309,7 +440,7 @@ class PublicVerificationTests(unittest.TestCase):
         with patch.object(controller.urllib.request, 'urlopen', side_effect=self.response) as fetch:
             result = controller.public_verify(None, 'a'*64, 'b'*64, {})
         self.assertEqual(result, {path: 'PASS' for path in controller.PAGES})
-        self.assertEqual(fetch.call_count, 4)
+        self.assertEqual(fetch.call_count, len(controller.PAGES))
 
     def test_v1_block_is_not_success(self):
         def old(request, timeout):
@@ -401,6 +532,15 @@ class SmokeTests(unittest.TestCase):
         target.write_bytes(target.read_bytes().replace(b'</body>', b'<p>extra</p></body>', 1))
         with self.assertRaisesRegex(remote.DeploymentError, 'SMOKE_RESULT'):
             remote.smoke(self.root/'preview')
+
+    def test_landing_already_v2_is_kept_as_it_is(self):
+        name = 'video/seo/ua/landing.html'
+        page = self.root/name
+        page.write_bytes(page.read_bytes().replace(OLD.SNIPPET.encode(), NEW.SNIPPET.encode()))
+        plan = remote.prepare(self.root/'preview')
+        self.assertEqual(plan['files'][name]['before'], plan['files'][name]['after'])
+        value = remote.smoke(self.root/'preview')
+        self.assertEqual((value['pages'], value['pages_block_only'], value['pages_already_v2']), (8, 8, 1))
 
     def test_installed_v2_is_refused(self):
         (self.root/'ua_google_tag.py').write_bytes((Path(__file__).resolve().parent/'ua_google_tag.py').read_bytes())

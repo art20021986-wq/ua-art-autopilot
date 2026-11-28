@@ -77,7 +77,8 @@ def preview():
              'description': 'Preview of ADS-AWTAG-SITE (ADS-AWTAG-001 step 2): builds the candidate on the server '
                             '(ua_google_tag.py V1 -> V2: GA4 config as before, Google Ads AW-18537441937 config, one '
                             'conversion per generate_lead, quick-lead.js included; no user data) and every public page '
-                            'with the V1 tag block (the block swapped, nothing else), checks each page differs only by the '
+                            'with the tag block (the V1 block swapped, nothing else; a landing already V2 since 28.11 '
+                            'kept as it is), checks each page differs only by the '
                             'block and is undone exactly, the new module writes the same page and a second pass changes '
                             'nothing, no new host, the catalogue design guard sees the same shell, and measures storage. '
                             'No application source, CRM, HTML, media or bot state changes.',
@@ -141,8 +142,13 @@ def install():
                               'tag also configured for Google Ads AW-18537441937, and every generate_lead (quick-lead.js '
                               'included) sends one Google Ads conversion. No user data, no privacy text change; nothing '
                               'else on the pages changes. Rollback puts every file back byte for byte (a page a writer '
-                              'rewrote meanwhile gets the V1 block back). Existing backup, bot pause, writer locks, the '
-                              'auction jobs held, data-preservation, rollback and public health checks are kept.',
+                              'rewrote meanwhile gets the V1 block back). R2: the bot pause waits for the explicit '
+                              'stopped state; one landing refresh with the installed modules runs under the locks and '
+                              'every page is checked byte for byte before they are released; the verify reads the pages '
+                              'under the page writers\' locks; a rollback restores the modules first, then every page '
+                              'with the V1 block (the 32 landings already V2 since 28.11 included). Existing backup, '
+                              'bot pause, writer locks, the auction jobs held, data-preservation, rollback and public '
+                              'health checks are kept.',
                'execution': execution(task, True),
                'health_checks': ['https://www.uaart.com.ua/video/index.html', 'https://www.uaart.com.ua/video/katalog.html',
                                  'https://www.uaart.com.ua/video/podbor.html', 'https://www.uaart.com.ua/video/korea.html'],

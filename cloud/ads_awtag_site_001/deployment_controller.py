@@ -12,8 +12,10 @@ from release_constants import PREVIEW_TASK, INSTALL_TASK, PACKAGE
 from candidate_builder import is_new
 SITE = 'https://www.uaart.com.ua'
 AGENT = 'UAART-AWTag-Site-Verify/1'
-# Public evidence: these pages carry the V2 tag block once and no V1 block.
-PAGES = ('/video/index.html', '/video/katalog.html', '/video/podbor.html', '/video/korea.html')
+# Public evidence: these pages carry the V2 tag block once and no V1 block (R2: a landing too, the pages the stale
+# bot rewrote in R1).
+PAGES = ('/video/index.html', '/video/katalog.html', '/video/podbor.html', '/video/korea.html',
+         '/video/seo/ru/audi-a6-koreya-kiev.html')
 
 
 def context():
