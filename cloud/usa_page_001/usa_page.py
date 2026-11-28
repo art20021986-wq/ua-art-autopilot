@@ -26,6 +26,8 @@ USA_JS = (
     'p[x.type]=x.value;});return true;}catch(e){p=null;return false;}});if(!p||!p.hour)return "";'
     'return p.year+"/"+p.month+"/"+p.day+" "+(p.hour==="24"?"00":p.hour)+":"+p.minute;}'
     'function zones(s,i){return " "+ZN[i][1];}'
+    # USA-PAGE-001: an IAAI lot without its odometer reading shows no «0 км»
+    'function kmtext(l){return l.mileage_km?n(l.mileage_km)+" "+t("km"):t("km_tbd");}'
     'var NOW=new Date().toISOString().slice(0,16)+"Z",'
     'KO=Date.parse(kyiv(NOW).replace(/\\//g,"-").replace(" ","T")+":00Z")-Date.parse(NOW)||72e5;'
     'function usa(l){var e=/(\\d+(?:\\.\\d+)?)L/.exec(l.engine||""),f=String(l.fuel||"").toLowerCase(),'
@@ -58,13 +60,16 @@ EDITS = (
      '"runs": ["на ходу", "на ходу", "მოძრავი"], "state": ["Стан", "Состояние", "მდგომარეობა"], '
      '"dmg_minor": ["дрібні вм’ятини, подряпини", "мелкие вмятины, царапины", "მცირე ჩაღრმავებები, ნაკაწრები"], '
      '"dmg_wear": ["звичайний знос", "обычный износ", "ჩვეულებრივი ცვეთა"], '
-     '"dmg_hail": ["сліди граду", "следы града", "სეტყვის კვალი"]', 1),
+     '"dmg_hail": ["сліди граду", "следы града", "სეტყვის კვალი"], '
+     '"km_tbd": ["пробіг уточнюється", "пробег уточняется", "გარბენი ზუსტდება"]', 1),
     # «today» in Kyiv, not in Japan (UTC+9)
     ('324e5', 'KO', 2),
     # the card: «Торги Пн, 30.11 · 16:30 Київ», mileage · condition, the price
     ('function stamp(s){return tri(function(i){return when(s,i)+" · "',
      'function stamp(s){return tri(function(i){return L.trade[i]+" "+when(s,i).replace(" ",", ")+" · "', 1),
     ('(l.score?" · "+t("score")+" "+esc(l.score):"")', '(cond(l)?" · "+cond(l):"")', 1),
+    ('"</b><span>"+n(l.mileage_km)+" "+t("km")+', '"</b><span>"+kmtext(l)+', 1),
+    ('row("mileage",n(l.mileage_km)+" км")', '(l.mileage_km?row("mileage",n(l.mileage_km)+" км"):"")', 1),
     ('function price(l,full){return l.start_usd?\'<span class="kl-usd">$\'+n(l.start_usd)+(full?" <small>(¥"+'
      'n(l.start_jpy)+")</small>":"")+"</span>"',
      'function price(l){return l.start_usd?\'<span class="kl-usd">\'+t("buy")+" $"+n(l.start_usd)+"</span>"', 1),

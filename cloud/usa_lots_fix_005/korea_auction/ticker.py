@@ -54,6 +54,7 @@ T = {
     'buy_now': ('купити зараз', 'купить сейчас', 'ახლავე ყიდვა'),
     'value_us': ('ціна в США', 'цена в США', 'ფასი აშშ-ში'),
     'price_ask': ('ціна — за запитом', 'цена — по запросу', 'ფასი — მოთხოვნით'),  # USA-LOTS-FIX-005
+    'km_tbd': ('пробіг уточнюється', 'пробег уточняется', 'გარბენი ზუსტდება'),  # USA-LOTS-FIX-005: no «0 км»
     'dmg_minor': ('дрібні вм’ятини, подряпини', 'мелкие вмятины, царапины', 'მცირე ჩაღრმავებები, ნაკაწრები'),
     'dmg_wear': ('звичайний знос', 'обычный износ', 'ჩვეულებრივი ცვეთა'),
     'dmg_hail': ('сліди граду', 'следы града', 'სეტყვის კვალი'),
@@ -254,10 +255,12 @@ def _usa_item(it):
         '<span class="kt-body"><span class="kt-top"><span class="kt-live">● %s</span>'
         '<span class="kt-clock" data-kt-start="%s">%s <i></i></span></span>%s'
         '<strong>%s %d</strong>'
-        '<span>%s %s · %s · %s</span>'
+        '<span>%s · %s · %s</span>'
         '<span class="kt-price">%s</span></span></a>'
     ) % (USA_LINK, _flag('usa'), escape(it['photo']), escape(it['title']), _t('auction'), start, _t('left'), when,
-         escape(it['title']), it['year'], _num(it['mileage_km']), _t('km'), _t('runs'), _damage(it.get('damage')), price)
+         escape(it['title']), it['year'],
+         '%s %s' % (_num(it['mileage_km']), _t('km')) if it.get('mileage_km') else _t('km_tbd'),
+         _t('runs'), _damage(it.get('damage')), price)
 
 
 def _with_japan(cards, japan, every=JAPAN_EVERY):
