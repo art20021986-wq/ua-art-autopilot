@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "f11210e6e34245799a05ffd2b5280b3eee392bbf1107070693ce276c08a0a3c0",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T07:13:39Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-28T07:27:35Z",
+  "heartbeat_at": "2026-11-28T07:27:35Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "46119714916",
     "task_id": "LOGO-INSTALL-20261128-R2",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 728.0,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/katalog.html",
+        "http_status": 200,
+        "latency_ms": 337.2,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/katalog.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/podbor.html",
+        "http_status": 200,
+        "latency_ms": 320.1,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/podbor.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-46119714916-9fb7549eca6e0bfb",
   "production_transaction_path": "state/transactions/LOGO-INSTALL-20261128-R2.9fb7549eca6e0bfbdd59af59a82579559c9e72c7de3727c8b879853c56c0e700.46119714916.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "catalog_renderer-516734deb9ea5607",
   "receipt_path": "state/receipts/LOGO-INSTALL-20261128-R2.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "4de4730008bc8f66045aae62724daad4c304f581098f17041129643ab05e53fc",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/LOGO-INSTALL-20261128-R2.json",
   "request_sha256": "9fb7549eca6e0bfbdd59af59a82579559c9e72c7de3727c8b879853c56c0e700",
   "resource_locks": [
@@ -78,7 +109,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "a6dfc14e11f00277f4ec4e7cd3ba20d581d2db238681847748e42dc208185e37",
     "file_sha256": {
@@ -97,5 +128,5 @@
       "cloud/logo_site_001/ua_logo_c.py": "c1e35eecd094427695f20b0c15f6b3e2594826e606d8930f1ef32f5991b9d17b"
     }
   },
-  "updated_at": "2026-11-28T07:13:39Z"
+  "updated_at": "2026-11-28T07:27:35Z"
 }
