@@ -15,8 +15,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--bundle', required=True)
     parser.add_argument('--run', required=True)
+    parser.add_argument('--limit', type=int)
     args = parser.parse_args()
-    if not re.fullmatch(r'[0-9a-f]{64}', args.bundle) or not re.fullmatch(r'[0-9]+', args.run):
+    if not re.fullmatch(r'[0-9a-f]{64}', args.bundle) or not re.fullmatch(r'[0-9]+', args.run) \
+            or not (args.limit is None or 1 <= args.limit <= 12000):
         raise ValueError('IDENTITY')
     archive = BASE / ('adsbulk-' + args.bundle + '.zip')
     if hashlib.sha256(archive.read_bytes()).hexdigest() != args.bundle:
@@ -41,7 +43,7 @@ def main():
                     handle.write(payload)
     result = subprocess.run([
         sys.executable, '-B', str(package / 'source_remote.py'), '--run', args.run,
-    ], timeout=600, check=False)
+    ] + ([] if args.limit is None else ['--limit', str(args.limit)]), timeout=600, check=False)
     return result.returncode
 
 

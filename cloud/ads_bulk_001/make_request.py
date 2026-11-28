@@ -3,11 +3,12 @@
 
 Usage: python3 cloud/ads_bulk_001/make_request.py request 20261025[-R2]   # after merge to main:
        python3 cloud/ads_bulk_001/make_request.py launch 20261025[-R2]
+       python3 cloud/ads_bulk_001/make_request.py request 20261128-BIG --limit 12000   # one big run (Basic access)
 """
+import argparse
 import datetime
 import hashlib
 import json
-import sys
 
 P = 'cloud/ads_bulk_001/'
 DEPENDENCIES = [P + 'source_remote.py', P + 'source_check.py', P + 'plan.py', P + 'keywords.py', P + 'keywords_jpus.py', P + 'usa.py', P + 'bootstrap.py', P + 'make_request.py', P + 'transport.py']
@@ -18,7 +19,7 @@ def sha(path):
     return hashlib.sha256(open(path, 'rb').read()).hexdigest()
 
 
-def request(day):
+def request(day, limit=None):
     task = 'ADS-BULK-' + day
     value = {
         'ai_requested': False, 'changed_paths': [P + day + '.json'], 'complexity': 1, 'control_plane_version': 'TASK107-R2',
@@ -37,6 +38,15 @@ def request(day):
                       'receipt_path': 'state/receipts/%s.json' % task, 'test_paths': TESTS, 'timeout_seconds': 900},
         'production_required': False, 'read_only': False, 'requested_min_class': 'STANDARD',
         'storage_required_bytes': 33554432, 'task_id': task, 'title': 'Google Ads bulk keywords Korea + USA, 4,55 UAH'}
+    if limit is not None:
+        if not 1 <= limit <= 12000:
+            raise SystemExit('LIMIT')
+        value['keyword_limit'] = limit
+        value['title'] += ', %d keywords at once' % limit
+        value['description'] += (' Basic access (15 000 operations a day): this run\'s limit is %d keywords (keyword_limit), '
+                                 'shared by the same rule, and all missing USA groups with their ad are created now; a '
+                                 'quota answer from Google stops sending at once (PASS_PARTIAL, EXPLORER_LIMIT_REACHED). '
+                                 'Japan not included.' % limit)
     path = 'tasks/requests/%s.json' % task
     with open(path, 'x') as handle:
         handle.write(json.dumps(value, sort_keys=True, separators=(',', ':')))
@@ -60,6 +70,9 @@ def launch(day):
 
 
 if __name__ == '__main__':
-    action = sys.argv[1]
-    day = sys.argv[2]
-    print(request(day) if action == 'request' else launch(day))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('action', choices=('request', 'launch'))
+    parser.add_argument('day')
+    parser.add_argument('--limit', type=int)
+    args = parser.parse_args()
+    print(request(args.day, args.limit) if args.action == 'request' else launch(args.day))

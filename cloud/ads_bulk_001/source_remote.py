@@ -11,6 +11,10 @@
 4. 2026-11-28 (owner «да»): the same every night for the existing campaign «Пошук — США (UA ART)» (usa.py): up to
    usa.MAX_NEW_GROUPS missing groups with one ad each, then its keywords; keywords.split shares PER_DAY between Korea and
    USA (half each, all to one when the other has nothing left). Its budget, ceiling and negatives are not touched.
+5. 2026-11-28 (Basic access): the night's limit is a parameter of the run (--limit, default keywords.PER_DAY; the
+   request's keyword_limit, up to MAX_LIMIT). Above PER_DAY all missing USA groups are created in the same run. The API
+   does not tell the developer token level, so a quota answer (HTTP 429 / RESOURCE_EXHAUSTED / quotaError) stops all
+   sending at once, without a failure: status PASS_PARTIAL, access_level_hint EXPLORER_LIMIT_REACHED.
 State before and after in the report; budget and other settings unchanged. No site, CRM or bot change.
 """
 import argparse
@@ -31,6 +35,8 @@ CEILING_MICROS = 4550000  # 4,55 UAH (owner 2026-11-27 «став тогда 4 �
 # 2026-11-26: the campaign may be renamed «Пошук — Україна — Корея (UA ART)» (owner «Да, переименуй»).
 NAMES = "'%s', 'Пошук — Україна — Корея (UA ART)'" % plan.NAME
 CHUNK = 600
+MAX_LIMIT = 12000  # keywords a run: with ~230 group/ad operations and ~40 reads the run stays under ~14 000 of 15 000
+EXPLORER_OPS = 2880  # the Explorer level's daily operations on a production account
 AUCTION_PAGE = plan.SITE + 'korea.html'  # the lots of the coming Korean auctions (filters by make, model, year)
 # 2026-11-27: «Ставка онлайн …» removed (owner «Да»): 7 of 32 auction ads were refused as PROHIBITED (read as gambling).
 AUCTION_HEAD = {'uk': ['Лоти аукціонів Кореї щодня', 'Ціни та фото кожного лоту', 'Фільтр: марка, модель, рік',
@@ -50,6 +56,18 @@ NEGATIVES = ("SELECT campaign_criterion.keyword.text FROM campaign_criterion WHE
              "AND campaign_criterion.negative = TRUE AND campaign_criterion.type = 'KEYWORD'")
 
 
+class QuotaStop(check.CheckError):
+    """Google refused for the daily quota: nothing more is sent tonight."""
+
+
+def quota(status, answer):
+    """True for a quota answer: HTTP 429, RESOURCE_EXHAUSTED or any QuotaError (RESOURCE_EXHAUSTED,
+    RESOURCE_TEMPORARILY_EXHAUSTED, ...)."""
+    info = check.errors(answer)
+    return status == 429 or info['status'] == 'RESOURCE_EXHAUSTED' or \
+        any(e['code'].startswith('quotaError=') for e in info['errors'])
+
+
 def read(customer, headers, query, opener=urllib.request.urlopen):
     rows, token = [], None
     while True:
@@ -57,7 +75,8 @@ def read(customer, headers, query, opener=urllib.request.urlopen):
         status, answer = check.call(check.API + 'customers/%s/googleAds:search' % customer, json.dumps(body).encode(),
                                     headers, opener)
         if status != 200:
-            raise check.CheckError('READ_%s:%s' % (status, json.dumps(check.errors(answer))[:200]))
+            raise (QuotaStop if quota(status, answer) else check.CheckError)(
+                'READ_%s:%s' % (status, json.dumps(check.errors(answer))[:200]))
         rows += answer.get('results', [])
         token = answer.get('nextPageToken')
         if not token:
@@ -243,7 +262,7 @@ def mutate(customer, headers, ops, opener, names=None):
     status, answer = check.call(check.API + 'customers/%s/googleAds:mutate' % customer,
                                 json.dumps({'mutateOperations': ops, 'partialFailure': True}).encode(), headers, opener)
     if status != 200:
-        return {'http': status, **check.errors(answer)}
+        return {'http': status, **check.errors(answer), **({'quota': True} if quota(status, answer) else {})}
     refused = findings(answer.get('partialFailureError'))
     result = {'sent': len(ops), 'refused': len(refused), 'codes': sorted({r['code'] for r in refused})[:8],
               'examples': refused[:8]}
@@ -262,78 +281,110 @@ def summary(current):
             'negatives': len(current['negatives']), 'groups_without_ad': sorted(set(groups) - current.get('with_ads', set(groups)))}
 
 
-def run(keys, opener=urllib.request.urlopen):
+def run(keys, opener=urllib.request.urlopen, limit=None):
+    limit = keywords.PER_DAY if limit is None else limit
     token, _ = check.access_token(keys, opener)
     headers = {'Authorization': 'Bearer ' + token, 'developer-token': keys['developer_token'],
                'login-customer-id': keys['login_customer_id'], 'Content-Type': 'application/json'}
     customer = keys['customer_id']
     before = state(customer, headers, opener)
-    value = {'before': summary(before), 'steps': []}
-    first = first_operations(customer, before)
-    if first:
-        value['steps'].append({'first': mutate(customer, headers, first, opener,
-                                               {r: n for n, r in before['groups'].items()})})
-    remove = redundant(read(customer, headers, KEYWORD_ROWS % NAMES, opener))
-    value['duplicates_removed'] = 0
-    for start in range(0, len(remove), CHUNK):
-        result = mutate(customer, headers, [{'adGroupCriterionOperation': {'remove': r}}
-                                            for r in remove[start:start + CHUNK]], opener)
-        value['steps'].append({'duplicates_%d' % start: result})
-        if 'http' in result:
-            break
-        value['duplicates_removed'] += result['sent'] - result['refused']
-    usa_before = state(customer, headers, opener, usa.NAMES)
-    value['usa'] = {'before': summary(usa_before), 'steps': []}
-    new_groups = usa.group_operations(customer, usa_before)
-    if new_groups:
-        value['usa']['steps'].append({'groups': mutate(customer, headers, new_groups, opener,
-                                                       {r: n for n, r in usa_before['groups'].items()})})
-    middle, usa_middle = state(customer, headers, opener), state(customer, headers, opener, usa.NAMES)
-    korea_part, usa_part = keywords.split(len(keyword_operations(middle, 10 ** 6)),
-                                          len(keyword_operations(usa_middle, 10 ** 6, usa.waiting(usa_middle))))
-    refused = {'korea': send(customer, headers, keyword_operations(middle, korea_part), value['steps'], opener),
-               'usa': send(customer, headers, keyword_operations(usa_middle, usa_part, usa.waiting(usa_middle)),
-                           value['usa']['steps'], opener)}
-    after, usa_after = state(customer, headers, opener), state(customer, headers, opener, usa.NAMES)
+    value = {'limit': limit, 'before': summary(before), 'steps': [], 'duplicates_removed': 0,
+             'usa': {'steps': []}}
+    sent = {'korea': [0, 0], 'usa': [0, 0]}  # [operations sent, refused by Google] of the keywords
+    try:
+        first = first_operations(customer, before)
+        if first:
+            stop(value['steps'], 'first', mutate(customer, headers, first, opener,
+                                                  {r: n for n, r in before['groups'].items()}))
+        remove = redundant(read(customer, headers, KEYWORD_ROWS % NAMES, opener))
+        for start in range(0, len(remove), CHUNK):
+            result = stop(value['steps'], 'duplicates_%d' % start, mutate(
+                customer, headers, [{'adGroupCriterionOperation': {'remove': r}} for r in remove[start:start + CHUNK]],
+                opener))
+            if 'http' in result:
+                break
+            value['duplicates_removed'] += result['sent'] - result['refused']
+        usa_before = state(customer, headers, opener, usa.NAMES)
+        value['usa']['before'] = summary(usa_before)
+        # Above the default night (Basic access) every missing USA group is created now, with its ad.
+        new_groups = usa.group_operations(customer, usa_before, None if limit <= keywords.PER_DAY else len(usa.plan()))
+        if new_groups:
+            stop(value['usa']['steps'], 'groups', mutate(customer, headers, new_groups, opener,
+                                                          {r: n for n, r in usa_before['groups'].items()}))
+        middle, usa_middle = state(customer, headers, opener), state(customer, headers, opener, usa.NAMES)
+        korea_part, usa_part = keywords.split(len(keyword_operations(middle, 10 ** 6)),
+                                              len(keyword_operations(usa_middle, 10 ** 6, usa.waiting(usa_middle))),
+                                              limit)
+        value['split'] = {'korea': korea_part, 'usa': usa_part}
+        send(customer, headers, keyword_operations(middle, korea_part), value['steps'], opener, sent['korea'])
+        send(customer, headers, keyword_operations(usa_middle, usa_part, usa.waiting(usa_middle)),
+             value['usa']['steps'], opener, sent['usa'])
+    except QuotaStop as error:
+        value['quota_stop'] = str(error)[:300]
+    operations = sum(r.get('sent', 0) for step in value['steps'] + value['usa']['steps'] for r in step.values())
+    value['operations_accepted'] = operations
+    value['access_level_hint'] = ('EXPLORER_LIMIT_REACHED' if operations <= EXPLORER_OPS else 'BASIC_LIMIT_REACHED') \
+        if 'quota_stop' in value else ('BASIC_OR_HIGHER' if operations > EXPLORER_OPS else 'NOT_TESTED_BELOW_2880')
+    value['policy_refusals'] = [r for step in value['steps'] + value['usa']['steps'] for result in step.values()
+                                for r in result.pop('policy_refusals', [])]
+    try:
+        after, usa_after = state(customer, headers, opener), state(customer, headers, opener, usa.NAMES)
+    except QuotaStop as error:  # the reads of this quota day are used up too: what was sent is what is known
+        value['after_unreadable'] = str(error)[:300]
+        value['countries'] = {c: {'added_tonight': n - r, 'refused_by_google': r} for c, (n, r) in sent.items()}
+        value['status'] = 'PARTIAL'
+        return value
     value['after'], value['usa']['after'] = summary(after), summary(usa_after)
+    usa_start = value['usa'].get('before', value['usa']['after'])
     value['added_now'] = value['after']['keywords'] - value['before']['keywords'] + value['duplicates_removed']
     value['plan_total'] = sum(map(len, keywords.plan().values()))
     value['left_for_next_run'] = len(keyword_operations(after, limit=10 ** 6))
-    usa_added = value['usa']['after']['keywords'] - value['usa']['before']['keywords']
+    usa_added = value['usa']['after']['keywords'] - usa_start['keywords']
     value['countries'] = {
-        'korea': {'added_tonight': value['added_now'], 'refused_by_google': refused['korea'],
+        'korea': {'added_tonight': value['added_now'], 'refused_by_google': sent['korea'][1],
                   'total_in_campaign': value['after']['keywords'], 'left_in_plan': value['left_for_next_run']},
-        'usa': {'added_tonight': usa_added, 'refused_by_google': refused['usa'],
+        'usa': {'added_tonight': usa_added, 'refused_by_google': sent['usa'][1],
                 'total_in_campaign': value['usa']['after']['keywords'],
                 'left_in_plan': sum(map(len, usa.waiting(usa_after).values())),
                 'groups_left_to_create': sum(1 for g in usa.plan() if g not in usa_after['groups'])}}
-    value['policy_refusals'] = [r for step in value['steps'] + value['usa']['steps'] for result in step.values()
-                                for r in result.pop('policy_refusals', [])]
-    usa_same = all(value['usa']['before'][k] == value['usa']['after'][k] for k in ('ceiling', 'budget', 'negatives'))
+    usa_same = all(usa_start[k] == value['usa']['after'][k] for k in ('ceiling', 'budget', 'negatives'))
+    safe = value['after']['ceiling'] == {'cpcBidCeilingMicros': str(CEILING_MICROS)} and usa_same
+    if 'quota_stop' in value:
+        value['status'] = 'PASS_PARTIAL' if safe else 'PARTIAL'
+        return value
     done = not value['left_for_next_run'] and not value['countries']['usa']['left_in_plan']
-    value['status'] = 'PASS' if value['after']['ceiling'] == {'cpcBidCeilingMicros': str(CEILING_MICROS)} \
-        and usa_same and (value['added_now'] + usa_added > 0 or done) else 'PARTIAL'
+    value['status'] = 'PASS' if safe and (value['added_now'] + usa_added > 0 or done) else 'PARTIAL'
     return value
 
 
-def send(customer, headers, ops, steps, opener):
-    """Keyword operations in chunks of CHUNK (partialFailure); returns how many Google refused."""
-    refused = 0
+def stop(steps, name, result):
+    """Record one mutate result; a quota answer ends the run's sending (QuotaStop)."""
+    steps.append({name: result})
+    if result.get('quota'):
+        raise QuotaStop('MUTATE_%s:%s' % (result['http'], json.dumps(
+            {k: result[k] for k in ('status', 'message', 'errors') if k in result}, ensure_ascii=False)[:250]))
+    return result
+
+
+def send(customer, headers, ops, steps, opener, counts):
+    """Keyword operations in chunks of CHUNK (partialFailure); counts gets [sent, refused] added."""
     for start in range(0, len(ops), CHUNK):
-        result = mutate(customer, headers, ops[start:start + CHUNK], opener)
-        steps.append({'keywords_%d' % start: result})
+        result = stop(steps, 'keywords_%d' % start, mutate(customer, headers, ops[start:start + CHUNK], opener))
         if 'http' in result:
             break
-        refused += result['refused']
-    return refused
+        counts[0] += result['sent']
+        counts[1] += result['refused']
 
 
-def report(path=check.KEYS_PATH, opener=urllib.request.urlopen):
+def report(path=check.KEYS_PATH, opener=urllib.request.urlopen, limit=None):
     keys = json.loads(Path(path).read_text(encoding='utf-8'))
     if not all(keys.get(n) for n in check.KEY_NAMES + ('login_customer_id', 'customer_id')):
         return json.dumps({'status': 'KEYS_INCOMPLETE'})
     try:
-        value = run(keys, opener)
+        value = run(keys, opener, limit)
+    except QuotaStop as error:  # the quota answered the first read: nothing was sent, nothing changed
+        value = {'status': 'PASS_PARTIAL', 'limit': limit or keywords.PER_DAY, 'quota_stop': str(error)[:300],
+                 'operations_accepted': 0, 'access_level_hint': 'EXPLORER_LIMIT_REACHED'}
     except check.CheckError as error:
         value = {'status': 'FAIL', 'error': str(error)}
     return check.clean(value, keys)
@@ -342,9 +393,12 @@ def report(path=check.KEYS_PATH, opener=urllib.request.urlopen):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
+    parser.add_argument('--limit', type=int)
     args = parser.parse_args()
     if not re.fullmatch(r'[0-9]+', args.run):
         raise SystemExit('RUN_ID')
+    if args.limit is not None and not 1 <= args.limit <= MAX_LIMIT:
+        raise SystemExit('LIMIT')
     resource.setrlimit(resource.RLIMIT_CPU, (240, 250))
     work = HERE / 'runs' / args.run
     work.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -352,7 +406,7 @@ def main():
     if receipt.exists():
         return 0
     try:
-        value = json.loads(report())
+        value = json.loads(report(limit=args.limit))
     except Exception as error:
         value = {'status': 'FAIL', 'error': type(error).__name__ + ':' + str(error)[:80]}
     value.update(run_id=args.run, mode='probe', safe_to_stop=True, remote_write_count=1)

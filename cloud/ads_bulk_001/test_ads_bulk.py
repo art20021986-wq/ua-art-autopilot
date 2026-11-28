@@ -7,6 +7,7 @@ import re
 import sys
 import tempfile
 import unittest
+import urllib.error
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -336,8 +337,123 @@ class UsaTests(unittest.TestCase):
         self.assertEqual(ops[-1]['adGroupAdOperation']['create']['adGroup'], 'g/2')
 
 
+QUOTA = {'error': {'code': 429, 'message': 'Resource has been exhausted (e.g. check quota).', 'status': 'RESOURCE_EXHAUSTED',
+                   'details': [{'@type': 'type.googleapis.com/google.ads.googleads.v19.errors.GoogleAdsFailure',
+                                'errors': [{'errorCode': {'quotaError': 'RESOURCE_EXHAUSTED'},
+                                            'message': 'Too many requests. Retry in 86400 seconds.',
+                                            'details': {'quotaErrorDetails': {
+                                                'rateScope': 'DEVELOPER', 'retryDelay': '86400s',
+                                                'rateName': 'Number of operations for explorer access'}}}]}]}}
+
+
+class Explorer(Google):
+    """Google at the Explorer level: after `left` operations every mutate (with reads=True every read too) is 429."""
+    def __init__(self, left, reads=False):
+        super().__init__()
+        self.left, self.reads, self.refused_after, self.tripped = left, reads, 0, left <= 0
+
+    def __call__(self, request, timeout=None):
+        if request.full_url != remote.check.TOKEN_ENDPOINT:
+            mutate = request.full_url.endswith('googleAds:mutate')
+            size = len(json.loads(request.data)['mutateOperations']) if mutate else 0
+            if self.left < size or (self.tripped and self.reads):
+                self.tripped = True
+                self.refused_after += mutate
+                raise urllib.error.HTTPError(request.full_url, 429, 'Too Many Requests', {},
+                                             io.BytesIO(json.dumps(QUOTA).encode()))
+            self.left -= size
+        return super().__call__(request, timeout)
+
+
+class BigRunTests(unittest.TestCase):
+    """Basic access: one run with a large limit (owner 28.11: ~12 000 keywords at once, Japan not included)."""
+    def report(self, google, limit):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / 'keys.json'
+            path.write_text(json.dumps(KEYS))
+            return json.loads(remote.report(path, google, limit))
+
+    def test_split_12000(self):
+        self.assertEqual(keywords.split(8976, 17600, 12000), (6000, 6000))  # half each, both have more left
+        self.assertEqual(keywords.split(4000, 17600, 12000), (4000, 8000))  # Korea all it has, USA the rest
+        self.assertEqual(keywords.split(8976, 1000, 12000), (8976, 1000))  # less left than the limit: all of it
+        self.assertEqual(keywords.split(8976, 17600), (1200, 1200))  # the default night unchanged
+
+    def test_big_run_all_usa_groups_and_basic_hint(self):
+        google = Google()
+        night = self.report(google, 5000)
+        self.assertEqual(night['status'], 'PASS')
+        self.assertEqual(night['limit'], 5000)
+        self.assertEqual(night['split'], {'korea': 2500, 'usa': 2500})
+        self.assertEqual(night['countries']['usa']['groups_left_to_create'], 0)
+        self.assertEqual(night['usa']['after']['groups_without_ad'], [])
+        self.assertEqual(night['countries']['korea']['added_tonight'], 2500)
+        self.assertEqual(night['countries']['usa']['added_tonight'], 2500)
+        self.assertEqual(night['access_level_hint'], 'BASIC_OR_HIGHER')
+        self.assertGreater(night['operations_accepted'], remote.EXPLORER_OPS)
+        self.assertTrue(all(len(m['mutateOperations']) <= remote.CHUNK for m in google.mutates
+                            if 'adGroupCriterionOperation' in m['mutateOperations'][0]))
+        texts = google.texts('usa')
+        self.assertEqual(len(texts), len(set(texts)))
+        self.assertEqual(google.budgets, {'korea': '300000000', 'usa': '50000000'})
+        self.assertEqual(google.campaigns['usa']['targetSpend'], {'cpcBidCeilingMicros': '2000000'})
+        self.assertEqual(google.negatives['usa'], {'olx', 'copart parts'})
+
+    def test_usa_group_cap_only_with_big_limit(self):
+        current = {'campaign': {'resourceName': 'c/8'}, 'groups': {}, 'with_ads': set()}
+        night = self.report(Google(), keywords.PER_DAY)
+        self.assertEqual(night['usa']['after']['groups'], 4 + usa.MAX_NEW_GROUPS)
+        self.assertEqual(night['access_level_hint'], 'NOT_TESTED_BELOW_2880')
+        self.assertEqual(night['split'], {'korea': 1200, 'usa': 1200})
+        self.assertEqual(len(usa.group_operations('1', current)), 2 * usa.MAX_NEW_GROUPS)
+        self.assertEqual(len(usa.group_operations('1', current, len(usa.plan()))), 2 * len(usa.plan()))
+
+    def test_quota_mid_run_stops_cleanly(self):
+        google = Explorer(2880)
+        night = self.report(google, 12000)
+        self.assertEqual(night['status'], 'PASS_PARTIAL')
+        self.assertEqual(night['access_level_hint'], 'EXPLORER_LIMIT_REACHED')
+        self.assertIn('RESOURCE_EXHAUSTED', night['quota_stop'])
+        self.assertEqual(google.refused_after, 1)  # nothing sent after the quota answer
+        added = night['countries']['korea']['added_tonight'] + night['countries']['usa']['added_tonight']
+        self.assertEqual(added, len(google.keywords) - len(Google().keywords))
+        self.assertGreater(added, 0)
+        self.assertLessEqual(night['operations_accepted'], remote.EXPLORER_OPS)
+        self.assertEqual(night['countries']['usa']['added_tonight'], 0)  # Korea goes first, the stop came in it
+        self.assertEqual(night['after']['ceiling'], {'cpcBidCeilingMicros': '4550000'})
+        self.assertEqual(google.budgets, {'korea': '300000000', 'usa': '50000000'})
+
+    def test_quota_also_on_reads_reports_what_was_sent(self):
+        google = Explorer(2880, reads=True)
+        night = self.report(google, 12000)
+        self.assertEqual(night['status'], 'PARTIAL')
+        self.assertEqual(night['access_level_hint'], 'EXPLORER_LIMIT_REACHED')
+        self.assertIn('after_unreadable', night)
+        self.assertEqual(night['countries']['korea']['added_tonight'] + night['countries']['usa']['added_tonight'],
+                         len(google.keywords) - len(Google().keywords))
+
+    def test_quota_before_anything(self):
+        night = self.report(Explorer(0, reads=True), 12000)
+        self.assertEqual((night['status'], night['access_level_hint'], night['operations_accepted']),
+                         ('PASS_PARTIAL', 'EXPLORER_LIMIT_REACHED', 0))
+
+    def test_quota_shapes(self):
+        self.assertTrue(remote.quota(429, {}))
+        self.assertTrue(remote.quota(400, {'error': {'status': 'RESOURCE_EXHAUSTED'}}))
+        temporary = json.loads(json.dumps(QUOTA))
+        temporary['error']['status'] = 'INVALID_ARGUMENT'
+        temporary['error']['details'][0]['errors'][0]['errorCode'] = {'quotaError': 'RESOURCE_TEMPORARILY_EXHAUSTED'}
+        self.assertTrue(remote.quota(400, temporary))
+        self.assertFalse(remote.quota(400, {'error': {'status': 'INVALID_ARGUMENT', 'details': [
+            {'errors': [{'errorCode': {'requestError': 'INVALID_INPUT'}}]}]}}))
+
+
 class FakeAPI:
-    def run(self, mode, run_id, bundle):
+    def __init__(self):
+        self.limit = 'unset'
+
+    def run(self, mode, run_id, bundle, limit=None):
+        self.limit = limit
         return {'status': 'PASS'}
 
 
@@ -353,8 +469,29 @@ class ControllerTests(unittest.TestCase):
             env = {'UAART_TASK_ID': self.TASK, 'UAART_RECEIPT_PATH': 'state/receipts/%s.json' % self.TASK,
                    'UAART_REQUEST_PATH': 'tasks/requests/%s.json' % self.TASK,
                    'UAART_REQUEST_SHA256': c.sha(request.read_bytes()), 'UAART_RUN_ID': '7'}
-            receipt = c.execute(env, root=temp, api=FakeAPI(), upload=lambda a: 'b' * 64)
+            api = FakeAPI()
+            receipt = c.execute(env, root=temp, api=api, upload=lambda a: 'b' * 64)
         self.assertEqual(receipt['evidence_path'], 'cloud/ads_bulk_001/20261126.json')
+        self.assertIsNone(api.limit)  # the default night: no limit passed on
+
+    def test_limit_from_request(self):
+        task = 'ADS-BULK-20261128-BIG'
+        for limit, error in ((12000, None), (12001, 'LIMIT'), ('12000', 'LIMIT'), (True, 'LIMIT')):
+            with tempfile.TemporaryDirectory() as temp:
+                request = Path(temp) / 'tasks/requests' / (task + '.json')
+                request.parent.mkdir(parents=True)
+                request.write_text(json.dumps({'production_required': False, 'keyword_limit': limit}))
+                env = {'UAART_TASK_ID': task, 'UAART_RECEIPT_PATH': 'state/receipts/%s.json' % task,
+                       'UAART_REQUEST_PATH': 'tasks/requests/%s.json' % task,
+                       'UAART_REQUEST_SHA256': c.sha(request.read_bytes()), 'UAART_RUN_ID': '7'}
+                api = FakeAPI()
+                if error:
+                    with self.assertRaisesRegex(c.ProbeError, error):
+                        c.execute(env, root=temp, api=api, upload=lambda a: 'b' * 64)
+                    continue
+                receipt = c.execute(env, root=temp, api=api, upload=lambda a: 'b' * 64)
+            self.assertEqual(api.limit, 12000)
+            self.assertEqual(receipt['evidence_path'], 'cloud/ads_bulk_001/20261128-BIG.json')
 
 
 class TransportTests(unittest.TestCase):
@@ -364,6 +501,17 @@ class TransportTests(unittest.TestCase):
              patch.object(api, 'json', return_value={'id': transport.BOT_ID}):
             with self.assertRaisesRegex(transport.TransportError, 'TRIGGER_IDENTITY'):
                 api.run('probe', '1', 'a' * 64)
+
+    def test_limit_in_command_only_when_given(self):
+        for limit, tail in ((None, ['--run', '1']), (12000, ['--run', '1', '--limit', '12000'])):
+            api = transport.API('test-token')
+            receipt = json.dumps({'run_id': '1', 'mode': 'probe', 'safe_to_stop': True}).encode()
+            with patch.object(api, 'file', side_effect=[None, receipt]), \
+                    patch.object(api, 'json', return_value={'id': 5}) as start, patch.object(api, 'request'):
+                api.run('probe', '1', 'a' * 64, limit)
+            self.assertTrue(start.call_args[0][2]['command'].endswith(' '.join(tail)))
+        with self.assertRaisesRegex(transport.TransportError, 'RUN_LIMIT'):
+            transport.API('test-token').run('probe', '1', 'a' * 64, 20000)
 
     def test_own_prefix(self):
         self.assertIn('adsbulk-', Path(transport.__file__).read_text())
