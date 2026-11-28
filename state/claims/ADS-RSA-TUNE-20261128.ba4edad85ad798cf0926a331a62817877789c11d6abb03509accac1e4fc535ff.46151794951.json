@@ -7,21 +7,23 @@
   "created_at": "2026-11-28T14:15:20Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T14:15:20Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-28T14:18:29Z",
+  "heartbeat_at": "2026-11-28T14:18:29Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "46151794951",
     "task_id": "ADS-RSA-TUNE-20261128",
     "task_sha256": "ba4edad85ad798cf0926a331a62817877789c11d6abb03509accac1e4fc535ff"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-d7f7db750e9a673c-28ba551cd9844381",
   "receipt_path": "state/receipts/ADS-RSA-TUNE-20261128.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "008ade7f4ad4cfa20485841ec94609ee09f15cbb9354a760eedfc22e05b225fb",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/ADS-RSA-TUNE-20261128.json",
   "request_sha256": "ba4edad85ad798cf0926a331a62817877789c11d6abb03509accac1e4fc535ff",
   "resource_locks": [
@@ -29,8 +31,28 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "46fd68e43eef67006388a6b2c7223ed66f51ea43",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91661053952,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 40.851
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-28T14:15:20Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "f3ef53cbaf7dacc1886215eabcffc948f593077f2474f4719626076d0ffd9e5c",
+    "file_sha256": {
+      "cloud/ads_rsa_tune_001/bootstrap.py": "79cb79083a6b586ea9ba907bb50ad4456f4b69bcb7d7fe619095484f29571d2f",
+      "cloud/ads_rsa_tune_001/make_request.py": "d609a57b9ab51a6aed2c4ac222f2dd7479aef20569417b2bf0301eb2b2f7f907",
+      "cloud/ads_rsa_tune_001/source_check.py": "094f82cfebc1f43666b9cd58b92948efa84ee6669b18a29d2e8343046025c7d0",
+      "cloud/ads_rsa_tune_001/source_remote.py": "b86c8c485bde3c168edeece9bef579a9baf8ffcc5117626de39a05ff4d6fc4be",
+      "cloud/ads_rsa_tune_001/test_ads_rsa_tune.py": "76f99e94fa7ecd2f89d72aa1d6e94d8413adea05e49d8313afb801f48b6fd2ce",
+      "cloud/ads_rsa_tune_001/transport.py": "b5e11637abf9a3003ecf674fb594c0249a1988fc41a3b5efc6457ddfde2c9b1e"
+    }
+  },
+  "updated_at": "2026-11-28T14:18:29Z"
 }
