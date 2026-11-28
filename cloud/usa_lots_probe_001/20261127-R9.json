@@ -1,0 +1,83 @@
+{
+  "mode": "probe",
+  "no_bid_placed": true,
+  "no_login": true,
+  "remote_write_count": 0,
+  "reproduce": {
+    "error": "Traceback (most recent call last):\n  File \"/home/Carix/autopilot_inbox/cloud/task_068_ferry_vin/usaprobe-b6a3c29b3bbac[N]fe1d6ddb4588df1b19dfe9778ff0427ee23a5b33e1547/source_remote.py\", line 367, in reproduce\n    value['report'] = _job.run(client, data, now, Path(temp) / 'usa')\n  File \"/home/Carix/usa_auction/job.py\", line 206, in run\n    full = [lot for lot in full if lot['auction_start'] and lot['auction_start'] >= today and selection.keep(lot)]\n  File \"/home/Carix/usa_auction/job.py\", line 206, in <listcomp>\n    full = [lot for lot in full if lot['auction_start'] and lot['auction_start'] >= today and selection.keep(lot)]\nKeyError: 'auction_start'\n",
+    "page_samples": [
+      {
+        "actual_cash_value_usd": "0",
+        "auction_start": "2026-11-30T15:30Z",
+        "buy_now_usd": "11000",
+        "damage": "Hail Hail",
+        "drive": "Front Wheel Drive",
+        "engine": "2.5L I-4 DI, DOHC, VVT, TURBO, 290HP 2.5",
+        "fuel": "Gasoline",
+        "location": "At the branch Live Auction: Mon Nov 30 9",
+        "odometer_mi": "47320",
+        "photos": 16,
+        "runs": "True",
+        "secondary_damage": "",
+        "title_type": "CLEAR (Missouri)",
+        "transmission": "Automatic Transmission"
+      },
+      {
+        "actual_cash_value_usd": "0",
+        "auction_start": "",
+        "buy_now_usd": "7200",
+        "damage": "Hail Hail",
+        "drive": "Front Wheel Drive",
+        "engine": "ELECTRIC ELECTRIC",
+        "fuel": "Electric",
+        "location": "Offsite At the Tulsa (OK ) branch 5311 W",
+        "odometer_mi": "28897",
+        "photos": 18,
+        "runs": "True",
+        "secondary_damage": "",
+        "title_type": "CLEAR (Oklahoma)",
+        "transmission": "Automatic Transmission"
+      },
+      {
+        "actual_cash_value_usd": "0",
+        "auction_start": "2026-11-30T15:30Z",
+        "buy_now_usd": "0",
+        "damage": "Hail Hail",
+        "drive": "Front Wheel Drive",
+        "engine": "1.5L I-4 DI, DOHC, VVT, TURBO, 163HP 1.5",
+        "fuel": "Gasoline",
+        "location": "Offsite Springfield Offsite 3923 SELMORE",
+        "odometer_mi": "64043",
+        "photos": 20,
+        "runs": "True",
+        "secondary_damage": "Storm Damage",
+        "title_type": "CLEAR (Missouri)",
+        "transmission": "Automatic Transmission"
+      },
+      {
+        "actual_cash_value_usd": "0",
+        "auction_start": "2026-11-30T15:30Z",
+        "buy_now_usd": "1300",
+        "damage": "Hail Hail",
+        "drive": "Front Wheel Drive",
+        "engine": "2.5L I-4 DI, DOHC, VVT, 196HP 2.5L I-4 D",
+        "fuel": "Gasoline",
+        "location": "Offsite Springfield Offsite 3923 SELMORE",
+        "odometer_mi": "[N]",
+        "photos": 16,
+        "runs": "True",
+        "secondary_damage": "Storm Damage",
+        "title_type": "CLEAR (Missouri)",
+        "transmission": "Automatic Transmission"
+      }
+    ],
+    "pages_read": 4,
+    "requests": 8,
+    "requests_limit": 8
+  },
+  "requests": 0,
+  "run_id": "46150482351",
+  "safe_to_stop": true,
+  "status": "PASS",
+  "task_id": "USA-LOTS-PROBE-20261127-R9"
+}
