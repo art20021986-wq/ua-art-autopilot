@@ -88,7 +88,7 @@ class ModuleTests(unittest.TestCase):
 class BuildTests(unittest.TestCase):
     def source(self):
         return {'ua_brand_home.py': (HERE/'fixtures/ua_brand_home.txt').read_bytes(),
-                'ua_seo_metadata.py': b"X = 1\nSEO_REVISION = 'PERF-CWV-001'\n",
+                'ua_seo_metadata.py': (HERE/'fixtures/ua_seo_metadata.txt').read_bytes(),
                 'catalog_design_golden.html': fixture('katalog.html').encode('utf-8'),
                 'video/index.html': fixture('index.html').encode('utf-8'),
                 'video/katalog.html': fixture('katalog.html').encode('utf-8'),
@@ -97,7 +97,10 @@ class BuildTests(unittest.TestCase):
     def test_candidate(self):
         result = candidate_builder.build(self.source(), {})
         self.assertEqual(set(result) - set(self.source()), set(candidate_builder.NEW_MODULES))
-        self.assertEqual(result['ua_seo_metadata.py'], b"X = 1\nSEO_REVISION = 'LOGO-001'\n")
+        metadata = self.source()['ua_seo_metadata.py']
+        self.assertEqual(result['ua_seo_metadata.py'],
+                         metadata.replace(b"\nSEO_REVISION = 'PERF-CWV-001'\n", b"\nSEO_REVISION = 'LOGO-001'\n"))
+        self.assertIn(b'# SEO-PRICE-001:', result['ua_seo_metadata.py'])
         self.assertEqual(result['ua_brand_home.py'], (HERE/'ua_brand_home.py').read_bytes())
         for name in ('catalog_design_golden.html', 'video/katalog.html', 'video/podbor.html'):
             self.assertEqual(result[name].decode('utf-8').count(ua_header_nav.NAV), 1)
@@ -105,11 +108,12 @@ class BuildTests(unittest.TestCase):
         for name in candidate_builder.NEW_MODULES + ('ua_brand_home.py',):
             compile(result[name], name, 'exec')
 
-    def test_live_module_must_be_the_installed_one(self):
-        source = self.source()
-        source['ua_brand_home.py'] += b'\n'
-        with self.assertRaisesRegex(ValueError, 'LOGO_LIVE_MODULE_UNEXPECTED'):
-            candidate_builder.build(source, {})
+    def test_live_modules_must_be_the_installed_ones(self):
+        for name in ('ua_brand_home.py', 'ua_seo_metadata.py'):
+            source = self.source()
+            source[name] += b'\n'
+            with self.assertRaisesRegex(ValueError, 'LOGO_LIVE_MODULE_UNEXPECTED:' + name):
+                candidate_builder.build(source, {})
 
     def test_second_application_is_refused(self):
         result = candidate_builder.build(self.source(), {})
