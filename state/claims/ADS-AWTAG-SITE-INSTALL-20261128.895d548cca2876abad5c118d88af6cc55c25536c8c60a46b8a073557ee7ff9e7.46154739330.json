@@ -17,6 +17,15 @@
       "retries_remaining": 1,
       "retry_allowed": false,
       "signature": "4829e81b3d534b9b"
+    },
+    {
+      "action": "MANUAL_RECONCILIATION",
+      "at": "2026-11-28T15:30:00+00:00",
+      "class": "ROLLED_BACK_VERIFIED",
+      "evidence_path": "state/reconciliations/ADS-AWTAG-SITE-INSTALL-20261128.46154739330.authenticated-evidence.json",
+      "message": "Verify failed (FILE_CHANGED on an SEO landing): the old bot process survived the pause (set_bot accepted 'stopping') and its minute landing refresh wrote during install and after restore. Rollback receipt PASS; modules restored to V1; 32 landings carry the owner-approved V2 tag. Owner-authorized halt recovery («Да» ec986643); reinstall as ADS-AWTAG-SITE-INSTALL-20261128-R2 with the bot-stop fix.",
+      "retries_remaining": 0,
+      "retry_allowed": false
     }
   ],
   "heartbeat_at": "2026-11-28T14:34:26Z",
@@ -137,5 +146,5 @@
       "cloud/ads_awtag_site_001/ua_google_tag_old.py": "f5f0a30489d20d7f7d973c27bd31e583e9827fb5a6d1e24a97fb35d1e6a3b6d4"
     }
   },
-  "updated_at": "2026-11-28T14:59:49Z"
+  "updated_at": "2026-11-28T15:30:00+00:00"
 }

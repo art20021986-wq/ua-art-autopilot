@@ -1,0 +1,20 @@
+{
+  "cause": "set_bot(False) treated 'stopping' as stopped; the old bot process kept the loaded modules in memory and its minute job ua_card_lang_job -> ua_seo_index.refresh rewrote SEO landings outside the installer locks: during install (V1 -> FILE_CHANGED on verify) and after restore (V2 on the 32 landings at 14:51:40Z)",
+  "claim_before_sha256": "a380e4c7cb717e12ac1ddb56952e6122ca19fe02a9c6fe4b89974cef9c11bb26",
+  "crm_unchanged": true,
+  "error": "REMOTE_VERIFY:DeploymentError:FILE_CHANGED:video/seo/ru/audi-a6-koreya-kiev.html -> CONTROLLER_FAILED:1",
+  "failed_step": "execute / critical / controller_production: remote verify",
+  "halt_archive": "state/halt_history/ADS-AWTAG-SITE-INSTALL-20261128.46154739330/halt.json",
+  "known_residual": "32 SEO landings (seo/ru|ua/*) carry the V2 tag lines (AW config + conversion), rewritten by the stale bot process after restore; owner-approved tag (cff080ab), no personal data; R2 makes V2 the target state on all pages",
+  "live_verify": "2026-11-28 ~15:00Z session 37 and coordinator: /, index, katalog, korea, ua/UA-0001, seo/ru/audi-a6 = 200; ua_google_tag.py on server V1 (f5f0a304); index/katalog/cards carry V1 (no AW)",
+  "owner_statement": "«1. Да» (2026-11-28T15:28:08Z, ios, coordinator chat, event ec986643-74ac-4707-b900-01c181beeaa9) to lifting the emergency halt",
+  "precedent": "state/reconciliations/CARD-FACTS-INSTALL-20261117.44023739157.authenticated-evidence.json",
+  "production_transaction_status": "ROLLED_BACK",
+  "protected_files_unchanged": true,
+  "recorded_at": "2026-11-28T15:30:00+00:00",
+  "retry": "ADS-AWTAG-SITE-INSTALL-20261128-R2 (PR #2478; needs its own owner «Да»)",
+  "rollback_receipt": "ROLLED_BACK, restored true, live_verify PASS, crm_unchanged, protected_files_unchanged, unexpected_changes 0",
+  "run_id": "46154739330",
+  "task_id": "ADS-AWTAG-SITE-INSTALL-20261128",
+  "workflow_conclusion": "failure"
+}
