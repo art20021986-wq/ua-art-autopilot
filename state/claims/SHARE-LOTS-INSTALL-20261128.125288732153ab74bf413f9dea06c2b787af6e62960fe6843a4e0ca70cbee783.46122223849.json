@@ -8,8 +8,9 @@
   "critical_gate_evidence_sha256": "cb022c87bed2d62610385a9d353d5c657bf105bd7b30999ba259a82db5c86802",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T07:46:59Z",
-  "heartbeat_sequence": 7,
+  "finished_at": "2026-11-28T08:00:55Z",
+  "heartbeat_at": "2026-11-28T08:00:55Z",
+  "heartbeat_sequence": 9,
   "identity": {
     "run_id": "46122223849",
     "task_id": "SHARE-LOTS-INSTALL-20261128",
@@ -17,7 +18,36 @@
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
   "package_compile_status": "PASS",
-  "post_health_status": "REQUIRED",
+  "post_health": {
+    "checks": [
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/index.html",
+        "http_status": 200,
+        "latency_ms": 727.4,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/index.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/korea.html",
+        "http_status": 200,
+        "latency_ms": 84.5,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/korea.html"
+      },
+      {
+        "error": "",
+        "final_url": "https://www.uaart.com.ua/video/japan.html",
+        "http_status": 200,
+        "latency_ms": 118.7,
+        "status": "PASS",
+        "url": "https://www.uaart.com.ua/video/japan.html"
+      }
+    ],
+    "status": "PASS"
+  },
+  "post_health_status": "PASS",
   "pre_health": {
     "checks": [
       {
@@ -51,10 +81,11 @@
   "production_required": true,
   "production_transaction_id": "tx-46122223849-125288732153ab74",
   "production_transaction_path": "state/transactions/SHARE-LOTS-INSTALL-20261128.125288732153ab74bf413f9dea06c2b787af6e62960fe6843a4e0ca70cbee783.46122223849.json",
-  "production_transaction_status": "OPEN",
+  "production_transaction_status": "FINISHED",
   "queue_key": "path_scope-758d3b3819f3a1a8-ec71d7aea81335ce",
   "receipt_path": "state/receipts/SHARE-LOTS-INSTALL-20261128.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "24c36c4334555e900e6804937fd422bc3b8540f163b10fca197ea49bfa5e2b56",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SHARE-LOTS-INSTALL-20261128.json",
   "request_sha256": "125288732153ab74bf413f9dea06c2b787af6e62960fe6843a4e0ca70cbee783",
   "resource_locks": [
@@ -77,7 +108,7 @@
   },
   "storage_preflight_status": "PASS",
   "task_class": "CRITICAL",
-  "task_execution_status": "RUNNING",
+  "task_execution_status": "FINISHED",
   "trusted_package": {
     "controller_sha256": "2f9d9298fbca881f761f3f041f05ce8a319ab21c95d27f225f1c829359f24b35",
     "file_sha256": {
@@ -93,5 +124,5 @@
       "cloud/share_lots_001/test_release.py": "0653fd48fb807b0fafecd2e77f5c5bc8bc268036b6cdc7a1e40810beb04a2402"
     }
   },
-  "updated_at": "2026-11-28T07:46:59Z"
+  "updated_at": "2026-11-28T08:00:55Z"
 }
