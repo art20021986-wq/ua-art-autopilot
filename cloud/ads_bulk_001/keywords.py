@@ -4,7 +4,8 @@
 Pure: no network. Every brand and model sold at the Korean car auctions (Hyundai, Kia, Genesis, Chevrolet / GM Korea,
 Renault Korea / Samsung, SsangYong / KGM, and the imports there) × buyer phrasings, Ukrainian and Russian, Latin and
 Cyrillic spellings as people type them. One group per brand and language; the five models with their own page keep
-their groups. PER_DAY caps today's part: the Explorer API level allows about 2 880 operations a day.
+their groups. PER_DAY is the default night (Explorer API level: about 2 880 operations a day); a run may carry its own
+limit (source_remote --limit, Basic access).
 """
 BRANDS = {
     'Hyundai': (['hyundai', 'хюндай', 'хендай', 'хундай', 'хьюндай'],
@@ -139,7 +140,7 @@ def today(have=frozenset(), limit=PER_DAY, groups=None):
 
 def split(left_korea, left_usa, total=None):
     """Tonight's part for each campaign (owner 28.11 «да»): half each; a country with less left gives the rest to the
-    other, so the night stays within total (PER_DAY)."""
+    other, so the night stays within total (the run's limit, default PER_DAY)."""
     total = PER_DAY if total is None else total
     korea = min(left_korea, max(total // 2, total - left_usa))
     return korea, min(left_usa, total - korea)

@@ -10,7 +10,7 @@ import keywords_jpus
 NAME = 'Пошук — США (UA ART)'
 NAMES = "'%s'" % NAME
 PAGE = 'https://www.uaart.com.ua/video/usa.html'
-MAX_NEW_GROUPS = 40  # a night: 40 groups + 40 ads = 80 operations, so the total stays within the ~2 880 a day
+MAX_NEW_GROUPS = 40  # a default night: 80 operations, within ~2 880 a day; a run above PER_DAY creates all at once
 UK_HEAD = ['Авто з США під ключ', 'Аукціони США: Copart', 'Послуга — 600 $', 'Звіт Carfax — 0 $',
            'Доступ до Copart безкоштовно', 'Офіс у Києві, Перемоги 20', 'Офіційний договір', 'Особистий кабінет 24/7',
            'Страхування авто в дорозі']

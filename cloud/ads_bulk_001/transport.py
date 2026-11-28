@@ -87,9 +87,11 @@ class API:
         if self.file(path) != payload:
             raise TransportError('UPLOAD_READBACK')
 
-    def run(self, mode, run_id, bundle_sha):
+    def run(self, mode, run_id, bundle_sha, limit=None):
         if mode != 'probe' or not re.fullmatch(r'[0-9]+', run_id):
             raise TransportError('RUN_IDENTITY')
+        if limit is not None and (type(limit) is not int or not 1 <= limit <= 12000):
+            raise TransportError('RUN_LIMIT')
         if not re.fullmatch(r'[0-9a-f]{64}', bundle_sha):
             raise TransportError('RUN_HASH')
         receipt = INBOX+'/adsbulk-'+bundle_sha+'/runs/'+run_id+'/receipt-'+mode+'.json'
@@ -97,7 +99,7 @@ class API:
         if prior:
             return json.loads(prior)
         args = ['python3.10', INBOX+'/adsbulk_bootstrap.py', '--bundle', bundle_sha,
-                '--run', run_id]
+                '--run', run_id] + ([] if limit is None else ['--limit', str(limit)])
         trigger = self.json('POST', 'always_on/', {'command': shlex.join(args),
                    'description': 'Google Ads bulk '+mode+' '+run_id, 'enabled': 'true'}, (200, 201, 202))
         trigger_id = trigger.get('id')
