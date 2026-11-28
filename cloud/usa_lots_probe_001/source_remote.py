@@ -299,6 +299,35 @@ def diagnose(browser):
                           'auction_starts': sorted(str(p.get('auction_start', '')) for p in lot_pages)[:10],
                           'samples': [{k: clean(v)[:60] for k, v in p.items() if k != 'photos'} for p in lot_pages[:2]],
                           'photo_shape': clean(next((p['photos'][0] for p in lot_pages if p.get('photos')), ''))}
+    # R8 (after USA-LOTS-FIX-003): the last run's own report, the run lock, the published files' times
+    data = Path('/home/Carix/usa_auction_data')
+    try:
+        value['last_run'] = json.loads((data / 'last_run.json').read_bytes())
+    except (OSError, ValueError) as error:
+        value['last_run'] = 'MISSING:' + type(error).__name__
+    now = time.time()
+    lock = Path('/home/Carix/.usa_auction_job.lock')
+    value['lock_age_min'] = round((now - lock.stat().st_mtime) / 60, 1) if lock.exists() else -1
+    for name in ('state.json',):
+        target = data / name
+        value[name + '_age_min'] = round((now - target.stat().st_mtime) / 60, 1) if target.exists() else -1
+    for name in ('lots.json', 'feed.json'):
+        target = Path('/home/Carix/video/usa') / name
+        value[name + '_age_min'] = round((now - target.stat().st_mtime) / 60, 1) if target.exists() else -1
+    try:
+        import fcntl as _fcntl
+        if not lock.exists():
+            raise FileNotFoundError('no lock file')  # read-only: never created here
+        with open(lock, 'r') as handle:
+            try:
+                _fcntl.flock(handle, _fcntl.LOCK_EX | _fcntl.LOCK_NB)
+                _fcntl.flock(handle, _fcntl.LOCK_UN)
+                value['lock_held'] = False
+            except BlockingIOError:
+                value['lock_held'] = True  # a USA run is working now
+    except OSError as error:
+        value['lock_held'] = 'ERROR:' + type(error).__name__
+    value['running_pages'] = sum(1 for p in state.get('pages', {}).values() if p.get('runs'))
     copies = Path('/home/Carix/video/usa/lots')
     value['photo_copies'] = len(list(copies.iterdir())) if copies.is_dir() else -1
     url = ''  # R6: no IAAI request
