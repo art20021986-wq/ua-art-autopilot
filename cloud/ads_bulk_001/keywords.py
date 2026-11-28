@@ -125,12 +125,21 @@ def plan():
     return groups
 
 
-def today(have=frozenset(), limit=PER_DAY):
-    """The next part: up to limit keywords not yet in the campaign, round-robin over groups so every group gets some."""
-    queue = {g: [k for k in words if (g, k) not in have] for g, words in plan().items()}
+def today(have=frozenset(), limit=PER_DAY, groups=None):
+    """The next part: up to limit keywords not yet in the campaign, round-robin over groups so every group gets some
+    (groups: another plan, e.g. the USA one; default the Korea plan)."""
+    queue = {g: [k for k in words if (g, k) not in have] for g, words in (plan() if groups is None else groups).items()}
     picked = []
     while len(picked) < limit and any(queue.values()):
         for g in list(queue):
             if queue[g] and len(picked) < limit:
                 picked.append((g, queue[g].pop(0)))
     return picked
+
+
+def split(left_korea, left_usa, total=None):
+    """Tonight's part for each campaign (owner 28.11 «да»): half each; a country with less left gives the rest to the
+    other, so the night stays within total (PER_DAY)."""
+    total = PER_DAY if total is None else total
+    korea = min(left_korea, max(total // 2, total - left_usa))
+    return korea, min(left_usa, total - korea)
