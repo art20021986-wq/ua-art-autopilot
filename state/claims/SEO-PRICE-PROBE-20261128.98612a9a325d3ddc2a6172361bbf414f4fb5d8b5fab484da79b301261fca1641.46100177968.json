@@ -7,21 +7,23 @@
   "created_at": "2026-11-28T02:54:13Z",
   "critical_gate_status": "NOT_REQUIRED",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T02:54:13Z",
-  "heartbeat_sequence": 0,
+  "finished_at": "2026-11-28T02:59:47Z",
+  "heartbeat_at": "2026-11-28T02:59:47Z",
+  "heartbeat_sequence": 5,
   "identity": {
     "run_id": "46100177968",
     "task_id": "SEO-PRICE-PROBE-20261128",
     "task_sha256": "98612a9a325d3ddc2a6172361bbf414f4fb5d8b5fab484da79b301261fca1641"
   },
   "mode_epoch": "auto-20260904T174904Z-global-guard-04",
-  "package_compile_status": "PENDING",
+  "package_compile_status": "PASS",
   "post_health_status": "NOT_REQUIRED",
   "pre_health_status": "NOT_REQUIRED",
   "production_required": false,
   "queue_key": "path_scope-cad99a9c91f97d08-763db7584d67f307",
   "receipt_path": "state/receipts/SEO-PRICE-PROBE-20261128.json",
-  "receipt_validation_status": "PENDING",
+  "receipt_sha256": "b531509e4fe9375873b60dd4d110736016b3621b56e07075c3ade00a0a6f55eb",
+  "receipt_validation_status": "PASS",
   "request_path": "tasks/requests/SEO-PRICE-PROBE-20261128.json",
   "request_sha256": "98612a9a325d3ddc2a6172361bbf414f4fb5d8b5fab484da79b301261fca1641",
   "resource_locks": [
@@ -29,8 +31,27 @@
   ],
   "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
   "source_commit": "0e8b8f0ad3c8193416d7e60e068aaf7926b4f9b1",
-  "storage_preflight_status": "PENDING",
+  "storage_preflight": {
+    "allowed": true,
+    "free_bytes": 91250380800,
+    "heavy": false,
+    "measurement_scope": "github_runner_sandbox",
+    "required_bytes": 33554432,
+    "status": "PASS",
+    "usage_percent": 41.116
+  },
+  "storage_preflight_status": "PASS",
   "task_class": "STANDARD",
-  "task_execution_status": "CLAIMED",
-  "updated_at": "2026-11-28T02:54:13Z"
+  "task_execution_status": "FINISHED",
+  "trusted_package": {
+    "controller_sha256": "c2f0e62e05efb5e784f74637dd01d617698b4c4c70a9f8bf9107aeed467fdc60",
+    "file_sha256": {
+      "cloud/seo_price_probe_001/bootstrap.py": "472b8f067f3fa7e35f34b48e87de5659ac2d2cdf9ec374b276bb813dca61db60",
+      "cloud/seo_price_probe_001/make_request.py": "32d848388564f621cd53723d11ab80fb5f94bcb41282cdfc0fee34202d0062a2",
+      "cloud/seo_price_probe_001/source_remote.py": "a7f725e40f4fb48cf1455e7865d64f863a58a8b86f3e522d28eaaf96a8b1f28f",
+      "cloud/seo_price_probe_001/test_seo_price_probe.py": "357577937d9d7a15b9171b2df53d1db02927130da466d364350cf295750e4f70",
+      "cloud/seo_price_probe_001/transport.py": "3bbb8fc15224c9de27bb75b050758cad916fea99262641413040177fe69afae4"
+    }
+  },
+  "updated_at": "2026-11-28T02:59:47Z"
 }
