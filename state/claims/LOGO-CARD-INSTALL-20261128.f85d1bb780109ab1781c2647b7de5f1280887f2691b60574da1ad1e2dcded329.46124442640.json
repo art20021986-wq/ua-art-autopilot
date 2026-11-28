@@ -8,8 +8,8 @@
   "critical_gate_evidence_sha256": "0a2cbbd5a209fc2e8135580e11bf60488ec25f54c9a06877ade496bb77bbe799",
   "critical_gate_status": "PASS_PRODUCTION",
   "execution_mode": "AUTOMATIC",
-  "heartbeat_at": "2026-11-28T08:12:40Z",
-  "heartbeat_sequence": 6,
+  "heartbeat_at": "2026-11-28T08:15:44Z",
+  "heartbeat_sequence": 7,
   "identity": {
     "run_id": "46124442640",
     "task_id": "LOGO-CARD-INSTALL-20261128",
@@ -51,7 +51,7 @@
   "production_required": true,
   "production_transaction_id": "tx-46124442640-f85d1bb780109ab1",
   "production_transaction_path": "state/transactions/LOGO-CARD-INSTALL-20261128.f85d1bb780109ab1781c2647b7de5f1280887f2691b60574da1ad1e2dcded329.46124442640.json",
-  "production_transaction_status": "PREPARING",
+  "production_transaction_status": "OPEN",
   "queue_key": "path_scope-1e7bba11037b2ec7-d32decac51bd7f65",
   "receipt_path": "state/receipts/LOGO-CARD-INSTALL-20261128.json",
   "receipt_validation_status": "PENDING",
@@ -94,5 +94,5 @@
       "cloud/logo_card_001/ua_header_nav.py": "b266410d91eb7ae105b07f9ecac26c63c1f075b7078b90c26fae001b2baa36dd"
     }
   },
-  "updated_at": "2026-11-28T08:12:40Z"
+  "updated_at": "2026-11-28T08:15:44Z"
 }
