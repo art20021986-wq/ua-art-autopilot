@@ -300,6 +300,17 @@ class TransportTests(unittest.TestCase):
             mutate.assert_not_called()
             self.assertEqual(pause.call_count, 1)
 
+    def test_pause_waits_longer_than_two_minutes(self):
+        """Run 46161221342: the bot took longer than 120 s to stop; the pause now waits up to 480 s."""
+        api = API('test-token')
+        clock = iter([0, 0, 200, 400])
+        with patch.object(api, 'bot', side_effect=[
+            {'enabled': False, 'state': 'Stopping'},
+            {'enabled': False, 'state': 'Stopping'},
+            {'enabled': False, 'state': 'Stopped'},
+        ]), patch.object(api, 'json'), patch('time.sleep'), patch('time.monotonic', side_effect=lambda: next(clock)):
+            self.assertEqual(api.set_bot(False)['state'], 'stopped')
+
     def test_wrong_bot_identity_is_rejected_before_pause(self):
         api = API('test-token')
         with patch.object(api, 'json', return_value={
