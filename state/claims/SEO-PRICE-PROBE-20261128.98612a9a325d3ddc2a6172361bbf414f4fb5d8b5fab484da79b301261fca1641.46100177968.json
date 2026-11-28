@@ -1,0 +1,36 @@
+{
+  "ai_response_status": "NOT_REQUESTED",
+  "automatic_mode_enabled": true,
+  "autostart_ledger_path": "state/autostart_consumed/SEO-PRICE-PROBE-20261128.98612a9a325d3ddc2a6172361bbf414f4fb5d8b5fab484da79b301261fca1641.json",
+  "autostart_ledger_sha256": "e6c7c97fd950b055ed57bbdd3678095cd341174d3bee81ba6be62631f62cec0f",
+  "autostart_source_commit": "b9805e3ef0bbb066ecdaa09c97c7dc2d4234dbdc",
+  "created_at": "2026-11-28T02:54:13Z",
+  "critical_gate_status": "NOT_REQUIRED",
+  "execution_mode": "AUTOMATIC",
+  "heartbeat_at": "2026-11-28T02:54:13Z",
+  "heartbeat_sequence": 0,
+  "identity": {
+    "run_id": "46100177968",
+    "task_id": "SEO-PRICE-PROBE-20261128",
+    "task_sha256": "98612a9a325d3ddc2a6172361bbf414f4fb5d8b5fab484da79b301261fca1641"
+  },
+  "mode_epoch": "auto-20260904T174904Z-global-guard-04",
+  "package_compile_status": "PENDING",
+  "post_health_status": "NOT_REQUIRED",
+  "pre_health_status": "NOT_REQUIRED",
+  "production_required": false,
+  "queue_key": "path_scope-cad99a9c91f97d08-763db7584d67f307",
+  "receipt_path": "state/receipts/SEO-PRICE-PROBE-20261128.json",
+  "receipt_validation_status": "PENDING",
+  "request_path": "tasks/requests/SEO-PRICE-PROBE-20261128.json",
+  "request_sha256": "98612a9a325d3ddc2a6172361bbf414f4fb5d8b5fab484da79b301261fca1641",
+  "resource_locks": [
+    "PATH_SCOPE:cad99a9c91f97d08"
+  ],
+  "schema_version": "UA-ART-CONTROL-PLANE-R2.0",
+  "source_commit": "0e8b8f0ad3c8193416d7e60e068aaf7926b4f9b1",
+  "storage_preflight_status": "PENDING",
+  "task_class": "STANDARD",
+  "task_execution_status": "CLAIMED",
+  "updated_at": "2026-11-28T02:54:13Z"
+}
